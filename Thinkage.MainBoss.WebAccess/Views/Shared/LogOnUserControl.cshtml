@@ -1,0 +1,21 @@
+﻿@using System.Web.Mvc.Html;
+@using Thinkage.MainBoss.WebAccess;
+@using Thinkage.Web.Mvc.Html;
+
+@{
+	var instance = (Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance;
+	if (instance != null && !instance.IsLoggedOut && instance.IsMainBossUser) {
+		<table border="0">
+			<col align="left" />
+			<col align="right" />
+			<tr>
+				<td>@(T.Text("Welcome MainBoss user"))@Html.NBSP()<b>@(instance.ContactName)@(Html.NBSP())(@(instance.UserName) @(T.Text("on")) @(instance.Connection.DBClientConnection.DBName))</b></td>
+				<td class="logout">@Html.ActionLink(T.Text("Logout"), "Logout", "Home", null, new
+						  {
+							  @class = "StateActionLink"
+						  })</td>
+			</tr>
+		</table>
+	}
+}
+

@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<appSettings>
+  <!-- This file provides the equivalent to command-line options, in this case specifying the database server, server name, and the organization name.
+  The latter is only used for displaying stuff on the web pages, not for any actual data fetching. -->
+  <add key="orgname" value="xxx"/>
+  <add key="dbserver" value="audrium"/>
+  <add key="dbname" value="viking"/>
+</appSettings>

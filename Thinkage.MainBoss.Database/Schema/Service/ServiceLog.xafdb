@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database name="http://thinkage.ca/MB3/dsMB.xsd:dsDatabaseHistory_1_0_0_337" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="../Types.xafdb"/>
+	<table name="ServiceLog" defaults="false" log="false" id="Id" labelkey="Service Log">
+		<doc>
+	  This table records in text form significant Database events - creation, upgrades etc
+	</doc>
+		<field name="Id" read="RequiredGUID"/>
+		<field name="EntryDate" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.999, divided 100, nonnull)">
+			<extension name="serversetsDateTime"/>
+		</field>
+		<field name="EntryVersion" read="RowVersion">
+			<doc>
+				Automatically incremented value by database server (type rowversion) to distinguish records with same EntryDate.
+				Higher values dictate later rows. Allows sorting of records based on entry date and in proper order of insertion
+			</doc>
+			<result hosting="server">
+				cast(0 as RowVersion)
+			</result>
+		</field>
+		<field name="EntryType" type="integer(nonnull, min 0, max 255)">
+			<doc>Corresponds to the ServiceLogEntry.EntryType property (similar to system Event Log entry type)</doc>
+			<extension name="controlprovider">Thinkage.MainBoss.Database.DatabaseEnums.ServiceLogEntryTypeProvider,Thinkage.MainBoss.Database</extension>
+		</field>
+		<field name="Source" type="RequiredSubject">
+			<doc>Who generated the message (service worker thread name)</doc>
+		</field>
+		<field name="Message" type="Comment">
+			<doc>The full description of the log entry</doc>
+		</field>
+		<extension name="deletemethod">delete</extension>
+	</table>
+</database>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+  <table name="DatabaseStatus" defaults="false" log="false" id="Id" labelkey="">
+	<doc>
+	  This view provides a single record containing the information to display in the right-hand panel when the main treeview node is selected.	 
+	  The ID was picked arbitrarily but is fixed so that the "same" record is found after a clear and refresh.
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="NumNewRequests" type="Quantity" />
+	<field name="NumInProgressRequests" type="Quantity" />
+	<field name="NumUnAssignedNewRequests" type="Quantity" />
+	<field name="NumUnAssignedInProgressRequests" type="Quantity" />
+	<field name="NumNewWorkOrders" type="Quantity" />
+	<field name="NumOpenWorkOrders" type="Quantity" />
+	<field name="NumUnAssignedNewWorkOrders" type="Quantity" />
+	<field name="NumUnAssignedOpenWorkOrders" type="Quantity" />
+	<field name="NumDraftPurchaseOrders" type="Quantity" />
+	<field name="NumIssuedPurchaseOrders" type="Quantity" />
+	<field name="NumUnAssignedDraftPurchaseOrders" type="Quantity" />
+	<field name="NumUnAssignedIssuedPurchaseOrders" type="Quantity" />
+	<field name="NumEmailNeedingManualProcessing" type="Quantity" />
+	<field name="LastGenerationEntryDate" type="Date"/>
+	<field name="LatestGenerationEndDate" type="Date"/>
+	<field name="LastBackupDate" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
+	<field name="LastBackupFileName" type="string(minlength 1, 256, lines 0, trim both, null)"/>
+	<extension name="query">
+	  select 
+		cast('2E3B9222-3303-422C-8C94-F2EC31B1AF32' as uniqueidentifier),
+		(SELECT count(*)
+			  FROM Request
+				JOIN RequestStateHistory ON RequestStateHistory.ID = Request.CurrentRequestStateHistoryID
+				JOIN RequestState ON RequestState.[ID] = RequestStateHistory.RequestStateID
+			  WHERE RequestState.FilterAsNew = 1),
+		(SELECT count(*)
+			  FROM Request
+				JOIN RequestStateHistory ON RequestStateHistory.ID = Request.CurrentRequestStateHistoryID
+				JOIN RequestState ON RequestState.[ID] = RequestStateHistory.RequestStateID
+			  WHERE RequestState.FilterAsInProgress = 1),
+		(SELECT count(*)
+			  FROM Request
+				JOIN RequestStateHistory ON RequestStateHistory.ID = Request.CurrentRequestStateHistoryID
+				JOIN RequestState ON RequestState.[ID] = RequestStateHistory.RequestStateID
+			  WHERE RequestState.FilterAsNew = 1
+				AND Request.Id NOT IN (
+				  select WO.ID from
+					Request as WO
+					JOIN RequestAssignment as WOAt on WOAt.RequestID = WO.Id
+					JOIN RequestAssignee as WOAee on WOAee.Id = WOAt.RequestAssigneeID
+					JOIN Contact as C on C.Id = WOAee.ContactID
+					WHERE C.Hidden IS NULL
+				  )),
+		(SELECT count(*)
+			  FROM Request
+				JOIN RequestStateHistory ON RequestStateHistory.ID = Request.CurrentRequestStateHistoryID
+				JOIN RequestState ON RequestState.[ID] = RequestStateHistory.RequestStateID
+			  WHERE RequestState.FilterAsInProgress = 1
+				AND Request.Id NOT IN (
+				  select WO.ID from
+					Request as WO
+					JOIN RequestAssignment as WOAt on WOAt.RequestID = WO.Id
+					JOIN RequestAssignee as WOAee on WOAee.Id = WOAt.RequestAssigneeID
+					JOIN Contact as C on C.Id = WOAee.ContactID
+					WHERE C.Hidden IS NULL
+				  )),
+		(SELECT count(*)
+			  FROM WorkOrder
+				JOIN WorkOrderStateHistory ON WorkOrderStateHistory.ID = WorkOrder.CurrentWorkOrderStateHistoryID
+				JOIN WorkOrderState ON WorkOrderState.ID = WorkOrderStateHistory.WorkOrderStateID
+			  WHERE WorkOrderState.FilterAsDraft = 1),		
+		(SELECT count(*)
+			  FROM WorkOrder
+				JOIN WorkOrderStateHistory ON WorkOrderStateHistory.ID = WorkOrder.CurrentWorkOrderStateHistoryID
+				JOIN WorkOrderState ON WorkOrderState.ID = WorkOrderStateHistory.WorkOrderStateID
+			  WHERE WorkOrderState.FilterAsOpen = 1),
+		(SELECT count(*)
+			  FROM WorkOrder
+				JOIN WorkOrderStateHistory ON WorkOrderStateHistory.ID = WorkOrder.CurrentWorkOrderStateHistoryID
+				JOIN WorkOrderState ON WorkOrderState.ID = WorkOrderStateHistory.WorkOrderStateID
+			  WHERE WorkOrderState.FilterAsDraft = 1
+				AND WorkOrder.Id NOT IN (
+				  select WO.ID from
+						WorkOrder as WO
+					JOIN WorkOrderAssignmentAll as WOAA on WOAA.WorkOrderID = WO.Id
+					JOIN WorkOrderAssignee as WOA on WOA.Id = WOAA.WorkOrderAssigneeID
+					JOIN Contact as C on C.Id = WOA.ContactID
+					WHERE C.Hidden IS NULL
+				  )),		
+		(SELECT count(*)
+			  FROM WorkOrder
+				JOIN WorkOrderStateHistory ON WorkOrderStateHistory.ID = WorkOrder.CurrentWorkOrderStateHistoryID
+				JOIN WorkOrderState ON WorkOrderState.ID = WorkOrderStateHistory.WorkOrderStateID
+			  WHERE WorkOrderState.FilterAsOpen = 1
+				AND WorkOrder.Id NOT IN (
+				  select WO.ID from
+					WorkOrder as WO
+					JOIN WorkOrderAssignmentAll as WOAA on WOAA.WorkOrderID = WO.Id
+					JOIN WorkOrderAssignee as WOA on WOA.Id = WOAA.WorkOrderAssigneeID
+					JOIN Contact as C on C.Id = WOA.ContactID
+					WHERE C.Hidden IS NULL
+				  )),
+		(SELECT count(*)
+			  FROM PurchaseOrder
+				JOIN PurchaseOrderStateHistory ON PurchaseOrderStateHistory.ID = PurchaseOrder.CurrentPurchaseOrderStateHistoryID
+				JOIN PurchaseOrderState ON PurchaseOrderState.[ID] = PurchaseOrderStateHistory.PurchaseOrderStateID
+			  WHERE PurchaseOrderState.FilterAsDraft = 1),
+		(SELECT count(*)
+			  FROM PurchaseOrder
+				JOIN PurchaseOrderStateHistory ON PurchaseOrderStateHistory.ID = PurchaseOrder.CurrentPurchaseOrderStateHistoryID
+				JOIN PurchaseOrderState ON PurchaseOrderState.[ID] = PurchaseOrderStateHistory.PurchaseOrderStateID
+			  WHERE PurchaseOrderState.FilterAsIssued = 1),
+		(SELECT count(*)
+			  FROM PurchaseOrder
+				JOIN PurchaseOrderStateHistory ON PurchaseOrderStateHistory.ID = PurchaseOrder.CurrentPurchaseOrderStateHistoryID
+				JOIN PurchaseOrderState ON PurchaseOrderState.[ID] = PurchaseOrderStateHistory.PurchaseOrderStateID
+			  WHERE PurchaseOrderState.FilterAsDraft = 1
+				AND PurchaseOrder.Id NOT IN (
+				  select WO.ID from
+					PurchaseOrder as WO
+					JOIN PurchaseOrderAssignment as WOAt on WOAt.PurchaseOrderID = WO.Id
+					JOIN PurchaseOrderAssignee as WOAee on WOAee.Id = WOAt.PurchaseOrderAssigneeID
+					JOIN Contact as C on C.Id = WOAee.ContactID
+					WHERE C.Hidden IS NULL
+				  )),
+		(SELECT count(*)
+			  FROM PurchaseOrder
+				JOIN PurchaseOrderStateHistory ON PurchaseOrderStateHistory.ID = PurchaseOrder.CurrentPurchaseOrderStateHistoryID
+				JOIN PurchaseOrderState ON PurchaseOrderState.[ID] = PurchaseOrderStateHistory.PurchaseOrderStateID
+			  WHERE PurchaseOrderState.FilterAsIssued = 1
+				AND PurchaseOrder.Id NOT IN (
+				  select WO.ID from
+					PurchaseOrder as WO
+					JOIN PurchaseOrderAssignment as WOAt on WOAt.PurchaseOrderID = WO.Id
+					JOIN PurchaseOrderAssignee as WOAee on WOAee.Id = WOAt.PurchaseOrderAssigneeID
+					JOIN Contact as C on C.Id = WOAee.ContactID
+					WHERE C.Hidden IS NULL
+				  )),
+		(SELECT count(*) 
+			  FROM EmailRequest 
+			  WHERE EmailRequest.ProcessingState in ( 5, 6, 7, 8 ) ), -- the values are EmailRequestState.AmbiguousRequestor EmailRequestState.AmbiguousRequestorCreation EmailRequestState.NoRequestor EmailRequestState.NoContact
+		(SELECT TOP(1) EntryDate
+			  from PMGenerationBatch
+			  order by EntryDate DESC),
+		(SELECT TOP(1) EndDate
+			  from PMGenerationBatch
+			  order by EndDate DESC),
+		(SELECT TOP(1) LastBackupDate
+			  from BackupFileName
+				where Message is null
+			  order by LastBackupDate DESC),
+		(SELECT TOP(1) FileName
+			  from BackupFileName
+				where Message is null
+			  order by LastBackupDate DESC)
+    </extension>
+	<extension name="dependson">Request</extension>
+	<extension name="dependson">RequestAssignment</extension>
+	<extension name="dependson">RequestAssignee</extension>
+	<extension name="dependson">RequestStateHistory</extension>
+	<extension name="dependson">RequestState</extension>
+	<extension name="dependson">WorkOrder</extension>
+	<extension name="dependson">WorkOrderAssignmentAll</extension>
+	<extension name="dependson">WorkOrderAssignee</extension>
+	<extension name="dependson">WorkOrderStateHistory</extension>
+	<extension name="dependson">WorkOrderState</extension>
+	<extension name="dependson">PurchaseOrder</extension>
+	<extension name="dependson">PurchaseOrderAssignment</extension>
+	<extension name="dependson">PurchaseOrderAssignee</extension>
+	<extension name="dependson">PurchaseOrderStateHistory</extension>
+	<extension name="dependson">PurchaseOrderState</extension>
+	<extension name="dependson">PMGenerationBatch</extension>
+	<extension name="dependson">BackupFileName</extension>
+	<extension name="dependson">Contact</extension>
+  </table>
+  <table name="Request" />
+  <table name="RequestAssignment" />
+  <table name="RequestAssignee" />
+  <table name="RequestStateHistory" />
+  <table name="RequestState" />
+  <table name="WorkOrder" />
+  <table name="WorkOrderAssignmentAll" />
+  <table name="WorkOrderAssignee" />
+  <table name="WorkOrderStateHistory" />
+  <table name="WorkOrderState" />
+  <table name="PurchaseOrder" />
+  <table name="PurchaseOrderAssignment" />
+  <table name="PurchaseOrderAssignee" />
+  <table name="PurchaseOrderStateHistory" />
+  <table name="PurchaseOrderState" />
+  <table name="PMGenerationBatch" />
+  <table name="BackupFileName"/>
+  <table name="Contact"/>
+</database>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="Miscellaneous" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true"  labelkey="Miscellaneous">
+	<doc>Description of other miscellaneous purchase items</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="RequiredCode"/>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="Desc" type="Desc"/>
+	<field name="Comment" type="Comment"/>
+	<field name="PurchaseOrderText" type="LineText">
+	  <doc>Text that will appear on a purchase order item description line</doc>
+	</field>
+	<field name="CostCenterID" type="RequiredGUIDREF"  link="CostCenter">
+	  <doc>Cost center for expense of miscellaneous purchase to accrue</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="Cost" type="Currency"/>
+	<extension name="deletemethod">hide</extension>
+	<extension name="costrights">PurchaseOrderMiscellaneous</extension>
+  </table>
+  <table name="CostCenter"/>
+</database>

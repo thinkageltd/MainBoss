@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ItemCountValue" defaults="true" log="false" id="Id" xid="ItemLocationID" labelkey="Physical Count">
+	<doc>
+	  These records represent a Physical Count and/or inventory valuation operation. They provide an origin for accumulating changes in
+	  quantity and value expressed by all the other inventory transactions. Alteration of the cost on other inventory
+	  transactions (and older ItemCountValue records) whose EffectiveDate predates the latest ItemCountValue is not permitted, since
+	  such changes would affect the net financial change expressed by this record. If it appears necessary to enter such transactions,
+	  the information must first be manually verified as to whether the items referred to by the transaction were counted by the
+	  Physical Count/Evaluation or not. This will determine whether the new transaction should actually post-date the Count (i.e.
+	  the EffectiveDate was wrong and should actually be after the Count), or whether the Count should be voided, then re-entered
+	  after the transaction has been entered. Such a re-entry would require re-evaluation of the deemed actual value.
+	  Entry of a Count record whose effective date predates existing transactions is allowed; the only effect may be that the actual
+	  cost of the items will be different from what they would have been had the records been entered in the correct order (assuming
+	  the Count record affects the unit cost).
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="AccountingTransactionID" read="RequiredGUIDREF"  base="AccountingTransaction">
+	  <doc>
+		The net financial change represented by this evaluation. This represents the difference between the accumulated value
+		since the last Physical Count (or since the zero origin if none) and the deemed value entered by the user
+	  </doc>
+	</field>
+	<field name="ItemLocationID" type="RequiredGUIDREF" link="ItemLocation">
+	  <doc>The Item and Location where the count actually was taken. This must be a Permanent ItemLocation. </doc>
+	  <extension name="linkage">captive</extension>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.PermanentItemLocationPickerTblCreator,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="Quantity" type="RequiredQuantity">
+	  <doc>The quantity as counted at the location.</doc>
+	</field>
+	<field name="Cost" type="RequiredCurrency">
+	  <doc>The deemed value of the items found at the location.</doc>
+	</field>
+	<field name="ItemAdjustmentCodeID" type="RequiredGUIDREF"  link="ItemAdjustmentCode" labelkey="Adjustment Code">
+	  <doc>The Adjustment code which, amongst other things, determines what cost center the value discrepancy is charged to.</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="VoidingItemCountValueVoidID" read="GUIDREF" link="ItemCountValueVoid">
+	  <doc>
+		If non-null, the link to the ItemCountValueVoid whose presence voids this record. Such an ItemCountValueVoid record will
+		also link back to us via its VoidedItemCountValueID field.
+	  </doc>
+	  <result hosting="cached">
+		(select id from ItemCountValueVoid)
+	  </result>
+	  <extension name="dependson">ItemCountValueVoid</extension>
+	</field>
+	<extension name="costrights">InventoryActivity</extension>
+  </table>
+  <table name="ItemAdjustmentCode"/>
+  <table name="ItemCountValueVoid"/>
+  <object class="function" name="mbfn_ItemCountValue_VoidingItemCountValueVoid">
+	<doc>
+	Return a VoidingItemCountValue entry that refers to us
+	</doc>
+	<extension name="body">
+		(
+		  @ICVID uniqueidentifier
+		)
+		RETURNS uniqueidentifier
+		as
+		begin
+		  return (
+				select ID
+				  from ItemCountValueVoid
+				  where ItemCountValueVoid.VoidedItemCountValueID = @ICVID
+		  )
+		end
+	</extension>
+	<extension name="dependson">ItemCountValueVoid</extension>
+  </object>
+  <object class="trigger" name="mbtg_ItemCountValue_Updates_ActualItemLocationEtAl">
+	<doc>
+	  Maintain the current ItemCountValue reference in PermanentItemLocation
+	  Maintain the TotalCost and OnHand quantities in ActualItemLocation
+	</doc>
+	<extension name="body">
+	  on ItemCountValue
+	  after insert
+	  as
+	  begin
+		-- check against pre-existing physical count records only (before recalculating the CurrentItemCountValueID)
+		if exists(select *
+					from inserted
+					  join ActualItemLocation as AIL on inserted.ItemLocationID = AIL.ItemLocationID
+					  join PermanentItemLocation as PIL on AIL.ID = PIL.ActualItemLocationID
+					  join ItemCountValue as CICV on CICV.ID = PIL.CurrentItemCountValueID
+					  join AccountingTransaction as CTX on CTX.ID = CICV.AccountingTransactionID
+					  join AccountingTransaction as TX on TX.ID = inserted.AccountingTransactionID
+					where CTX.EffectiveDate &gt;= TX.EffectiveDate) begin
+		  raiserror('''%s'' record predates the latest Physical Count', 16, 1, 'ItemCountValue')
+		  rollback transaction
+		end
+		if exists(select count(*) from inserted group by ItemLocationID having count(*) > 1) begin
+		  raiserror('Cannot insert multiple ''%s'' records for a particular storage assignment in a single insert statement', 16, 1, 'ItemCountValue')
+		  rollback transaction
+		end
+	  -- Calculate definitively the associated AccountingTransaction.Cost
+		update AccountingTransaction
+		  set cost = coalesce((select top 1 X.TotalCost
+									from RationalizedInventoryActivityDeltas as X
+									where
+									  X.ItemLocationID = inserted.ItemLocationID
+									  and (TX.EffectiveDate > X.EffectiveDate or (TX.EffectiveDate = X.EffectiveDate and TX.EntryDate > X.EntryDate))
+									order by EffectiveDate desc, EntryDate desc), 0)
+						  - inserted.Cost
+		  from AccountingTransaction as TX
+			inner join inserted on inserted.AccountingTransactionID = TX.id
+			  
+	  -- Reset PermanentItemLocation.CurrentItemCountValueID
+		update PermanentItemLocation
+			set CurrentItemCountValueID = dbo.mbfn_PermanentItemLocation_CurrentItemCountValue(PermanentItemLocation.ID)
+			where PermanentItemLocation.ActualItemLocationID in (
+					select distinct ActualItemLocation.ID from ActualItemLocation join inserted on inserted.ItemLocationID = ActualItemLocation.ItemLocationID
+			  union select distinct ActualItemLocation.ID from ActualItemLocation join deleted on deleted.ItemLocationID = ActualItemLocation.ItemLocationID
+			  )
+		<!-- If we could be sure there was only one record per IL, we could do the work here with 14 update calls (for the various inv tx tables)
+			However that would represent a lot of code duplication (over 7 types of inv tx, not to mention ICV and ICVV), so instead we set up
+			a cursor which yields the IL, cost delta, and quantity delta, and call a procedure to do the updating. -->
+		declare Deltas cursor local fast_forward
+		for
+		  select
+			inserted.ItemLocationID,
+			TX.EffectiveDate,
+			TX.EntryDate,
+			inserted.Quantity - coalesce((select top 1 X.TotalQuantity
+									from RationalizedInventoryActivityDeltas as X
+									where
+									  X.ItemLocationID = inserted.ItemLocationID
+									  and (TX.EffectiveDate > X.EffectiveDate or (TX.EffectiveDate = X.EffectiveDate and TX.EntryDate > X.EntryDate))
+									order by EffectiveDate desc, EntryDate desc), 0),
+			-TX.Cost
+		  from inserted
+		  join AccountingTransaction as TX on TX.Id = inserted.AccountingTransactionID
+		  
+		declare @ILID uniqueidentifier
+		declare @EffectiveDate datetime
+		declare @EntryDate datetime
+		declare @DeltaQuantity integer
+		declare @DeltaCost money
+		open Deltas
+		fetch next from Deltas into @ILID, @EffectiveDate, @EntryDate, @DeltaQuantity, @DeltaCost
+		while @@Fetch_Status = 0
+		begin
+		  exec mbsp_AddInventoryDeltas @ILID, @EffectiveDate, @EntryDate, @DeltaQuantity, @DeltaCost
+		  fetch next from Deltas into @ILID, @EffectiveDate, @EntryDate, @DeltaQuantity, @DeltaCost
+		end
+	  end
+	</extension>
+	<extension name="references">mbfn_PermanentItemLocation_CurrentItemCountValue()</extension>
+	<extension name="references">ActualItemLocation</extension>
+	<extension name="references">PermanentItemLocation</extension>
+	<extension name="references">ItemCountValue</extension>
+	<extension name="references">AccountingTransaction</extension>
+	<extension name="references">ItemLocation</extension>
+	<extension name="references">RationalizedInventoryActivityDeltas</extension>
+	<extension name="references">mbsp_AddInventoryDeltas[]</extension>
+  </object>
+  <table name="ActualItemLocation"/>
+  <table name="PermanentItemLocation"/>
+  <table name="AccountingTransaction" />
+  <table name="ItemLocation" />
+  <table name="RationalizedInventoryActivityDeltas" />
+</database>

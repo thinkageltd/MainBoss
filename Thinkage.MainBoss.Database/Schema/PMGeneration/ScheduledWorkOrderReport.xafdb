@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ScheduledWorkOrderReport" defaults="false" log="false" id="Id" labelkey="">
+	<field name="Id" read="blob(minlength 32, maxlength 32, nonnull)"/>
+	<field name="ScheduledWorkOrderID" type="RequiredGUIDREF" labelkey="" link="ScheduledWorkOrder"/>
+	<field name="DemandTemplateID" type="GUIDREF" link="DemandTemplate"/>
+	<extension name="query">
+		select cast(SWO.Id as binary(32)), SWO.Id, null
+		  from ScheduledWorkOrder as SWO
+	  union all
+		select cast(SWO.Id as binary(16))+cast(DT.Id as binary(16)), SWO.Id, DT.Id
+		  from
+			ScheduledWorkOrder as SWO
+		  join
+			WorkOrderTemplateContainment as WOTC
+			on WOTC.ContainedWorkOrderTemplateID = SWO.WorkOrderTemplateID
+		  join
+			DemandTemplate as DT
+			on DT.WorkOrderTemplateID = WOTC.ContainingWorkOrderTemplateID
+	</extension>
+	<extension name="dependson">ScheduledWorkOrder</extension>
+	<extension name="dependson">WorkOrderTemplateContainment</extension>
+	<extension name="dependson">DemandTemplate</extension>
+	<extension name="costrights">UnitValue</extension>
+  </table>
+  <table name="ScheduledWorkOrder"/>
+  <table name="WorkOrderTemplateContainment" id="Id">
+	<field name="Id" read="blob(minlength 32, maxlength 32, nonnull)"/>
+  </table>
+  <table name="DemandTemplate"/>
+</database>

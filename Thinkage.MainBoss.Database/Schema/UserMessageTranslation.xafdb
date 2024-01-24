@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+  <table name="UserMessageTranslation" defaults="false" log="false" id="Id" xid="UserMessageKeyID LanguageLCID" xunique="true" labelkey="User Message Translation">
+		<doc>A table of translations used in the program to construct messages to users of different languages.</doc>
+		<field name="Id" read="RequiredGUID"/>
+		<field name="UserMessageKeyID" type="RequiredGUIDREF" link="UserMessageKey">
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="LanguageLCID" type="RequiredCultureInfoLCID">
+			<doc>The language culture for this translation/culture</doc>
+			<extension name="pickfrom">Thinkage.Libraries.Presentation.CommonTblPickers.CultureInfoPickerTblCreator,Thinkage.Libraries.Presentation</extension>
+			<extension name="controlprovider">Thinkage.Libraries.DBAccess.CultureInfoSession.LCIDProvider,Thinkage.Libraries.DBAccess</extension>			
+		</field>
+		<field name="Translation" type="string(minlength 0, 1073741823, trim trailingonly, nonnull)">
+			<doc>The text of the translation associated with this language LCID</doc>
+		</field>
+		<extension name="deletemethod">delete</extension>
+	</table>
+	<table name="UserMessageKey"/>
+	<object class="function" name="mbfn_UserMessageTranslate">
+		<doc>Return the translation that best matches the context/key and preferredLanguage specified. Return null if none found</doc>
+		<extension name="body">		
+	  (
+		  @context nvarchar(50),
+		  @key nvarchar(50),
+		  @preferredLanguage int
+	  )
+	  RETURNS nvarchar(max)
+	  AS
+	  begin
+				DECLARE @ret nvarchar(max)
+				DECLARE @langid int
+
+				if @preferredLanguage is NULL
+				begin
+					SET @preferredLanguage = 127
+				end
+				-- Search for the SPECIFIC language first
+				SET @langid = @preferredLanguage
+				select @ret = UMT.Translation
+					from UserMessageKey as UMK 
+					join UserMessageTranslation as UMT on UMT.UserMessageKeyID = UMK.Id
+					where UMK.Context = @context and UMK.[Key] = @key	and	UMT.LanguageLCID = @langid
+
+				-- Search for base language if we didn't find a specific one. Don't search again if we searched
+				-- for a base language id
+				SET @langid = @preferredLanguage &amp; 0x03ff
+				if @ret is null and @langid &lt;&gt; @preferredLanguage
+				begin
+					select @ret = UMT.Translation
+							from UserMessageKey as UMK 
+							join UserMessageTranslation as UMT on UMT.UserMessageKeyID = UMK.Id
+							where UMK.Context = @context and UMK.[Key] = @key	and	UMT.LanguageLCID = @langid			
+				end
+				-- Finally, search for the default language id (invariant) if we haven't already searched for it previously
+				if @ret is null and @langid &lt;&gt; 127
+				begin
+					select @ret = UMT.Translation
+							from UserMessageKey as UMK 
+							join UserMessageTranslation as UMT on UMT.UserMessageKeyID = UMK.Id
+							where UMK.Context = @context and UMK.[Key] = @key	and	UMT.LanguageLCID = 127			
+				end
+			return @ret
+	  end
+		</extension>
+	</object>
+	<object class="function" name="mbfn_UserMessageTranslateFromKey">
+		<doc>Return the translation that best matches the 'context + nchar(167) + key' and preferredLanguage specified. Return null if none found</doc>
+		<extension name="body">		
+	  (
+		  @simplekey nvarchar(100),
+		  @preferredLanguage int
+	  )
+	  RETURNS nvarchar(max)
+	  AS
+	  begin
+				DECLARE @context nvarchar(max)
+				DECLARE @key nvarchar(max)
+				DECLARE @brk int
+				
+				if @simplekey is null
+				begin
+					return null
+				end
+				
+			set @brk = charindex(NCHAR(167), @simplekey, 0)
+			if @brk &gt; 0
+			begin
+				set @context = left(@simplekey, @brk-1)
+				set @key = right(@simplekey, len(@simplekey)-@brk)
+				return [dbo].mbfn_UserMessageTranslate(@context, @key, @preferredLanguage)
+			end
+			return null
+	  end
+		</extension>
+	</object>
+	<object class="function" name="mbfn_UserMessageTranslateFromID">
+		<doc>Return the translation that best the UserMessageKey identified with ID. Return null if none found</doc>
+		<extension name="body">		
+	  (
+		  @umkid uniqueidentifier,
+		  @preferredLanguage int
+	  )
+	  RETURNS nvarchar(max)
+	  AS
+	  begin
+				DECLARE @context nvarchar(max)
+				DECLARE @key nvarchar(max)
+				
+				if @umkid is null
+				begin
+					return null
+				end
+			select @context=UMK.Context, @key = UMK.[Key] from UserMessageKey as UMK where UMK.ID = @umkid
+			if @context is not null and @key is not null
+			begin
+				return [dbo].mbfn_UserMessageTranslate(@context, @key, @preferredLanguage)
+			end
+			return null
+	  end
+		</extension>
+	</object>
+	<extension name="dependson">UserMessageKey</extension>
+</database>

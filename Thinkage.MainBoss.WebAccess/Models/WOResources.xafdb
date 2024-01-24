@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database labelcontext="dsMBLabel" name="http://thinkage.ca/MB3/dsMB.xsd:WOResource" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="../../Thinkage.MainBoss.Database/Schema/Types.xafdb"/>
+  <table name="CostCenter" labelkey="Cost Center"/>
+  <table name="WorkOrderExpenseCategory" labelkey="Work Order Expense Category"/>
+  <table name="WorkOrderExpenseModel" labelkey="Work Order Expense Model"/>
+  <table name="AccessCode" labelkey="Access Code"/>
+  <table name="WorkOrder" labelkey="Work Order"/>
+  <table name="WorkOrderState" labelkey="Work Order State"/>
+  <table name="WorkOrderStateHistory" labelkey="Work Order State History"/>
+  <table name="PurchaseOrder" labelkey="Purchase Order"/>
+  <table name="PurchaseOrderState" labelkey="Purchase Order State"/>
+  <table name="PurchaseOrderStateHistory" labelkey="Purchase Order State History"/>
+  <table name="WorkOrderTemplate" labelkey="Task"/>
+  <table name="TemporaryStorage" labelkey="Temporary Storage"/>
+  <table name="TemplateTemporaryStorage" labelkey="Task Temporary Storage"/>
+  <table name="ItemCountValue" labelkey="Physical Count"/>
+  <table name="ItemCountValueVoid" labelkey="Physical Count Void"/>
+  <table name="UnitOfMeasure" labelkey="UOM"/>
+  <table name="ItemCategory" labelkey="Item Category"/>
+  <table name="PostalAddress" labelkey="Postal Address"/>
+
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Accounting/AccountingTransaction.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/Demand.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/DemandItem.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/DemandLaborInside.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/DemandOtherWorkInside.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/DemandMiscellaneousWorkOrderCost.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/ActualOtherWorkInside.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/ActualItem.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/ActualLaborInside.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/ActualMiscellaneousWorkOrderCost.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/MiscellaneousWorkOrderCost.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/WorkOrderExpenseModelEntry.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Labor/LaborInside.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Labor/OtherWorkInside.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Labor/Employee.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Labor/Trade.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Locations/Location.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Locations/RelativeLocation.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Locations/PlainRelativeLocation.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Locations/TemporaryStorage.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Locations/PermanentStorage.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Inventory/ItemLocation.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Inventory/ActualItemLocation.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Inventory/TemporaryItemLocation.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Inventory/PermanentItemLocation.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Inventory/Item.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Contact.xafdb"/>
+</database>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+
+  <table name="RequestedWorkOrder" defaults="false" log="false" id="Id" xid="RequestID WorkOrderID" xunique="true" labelkey="Work Order linked Request">
+	<field name="Id" read="RequiredGUID" />
+	<field name="RequestID" type="RequiredGUIDREF" link="Request">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="WorkOrderID" type="RequiredGUIDREF" link="WorkOrder">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<extension name="deletemethod">delete</extension>
+  </table>
+  <object class="trigger" name="mbtg_RequestedWorkOrder_ManageRequest">
+	<doc>
+	  Optionally change a request state when a request is linked to a workorder
+	</doc>
+	<extension name="body">
+	<!--
+	  When saving a new WO and a new RequestedWO record this trigger is only effective when the save order is
+	  (new WO, new WOStateHistory, new RequestedWO). The equally-valid order (new WO, new RequestedWO, new WOStateHistory)
+	  is handled by the WO state history trigger.
+		The transition conditions are governed by the table ManageRequestTransition
+	-->
+	on RequestedWorkOrder
+	after insert
+	as begin
+	  declare @datestamp datetime
+	  declare @includeWSHComment bit
+	  set @includeWSHComment = dbo._vgetCopyWSHCommentToRSH() -- TODO: in future a value in the WSH record itself to whether to include the WSH information
+	  if dbo._vgetManageRequestStates() = 1 begin
+			set @datestamp = dbo._DClosestValue(getdate(), 2, 100)
+			-- Same state (non-transition) case (Request State History remains in existing state
+			insert into RequestStateHistory (ID, EntryDate, EffectiveDate, EffectiveDateReadonly, UserID, RequestID, RequestStateID,
+									CommentToRequestor,
+									RequestStateHistoryStatusID, PredictedCloseDate)
+				select newid(), @datestamp, @datestamp, WSH.EffectiveDateReadonly, WSH.UserID, R.ID, MRST.ChangeToRequestStateID,
+					dbo.mbfn_UserMessageTranslateFromID(MRST.CommentToRequestorUserMessageKeyID, C.PreferredLanguage)
+					+
+					CASE WHEN @includeWSHComment = 1 and WStatus.Code IS NOT NULL
+					THEN Char(13)+Char(10)+'----'+Char(13)+Char(10)+WStatus.Code
+					ELSE ''
+					END
+					+
+					CASE WHEN  @includeWSHComment = 1 and WSH.Comment IS NOT NULL
+					THEN Char(13)+Char(10)+'----'+Char(13)+Char(10)+WSH.Comment
+					ELSE ''
+					END				
+					,
+					ORSH.RequestStateHistoryStatusID, ORSH.PredictedCloseDate
+
+				from inserted as RWO
+				join Request as R on R.ID = RWO.RequestID
+					join Requestor on Requestor.ID = R.RequestorID
+					join Contact as C on C.Id = Requestor.ContactID	
+					join RequestStateHistory as ORSH on ORSH.ID = R.CurrentRequestStateHistoryID
+				
+				join WorkOrder as WO on WO.ID = RWO.WorkOrderID
+					join WorkOrderStateHistory as WSH on WSH.ID = WO.CurrentWorkOrderStateHistoryID
+					left join WorkOrderStateHistoryStatus as WStatus on WStatus.ID = WSH.WorkOrderStateHistoryStatusID
+			  
+				join ManageRequestTransition as MRST
+					on MRST.RequestStateID = ORSH.RequestStateID and MRST.WorkOrderStateID = WSH.WorkOrderStateID 
+				where
+					-- where new state of request is  the same state it is in (e.g. Add a comment)
+					MRST.ChangeToRequestStateID = ORSH.RequestStateID
+					and
+					-- Only on requests where there is a single tied Work Order (this one)
+					(select count(*) from RequestedWorkOrder as CRWO where CRWO.RequestID = RWO.RequestID) = 1
+
+			-- Do the state transitions (where Request State History changes State)
+			while 1 = 1
+			begin
+				set @datestamp = dateadd(ms, 1000, @datestamp) -- use a 1000 millisecond interval between successive inserts
+				insert into RequestStateHistory (ID, EntryDate, EffectiveDate, EffectiveDateReadonly, UserID, RequestID, RequestStateID,
+													CommentToRequestor)
+
+					select newid(), @datestamp, @datestamp, WSH.EffectiveDateReadonly, WSH.UserID, R.ID, MRST.ChangeToRequestStateID,
+						dbo.mbfn_UserMessageTranslateFromID(MRST.CommentToRequestorUserMessageKeyID, C.PreferredLanguage)
+						+
+						CASE WHEN @includeWSHComment = 1 and WStatus.Code IS NOT NULL
+						THEN Char(13)+Char(10)+'----'+Char(13)+Char(10)+WStatus.Code
+						ELSE ''
+						END
+						+
+						CASE WHEN  @includeWSHComment = 1 and WSH.Comment IS NOT NULL
+						THEN Char(13)+Char(10)+'----'+Char(13)+Char(10)+WSH.Comment
+						ELSE ''
+						END				
+					from inserted as RWO
+					join Request as R on R.ID = RWO.RequestID
+						join Requestor on Requestor.ID = R.RequestorID
+						join Contact as C on C.Id = Requestor.ContactID	
+						join RequestStateHistory as ORSH on ORSH.ID = R.CurrentRequestStateHistoryID				
+					join WorkOrder as WO on WO.ID = RWO.WorkOrderID
+						join WorkOrderStateHistory as WSH on WSH.ID = WO.CurrentWorkOrderStateHistoryID
+						left join WorkOrderStateHistoryStatus as WStatus on WStatus.ID = WSH.WorkOrderStateHistoryStatusID			  
+					join ManageRequestTransition as MRST
+						on MRST.RequestStateID = ORSH.RequestStateID and MRST.WorkOrderStateID = WSH.WorkOrderStateID 
+					where
+							-- where new state of request is NOT the same state it is in (e.g. Add a comment)
+							MRST.ChangeToRequestStateID &lt;&gt; ORSH.RequestStateID
+							and
+						-- Only on requests where there is a single tied Work Order (this one)
+						(select count(*) from RequestedWorkOrder as CRWO where CRWO.RequestID = RWO.RequestID) = 1
+				-- we are done if there were no transitions, otherwise continue if the New Request State requires more transitions
+				if @@ROWCOUNT = 0 
+					break
+				set @includeWSHComment = 0 -- only include WSH comment ONCE if we do multiple transition records
+			end
+	  end
+	end
+	;
+	</extension>
+	<extension name="dependson">WorkOrder</extension>
+	<extension name="dependson">WorkOrderStateHistory</extension>
+	<extension name="dependson">Request</extension>
+	<extension name="dependson">RequestStateHistory</extension>
+	<extension name="dependson">RequestState</extension>
+	<extension name="dependson">RequestedWorkOrder</extension>
+	<extension name="dependson">Requestor</extension>
+	<extension name="dependson">Contact</extension>
+	<extension name="dependson">mbfn_UserMessageTranslate()</extension>
+  </object>
+  <table name="WorkOrder"/>
+  <table name="WorkOrderStateHistory"/>
+  <table name="Request"/>
+  <table name="RequestStateHistory"/>
+  <table name="RequestState"/>
+  <table name="Requestor"/>
+  <table name="Contact"/>
+</database>

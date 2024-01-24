@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="LocationDerivations" defaults="false" log="false" id="Id" labelkey="Location Derivations">
+	<doc>
+		  This view provides Path information from the base Location record to all the most derived xxxLocation tables
+		  and provides record type information and a record to edit ID for all the most-derived Location derivations.
+		  This is a flat composite view which allows editing of all derived record types.
+	</doc>
+	<field name="Id" read="RequiredGUID">
+	  <doc>ID of root Location record</doc>
+	</field>
+	<field name="TableEnum" type="integer(min 0, max 5, nonnull)"> <!-- Note other tables depend on this maximum (PMGenerationDetailAndScheduledWorkOrderAndLocation for one) -->
+	  <doc>Record type identification. See DatabaseLayout.ViewRecordTypes for values.</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TILocations.AllLocationsProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="ContainingLocationID" type="GUIDREF" link="Location">
+	  <doc>The ID of the base Location record of the parent record for the tree structure</doc>
+	</field>
+	<field name="LocationID" type="RequiredGUIDREF" link="Location" labelkey="">
+	  <doc>ID of the base LocationID record</doc>
+	</field>
+	<extension name="query">
+			select LocationID, 0, NULL, LocationID									<!-- DatabaseEnums.LocationDerivations.PostalAddress -->
+				from PostalAddress as PA
+		  union all
+			select LocationID, 1, ContainingLocationID, LocationID				<!-- DatabaseEnums.LocationDerivations.TemporaryStorage -->
+				from TemporaryStorage as TS
+		  union all
+			select RL.LocationID, 2, RL.ContainingLocationID, RL.LocationID			<!-- DatabaseEnums.LocationDerivations.Unit -->
+				from Unit
+				  left join RelativeLocation as RL on Unit.RelativeLocationID = RL.ID
+		  union all
+			select RL.LocationID, 3, RL.ContainingLocationID, RL.LocationID			<!-- DatabaseEnums.LocationDerivations.PermanentStorage -->
+				from PermanentStorage as PS
+				  left join RelativeLocation as RL on PS.RelativeLocationID = RL.ID
+		  union all
+			select RL.LocationID, 4, RL.ContainingLocationID, RL.LocationID			<!-- DatabaseEnums.LocationDerivations.PlainRelativeLocation -->
+				from PlainRelativeLocation as PRL
+				  left join RelativeLocation as RL on PRL.RelativeLocationID = RL.ID
+		  union all
+			select TTS.LocationID, 5, TTS.ContainingLocationID, TTS.LocationID	<!-- DatabaseEnums.LocationDerivations.TemplateTemporaryStorage -->
+				from TemplateTemporaryStorage as TTS
+		</extension>
+		<extension name="dependson">Location</extension>
+		<extension name="dependson">PermanentStorage</extension>
+		<extension name="dependson">PlainRelativeLocation</extension>
+		<extension name="dependson">PostalAddress</extension>
+		<extension name="dependson">RelativeLocation</extension>
+		<extension name="dependson">TemplateTemporaryStorage</extension>
+		<extension name="dependson">TemporaryStorage</extension>
+		<extension name="dependson">Unit</extension>
+  </table>
+  <table name="Location"/>
+  <table name="PermanentStorage"/>
+  <table name="PlainRelativeLocation"/>
+  <table name="PostalAddress"/>
+  <table name="RelativeLocation"/>
+  <table name="TemplateTemporaryStorage"/>
+  <table name="TemporaryStorage"/>
+  <table name="Unit"/>
+
+  <table name="LocationAndContainers" defaults="false" log="false" id="Id" labelkey="Location Derivations">
+	<doc></doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="FilterID" link="LocationDerivations" type="RequiredGUIDREF">
+	  <doc></doc>
+	</field>
+	<field name="DisplayID" link="LocationDerivations" type="RequiredGUIDREF">
+	  <doc></doc>
+	</field>
+	<!-- The remaining fields are required by the limitations of CompositeTbl or Tree-Structured Tbls -->
+	<field name="IsPrimary" type="RequiredBool">
+	  <!-- ListControl needs this field directly and the Tbl.IAttr that specifies this only lets you name a DBI_Column not a DBI_Path -->
+	  <doc></doc>
+	</field>
+	<extension name="query">
+			select ContainingLocationID,
+				  ContainedLocationID,
+				  ContainingLocationID,
+				  case when ContainingLocationID = ContainedLocationID then 1 else 0 end
+			from LocationContainment
+	</extension>
+	<extension name="dependson">LocationContainment</extension>
+  </table>
+  <table name="LocationContainment"/>
+</database>

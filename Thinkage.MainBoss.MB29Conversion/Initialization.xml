@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+<!--
+Define Lookup tables that are used during conversion. Since some tables in the new database are
+composites of multiple tables from the input database, we need to be able to link records in the
+new database to the corresponding source record from the input database.  We create tables
+of the form <newdatabasetable>From<inputdatabasetable> that map the [ID] of the input
+database table records to the newid assigned to the created record in the new database.
+So whenever we need to link records in the new database from information in the input database,
+we can substitute the [OutID] value as the linkage information. [InID] identifies the original
+record in the input database.
+
+All functions and temporary tables we create are built in the input database as we will throw it away when we are
+done. This saves the steps of cleaning up.
+
+ -->
+<table name="ConversionFunctions">
+  <data>
+<!-- DTIME: map input date/time fields into single SQL datetime value -->
+CREATE FUNCTION dbo.fn_DTIME (@DateField as datetime, @TimeField as char(6))
+RETURNS datetime
+AS
+BEGIN
+	RETURN (CONVERT( datetime, convert(varchar(10), @DateField, 120) + ' ' + SUBSTRING(@TimeField,1,2)+':'+SUBSTRING(@TimeField,3,2)+':'+SUBSTRING(@TimeField,5,2), 120) )
+END
+GO
+<!-- MONEY: map currency values in pennies to currency -->
+CREATE FUNCTION dbo.fn_MONEY (@v as integer)
+returns money
+as
+BEGIN
+	if @v is null
+		return null
+
+	return CAST(@v as MONEY) / 100 
+END
+GO
+<!-- For converting duration and downtime values in tasks and Unit Maintenance Plans, etc. where the form is HHHHMM -->
+CREATE FUNCTION dbo.fn_DURATION(@v as varchar(6))
+RETURNS datetime
+as
+BEGIN
+	declare @days int
+	declare @hours int
+	if @v is NULL or @v = '000000'
+		return NULL
+	SET @days = CONVERT(int, substring(@v,1,4))
+	SET @hours = @days % 24
+	SET @days = @days / 24
+	return dbo._INew(@days, @hours, convert(int, substring(@v,5,2)), 0, 0 )
+END
+GO
+
+<!-- For converting Schedule Season values -->
+CREATE FUNCTION dbo.fn_SEASON(@v as char(4))
+returns datetime
+as
+BEGIN
+	if @v is NULL
+		return null
+	return dbo._IDatediff(CONVERT(datetime, '20000101', 112), CONVERT(datetime, '2000'+@v, 112))
+END
+GO
+<!-- For converting week day inhibits -->
+CREATE FUNCTION dbo.fn_weekdays(@f as char(2))
+returns int
+as
+begin
+	return convert(int, convert(binary(2), @f)) &amp; (2|4|8|256|512|1024|2048)
+end
+GO
+CREATE FUNCTION dbo.fn_weekday(@mask as int, @f as char(2))
+returns bit
+as
+begin
+	if @f is null
+		return 1
+	if (convert(binary(2), @f) &amp; @mask) = @mask
+		return 1
+	return 0
+end
+GO
+
+<!--Do any CustomImportDirectives before anything else -->
+DECLARE @CustomImportDirective NVARCHAR(max)
+DECLARE directives_cursor CURSOR
+FOR
+   SELECT DIRECTIVE FROM <IDB/>.dbo.CustomImportDirectives order by RECNO;
+OPEN directives_cursor;
+FETCH NEXT FROM directives_cursor INTO @CustomImportDirective;
+while (@@FETCH_STATUS != -1)
+  BEGIN
+  if @CustomImportDirective is not null
+  begin
+	exec (@CustomImportDirective);
+  end;
+  FETCH NEXT FROM directives_cursor INTO @CustomImportDirective;
+END;
+CLOSE directives_cursor;
+DEALLOCATE directives_cursor;
+GO
+
+<!-- Alter the input tables to add an EXCLUDE column for the prepass phase that will determine which rows to exclude
+	 based on bad linkages etc. -->
+DECLARE tnames_cursor CURSOR
+FOR
+   SELECT TABLE_CATALOG, TABLE_NAME FROM <IDB/>.information_schema.tables AS t
+OPEN tnames_cursor;
+DECLARE @tablename sysname;
+DECLARE @tablecatalog sysname;
+declare @fqn nvarchar(max)
+FETCH NEXT FROM tnames_cursor INTO @tablecatalog, @tablename;
+WHILE (@@FETCH_STATUS != -1)
+BEGIN
+   IF (@@FETCH_STATUS != -2)
+   BEGIN
+	select @fqn = '[' + RTRIM(@tablecatalog) + '].dbo.[' + RTRIM(@tablename) + ']'
+    EXEC ('ALTER TABLE ' + @fqn + ' ADD EXCLUDE BIT DEFAULT 0');
+	EXEC ('UPDATE ' + @fqn + ' SET EXCLUDE = 0');
+   END;
+   FETCH NEXT FROM tnames_cursor INTO @tablecatalog, @tablename;
+END;
+CLOSE tnames_cursor;
+DEALLOCATE tnames_cursor;
+GO
+
+<!-- Alter other tables for special requirements -->
+
+<!-- Add an adjustment column to the input InvLocations table to flag invalid values with different adjustment codes -->
+ALTER TABLE <IDB/>.dbo.InvLocations ADD ADJUSTMENTID uniqueidentifier;
+GO
+UPDATE <IDB/>.dbo.InvLocations SET ONHAND = 0 where ONHAND IS NULL
+UPDATE <IDB/>.dbo.InvLocations SET TOTALCOST = 0 where TOTALCOST IS NULL
+<!--
+Regarding inventory items, if we find an InvLocations record for an item we have to decide if an item is
+actually being stored on an ongoing basis or not.
+If it is, we need to make a corresponding (permanent) ItemLocation and a PermanentStorage to put it in.
+But we can get bogus InvLocation records for non-inventoried items for which we don't want to do this.
+To clean this up, we remove any InvLocation records which have count and value zero and whose item is not inventoried.
+-->
+delete from <IDB/>.dbo.InvLocations
+  from <IDB/>.dbo.InvLocations as IL join <IDB/>.dbo.InvItems as I on IL.ItemKey = I.[Key]
+  where Il.OnHand = 0 and IL.TotalCost = 0 and I.Inventory = 0
+<!-- Modify the InvLocations table so NULL Sr references are replaced with references to a 0 Key, which will become "general inventory" -->
+update <IDB/>.dbo.InvLocations
+  set StrmKey = 0
+  where StrmKey is null
+<!-- Modify the InvTransactions table so NULL Sr references are replaced with references to a 0 Key in RT records.
+  Note that PQ and PO records are not altered, as a result PO and PQ that name GeneralInventory will never become "recommended" quotes for any ItemLocation -->
+update <IDB/>.dbo.InvTransactions
+  set StrmKey = 0
+  where StrmKey is null and [Type] = 'RT'
+<!-- Modify the InvLocations table to ensure it contains records for each SR/Item pair mentioned by a RT transaction on inventoried items
+  RT records against non-inventoried items for which no InvLocation is found (implying 0 on hand) will turn into Template Temp ItemLocations,
+  which name the RT record's SR as its location.
+  Note we need to make sure we only get distinct ItemKey/StrmKey combinations even though there may be multiple RT records referencing the same ItemKey/StrmKey
+ -->
+insert into <IDB/>.dbo.InvLocations (ID, Recno, StrmKey, ItemKey, Loc, OnHand, TotalCost)
+  select NEWID(), ItemLocations.ItemKey+(select max(recno) from <IDB/>.dbo.InvLocations), ItemLocations.StrmKey, ItemLocations.ItemKey, null, 0, 0
+  from (
+    select DISTINCT TX.StrmKey as StrmKey, TX.ItemKey as ItemKey
+	  from <IDB/>.dbo.InvTransactions as TX
+	   join <IDB/>.dbo.InvItems as I on TX.ItemKey = I.[Key]
+	   left join <IDB/>.dbo.InvLocations as IL on IL.ItemKey = TX.ItemKey and IL.StrmKey = TX.StrmKey
+	   where TX.[Type] = 'RT' and TX.StrmKey = 0 and I.Inventory != 0 and IL.Recno is null
+	) as ItemLocations
+
+declare @NewRecno int
+declare @NewKey int
+declare @ContainingBuildingKey int
+
+<!-- Modify the Storeroom table from 29 to have a Storeroom with key 0 labelled General Inventory if any InvLocation or any RT transaction references it.-->
+if  exists(select * from <IDB/>.dbo.InvLocations as IL where IL.StrmKey = 0)
+  or
+	exists(select * from <IDB/>.dbo.InvTransactions as TX where TX.[Type] = 'RT' and TX.StrmKey = 0)
+BEGIN
+  select @NewRecno = 1+max(recno) from <IDB/>.dbo.Storerooms
+  select @ContainingBuildingKey = (select top 1 [Key] from <IDB/>.dbo.Buildings where Recno != 1 order by code)
+  insert into <IDB/>.dbo.Storerooms
+			([recno], id, [key], building, code, [desc], hidden)
+	values (@NewRecno, newid(), 0, @ContainingBuildingKey, 'General', 'MB2.9 General Inventory', 0)
+END
+
+<!-- A table to insert CODE values for conversion such that uniqueness criteria can be applied using the stored procedure IDB.dbo.FixCodes -->
+CREATE TABLE <IDB/>.dbo.CodeManagement (
+  [ID]		  uniqueidentifier PRIMARY KEY,
+	[Sequence] int identity,
+  [Code]	  nvarchar(max),
+  [Context]	  uniqueidentifier,
+  [Hidden29]  int NOT NULL default 0,
+  [Hidden30]  datetime
+);
+GO
+USE <IDB/>;
+GO
+CREATE PROCEDURE dbo.FixCodes (@maxLength as int)
+AS
+BEGIN
+  -- First, make sure there are no null codes.
+  update <IDB/>.dbo.CodeManagement
+	set Code = 'Null'
+	where Code is null;
+
+  -- Truncate the codes to the maximum length allowed.
+  update <IDB/>.dbo.CodeManagement
+	set Code = rtrim(substring(Code, 1, @maxLength))
+  
+  -- Now, ensure there are no non-hidden codes duplicated within their context
+  declare @counter int;
+  select @counter = 10000	-- the smallest 5-digit number
+  while exists(select count(*) from <IDB/>.dbo.CodeManagement where Hidden29 = 0 group by Code, Context having count(*) > 1)
+  begin
+	-- The subquery in this statement returns one of the Sequence's (in particular the largest one) of each set of duplicated
+	-- records. Thus each iteration through this loop uniquefies *one* record from each set of multiples (although it is possible that
+	-- in doing so, it creates a *new* duplicate, but things will eventually terminate as long as the @counter does not run out).
+	update <IDB/>.dbo.CodeManagement
+	  set Code = rtrim(substring(Code, 1, @maxLength-5))+Convert(nchar(5), @counter)
+	  where Sequence in (select max(Sequence)
+					  from <IDB/>.dbo.CodeManagement
+					  where Hidden29 = 0
+					  group by Code, Context
+					  having count(*) > 1)
+	  
+	select @counter = @counter+1
+  end
+  
+  -- Assign datetime values to the hidden records.
+  update <IDB/>.dbo.CodeManagement
+	set Hidden30 = dbo._DClosestValue(getdate(),2,100)
+	where Hidden29 != 0;
+	
+  -- Make sure the hidden values are unique within their context as well. In this case we increment the Hidden30 by a second.
+  select @counter = 1
+  while exists(select count(*) from <IDB/>.dbo.CodeManagement where Hidden29 != 0 group by Code, Context, Hidden30 having count(*) > 1)
+  begin
+	update <IDB/>.dbo.CodeManagement
+	  set Hidden30 = Hidden30 + convert(float, @counter)/(24*3600)
+	  where Sequence in (select max(Sequence)
+					  from <IDB/>.dbo.CodeManagement
+					  where Hidden29 != 0
+					  group by Code, Context, Hidden30
+					  having count(*) > 1)
+	  
+	select @counter = @counter+1
+  end
+END
+GO
+-- Generic procedure to flag rows in input tables that we will mark the EXCLUDE value true because the required
+-- linkage between tables is missing, or the linkage is to an already excluding row due to some other missing linkage
+CREATE PROCEDURE dbo.ExcludeMissingLinks(
+	@sourceTable as nvarchar(max),
+	@sourceField as nvarchar(max),
+	@destTable as nvarchar(max),
+	@destField as nvarchar(max)
+	)
+AS
+	exec ('UPDATE ' + @sourceTable +
+			 ' SET EXCLUDE = 1 FROM ' +
+				@sourceTable + ' AS S LEFT JOIN ' +
+				@destTable + ' AS D ON S.[' + @sourceField + '] = D.[' + @destField + ']' +
+				' WHERE D.[ID] IS NULL OR D.EXCLUDE = 1')
+GO
+
+CREATE PROCEDURE dbo.ExcludePrototype(@sourceTable as nvarchar(max))
+AS
+exec ('UPDATE ' + @sourceTable + ' SET EXCLUDE = 1 WHERE [RECNO] = 1')
+go
+
+exec <IDB/>.dbo.ExcludePrototype '<IDB_AsString/>.dbo.Buildings';
+exec <IDB/>.dbo.ExcludePrototype '<IDB_AsString/>.dbo.Units';
+exec <IDB/>.dbo.ExcludePrototype '<IDB_AsString/>.dbo.WorkOrders';
+exec <IDB/>.dbo.ExcludePrototype '<IDB_AsString/>.dbo.Purchases';
+exec <IDB/>.dbo.ExcludePrototype '<IDB_AsString/>.dbo.PreventiveSchedules';
+exec <IDB/>.dbo.ExcludePrototype '<IDB_AsString/>.dbo.Meters';
+exec <IDB/>.dbo.ExcludePrototype '<IDB_AsString/>.dbo.PurchaseExtras';
+exec <IDB/>.dbo.ExcludePrototype '<IDB_AsString/>.dbo.ServiceContracts';
+exec <IDB/>.dbo.ExcludePrototype '<IDB_AsString/>.dbo.Vendors';
+exec <IDB/>.dbo.ExcludePrototype '<IDB_AsString/>.dbo.Contacts';
+exec <IDB/>.dbo.ExcludePrototype '<IDB_AsString/>.dbo.Templates';
+exec <IDB/>.dbo.ExcludePrototype '<IDB_AsString/>.dbo.Storerooms';
+exec <IDB/>.dbo.ExcludePrototype '<IDB_AsString/>.dbo.UoM';
+exec <IDB/>.dbo.ExcludePrototype '<IDB_AsString/>.dbo.InvItems';
+exec <IDB/>.dbo.ExcludePrototype '<IDB_AsString/>.dbo.Labor';
+exec <IDB/>.dbo.ExcludePrototype '<IDB_AsString/>.dbo.Personnel';
+
+exec <IDB/>.dbo.ExcludeMissingLinks '<IDB_AsString/>.dbo.Units', 'BUILDING', '<IDB_AsString/>.dbo.Buildings', 'KEY';
+exec <IDB/>.dbo.ExcludeMissingLinks '<IDB_AsString/>.dbo.Purchases', 'VENDOR', '<IDB_AsString/>.dbo.Vendors', 'KEY';
+exec <IDB/>.dbo.ExcludeMissingLinks '<IDB_AsString/>.dbo.ServiceContracts', 'VENDOR', '<IDB_AsString/>.dbo.Vendors', 'KEY';
+exec <IDB/>.dbo.ExcludeMissingLinks '<IDB_AsString/>.dbo.PurchaseExtras', 'POKEY', '<IDB_AsString/>.dbo.Purchases', 'KEY';
+exec <IDB/>.dbo.ExcludeMissingLinks '<IDB_AsString/>.dbo.PreventiveSchedules', 'WOKEY', '<IDB_AsString/>.dbo.WorkOrders', 'KEY';
+exec <IDB/>.dbo.ExcludeMissingLinks '<IDB_AsString/>.dbo.Labor', 'WOKEY', '<IDB_AsString/>.dbo.WorkOrders', 'KEY';
+exec <IDB/>.dbo.ExcludeMissingLinks '<IDB_AsString/>.dbo.Labor', 'LABORKEY', '<IDB_AsString/>.dbo.Personnel', 'KEY';
+exec <IDB/>.dbo.ExcludeMissingLinks '<IDB_AsString/>.dbo.Meters', 'UNITKEY', '<IDB_AsString/>.dbo.UNITS', 'KEY';
+exec <IDB/>.dbo.ExcludeMissingLinks '<IDB_AsString/>.dbo.InvLocations', 'STRMKEY', '<IDB_AsString/>.dbo.Storerooms', 'KEY';
+exec <IDB/>.dbo.ExcludeMissingLinks '<IDB_AsString/>.dbo.InvLocations', 'ITEMKEY', '<IDB_AsString/>.dbo.InvItems', 'KEY';
+exec <IDB/>.dbo.ExcludeMissingLinks '<IDB_AsString/>.dbo.MeterHistory', 'METERKEY', '<IDB_AsString/>.dbo.Meters', 'KEY';
+
+-- Only work with Prototype PurchaseOrders so exclude all others now if present
+update <IDB/>.dbo.Purchases SET EXCLUDE = 1 where [STATE] != 'P'
+
+</data>
+</table>
+
+<table name="VendorLinkages">
+  <dependency table="ConversionFunctions"/>
+  <data>
+	  -- The 2.9 Vendor record contains one set of "contact" information which we convert into a Contact record coded V_vendorcode,
+	  -- which we then use as the Sales Contact for the new Vendor record. It also contains postal address information which we convert
+	  -- into a PostalAddress record and its base Location record, to use as the Location of the Vendor (and also of the contact).
+	  -- This table contains the ID value mappings from the vendor record to all the other records.
+	  CREATE TABLE <IDB/>.dbo.VendorLinkages (
+		  [ID]               [uniqueidentifier] NOT NULL PRIMARY KEY,
+		  [VendorID]         [uniqueidentifier] NOT NULL,
+		  [ContactID]        [uniqueidentifier] NOT NULL,
+		  [LocationID]       [uniqueidentifier] NOT NULL,
+		  [PostalAddressID]  [uniqueidentifier] NOT NULL 
+	  ) ON [PRIMARY];
+	  INSERT INTO <IDB/>.dbo.VendorLinkages
+			  ([ID], [VendorID], [ContactID], [LocationID], [PostalAddressID])
+		SELECT [ID], [ID], NEWID(), NEWID(), NEWID()
+		  from <IDB/>.dbo.Vendors as V
+			where V.EXCLUDE = 0;
+	</data>
+  </table>
+
+  <table name="BuildingLinkages">
+	  <dependency table="ConversionFunctions"/>
+	  <data>
+	  -- The 2.9 Building record converts into a PostalAddress record and its base Location record.
+	  -- We use the ID in the input Building table as the Location ID since that is how most of the linkages occur in the new DB.
+	  -- This table contains the ID value mappings from the building record to all the other records.
+	  CREATE TABLE <IDB/>.dbo.BuildingLinkages (
+		  [ID]               [uniqueidentifier] NOT NULL PRIMARY KEY,
+		  [LocationID]       [uniqueidentifier] NOT NULL,
+		  [PostalAddressID]  [uniqueidentifier] NOT NULL,
+	  ) ON [PRIMARY];
+	  INSERT INTO <IDB/>.dbo.BuildingLinkages
+			  ([ID], [LocationID], [PostalAddressID])
+		SELECT [ID], [ID], NEWID()
+		  from <IDB/>.dbo.Buildings as B
+			where B.EXCLUDE = 0;
+	</data>
+  </table>
+
+  <table name="UnitLinkages">
+	  <dependency table="ConversionFunctions"/>
+	  <data>
+	  -- The 2.9 Unit record converts into a Unit record with its base RelativeLocation and Location records.
+	  -- In addition, if the unit appears to have a warranty, we assign it ID's for a ServiceConract and UnitServiceContract records.
+	  -- This table contains the ID value mappings from the Unit record to all the other records.
+	  CREATE TABLE <IDB/>.dbo.UnitLinkages (
+		  [ID]                    [uniqueidentifier] NOT NULL PRIMARY KEY,
+		  [LocationID]            [uniqueidentifier] NOT NULL,
+		  [RelativeLocationID]    [uniqueidentifier] NOT NULL,
+		  [UnitID]                [uniqueidentifier] NOT NULL,
+		  [ServiceContractID]     [uniqueidentifier],
+		  [UnitServiceContractID] [uniqueidentifier]
+	  ) ON [PRIMARY];
+
+	  INSERT INTO <IDB/>.dbo.UnitLinkages
+			  ([ID], [LocationID], [RelativeLocationID], [UnitID])
+		SELECT [ID],[ID], NEWID(), NEWID()
+		  from <IDB/>.dbo.Units as U
+			where U.EXCLUDE = 0;
+
+	  UPDATE <IDB/>.dbo.UnitLinkages
+		set [ServiceContractID] = newid(), [UnitServiceContractID] = newid()
+		from <IDB/>.dbo.UnitLinkages as UL
+		  join <IDB/>.dbo.Units as U on U.ID = UL.ID
+		where U.Service is not null or U.WEXPIRY is not null
+	</data>
+  </table>
+
+  <table name="StoreroomLinkages">
+	  <dependency table="ConversionFunctions"/>
+  <data>
+	  -- The 2.9 Storeroom record converts into a PermanentStorage record with its base RelativeLocation and Location records.
+	  -- This table contains the ID value mappings from the Storeroom record to all the other records.
+	  CREATE TABLE <IDB/>.dbo.StoreroomLinkages (
+		  [ID]                 [uniqueidentifier] NOT NULL PRIMARY KEY,
+		  [LocationID]         [uniqueidentifier] NOT NULL,
+		  [RelativeLocationID] [uniqueidentifier] NOT NULL,
+		  [PermanentStorageID] [uniqueidentifier] NOT NULL,
+	  ) ON [PRIMARY];
+	  INSERT INTO <IDB/>.dbo.StoreroomLinkages
+			  ([ID], [LocationID], [RelativeLocationID], [PermanentStorageID])
+		SELECT [ID],[ID], NEWID(), NEWID()
+		  from <IDB/>.dbo.Storerooms as S
+			WHERE S.EXCLUDE = 0;
+	</data>
+  </table>
+
+  <table name="PersonnelLinkages">
+	  <dependency table="ConversionFunctions"/>
+  <data>
+	  -- The 2.9 Personnel record converts into an employee record, a Contact record, and a LaborInside record.
+	  -- This table contains the ID value mappings from the Personnel record to all the other records.
+	  CREATE TABLE <IDB/>.dbo.PersonnelLinkages (
+		  [ID]            [uniqueidentifier] NOT NULL PRIMARY KEY,
+		  [EmployeeID]    [uniqueidentifier] NOT NULL,
+		  [ContactID]     [uniqueidentifier] NOT NULL,
+		  [LaborInsideID] [uniqueidentifier] NOT NULL
+	  ) ON [PRIMARY];
+	  INSERT INTO <IDB/>.dbo.PersonnelLinkages
+			  ([ID], [EmployeeID], [ContactID], [LaborInsideID])
+		SELECT [ID],[ID], NEWID(), NEWID()
+		  from <IDB/>.dbo.Personnel as P
+			where P.EXCLUDE = 0;
+	</data>
+  </table>
+
+  <table name="RelativeLocationCodes">
+	<dependency table="ConversionFunctions"/>
+	<dependency table="UnitLinkages"/>
+	<dependency table="StoreroomLinkages"/>
+	<data>
+	  <!-- Generation of Relative Locations is in three separate files, so we do all the Code uniquefying here -->
+	  delete from <IDB/>.dbo.CodeManagement;
+	  
+	  -- FIll the CodeManagement table keyed by the RelativeLocationID of the eventual records.
+	  
+	  -- Throw in the PlainRelativeLocations (there are none)
+	  
+	  -- Throw in the Units
+	  insert into <IDB/>.dbo.CodeManagement ([ID], [Code], [Context], [Hidden29])
+		SELECT UL.[RelativeLocationID], U.[Code], B.[ID], CASE WHEN U.OBSOLETE IS NOT NULL THEN 1 ELSE COALESCE(U.[HIDDEN],0) END	-- Treat Obsolete as Hidden
+		FROM <IDB/>.dbo.Units as U
+			join <IDB/>.dbo.UnitLinkages as UL on U.[ID] = UL.[ID]
+			join <IDB/>.dbo.Buildings as B on U.BUILDING = B.[KEY];
+			
+	  -- Throw in the Storerooms
+	  insert into <IDB/>.dbo.CodeManagement ([ID], [Code], [Context], [Hidden29])
+		SELECT SL.[RelativeLocationID], S.[Code], B.[ID], COALESCE(S.[HIDDEN],0)
+		FROM <IDB/>.dbo.Storerooms as S
+			join <IDB/>.dbo.StoreroomLinkages as SL on S.[ID] = SL.[ID]
+			join <IDB/>.dbo.Buildings as B on S.[BUILDING] = B.[KEY];
+			
+	  -- We don't bother with the sub-storerooms; they are already unique and !hidden as generated.
+	  
+	  -- Generate the unique Code's
+	  exec <IDB/>.dbo.FixCodes 50;	  -- width of RelativeLocation.Code
+	  
+	  -- Extract the results.
+	  CREATE TABLE <IDB/>.dbo.RelativeLocationCodes (
+		  [ID]            uniqueidentifier NOT NULL PRIMARY KEY,
+		  [Code]          nvarchar(50) NOT NULL,
+		  [Hidden]        datetime
+	  );
+	  INSERT INTO <IDB/>.dbo.RelativeLocationCodes
+			  ([ID], [Code], [Hidden])
+		SELECT [ID], [Code], [Hidden30]
+		  from <IDB/>.dbo.CodeManagement;
+	  
+	</data>
+  </table>
+
+  <table name="SubStorerooms">
+	<dependency table="StoreroomLinkages"/>
+	<data>
+	  -- We generate a SubStoreroom for each unique (Storeroom, non-null Location) we find in InvLocations.
+	  -- This table is keyed by ContainingID (the LocationID of the containing PermanentStorage) and the LocationID.
+	  create table <IDB/>.dbo.SubStorerooms (
+		ContainingID		uniqueidentifier not null,
+		Code				nvarchar(50) not null,
+		LocationID			uniqueidentifier NOT NULL,
+		RelativeLocationID	uniqueidentifier NOT NULL,
+		PermanentStorageID	uniqueidentifier NOT NULL
+	  )
+	  
+	  insert into <IDB/>.dbo.SubStorerooms
+		(ContainingID, Code, LocationID, RelativeLocationID, PermanentStorageID)
+		select SL.LocationID, IL.Loc, newid(), newid(), newid()
+		  from <IDB/>.dbo.InvLocations as IL
+			join <IDB/>.dbo.InvItems as I on IL.ItemKey = I.[Key]
+			join <IDB/>.dbo.Storerooms as SR on IL.StrmKey = SR.[Key]
+			join <IDB/>.dbo.StoreroomLinkages SL on SR.ID = SL.ID
+		  where IL.Loc is not null
+		  group by IL.Loc, SL.LocationID;
+	</data>
+  </table>
+
+  <table name="InvLocationLinkages">
+	<dependency table="StoreroomLinkages"/>
+	<dependency table="SubStorerooms"/>
+	<data>
+	  -- The InvLocationLinkages table has a row for each InvLocation row that references an Inventoried Item
+	  -- There is an ID for the ItemCountValue and its base AccountingTransaction records to set the quantity and value
+	  -- There is also an ID for the PermanentItemLocation and ItemLocation records.
+	  -- We also include the LocationID of the PermanentStorage that is referenced.
+	  -- Note that we use the InvLocation.ID from the old DB as the ItemLocationID
+	  create table <IDB/>.dbo.InvLocationLinkages (
+		ItemCountValueID			uniqueidentifier not null,
+		AccountingTransactionID		uniqueidentifier not null,
+		PermanentItemLocationID		uniqueidentifier not null,
+		ActualItemLocationID		uniqueidentifier not null,
+		ItemLocationID		 		uniqueidentifier not null,
+		PermanentStorageLocationID	uniqueidentifier not null
+	  )
+	  
+	  -- DO the entries where the InvLocation.Loc is null; these go directly into the first-level storerooms.
+	  insert into <IDB/>.dbo.InvLocationLinkages
+		(ItemCountValueID, AccountingTransactionID, PermanentItemLocationID, ActualItemLocationID, ItemLocationID, PermanentStorageLocationID)
+		select newid(), newid(), newid(), newid(), IL.ID, SL.LocationID
+		  from <IDB/>.dbo.InvLocations as IL
+			join <IDB/>.dbo.Storerooms as SR on IL.StrmKey = SR.[Key]
+			join <IDB/>.dbo.StoreroomLinkages as SL on SR.ID = SL.ID
+			join <IDB/>.dbo.InvItems as I on IL.ItemKey = I.[Key]
+		  where IL.LOC is null
+
+	  -- DO the entries where the InvLocation.Loc is not null; these go directly into nested storerooms.
+	  insert into <IDB/>.dbo.InvLocationLinkages
+		(ItemCountValueID, AccountingTransactionID, PermanentItemLocationID, ActualItemLocationID, ItemLocationID, PermanentStorageLocationID)
+		select newid(), newid(), newid(), newid(), IL.ID, SS.LocationID
+		  from <IDB/>.dbo.InvLocations as IL
+			join <IDB/>.dbo.Storerooms as SR on IL.StrmKey = SR.[Key]
+			join <IDB/>.dbo.StoreroomLinkages as SL on SR.ID = SL.ID
+			join <IDB/>.dbo.SubStorerooms as SS on SL.LocationID = SS.ContainingID and IL.Loc = SS.Code
+			join <IDB/>.dbo.InvItems as I on IL.ItemKey = I.[Key]
+		  where IL.LOC is not null
+	</data>
+  </table>
+
+  <table name="SetVariables">
+	<!-- TODO: If we ever start importing WO history we want to do this step after the history import to reduce the trigger burden -->
+	<data>
+	  exec <ODB/>.dbo._vsetManageRequestStates 1
+	</data>
+  </table>
+</dbconversion>
+ 

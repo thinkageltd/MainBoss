@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="PurchaseOrdersWithAssignments" log="false" id="Id" labelkey="">
+	<doc>
+	  This view provides rows for all the PurchaseOrderAssignments along with purchase orders that have no assignments.
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="PurchaseOrderID" link="PurchaseOrder" type="RequiredGUIDREF" labelkey=""/>
+	<field name="PurchaseOrderAssignmentID" link="PurchaseOrderAssignment" type="GUIDREF" labelkey=""/>
+	<extension name="query">
+		select
+		  coalesce(PurchaseOrderAssignment.Id, PurchaseOrder.Id),
+		  PurchaseOrder.Id,
+		  PurchaseOrderAssignment.Id
+		from
+		  PurchaseOrder
+		  left join PurchaseOrderAssignment on PurchaseOrderAssignment.PurchaseOrderID = PurchaseOrder.Id
+	</extension>
+	<extension name="dependson">PurchaseOrder</extension>
+	<extension name="dependson">PurchaseOrderAssignment</extension>
+	<extension name="costrights">PurchaseOrderItem,PurchaseOrderLabor,PurchaseOrderMiscellaneous</extension>
+	<extension name="lastupdate">PurchaseOrderID</extension>
+  </table>
+  
+  
+  <table name="PurchaseOrderAssignmentReport" log="false" id="Id" labelkey="">
+	<doc>
+	  This view provides the records for PurchaseOrderExtras for each PurchaseOrderAssignments
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="PurchaseOrderAssigneeID" link="PurchaseOrderAssignee" type="GUIDREF" labelkey="Assignee"/>
+	<field name="PurchaseOrderFormReportID" link="PurchaseOrderFormReport" type="RequiredGUIDREF" labelkey=""/>
+	<extension name="query">
+	  select
+		newid()
+		,PurchaseOrderAssignment.PurchaseOrderAssigneeId
+		,PurchaseOrderFormReport.ID
+	  from PurchaseOrderFormReport
+		left outer join PurchaseOrderAssignment on PurchaseOrderAssignment.PurchaseOrderID = PurchaseOrderFormReport.PurchaseOrderID
+	</extension>
+	<extension name="dependson">PurchaseOrderAssignment</extension>
+	<extension name="dependson">PurchaseOrderAssignee</extension>
+	<extension name="dependson">PurchaseOrderFormReport</extension>
+	<extension name="costrights">PurchaseOrderItem,PurchaseOrderLabor,PurchaseOrderMiscellaneous</extension>
+	<extension name="lastupdate">PurchaseOrderFormReportID</extension>
+  </table>
+  <table name="PurchaseOrder" />
+  <table name="PurchaseOrderAssignment"/>
+  <table name="PurchaseOrderAssignee"/>
+  <table name="PurchaseOrderFormReport" />
+</database>

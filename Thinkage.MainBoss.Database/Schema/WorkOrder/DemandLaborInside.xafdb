@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="DemandLaborInside" defaults="true" log="false" id="Id" xid="DemandID LaborInsideID" labelkey="Demand Hourly Inside">
+	<field name="Id" read="RequiredGUID" />
+	<field name="DemandID" read="RequiredGUIDREF" base="Demand"/>
+	<field name="LaborInsideID" type="RequiredGUIDREF" link="LaborInside">
+	  <doc>Hourly Inside work reference</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="Quantity" type="interval(min 00:01:00, max 36500.00:00:00, by 00:01:00)" labelkey="Demanded">
+	  <doc>Labor time required</doc>
+	</field>
+	<field name="ActualQuantity" read="RequiredLaborDuration" labelkey="Actual">
+	  <doc>The total labor time of all the associated actuals</doc>
+	  <result hosting="cached">
+		  cast(42 as RequiredLaborDuration)
+	  </result>
+	  <extension name="dependson">mbfn_DemandLaborInside_ActualQuantity()</extension>
+	</field>
+	<extension name="deletemethod">delete</extension>
+	<extension name="costrights">WorkOrderInside</extension>
+  </table>
+  <table name="Demand"/>
+  <table name="LaborInside"/>
+  <table name="ActualLaborInside"/>
+  <table name="AccountingTransaction"/>
+
+  <object class="function" name="mbfn_DemandLaborInside_ActualQuantity">
+	<doc>
+	  Calculate the total actual quantities for actuals linked to this DemandLaborInside
+	</doc>
+	<extension name="body">
+	  (
+		@DLIID uniqueidentifier -- DemandLaborInsideID
+	  )
+	  RETURNS XAFInterval
+	  as
+	  begin
+		return (
+			select dbo._ISumToI(sum(dbo._IIToSum(Quantity)))
+				from ActualLaborInside
+				where ActualLaborInside.DemandLaborInsideID = @DLIID
+		)
+	  end
+	</extension>
+	<extension name="dependson">DemandLaborInside.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualLaborInside</extension>
+  </object>
+  <object class="function" name="mbfn_DemandLaborInside_ActualCost">
+	<doc>
+	  Calculate the total actual cost for actuals linked to this DemandLaborInside
+	</doc>
+	<extension name="body">
+	  (
+		@DLIID uniqueidentifier -- DemandLaborInsideID
+	  )
+	  RETURNS money
+	  as
+	  begin
+		return (
+			select sum(Cost)
+				from ActualLaborInside
+				join AccountingTransaction on AccountingTransaction.ID = ActualLaborInside.AccountingTransactionID
+				where ActualLaborInside.DemandLaborInsideID = @DLIID
+		)
+	  end
+	</extension>
+	<extension name="dependson">DemandLaborInside.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualLaborInside</extension>
+  </object>
+</database>

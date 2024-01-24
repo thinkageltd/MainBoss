@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing Item Records</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Editing Item Records</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.Item.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Item Pricing.htm">Next section &gt;</a></p>
+
+<p>You create or modify item records using the item editor. The usual way to open the editor is to click <span class="CButton">New Item</span> or <span class="CButton">Edit</span> in the <span class="CButton">View</span> section of the control panel entry for <span class="CPanel">Items</span>.</p>
+
+<p>The item editor window contains the following:</p>
+
+<p class="wi"><span class="CButton">Details</span> section: Shows basic information for the record.</p>
+<p class="wi2"><span class="CField">Code</span>: A brief code to identify this record. No two records may have the same code.</p>
+<p class="wi2"><span class="CField">Description</span>: A longer description of the item.</p>
+<p class="wi2"><span class="CField">UOM</span>: The units of measurement used to measure this item. For more about units of measurement, see <a href="UnitsofMeasure.htm">Units of Measure</a>.</p>
+<p class="wi2"><span class="CField">Category</span>: The category to which this item belongs. For more about item categories, see <a href="ItemCategories.htm">Item Categories</a>.</p>
+<p class="wi2"><span class="CField">On Hand</span>: Read-only fields giving the total quantity of this item currently present in all storerooms, plus the unit cost and total cost of the items. For definitions of "<span class="CField">On Hand</span>", "<span class="CField">On Order</span>", "<span class="CField">On Reserve</span>" and "<span class="CField">Available</span>", see <a href="HowInventoryWorks.htm">How Inventory Works</a>.</p>
+<p class="wi2"><span class="CField">On Order</span>: The quantity on order.</p>
+<p class="wi2"><span class="CField">On Reserve</span>: A read-only field giving the total quantity of the item that has been reserved for use on work orders.</p>
+<p class="wi2"><span class="CField">Available</span>: A read-only field giving the total quantity of the item that is available for use. This is equal to <span class="CField">On Hand</span> + <span class="CField">On Order</span> - <span class="CField">On Reserve</span>.</p>
+<p class="wi2"><span class="CField">Comments</span>: Any comments you want to associate with the item.</p>
+<p class="wi"><span class="CButton">Storeroom Assignments</span> section: Lists any storerooms where this item may be stored. For more on storeroom assignments, see <a href="StoreroomAssignments.htm">Storeroom Assignments</a>.</p>
+<p class="wi"><span class="CButton">Temporary Storage Assignments</span> section: Lists any temporary storage locations where this item is stored. For more on temporary storage, see <a href="Edit.Temporary Storage.htm">Temporary Storage Locations</a>.</p>
+<p class="wi"><span class="CButton">Task Temporary Storage Assignments</span> section: Lists task temporary storage locations where the item is stored. For more, see <a href="Edit.Task Temporary Storage Assignment.htm">Editing Task Temporary Storage Assignments</a>.</p>
+<p class="wi"><span class="CButton">Pricing</span> section: Shows price quotes and purchase prices for this item. Each line gives information about a particular vendor.</p>
+<p class="wi"><span class="CButton">Purchasing</span> section: Lists "purchase item" records for the item, including the purchase order on which the item appeared.</p>
+<p class="wi"><span class="CButton">Receiving</span> section: Shows receipts of this item.</p>
+<p class="wi"><span class="CButton">Usage</span> section: Shows units where the item is used as a spare part. For more, see <a href="SpareParts.htm">Spare Parts</a>.</p>
+<p class="wi"><span class="CButton">Maintenance</span> section: Shows any tasks that use this item. For more on tasks, see <a href="Tasks.htm">Tasks</a>.</p>
+<p class="wi2"><span class="CButton">New Task Demand Item</span>: Opens a window where you can add a demand for this item to a task. For more information, see <a href="Edit.Task Demand Item.htm">Task Demand Item</a>.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on items, see <a href="InventoryItemRecords.htm">Inventory Item Records</a>. For more on viewing item records, see <a href="Browse.Item.htm">Viewing Item Records</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Browse.Item.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Item Pricing.htm">Next section &gt;</a></p>
+</body>
+</html>
+

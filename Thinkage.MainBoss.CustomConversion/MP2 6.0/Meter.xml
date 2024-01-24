@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+  <table name="Meter">
+	<dependency table="Unit"/>
+	<dependency table="UnitOfMeasure"/>
+	<data>
+		if object_id('dbo.MeterClassData', 'U') is not null drop table dbo.MeterClassData;
+		GO		
+	  create table <IDB/>.dbo.MeterClassData (
+		[ID]		uniqueidentifier not null,
+		[MeterCode] varchar(20),
+		[UoMKey]	uniqueidentifier,
+		[Hidden29]	integer
+	  )
+	  <!-- Note that orphaned meters (which do not link to a unit) are not imported. Readings for such meters are also discarded,
+	  but PM schedules referring to them specifically diagnose the meter problem. -->
+	  insert into <IDB/>.dbo.MeterClassData
+		  (id, MeterCode, UoMKey, Hidden29)
+		  select newid(), M.METERNUM, UOMUOP.MAINBOSSID, 0
+			from <IDB/>.dbo.METER as M
+			left join <IDB/>.dbo.UOMUOP on M.UOM = UOMUOP.UNIT
+			group by M.METERNUM, UOMUOP.MAINBOSSID
+			
+	  delete from <IDB/>.dbo.CodeManagement
+	  
+	  insert into <IDB/>.dbo.CodeManagement
+		(ID, Code, Hidden29)
+		select MCD.id, CASE WHEN MCD.UoMKey is null THEN MCD.MeterCode ELSE MCD.MeterCode+'_'+UOMUOP.UNIT END, Hidden29
+		  from <IDB/>.dbo.MeterClassData as MCD
+			left join <IDB/>.dbo.UOMUOP on MCD.UoMKey = UOMUOP.[MAINBOSSID]
+			
+	  exec <IDB/>.dbo.FixCodes 50
+
+	  INSERT INTO <ODB/>.dbo.MeterClass ([ID],[Code],[UnitOfMeasureID], Hidden)
+		  SELECT MCD.ID, CM.Code, UOM.[MAINBOSSID], CM.Hidden30
+		  from <IDB/>.dbo.MeterClassData as MCD
+			  left join <IDB/>.dbo.UOMUOP as UOM on UOM.[MAINBOSSID] = MCD.UOMKEY
+			  join <IDB/>.dbo.CodeManagement as CM on MCD.ID = CM.ID
+GO
+	  INSERT INTO <ODB/>.dbo.Meter ([ID],[UnitLocationID],[MeterClassID], [MeterReadingOffset], [Hidden] )
+		  SELECT M.[MAINBOSSID], UL.[LocationID], MCD.ID, 0, NRL.Hidden
+		  from <IDB/>.dbo.METER as M
+				join <IDB/>.dbo.UOMUOP on UOMUOP.UNIT = M.UOM
+			  join <IDB/>.dbo.MeterClassData as MCD on M.METERNUM = MCD.MeterCode and ((M.UOM IS NULL AND MCD.UOMKEY IS NULL) or UOMUOP.MAINBOSSID = MCD.UOMKEY)
+			  join <IDB/>.dbo.EQUIP as U on U.[EQNUM] = M.[EQNUM]
+			  join <IDB/>.dbo.UnitLinkages as UL on U.MAINBOSSID = UL.id  -- The Meters-Units join automatically excludes prototype records.
+			  join <ODB/>.dbo.RelativeLocation as NRL on UL.RelativeLocationID = NRL.ID
+				WHERE M.MAINBOSSEXCLUDE = 0;
+	</data>
+</table>
+</dbconversion>
+

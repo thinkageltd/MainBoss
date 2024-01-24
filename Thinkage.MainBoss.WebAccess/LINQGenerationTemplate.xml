@@ -1,0 +1,638 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<DataSet xmlns="http://www.thinkage.ca/TextTemplate.xsd">
+<!-- The following code is to create a macro which contains a single blank, to circumvent a problem wherein the Xml reader which reads
+this template is discarding significant whitespace -->
+<Whitespace Include="Embedded">
+	<Define Macro="XSpaceX">X X</Define>
+	<Define Macro="Space">
+		<Expand Macro="XSpaceX">
+			<Replace Pattern="X"/>
+		</Expand>
+	</Define>
+</Whitespace>
+	<Defer Macro="LabelK"><Expand Macro="DataSetClassName"/>LabelK<LabelContext/>
+	</Defer>
+	<Whitespace Include="BeforeText">
+<Define Macro="DataSetNamespace"><DataSetName><Replace Pattern=":[^:]*$"/></DataSetName></Define>
+<!-- Define standard modifier macros provided on command line if not specified -->		
+<If><Not><Defined Macro="InheritanceModifier"/></Not><Define Macro="UseInheritanceModifier"></Define><Else/><Define Macro="UseInheritanceModifier"><Expand Macro="InheritanceModifier"/><Expand Macro="Space"/></Define></If><!-- sealed or abstract -->
+<If><Not><Defined Macro="DataSetClassName"/></Not><Define Macro="DataSetClassName"><DataSetName><Replace Pattern=".*:"/></DataSetName></Define></If>
+<If><Not><Defined Macro="EntityNamespace"/></Not><Define Macro="EntityNamespace"><Expand Macro="DataSetClassName"/>Entities</Define></If>
+<If><Not><Defined Macro="ContextNamespace"/></Not><Define Macro="ContextNamespace"><Expand Macro="TargetNamespace"/></Define></If>
+<If><And><Defined Macro="SerializationMode"/>
+		<Compare><Test><Expand Macro="SerializationMode"/></Test><NotEqualTo>Unidirectional</NotEqualTo></Compare>
+	</And>
+	<Error>SerializationMode=<Expand Macro="SerializationMode"/> not supported; only Unidirectional is allowed</Error>
+</If>
+<If><Not><Defined Macro="DataContextName"/></Not><Define Macro="DataContextName"><Expand Macro="DataSetClassName"/>DataContext</Define></If>
+<If><Not><Defined Macro="DataContextBaseClass"/></Not><Define Macro="DataContextBaseClass">System.Data.Linq.DataContext</Define></If>
+<If><Not><Defined Macro="Access"/></Not><Define Macro="Access">public</Define></If><!--public or internal -->
+<If><Not><Defined Macro="PLURAL"/></Not><Define Macro="PLURAL"></Define></If>
+<Defer Macro="SetFieldType"><Whitespace Include="Embedded">
+	<Define Macro="FieldType"><TypeInfo Property="NullableValueType" Ref="CurrentField"><Replace Pattern="System\.TimeSpan">System.DateTime</Replace><Replace Pattern="System\.String">string</Replace><Replace Pattern="System.Int16">short</Replace><Replace Pattern="System.Int32">int</Replace><Replace Pattern="System\.SByte">byte</Replace><Replace Pattern="System\.Boolean">bool</Replace><Replace Pattern="Thinkage.Libraries.GIS.GeoGeography">System.Data.Linq.Binary</Replace></TypeInfo></Define>
+</Whitespace></Defer>
+<Defer Macro="SetIsPrimaryKey">
+	<Define Macro="IsPrimaryKey">false</Define>
+	<ForEachFieldConstraint Ref="CurrentField" Set="UConstraint">
+		<If><And>
+			<Constraint Ref="UConstraint" Type="Unique"/>
+			<IsPrimary Ref="UConstraint"/>
+			</And>
+			<Define Macro="IsPrimaryKey">true</Define>
+		</If>
+	</ForEachFieldConstraint>
+</Defer>
+<Defer Macro="ReferencedTableName"><Whitespace Include="None">
+  <WithConstraintReferencedConstraint Ref="CurrentConstraint" Set="ReferencedConstraint">
+	<WithConstraintConstrainedTable Ref="ReferencedConstraint" Set="ReferencedTable">
+		<TableName Ref="ReferencedTable"/>
+	</WithConstraintConstrainedTable>
+  </WithConstraintReferencedConstraint>
+</Whitespace></Defer>
+<Defer Macro="ReferringConstraintReferencedTableName"><Whitespace Include="None">
+	<WithConstraintConstrainedTable Ref="ReferringConstraint" Set="ReferringTable">
+		<If><Constraint Ref="ReferringConstraint" Type="Foreign" CountUnder="2" Linkage="Unrelated"/></If>
+		<If><Constraint Ref="ReferringConstraint" Type="Foreign" CountUnder="2" Linkage="Derived"/>Base</If>
+		<If><Constraint Ref="ReferringConstraint" Type="Foreign" CountUnder="2" Linkage="Base"/>Derived</If>
+		<TableName Ref="ReferringTable"/>
+	</WithConstraintConstrainedTable>
+</Whitespace></Defer>		
+<Defer Macro="ReferringTableName"><Whitespace Include="None">
+  <WithConstraintConstrainedTable Ref="ReferringConstraint" Set="ReferringTable">
+	<TableName Ref="ReferringTable"/>
+  </WithConstraintConstrainedTable>
+</Whitespace></Defer>
+<Defer Macro="ReferringTableNameForField"><Whitespace Include="None">
+  <WithConstraintConstrainedTable Ref="CurrentConstraint" Set="ReferringTable">
+	<TableName Ref="ReferringTable"/>
+  </WithConstraintConstrainedTable>
+</Whitespace></Defer>
+<!-- Safexxx substitutes known identifiers that conflict in the namespace of the base Dataset class -->
+<Defer Macro="SafeTableName"><Whitespace Include="None">
+  <TableName Ref="CurrentTable"><!--<Replace Pattern="^Item$">_Item</Replace>--></TableName>
+</Whitespace></Defer>
+<Defer Macro="SafeReferencedTableName"><Whitespace Include="None">
+  <Expand Macro="ReferencedTableName"><!--<Replace Pattern="^Item$">_Item</Replace>--></Expand>
+</Whitespace></Defer>
+<Defer Macro="VariableName"><Whitespace Include="None">
+  <FieldName Ref="CurrentField"></FieldName>
+</Whitespace></Defer>
+<Defer Macro="EntitySetName"><Whitespace Include="None">
+	<Expand Macro="ReferringTableName"/>
+	<ForEachConstrainedField Ref="ReferringConstraint" Set="ReferencedField">
+		<If><Constraint Ref="ReferringConstraint" Type="Foreign" CountUnder="2" Linkage="Unrelated"/></If>
+		<If><Constraint Ref="ReferringConstraint" Type="Foreign" CountUnder="2" Linkage="Derived"/>Derived</If>
+		<If><Constraint Ref="ReferringConstraint" Type="Foreign" CountUnder="2" Linkage="Base"/>Base</If>
+		<FieldName Ref="ReferencedField"><Replace Pattern="ID$"></Replace></FieldName>
+	</ForEachConstrainedField>
+</Whitespace></Defer>
+<Defer Macro="ReferredEntitySetName"><Whitespace Include="None">
+	<TableName Ref="CurrentTable"/>
+	<If><Constraint Ref="CurrentConstraint" Type="Foreign" CountUnder="2" Linkage="Unrelated"/></If>
+	<If><Constraint Ref="CurrentConstraint" Type="Foreign" CountUnder="2" Linkage="Derived"/>Derived</If>
+	<If><Constraint Ref="CurrentConstraint" Type="Foreign" CountUnder="2" Linkage="Base"/>Base</If>
+	<ForEachConstrainedField Ref="CurrentConstraint" Set="ReferringField">
+		<FieldName Ref="ReferringField"><Replace Pattern="ID$"></Replace></FieldName>
+	</ForEachConstrainedField>
+</Whitespace></Defer>
+<Defer Macro="EntityRefName"><Whitespace Include="None">
+	<If><Constraint Ref="CurrentConstraint" Type="Foreign" CountUnder="2" Linkage="Unrelated"/></If>
+	<If><Constraint Ref="CurrentConstraint" Type="Foreign" CountUnder="2" Linkage="Derived"/>Derived</If>
+	<If><Constraint Ref="CurrentConstraint" Type="Foreign" CountUnder="2" Linkage="Base"/>Base</If>
+	<ForEachConstrainedField Ref="CurrentConstraint" Set="ReferringField">
+		<FieldName Ref="ReferringField"><Replace Pattern="ID$"></Replace></FieldName>
+	</ForEachConstrainedField>
+</Whitespace></Defer>
+<Defer Macro="ReferringEntityRefType"><Whitespace Include="None">
+  <WithConstraintConstrainedTable Ref="ReferringConstraint" Set="ReferringTable">
+	<TableName Ref="ReferringTable"/>
+  </WithConstraintConstrainedTable>
+</Whitespace></Defer>
+<Defer Macro="ReferringEntityRefName"><Whitespace Include="None">
+	<ForEachConstrainedField Ref="ReferringConstraint" Set="ReferencedField">
+		<If><Constrained Ref="ReferencedField" Type="Foreign" CountUnder="2" Linkage="Unrelated"/></If>
+		<If><Constrained Ref="ReferencedField" Type="Foreign" CountUnder="2" Linkage="Derived"/>Derived</If>
+		<If><Constrained Ref="ReferencedField" Type="Foreign" CountUnder="2" Linkage="Base"/>Base</If>
+		<FieldName Ref="ReferencedField"><Replace Pattern="ID$"></Replace></FieldName>
+	</ForEachConstrainedField>
+</Whitespace></Defer>
+<Defer Macro="ConstrainedFieldName"><Whitespace Include="None">
+	<If><Constrained Ref="CurrentField" Type="Foreign" Linkage="Unrelated"/></If>
+	<If><Constrained Ref="CurrentField" Type="Foreign" Linkage="Derived"/>Derived</If>
+	<If><Constrained Ref="CurrentField" Type="Foreign" Linkage="Base"/></If>
+	<FieldName Ref="CurrentField"/>
+</Whitespace>
+</Defer>
+<Defer Macro="SafeReferringTableName"><Whitespace Include="None">
+  <Expand Macro="ReferringTableName"><!--<Replace Pattern="^Item$">_Item</Replace>--></Expand>
+</Whitespace></Defer>
+<!-- Counters -->
+<Defer Macro="DBIClassName"><Expand Macro="Tprefix"/><DataSetName><Replace Pattern=".*:"/></DataSetName>DBI</Defer>
+<Define Macro="CNameCounter">0</Define><!-- Used to generate Constraint<n> names as needed -->
+<!-- Ensure all the columns are representable as SQL types. -->
+<Whitespace Include="None">
+	<ForEachTable Set="T">
+		<ForEachTableField Ref="T" Set="F">
+			<Define Macro="Junk">
+				<TypeInfo Ref="F" Property="DatabaseType"/>
+			</Define>
+		</ForEachTableField>
+	</ForEachTable>
+	<!-- Ensure all the variables are representable as SQL types;
+		this is not a sufficient test, we want to know if their *encoded* type fits in the type
+		we are using for the Value column of the __Variables table. -->
+	<ForEachVariable Set="V">
+		<Define Macro="Junk">
+			<TypeInfo Ref="V" Property="DatabaseType"/>
+		</Define>
+	</ForEachVariable>
+</Whitespace>
+#pragma warning disable 1591
+//------------------------------------------------------------------------------
+// &lt;auto-generated&gt;
+//     This code was generated by a tool.
+//		Template file <!-- $$Workfile: -->LINQGenerationTemplate.xml<!-- $ -->
+//		Vault version <!-- $$Revision: -->31<!-- $ -->
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// &lt;/auto-generated&gt;
+//------------------------------------------------------------------------------
+namespace <Expand Macro="ContextNamespace"/>
+{
+	using System.Data.Linq;
+	using System.Data.Linq.Mapping;
+	using System.Data;
+	using System.Collections.Generic;
+	using System.Reflection;
+	using System.Linq;
+	using System.Linq.Expressions;
+
+	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="Master")]
+	<Expand Macro="Access"/> <Expand Macro="UseInheritanceModifier"/>partial class <Expand Macro="DataContextName"/> : <Expand Macro="DataContextBaseClass"/>
+	{
+		private static System.Data.Linq.Mapping.MappingSource mappingSource = new AttributeMappingSource();
+
+	#region Extensibility Method Definitions
+	<If><Defined Macro="ENTITY_TRACE"/>
+	#if ENTITY_TRACE
+	void OnCreated() {
+		System.Diagnostics.Debug.WriteLine("DataContext <Expand Macro="DataSetClassName"/> OnCreated()");
+	}
+	#else
+	</If>
+	partial void OnCreated();
+	<If><Defined Macro="ENTITY_TRACE"/>
+	#endif
+	</If>
+<If><Not><Defined Macro="IsView"/></Not>
+<ForEachTable Set="CurrentTable">
+	partial void Insert<Expand Macro="SafeTableName"/>(<Expand Macro="EntityNamespace"/>.<Expand Macro="SafeTableName"/> instance);
+	partial void Update<Expand Macro="SafeTableName"/>(<Expand Macro="EntityNamespace"/>.<Expand Macro="SafeTableName"/> instance);
+	partial void Delete<Expand Macro="SafeTableName"/>(<Expand Macro="EntityNamespace"/>.<Expand Macro="SafeTableName"/> instance);
+</ForEachTable>
+</If>
+	#endregion
+
+		public <Expand Macro="DataContextName"/>() :
+				base(global::System.Configuration.ConfigurationManager.ConnectionStrings["Master"].ConnectionString, mappingSource)
+		{
+			OnCreated();
+		}
+
+		public <Expand Macro="DataContextName"/>(string connection) :
+				base(connection, mappingSource)
+		{
+			OnCreated();
+		}
+
+		public <Expand Macro="DataContextName"/>(System.Data.IDbConnection connection) :
+				base(connection, mappingSource)
+		{
+			OnCreated();
+		}
+
+		public <Expand Macro="DataContextName"/>(string connection, System.Data.Linq.Mapping.MappingSource mappingSource) :
+				base(connection, mappingSource)
+		{
+			OnCreated();
+		}
+
+		public <Expand Macro="DataContextName"/>(System.Data.IDbConnection connection, System.Data.Linq.Mapping.MappingSource mappingSource) :
+				base(connection, mappingSource)
+		{
+			OnCreated();
+		}
+<ForEachTable Set="CurrentTable">
+		public System.Data.Linq.Table&lt;<Expand Macro="EntityNamespace"/>.<Expand Macro="SafeTableName"/>&gt; <Expand Macro="SafeTableName"/><Expand Macro="PLURAL"/>
+		{
+			get
+			{
+				return this.GetTable&lt;<Expand Macro="EntityNamespace"/>.<Expand Macro="SafeTableName"/>&gt;();
+			}
+		}
+</ForEachTable>
+<ForEachVariable Set="CurrentField">
+  <Expand Macro="SetFieldType"/>
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.[_vget<FieldName Ref="CurrentField"/>]", IsComposable=true)]
+		public <Expand Macro="FieldType"/> _vget<Expand Macro="VariableName"/>()
+		{
+			return ((<Expand Macro="FieldType"/>)(this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod()))).ReturnValue));
+		}
+</ForEachVariable>
+	}
+}
+namespace <Expand Macro="EntityNamespace"/>
+{
+<If><Defined Macro="SerializationMode"/>
+	using System.Runtime.Serialization;
+</If>
+	using System.Data.Linq;
+	using System.Data.Linq.Mapping;
+	using System.ComponentModel;
+	using System;
+	using System.Runtime.CompilerServices;
+
+<ForEachTable Set="CurrentTable">
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.<Expand Macro="SafeTableName"/>")]
+<If><Defined Macro="SerializationMode"/>
+	[global::System.Runtime.Serialization.DataContractAttribute()]
+</If>
+	public partial class <Expand Macro="SafeTableName"/><If><Not><Defined Macro="IsView"/></Not> : INotifyPropertyChanging, INotifyPropertyChanged </If>
+	{
+		// Denotes table <Expand Macro="SafeTableName"/> with labelkey='<LabelKey Ref="CurrentTable"/>'
+		static public string <Expand Macro="SafeTableName"/>LabelKey { get{return <Expand Macro="LabelK"/>.K("<LabelKey Ref="CurrentTable"/>").Translate();}}
+<If><Not><Defined Macro="IsView"/></Not>
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+</If>
+<ForEachTableField Set="CurrentField" Ref="CurrentTable"><Expand Macro="SetFieldType"/>
+	<If><Not><Constrained Ref="CurrentField" Type="Foreign" Linkage="Derived"/></Not>
+		private <Expand Macro="FieldType"/> _<Expand Macro="ConstrainedFieldName"/>;
+	</If>
+</ForEachTableField>
+<ForEachTableConstraint Set="CurrentConstraint" Ref="CurrentTable"><Whitespace Include="BeforeText">
+	<If><Constraint Ref="CurrentConstraint" Type="Unique"/>
+		<ForEachConstraintReference Ref="CurrentConstraint" Set="ReferringConstraint">
+		<If><Or>
+			<Constraint Ref="ReferringConstraint" Type="Foreign" CountUnder="2" Linkage="Unrelated"/>
+			<Constraint Ref="ReferringConstraint" Type="Foreign" CountUnder="2" Linkage= "Unrelated"/>
+			</Or>
+		private EntitySet&lt;<Expand Macro="ReferringTableName"/>&gt; _<Expand Macro="EntitySetName"/>;
+			</If>
+		</ForEachConstraintReference>
+	</If>
+</Whitespace></ForEachTableConstraint>
+	<ForEachTableConstraint Set="CurrentConstraint" Ref="CurrentTable"><Whitespace Include="BeforeText">
+		<If><Constraint Ref="CurrentConstraint" Type="Foreign" CountUnder="2"/>
+		private EntityRef&lt;<Expand Macro="ReferencedTableName"/>&gt; _<Expand Macro="EntityRefName"/>;
+	  </If>
+ </Whitespace></ForEachTableConstraint>
+<If><Defined Macro="SerializationMode"/>
+#pragma warning disable 0414
+		private bool serializing;
+#pragma warning restore 0414
+</If>
+<If><Not><Defined Macro="IsView"/></Not>
+	#region Extensibility Method Definitions
+	partial void OnLoaded();
+	partial void OnValidate(System.Data.Linq.ChangeAction action);
+	<If><Defined Macro="ENTITY_TRACE"/>
+	#if ENTITY_TRACE
+	void OnCreated()
+	{
+		System.Diagnostics.Debug.WriteLine("Entity <Expand Macro="SafeTableName"/> OnCreated():0x{0:x}", this.GetHashCode());
+	}
+	#else
+	</If>
+	partial void OnCreated();
+	<If><Defined Macro="ENTITY_TRACE"/>
+	#endif
+	</If>
+<ForEachTableField Set="CurrentField" Ref="CurrentTable"><Expand Macro="SetFieldType"/>
+	<If><Not><Constrained Ref="CurrentField" Type="Foreign" Linkage="Derived"/></Not>
+	<If><Defined Macro="ENTITY_TRACE"/>
+	#if ENTITY_TRACE
+	void On<Expand Macro="ConstrainedFieldName"/>Changing(<Expand Macro="FieldType"/> value)
+	{
+		System.Diagnostics.Debug.WriteLine("Field <Expand Macro="ConstrainedFieldName"/> Changing to 0x{0:x}", value);
+	}
+	void On<Expand Macro="ConstrainedFieldName"/>Changed()
+	{
+		System.Diagnostics.Debug.WriteLine("Field <Expand Macro="ConstrainedFieldName"/> Changed()");
+	}
+	#else
+	</If>
+	partial void On<Expand Macro="ConstrainedFieldName"/>Changing(<Expand Macro="FieldType"/> value);
+	partial void On<Expand Macro="ConstrainedFieldName"/>Changed();
+	<If><Defined Macro="ENTITY_TRACE"/>
+	#endif
+	</If>
+	</If>
+</ForEachTableField>
+	#endregion
+</If>
+
+		public <Expand Macro="SafeTableName"/>()
+		{
+		<If><Defined Macro="SerializationMode"/>
+			this.Initialize();
+		<Else/>
+<ForEachTableConstraint Set="CurrentConstraint" Ref="CurrentTable"><Whitespace Include="BeforeText">
+	<If><Constraint Ref="CurrentConstraint" Type="Unique"/>
+		<ForEachConstraintReference Ref="CurrentConstraint" Set="ReferringConstraint">
+			<If><Or>
+				<Constraint Ref="ReferringConstraint" Linkage="Unrelated"/>
+				<Constraint Ref="ReferringConstraint" Linkage= "Unrelated"/>
+				</Or>
+			this._<Expand Macro="EntitySetName"/> = new EntitySet&lt;<Expand Macro="ReferringTableName"/>&gt;(new Action&lt;<Expand Macro="ReferringTableName"/>&gt;(this.attach_<Expand Macro="EntitySetName"/>), new Action&lt;<Expand Macro="ReferringTableName"/>&gt;(this.detach_<Expand Macro="EntitySetName"/>));
+			</If>
+		</ForEachConstraintReference>
+	</If>
+</Whitespace></ForEachTableConstraint>
+	<ForEachTableConstraint Set="CurrentConstraint" Ref="CurrentTable">
+		<If><Constraint Ref="CurrentConstraint" Type="Foreign" CountUnder="2"/>
+			this._<Expand Macro="EntityRefName"/> = default(EntityRef&lt;<Expand Macro="ReferencedTableName"/>&gt;);
+	  </If>
+	</ForEachTableConstraint>
+	<If><Not><Defined Macro="IsView"/></Not>
+			OnCreated();
+	</If>
+</If>
+		}
+<Defer Macro="AddSerialOrderCount"><Define Macro="SerialOrderCount"><Expand Macro="SerialOrderCount"/>+1</Define></Defer>
+<Define Macro="SerialOrderCount">0</Define>
+<ForEachTableField Set="CurrentField" Ref="CurrentTable"><Expand Macro="SetFieldType"/><Expand Macro="SetIsPrimaryKey"/>
+	<If><Not><Constrained Ref="CurrentField" Type="Foreign" Linkage="Derived"/></Not>
+		/// Denotes the <TableName Ref="CurrentTable"/>'s <FieldName Ref="CurrentField"/> column with type <TypeInfo Property="Name" Ref="CurrentField"/> with labelkey='<LabelKey Ref="CurrentField"/>'
+		static public string <Expand Macro="SafeTableName"/>_<Expand Macro="ConstrainedFieldName"/>{ get{return <Expand Macro="LabelK"/>.K("<LabelKey Ref="CurrentField"/>").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(<Expand Macro="EntityNamespace"/>.<Expand Macro="SafeTableName"/>),Name="<Expand Macro="SafeTableName"/>_<Expand Macro="ConstrainedFieldName"/>")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_<Expand Macro="ConstrainedFieldName"/>", DbType="<TypeInfo Ref="CurrentField" Property="DatabaseType"/>"<If><Compare><Test><Expand Macro="IsPrimaryKey"/></Test><EqualTo>true</EqualTo></Compare>, IsPrimaryKey=true<ElseIf/><Not><Nullable Ref="CurrentField"/></Not>, CanBeNull=false</If><If><Calculation Ref="CurrentField" Hosting="Server"/>, IsDbGenerated=true, AutoSync=AutoSync.Always, UpdateCheck=UpdateCheck.Never</If>)]
+	<If><Defined Macro="SerializationMode"/><Expand Macro="AddSerialOrderCount"/>
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=<Expand Macro="SerialOrderCount"/>)]
+	</If>
+		<If><Not><Nullable Ref="CurrentField"/></Not>
+		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
+		</If>
+		public <Expand Macro="FieldType"/> <Expand Macro="ConstrainedFieldName"/>
+		{
+			get
+			{
+				return this._<Expand Macro="ConstrainedFieldName"/>;
+			}
+			set
+			{
+				if ((this._<Expand Macro="ConstrainedFieldName"/> != value))
+				{
+			<If><Not><Defined Macro="IsView"/></Not>
+				<ForEachFieldConstraint Ref="CurrentField" Set="CurrentConstraint">
+					<If><Constraint Ref="CurrentConstraint" Type="Foreign" CountUnder="2"/>
+					if (this._<Expand Macro="EntityRefName"/>.HasLoadedOrAssignedValue )
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+				</If>
+				</ForEachFieldConstraint>
+			</If>
+			<If><Not><Defined Macro="IsView"/></Not>
+					this.On<Expand Macro="ConstrainedFieldName"/>Changing(value);
+					this.SendPropertyChanging();
+			</If>
+					this._<Expand Macro="ConstrainedFieldName"/> = value;
+			<If><Not><Defined Macro="IsView"/></Not>
+					this.SendPropertyChanged();
+					this.On<Expand Macro="ConstrainedFieldName"/>Changed();
+			</If>
+				}
+			}
+		}
+	</If>
+</ForEachTableField>
+<ForEachTableConstraint Set="CurrentConstraint" Ref="CurrentTable"><Whitespace Include="BeforeText">
+	<If><Constraint Ref="CurrentConstraint" Type="Unique"/>
+		<ForEachConstraintReference Ref="CurrentConstraint" Set="ReferringConstraint">
+		<If><Constraint Ref="ReferringConstraint" Type="Foreign" CountUnder="2" Linkage="Unrelated"/>
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="<Expand Macro="SafeTableName"/>_<Expand Macro="ReferringTableName"/>", Storage="_<Expand Macro="EntitySetName"/>", ThisKey="<ForEachConstrainedField Ref="CurrentConstraint" Set="CurrentField" SetReferenced="rf" Separator=","><FieldName Ref="CurrentField"/></ForEachConstrainedField>", OtherKey="<ForEachConstrainedField Ref="ReferringConstraint" Set="CurrentField" Separator=","><FieldName Ref="CurrentField"/></ForEachConstrainedField>")]
+	<If><Defined Macro="SerializationMode"/>
+		<Expand Macro="AddSerialOrderCount"/>
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=<Expand Macro="SerialOrderCount"/>, EmitDefaultValue=false)]
+	</If>
+		public EntitySet&lt;<Expand Macro="ReferringTableName"/>&gt; <Expand Macro="EntitySetName"/>
+		{
+			get
+			{
+			<If><Defined Macro="SerializationMode"/>
+				if ((this.serializing 
+							&amp;&amp; (this._<Expand Macro="EntitySetName"/>.HasLoadedOrAssignedValues == false)))
+				{
+					return null;
+				}
+			</If>
+				return this._<Expand Macro="EntitySetName"/>;
+			}
+			set
+			{
+				this._<Expand Macro="EntitySetName"/>.Assign(value);
+			}
+		}
+		</If>
+		<If><Constraint Ref="ReferringConstraint" CountUnder="2" Linkage="Base"/>
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="<Expand Macro="SafeTableName"/>_<Expand Macro="ReferringConstraintReferencedTableName"/>", Storage="_<Expand Macro="ReferringConstraintReferencedTableName"/>", ThisKey="<ForEachConstrainedField Ref="CurrentConstraint" Set="CurrentField" Separator=","><FieldName Ref="CurrentField"/></ForEachConstrainedField>", OtherKey="<ForEachConstrainedField Ref="ReferringConstraint" Set="CurrentField" SetReferenced="rf" Separator=","><FieldName Ref="CurrentField"/></ForEachConstrainedField>", IsUnique=true, IsForeignKey=false)]
+		public <Expand Macro="ReferringEntityRefType"/> <Expand Macro="ReferringConstraintReferencedTableName"/>
+		{
+			get
+			{
+				return this._<Expand Macro="ReferringConstraintReferencedTableName"/>.Entity;
+			}
+<If><Not><Defined Macro="IsView"/></Not>
+			set
+			{
+				<Expand Macro="ReferringEntityRefType"/> previousValue = this._<Expand Macro="ReferringConstraintReferencedTableName"/>.Entity;
+				if (((previousValue != value)
+							|| (this._<Expand Macro="ReferringConstraintReferencedTableName"/>.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._<Expand Macro="ReferringConstraintReferencedTableName"/>.Entity = null;
+						previousValue.<Expand Macro="ReferringEntityRefName"/> = null;
+					}
+					this._<Expand Macro="ReferringConstraintReferencedTableName"/>.Entity = value;
+					if ((value != null))
+					{
+						value.<Expand Macro="ReferringEntityRefName"/> = this;
+					}
+					this.SendPropertyChanged();
+				}
+			}
+</If>
+		}
+		</If>
+	</ForEachConstraintReference>
+  </If>
+</Whitespace></ForEachTableConstraint>
+<ForEachTableConstraint Set="CurrentConstraint" Ref="CurrentTable"><Whitespace Include="BeforeText">
+		<If><Or>
+			<Constraint Ref="CurrentConstraint" Type="Foreign" CountUnder="2" Linkage="Unrelated"/>
+			<Constraint Ref="CurrentConstraint" Type="Foreign" CountUnder="2" Linkage="Base"/>
+			</Or>
+
+	   <WithConstraintReferencedConstraint Ref="CurrentConstraint" Set="ReferredConstraint">
+	     <WithConstraintConstrainedTable Ref="ReferredConstraint" Set="ReferredTable">
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="<Expand Macro="EntityRefName"/>_<Expand Macro="SafeTableName"/>", Storage="_<Expand Macro="EntityRefName"/>", ThisKey="<ForEachConstrainedField Ref="CurrentConstraint" Set="CurrentField" Separator=","><FieldName Ref="CurrentField"/></ForEachConstrainedField>", OtherKey="<ForEachConstrainedField Ref="ReferredConstraint" Set="CurrentField" SetReferenced="rf" Separator=","><FieldName Ref="CurrentField"/></ForEachConstrainedField>", IsForeignKey=true)]
+		public <Expand Macro="ReferencedTableName"/> <Expand Macro="EntityRefName"/>
+		{
+			get
+			{
+				return this._<Expand Macro="EntityRefName"/>.Entity;
+			}
+			set
+			{
+				<Expand Macro="ReferencedTableName"/> previousValue = this._<Expand Macro="EntityRefName"/>.Entity;
+				<If><Not><Defined Macro="IsView"/></Not>
+				if (((previousValue != value)
+							|| (this._<Expand Macro="EntityRefName"/>.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._<Expand Macro="EntityRefName"/>.Entity = null;
+					<If><Constraint Ref="CurrentConstraint" Linkage="Unrelated"/>
+						previousValue.<Expand Macro="ReferredEntitySetName"/>.Remove(this);
+					</If>
+					}
+					this._<Expand Macro="EntityRefName"/>.Entity = value;
+					if ((value != null))
+					{
+					<If><Constraint Ref="CurrentConstraint" Linkage="Unrelated"/>
+						value.<Expand Macro="ReferredEntitySetName"/>.Add(this);
+					</If>
+						this._<ForEachConstrainedField Ref="CurrentConstraint" Set="CurrentField" Separator="_"><Expand Macro="ConstrainedFieldName"/></ForEachConstrainedField> = value.<ForEachConstrainedField Ref="ReferredConstraint" Set="CurrentField" SetReferenced="rf" Separator=","><FieldName Ref="CurrentField"/></ForEachConstrainedField>;
+					}
+					else
+					{
+						<ForEachConstrainedField Ref="CurrentConstraint" Set="CurrentField" Separator=""><Expand Macro="SetFieldType"/><Whitespace Include="BeforeText">
+						this._<Expand Macro="ConstrainedFieldName"/> = default(<Expand Macro="FieldType"><Replace Pattern="System.Nullable">Nullable</Replace></Expand>);
+						</Whitespace></ForEachConstrainedField>
+					}
+					this.SendPropertyChanged();
+				}
+				</If>
+			}
+		}
+</WithConstraintConstrainedTable></WithConstraintReferencedConstraint></If></Whitespace></ForEachTableConstraint>
+
+<If><Not><Defined Macro="IsView"/></Not>
+		public event PropertyChangingEventHandler PropertyChanging;
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+
+		protected virtual void SendPropertyChanged([CallerMemberName]String propertyName = null)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+</If>
+<ForEachTableConstraint Set="CurrentConstraint" Ref="CurrentTable">
+	  <If><Constraint Ref="CurrentConstraint" Type="Unique"/>
+		<ForEachConstraintReference Ref="CurrentConstraint" Set="ReferringConstraint">
+		<If><Constraint Ref="ReferringConstraint" Type="Foreign" CountUnder="2" Linkage="Unrelated"/>
+
+		private void attach_<Expand Macro="EntitySetName"/>(<Expand Macro="ReferringTableName"/> entity)
+		{
+<If><Not><Defined Macro="IsView"/></Not>
+			this.SendPropertyChanging();
+</If>
+			entity.<Expand Macro="ReferringEntityRefName"/> = this;
+		}
+		private void detach_<Expand Macro="EntitySetName"/>(<Expand Macro="ReferringTableName"/> entity)
+		{
+<If><Not><Defined Macro="IsView"/></Not>
+			this.SendPropertyChanging();
+</If>
+			entity.<Expand Macro="ReferringEntityRefName"/> = null;
+		}
+		</If>
+		</ForEachConstraintReference>
+	  </If>
+  </ForEachTableConstraint>
+<If><Defined Macro="SerializationMode"/>
+		private void Initialize()
+		{
+<ForEachTableConstraint Set="CurrentConstraint" Ref="CurrentTable"><Whitespace Include="BeforeText">
+	<If><Constraint Ref="CurrentConstraint" Type="Unique"/>
+		<ForEachConstraintReference Ref="CurrentConstraint" Set="ReferringConstraint">
+			<If><Or>
+				<Constraint Ref="ReferringConstraint" Linkage="Unrelated"/>
+				<Constraint Ref="ReferringConstraint" Linkage= "Unrelated"/>
+				</Or>
+			this._<Expand Macro="EntitySetName"/> = new EntitySet&lt;<Expand Macro="ReferringTableName"/>&gt;(new Action&lt;<Expand Macro="ReferringTableName"/>&gt;(this.attach_<Expand Macro="EntitySetName"/>), new Action&lt;<Expand Macro="ReferringTableName"/>&gt;(this.detach_<Expand Macro="EntitySetName"/>));
+			</If>
+		</ForEachConstraintReference>
+	</If>
+</Whitespace></ForEachTableConstraint>
+	<ForEachTableConstraint Set="CurrentConstraint" Ref="CurrentTable">
+		<If><Constraint Ref="CurrentConstraint" Type="Foreign" CountUnder="2"/>
+			this._<Expand Macro="EntityRefName"/> = default(EntityRef&lt;<Expand Macro="ReferencedTableName"/>&gt;);
+	  </If>
+	</ForEachTableConstraint>
+	<If><Not><Defined Macro="IsView"/></Not>
+			OnCreated();
+	</If>		
+		}
+		
+		[global::System.Runtime.Serialization.OnDeserializingAttribute()]
+		[global::System.ComponentModel.EditorBrowsableAttribute(EditorBrowsableState.Never)]
+		private void OnDeserializing(StreamingContext context)
+		{
+			this.Initialize();
+		}
+		
+		[global::System.Runtime.Serialization.OnSerializingAttribute()]
+		[global::System.ComponentModel.EditorBrowsableAttribute(EditorBrowsableState.Never)]
+		private void OnSerializing(StreamingContext context)
+		{
+			this.serializing = true;
+		}
+		
+		[global::System.Runtime.Serialization.OnSerializedAttribute()]
+		[global::System.ComponentModel.EditorBrowsableAttribute(EditorBrowsableState.Never)]
+		private void OnSerialized(StreamingContext context)
+		{
+			this.serializing = false;
+		}
+</If>
+	}
+</ForEachTable>
+<If><Defined Macro="TargetNamespace"/>
+	<Defer Macro="LabelK"><Expand Macro="DataSetClassName"/>LabelK<LabelContext/></Defer>
+	internal class <Expand Macro="LabelK"/> : Thinkage.Libraries.Translation.GeneralKeyBuilder {
+		const string LabelContext = "<LabelContext/>";
+
+		static <Expand Macro="LabelK"/> Instance = new <Expand Macro="LabelK"/>();
+		protected <Expand Macro="LabelK"/>() {
+		}
+		protected override Thinkage.Libraries.Translation.ContextReference GetContext() {
+			return Thinkage.Libraries.Translation.ContextReference.New(LabelContext);
+		}
+		public static Thinkage.Libraries.Translation.Key K([Thinkage.Libraries.Translation.Context(LabelContext)]string s) {
+			return Instance.BuildKey(s);
+		}
+	}
+}
+#pragma warning restore 1591
+</If>
+<Whitespace Include="All"><!-- make sure final newline appears -->
+</Whitespace>
+  </Whitespace>
+</DataSet>
+

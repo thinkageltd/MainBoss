@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="LocationReport" log="false" id="Id" labelkey="">
+	<field name="Id" read="RequiredGUID" />
+	<field name="LocationID" type="RequiredGUIDREF" link="Location" unique="true" />
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="LocationType" type="integer(min 0, max 5, nonnull)"> <!-- ViewRecordTypes.LocationReport -->
+	  <extension name="controlprovider">Thinkage.MainBoss.Database.ViewRecordTypes.LocationReportProvider,Thinkage.MainBoss.Database</extension>
+	</field>
+	<field name="ContainingLocationID" type="GUIDREF" link="Location" />
+	<field name="LocationCode" type="SingleLineUnlimited" />
+	<field name="LocationDetail" type="MultiLineUnlimited">
+	  <extension name="dependson">mbfn_Location_PostalAddress()</extension>
+	</field>
+	<field name="OrderByRank" type="SingleLineUnlimited" labelkey="Physical Count Sheet Sort Order">
+	  <extension name="dependson">mbfn_OrderByRank()</extension>
+	</field>
+	
+	<extension name="query">
+
+		with MyLocationDerivations (Id, TableEnum, Code, ContainingLocationID, LocationID, LocationDetail, Hidden) as (
+			
+			select LocationID, 0, PA.Code, NULL, LocationID, dbo.mbfn_Location_PostalAddress(LocationID), PA.Hidden
+				from PostalAddress as PA
+
+	  union all
+			select LocationID, 1, WO.Number, ContainingLocationID, LocationID, WO.Subject, case when WorkOrderState.FilterAsClosed = 1 then WorkOrderStateHistory.EffectiveDate else null end
+				from TemporaryStorage as TS
+					left join WorkOrder as WO on WO.ID = TS.WorkOrderID
+					join WorkOrderStateHistory on WorkOrderStateHistory.Id = WO.CurrentWorkOrderStateHistoryID
+					join WorkOrderState on WorkOrderState.ID = WorkOrderStateHistory.WorkOrderStateID
+
+	  union all
+			select RL.LocationID, 2, RL.Code, RL.ContainingLocationID, RL.LocationID, Location.[Desc], RL.Hidden
+				from Unit
+				  left join RelativeLocation as RL on Unit.RelativeLocationID = RL.ID
+				  join Location on Location.ID = RL.LocationID
+
+	  union all
+			select RL.LocationID, 3, RL.Code, RL.ContainingLocationID, RL.LocationID, Location.[Desc], RL.Hidden
+				from PermanentStorage as PS
+				  left join RelativeLocation as RL on PS.RelativeLocationID = RL.ID
+				  join Location on Location.ID = RL.LocationID
+
+	  union all
+			select RL.LocationID, 4, RL.Code, RL.ContainingLocationID, RL.LocationID, Location.[Desc], RL.Hidden
+				from PlainRelativeLocation as PRL
+				  left join RelativeLocation as RL on PRL.RelativeLocationID = RL.ID
+				  join Location on Location.ID = RL.LocationID
+
+	  union all
+			select TTS.LocationID, 5, WOT.Code, TTS.ContainingLocationID, TTS.LocationID, WOT.[Description], WOT.Hidden
+				from TemplateTemporaryStorage as TTS
+					left join WorkOrderTemplate as WOT on WOT.ID = TTS.WorkOrderTemplateID
+		)
+
+		select
+		   MyLocationDerivations.LocationID  
+		,  MyLocationDerivations.LocationID
+		,  MyLocationDerivations.Hidden                             --
+		,  MyLocationDerivations.TableEnum   -- LocationType
+		,  MyLocationDerivations.ContainingLocationID
+		,  MyLocationDerivations.Code        -- LocationCode
+		,  MyLocationDerivations.LocationDetail
+		,  dbo.mbfn_OrderByRank(MyLocationDerivations.LocationID)
+		from MyLocationDerivations
+	</extension>
+	<extension name="dependson">Location</extension>
+	<extension name="dependson">PermanentStorage</extension>
+	<extension name="dependson">PlainRelativeLocation</extension>
+	<extension name="dependson">PostalAddress</extension>
+	<extension name="dependson">RelativeLocation</extension>
+	<extension name="dependson">TemplateTemporaryStorage</extension>
+	<extension name="dependson">TemporaryStorage</extension>
+	<extension name="dependson">Unit</extension>
+	<extension name="dependson">WorkOrder</extension>
+	<extension name="dependson">WorkOrderTemplate</extension>
+  </table>
+  <object class="function" name="mbfn_OrderByRank">
+	<doc>This function builds the full composite Code of the Location up to the root location</doc>
+	<extension name="body">
+			-- Build a sortable composite Code of the Location up to the root location.
+			-- Permanent storage rank is taken into consideration.
+			(@IID		uniqueidentifier)
+			RETURNS nvarchar(max)
+			AS
+			BEGIN
+			declare @result as nvarchar(max)
+			declare @locCode as nvarchar(100)
+			declare speccursor cursor scroll
+			for
+				SELECT dbo.mbfn_ConcatWithSeparator(right('0000000' + ltrim(str(PermanentStorage.Rank)), 7), '_', coalesce(w.Number, r.Code, p.Code))
+					FROM LocationContainment 
+							left outer join
+							TemporaryStorage AS t ON t.LocationID = LocationContainment.[ContainingLocationID]
+							left outer join 
+							WorkOrder AS w ON w.[ID] = t.WorkOrderID
+							left outer join
+							RelativeLocation AS r ON r.LocationID = LocationContainment.[ContainingLocationID]
+							left outer join
+							PermanentStorage ON PermanentStorage.RelativeLocationID = r.[ID]
+							left outer join
+							PostalAddress AS p ON p.LocationID = LocationContainment.[ContainingLocationID]
+					WHERE LocationContainment.[ContainedLocationID] = @IID
+					ORDER BY LocationContainment.Depth DESC
+
+			set @result = ''
+			open speccursor
+			fetch first from speccursor into @locCode
+			while @@FETCH_STATUS = 0
+			begin
+				set @result = @result + '  ' + @locCode -- separator has 2 spaces so that 'x'/'z' sorts before 'x y' (but unfortunately not before 'x   y')
+				fetch next from speccursor into @locCode
+			end
+			close speccursor
+			return @result			
+			END
+		</extension>
+	<extension name="dependson">PostalAddress</extension>
+	<!-- 
+		<extension name="dependson">RelativeLocation</extension>
+		<extension name="dependson">PermanentStorage</extension> 
+		-->
+	<extension name="dependson">TemporaryStorage</extension>
+	<extension name="dependson">mbfn_ConcatWithSeparator()</extension>
+  </object>
+  <table name="Location"/>
+  <table name="PermanentStorage"/>
+  <table name="PlainRelativeLocation"/>
+  <table name="PostalAddress"/>
+  <table name="RelativeLocation"/>
+  <table name="TemplateTemporaryStorage"/>
+  <table name="TemporaryStorage"/>
+  <table name="Unit"/>
+  <table name="WorkOrder"/>
+  <table name="WorkOrderTemplate"/>
+</database>
+ 

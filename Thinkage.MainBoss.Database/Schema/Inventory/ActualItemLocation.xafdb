@@ -1,0 +1,669 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ActualItemLocation" defaults="true" log="false" id="Id" xid="ItemLocationID" xunique="true" labelkey="Actual Item Location">
+	<doc>This record represents the assignment of an Item to either a permanent or temporary storage location only</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="ItemLocationID" read="RequiredGUIDREF" base="ItemLocation">
+	  <doc>The storage location the Item is assigned to</doc>
+	</field>
+	<field name="CostCenterID" type="RequiredGUIDREF" link="CostCenter">
+	  <doc>The Cost Center which contains the asset value of items when stored in this location</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="EffectiveMinimum" read="RequiredQuantity">
+	  <doc>The effective Minimum for this ItemLocation</doc>
+	  <!-- Trigger maintained with calculation from dbo.mbfn_ActualItemLocation_EffectiveMinimum(ID) -->
+	  <result hosting="cached">
+		cast(420000 as RequiredQuantity)
+	  </result>
+	  <extension name="dependson">mbfn_ActualItemLocation_EffectiveMinimum()</extension>
+	</field>
+	<field name="EffectiveMaximum" read="RequiredQuantity">
+	  <doc>The effective Maximum for this ItemLocation</doc>
+	  <!-- Trigger maintained with calculation from dbo.mbfn_ActualItemLocation_EffectiveMaximum(ID) -->
+	  <result hosting="cached">
+		cast(420000 as RequiredQuantity)
+	  </result>
+	  <extension name="dependson">mbfn_ActualItemLocation_EffectiveMaximum()</extension>
+	</field>
+	<field name="OnHand" read="RequiredQuantity" >
+	  <doc>The calculated total quantity currently on hand (this storage location)</doc>
+	  <!-- dbo.mbfn_ActualItemLocation_OnHandAtEternity( [ActualItemLocationID] ) -->
+	  <result hosting="cached">
+		cast(420000 as RequiredQuantity)
+	  </result>
+	  <extension name="dependson">ActualItemLocation.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	  <extension name="dependson">ItemAdjustment</extension>
+	  <extension name="dependson">ItemIssue</extension>
+	  <extension name="dependson">ItemTransfer</extension>
+	  <extension name="dependson">ReceiveItemPO</extension>
+	  <extension name="dependson">ReceiveItemNonPO</extension>
+	  <extension name="dependson">ActualItem</extension>
+	  <extension name="dependson">ItemCountValue</extension>
+	  <extension name="dependson">ItemCountValueVoid</extension>
+	</field>
+	<field name="OnOrder" read="RequiredQuantity" >
+	  <doc>The calculated total quantity ordered by all active purchase orders but not yet received (this storage location)</doc>
+	  <!-- Trigger maintained with calculation from dbo.mbfn_ActualItemLocation_OnOrder( [ActualItemLocationID] ) -->
+	  <result hosting="cached">
+		cast(420000 as RequiredQuantity)
+	  </result>
+	  <extension name="dependson">mbfn_ActualItemLocation_OnOrder()</extension>
+	</field>
+	<field name="OnReserve" read="RequiredQuantity" >
+	  <doc>The calculated total quantity demanded by all active work orders but not yet drawn (this storage location)</doc>
+	  <!-- Trigger maintained with calculation from dbo.mbfn_ActualItemLocation_OnReserve( [ActualItemLocationID] ) -->
+	  <result hosting="cached">
+		cast(420000 as RequiredQuantity)
+	  </result>
+	  <extension name="dependson">mbfn_ActualItemLocation_OnReserve()</extension>
+	</field>
+	<field name="Available" read="RequiredQuantity" >
+	  <doc>The calculated total quantity available (OnHand-OnReserve+OnOrder)</doc>
+	  <result hosting="server">
+		ActualItemLocation.OnHand + ActualItemLocation.OnOrder - ActualItemLocation.OnReserve
+	  </result>
+	</field>
+	<field name="Shortage" read="RequiredQuantity" >
+	  <doc>The calculated shortfall from minimum (case when EffectiveMinimum > Available then EffectiveMinimum - Available else 0 end)</doc>
+	  <result hosting="server">
+		case when ActualItemLocation.EffectiveMinimum > ActualItemLocation.Available then ActualItemLocation.EffectiveMinimum - ActualItemLocation.Available else 0 end
+	  </result>
+	</field>
+	<field name="UnitCost" read="UnitCost" >
+	  <doc>The calculated average unit cost for all the OnHand items</doc>
+	  <!-- dbo.mbfn_CalculateUnitCost(TotalCost, OnHand, 1) -->
+	  <result hosting="server">
+		cast(42 as UnitCost)
+	  </result>
+	  <extension name="dependson">mbfn_CalculateUnitCost()</extension>
+	</field>
+	<field name="TotalCost" read="RequiredCurrency" >
+	  <!--
+	  Technically, this field depends on the Cost in the AccountingTransaction that the following records are derived from.
+	  However we don't want to name the AccountingTransaction table since that would cause all other transaction types to also
+	  update us. This needs to be addressed somewhere in the cache manager.
+	  -->
+	  <doc>The calculated total value currently on hand (this storage location)</doc>
+	  <!-- dbo.mbfn_ActualItemLocation_TotalCostAtEternity( [ActualItemLocationID] ) -->
+	  <result hosting="cached">
+		cast(42 as Requiredcurrency)
+	  </result>
+	  <extension name="dependson">ActualItemLocation.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	  <extension name="dependson">ItemAdjustment</extension>
+	  <extension name="dependson">ItemIssue</extension>
+	  <extension name="dependson">ItemTransfer</extension>
+	  <extension name="dependson">ReceiveItemPO</extension>
+	  <extension name="dependson">ReceiveItemNonPO</extension>
+	  <extension name="dependson">ActualItem</extension>
+	  <extension name="dependson">ItemCountValue</extension>
+	  <extension name="dependson">ItemCountValueVoid</extension>
+	</field>
+	<extension name="costrights">InventoryActivity</extension>
+  </table>
+  <table name="AccountingTransaction"/>
+  <table name="ItemLocation"/>
+  <table name="Item"/>
+  <table name="Location"/>
+  <table name="ItemPrice"/>
+  <table name="CostCenter"/>
+  <table name="ItemCountValue"/>
+  <table name="ItemAdjustment"/>
+  <table name="ItemIssue"/>
+  <table name="ActualItem"/>
+  <table name="ReceiveItemPO"/>
+  <table name="ReceiveItemNonPO"/>
+  <table name="ItemCountValueVoid"/>
+  <table name="WorkOrder">
+	<field name="CurrentWorkOrderStateHistoryID"/>
+  </table>
+  <table name="WorkOrderStateHistory"/>
+  <table name="WorkOrderState"/>
+  <table name="Demand"/>
+  <table name="DemandItem">
+	<field name="Quantity"/>
+	<field name="ActualQuantity"/>
+	<field name="ItemLocationID"/>
+  </table>
+  <table name="PurchaseOrder">
+	<field name="CurrentPurchaseOrderStateHistoryID"/>
+  </table>
+  <table name="PurchaseOrderStateHistory"/>
+  <table name="PurchaseOrderState"/>
+  <table name="POLine"/>
+  <table name="POLineItem">
+	<field name="Quantity"/>
+	<field name="ReceiveQuantity"/>
+  </table>
+  <table name="ItemTransfer"/>
+  <table name="PermanentItemLocation">
+	<field name="Maximum"/>
+	<field name="Minimum"/>
+  </table>
+  <table name="TemporaryItemLocation"/>
+  <table name="TemplateItemLocation"/>
+  <table name="TemporaryStorage"/>
+  <object class="procedure" name="mbsp_RetotalInventory">
+	<doc>
+	  This procedure retotals inventory (TotalQuantity and TotalCost) for the given ActualItemLocation.
+	  It sets these fields in the various inventory transactions and also in the ActualItemLocation record.
+	  If it is passed a non-null AdjustmentCodeID and it detects that the Quantity and QuantityChange or Cost and Transaction.Cost are
+	  inconsistent on a non-voided ItemCountValue record, it will precede that record with an adjustment using the given adjustment code.
+	  Otherwise it will correct Transaction.Cost and QuantityChange as necessary (on the assumption that the user does not export accounting)
+	</doc>
+	<extension name="body">
+	  (
+	  @ILID uniqueidentifier,
+	  @AdjustmentCodeID uniqueidentifier
+	  )
+	  as
+	  begin
+		-- Make a cursor on all the ItemCountValue records for the AIL, in ascending date order.
+		declare ICV cursor Local Fast_Forward
+		for
+		  select EffectiveDate, EntryDate, I.Id, TX.Id, I.Quantity, I.Cost, TX.Cost
+			from ItemCountValue I
+			join AccountingTransaction as TX on TX.Id = I.AccountingTransactionID
+			where I.VoidingItemCountValueVoidID is null
+			  and I.ItemLocationID = @ILID
+			order by EffectiveDate, EntryDate
+		-- Iterate over that cursor, with one extra loop at the end to cover transactions to date.
+		declare @StartEffectiveDate datetime
+		declare @EndEffectiveDate datetime
+		declare @StartEntryDate datetime
+		declare @EndEntryDate datetime
+		declare @ICVID uniqueidentifier
+		declare @TXID uniqueidentifier
+		declare @ResultQuantity integer
+		declare @ResultCost money
+		declare @CostChange money
+		declare @Quantity integer
+		declare @Cost money
+		
+		set @StartEffectiveDate = null
+		set @StartEntryDate = null
+		set @Quantity = 0
+		set @Cost = 0
+		open  ICV
+		fetch next from ICV into @EndEffectiveDate, @EndEntryDate, @ICVID, @TXID, @ResultQuantity, @ResultCost, @CostChange
+		while @@fetch_Status = 0
+		begin
+		  exec mbsp_RetotalNormalInventoryTransactions @ILID, @StartEffectiveDate, @StartEntryDate, @EndEffectiveDate, @EndEntryDate, @Quantity, @Cost
+		  if @Cost - @CostChange != @ResultCost
+		  begin
+			-- Correct the transaction so its cost delta matches the difference between the running total and the entered cost.
+			-- TODO: Enter this as a new Adjustment record just before if we are given an @AdjustmentCodeID; do this with triggers disabled? and fill in Totals ourselves?
+			update AccountingTransaction
+			  set Cost = @Cost - @ResultCost
+			  where Id = @TXID
+		  end
+		  set @Quantity = @ResultQuantity
+		  set @Cost = @ResultCost
+		  set @StartEffectiveDate = @EndEffectiveDate
+		  set @StartEntryDate = @EndEntryDate
+		  fetch next from ICV into @EndEffectiveDate, @EndEntryDate, @ICVID, @TXID, @ResultQuantity, @ResultCost, @CostChange
+		end
+		exec mbsp_RetotalNormalInventoryTransactions @ILID, @StartEffectiveDate, @StartEntryDate, null, null, @Quantity out, @Cost out
+		update ActualItemLocation
+		  set OnHand = @Quantity, TotalCost = @Cost
+		  where ItemLocationID = @ILID and (OnHand != @Quantity or TotalCost != @Cost)
+	  end
+	</extension>
+	<extension name="references">mbsp_RetotalNormalInventoryTransactions[]</extension>
+  </object>
+  <object class="procedure" name="mbsp_RetotalNormalInventoryTransactions">
+	<doc>
+	  Retotal normal (delta) inventory transactions for the ItemLocation for the given date range (start is inclusive, end is exclusive)
+	  and return the final totals.
+	</doc>
+	<extension name="body">
+	  (
+	  @ILID uniqueidentifier,
+	  @StartEffectiveDate datetime,
+	  @StartEntryDate datetime,
+	  @EndEffectiveDate datetime,
+	  @EndEntryDate datetime,
+	  @Quantity integer output,
+	  @Cost money output
+	  )
+	  as
+	  begin
+		declare @DeltaQuantity integer
+		declare @DeltaCost money
+		declare @ResultQuantity integer
+		declare @ResultCost money
+		
+		declare @ItemAdjustmentID uniqueidentifier
+		declare @ItemIssueID uniqueidentifier
+		declare @ItemTransferID uniqueidentifier
+		declare @Reverse integer
+		declare @ReceiveItemPOID uniqueidentifier
+		declare @ReceiveItemNonPOID uniqueidentifier
+		declare @ActualItemID uniqueidentifier
+		
+		declare @Junk datetime
+		declare @Junk2 datetime
+		
+		-- To ensure we see the transactions in the correct order, we use a cursor.
+		-- There is no way to make an updatable cursor based on a union that knows which alternative of the union
+		-- was used and thus which table to update; all the updates must name the actual table to update, and only
+		-- use the cursor in the WHERE CURRENT OF CursorName clause.
+		-- TODO: If the WHERE CURRENT OF works despite the union, just make the query return an enum of which table to update.
+		declare TX cursor local fast_forward
+		for
+			select Quantity, TX.Cost, TotalQuantity, TotalCost, ItemAdjustment.Id, null, null, 0, null, null, null, EffectiveDate, EntryDate
+			  from ItemAdjustment
+			  join AccountingTransaction as TX on AccountingTransactionID = TX.Id
+			  where ItemLocationID = @ILID
+				and (@StartEffectiveDate is null or TX.EffectiveDate > @StartEffectiveDate or (TX.EffectiveDate = @StartEffectiveDate and TX.EntryDate >= @StartEntryDate))
+				and (@EndEffectiveDate is null or TX.EffectiveDate &lt; @EndEffectiveDate or (TX.EffectiveDate = @EndEffectiveDate and TX.EntryDate &lt; @EndEntryDate))
+		  union all
+			select Quantity, TX.Cost, TotalQuantity, TotalCost, null, null, null, 0, null, ReceiveItemNonPO.Id, null, EffectiveDate, EntryDate
+			  from ReceiveItemNonPO
+			  join AccountingTransaction as TX on AccountingTransactionID = TX.Id
+			  where ItemLocationID = @ILID
+				and (@StartEffectiveDate is null or TX.EffectiveDate > @StartEffectiveDate or (TX.EffectiveDate = @StartEffectiveDate and TX.EntryDate >= @StartEntryDate))
+				and (@EndEffectiveDate is null or TX.EffectiveDate &lt; @EndEffectiveDate or (TX.EffectiveDate = @EndEffectiveDate and TX.EntryDate &lt; @EndEntryDate))
+		  union all
+			select Quantity, TX.Cost, TotalQuantity, TotalCost, null, null, null, 0, ReceiveItemPO.Id, null, null, EffectiveDate, EntryDate
+			  from ReceiveItemPO
+			  join AccountingTransaction as TX on AccountingTransactionID = TX.Id
+			  where ItemLocationID = @ILID
+				and (@StartEffectiveDate is null or TX.EffectiveDate > @StartEffectiveDate or (TX.EffectiveDate = @StartEffectiveDate and TX.EntryDate >= @StartEntryDate))
+				and (@EndEffectiveDate is null or TX.EffectiveDate &lt; @EndEffectiveDate or (TX.EffectiveDate = @EndEffectiveDate and TX.EntryDate &lt; @EndEntryDate))
+		  union all
+			select Quantity, TX.Cost, FromTotalQuantity, FromTotalCost, null, null, ItemTransfer.Id, 0, null, null, null, EffectiveDate, EntryDate
+			  from ItemTransfer
+			  join AccountingTransaction as TX on AccountingTransactionID = TX.Id
+			  where ToItemLocationID = @ILID
+				and (@StartEffectiveDate is null or TX.EffectiveDate > @StartEffectiveDate or (TX.EffectiveDate = @StartEffectiveDate and TX.EntryDate >= @StartEntryDate))
+				and (@EndEffectiveDate is null or TX.EffectiveDate &lt; @EndEffectiveDate or (TX.EffectiveDate = @EndEffectiveDate and TX.EntryDate &lt; @EndEntryDate))
+		  union all
+			select -Quantity, -TX.Cost, ToTotalQuantity, ToTotalCost, null, null, ItemTransfer.Id, 1, null, null, null, EffectiveDate, EntryDate
+			  from ItemTransfer
+			  join AccountingTransaction as TX on AccountingTransactionID = TX.Id
+			  where FromItemLocationID = @ILID
+				and (@StartEffectiveDate is null or TX.EffectiveDate > @StartEffectiveDate or (TX.EffectiveDate = @StartEffectiveDate and TX.EntryDate >= @StartEntryDate))
+				and (@EndEffectiveDate is null or TX.EffectiveDate &lt; @EndEffectiveDate or (TX.EffectiveDate = @EndEffectiveDate and TX.EntryDate &lt; @EndEntryDate))
+		  union all
+			select -Quantity, -TX.Cost, TotalQuantity, TotalCost, null, ItemIssue.Id, null, 0, null, null, null, EffectiveDate, EntryDate
+			  from ItemIssue
+			  join AccountingTransaction as TX on AccountingTransactionID = TX.Id
+			  where ItemLocationID = @ILID
+				and (@StartEffectiveDate is null or TX.EffectiveDate > @StartEffectiveDate or (TX.EffectiveDate = @StartEffectiveDate and TX.EntryDate >= @StartEntryDate))
+				and (@EndEffectiveDate is null or TX.EffectiveDate &lt; @EndEffectiveDate or (TX.EffectiveDate = @EndEffectiveDate and TX.EntryDate &lt; @EndEntryDate))
+		  union all
+			select -ActualItem.Quantity, -TX.Cost, TotalQuantity, TotalCost, null, null, null, 0, null, null, ActualItem.Id, EffectiveDate, EntryDate
+			  from ActualItem
+			  join DemandItem as DI on DI.ID = ActualItem.DemandItemID
+			  join AccountingTransaction as TX on AccountingTransactionID = TX.Id
+			  where ItemLocationID = @ILID
+				and (@StartEffectiveDate is null or TX.EffectiveDate > @StartEffectiveDate or (TX.EffectiveDate = @StartEffectiveDate and TX.EntryDate >= @StartEntryDate))
+				and (@EndEffectiveDate is null or TX.EffectiveDate &lt; @EndEffectiveDate or (TX.EffectiveDate = @EndEffectiveDate and TX.EntryDate &lt; @EndEntryDate))
+		order by EffectiveDate, EntryDate
+
+		open TX
+		fetch next from TX into @DeltaQuantity, @DeltaCost, @ResultQuantity, @ResultCost, @ItemAdjustmentID, @ItemIssueID, @ItemTransferID, @Reverse, @ReceiveItemPOID, @ReceiveItemNonPOID, @ActualItemID, @Junk, @Junk2
+		while @@fetch_status = 0
+		begin
+		  set @Quantity = @Quantity + @DeltaQuantity
+		  set @Cost = @Cost + @DeltaCost
+		  if @Cost != @ResultCost or @Quantity != @ResultQuantity or @ResultCost is null or @ResultQuantity is null
+		  begin
+			if @ItemAdjustmentID is not null
+			  update ItemAdjustment
+				set TotalQuantity = @Quantity, TotalCost = @Cost
+				where Id = @ItemAdjustmentID
+			else if @ItemIssueID is not null
+			  update ItemIssue
+				set TotalQuantity = @Quantity, TotalCost = @Cost
+				where Id = @ItemIssueID
+			else if @ItemTransferID is not null and @Reverse = 0
+			  update ItemTransfer
+				set ToTotalQuantity = @Quantity, FromTotalCost = @Cost
+				where Id = @ItemTransferID
+			else if @ItemTransferID is not null and @Reverse != 0
+			  update ItemTransfer
+				set FromTotalQuantity = @Quantity, ToTotalCost = @Cost
+				where Id = @ItemTransferID
+			else if @ReceiveItemPOID is not null
+			  update ReceiveItemPO
+				set TotalQuantity = @Quantity, TotalCost = @Cost
+				where Id = @ReceiveItemPOID
+			else if @ReceiveItemNonPOID is not null
+			  update ReceiveItemNonPO
+				set TotalQuantity = @Quantity, TotalCost = @Cost
+				where Id = @ReceiveItemNonPOID
+			else if @ActualItemID is not null
+			  update ActualItem
+				set TotalQuantity = @Quantity, TotalCost = @Cost
+				where Id = @ActualItemID
+		  end
+		  fetch next from TX into @DeltaQuantity, @DeltaCost, @ResultQuantity, @ResultCost, @ItemAdjustmentID, @ItemIssueID, @ItemTransferID, @Reverse, @ReceiveItemPOID, @ReceiveItemNonPOID, @ActualItemID, @Junk, @Junk2
+		end
+	  end
+	</extension>
+	<extension name="references">AccountingTransaction</extension>
+	<extension name="references">ItemAdjustment</extension>
+	<extension name="references">ItemIssue</extension>
+	<extension name="references">ItemTransfer</extension>
+	<extension name="references">ReceiveItemPO</extension>
+	<extension name="references">ReceiveItemNonPO</extension>
+	<extension name="references">ActualItem</extension>
+	<extension name="references">ActualItemLocation</extension>
+  </object>
+  <object class="procedure" name="mbsp_AddInventoryDeltas">
+	<doc>
+	  This method adds a change in quantity and cost to the TotalQuantity and TotalCost of all the inventory transactions
+	  on the given ItemLocation on or after the given date, as well as to the ActualItemLocation itself.
+	  This method is not equipped to update ItemCountValue records, so the given date should be after any such records
+	  for the given ItemLocation. Updating ItemCountValue records with changed cost would require the ability to generate
+	  a new ItemAdjustment record, which in turn requires an ItemAdjustmentCodeID.
+	</doc>
+	<extension name="body">
+	  (
+	  @ILID uniqueidentifier,
+	  @StartEffectiveDate datetime,
+	  @StartEntryDate datetime,
+	  @DeltaQuantity integer,
+	  @DeltaCost money
+	  )
+	  as
+	  begin
+		update ItemAdjustment
+		  set TotalQuantity = TotalQuantity + @DeltaQuantity, TotalCost = TotalCost + @DeltaCost
+		  from
+			ItemAdjustment
+			join AccountingTransaction as TX on TX.Id = ItemAdjustment.AccountingTransactionID
+		  where
+			(TX.EffectiveDate > @StartEffectiveDate or (TX.EffectiveDate = @StartEffectiveDate and TX.EntryDate >= @StartEntryDate))
+			and ItemAdjustment.ItemLocationID = @ILID
+		update ItemIssue
+		  set TotalQuantity = TotalQuantity + @DeltaQuantity, TotalCost = TotalCost + @DeltaCost
+		  from
+			ItemIssue
+			join AccountingTransaction as TX on TX.Id = ItemIssue.AccountingTransactionID
+		  where
+			(TX.EffectiveDate > @StartEffectiveDate or (TX.EffectiveDate = @StartEffectiveDate and TX.EntryDate >= @StartEntryDate))
+			and ItemIssue.ItemLocationID = @ILID
+		update ItemTransfer
+		  set FromTotalQuantity = FromTotalQuantity + @DeltaQuantity, FromTotalCost = FromTotalCost + @DeltaCost
+		  from
+			ItemTransfer
+			join AccountingTransaction as TX on TX.Id = ItemTransfer.AccountingTransactionID
+		  where
+			(TX.EffectiveDate > @StartEffectiveDate or (TX.EffectiveDate = @StartEffectiveDate and TX.EntryDate >= @StartEntryDate))
+			and ItemTransfer.FromItemLocationID = @ILID
+		update ItemTransfer
+		  set ToTotalQuantity = ToTotalQuantity + @DeltaQuantity, ToTotalCost = ToTotalCost + @DeltaCost
+		  from
+			ItemTransfer
+			join AccountingTransaction as TX on TX.Id = ItemTransfer.AccountingTransactionID
+		  where
+			(TX.EffectiveDate > @StartEffectiveDate or (TX.EffectiveDate = @StartEffectiveDate and TX.EntryDate >= @StartEntryDate))
+			and ItemTransfer.ToItemLocationID = @ILID
+		update ReceiveItemPO
+		  set TotalQuantity = TotalQuantity + @DeltaQuantity, TotalCost = TotalCost + @DeltaCost
+		  from
+			ReceiveItemPO
+			join AccountingTransaction as TX on TX.Id = ReceiveItemPO.AccountingTransactionID
+		  where
+			(TX.EffectiveDate > @StartEffectiveDate or (TX.EffectiveDate = @StartEffectiveDate and TX.EntryDate >= @StartEntryDate))
+			and ReceiveItemPO.ItemLocationID = @ILID
+		update ReceiveItemNonPO
+		  set TotalQuantity = TotalQuantity + @DeltaQuantity, TotalCost = TotalCost + @DeltaCost
+		  from
+			ReceiveItemNonPO
+			join AccountingTransaction as TX on TX.Id = ReceiveItemNonPO.AccountingTransactionID
+		  where
+			(TX.EffectiveDate > @StartEffectiveDate or (TX.EffectiveDate = @StartEffectiveDate and TX.EntryDate >= @StartEntryDate))
+			and ReceiveItemNonPO.ItemLocationID = @ILID
+		update ActualItem
+		  set TotalQuantity = TotalQuantity + @DeltaQuantity, TotalCost = TotalCost + @DeltaCost
+		  from
+			ActualItem
+			join AccountingTransaction as TX on TX.Id = ActualItem.AccountingTransactionID
+			join DemandItem as DI on DI.Id = ActualItem.DemandItemID
+		  where
+			(TX.EffectiveDate > @StartEffectiveDate or (TX.EffectiveDate = @StartEffectiveDate and TX.EntryDate >= @StartEntryDate))
+			and DI.ItemLocationID = @ILID
+		update ActualItemLocation
+		  set OnHand = OnHand + @DeltaQuantity, TotalCost = TotalCost + @DeltaCost
+		  from
+			ActualItemLocation
+		  where
+			ActualItemLocation.ItemLocationID = @ILID
+	  end
+	</extension>
+	<extension name="references">AccountingTransaction</extension>
+	<extension name="references">ItemAdjustment</extension>
+	<extension name="references">ItemIssue</extension>
+	<extension name="references">ItemTransfer</extension>
+	<extension name="references">ReceiveItemPO</extension>
+	<extension name="references">ReceiveItemNonPO</extension>
+	<extension name="references">ActualItem</extension>
+	<extension name="references">ActualItemLocation</extension>
+  </object>
+  <object class="function" name="mbfn_ActualItemLocation_EffectiveMaximum">
+	<doc>
+	  The effective maximum count of items for an ItemLocation. This is zero for temporary or template ItemLocations,
+	  otherwise the value comes from the derived PermanentItemLocation record.
+	</doc>
+	<extension name="body">
+	  (
+	  @AILID uniqueidentifier	-- ActualItemLocation ID
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		  return coalesce((select Maximum from PermanentItemLocation where ActualItemLocationID = @AILID), 0)
+	  end
+	</extension>
+	<extension name="dependson">PermanentItemLocation.Maximum</extension>
+  </object>
+  <object class="function" name="mbfn_ActualItemLocation_EffectiveMinimum">
+	<doc>
+	  The effective minimum count of items for an ItemLocation. This is zero for temporary or template ItemLocations,
+	  otherwise the value comes from the derived PermanentItemLocation record.
+	</doc>
+	<extension name="body">
+	  (
+	  @AILID uniqueidentifier	-- ActualItemLocation ID
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		  return coalesce((select Minimum from PermanentItemLocation where ActualItemLocationID = @AILID), 0)
+	  end
+	</extension>
+	<extension name="dependson">PermanentItemLocation.Minimum</extension>
+  </object>
+  <object class="function" name="mbfn_ActualItemLocation_OnOrder">
+	<doc>
+	  Calculate the number of this item currently on order for placement in this location.
+	</doc>
+	<extension name="body">
+	  (
+	  @AIID uniqueidentifier	-- ActualItemLocationID
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		  return (
+			  select coalesce(sum( dbo.mbfn_ZeroIfNegative(POLineItem.Quantity-POLineItem.ReceiveQuantity) ), 0)
+			  from POLineItem
+				  join ActualItemLocation on POLineItem.ItemLocationID = ActualItemLocation.ItemLocationID
+				  join POLine on POLine.[ID] = POLineItem.POLineID
+				  join PurchaseOrder on PurchaseOrder.[ID] = POLine.PurchaseOrderID
+				  join PurchaseOrderStateHistory on PurchaseOrderStateHistory.[ID] = PurchaseOrder.CurrentPurchaseOrderStateHistoryID
+				  join PurchaseOrderState on PurchaseOrderState.[ID] = PurchaseOrderStateHistory.PurchaseOrderStateID
+			  where ActualItemLocation.ID = @AIID and PurchaseOrderState.OrderCountsActive = 1
+		  )
+	  end
+	</extension>
+	<extension name="dependson">mbfn_ZeroIfNegative()</extension>
+	<extension name="dependson">POLineItem</extension>
+	<extension name="dependson">POLineItem.Quantity</extension>
+	<extension name="dependson">POLineItem.ReceiveQuantity</extension>
+	<extension name="dependson">PurchaseOrder.CurrentPurchaseOrderStateHistoryID</extension>
+	<extension name="references">ActualItemLocation</extension>
+	<extension name="references">POLine</extension>
+	<extension name="references">PurchaseOrder</extension>
+	<extension name="references">PurchaseOrderStateHistory</extension>
+	<extension name="references">PurchaseOrderState</extension>
+  </object>
+  <object class="function" name="mbfn_ActualItemLocation_OnReserve">
+	<doc>
+	  Total all the demands for this item location less the actuals already issued (if actuals exist)
+	</doc>
+	<extension name="body">
+	  (
+		@AIID uniqueidentifier	-- ActualItemLocationID
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		  return (
+			  select coalesce(sum( dbo.mbfn_ZeroIfNegative(DemandItem.Quantity-DemandItem.ActualQuantity) ),0)
+			  from DemandItem
+				  join ActualItemLocation on ActualItemLocation.ItemLocationID = DemandItem.ItemLocationID
+				  join Demand on Demand.[ID] = DemandItem.DemandID
+				  join WorkOrder on WorkOrder.[ID] = Demand.WorkOrderID
+				  join WorkOrderStateHistory on WorkOrderStateHistory.[ID] = WorkOrder.CurrentWorkOrderStateHistoryID
+				  join WorkOrderState on WorkOrderState.[ID] = WorkOrderStateHistory.WorkOrderStateID
+			  where ActualItemLocation.ID = @AIID and WorkOrderState.DemandCountsActive = 1
+		  )
+	  end
+	</extension>
+	<extension name="dependson">mbfn_ZeroIfNegative()</extension>
+	<extension name="dependson">DemandItem</extension>
+	<extension name="dependson">DemandItem.Quantity</extension>
+	<extension name="dependson">DemandItem.ActualQuantity</extension>
+	<extension name="dependson">DemandItem.ItemLocationID</extension>
+	<extension name="dependson">WorkOrder.CurrentWorkOrderStateHistoryID</extension>
+	<extension name="references">ActualItemLocation</extension>
+	<extension name="references">Demand</extension>
+	<extension name="references">WorkOrder</extension>
+	<extension name="references">WorkOrderStateHistory</extension>
+	<extension name="references">WorkOrderState</extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualItemLocation_Updates_Item">
+	<doc>
+	  Prevent illegal alteration of Cost Center; Maintain the totals in the actual Item
+	</doc>
+	<extension name="body">
+	  on ActualItemLocation
+	  after insert, update, delete
+	  as
+	  begin
+			if exists(select * from inserted join deleted on inserted.id = deleted.id where (inserted.TotalCost != 0 or deleted.TotalCost != 0) and inserted.CostCenterID != deleted.CostCenterID) begin
+				raiserror('Cannot change Cost Center for Storage Assignment when Total Cost is not zero', 16, 1)
+				rollback transaction
+			end
+		  update Item
+			  set TotalCost = dbo.mbfn_Item_TotalCost(Item.ID),
+				  OnHand = dbo.mbfn_Item_OnHand(Item.ID),
+				  OnReserve = dbo.mbfn_Item_OnReserve(Item.ID),
+				  OnOrder = dbo.mbfn_Item_OnOrder(Item.ID),
+				  Available = dbo.mbfn_Item_Available(Item.ID)
+			  from Item
+			  where Item.ID in (
+					  select distinct ItemID from ItemLocation
+									  join inserted on ItemLocation.ID = inserted.ItemLocationID
+				union select distinct ItemID from ItemLocation
+									  join deleted on ItemLocation.ID = deleted.ItemLocationID
+				)
+	  end
+	</extension>
+	<extension name="references">mbfn_Item_TotalCost()</extension>
+	<extension name="references">mbfn_Item_OnHand()</extension>
+	<extension name="references">mbfn_Item_OnReserve()</extension>
+	<extension name="references">mbfn_Item_OnOrder()</extension>
+	<extension name="references">mbfn_Item_Available()</extension>
+	<extension name="references">ActualItemLocation</extension>
+	<extension name="references">ItemLocation</extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualItemLocation_Updates_WorkOrder">
+	<doc>This trigger maintains the boolean value indicating whether all temporary storage associated with the WO is empty</doc>
+	<extension name="body">
+	  on ActualItemLocation
+	  after insert, update, delete
+	  as
+	  begin
+		  update WorkOrder SET
+			  TemporaryStorageEmpty = dbo.mbfn_WorkOrder_TemporaryStorageEmpty(WorkOrder.ID)
+			  from WorkOrder
+				join TemporaryStorage as TS on TS.WorkOrderID = WorkOrder.ID
+				join ItemLocation as IL on IL.LocationID = TS.LocationID
+			  where IL.ID in (
+					select ItemLocationID from inserted
+				  union
+					select ItemLocationID from deleted
+			  )
+	  end
+	</extension>
+	<extension name="references">mbfn_WorkOrder_TemporaryStorageEmpty()</extension>
+	<extension name="references">ActualItemLocation</extension>
+	<extension name="references">TemporaryStorage</extension>
+	<extension name="references">ItemLocation</extension>
+  </object>
+  <table name="RationalizedInventoryActivityDeltas" labelkey="">
+	<doc>
+	  This view gives a linearized summary of the inventory activity records that represent a change in value and/or quantity to be totalled up.
+	  Quantities and values are sign-adjusted to represent positive values as increasing the quantity or value in the ItemLocation.
+	  For correctable records the corrections if any are listed individually and the original record's uncorrected values are shown. For voidable records
+	  only unvoided records are included; voided records and their voiding records are omitted.
+	</doc>
+	<field name="Id" read="RequiredGUID"></field>
+	<field name="AccountingTransactionID" type="RequiredGUIDREF" link="AccountingTransaction" labelkey=""/>
+	<field name="ItemLocationID" type="RequiredGUIDREF" link="ItemLocation"></field>
+	<field name="EffectiveDate" type="RequiredDateTime"></field>
+	<field name="EntryDate" type="RequiredDateTime"></field>
+	<field name="Quantity" type="Quantity"></field>
+	<field name="Cost" type="Currency"></field>
+	<field name="TotalQuantity" type="RequiredQuantity"></field>
+	<field name="TotalCost" type="RequiredCurrency"></field>
+	<extension name="query">
+	  -- First the records that add "to" the ItemLocation
+		  select TX.ID, TX.ID, ItemLocationID, TX.EffectiveDate, TX.EntryDate, Quantity, TX.Cost, TotalQuantity, TotalCost
+			  from (
+					select AccountingTransactionID, ItemLocationID, Quantity, TotalQuantity, TotalCost from ItemAdjustment
+				  union all
+					select AccountingTransactionID, ItemLocationID, Quantity, TotalQuantity, TotalCost from ReceiveItemNonPO
+				  union all
+					select AccountingTransactionID, ItemLocationID, Quantity, TotalQuantity, TotalCost from ReceiveItemPO
+				  union all
+					select AccountingTransactionID, ToItemLocationID, Quantity, ToTotalQuantity, ToTotalCost from ItemTransfer
+				) as Adds(AccountingTransactionID, ItemLocationID, Quantity, TotalQuantity, TotalCost)
+			  join AccountingTransaction as TX on TX.ID = Adds.AccountingTransactionID
+		union all
+	  -- Now all the records that subtract "from" the ItemLocation
+		  select TX.ID, TX.ID, ItemLocationID, TX.EffectiveDate, TX.EntryDate, -Quantity, -TX.Cost, TotalQuantity, TotalCost
+			  from (
+					select AccountingTransactionID, FromItemLocationID, Quantity, FromTotalQuantity, FromTotalCost from ItemTransfer
+				  union all
+					select AccountingTransactionID, ItemLocationID, Quantity, TotalQuantity, TotalCost from ItemIssue
+				  union all
+					select AccountingTransactionID, DI.ItemLocationID, ActualItem.Quantity, TotalQuantity, TotalCost from ActualItem join DemandItem as DI on DI.ID = ActualItem.DemandItemID
+			  ) as Subtracts(AccountingTransactionID, ItemLocationID, Quantity, TotalQuantity, TotalCost)
+			  join AccountingTransaction as TX on TX.ID = Subtracts.AccountingTransactionID
+		union all
+	  -- Finally, the unvoided ItemCountValue records
+		  select TX.ID, TX.ID, ItemLocationID, TX.EffectiveDate, TX.EntryDate, null, null, Quantity, ICV.Cost
+			from ItemCountValue as ICV
+			  join AccountingTransaction as TX on TX.ID = ICV.AccountingTransactionID
+			where ICV.VoidingItemCountValueVoidID is null
+	</extension>
+	<extension name="references">AccountingTransaction</extension>
+	<extension name="references">ItemLocation</extension>
+	<extension name="dependson">ItemAdjustment</extension>
+	<extension name="dependson">ItemIssue</extension>
+	<extension name="dependson">ItemTransfer</extension>
+	<extension name="dependson">ReceiveItemNonPO</extension>
+	<extension name="dependson">ReceiveItemPO</extension>
+	<extension name="dependson">ActualItem</extension>
+	<extension name="references">DemandItem</extension>
+	<extension name="dependson">ItemCountValue</extension>
+  </table>
+</database>

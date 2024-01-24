@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+  <table name="Vendor">
+	<dependency table="Contact"/>
+	<dependency table="VendorCategory"/>
+	<dependency table="VendorLinkages"/>
+	<!--
+	The 2.9 Vendor does not have a C/C, but this is a required field in 3.0.
+	There really isn't a good reason for requiring this in 3.0, we could just complain when a Transaction is about to be made and the vendor's
+	null A/P c/c ends up in the transaction. However if the site is running without accounting, we still create transactions and a C/C must be
+	present anyway (even if it were not a required field). We have to make vendors with no C/C reference the pre-build C/C provided for this purpose.
+	-->
+	<data>
+	delete from <IDB/>.dbo.CodeManagement;
+	insert into <IDB/>.dbo.CodeManagement ([ID], [Code], [Hidden29])
+		SELECT V.[ID], V.[CODE], COALESCE(V.[HIDDEN],0)
+		from <IDB/>.dbo.Vendors as V
+		where V.EXCLUDE = 0;
+
+	exec <IDB/>.dbo.FixCodes 50
+
+	  INSERT INTO <ODB/>.dbo.Vendor ([ID],[Code],[Desc],[Comment],[AccountNumber],[VendorCategoryID], [SalesContactID], [Hidden], [AccountsPayableCostCenterID] )
+		  SELECT V.[ID],CM.[CODE],V.[DESC], V.COMMENT, V.[ACCOUNTNUM], VC.ID, VL.ContactID, CM.[Hidden30],
+			(select [AccountsPayableCostCenterID] from <ODB/>.dbo._DVendor)
+		  from <IDB/>.dbo.Vendors as V
+			  join <IDB/>.dbo.VendorLinkages VL on V.[ID] = VL.ID
+			  left join <IDB/>.dbo.VendorCategories as VC on V.Category = VC.[CODE]
+				join <IDB/>.dbo.CodeManagement as CM on V.ID = CM.ID
+</data>
+  </table>
+</dbconversion>
+

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="Location" defaults="true" log="false" xid="Code" id="Id" labelkey="Location">
+	<field name="Id" read="RequiredGUID" />
+	<field name="Code" read="SingleLineUnlimited" labelkey="Path">
+	  <result hosting="cached">
+<!-- 	 Updated by various triggers -->
+		cast(' ' as [SingleLineUnlimited])
+	  </result>
+	  <extension name="dependson">PostalAddress.Code</extension>
+	  <extension name="dependson">RelativeLocation.Code</extension>
+	  <extension name="dependson">RelativeLocation.ContainingLocationID</extension>
+	  <extension name="dependson">WorkOrder.Number</extension>
+	  <extension name="dependson">WorkOrderTemplate.Code</extension>
+	  <extension name="dependson">TemporaryStorage.ContainingLocationID</extension>
+	  <extension name="dependson">TemplateTemporaryStorage.ContainingLocationID</extension>
+	</field>
+	<field name="Desc" type="Desc" />
+	<field name="Comment" type="Comment"  />
+	<field name="GISLocation" type="GISLocation" />
+	<field name="GISZoom" type="GISZoom" />
+	</table>
+  <object class="trigger" name="mbtg_SetNewLocationContainment">
+	<doc>This trigger creates the trivial self-containment for all new Location records</doc>
+	<extension name="body">
+	  on location
+	  for insert
+	  as
+	  begin
+		  -- This is created before any derived record stating it is contained anywhere so for now all we need to add is the self-containment record
+		  insert into LocationContainment select newid(), id, id, 0 from inserted
+	  end
+	</extension>
+	<extension name="references">LocationContainment</extension>
+	<extension name="references">Location</extension>
+  </object>
+  <table name="LocationContainment"/>
+  <table name="PostalAddress">
+	<field name="Code"/>
+  </table>
+  <table name="RelativeLocation">
+	<field name="ContainingLocationID"/>
+	<field name="Code"/>
+  </table>
+  <table name="WorkOrder">
+	<field name="Number"/>
+  </table>
+  <table name="TemporaryStorage">
+	<field name="ContainingLocationID"/>
+  </table>
+  <table name="WorkOrderTemplate">
+	<field name="Code"/>
+  </table>
+  <table name="TemplateTemporaryStorage">
+	<field name="ContainingLocationID"/>
+  </table>
+</database>

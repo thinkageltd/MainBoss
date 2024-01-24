@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+
+  <variable name="WRSequence" type="integer(unsigned 63,nonnull)">
+	<doc>The integer to be used in conjunction with WRSequenceFormat to produce the new Work Request Number</doc>
+  </variable>
+  <variable name="WRSequenceFormat" type="RequiredAutoNumber">
+	<doc>The format specification for producing the new Work Request Number</doc>
+  </variable>
+
+  <table name="Request" defaults="true" log="false" id="Id" xid="Number" xunique="true" labelkey="Request">
+	<doc>
+	  Records in this table represent a relatively informal request for work to be done and/or a report of a problem to be corrected
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="Number" type="RequiredAutoNumber">
+	  <doc>The request number as built from WRSequence/SWSequenceFormat or as manually entered</doc>
+	</field>
+	<field name="Subject" type="RequiredSubject">
+	  <doc>a 1-line description of the work or problem</doc>
+	</field>
+	<field name="Description" type="MultiLineUnlimited">
+	  <doc>A detailed description of the work or problem</doc>
+	</field>
+	<field name="Comment" type="Comment">
+	  <doc>Another detailed description of the work or problem. TODO: Why is this here? How does it differ from Description?</doc>
+	  <extension name="lines">2</extension>
+	</field>
+	<field name="CurrentRequestStateHistoryID" read="RequiredGUIDREF"  link="RequestStateHistory" labelkey="Current State History">
+	  <doc>Calculated reference to the current RequestStateHistory record.</doc>
+	  <result hosting="cached">
+		cast(request.id as link(RequestStateHistory, nonnull))
+	  </result>
+	  <extension name="dependson">RequestStateHistory@RequestStateHistory.RequestID->Request.ID</extension>
+	  <extension name="dependson">RequestStateHistory.RequestID@RequestStateHistory.RequestID->Request.ID</extension>
+	  <extension name="dependson">RequestStateHistory.EffectiveDate@RequestStateHistory.RequestID->Request.ID</extension>
+	  <!-- the following two dependencies are only true if the variable ManageRequestStates is set true -->
+	  <extension name="dependson">RequestedWorkOrder</extension>
+	  <extension name="dependson">WorkOrderStateHistory</extension>
+	</field>
+	<field name="RequestorID" type="RequiredGUIDREF" link="Requestor">
+	  <doc>The person requesting the work or reporting the problem</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="UnitLocationID" labelkey="Unit" type="GUIDREF"  link="Location">
+	  <doc>The Unit which needs work or has a problem, if known</doc>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.UnitBrowseTblCreator,Thinkage.MainBoss.Controls</extension>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="AccessCodeID" type="GUIDREF"  link="AccessCode">
+	  <doc>An access code defining how and when the work can be done</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="RequestPriorityID" type="GUIDREF"  link="RequestPriority" labelkey="Priority">
+	  <doc>a priority code assigned to the work to assist in scheduling</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="SelectPrintFlag" type="Requiredbool" labelkey="Select for Printing">
+	  <doc>Interim flag for support of a SelectForPrint operation; will migrate to general flags model in future</doc>
+	</field>
+	<field name="LastRequestorAcknowledgementDate" type="DateTime">
+	  <doc>
+		The date/time that RequestStateHistory records for this particular request were last reported back to the user.
+		This is compared with the EntryDate of RequestStateHistory records to determine if the history record is "new" (unreported).
+		A null value indicates no history records have ever been reported.
+	  </doc>
+	</field>
+	<field name="LastRequestorAcknowledgementError" type="MultiLineUnlimited">
+	  <doc>Last error message when attempting to send email to the Requestor. Null if no email was successfully submitted for delivery.</doc>
+	</field>
+	<extension name="costrights">UnitValue</extension>
+	<extension name="lastupdate">CurrentRequestStateHistoryID.EffectiveDate</extension>
+	<extension name="equate">CurrentRequestStateHistoryID.RequestID=Id</extension>
+  </table>
+  <object class="function" name="mbfn_Request_CurrentRequestStateHistory">
+	<doc>
+	  Return the RequestStateHistory record that represents the Current state for a workorder
+	</doc>
+	<extension name="body">
+	  (
+	  @WID uniqueidentifier -- Request
+	  )
+	  RETURNS	uniqueidentifier
+	  as
+	  begin
+	  return (
+	  select top 1 ID from RequestStateHistory
+	  where RequestStateHistory.RequestID = @WID
+	  order by EffectiveDate desc
+	  )
+	  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_Request_CreationDate">
+	<!-- TODO: Get rid of this, no one uses it -->
+	<doc>
+	  Gets the minimum EntryDate for the creation of a work request
+	</doc>
+	<extension name="body">
+	  (
+	  @ID		uniqueidentifier	-- RequestID
+	  )
+	  RETURNS DateTime
+	  as
+	  begin
+	  return (select min(EntryDate) from RequestStateHistory where RequestID = @ID)
+	  end
+	</extension>
+	<extension name="dependson">RequestStateHistory</extension>
+  </object>
+  <object class="trigger" name="mbtg_Request_Updates_RequestorAcknowledgement">
+	<extension name="body">
+	  on Request
+	  after insert, update
+	  not for replication
+	  as
+	  begin
+	  -- Update LastRequestorAcknowledgementXXX for all Requestors changed in this UPDATE set
+	  if(UPDATE(RequestorID))
+	  begin
+	  UPDATE Request
+	  SET LastRequestorAcknowledgementDate = null, LastRequestorAcknowledgementError = null
+	  from Request as R
+	  join inserted on R.ID = inserted.ID
+	  join deleted on inserted.ID = deleted.ID
+	  join Requestor on Requestor.ID = inserted.RequestorID
+	  join Contact on Requestor.ContactID = Contact.[ID]
+	  where
+	  inserted.RequestorID &lt;&gt; deleted.RequestorID
+	  and Contact.[HIDDEN] IS NULL
+	  and Requestor.[HIDDEN] IS NULL
+	  end
+	  end
+	</extension>
+  </object>
+  <table name="RequestStateHistory">
+	<field name="RequestID"/>
+	<field name="EffectiveDate"/>
+  </table>
+  <table name="Requestor"/>
+  <table name="Location"/>
+  <table name="AccessCode"/>
+  <table name="RequestPriority"/>
+  <table name="RequestedWorkOrder"/>
+  <table name="WorkOrderStateHistory"/>
+  <table name="EmailRequest"/>
+</database>

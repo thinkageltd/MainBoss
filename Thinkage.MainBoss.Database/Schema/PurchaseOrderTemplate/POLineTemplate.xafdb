@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="POLineTemplate" defaults="true" log="false" id="Id" xid="PurchaseOrderTemplateID LineNumberRank" labelkey="Purchase Line Template">
+    <field name="Id" read="RequiredGUID"/>
+    <field name="PurchaseOrderTemplateID" type="RequiredGUIDREF" link="PurchaseOrderTemplate">
+		<extension name="linkage">captive</extension>
+	</field>
+	<field name="LineNumberRank" type="integer(min 1, max 32767)">
+	  <doc>The relative order within the instance of PurchaseOrderTemplate to which this POLineTemplate is associated.</doc>
+	</field>
+  </table>
+  <table name="PurchaseOrderTemplate" id="Id"/> 
+</database>

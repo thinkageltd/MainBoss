@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="PurchaseOrderStateHistoryReport" log="false" id="Id"  labelkey="">
+	<field name="Id" read="requiredGUID" />
+	<field name="PurchaseOrderStateHistoryID" type="RequiredGUIDREF" link="PurchaseOrderStateHistory" unique="true" labelkey=""/>
+	<field name="PreviousPurchaseOrderStateHistoryID" type="GUIDREF" link="PurchaseOrderStateHistory" unique="true" where="PreviousPurchaseOrderStateHistoryID is not null" labelkey="Previous State History"/>
+	<extension name="query">
+	  with NumberedStateHistory (
+			rowNum
+		  , PurchaseOrderID 
+		  , PurchaseOrderStateHistoryID
+		) as (
+		  select
+			row_number() over (order by PurchaseOrderID, EffectiveDate),
+			PurchaseOrderID,
+			ID
+		  from PurchaseOrderStateHistory 
+		)
+	  select 
+		  SH.PurchaseOrderStateHistoryID 
+		, SH.PurchaseOrderStateHistoryID 
+		, PreviousSH.PurchaseOrderStateHistoryID
+	  from NumberedStateHistory as SH
+		left join NumberedStateHistory as PreviousSH on PreviousSH.PurchaseOrderID = SH.PurchaseOrderID  and PreviousSH.rowNum = (SH.rowNum - 1)
+ 	</extension>
+	<extension name="dependson">PurchaseOrderStateHistory</extension>
+  </table>
+  <table name="PurchaseOrderStateHistory"/>
+</database>

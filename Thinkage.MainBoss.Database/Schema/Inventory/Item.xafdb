@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="Item" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Item">
+	<!-- TODO: Someday we may want a common base class for all resources, tangible or not; this record would be a derivation thereof. -->
+	<doc>
+	  This record represents a tangible resource, that is, some object or substance that has a physical existence
+	  and location and that can be measured and stored.
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="Code" type="RequiredCode" />
+	<field name="Hidden" type="GenerationValue"  />
+	<field name="Desc" type="Desc"  />
+	<field name="Comment" type="Comment"  />
+	<field name="ItemCategoryID" type="GUIDREF"  link="ItemCategory" labelkey="Category">
+	  <doc>A category that this item belongs in</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="UnitOfMeasureID" type="GUIDREF"  link="UnitOfMeasure">
+	  <!-- TODO: Item.UnitOfMeasureID should be a required field with captive linkage but in MainBoss 2.9 it was optional so it has been left as optional in 3.0 -->
+	  <doc>The unit in which this Item is measured. Note that MB3.0 does not support fractional quantities</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+
+	<field name="OnHand" read="RequiredQuantity" >
+	  <doc>The calculated total quantity currently on hand (all storage locations)</doc>
+	  <!-- dbo.mbfn_Item_OnHand( [ID] ) maintained by trigger -->
+	  <result hosting="cached">
+		cast(0 as RequiredQuantity)
+	  </result>
+	  <extension name="dependson">mbfn_Item_OnHand()</extension>
+	</field>
+	<field name="OnReserve" read="RequiredQuantity" >
+	  <doc>The calculated total quantity demanded by all active work orders but not yet drawn (all storage locations)</doc>
+	  <!-- dbo.mbfn_Item_OnReserve( [ID] ) maintained by trigger -->
+	  <result hosting="cached">
+		cast(0 as RequiredQuantity)
+	  </result>
+
+	  <extension name="dependson">mbfn_Item_OnReserve()</extension>
+	</field>
+	<field name="OnOrder" read="RequiredQuantity" >
+	  <doc>The calculated total quantity ordered by all active purchase orders but not yet received (all storage locations)</doc>
+	  <!-- dbo.mbfn_Item_OnOrder( [ID] ) maintained by trigger -->
+	  <result hosting="cached">
+		cast(0 as RequiredQuantity)
+	  </result>
+	  <extension name="dependson">mbfn_Item_OnOrder()</extension>
+	</field>
+	<field name="Available" read="RequiredQuantity" >
+	  <doc>The calculated total quantity available (OnHand-OnReserve+OnOrder)</doc>
+	  <!-- dbo.mbfn_Item_Available( [ID] ) maintained by trigger -->
+	  <result hosting="cached">
+		cast(0 as RequiredQuantity)
+	  </result>
+	  <extension name="dependson">mbfn_Item_Available()</extension>
+	</field>
+	<field name="TotalCost" read="RequiredCurrency" >
+	  <doc>The calculated total value currently on hand (all storage locations)</doc>
+	  <!-- dbo.mbfn_Item_TotalCost( [ID] ) maintained by trigger -->
+	  <result hosting="cached">
+		cast(42 as RequiredCurrency)
+	  </result>
+	  <!--
+	  Technically, this field depends on the Cost in the AccountingTransaction that the following records are derived from.
+	  However we don't want to name the AccountingTransaction table since that would cause all other transaction types to also
+	  update us. This needs to be addressed somewhere in the cache manager.
+	  -->
+	  <extension name="dependson">mbfn_Item_TotalCost()</extension>
+	</field>
+	<field name="UnitCost" read="UnitCost" >
+	  <doc>The calculated average unit cost for all the OnHand items</doc>
+	  <!-- dbo.mbfn_CalculateUnitCost(TotalCost,OnHand,1) -->
+	  <result hosting="server">
+		cast(42 as unitcost)
+	  </result>
+	  <extension name="dependson">mbfn_CalculateUnitCost()</extension>
+	</field>
+	<extension name="deletemethod">hide</extension>
+  	<extension name="costrights">InventoryActivity</extension>
+  </table>
+  <table name="ItemCategory"/>
+  <table name="UnitOfMeasure"/>
+  <table name="ItemLocation"/>
+  <table name="ActualItemLocation">
+	<field name="OnHand"/>
+	<field name="Available"/>
+	<field name="OnOrder"/>
+	<field name="OnReserve"/>
+	<field name="TotalCost"/>
+  </table>
+  <object class="function" name="mbfn_Item_OnHand">
+	<doc>
+	  Total all the TotalCost values for particular item in all locations
+	  create function mbfn_Item_OnHand(
+	</doc>
+	<extension name="body">
+	  (
+		  @IID		uniqueidentifier	-- ItemID
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		  return (select coalesce(SUM(ActualItemLocation.OnHand), 0)
+				   from ActualItemLocation
+				   join ItemLocation on ItemLocation.ID = ActualItemLocation.ItemLocationID
+				   where ItemLocation.ItemID = @IID)
+	  end
+	</extension>
+	<extension name="dependson">ActualItemLocation.OnHand</extension>
+	<!-- Although in theory a new ActualItemLocation record could alter the result, in practice such records always contain a zero OnHand. -->
+	<extension name="references">ItemLocation</extension>
+  </object>
+  <object class="function" name="mbfn_Item_Available">
+	<doc>
+	  The number of this item available for use
+	</doc>
+	<extension name="body">
+	  (
+		  @IID		uniqueidentifier	-- ItemID
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		  return (select coalesce(SUM(ActualItemLocation.Available), 0)
+				   from ActualItemLocation
+				   join ItemLocation on ItemLocation.ID = ActualItemLocation.ItemLocationID
+				   where ItemLocation.ItemID = @IID)
+	  end
+	</extension>
+	<extension name="dependson">ActualItemLocation.Available</extension>
+	<!-- Although in theory a new ActualItemLocation record could alter the result, in practice such records always contain a zero Available. -->
+	<extension name="references">ItemLocation</extension>
+  </object>
+  <object class="function" name="mbfn_Item_OnOrder">
+	<doc>
+	  Calculate the number of this item currently on order.
+	</doc>
+	<extension name="body">
+	  (
+		  @IID		uniqueidentifier	-- ItemID
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		  return (select coalesce(SUM(ActualItemLocation.OnOrder), 0)
+				   from ActualItemLocation
+				   join ItemLocation on ItemLocation.ID = ActualItemLocation.ItemLocationID
+				   where ItemLocation.ItemID = @IID)
+	  end
+	</extension>
+	<extension name="dependson">ActualItemLocation.OnOrder</extension>
+	<!-- Although in theory a new ActualItemLocation record could alter the result, in practice such records always contain a zero OnOrder. -->
+	<extension name="references">ItemLocation</extension>
+  </object>
+  <object class="function" name="mbfn_Item_OnReserve">
+	<doc>
+	  Total all the demands for this item less the actuals already issued (if actuals exist)
+	</doc>
+	<extension name="body">
+	  (
+		  @IID		uniqueidentifier	-- ItemID
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		  return (select coalesce(SUM(ActualItemLocation.OnReserve), 0)
+				   from ActualItemLocation
+				   join ItemLocation on ItemLocation.ID = ActualItemLocation.ItemLocationID
+				   where ItemLocation.ItemID = @IID)
+	  end
+	</extension>
+	<extension name="dependson">ActualItemLocation.OnReserve</extension>
+	<!-- Although in theory a new ActualItemLocation record could alter the result, in practice such records always contain a zero OnReserve. -->
+	<extension name="references">ItemLocation</extension>
+  </object>
+  <object class="function" name="mbfn_Item_TotalCost">
+	<doc>
+	  Total all the TotalCost values for particular item in all locations
+	</doc>
+	<extension name="body">
+	  (
+		  @IID		uniqueidentifier	-- ItemID
+	  )
+	  RETURNS money
+	  as
+	  begin
+		  return (select coalesce(SUM(ActualItemLocation.TotalCost), 0)
+				   from ActualItemLocation
+				   join ItemLocation on ItemLocation.ID = ActualItemLocation.ItemLocationID
+				   where ItemLocation.ItemID = @IID)
+	  end
+	</extension>
+	<extension name="dependson">ActualItemLocation.TotalCost</extension>
+	<!-- Although in theory a new ActualItemLocation record could alter the result, in practice such records always contain a zero TotalCost. -->
+	<extension name="references">ItemLocation</extension>
+  </object>
+</database>
+

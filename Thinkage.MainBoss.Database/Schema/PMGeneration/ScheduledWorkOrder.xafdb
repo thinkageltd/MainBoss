@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+
+  <variable name="PmGenerateInterval" type="RequiredDaySpan">
+	<doc>Time interval from current time over which workorders should be generated stored in format dddddd.00:00:00</doc>
+  </variable>
+
+  <table name="ScheduledWorkOrder" defaults="true" log="false" id="Id" xid="UnitLocationID ScheduleID" labelkey="Unit Maintenance Plan">
+	<doc>
+	  This record defines that a given Work Order Template (Task) should be generated for a given Unit on a given Schedule.
+	</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="UnitLocationID" labelkey="Unit" type="RequiredGUIDREF" link="Location">
+	  <doc>The ID of the Location record which is the base of the Unit for which this record defines a scheduled procedure</doc>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.UnitBrowseTblCreator,Thinkage.MainBoss.Controls</extension>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Hidden" type="GenerationValue" labelkey="Deleted"/>
+	<field name="ScheduleID" type="RequiredGUIDREF" link="Schedule" labelkey="Maintenance Timing">
+	  <doc>The schedule which determines how to generate future scheduling points based on the scheduling history</doc>
+	  <extension name="pickfrom">Schedule</extension>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="WorkOrderTemplateID" type="RequiredGUIDREF" link="WorkOrderTemplate">
+	  <doc>The ID of the Work Order Template (task definition) which defines what work constitutes the scheduled procedure</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="SlackDays" type="WorkOrderDuration" labelkey="Slack Days">
+	  <doc>
+		Extra days to add to the EstimatedWorkEnd to form the WorkDueDate
+	  </doc>
+	</field>
+	<field name="Inhibit" type="RequiredBool">
+	  <doc>This flag inhibits scheduling of this particular Task/Unit combination. Note that unlike the weekday and seasonal
+	  inhibits in the schedule which advance the schedule basis, this flag stops scheduling altogether.</doc>
+	</field>
+	<field name="RescheduleBasisAlgorithm" type="integer(min 0, max 2,nonnull)" labelkey="Timing Basis" >
+	  <doc>This enum value identifies how the reschedule basis is calculated: FromWorkOrderEndDate (0), FromWorkOrderStartDate (1) or FromScheduleBasis (2)</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TISchedule.BasisAlgorithmProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="CurrentPMGenerationDetailID" read="GUIDREF"  link="PMGenerationDetail" labelkey="Current Scheduling Detail">
+	  <doc>ID of the most recent PMGenerationDetail that defined a new scheduling basis. It will be NULL for a never before scheduled ScheduledWorkOrder</doc>
+	  <!-- Note: must change hosting to "server" (or "builtin"?) when this field is changed to an automatically-calculated field -->
+	  <result hosting="cached">
+		(select id from PMGenerationDetail)
+	  </result>
+	  <extension name="dependson">PMGenerationDetail</extension>
+	  <extension name="dependson">PMGenerationBatch</extension>
+	</field>
+	<extension name="costrights">UnitValue</extension>
+	<extension name="deletemethod">hide</extension>
+  </table>
+  <object class="function" name="mbfn_ScheduledWorkOrder_CurrentPMGenerationDetail">
+	<doc>This function calculates the value for the CurrentPMGenerationDetail field in a given record</doc>
+	<extension name="body">
+	  (@ScheduledWorkOrderID UNIQUEIDENTIFIER)
+		returns UNIQUEIDENTIFIER
+		as
+		begin
+			return (select top 1 PMGenerationDetail.ID
+						from PMGenerationDetail
+						join PMGenerationBatch on PMGenerationBatch.ID = PMGenerationDetail.PMGenerationBatchID
+						where PMGenerationDetail.ScheduledWorkOrderID = @ScheduledWorkOrderID
+								and PMGenerationBatch.SessionID is null
+								and PMGenerationDetail.FirmScheduleData = 1
+								and PMGenerationDetail.DetailType >= 5 -- See DatabaseEnums.PMType.ActualReschedules for values that affect rescheduling
+						order by PMGenerationBatch.EntryDate DESC, PMGenerationDetail.Sequence DESC)
+		end
+	</extension>
+	<extension name="dependson">PMGenerationDetail</extension>
+	<extension name="dependson">PMGenerationBatch.SessionID</extension>
+	<extension name="dependson">PMGenerationDetail.FirmScheduleData</extension>
+	<extension name="dependson">PMGenerationDetail.DetailType</extension>
+	<extension name="references">PMGenerationBatch</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetCurrentPMGenerationDetail1">
+	<doc>This trigger sets the value for the CurrentPMGenerationDetail when a batch record is changed</doc>
+	<extension name="body">
+	  on PMGenerationBatch
+	  after insert, update
+	  not for replication
+	  as
+	  BEGIN
+		  update ScheduledWorkOrder
+			  set CurrentPMGenerationDetailID = dbo.mbfn_ScheduledWorkOrder_CurrentPMGenerationDetail(ID)
+			  where [ID] in (
+				  select DISTINCT PMGenerationDetail.ScheduledWorkOrderID
+					  from PMGenerationDetail
+					  join inserted on inserted.ID = PMGenerationBatchID)
+	  END
+	</extension>
+	<extension name="references">mbfn_ScheduledWorkOrder_CurrentPMGenerationDetail()</extension>
+	<extension name="references">ScheduledWorkOrder</extension>
+	<extension name="references">PMGenerationDetail</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetCurrentPMGenerationDetail2">
+	<doc>This trigger sets the value for the CurrentPMGenerationDetail when a detail record is changed</doc>
+	<extension name="body">
+	  on PMGenerationDetail
+	  after insert, update
+	  not for replication
+	  as
+	  BEGIN
+		  update ScheduledWorkOrder
+			  set CurrentPMGenerationDetailID = dbo.mbfn_ScheduledWorkOrder_CurrentPMGenerationDetail(ID)
+			  where [ID] in (
+				  select DISTINCT inserted.ScheduledWorkOrderID
+					  from PMGenerationBatch
+					  join inserted on inserted.PMGenerationBatchID = PMGenerationBatch.ID
+				  where PMGenerationBatch.SessionID is null)
+	  END
+	</extension>
+	<extension name="references">mbfn_ScheduledWorkOrder_CurrentPMGenerationDetail()</extension>
+	<extension name="references">ScheduledWorkOrder</extension>
+	<extension name="references">PMGenerationDetail</extension>
+  </object>
+  <table name="Schedule"/>
+  <table name="Location"/>
+  <table name="WorkOrderTemplate"/>
+  <table name="PMGenerationDetail">
+	<field name="FirmScheduleData"/>
+	<field name="DetailType"/>
+  </table>
+  <table name="PMGenerationBatch">
+	<field name="SessionID"/>
+  </table>
+</database>

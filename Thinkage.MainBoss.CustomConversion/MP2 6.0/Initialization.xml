@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+<!--
+Define Lookup tables that are used during conversion. Since some tables in the new database are
+composites of multiple tables from the input database, we need to be able to link records in the
+new database to the corresponding source record from the input database.  We create tables
+of the form <newdatabasetable>From<inputdatabasetable> that map the [ID] of the input
+database table records to the newid assigned to the created record in the new database.
+So whenever we need to link records in the new database from information in the input database,
+we can substitute the [OutID] value as the linkage information. [InID] identifies the original
+record in the input database.
+
+All functions and temporary tables we create are built in the input database as we will throw it away when we are
+done. This saves the steps of cleaning up.
+
+ -->
+<table name="ConversionFunctions">
+  <data>
+<!-- DTIME: map input date/time fields into single SQL datetime value -->
+if object_id('dbo.fn_DTIME', 'FN') is not null drop function dbo.fn_DTIME;
+GO
+CREATE FUNCTION dbo.fn_DTIME (@DateField as datetime, @TimeField as char(6))
+RETURNS datetime
+AS
+BEGIN
+	RETURN (CONVERT( datetime, convert(varchar(10), @DateField, 120) + ' ' + SUBSTRING(@TimeField,1,2)+':'+SUBSTRING(@TimeField,3,2)+':'+SUBSTRING(@TimeField,5,2), 120) )
+END
+GO
+<!-- MONEY: map currency values in floating point $ to currency -->
+if object_id('dbo.fn_MONEY', 'FN') is not null drop function dbo.fn_MONEY;
+GO
+CREATE FUNCTION dbo.fn_MONEY (@v as float)
+returns money
+as
+BEGIN
+	if @v is null
+		return null
+
+	return CAST(ROUND(@v,2,1) as MONEY)
+END
+GO
+<!-- For converting duration in floating LABORHOURS-->
+if object_id('dbo.fn_DURATION', 'FN') is not null drop function dbo.fn_DURATION;
+GO
+CREATE FUNCTION dbo.fn_DURATION(@v as float)
+RETURNS datetime
+as
+BEGIN
+	declare @mins int
+	declare @hours int
+	if @v is NULL
+			return NULL
+	SET @hours = CONVERT(int, @v*60) / 60
+	SET @mins =  CONVERT(int, @v*60) % 60
+	return <ODB/>.dbo._INew(0, @hours, @mins, 0, 0 )
+END
+GO
+
+<!-- For converting Schedule Season values (NONE in MP2 so we return NULL always)-->
+if object_id('dbo.fn_SEASON', 'FN') is not null drop function dbo.fn_SEASON;
+GO
+CREATE FUNCTION dbo.fn_SEASON(@v as char(4))
+returns datetime
+as
+BEGIN
+--	if @v is NULL
+		return null
+--	return <ODB/>.dbo._IDatediff(CONVERT(datetime, '20000101', 112), CONVERT(datetime, '2000'+@v, 112))
+END
+GO
+<!-- For converting week day inhibits -->
+if object_id('dbo.fn_weekdays', 'FN') is not null drop function dbo.fn_weekdays;
+GO
+CREATE FUNCTION dbo.fn_weekdays(@siteid as varchar(15))
+returns int
+as
+begin
+	declare @ret int
+	select @ret = CASE WHEN SUN = 'Y' THEN 2 ELSE 0 END
+	|      CASE WHEN MON = 'Y' THEN 4 ELSE 0 END
+	|      CASE WHEN TUE = 'Y' THEN 8 ELSE 0 END
+	|      CASE WHEN WED = 'Y' THEN 256 ELSE 0 END
+	|      CASE WHEN THU = 'Y' THEN 512 ELSE 0 END
+	|      CASE WHEN FRI = 'Y' THEN 1024 ELSE 0 END
+	|      CASE WHEN SAT = 'Y' THEN 2048 ELSE 0 END
+	FROM WORKWEEK
+		WHERE @SITEID = SITEID
+	return @ret
+end
+GO
+if object_id('dbo.fn_weekday', 'FN') is not null drop function dbo.fn_weekday;
+GO
+CREATE FUNCTION dbo.fn_weekday(@mask as int, @siteid as varchar(15))
+returns bit
+as
+begin
+	if @siteid is null
+		return 1
+	if (dbo.fn_weekdays(@siteid) &amp; @mask) = @mask
+		return 1
+	return 0
+end
+GO
+
+<!-- Alter the input tables to add an MAINBOSSEXCLUDE column for the prepass phase that will determine which rows to exclude
+	 based on bad linkages etc. -->
+DECLARE tnames_cursor CURSOR
+FOR
+   SELECT TABLE_CATALOG, TABLE_NAME FROM <IDB/>.information_schema.tables AS t WHERE TABLE_TYPE = 'BASE TABLE'
+OPEN tnames_cursor;
+DECLARE @tablename sysname;
+DECLARE @tablecatalog sysname;
+declare @fqn nvarchar(max)
+FETCH NEXT FROM tnames_cursor INTO @tablecatalog, @tablename;
+WHILE (@@FETCH_STATUS != -1)
+BEGIN
+   IF (@@FETCH_STATUS != -2)
+   BEGIN
+	select @fqn = '[' + RTRIM(@tablecatalog) + '].dbo.[' + RTRIM(@tablename) + ']'
+		EXEC ('DISABLE TRIGGER ALL ON ' + @fqn);
+		if COLUMNPROPERTY(OBJECT_ID(@fqn), 'MAINBOSSEXCLUDE', 'ColumnId') IS NOT NULL
+		BEGIN
+			EXEC ('ALTER TABLE ' + @fqn + ' DROP COLUMN MAINBOSSEXCLUDE');
+		END
+		EXEC ('ALTER TABLE ' + @fqn + ' ADD MAINBOSSEXCLUDE BIT');
+		EXEC ('UPDATE ' + @fqn + ' SET MAINBOSSEXCLUDE = 0');
+		if COLUMNPROPERTY(OBJECT_ID(@fqn), 'MAINBOSSID', 'ColumnId') IS NOT NULL
+		BEGIN
+			EXEC ('ALTER TABLE ' + @fqn + ' DROP COLUMN MAINBOSSID');
+		END
+		EXEC ('ALTER TABLE ' + @fqn + ' ADD MAINBOSSID uniqueidentifier');
+		EXEC ('UPDATE ' + @fqn + ' SET MAINBOSSID = NEWID()');
+		EXEC ('ENABLE TRIGGER ALL ON ' + @fqn);
+   END;
+   FETCH NEXT FROM tnames_cursor INTO @tablecatalog, @tablename;
+END;
+CLOSE tnames_cursor;
+DEALLOCATE tnames_cursor;
+GO
+
+<!-- A table to insert CODE values for conversion such that uniqueness criteria can be applied using the stored procedure IDB.dbo.FixCodes -->
+if object_id('dbo.CodeManagement', 'U') is not null drop table dbo.CodeManagement;
+GO
+CREATE TABLE <IDB/>.dbo.CodeManagement (
+  [ID]		  uniqueidentifier PRIMARY KEY,
+	[Sequence] int identity,
+  [Code]	  nvarchar(max),
+  [Context]	  uniqueidentifier,
+  [Hidden29]  int NOT NULL default 0,
+  [Hidden30]  datetime
+);
+GO
+USE <IDB/>;
+GO
+if object_id('dbo.FixCodes', 'P') is not null drop procedure dbo.FixCodes;
+GO
+CREATE PROCEDURE dbo.FixCodes (@maxLength as int)
+AS
+BEGIN
+  -- First, make sure there are no null codes.
+  update <IDB/>.dbo.CodeManagement
+	set Code = 'Null'
+	where Code is null;
+
+  -- Truncate the codes to the maximum length allowed.
+  update <IDB/>.dbo.CodeManagement
+	set Code = rtrim(substring(Code, 1, @maxLength))
+  
+  -- Now, ensure there are no non-hidden codes duplicated within their context
+  declare @counter int;
+  select @counter = 10000	-- the smallest 5-digit number
+  while exists(select count(*) from <IDB/>.dbo.CodeManagement where Hidden29 = 0 group by Code, Context having count(*) > 1)
+  begin
+	-- The subquery in this statement returns one of the Sequence's (in particular the largest one) of each set of duplicated
+	-- records. Thus each iteration through this loop uniquefies *one* record from each set of multiples (although it is possible that
+	-- in doing so, it creates a *new* duplicate, but things will eventually terminate as long as the @counter does not run out).
+	update <IDB/>.dbo.CodeManagement
+	  set Code = rtrim(substring(Code, 1, @maxLength-5))+Convert(nchar(5), @counter)
+	  where Sequence in (select max(Sequence)
+					  from <IDB/>.dbo.CodeManagement
+					  where Hidden29 = 0
+					  group by Code, Context
+					  having count(*) > 1)
+	  
+	select @counter = @counter+1
+  end
+  
+  -- Assign datetime values to the hidden records.
+  update <IDB/>.dbo.CodeManagement
+	set Hidden30 = <ODB/>.dbo._DClosestValue(getdate(),2,100)
+	where Hidden29 != 0;
+	
+  -- Make sure the hidden values are unique within their context as well. In this case we increment the Hidden30 by a second.
+  select @counter = 1
+  while exists(select count(*) from <IDB/>.dbo.CodeManagement where Hidden29 != 0 group by Code, Context, Hidden30 having count(*) > 1)
+  begin
+	update <IDB/>.dbo.CodeManagement
+	  set Hidden30 = Hidden30 + convert(float, @counter)/(24*3600)
+	  where Sequence in (select max(Sequence)
+					  from <IDB/>.dbo.CodeManagement
+					  where Hidden29 != 0
+					  group by Code, Context, Hidden30
+					  having count(*) > 1)
+	  
+	select @counter = @counter+1
+  end
+END
+GO
+-- Generic procedure to flag rows in input tables that we will mark the MAINBOSSEXCLUDE value true because the required
+-- linkage between tables is missing, or the linkage is to an already excluding row due to some other missing linkage
+if object_id('dbo.ExcludeMissingLinks', 'P') is not null drop procedure dbo.ExcludeMissingLinks;
+GO
+CREATE PROCEDURE dbo.ExcludeMissingLinks(
+	@sourceTable as nvarchar(max),
+	@sourceField as nvarchar(max),
+	@destTable as nvarchar(max),
+	@destField as nvarchar(max)
+	)
+AS
+	exec ('UPDATE ' + @sourceTable +
+			 ' SET MAINBOSSEXCLUDE = 1 FROM ' +
+				@sourceTable + ' AS S LEFT JOIN ' +
+				@destTable + ' AS D ON S.[' + @sourceField + '] = D.[' + @destField + ']' +
+				' WHERE D.[ID] IS NULL OR D.MAINBOSSEXCLUDE = 1')
+GO
+
+<!-- exec <IDB/>.dbo.ExcludeMissingLinks '<IDB_AsString/>.dbo.Units', 'BUILDING', '<IDB_AsString/>.dbo.Buildings', 'KEY'; -->
+
+</data>
+</table>
+
+<table name="VendorLinkages">
+  <dependency table="ConversionFunctions"/>
+  <data>
+		-- Comment out following line if Vendors are desired to be imported
+		UPDATE <IDB/>.dbo.Vendor SET VENDOR.MAINBOSSEXCLUDE = 1 where VENDOR.VENDORID NOT IN (select DISTINCT EQUIP.VENDORID from <IDB/>.dbo.EQUIP WHERE VENDORID IS NOT NULL)
+
+		if object_id('dbo.VendorLinkages', 'U') is not null drop table dbo.VendorLinkages;
+		GO
+	  -- The MP2 Vendor record contains one set of "contact" information which we convert into a Contact record coded V_vendorcode,
+	  -- which we then use as the Sales Contact for the new Vendor record. It also contains postal address information which we convert
+	  -- into a PostalAddress record and its base Location record, to use as the Location of the Vendor (and also of the contact).
+	  -- This table contains the ID value mappings from the vendor record to all the other records.
+	  CREATE TABLE <IDB/>.dbo.VendorLinkages (
+		  [ID]               [uniqueidentifier] NOT NULL PRIMARY KEY,
+		  [VendorID]         [uniqueidentifier] NOT NULL,
+		  [ContactID]        [uniqueidentifier] NOT NULL,
+		  [LocationID]       [uniqueidentifier] NOT NULL,
+		  [PostalAddressID]  [uniqueidentifier] NOT NULL 
+	  ) ON [PRIMARY];
+	  INSERT INTO <IDB/>.dbo.VendorLinkages
+			  ([ID], [VendorID], [ContactID], [LocationID], [PostalAddressID])
+		SELECT [MAINBOSSID], [MAINBOSSID], NEWID(), NEWID(), NEWID()
+		  from <IDB/>.dbo.VENDOR as V
+			where V.MAINBOSSEXCLUDE = 0;
+	</data>
+  </table>
+
+
+  <table name="SiteLinkages">
+	  <dependency table="ConversionFunctions"/>
+	  <data>
+		if object_id('dbo.SiteLinkages', 'U') is not null drop table dbo.SiteLinkages;
+		GO
+	  -- The MP2 SITE record converts into a PostalAddress record and its base Location record.
+	  -- We use the ID in the input Building table as the Location ID since that is how most of the linkages occur in the new DB.
+	  -- This table contains the ID value mappings from the building record to all the other records.
+	  CREATE TABLE <IDB/>.dbo.SiteLinkages (
+		  [ID]               [uniqueidentifier] NOT NULL PRIMARY KEY,
+		  [LocationID]       [uniqueidentifier] NOT NULL,
+		  [PostalAddressID]  [uniqueidentifier] NOT NULL,
+	  ) ON [PRIMARY];
+	  INSERT INTO <IDB/>.dbo.SiteLinkages
+			  ([ID], [LocationID], [PostalAddressID])
+		SELECT [MAINBOSSID], [MAINBOSSID], NEWID()
+		  from <IDB/>.dbo.SITE as B
+			where B.MAINBOSSEXCLUDE = 0;
+	</data>
+  </table>
+	<table name="LocationLinkages">
+		<dependency table="ConversionFunctions"/>
+		<data>
+if object_id('dbo.LocationLinkages', 'U') is not null drop table dbo.LocationLinkages;
+GO	  -- This table contains the ID value mappings from the building record to all the other records.
+	  CREATE TABLE <IDB/>.dbo.LocationLinkages (
+			[ID]               [uniqueidentifier] NOT NULL PRIMARY KEY,
+			[LocationID]       [uniqueidentifier] NOT NULL,
+			[RelativeLocationID]    [uniqueidentifier] NOT NULL,
+			[UnitID] [uniqueidentifier] NOT NULL, -- All locations become 'LOCATION' Units under site
+			[ContainingLocationID] [uniqueidentifier] NULL, -- updated when PlainRelativeLocation codes are added to CM
+			SITE varchar(15) NULL,
+			LOCATION varchar(30) NULL,
+			SUB1 varchar(30) NULL,
+			SUB2 varchar(30) NULL,
+			SUB3 varchar(30) NULL
+	  ) ON [PRIMARY];
+	  INSERT INTO <IDB/>.dbo.LocationLinkages
+			  ([ID], [LocationID], [RelativeLocationID], [UnitID], SITE, LOCATION, SUB1, SUB2, SUB3)
+		SELECT A.XID, A.XID, NEWID(), NEWID(), A.S, A.L, A.S1, A.S2, A.S3
+			from (SELECT DISTINCT COALESCE(L.MAINBOSSID, NEWID()), X.S, X.L, X.S1, X.S2, X.S3
+				FROM (
+					SELECT  LOC.SITEID AS S, '-', '-', '-', '-'
+					from <IDB/>.dbo.Location as LOC
+					union
+					SELECT  LOC.SITEID AS S, LOC.LOCATION as L, '-', '-', '-'
+					from <IDB/>.dbo.Location as LOC
+					union
+					SELECT  LOC.SITEID AS S, LOC.LOCATION as L, LOC.SUBLOCATION1 AS S1, '-', '-'
+					from <IDB/>.dbo.Location as LOC
+					union
+					SELECT  LOC.SITEID AS S, LOC.LOCATION as L, LOC.SUBLOCATION1 AS S1, LOC.SUBLOCATION2 as S1, '-'
+					from <IDB/>.dbo.Location as LOC
+					union
+					SELECT  LOC.SITEID AS S, LOC.LOCATION as L, LOC.SUBLOCATION1 AS S1, LOC.SUBLOCATION2 as S1, LOC.SUBLOCATION3 as S3
+					from <IDB/>.dbo.Location as LOC
+					union
+					SELECT  LOC.SITEID AS S, LOC.LOCATION as L, '--', '-', '-'
+					from <IDB/>.dbo.Location as LOC
+					where LOC.SUBLOCATION1 = '-' and LOC.SUBLOCATION2 != '-'
+					union
+					SELECT  LOC.SITEID AS S, LOC.LOCATION as L, LOC.SUBLOCATION1 as S1, '--', '-'
+					from <IDB/>.dbo.Location as LOC
+					where LOC.SUBLOCATION2 = '-' and LOC.SUBLOCATION3 != '-'
+				)as X(S, L, S1, S2, S3)
+				LEFT JOIN <IDB/>.dbo.Location as L
+					on L.SITEID = X.S and L.LOCATION = X.L and L.SUBLOCATION1 = X.S1 and L.SUBLOCATION2 = X.S2 and L.SUBLOCATION3 = X.S3
+			) as A(XID, S, L, S1, S2, S3)
+GO
+UPDATE <IDB/>.dbo.LocationLinkages SET SUB3 = NULL where SUB3 = '-'
+UPDATE <IDB/>.dbo.LocationLinkages SET SUB2 = NULL where SUB2 = '-' AND SUB3 IS NULL
+UPDATE <IDB/>.dbo.LocationLinkages SET SUB1 = NULL where SUB1 = '-' AND SUB2 IS NULL
+UPDATE <IDB/>.dbo.LocationLinkages SET SUB1 = '-' where SUB1 = '--'
+UPDATE <IDB/>.dbo.LocationLinkages SET SUB2 = '-' where SUB2 = '--' 
+GO
+	 -- Update the ContainingLocationID of the LocationLinkages
+UPDATE <IDB/>.dbo.LocationLinkages SET [ContainingLocationID] = S.[MAINBOSSID]
+				FROM <IDB/>.dbo.LocationLinkages as L
+	 			join <IDB/>.dbo.SITE as S on L.SITE = S.[SITEID]
+			where COALESCE(L.SUB3, COALESCE(L.SUB2, COALESCE(L.SUB1, NULL))) IS NULL
+GO
+UPDATE <IDB/>.dbo.LocationLinkages SET [ContainingLocationID] = L2.ID
+			FROM <IDB/>.dbo.LocationLinkages
+				join <IDB/>.dbo.LocationLinkages as L2 on L2.SITE = LocationLinkages.SITE AND L2.LOCATION = LocationLinkages.LOCATION and COALESCE(L2.SUB3, COALESCE(L2.SUB2, COALESCE(L2.SUB1, NULL))) IS NULL
+			where
+				LocationLinkages.ContainingLocationID IS NULL
+				AND COALESCE(LocationLinkages.SUB3, COALESCE(LocationLinkages.SUB2, NULL)) IS NULL
+GO
+UPDATE <IDB/>.dbo.LocationLinkages SET [ContainingLocationID] = L2.ID
+			FROM <IDB/>.dbo.LocationLinkages
+				join <IDB/>.dbo.LocationLinkages as L2 on L2.SITE = LocationLinkages.SITE AND L2.LOCATION = LocationLinkages.LOCATION and L2.SUB1 = LocationLinkages.SUB1 AND COALESCE(L2.SUB3, COALESCE(L2.SUB2, NULL)) IS NULL
+			where
+				LocationLinkages.ContainingLocationID IS NULL
+				AND	COALESCE(LocationLinkages.SUB3,  NULL) IS NULL
+GO
+UPDATE <IDB/>.dbo.LocationLinkages SET [ContainingLocationID] = L2.ID
+			FROM <IDB/>.dbo.LocationLinkages
+				join <IDB/>.dbo.LocationLinkages as L2 on L2.SITE = LocationLinkages.SITE AND L2.LOCATION = LocationLinkages.LOCATION and L2.SUB1 = LocationLinkages.SUB1 and L2.SUB2 = LocationLinkages.SUB2 AND COALESCE(L2.SUB3, NULL) IS NULL
+			where
+				LocationLinkages.ContainingLocationID IS NULL
+	</data>
+	</table>
+  <table name="UnitLinkages">
+	  <dependency table="ConversionFunctions"/>
+	  <data>
+		if object_id('dbo.UnitLinkages', 'U') is not null drop table dbo.UnitLinkages;
+		GO
+		UPDATE <IDB/>.dbo.EQUIP SET MAINBOSSEXCLUDE = 1 WHERE EQNUM = '-'
+	  -- The MP2 EQUIP record converts into a Unit record with its base RelativeLocation and Location records.
+	  -- This table contains the ID value mappings from the Unit record to all the other records.
+	  CREATE TABLE <IDB/>.dbo.UnitLinkages (
+		  [ID]                    [uniqueidentifier] NOT NULL PRIMARY KEY,
+		  [LocationID]            [uniqueidentifier] NOT NULL,
+		  [RelativeLocationID]    [uniqueidentifier] NOT NULL,
+		  [UnitID]                [uniqueidentifier] NOT NULL
+	  ) ON [PRIMARY];
+
+	  INSERT INTO <IDB/>.dbo.UnitLinkages
+			  ([ID], [LocationID], [RelativeLocationID], [UnitID])
+		SELECT [MAINBOSSID],[MAINBOSSID], NEWID(), NEWID()
+		  from <IDB/>.dbo.EQUIP as U
+			where U.MAINBOSSEXCLUDE = 0;
+
+	</data>
+  </table>
+
+  <table name="StoreroomLinkages">
+	  <dependency table="ConversionFunctions"/>
+  <data>
+		-- Uncomment following to exclude storerooms and inventory from the import
+		-- UPDATE <IDB/>.dbo.WAREHOUSE SET MAINBOSSEXCLUDE = 1
+		-- UPDATE <IDB/>.dbo.STOCK SET MAINBOSSEXCLUDE = 1
+		-- UPDATE <IDB/>.dbo.INVY SET MAINBOSSEXCLUDE = 1
+		-- UPDATE <IDB/>.dbo.INVTYPE SET MAINBOSSEXCLUDE = 1
+
+if object_id('dbo.StoreroomLinkages', 'U') is not null drop table dbo.StoreroomLinkages;
+GO
+	  -- The MP2 warehouse record converts into a PermanentStorage record with its base RelativeLocation and Location records.
+	  -- This table contains the ID value mappings from the Storeroom record to all the other records.
+	  CREATE TABLE <IDB/>.dbo.StoreroomLinkages (
+		  [ID]                 [uniqueidentifier] NOT NULL PRIMARY KEY,
+		  [LocationID]         [uniqueidentifier] NOT NULL,
+		  [RelativeLocationID] [uniqueidentifier] NOT NULL,
+		  [PermanentStorageID] [uniqueidentifier] NOT NULL
+	  ) ON [PRIMARY];
+	  INSERT INTO <IDB/>.dbo.StoreroomLinkages
+			  ([ID], [LocationID], [RelativeLocationID], [PermanentStorageID])
+		SELECT [MAINBOSSID],[MAINBOSSID], NEWID(), NEWID()
+		  from <IDB/>.dbo.WAREHOUSE as S
+			WHERE S.MAINBOSSEXCLUDE = 0;
+
+-- the SubLocations
+		if object_id('dbo.SubStoreroomLinkages', 'U') is not null drop table dbo.SubStoreroomLinkages;
+		GO
+	  -- The MP2 warehouse record converts into a PermanentStorage record with its base RelativeLocation and Location records.
+	  -- This table contains the ID value mappings from the Storeroom record to all the other records.
+	  CREATE TABLE <IDB/>.dbo.SubStoreroomLinkages (
+		  [ID]                 [uniqueidentifier] NOT NULL PRIMARY KEY,
+			[Code]								varchar(15) NOT NULL,
+			[StoreroomLocationID] 	 [uniqueidentifier] NOT NULL,
+		  [LocationID]         [uniqueidentifier] NOT NULL,
+		  [RelativeLocationID] [uniqueidentifier] NOT NULL,
+		  [PermanentStorageID] [uniqueidentifier] NOT NULL
+	  ) ON [PRIMARY];
+	  INSERT INTO <IDB/>.dbo.SubStoreroomLinkages
+			  ([ID], [Code], [StoreroomLocationID], [LocationID], [RelativeLocationID], [PermanentStorageID])
+		SELECT NEWID(), X.LOCATION, X.StoreroomLocationID, NEWID(), NEWID(), NEWID() from
+			( SELECT DISTINCT SL.LocationID, LOCATION
+				from <IDB/>.dbo.STOCK as S
+					join <IDB/>.dbo.WAREHOUSE as W on W.WAREHOUSEID = S.WAREHOUSEID
+					join <IDB/>.dbo.StoreroomLinkages as SL on SL.ID = W.MAINBOSSID
+								WHERE S.MAINBOSSEXCLUDE = 0 AND W.MAINBOSSEXCLUDE = 0
+			) as X(StoreroomLocationID, LOCATION)
+			
+if object_id('dbo.InvLocationLinkages', 'U') is not null drop table dbo.InvLocationLinkages;
+GO
+ -- Build the StoreroomAssignment information from the MP2 data
+	  CREATE TABLE <IDB/>.dbo.InvLocationLinkages (
+		  [ID]										[uniqueidentifier] NOT NULL PRIMARY KEY,
+			[AccountingTransactionID]	[uniqueidentifier] NOT NULL,
+		  [PermanentStorageLocationID] [uniqueidentifier] NOT NULL,
+			[ActualItemLocationID]		[uniqueidentifier] NOT NULL,
+			[ItemLocationID]					[uniqueidentifier] NOT NULL,
+			[ItemID]									[uniqueidentifier] NOT NULL,
+			[QTYONHAND]								[int] NOT NULL,
+			[TOTALQTY]								[int] NOT NULL,
+			[TOTALVALUE]							[money] NOT NULL,
+			[MINSTOCK]								[int] NOT NULL,
+			[MAXSTOCK]								[int] NOT NULL,
+			[PCDATE]									[datetime] NOT NULL
+	  ) ON [PRIMARY];
+	  INSERT INTO <IDB/>.dbo.InvLocationLinkages
+			  ([ID], AccountingTransactionID, [PermanentStorageLocationID], [ActualItemLocationID], [ItemLocationID], [ItemID], QTYONHAND, TOTALQTY, TOTALVALUE, MINSTOCK, MAXSTOCK, PCDATE)
+		SELECT STOCK.MAINBOSSID, NEWID(), SubL.LocationID, NEWID(), NEWID(), INVY.MAINBOSSID, CONVERT(INT, COALESCE(QTYONHAND,0)), CONVERT(INT, COALESCE(C.QTY,0)), <IDB/>.dbo.fn_money(COALESCE(C.TOTALVALUE,0)), CONVERT(INT, COALESCE(WI.MINSTOCKLEVEL, 0)), CONVERT(INT, COALESCE(WI.MAXSTOCKLEVEL,0)), <ODB/>.dbo._DClosestValue(COALESCE(WI.LASTDATECOUNTED,getdate()),2, 100)
+		from <IDB/>.dbo.STOCK
+			join <IDB/>.dbo.SubStoreroomLinkages as SubL on SubL.[CODE] = STOCK.LOCATION
+			join <IDB/>.dbo.StoreroomLinkages as SL on SL.LocationID = SubL.StoreroomLocationID
+			join <IDB/>.dbo.WAREHOUSE as W on W.MAINBOSSID = SL.ID
+			left join <IDB/>.dbo.ITEMCOST as C on C.ITEMNUM = STOCK.ITEMNUM and C.WAREHOUSEID = STOCK.WAREHOUSEID
+			join <IDB/>.dbo.WAREHOUSEINFO as WI on WI.WAREHOUSEID = STOCK.WAREHOUSEID and WI.ITEMNUM = STOCK.ITEMNUM
+			join <IDB/>.dbo.INVY on INVY.ITEMNUM = STOCK.ITEMNUM
+			where WI.STOCKITEM = 'Y' AND INVY.MAINBOSSEXCLUDE = 0
+	</data>
+  </table>
+
+  <table name="PersonnelLinkages">
+	  <dependency table="ConversionFunctions"/>
+  <data>
+		if object_id('dbo.PersonnelLinkages', 'U') is not null drop table dbo.PersonnelLinkages;
+		GO
+		-- special case for NTN to consolidate 'RC' to 
+		UPDATE <IDB/>.dbo.EMP SET MAINBOSSEXCLUDE = 1 where EMPCODE = 'RC' OR (LASTNAME IS NULL AND FIRSTNAME IS NULL)
+	  -- The MP2 EMP record converts into an employee record, a Contact record, and a LaborInside record.
+	  -- This table contains the ID value mappings from the Personnel record to all the other records.
+	  CREATE TABLE <IDB/>.dbo.PersonnelLinkages (
+		  [ID]            [uniqueidentifier] NOT NULL PRIMARY KEY,
+		  [EmployeeID]    [uniqueidentifier] NOT NULL,
+		  [ContactID]     [uniqueidentifier] NOT NULL,
+		  [LaborInsideID] [uniqueidentifier] NOT NULL
+	  ) ON [PRIMARY];
+	  INSERT INTO <IDB/>.dbo.PersonnelLinkages
+			  ([ID], [EmployeeID], [ContactID], [LaborInsideID])
+		SELECT [MAINBOSSID], [MAINBOSSID], NEWID(), NEWID()
+		  from <IDB/>.dbo.EMP as P
+			where P.MAINBOSSEXCLUDE = 0;
+	</data>
+  </table>
+
+  <table name="RelativeLocationCodes">
+	<dependency table="ConversionFunctions"/>
+	<dependency table="LocationLinkages"/>
+	<dependency table="UnitLinkages"/>
+	<dependency table="StoreroomLinkages"/>
+	<data>
+	  <!-- Generation of Relative Locations is in three separate files, so we do all the Code uniquefying here -->
+delete from <IDB/>.dbo.CodeManagement;
+	  -- Fill the CodeManagement table keyed by the RelativeLocationID of the eventual records.
+	  
+	  -- Throw in the PlainRelativeLocations (from Location) (Actually these will be made dummy Units rather than PlainRelativeLocations so they can be treated as an 'area' that may need maintenance
+
+insert into <IDB/>.dbo.CodeManagement ([ID], [Code], [Context], [Hidden29])
+		SELECT L.[RelativeLocationID], COALESCE(L.SUB3, COALESCE(L.SUB2, COALESCE(L.SUB1, COALESCE(L.LOCATION, 'BLARTO!!!!')))), L.[ContainingLocationID], 0
+		FROM <IDB/>.dbo.LocationLinkages as L
+GO
+	  -- Throw in the Units
+	  insert into <IDB/>.dbo.CodeManagement ([ID], [Code], [Context], [Hidden29])
+		SELECT UL.[RelativeLocationID], U.[EQNUM], LL.[ID], CASE WHEN U.INSERVICE = 'N' THEN 1 ELSE 0 END	-- Treat not in service as Hidden
+		FROM <IDB/>.dbo.EQUIP as U
+			join <IDB/>.dbo.LOCATION AS L on
+				 L.SITEID = U.SITEID
+				 and COALESCE(L.LOCATION,'-') = COALESCE(U.LOCATION,'-')
+				  and COALESCE(L.SUBLOCATION1,'-') = COALESCE(U.SUBLOCATION1,'-')
+				   and COALESCE(L.SUBLOCATION2,'-') = COALESCE(U.SUBLOCATION2,'-')
+					and COALESCE(L.SUBLOCATION3,'-') = COALESCE(U.SUBLOCATION3,'-')
+			join <IDB/>.dbo.UnitLinkages as UL on U.[MAINBOSSID] = UL.[ID]
+			join <IDB/>.dbo.LocationLinkages as LL on L.MAINBOSSID = LL.ID
+GO
+	  -- Throw in the Storerooms
+	  insert into <IDB/>.dbo.CodeManagement ([ID], [Code], [Context], [Hidden29])
+		SELECT SL.[RelativeLocationID], S.[WAREHOUSEID], B.[MAINBOSSID], 0
+		FROM <IDB/>.dbo.WAREHOUSE as S
+			join <IDB/>.dbo.StoreroomLinkages as SL on S.[MAINBOSSID] = SL.[ID]
+			join <IDB/>.dbo.SITE as B on S.[PRIMARYSITE] = B.[SITEID];
+			
+	  -- We don't bother with the sub-storerooms; they are already unique and !hidden as generated.
+	  
+	  -- Generate the unique Code's
+	  exec <IDB/>.dbo.FixCodes 50;	  -- width of RelativeLocation.Code
+	  
+	  -- Extract the results.
+		if object_id('dbo.RelativeLocationCodes', 'U') is not null drop table dbo.RelativeLocationCodes;
+		
+	  CREATE TABLE <IDB/>.dbo.RelativeLocationCodes (
+		  [ID]            uniqueidentifier NOT NULL PRIMARY KEY,
+		  [Code]          nvarchar(50) NOT NULL,
+		  [Hidden]        datetime
+	  );
+	  INSERT INTO <IDB/>.dbo.RelativeLocationCodes
+			  ([ID], [Code], [Hidden])
+		SELECT [ID], [Code], [Hidden30]
+		  from <IDB/>.dbo.CodeManagement;
+	  
+	</data>
+  </table>
+
+
+  <table name="SetVariables">
+	<!-- TODO: If we ever start importing WO history we want to do this step after the history import to reduce the trigger burden -->
+	<data>
+	  exec <ODB/>.dbo._vsetManageRequestStates 1
+	</data>
+  </table>
+</dbconversion>
+ 

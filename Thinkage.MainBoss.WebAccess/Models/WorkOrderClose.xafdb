@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database labelcontext="dsMBLabel" name="http://thinkage.ca/MB3/dsMB.xsd:WorkOrderClose" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="../../Thinkage.MainBoss.Database/Schema/Types.xafdb"/>
+  <variable name="DBVersion" type="RequiredVersionInfo">
+	<doc>The version of the database intended to prevent newer versions of the applications from accessing older databases.</doc>
+  </variable>
+  <table name="WorkOrderExpenseModel" labelkey="Work Order Expense Model"/>
+  <table name="AccessCode" labelkey="Access Code"/>
+  <table name="WorkCategory" labelkey="Work Category"/>
+  <table name="CostCenter" labelkey="Cost Center"/>
+  <table name="WorkOrderPriority" labelkey="Work Order Priority"/>
+  <table name="ActualItemLocation" labelkey="Actual Item Location"/>
+  <table name="ItemLocation" labelkey="Item Location"/>
+  <table name="TemporaryStorage" labelkey="Temporary Storage"/>
+  <table name="RequestState" labelkey="Request State"/>
+  <table name="RequestStateHistory" labelkey="Request State History"/>
+
+
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/WorkOrderStateTransition.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/WorkOrder.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/WorkOrderState.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/CloseCode.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/WorkOrderStateHistory.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/WorkOrderStateHistoryStatus.xafdb"/>
+</database>

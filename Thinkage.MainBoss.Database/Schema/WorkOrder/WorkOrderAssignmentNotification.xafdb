@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderAssignmentNotification" defaults="false" log="false" id="Id" xid="WorkOrderID WorkOrderAssigneeID" xunique="true" labelkey="Work Order Assignment Notification">
+	<doc>
+	  Records in this table represent association of a WorkOrderAssignee to a WorkOrder from the WorkOrderAssignmentAll view and is used soley to record the
+	  LastNotificationDate for both explicit and implicit assignment records.
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="WorkOrderAssigneeID" type="RequiredGUIDREF" link="WorkOrderAssignee" cascade="true" labelkey="Assignee">
+	  <doc>The WorkOrderAssignee assigned to WorkOrders.</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="WorkOrderID" type="RequiredGUIDREF" link="WorkOrder" cascade="true">
+	  <doc>The WorkOrder the Assignee is assigned to</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="LastNotificationDate" type="DateTime">
+	  <doc>
+		The date/time that WorkOrderStateHistory records for this particular workorder assignment were last reported back to the WorkOrderAssignee
+		This is compared with the EntryDate of WorkOrderStateHistory records to determine if the history record is "new" (unreported).
+		A null value indicates no history records have ever been reported.
+		Only 'Open' WorkOrders are considered for notification
+		The records in this table are created by the MainBoss Service as required from those found in the WorkOrderAssignmentAll view.
+	  </doc>
+	</field>
+	<extension name="deletemethod">delete</extension>
+  </table>
+  <table name="WorkOrderAssignee"/>
+  <table name="WorkOrder"/>
+</database>

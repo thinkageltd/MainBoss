@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="RequestAssignment" defaults="true" log="false" id="Id" xid="RequestID RequestAssigneeID" xunique="true" labelkey="Request Assignment">
+		<doc>
+	  Records in this table represent association of a RequestAssignee to a Request. 
+	  Reassignment is done via deletion and creation of a new record
+	</doc>
+		<field name="Id" read="RequiredGUID" />
+		<field name="RequestAssigneeID" type="RequiredGUIDREF" link="RequestAssignee" cascade="true" labelkey="Assignee">
+			<doc>The RequestAssignee assigned to Requests.</doc>
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="RequestID" type="RequiredGUIDREF" link="Request" cascade="true">
+			<doc>The Request the Assignee is assigned to</doc>
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="LastNotificationDate" type="DateTime">
+			<doc>
+		The date/time that RequestStateHistory records for this particular request were last reported back to the RequestAssignee
+		This is compared with the EntryDate of RequestStateHistory records to determine if the history record is "new" (unreported).
+		A null value indicates no history records have ever been reported.
+		Only 'InProgress' requests are considered for notification, including 'new' InProgress requeststatehistory records that have new comments (for example)
+	  </doc>
+		</field>
+		<extension name="deletemethod">delete</extension>
+		<extension name="lastupdate">RequestID</extension>
+	</table>
+	<table name="RequestAssignee"/>
+	<table name="Request"/>
+</database>

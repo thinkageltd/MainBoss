@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{EF117FD7-B21F-4408-A09A-9D6BA238CED0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Thinkage.MainBoss.WebCommon</RootNamespace>
+    <AssemblyName>Thinkage.MainBoss.WebCommon</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>Thinkage.MainBoss.WebCommon</SccProjectName>
+    <SccLocalPath>1~cf73bb72-5e59-49d7-bf5d-1423e6537726</SccLocalPath>
+    <SccAuxPath>http://vault.thinkage.ca/VaultService</SccAuxPath>
+    <SccProvider>SourceGear Vault Visual Studio 2005 Client:{1EA47954-8515-402d-82D9-B5C332120A8D}</SccProvider>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CompanyInfo.cs" />
+    <Compile Include="HttpApplication.cs" />
+    <Compile Include="ProductInfo.cs" />
+    <Compile Include="RouteConfig.cs" />
+    <Compile Include="SolutionSettings.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Thinkage.Libraries.DBAccess\Thinkage.Libraries.DBAccess.csproj">
+      <Project>{4c013dd4-7ae5-49ed-9a18-ce2204c9b508}</Project>
+      <Name>Thinkage.Libraries.DBAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary.MSSql\Thinkage.Libraries.DBILibrary.MSSql.csproj">
+      <Project>{71bfb1de-d9e5-48cc-87ba-bbde18496ab2}</Project>
+      <Name>Thinkage.Libraries.DBILibrary.MSSql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary\Thinkage.Libraries.DBILibrary.csproj">
+      <Project>{9398f76e-d6fd-4194-9599-ce4b6512d5a2}</Project>
+      <Name>Thinkage.Libraries.DBILibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.MVC\Thinkage.Libraries.MVC.csproj">
+      <Project>{46acf84c-12aa-450c-912c-7353644f44fb}</Project>
+      <Name>Thinkage.Libraries.MVC</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.Sql\Thinkage.Libraries.Sql.csproj">
+      <Project>{f83bdc83-15eb-4778-a127-80bb86a7ace3}</Project>
+      <Name>Thinkage.Libraries.Sql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Layout\Thinkage.Libraries.XAF.Database.Layout.csproj">
+      <Project>{d329682f-5e4c-496d-9df4-e94896daec54}</Project>
+      <Name>Thinkage.Libraries.XAF.Database.Layout</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Service.MSSql\Thinkage.Libraries.XAF.Database.Service.MSSql.csproj">
+      <Project>{1a451d90-ff1f-4446-a6c7-983422ca1103}</Project>
+      <Name>Thinkage.Libraries.XAF.Database.Service.MSSql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Service\Thinkage.Libraries.XAF.Database.Service.csproj">
+      <Project>{1bf2ec15-6f92-4ce1-aeb4-fba8e3e147a1}</Project>
+      <Name>Thinkage.Libraries.XAF.Database.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries\Thinkage.Libraries.csproj">
+      <Project>{f1588fb4-32fc-4718-8982-66c02732df13}</Project>
+      <Name>Thinkage.Libraries</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.MainBoss.Database\Thinkage.MainBoss.Database.csproj">
+      <Project>{1302bbda-fb21-415f-9ecf-678be8f5f79e}</Project>
+      <Name>Thinkage.MainBoss.Database</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>powershell -noprofile $(SolutionDir)GenerateProjectSolutionSettings.ps1 $(ProjectDir) "c#" $(ProjectName)</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+	<?define COMPANY = "Thinkage"?>
+	<?define BuildDir = "BuildDir"?>
+	<?define PDBDir = "PDBDir"?>
+
+	<?ifdef env.CommonProgramFiles(x86) ?>
+	<?define CommonMergeModules = "$(env.CommonProgramFiles(x86))\Merge Modules"?>
+	<?else?>
+	<?define CommonMergeModules = "$(env.CommonProgramFiles)\Merge Modules"?>
+	<?endif?>	
+</Include>

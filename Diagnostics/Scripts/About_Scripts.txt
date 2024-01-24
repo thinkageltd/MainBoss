@@ -1,0 +1,25 @@
+#cs----------------------------------------------------
+A note about test scripts
+
+The environment I have been using to write scripts to
+'drive' MainBoss and all forms, controls, etc from
+within it has been a language called AutoIT.  AutoIT
+is a scripting language similar to VB and the likes.
+It's available at http://www.autoitscript.com .
+
+Research has lead me to believe that events such as
+clicks, send text, etc are done through a Win32API
+call to SendInput() in the user32.dll file.  This
+allows for simulated input to be passed into the
+message queue of any program with a handle, and even
+some without.
+Ref:
+http://msdn2.microsoft.com/en-us/library/ms646310.aspx
+
+To use the scripts uyou must first install AutoIT.  
+Then open the au3 file in the SciTE editor and hit F5
+as in VS.  I assumed that MainBoss would be open and
+would not be minimized when the scripts were run.  You
+must also have selected a maintenance organization and
+be idling at the 'control panel'.
+#ce----------------------------------------------------

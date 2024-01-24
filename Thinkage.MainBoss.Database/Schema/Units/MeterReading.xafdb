@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="MeterReading" defaults="true" log="false" id="Id" xid="MeterID EffectiveDate Hidden" xunique="true" labelkey="Meter Reading">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Hidden" type="GenerationValue">
+	  <doc>Removal of a meter reading on this date.</doc>
+	</field>
+	<field name="EntryDate" type="RequiredDateTime">
+	  <doc>Date entry was made in table</doc>
+	  <extension name="serversetsDateTime"/>
+	</field>
+	<field name="EffectiveDate" type="RequiredDateTime">
+	  <extension name="servergetsDateTime"/>
+	</field>
+	<field name="MeterID" type="RequiredGUIDREF" link="Meter">
+	  <doc>The meter to which this reading is associated</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="WorkOrderID" type="GUIDREF"  link="WorkOrder">
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="Reading" type="RequiredMeterReadingValue"/>
+	<field name="EffectiveReading" read="RequiredMeterReadingValue">
+	  <doc>Trigger maintained value at time of record insertion based on value of Meter.MeterReadingOffset at time of insert</doc>
+	  <result hosting="cached">
+		  cast(42000 as RequiredMeterReadingValue)
+	  </result>
+	</field>
+	<extension name="costrights">UnitValue</extension>
+	<extension name="deletemethod">hide</extension>
+  </table>
+  <object class="trigger" name="mbtg_SetCurrentMeterReading">
+	<doc>This trigger sets the value for the CurrentMeterReading when a reading record is changed</doc>
+	<extension name="body">
+	  on MeterReading
+	  after insert, delete, update
+	  not for replication
+	  as
+	  BEGIN
+		<!-- Add the offset to the reading given to us only for inserted records (i.e. where there is no matching row in inserted.
+		This does not follow the usual model for calculated columns because we only want the calculation done when the reading row is
+		first inserted.-->
+		UPDATE MeterReading 
+		  SET EffectiveReading = inserted.Reading+Meter.MeterReadingOffset
+		  from inserted
+			join MeterReading on MeterReading.ID = inserted.ID
+			join Meter on Meter.ID = inserted.MeterID
+			left join deleted on deleted.ID = inserted.ID
+			where deleted.ID is null
+		
+		<!-- Check that the reading from the next and previous records (if any) from updated records are not less than or greater than
+		(respectively) the current record's reading.
+		Note that we must join inserted to the MeterReading table so we see the result of the calculation of the EffectiveReading.
+		An alternative would be to join inserted to Meter and calculate the effective reading ourselves. This might be a better approach
+		if we ever turn this into an INSTEAD OF trigger. -->
+		if exists(select *
+					from inserted join MeterReading as MR on MR.ID = inserted.ID
+					where
+						(select top 1 EffectiveReading from MeterReading
+							  where
+								  MeterID = inserted.MeterID
+								and
+								  hidden is null
+								and
+								  EffectiveDate &gt; inserted.EffectiveDate
+							  order by EffectiveDate asc)
+						  &lt; MR.EffectiveReading
+					  or
+						(select top 1 EffectiveReading from MeterReading
+							  where
+								  MeterID = inserted.MeterID
+								and
+								  hidden is null
+								and
+								  EffectiveDate &lt; inserted.EffectiveDate
+							  order by EffectiveDate desc)
+						  &gt; MR.EffectiveReading
+		  ) begin
+		  raiserror('Meter readings must not decrease with increasing Effective Date', 16, 1)
+		  rollback transaction
+		end
+
+		<!-- Set Meter.CurrentMeterReadingID -->
+		update Meter
+			set CurrentMeterReadingID = dbo.mbfn_Meter_CurrentMeterReading(ID)
+			where [ID] in (
+				select DISTINCT inserted.MeterID
+					from inserted where HIDDEN is NULL
+				union
+				select DISTINCT deleted.MeterID
+					from deleted where HIDDEN is NULL
+			  )
+	  END
+	</extension>
+	<extension name="references">mbfn_Meter_CurrentMeterReading()</extension>
+	<extension name="references">Meter</extension>
+	<extension name="references">MeterReading</extension>
+  </object>
+  <table name="Meter"/>
+  <table name="WorkOrder"/>
+</database>

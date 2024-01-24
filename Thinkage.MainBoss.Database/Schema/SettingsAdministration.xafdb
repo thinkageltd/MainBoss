@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+  <table name="SettingsAdministration" defaults="false" log="false" id="Id" labelkey="Settings Administration">
+	<doc>
+	  This view provides records to show all the Settings, grouped by ContactID for the User, and the form to which the setting applies
+	</doc>
+	<field name="Id" read="blob(minlength 32, maxlength 32, nonnull)">
+	  <doc>The Id of this row</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIGeneralMB3.GlobalSettingsNameProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="ParentID" type="link" link="SettingsAdministration" labelkey="Settings Administration">
+	  <doc>The ParentID for this row</doc>
+	</field>
+	<field name="UserID" type="GUIDREF" link="User">
+	  <doc>The UserID if this is a User Identification Row (NULL for global)</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="SettingsNameID" type="GUIDREF" link="SettingsName">
+	  <doc>The Form association for the setting</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="SettingsID" type="GUIDREF" link="Settings">
+	  <doc>The Setting saved by the user for a form.</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="IsDefault" type="Bool">
+	  <doc>Set to 1 if this row represents the Default setting for the group</doc>
+	</field>
+	<field name="Size" type="Quantity">
+	  <doc>The size in bytes of the Settings Value field</doc>
+	</field>
+	<extension name="query">
+		select distinct cast(coalesce(S.UserID,'A0000000-0000-0000-0000-00000000000A') as binary(32)), NULL, S.UserID, NULL, NULL, NULL, NULL
+				from Settings as S
+		union all
+			select distinct cast(coalesce(S.UserID,'A0000000-0000-0000-0000-00000000000A') as binary(16))+cast(S.SettingsNameID as binary(16)), cast(coalesce(S.UserID,'A0000000-0000-0000-0000-00000000000A') as binary(32)), NULL, S.SettingsNameID, NULL, NULL, NULL
+				from Settings as S
+		union all
+			select cast(S.ID as binary(32)),cast(coalesce(S.UserID,'A0000000-0000-0000-0000-00000000000A') as binary(16))+cast(S.SettingsNameID as binary(16)), NULL, NULL, S.ID, case WHEN DS.ID IS NULL THEN NULL ELSE 1 END, datalength(S.Value)
+				from Settings as S
+				left join DefaultSettings as DS on DS.SettingsID = S.ID
+		</extension>
+	<extension name="dependson">Settings</extension>
+	<extension name="dependson">User</extension>
+	<extension name="dependson">SettingsName</extension>
+	<extension name="dependson">DefaultSettings</extension>
+  </table>
+  <table name="Settings" />
+  <table name="DefaultSettings" />
+  <table name="SettingsName"/>
+  <table name="User"/>
+</database>

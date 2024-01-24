@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="PurchaseOrderTemplateReport" defaults="false" log="false" id="Id" labelkey="">
+		<field name="Id" read="RequiredGUID" />
+		<field name="Code" type="Code" labelkey="Resource"/>
+		<field name="PurchaseOrderText" type="LineText" />
+		<field name="Quantity" type="Quantity"/>
+		<field name="Labor" type="interval(min 00:01:00, max 36500.00:00:00, by 00:01:00, nonnull)"/>
+		<field name="UnitOfMeasureID" type="GUIDREF" link="UnitOfMeasure"/>
+		<field name="POLineTemplateID" type="RequiredGUIDREF" link="POLineTemplate"/>
+		<field name="PurchaseOrderTemplateID" type="RequiredGUIDREF" link="PurchaseOrderTemplate" labelkey=""/>
+		<field name="ItemLocationID" type="RequiredGUIDREF" link="ItemLocation"/>
+		<field name="Item" type="RequiredGUIDREF" link="Item"/>
+		<field name="LaborOutsideID" type="RequiredGUIDREF" link="LaborOutside"/>
+		<field name="OtherWorkOutsideID" type="RequiredGUIDREF" link="OtherWorkOutside"/>
+		<field name="MiscellaneousID" type="RequiredGUIDREF" link="Miscellaneous"/>
+		<extension name="query">
+			with MyPurchaseOrderLineTemplate (
+		POLineItemTemplateID,
+		Code,
+		PurchaseOrderText,
+		Quantity,
+		Labor,
+		UnitOfMeasureID,
+		POLineTemplateID,
+		ItemLocationID,
+		ItemID,
+		LaborOutsideID,
+		OtherWorkOutsideID,
+		MiscellaneousID
+		) as (
+		select 
+			POLineItemTemplate.[ID],
+			Item.Code,
+			ItemPrice.PurchaseOrderText,
+			POLineItemTemplate.Quantity,
+			null,
+			Item.UnitOfMeasureID,
+			POLineTemplate.ID,
+			ItemLocation.ID,
+			Item.ID,
+			null,
+			null,
+			null
+		from POLineItemTemplate
+			join POLineTemplate on POLineTemplate.[ID] = POLineItemTemplate.POLineTemplateID
+			join ItemLocation on ItemLocation.[ID] = POLineItemTemplate.ItemLocationID
+			join Item on Item.[ID] = ItemLocation.ItemID
+			left outer join ItemPrice on ItemPrice.[ID] = ItemLocation.ItemPriceID
+		union all
+		select
+			POLineLaborTemplate.[ID],
+			LaborOutside.Code,
+			LaborOutside.PurchaseOrderText,
+			null,
+			POLineLaborTemplate.Quantity,
+			null,
+			POLineTemplate.ID,
+			null,
+			null,
+			LaborOutside.ID,
+			null,
+			null
+		from POLineLaborTemplate
+			join POLineTemplate on POLineTemplate.[ID] = POLineLaborTemplate.POLineTemplateID
+			join DemandLaborOutsideTemplate on DemandLaborOutsideTemplate.[ID] = POLineLaborTemplate.DemandLaborOutsideTemplateID
+			join LaborOutside on LaborOutside.[ID] = DemandLaborOutsideTemplate.LaborOutsideID
+		union all
+		select
+			POLineOtherWorkTemplate.[ID],
+			OtherWorkOutside.Code,
+			OtherWorkOutside.PurchaseOrderText,
+			POLineOtherWorkTemplate.Quantity,
+			null,
+			null,
+			POLineTemplate.ID,
+			null,
+			null,
+			null,
+			OtherWorkOutside.ID,
+			null
+		from POLineOtherWorkTemplate
+			join POLineTemplate on POLineTemplate.[ID] = POLineOtherWorkTemplate.POLineTemplateID
+			join DemandOtherWorkOutsideTemplate on DemandOtherWorkOutsideTemplate.[ID] = POLineOtherWorkTemplate.DemandOtherWorkOutsideTemplateID
+			join OtherWorkOutside on OtherWorkOutside.[ID] = DemandOtherWorkOutsideTemplate.OtherWorkOutsideID
+		union all
+		select
+			POLineMiscellaneousTemplate.[ID],
+			Miscellaneous.Code,
+			Miscellaneous.PurchaseOrderText,
+			POLineMiscellaneousTemplate.Quantity,
+			null,
+			null,
+			POLineTemplate.ID,
+			null,
+			null,
+			null,
+			null,
+			Miscellaneous.ID
+		from POLineMiscellaneousTemplate
+			join POLineTemplate on POLineTemplate.[ID] = POLineMiscellaneousTemplate.POLineTemplateID
+			join Miscellaneous on Miscellaneous.[ID] = POLineMiscellaneousTemplate.MiscellaneousID
+		)
+		select
+			  PurchaseOrderTemplate.[ID] -- ID
+			, MyPurchaseOrderLineTemplate.[Code] -- Code
+			, MyPurchaseOrderLineTemplate.[PurchaseOrderText] -- PurchaseOrderText
+			, MyPurchaseOrderLineTemplate.[Quantity] -- Quantity
+			, MyPurchaseOrderLineTemplate.[Labor] -- QuantityMinutes
+			, MyPurchaseOrderLineTemplate.[UnitOFMeasureID] -- UOM
+			, POLineTemplateID
+			, PurchaseOrderTemplate.ID
+			, MyPurchaseOrderLineTemplate.ItemLocationID
+			, MyPurchaseOrderLineTemplate.ItemID
+			, MyPurchaseOrderLineTemplate.LaborOutsideID
+			, MyPurchaseOrderLineTemplate.OtherWorkOutsideID
+			, MyPurchaseOrderLineTemplate.MiscellaneousID
+		from PurchaseOrderTemplate
+			left outer join POLineTemplate on POLineTemplate.[PurchaseOrderTemplateID] = PurchaseOrderTemplate.[ID]
+			left outer join MyPurchaseOrderLineTemplate on MyPurchaseOrderLineTemplate.[POLineTemplateID] = POLineTemplate.[ID]
+	</extension>
+	<extension name="dependson">PurchaseOrderTemplate</extension>
+	<extension name="dependson">POLineTemplate</extension>
+	<extension name="dependson">PurchaseOrderState</extension>
+	<extension name="dependson">ItemLocation</extension>
+	<extension name="dependson">Item</extension>
+	<extension name="dependson">LaborOutside</extension>
+	<extension name="dependson">OtherWorkOutside</extension>
+	<extension name="dependson">Miscellaneous</extension>
+	<extension name="dependson">UnitOFMeasure</extension>
+	</table>
+	<table name="PurchaseOrderTemplate"/>
+	<table name="POLineTemplate"/>
+	<table name="PurchaseOrderState"/>
+	<table name="Item"/>
+	<table name="ItemLocation"/>
+	<table name="LaborOutside"/>
+	<table name="OtherWorkOutside"/>
+	<table name="Miscellaneous"/>
+	<table name="UnitOFMeasure"/>
+</database>

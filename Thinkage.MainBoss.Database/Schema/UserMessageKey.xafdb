@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+  <table name="UserMessageKey" defaults="false" log="false" id="Id" xid="Context Key" xunique="true" labelkey="User Message Key">
+		<doc>A table of keys used in the program to construct messages to users of different languages. </doc>
+		<field name="Id" read="RequiredGUID"/>
+		<field name="Context" type="RequiredCode">
+			<doc>The context in which the key resides for translation</doc>
+		</field>
+		<field name="Key" type="RequiredCode">
+			<doc>The key identifier.</doc>
+		</field>
+		<field name="Comment" type="translationkey(null)">
+			<extension name="lines">3</extension>
+		</field>
+	</table>
+</database>

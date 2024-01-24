@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="POLineOtherWork" defaults="true" log="false" id="Id" xid="POLineID"  labelkey="Purchase Per Job Outside">
+		<field name="Id" read="RequiredGUID" />
+		<field name="POLineID" read="RequiredGUIDREF"  base="POLine"/>
+		<field name="DemandOtherWorkOutsideID" type="RequiredGUIDREF"  link="DemandOtherWorkOutside">
+			<doc>Per Job Outside reference</doc>
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="Quantity" type="integer(min 1, max 2147483647, nonnull)" />
+		<field name="ReceiveQuantity" read="RequiredQuantity">
+			<doc>The total quantity of all the associated receives</doc>
+			<result hosting="cached">
+		  cast(42 as RequiredQuantity)
+	  </result>
+			<extension name="dependson">mbfn_POLineOtherWork_ReceiveQuantity()</extension>
+		</field>
+		<extension name="deletemethod">delete</extension>
+		<extension name="costrights">PurchaseOrderLabor</extension>
+		<extension name="equate">DemandOtherWorkOutsideID.OtherWorkOutsideID.VendorID=POLineID.PurchaseOrderID.VendorID</extension>
+	</table>
+	<table name="DemandOtherWorkOutside"/>
+	<table name="POLine"/>
+	<table name="ActualOtherWorkOutsidePO"/>
+	<object class="function" name="mbfn_POLineOtherWork_ReceiveQuantity">
+	  <doc>
+		Calculate the accumulated receives against a designated POLineOtherWork
+	  </doc>
+	  <extension name="body">
+		(
+		  @POLIID uniqueidentifier	-- POLineOtherWorkID
+		)
+		RETURNS integer
+		as
+		begin
+			return (
+			  select sum(Quantity)
+	  			from ActualOtherWorkOutsidePO
+				where ActualOtherWorkOutsidePO.POLineOtherWorkID = @POLIID
+			)
+		end
+	  </extension>
+	  <extension name="dependson">POLineOtherWork.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	  <extension name="dependson">ActualOtherWorkOutsidePO</extension>
+	</object>
+	<object class="trigger" name="mbtg_POLineOtherWork_Updates_DemandOtherWorkOutside">
+		<doc></doc>
+		<extension name="body">
+		  on POLineOtherWork
+		  after insert, update, delete
+		  as
+		  begin
+			  update DemandOtherWorkOutside
+				  set OrderQuantity = dbo.mbfn_DemandOtherWorkOutside_OrderQuantity(DemandOtherWorkOutside.ID)
+				  where DemandOtherWorkOutside.ID in (
+						   select distinct DemandOtherWorkOutsideID from inserted
+					 union select distinct DemandOtherWorkOutsideID from deleted
+				  )
+		  end
+		</extension>
+		<extension name="references">mbfn_DemandOtherWorkOutside_OrderQuantity()</extension>
+		<extension name="references">DemandOtherWorkOutside</extension>
+	</object>
+
+</database>

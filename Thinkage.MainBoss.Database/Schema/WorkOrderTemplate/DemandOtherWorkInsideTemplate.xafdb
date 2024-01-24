@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="DemandOtherWorkInsideTemplate" defaults="true" log="false" id="Id" xid="DemandTemplateID OtherWorkInsideID" labelkey="Task Demand Per Job Inside">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="DemandTemplateID" read="RequiredGUIDREF" base="DemandTemplate"/>
+	<field name="OtherWorkInsideID" type="RequiredGUIDREF" link="OtherWorkInside">
+	  <doc></doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="Quantity" type="integer(min 1, max 2147483647)" labelkey="Demanded"/>
+	<extension name="costrights">WorkOrderInside</extension>
+	<extension name="deletemethod">delete</extension>
+  </table>
+  <table name="DemandTemplate"/>
+  <table name="OtherWorkInside"/>
+</database>

@@ -1,0 +1,102 @@
+@model RequestEntities.Request
+@using Thinkage.Libraries.MVC.Models
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.MainBoss.WebAccess.Models
+@using Thinkage.Web.Mvc.Html
+@{
+	Layout = "~/Views/Shared/_LayoutEditForm.cshtml";
+	ViewBag.Title = T.Text("New Request");
+}
+@section EditFormContent {
+	@(Html.ValidationSummary(true, T.Text("Request submission was unsuccessful. Please correct the errors and try again.")))
+	@using(Html.BeginForm()) {
+		FormMap<RequestEntities.Request> f = Thinkage.MainBoss.WebAccess.Models.CreateRequestRepository.CreateForm;
+
+		<fieldset>
+			@(Html.HiddenFor(r => r.Id))
+			@(Html.HiddenFor(r => r.RequestorID))
+
+			@(Html.InputControlFor(f, r => r.Number, null, new
+		{
+			@readonly = "true"
+		}))
+			@(Html.InputControlFor(f, r => r.Subject))
+			<p>
+					@(Html.LabelFor(f, r => r.UnitLocationID))
+					@(Html.TextBox("WhereIsProblem", null, new
+				{
+					@size = "100"
+				}))
+					@(Html.ValidationMessageFor(r => r.UnitLocationID))
+					@(Html.HiddenFor(r => r.UnitLocationID))
+				
+			</p>
+			<p>
+				@(Html.LabelFor(f, rp => rp.RequestPriorityID))
+				@(Html.DropDownListFor(Model.RequestPriorityPickList, rp => rp.RequestPriorityID))
+				@(Html.ValidationMessageFor(rp => rp.RequestPriorityID))
+			</p>
+			@(Html.InputControlFor(f, r => r.Description))
+			<p>
+				<input type="submit" value="@(T.Text("Create"))" />
+			</p>
+		</fieldset>
+	}
+}
+@section scripts {
+	@*
+		This section implements an autocompletion picker on the UnitLocationID field?)
+	*@
+	<link href="~/Content/Custom/RequestCreate.css" rel="stylesheet" />
+	<script src="~/Content/Custom/RequestCreate.js"></script>
+	@*
+		Following extracts and sets javascript variables conditionally on existence of values in Model.Requestor and Model.Code. The values should exist, but I'm paranoid
+		the requestor or contact records may be deleted underneath us, and we'll die of null access errors at the wrong time. Safer this way.
+	*@
+	@if (Model.Requestor != null && Model.Requestor.Contact != null) {
+		<script>
+			var uName = "@Model.Requestor.Contact.Code";
+			var uEmail = "@Model.Requestor.Contact.Email";
+		</script>
+	}
+	else {
+		<script>
+			var uName = "";
+			var uEmail = "";
+		</script>
+	}
+
+	<script>
+		$("#WhereIsProblem").autocomplete({
+			disabled: !RequestCreateUnitCodeAutocompleteEnabled(),
+			source: function (request, response) {
+				var unit = new Array();
+				$.ajax({
+					async: false,
+					cache: false,
+					type: "POST",
+					url: "@(Url.Action("Autocomplete", "Unit"))",
+					data: { "term": request.term, "pattern": RequestCreateUnitCodePattern(uName, uEmail) },
+					success: function (data) {
+						for (var i = 0; i < data.length ; i++) {
+							unit[i] = { label: data[i].Value, Id: data[i].Key };
+						}
+					},
+					error: function (xhr, ajaxOptions, thrownError) {
+						alert(xhr.responseText);
+					}
+				});
+				response(unit);
+			},
+			select: function (event, ui) {
+				event.preventDefault();
+				$(this).val(ui.item.label);
+				$("#UnitLocationID").val(ui.item.Id);
+			},
+			focus: function (event, ui) {
+				event.preventDefault();
+				$(this).val(ui.item.label);
+			}
+		});
+	</script>
+}

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="PurchaseOrderExtras" log="false" id="Id" xid="Id" xunique="true" labelkey="">
+	<field name="Id" read="RequiredGUID" />
+	<field name="PurchaseOrderID" type="RequiredGUIDREF" link="PurchaseOrder" unique="true" labelkey=""/>
+	<field name="CreatedDate" type="DateTime" labelkey="Created Date">
+	  <extension name="dependson">PurchaseOrderStateHistory@PurchaseOrderStateHistory.PurchaseOrderID->PurchaseOrderExtras.PurchaseOrderID</extension>
+	</field>
+	<field name="IssuedDate" type="DateTime" labelkey="Issued Date">
+	  <extension name="dependson">PurchaseOrderStateHistory@PurchaseOrderStateHistory.PurchaseOrderID->PurchaseOrderExtras.PurchaseOrderID</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsIssued</extension>
+	</field>
+	<field name="EndedDateIfEnded" type="DateTime" labelkey="Ended Date">
+	  <extension name="dependson">PurchaseOrderStateHistory@PurchaseOrderStateHistory.PurchaseOrderID->PurchaseOrderExtras.PurchaseOrderID</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsClosed</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsVoid</extension>
+	</field>
+	<field name="EarliestIssuedDate" type="DateTime">
+	  <extension name="dependson">PurchaseOrderStateHistory@PurchaseOrderStateHistory.PurchaseOrderID->PurchaseOrderExtras.PurchaseOrderID</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsIssued</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsClosed</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsVoid</extension>
+	</field>
+	<field name="EarliestEndDate" type="DateTime">
+	  <extension name="dependson">PurchaseOrderStateHistory@PurchaseOrderStateHistory.PurchaseOrderID->PurchaseOrderExtras.PurchaseOrderID</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsClosed</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsVoid</extension>
+	  <extension name="dependson">PurchaseOrder.RequiredByDate</extension>
+	</field>
+	<field name="InNewDuration" type="DurationFine" labelkey="Time as New">
+	  <extension name="dependson">PurchaseOrderStateHistory@PurchaseOrderStateHistory.PurchaseOrderID->PurchaseOrderExtras.PurchaseOrderID</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsIssued</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsClosed</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsVoid</extension>
+	</field>
+	<field name="InIssuedDuration" type="DurationFine" labelkey="Time as Issued">
+	  <extension name="dependson">PurchaseOrderStateHistory@PurchaseOrderStateHistory.PurchaseOrderID->PurchaseOrderExtras.PurchaseOrderID</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsIssued</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsClosed</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsVoid</extension>
+	  <extension name="dependson">PurchaseOrder.RequiredByDate</extension>
+	</field>
+	<field name="Lifetime" type="DurationFine">
+	  <extension name="dependson">PurchaseOrderStateHistory@PurchaseOrderStateHistory.PurchaseOrderID->PurchaseOrderExtras.PurchaseOrderID</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsClosed</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsVoid</extension>
+	  <extension name="dependson">PurchaseOrder.RequiredByDate</extension>
+	</field>
+	<field name="VarianceInReceiveTime" type="DurationFine">
+	  <extension name="dependson">PurchaseOrderStateHistory@PurchaseOrderStateHistory.PurchaseOrderID->PurchaseOrderExtras.PurchaseOrderID</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsClosed</extension>
+	  <extension name="dependson">PurchaseOrderState.FilterAsVoid</extension>
+	  <extension name="dependson">PurchaseOrder.RequiredByDate</extension>
+	</field>
+	<field name="PurchaseOrderAssigneesAsText" type="SingleLineUnlimited" labelkey="Assignees">
+	  <extension name="dependson">Contact.Code</extension>
+	  <extension name="dependson">PurchaseOrderAssignee.Id</extension>
+	  <extension name="dependson">PurchaseOrderAssignee.ContactID</extension>
+	  <extension name="dependson">PurchaseOrderAssignment@PurchaseOrderAssignment.PurchaseOrderID->PurchaseOrderExtras.PurchaseOrderID</extension>
+	  <extension name="dependson">PurchaseOrderAssignment.PurchaseOrderAssigneeID@PurchaseOrderAssignment.PurchaseOrderID->PurchaseOrderExtras.PurchaseOrderID</extension>
+	</field>
+	<field name="CompletedNormally" type="Bool">
+	  <extension name="dependson">POLine@POLine.PurchaseOrderID->PurchaseOrderExtras.PurchaseOrderID</extension>
+	  <extension name="dependson">POLine.Cost@POLine.PurchaseOrderID->PurchaseOrderExtras.PurchaseOrderID</extension>
+	  <extension name="dependson">POLine.ReceiveCost@POLine.PurchaseOrderID->PurchaseOrderExtras.PurchaseOrderID</extension>
+	  <extension name="dependson">POLineItem.Quantity</extension>
+	  <extension name="dependson">POLineItem.ReceiveQuantity</extension>
+	  <extension name="dependson">POLineLabor.Quantity</extension>
+	  <extension name="dependson">POLineLabor.ReceiveQuantity</extension>
+	  <extension name="dependson">POLineOtherWork.Quantity</extension>
+	  <extension name="dependson">POLineOtherWork.ReceiveQuantity</extension>
+	  <extension name="dependson">POLineMiscellaneous.Quantity</extension>
+	  <extension name="dependson">POLineMiscellaneous.ReceiveQuantity</extension>
+	</field>
+	<!-- A single view for reporting a listing of PurchaseOrders and their relevant information. -->
+	<extension name="query">
+	  with X (
+		PurchaseOrderID,
+		CreatedDate,
+		IssuedDate,
+		EndedDateIfEnded,
+		RequiredByDate,
+		CurrentDateTime
+	  ) as (
+	  select
+		  PurchaseOrder.Id
+		  , (select min(EffectiveDate) from PurchaseOrderStateHistory where PurchaseOrderStateHistory.PurchaseOrderID = PurchaseOrder.Id)
+		  , (select min(EffectiveDate) as FirstIssueDate
+				from PurchaseOrderStateHistory
+  				  join PurchaseOrderState on PurchaseOrderStateHistory.PurchaseOrderStateID = PurchaseOrderState.Id
+				where PurchaseOrderState.FilterAsIssued = 1 and PurchaseOrderStateHistory.PurchaseOrderID = PurchaseOrder.Id
+		  )
+		  , case when PurchaseOrderState.FilterAsClosed = 1 or PurchaseOrderState.FilterAsVoid = 1 then PurchaseOrderStateHistory.EffectiveDate end
+		  , RequiredByDate
+		  , dbo._DClosestValue(getdate(),2,100)
+  		from PurchaseOrder
+		join PurchaseOrderStateHistory on PurchaseOrderStateHistory.Id = PurchaseOrder.CurrentPurchaseOrderStateHistoryID
+		join PurchaseOrderState on PurchaseOrderState.Id = PurchaseOrderStateHistory.PurchaseOrderStateID
+	  ),
+	  Y (
+		PurchaseOrderID,
+		CreatedDate,
+		IssuedDate,
+		EndedDateIfEnded,
+		RequiredByDate,
+		EarliestIssuedDate,
+		EarliestEndDate
+	  ) as (
+		select
+		  PurchaseOrderID
+		  , CreatedDate
+		  , IssuedDate
+		  , EndedDateIfEnded
+		  , COALESCE(RequiredByDate, EndedDateIfEnded, CurrentDateTime)
+		  , COALESCE(IssuedDate, EndedDateIfEnded, CurrentDateTime)
+		  , COALESCE(EndedDateIfEnded, CASE WHEN RequiredByDate > CurrentDateTime then RequiredByDate else CurrentDateTime end)
+		from X
+	  ),
+	  Activity (
+		PurchaseOrderID,
+		NotCompletedNormally
+	  ) as (
+		  select
+			POLine.PurchaseOrderID, case when POLineItem.ReceiveQuantity = POLineItem.Quantity and POLine.Cost = POLine.ReceiveCost then 0 else 1 end
+		  from POLineItem
+			join POLine on POLine.Id = POLineItem.POLineID
+		union all
+		  select
+			POLine.PurchaseOrderID, case when POLineLabor.ReceiveQuantity = POLineLabor.Quantity and POLine.Cost = POLine.ReceiveCost then 0 else 1 end
+		  from POLineLabor
+			join POLine on POLine.Id = POLineLabor.POLineID
+		union all
+		  select
+  			POLine.PurchaseOrderID, case when POLineOtherWork.Quantity = POLineOtherWork.ReceiveQuantity and POLine.Cost = POLine.ReceiveCost then 0 else 1 end
+		  from POLineOtherWork
+			join POLine on POLine.Id = POLineOtherWork.POLineID
+		union all
+		  select
+			POLine.PurchaseOrderID, case when POLineMiscellaneous.Quantity = POLineMiscellaneous.ReceiveQuantity and POLine.Cost = POLine.ReceiveCost then 0 else 1 end
+		  from POLineMiscellaneous
+			join POLine on POLine.Id = POLineMiscellaneous.POLineID
+	  )
+	  select
+		Y.PurchaseOrderID
+		, Y.PurchaseOrderID
+		, CreatedDate
+		, IssuedDate
+		, EndedDateIfEnded
+
+		, EarliestIssuedDate
+		, EarliestEndDate
+
+		, dbo._IDateDiff(CreatedDate,EarliestIssuedDate)
+		, dbo._IDateDiff(EarliestIssuedDate,EarliestEndDate)
+		, dbo._IDateDiff(CreatedDate,EarliestEndDate)
+		, dbo._IDateDiff(RequiredByDate,EarliestEndDate)
+
+		, STUFF((SELECT '; ' + Contact.Code
+					FROM PurchaseOrderAssignment
+					JOIN PurchaseOrderAssignee on PurchaseOrderAssignee.Id = PurchaseOrderAssigneeID
+					JOIN Contact on Contact.Id = PurchaseOrderAssignee.ContactID
+						where PurchaseOrderAssignment.PurchaseOrderID = Y.PurchaseOrderID
+						ORDER BY Contact.Code
+						for xml path(''), TYPE).value('.','varchar(max)'), 1 ,2,'')
+
+		, case when (select sum(Activity.NotCompletedNormally) from Activity where Activity.PurchaseOrderID = Y.PurchaseOrderID) = 0 then 1 else 0 end
+	  from Y
+	</extension>
+	<extension name="dependson">PurchaseOrder@PurchaseOrder.Id->PurchaseOrderExtras.PurchaseOrderID</extension>
+	<extension name="lastupdate">PurchaseOrderID</extension>
+	<extension name="equate">Id=PurchaseOrderID</extension>
+  </table>
+  <table name="PurchaseOrder">
+	<field name="RequiredByDate"/>
+  </table>
+  <table name="PurchaseOrderStateHistory">
+	<field name="PurchaseOrderID"/>
+  </table>
+  <table name="PurchaseOrderState">
+	<field name="FilterAsIssued"/>
+	<field name="FilterAsVoid"/>
+	<field name="FilterAsClosed"/>
+  </table>
+  <table name="PurchaseOrderAssignment">
+	<field name="PurchaseOrderID"/>
+	<field name="PurchaseOrderAssigneeID"/>
+  </table>
+  <table name="PurchaseOrderAssignee">
+	<field name="ContactID"/>
+  </table>
+  <table name="Contact">
+	<field name="Code"/>
+  </table>
+  <table name="POLine">
+	<field name="PurchaseOrderID"/>
+	<field name="Cost"/>
+	<field name="ReceiveCost"/>
+  </table>
+  <table name="POLineItem">
+	<field name="Quantity"/>
+	<field name="ReceiveQuantity"/>
+  </table>
+  <table name="POLineLabor">
+	<field name="Quantity"/>
+	<field name="ReceiveQuantity"/>
+  </table>
+  <table name="POLineOtherWork">
+	<field name="Quantity"/>
+	<field name="ReceiveQuantity"/>
+  </table>
+  <table name="POLineMiscellaneous">
+	<field name="Quantity"/>
+	<field name="ReceiveQuantity"/>
+  </table>
+</database>

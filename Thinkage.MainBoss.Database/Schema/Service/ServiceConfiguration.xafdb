@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ServiceConfiguration" defaults="true" log="false" id="Id" xid="Code" xunique="true" labelkey="Service Configuration">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="RequiredCode"/>
+	<field name="Desc" type="Desc"/>
+	<field name="Comment" type="Comment"/>
+	<!-- MainBoss Service Parameters -->
+	<field name="MainBossRemoteURL" type="URL">
+	  <doc>Optional URL location of an installed MainBossRemote Web service; used as URL basis for HTML links in email message sent to users</doc>
+	</field>
+	<field name="HtmlEmailNotification" type="Requiredbool">
+	  <doc>Whether or not notification emails are sent in HTML format. (Plain text is ALWAYS sent as well)</doc>
+	</field>
+	<field name="NotificationInterval" type="interval(min 00:01:00, max 1.00:00:00, by 0.00:01:00, nonnull)" >
+	  <doc>Time interval (in minutes) that the MainBoss Service processes request and assignee notifications</doc>
+	</field>
+	<field name="ReturnEmailDisplayName" type="VariableLengthString" >
+	  <doc>The DisplayName associated with the ReturnEmailAddress (sender's name) in the FROM field of notifications</doc>
+	</field>
+	<field name="ReturnEmailAddress" type="EmailAddress" >
+	  <doc>The administrator's email address; notifications are sent on behalf of the administrator.</doc>
+	</field>
+	<field name="AutomaticallyCreateRequestors" type="Requiredbool">
+	  <doc>Whether or not new requestors are automatically added to the requestor list</doc>
+	</field>
+	<field name="AutomaticallyCreateRequestorsFromLDAP" type="Requiredbool" labelkey="Automatically Create Requestors From Active Directory">
+	  <doc>Whether or not new requestors are automatically added to the requestor list, if their email address is in active directory</doc>
+	</field>
+	<field name="AutomaticallyCreateRequestorsFromEmail" type="Requiredbool">
+	  <doc>Whether or not new requestors are automatically added to the requestor list, if their email address is in active directory</doc>
+	</field>
+	<field name="ManualProcessingTimeAllowance" type="interval(min 01:00:00, max 30.00:00:00, by 0.01:00:00)">
+		<doc>Whether or not new requestors are automatically added to the requestor list, if their email address is in active directory</doc>
+	</field>
+	<field name="WakeUpInterval" type="interval(min 00:01:00, max 1.00:00:00, by 0.00:01:00, nonnull)" >
+	  <doc>Time interval (in minutes) that the @Request service should wake up and do work</doc>
+	</field>
+	<field name="Encryption" type="integer(min 0, max 2, nonnull)">
+		<doc> Require encryption with comunication with the SMTP/POP/IMAP servers</doc>
+		<extension name="controlprovider">Thinkage.MainBoss.Controls.TIMainBossService.EmailServerEncryptionProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="MailServerType" type="integer(min 0, max 4, nonnull)">
+	  <doc>The type of mail server: Any, POP3, IMAP4, POP3S IMAP4S</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIMainBossService.EmailServerTypeProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="ProcessNotificationEmail" type="Requiredbool">
+	  <doc>Whether or not the service processes outgoing notifications to Requestors and Assignees</doc>
+	</field>
+	<field name="ProcessRequestorIncomingEmail" type="Requiredbool">
+	  <doc>Whether or not the service processes incoming Requestor emails as requests</doc>
+	</field>
+	<field name="MailServer" type="VariableLengthString" >
+	  <doc>The mail server's name or address from which @Requests's Email account can be accessed</doc>
+	</field>
+	<field name="MailPort" type="integer(32)" >
+	  <doc>The mail server's port for POP3 and IMAP</doc>
+	</field>
+	<field name="MailUserName" type="VariableLengthString" >
+	  <doc>@Requests' Email account's username</doc>
+	</field>
+	<field name="MailboxName" type="VariableLengthString" >
+	  <doc>The name of the mailbox where @Requests' emails are stored (only used for IMAP4 accounts)</doc>
+	</field>
+	<field name="MailEncryptedPassword" type="blob(minlength 8, maxlength 32, null)" >
+	  <!-- encryption always produces 8-byte blocks -->
+	  <doc>@Requests' Email account's password (encrypted)</doc>
+	  <extension name="usage">password</extension>
+	</field>
+	<field name="MaxMailSize" type="integer(32)" labelkey="Maximum Mail Size">
+		<doc>Any Mail component larger than this size will be ignored.</doc>	
+	</field>
+	<field name="SMTPServer" type="VariableLengthString" >
+	  <doc>The Simple-Mail-Transfer-Protocol server's name or address that @Requests can use to send email-acknowledgements</doc>
+	</field>
+	<field name="SMTPPort" type="integer(32, nonnull)" >
+	  <doc>The Simple-Mail-Transfer-Protocol server's port</doc>
+	</field>
+	<field name="SMTPUseSSL" type="Requiredbool">
+	  <doc>Whether or not to use SSL to encrypt the SMTP connection</doc>
+	</field>
+	<field name="SMTPCredentialType" type="integer(min 0, max 2, nonnull)">
+	  <doc>The method of authentication credential used when connecting to the SMTP server: ANNONYMOUS, DEFAULT, CUSTOM</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIMainBossService.SMTPCredentialTypeProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="SMTPUserDomain" type="VariableLengthString" >
+	  <doc>@Requests' SMTP user's domain name</doc>
+	</field>
+	<field name="SMTPUserName" type="VariableLengthString" >
+	  <doc>@Requests' SMTP username</doc>
+	</field>
+	<field name="SMTPEncryptedPassword" type="blob(minlength 8, maxlength 32, null)" >
+	  <!-- encryption always produces 8-byte blocks -->
+	  <doc>@Requests' SMTP password (encrypted)</doc>
+	  <extension name="usage">password</extension>
+	</field>
+	<field name="ServiceMachineName" type="VariableLengthString" >
+	  <doc>The name of the machine where the corresponding @Requests service is running</doc>
+	</field>
+	<field name="SqlUserid" type="VariableLengthString" >
+	  <doc>The SQL userid that is used by the service, for a computer account it will be the external name</doc>
+	</field>
+ 	<field name="ServiceAccountName" type="string(minlength 1, 256, lines 0, trim both)">
+	  <doc>The service account name this service operates under</doc>
+	</field>
+ 	<field name="InstalledServiceVersion" type="string(minlength 1, 256, lines 0, trim both)">
+	  <doc>The MB Version of the Service that is currently installed</doc>
+	</field>
+	<field name="AcceptAutoCreateEmailPattern" type="VariableLengthString" >
+		<doc>A regular expression for email address that are accepted as automatically created for Requestors</doc>
+	</field>
+	<field name="RejectAutoCreateEmailPattern" type="VariableLengthString" >
+		<doc>A regular expression for email address that are regected as automatically created for Requestors</doc>
+	</field>
+	<extension name="deletemethod">delete</extension>
+  </table>
+  <object class="function" name="mbfn_ServiceRequestorNotificationsEnabled">
+	<doc>
+			Return non-zero if this database is configured to send Notifications to Requestors
+		</doc>
+	<extension name="body">
+		()
+		RETURNS bit
+		AS
+		BEGIN
+			DECLARE @ret as bit
+			select @ret = ProcessNotificationEmail from ServiceConfiguration
+			if @ret is null
+			begin
+				set @ret = 0
+			end
+			return @ret
+		END
+		</extension>
+	<extension name="dependson">ServiceConfiguration</extension>
+  </object>
+</database>

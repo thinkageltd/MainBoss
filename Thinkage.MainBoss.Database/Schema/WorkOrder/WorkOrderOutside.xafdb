@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderOutside" defaults="false" log="false" id="Id" labelkey="Work Order Outside">
+	<doc>This is the row data for the simplified WO Outside browsette</doc>
+	<field name="Id" read="RequiredGUID">
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderGroupNameProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="TableEnum" type="integer(min 0, max 5, nonnull)">
+	  <!-- DatabaseEnums.WorkOrderOutside -->
+	  <doc>The type of resource record</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderOutsideProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<!-- the base linkages of the unified records -->
+	<field name="TradeID" type="GUIDREF" link="Trade">
+	  <doc>the Trade record linkage (the 'agent')</doc>
+	</field>
+	<field name="DemandID" type="GUIDREF" link="Demand">
+	  <doc>the base Demand record linkage for resources derived from this (demands); this also acts as a common filter column for Demands and POLines</doc>
+	</field>
+	<field name="POLineID" type="GUIDREF" link="POLine">
+	  <doc>the base POLine record linkage. Note that these also include the related DemandID since the DemandID column also acts as a common filter column</doc>
+	</field>
+	<!-- Other fields required by restrictions in Tbl etc representations -->
+	<field name="WorkOrderExpenseModelEntryID" type="GUIDREF" link="WorkOrderExpenseModelEntry">
+	  <!-- This has to be here because the double-field join operation is not followable in XAF -->
+	  <doc>the Id of the WorkOrderExpenseModelEntry associated with a Demand record based on the WorkOrder's expense model which determines the C/C to actualize to.
+	  This will be null if there is no model entry (preventing actualization) and for all non-Demand and non-Actual record types.</doc>
+	</field>
+	<!-- Other fields required for filtering/parentage -->
+	<field name="ParentID" type="GUIDREF" link="WorkOrderOutside" labelkey="Work Order Outside">
+	  <!-- This must remain until we have some way of expressing the row parent on a per-view basis -->
+	  <doc>the Id of another record in this table that is the parent of this record in the tree view
+	  For Demands this is the Trade ID or the magic no-agent Id</doc>
+	</field>
+	<extension name="query">
+		<!-- fabricated record: Unspecified Trade -->
+		select '60000000-0000-0000-0000-000000000006', 0,	<!-- WorkOrderOutside.UnassignedTrade--><!--KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId-->
+				null, null, null, null, null
+	  union all
+		<!-- Trade -->
+		select T.ID, 1,					<!-- WorkOrderOutside.Trade -->
+			T.ID, NULL, NULL, NULL, NULL
+		from
+			Trade as T
+	  union all
+		<!-- Demand Hourly Outside -->
+		select D.ID, 2,				<!-- WorkOrderOutside.LaborOutside -->
+			NULL, D.ID, NULL, WOXME.ID, coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006') <!-- KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId -->
+		  from
+				Demand as D
+		  join
+				DemandLaborOutside as DLO on D.ID = DLO.DemandID
+		  join
+				LaborOutside as LO on LO.ID = DLO.LaborOutsideID
+		  join
+				WorkOrder as WO on WO.ID = D.WorkOrderID
+		  left join
+				WorkOrderExpenseModelEntry as WOXME
+				  on WOXME.WorkOrderExpenseModelID = WO.WorkOrderExpenseModelID
+					and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
+	  union all
+		<!-- Demand Other Work Outside -->
+		select D.ID, 3,				<!-- WorkOrderOutside.OtherWorkOutside -->
+			NULL, D.ID, NULL, WOXME.ID, coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006') <!-- KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId -->
+		  from
+				Demand as D
+		  join
+				DemandOtherWorkOutside as DOWO on D.ID = DOWO.DemandID
+		  join
+				OtherWorkOutside as OWO on OWO.ID = DOWO.OtherWorkOutsideID
+		  join
+				WorkOrder as WO on WO.ID = D.WorkOrderID
+		  left join
+				WorkOrderExpenseModelEntry as WOXME
+				  on WOXME.WorkOrderExpenseModelID = WO.WorkOrderExpenseModelID
+					and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
+	  union all
+		<!-- PO Line Labor -->
+		select POLL.POLineID, 4,				<!-- WorkOrderOutside.POLineLabor -->
+			NULL, DLO.DemandID, POLL.POLineID, WOXME.ID, DLO.DemandID
+		  from
+				POLineLabor as POLL
+		  join
+				DemandLaborOutside as DLO on POLL.DemandLaborOutsideID = DLO.ID
+		  join
+				Demand as D on DLO.DemandID = D.ID
+		  join
+				WorkOrder as WO on WO.ID = D.WorkOrderID
+		  left join
+				WorkOrderExpenseModelEntry as WOXME
+				  on WOXME.WorkOrderExpenseModelID = WO.WorkOrderExpenseModelID
+					and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
+	  union all
+		<!-- PO Line Other Work -->
+		select POLOW.POLineID, 5,				<!-- WorkOrderOutside.POLineOtherWork -->
+			NULL, DOWO.DemandID, POLOW.POLineID, WOXME.ID, DOWO.DemandID
+		  from
+				POLineOtherWork as POLOW
+		  inner join
+				DemandOtherWorkOutside as DOWO on POLOW.DemandOtherWorkOutsideID = DOWO.ID
+		  inner join
+				Demand as D on DOWO.DemandID = D.ID
+		  join
+				WorkOrder as WO on WO.ID = D.WorkOrderID
+		  left join
+				WorkOrderExpenseModelEntry as WOXME
+				  on WOXME.WorkOrderExpenseModelID = WO.WorkOrderExpenseModelID
+					and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
+	</extension>
+	<extension name="dependson">Trade</extension>
+	<extension name="dependson">Demand</extension>
+	<extension name="dependson">DemandLaborOutside</extension>
+	<extension name="dependson">DemandOtherWorkOutside</extension>
+	<extension name="dependson">POLine</extension>
+	<extension name="dependson">POLineLabor</extension>
+	<extension name="dependson">POLineOtherWork</extension>
+	<extension name="dependson">WorkOrder</extension>
+	<extension name="dependson">WorkOrderExpenseModelEntry</extension>
+	<extension name="costrights">WorkOrderOutside</extension>
+  </table>
+  <table name="WorkOrderOutsideTreeView" defaults="false" log="false" id="Id" labelkey="Work Order Outside">
+	<doc>This is the filter/display driver for the WorkOrderOutside view required for the tree-structured display</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="FilterID" type="GUIDREF" link="WorkOrderOutside">
+	</field>
+	<field name="DisplayID" type="GUIDREF" link="WorkOrderOutside">
+	</field>
+	<field name="IsPrimary" type="RequiredBool">
+	</field>
+	<extension name="query">
+	  <!-- We don't need self-containment for the Labor records since they are never primary -->
+		select DLO.DemandID, DLO.DemandID, DLO.DemandID, 1
+		  from DemandLaborOutside as DLO
+	  union all
+		select DOWO.DemandID, DOWO.DemandID, DOWO.DemandID, 1
+		  from DemandOtherWorkOutside as DOWO
+	  union all
+		select POLL.POLineID, POLL.POLineID, POLL.POLineID, 1
+			from POLineLabor as POLL
+		union all
+		select POLOW.POLineID, POLOW.POLineID, POLOW.POLineID, 1
+			from POLineOtherWork as POLOW
+	  union all
+		select coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006'), DLO.DemandID, coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006'), 0
+		  from
+			DemandLaborOutside as DLO
+		  join
+			LaborOutside as LO on LO.ID = DLO.LaborOutsideID
+	  union all
+		select coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006'), DOWO.DemandID, coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006'), 0
+		  from
+			DemandOtherWorkOutside as DOWO
+		  join
+			OtherWorkOutside as OWO on OWO.ID = DOWO.OtherWorkOutsideID
+		union all
+		select DLO.DemandID, POLL.POLineID, DLO.DemandID, 0
+			from
+				POLineLabor as POLL
+			join
+				DemandLaborOutside as DLO on POLL.DemandLaborOutsideID = DLO.ID
+		union all
+		select DOWO.DemandID, POLOW.POLineID, DOWO.DemandID, 0
+			from
+				POLineOtherWork as POLOW
+			join
+				DemandOtherWorkOutside as DOWO on POLOW.DemandOtherWorkOutsideID = DOWO.ID
+	  union all
+		select coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006'), POLL.POLineID, coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006'), 0
+		  from
+				POLineLabor as POLL
+			join
+				DemandLaborOutside as DLO on POLL.DemandLaborOutsideID = DLO.ID
+		  join
+				LaborOutside as LO on LO.ID = DLO.LaborOutsideID
+	  union all
+		select coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006'), POLOW.POLineID, coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006'), 0
+			from
+				POLineOtherWork as POLOW
+			join
+				DemandOtherWorkOutside as DOWO on POLOW.DemandOtherWorkOutsideID = DOWO.ID
+		  join
+				OtherWorkOutside as OWO on OWO.ID = DOWO.OtherWorkOutsideID
+	</extension>
+	<extension name="dependson">DemandLaborOutside</extension>
+	<extension name="dependson">DemandOtherWorkOutside</extension>
+	<extension name="dependson">POLineLabor</extension>
+	<extension name="dependson">POLineOtherWork</extension>
+  </table>
+  <table name="Trade"/>
+  <table name="Demand"/>
+  <table name="POLine"/>
+  <table name="DemandLaborOutside"/>
+  <table name="DemandOtherWorkOutside"/>
+  <table name="WorkOrder"/>
+  <table name="WorkOrderExpenseModelEntry"/>
+  <table name="WorkOrderExpenseModel"/>
+  <table name="LaborOutside"/>
+  <table name="OtherWorkOutside"/>
+  <table name="POLineLabor"/>
+  <table name="POLineOtherWork"/>
+</database>

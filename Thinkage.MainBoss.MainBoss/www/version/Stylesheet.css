@@ -1,0 +1,42 @@
+﻿body
+{
+    background-color: #FFEBA0;
+    font-size: .75em;
+    font-family: Verdana, Helvetica, Sans-Serif;
+    margin: 0;
+    padding: 0;
+    color: #696969;
+}
+.heading 
+{
+	text-align: center;
+}
+
+div#RequirementsCheck
+{
+	background-color:Red;
+	font-size: 1em;
+	color: Yellow;
+}
+div#WarningMessage
+{
+	background-color:black;
+	font-size: 1em;
+	color: Yellow;
+}
+h1
+{
+	font-size: medium;
+}
+h2
+{
+	font-size: medium;
+}
+.importDownload
+{
+	vertical-align: middle;
+}
+.displayButton
+{
+	vertical-align:middle;
+}

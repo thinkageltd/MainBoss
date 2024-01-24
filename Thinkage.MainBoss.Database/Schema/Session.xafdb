@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="Types.xafdb"/>
+	<table name="Session" defaults="false" log="false" id="Id" labelkey="Session">
+		<field name="Id" read="GUID"/>
+		<field name="ApplicationID" read="integer(64)" labelkey="Application">
+			<extension name="controlprovider">Thinkage.MainBoss.Controls.TIGeneralMB3.ApplicationIdProvider,Thinkage.MainBoss.Controls</extension>
+		</field>
+	</table>
+</database>

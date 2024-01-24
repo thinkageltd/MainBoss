@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+  <table name="Storeroom">
+	<dependency table="StoreroomLinkages"/>
+	<dependency table="PostalAddress"/>
+	<dependency table="RelativeLocationCodes"/>
+	<dependency table="SubStorerooms"/>
+	<data>
+	  -- Create the top-level storerooms. These come from the Storerooms in the 2.9 database, and some may be hidden.
+	  INSERT INTO <ODB/>.dbo.Location ([ID],[Desc])
+		  SELECT SL.[LocationID], S.[DESC]
+		  FROM <IDB/>.dbo.Storerooms as S
+			  join <IDB/>.dbo.StoreroomLinkages as SL on S.[ID] = SL.[ID]
+
+	  INSERT INTO <ODB/>.dbo.RelativeLocation ([ID], [LocationID], [Code], [ContainingLocationID], [Hidden])
+		  SELECT SL.[RelativeLocationID], SL.LocationID, RLC.[Code], B.[ID], RLC.[HIDDEN]
+		  FROM <IDB/>.dbo.Storerooms as S
+			  join <IDB/>.dbo.StoreroomLinkages as SL on S.[ID] = SL.[ID]
+			  join <IDB/>.dbo.Buildings as B on S.[BUILDING] = B.[KEY]
+			  join <IDB/>.dbo.RelativeLocationCodes as RLC on SL.[RelativeLocationID] = RLC.ID
+      	
+	  INSERT INTO <ODB/>.dbo.PermanentStorage ([ID], [RelativeLocationID])
+		  SELECT SL.[PermanentStorageID], SL.RelativeLocationID
+		  FROM <IDB/>.dbo.Storerooms as S
+			  join <IDB/>.dbo.StoreroomLinkages as SL on S.[ID] = SL.[ID]
+		  
+	  -- Now create the substorerooms. These come from InvLocation records that refer to inventories items and which have a Location filled in.
+	  -- The Location becomes the Code of the sub-storeroom. We do not fill in a Desc. These are never hidden.
+	  INSERT INTO <ODB/>.dbo.Location ([ID])
+		  SELECT SS.[LocationID]
+		  FROM <IDB/>.dbo.SubStorerooms as SS
+
+	  INSERT INTO <ODB/>.dbo.RelativeLocation ([ID], [LocationID], [Code], [ContainingLocationID])
+		  SELECT SS.RelativeLocationID, SS.LocationID, SS.[Code], SS.ContainingID
+		  FROM <IDB/>.dbo.SubStorerooms as SS
+      	
+	  INSERT INTO <ODB/>.dbo.PermanentStorage ([ID], [RelativeLocationID])
+		  SELECT SS.PermanentStorageID, SS.RelativeLocationID
+		  FROM <IDB/>.dbo.SubStorerooms as SS
+		  
+</data>
+  </table>
+</dbconversion>
+

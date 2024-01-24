@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database name="http://thinkage.ca/MB3/dsMB.xsd:dsUser_1_0_0_1_To_1_0_4_13" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+
+  <table name="User" defaults="true" log="false" id="Id" xid="Hidden ScopeName UserName" xunique="true">
+	<field name="Id" read="id(nonnull)"/>
+	<field name="ScopeName" type="UserName">
+	  <doc>
+		The scope (computer or domain) name to use to match against the windows user requesting access to the database.
+		If this is null it will match a windows user with the correct UserName in any scope (although other User records which
+		specify a ScopeName that matches the window user's scope will match preferentially).
+	  </doc>
+	</field>
+	<field name="UserName" type="RequiredUserName">
+	  <doc>The user name to match against the windows user requesting access to the database.</doc>
+	</field>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="IsGroup" type="RequiredBool">
+	  <doc>A flag indicating that this is a Group, not a User record, and thus should not be eligible to be used as the 'user identification' record.</doc>
+	</field>
+	<field name="Desc" type="Desc"/>
+	<field name="Comment" type="Comment"/>
+	<extension name="deletemethod">hide</extension>
+  </table>
+</database>

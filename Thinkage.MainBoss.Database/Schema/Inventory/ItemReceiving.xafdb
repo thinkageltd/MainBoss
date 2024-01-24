@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ItemReceiving" defaults="false" log="false" id="Id" labelkey="Item Receiving">
+	<field name="Id" read="requiredGUID"/>
+	<field name="TableEnum" labelkey="Receiving" type="integer(min 0, max 7,nonnull)">
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIItem.ItemReceivingProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="AccountingTransactionID" type="requiredGUIDREF" link="AccountingTransaction" labelkey=""/>
+	<field name="ItemID" type="requiredGUIDREF" link="Item"/>
+	<field name="ParentID" type="GUIDREF" link="ItemReceiving" labelkey="Item Receiving"/>
+	<extension name="query">
+		select RI.Id, case when RI.Id = RI.CorrectionID then 0 else 4 end + case when PIL.ID is null then 1 else 0 end, RI.AccountingTransactionID, <!-- ViewRecordTypes.ItemReceiving.ReceivePermanentPO ViewRecordTypes.ItemReceiving.ReceivePermanentPOCorrection ViewRecordTypes.ItemReceiving.ReceiveTemporaryPO ViewRecordTypes.ItemReceiving.ReceiveTemporaryPOCorrection -->
+				IL.ItemID, case when RI.Id = RI.CorrectionID then null else RI.CorrectionID end
+			from ReceiveItemPO as RI
+				join ItemLocation as IL on IL.Id = RI.ItemLocationID
+				join ActualItemLocation as AIL on AIL.ItemLocationID = IL.Id
+				left join PermanentItemLocation as PIL on PIL.ActualItemLocationID = AIL.Id
+		union all
+		select RI.Id, case when RI.Id = RI.CorrectionID then 2 else 6 end + case when PIL.ID is null then 1 else 0 end, RI.AccountingTransactionID, <!-- ViewRecordTypes.ItemReceiving.ReceivePermanentNonPO ViewRecordTypes.ItemReceiving.ReceivePermanentNonPOCorrection ViewRecordTypes.ItemReceiving.ReceiveTemporaryNonPO ViewRecordTypes.ItemReceiving.ReceiveTemporaryNonPOCorrection -->
+				IL.ItemID, case when RI.Id = RI.CorrectionID then null else RI.CorrectionID end
+			from ReceiveItemNonPO as RI
+				join ItemLocation as IL on IL.Id = RI.ItemLocationID
+				join ActualItemLocation as AIL on AIL.ItemLocationID = IL.Id
+				left join PermanentItemLocation as PIL on PIL.ActualItemLocationID = AIL.Id
+	</extension>
+	<extension name="dependson">ReceiveItemNonPO</extension>
+	<extension name="dependson">ReceiveItemPO</extension>
+	<extension name="dependson">ActualItemLocation</extension>
+	<extension name="dependson">PermanentItemLocation</extension>
+	<extension name="dependson">Item</extension>
+	<extension name="costrights">InventoryActivity</extension>
+  </table>
+  <table name="ReceiveItemNonPO"/>
+  <table name="ReceiveItemPO"/>
+  <table name="ActualItemLocation"/>
+  <table name="PermanentItemLocation"/>
+  <table name="AccountingTransaction"/>
+  <table name="Item"/>
+</database>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="../Upgrade/Schema/Types.xafdb"/>
+  <!-- Length of 1073741823 represents the largest supported nvarchar string value in the database
+		Other apparent magic numbers represent limitations of the sql data type; see the sql documentation
+     -->
+  <type name="Address" type="string(minlength 1, 30, lines 0, trim both)" />
+  <type name="AutoNumber" type="string(minlength 1, 20, lines 0, trim both)" />
+  <type name="Code" type="string(minlength 1, 50, lines 0, trim both)" />
+  <type name="OrganizationName" type="string(minlength 1, 120, lines 0, trim both)" />
+  <type name="CultureInfoLCID" type="integer(32)" />
+  <type name="Currency" type="currency(min -922337203685477.5808, max 922337203685477.5807, by 0.01)" />
+  <type name="Count" type="integer(unsigned 31)"/>
+  <type name="PositiveCurrency" type="currency(min 0.000, max 922337203685477.5807, by 0.01)" />
+  <type name="Date" type="datetime(min 1/1/1753, max 12/31/9999, by 1.00:00:00)" />
+  <type name="DateTime" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)" />
+  <type name="DayOfYear" type="interval(min 00:00:00, max 365.00:00:00, by 1.00:00:00)" />
+  <type name="DaySpan" type="interval(min 00:00:00, max 36500.00:00:00, by 1.00:00:00)" />
+  <type name="Downtime" type="interval(min 00:00:00, max 36500.00:00:00, by 00:00:01)" />
+  <type name="DurationDays" type="interval(min -36500.00:00:00, max 36500.00:00:00, by 1.00:00:00)" />
+  <type name="DurationMinutes" type="interval(min -36500.00:00:00, max 36500.00:00:00, by 00:01:00)" />
+  <type name="DurationFine" type="interval(min -36500.00:00:00, max 36500.00:00:00, divided 100)" />
+  <type name="EmailAddress" type="string(minlength 1, 128, lines 0, trim both)" />
+  <type name="GUIDREF" type="link" />
+  <type name="GISLocation" type="geography(srid 4326, is3d)" />
+  <type name="GISZoom" type="integer( min 0, max 20)" />
+  <type name="Image" type="blob(minlength 0, maxlength 2147483647)"/>
+  <type name="LaborDuration" type="interval(min 00:00:00, max 36500.00:00:00, by 00:01:00)" />
+  <type name="LaborDurationCorrection" type="interval(min -36500.00:00:00, max 36500.00:00:00, by 00:01:00)" />
+  <type name="LineText" type="string(minlength 1, 160, lines 0, trim both)" />
+  <type name="MaxBlob" type="blob(minlength 0, maxlength 2147483647)"/>
+  <type name="MeterReadingValue" type="integer(64)" />
+  <type name="MeterSpan" type="integer(64)" />
+  <type name="MonthSpan" type="Monthinterval(min 0m, max 1200m, by 1m)" />
+  <type name="MultiLineUnlimited" type="string(minlength 1, 1073741823, trim both)" />
+  <type name="PhoneNumber" type="string(minlength 1, 50, lines 0, trim both)" />
+  <type name="PostalCode" type="string(minlength 1, 10, lines 0, trim both)" />
+  <type name="ProcessName" type="string(minlength 1, 100, lines 0, trim both)" />
+  <type name="Quantity" type="integer(32)" />
+  <type name="ScheduleDuration" type="interval(min -36500.00:00:00, max 36500.00:00:00, by 00:01:00)" />
+  <type name="ScheduleEntryType" type="integer(8, nonnull)" />
+  <type name="ScheduleMonth" type="Monthinterval(min 0m, max 1200m, by 1m)" />
+  <type name="SingleLineUnlimited" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <type name="Subject" type="string(minlength 1, 100, lines 0, trim both)" />
+  <type name="UnitCost" type="currency(min -922337203685477.5808, max 922337203685477.5807, by 0.0001)" />
+  <type name="URL" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <type name="VariableLengthString" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <type name="WorkOrderDuration" type="interval(min 00:00:00, max 36500.00:00:00, by 1.00:00:00)" />
+  <type name="RequiredAddress" type="string(minlength 1, 30, lines 0, trim both, nonnull)" />
+  <type name="RequiredAutoNumber" type="string(minlength 1, 20, lines 0, trim both, nonnull)" />
+  <type name="RequiredByInterval" type="interval(min -36500.00:00:00, max 36500.00:00:00, by 1.00:00:00)" />
+  <type name="RequiredCode" type="string(minlength 1, 50, lines 0, trim both, nonnull)" />
+  <type name="RequiredComment" type="string(minlength 1, 1073741823, trim both, nonnull)" />
+  <type name="RequiredCultureInfoLCID" type="integer(32, nonnull)" />
+  <type name="RequiredCurrency" type="currency(min -922337203685477.5808, max 922337203685477.5807, by 0.01, nonnull)" />
+  <type name="RequiredCount" type="integer(unsigned 31, nonnull)"/>
+  <!-- range of MS Transact-SQL MONEY type -->
+  <type name="RequiredDate" type="datetime(min 1/1/1753, max 12/31/9999, by 1.00:00:00, nonnull)" />
+  <type name="RequiredDayOfYear" type="interval(min 00:00:00, max 365.00:00:00, by 1.00:00:00, nonnull)" />
+  <type name="RequiredDaySpan" type="interval(min 00:00:00, max 36500.00:00:00, by 1.00:00:00, nonnull)" />
+  <type name="RequiredDesc" type="string(minlength 1, 150, lines 0, trim both, nonnull)" />
+  <type name="RequiredDowntime" type="interval(min 00:00:00, max 36500.00:00:00, by 00:00:01, nonnull)" />
+  <type name="RequiredEmailAddress" type="string(minlength 1, 128, lines 0, trim both, nonnull)" />
+  <type name="RequiredGenerationValue" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100, nonnull)" />
+  <type name="RequiredLaborDuration" type="interval(min 00:00:00, max 36500.00:00:00, by 00:01:00, nonnull)" />
+  <type name="RequiredLaborDurationCorrection" type="interval(min -36500.00:00:00, max 36500.00:00:00, by 00:01:00, nonnull)" />
+  <type name="RequiredLineText" type="string(minlength 1, 160, lines 0, trim both, nonnull)" />
+  <type name="RequiredMaxBlob" type="blob(minlength 0, maxlength 2147483647, nonnull)"/>
+  <type name="RequiredMeterReadingValue" type="integer(64, nonnull)" />
+  <type name="RequiredMeterSpan" type="integer(64, nonnull)" />
+  <type name="RequiredMonthSpan" type="Monthinterval(min 0m, max 1200m, by 1m, nonnull)" />
+  <type name="RequiredMultiLineUnlimited" type="string(minlength 1, 1073741823, trim both, nonnull)" />
+  <type name="RequiredPhoneNumber" type="string(minlength 1, 50, lines 0, trim both, nonnull)" />
+  <type name="RequiredPostalCode" type="string(minlength 1, 10, lines 0, trim both, nonnull)" />
+  <type name="RequiredQuantity" type="integer(32, nonnull)" />
+  <type name="RequiredRequiredByInterval" type="interval(min -36500.00:00:00, max 36500.00:00:00, by 1.00:00:00, nonnull)" />
+  <type name="RequiredURL" type="string(minlength 1, 1073741823, lines 0, trim both, nonnull)" />
+  <type name="RequiredVariableLengthString" type="string(minlength 1, 1073741823, lines 0, trim both, nonnull)" />
+  <type name="RequiredWorkOrderDuration" type="interval(min 00:00:00, max 36500.00:00:00, by 1.00:00:00, nonnull)" />
+  <type name="RowVersion" type="blob(minlength 8, maxlength 8)"/>
+</database>

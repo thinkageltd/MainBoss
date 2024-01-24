@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="RequestAcknowledgement" defaults="false" log="false" id="Id" labelkey="Request Acknowledgement">
+		<doc>
+	  Return one row for each unacknowledged RequestStateHistory record for Requests
+	  We also return the ID of the Request and Requestor records
+	  so that everything useful can be reached by paths from this view.
+	</doc>
+		<field name="Id" read="RequiredGUID" />
+		<field name="RequestStateHistoryID" type="GUIDREF"  link="RequestStateHistory" labelkey="State History" />
+		<field name="RequestID" type="GUIDREF"  link="Request" />
+		<field name="RequestorID" type="GUIDREF" link="Requestor" />
+		<extension name="query">
+	  select RSH.ID, RSH.ID, R.ID, R.RequestorID
+	  from  RequestStateHistory as RSH
+			join Request as R on R.ID = RSH.RequestID
+	  where
+		  R.LastRequestorAcknowledgementDate is null 
+		  or R.LastRequestorAcknowledgementDate &lt; RSH.[EntryDate]
+    </extension>
+		<extension name="dependson">RequestStateHistory</extension>
+		<extension name="dependson">Request</extension>
+		<extension name="dependson">Requestor</extension>
+	</table>
+	<table name="RequestStateHistory"/>
+	<table name="Requestor"/>
+	<table name="Request"/>
+</database>

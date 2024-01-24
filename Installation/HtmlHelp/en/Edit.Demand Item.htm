@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Demand Item</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Demand Item</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Resources.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Demand Hourly Inside.htm">Next section &gt;</a></p>
+
+<p>An item demand requests that an item be held in reserve for a particular work order. Since it's possible that the same type of item is kept in different storage areas, the demand must specify a storage assignment: not just the item you want, but the storage location where you intend to get the item. The storage location may be a storeroom or a temporary storage location. (For more on storeroom assignments, see <a href="StoreroomAssignments.htm">Storeroom Assignments</a>. For more on temporary storage location assignments, see <a href="Edit.Temporary Storage Assignment.htm">Temporary Storage Assignments</a>.)</p>
+
+<p>To see the Demand Item editor, click <span class="CButton">New Demand Item</span> in the <span class="CButton">Items</span> subsection of the <span class="CButton">Resources</span> section of a work order. The editor contains the following:</p>
+
+<p class="wi"><span class="CButton">Details</span> area: Provides information about the demand.</p>
+<p class="wi2"><span class="CField">Work Order</span>: A read-only field identifying the work order.</p>
+<p class="wi2"><span class="CField">Storage Assignment</span> area: Lets you specify the type of item you want to reserve and the storage location where you intend to get the item. The area ends in a drop-down list that lets you choose a storage assignment. Before that are fields that let you shorten the length of the drop-down list:</p>
+<p class="wi3"><span class="CButton">Only include Items on the Parts list</span>: If you select this option, the "<span class="CField">Show Storage Assignments for</span>" drop-down list will only show items from the spare parts list of the unit associated with this work order. For more on spare parts, see <a href="SpareParts.htm">Spare Parts</a>.</p>
+<p class="wi3"><span class="CButton">Show all Items</span>: If you select this option, the "<span class="CField">Show Storage Assignments for</span>" drop-down list will show all of MainBoss's items.</p>
+<p class="wi3"><span class="CField">Show Storage Assignments for</span>: A drop-down list showing items. If you selected <span class="CButton">Only include Items on the Parts list</span>, the drop-down list only shows such spare part items. Otherwise, the drop-down list shows all items.</p>
+<p class="wi3">Drop-down list of storage assignments: Shows all storage assignments for the item specified in "<span class="CField">Show Storage Assignments for</span>". If you leave "<span class="CField">Show Storage Assignments for</span>" blank, this drop-down list will show all of MainBoss's storage assignments.</p>
+<p class="wi2">Read-only fields: The editor window contains a number of read-only fields giving information from the storage assignment record you've selected. If you have the same item in several different storage locations, changing "<span class="CField">Storage Assignment</span>" and checking the read-only fields may help you decide on the storage location you want to use for this particular work order.</p>
+<p class="wi3"><span class="CField">On hand</span>: The quantity of the item that is actually present in the storage location. This line also gives the cost per unit and total cost of the storage location's stock of the item.</p>
+<p class="wi3"><span class="CField">Available</span>: The quantity of the item that is available for use. This takes into account any stock that might be on reserve for use with other work orders.</p>
+<p class="wi3"><span class="CField">Via purchase</span>: If there is a price quote for this item associated with the given storage location, then "<span class="CField">Via purchase</span>" will provide information from the price quote: how much it will cost to purchase a given quantity of the item. (Note that this line is only filled in if there's an appropriate price quote record.)</p>
+<p class="wi2"><span class="CButton">Manually Enter Quantity</span>: Select this option if you want to fill in "<span class="CField">Demanded</span>" by hand.</p>
+<p class="wi2"><span class="CButton">Use On Hand Quantity</span>: Select this option if you want MainBoss to fill in "<span class="CField">Demanded</span>" with the quantity that is on hand in the specified item location.</p>
+<p class="wi2"><span class="CButton">Use Available Quantity</span>: Select this option if you want MainBoss to fill in "<span class="CField">Demanded</span>" with the quantity that is available in the specified item location.</p>
+<p class="wi2"><span class="CField">Demanded</span>: The quantity of the item that you want to reserve. When this quantity is filled in, MainBoss automatically displays the unit cost and total cost, based on the other information you have given.</p>
+<p class="wi2"><span class="CField">Already Used</span>: A read-only field giving the quantity of such items already used on this work order. This quantity reflects how much of the demand has already been actualized.</p>
+<p class="wi2"><span class="CField">Remaining</span>: A read-only field giving the difference between "<span class="CField">Demanded</span>" and "<span class="CField">Already used</span>".</p>
+<p class="wi2"><span class="CField">Demand from on hand</span>: A read-only field giving the outstanding quantity demanded from the storage location. This value only takes into account the current demand record, not any other demands in any other work orders.</p>
+<p class="wi2"><span class="CField">Demand via purchase</span>: If "<span class="CField">Demanded</span>" exceeds the quantity on hand in the storage location, "<span class="CField">Demand via purchase</span>" tells the item quantity you'll have to purchase in order to meet the stated demand. The line also gives the unit cost and total cost of such a purchase.</p>
+<p class="wi2"><span class="CField">Calculated Cost</span>: Read-only fields giving the unit cost and total cost of "<span class="CField">Demanded</span>". These figures are based on the unit cost of items in the selected storage location.</p>
+<p class="wi2"><span class="CButton">Use calculated cost</span>: If you checkmark this box, MainBoss will fill in "<span class="CField">Demanded Cost</span>" with the values given in "<span class="CField">Calculated Cost</span>". If you don't want to use the calculated cost, leave the checkbox blank and enter an appropriate cost in "<span class="CField">Demanded Cost</span>".</p>
+<p class="wi2"><span class="CField">Demanded Cost</span>: Can be filled in with a unit cost or a total cost, if different from the "<span class="CField">Calculated Cost</span>".</p>
+<p class="wi2"><span class="CField">Actual Cost Default</span>: Specifies the default method for calculating costs when someone creates an "actual item" in response to this demand. If the person who records "actual item" information has sufficient security permissions, he or she can specify item costs in a different way. However, if the person who records the "actual item" information does not have permission to specify costs, what you specify on this demand determines which costs MainBoss will use. The possible options are:</p>
+<p class="wi3"><span class="CButton">Manual entry</span>: If you choose this option, you expect the person recording "actual item" information to have appropriate security permissions to specify the actual cost of the items.</p>
+<p class="wi3"><span class="CButton">Current value calculation</span>: If you choose this option, the default is to calculate "actual item" costs from MainBoss's existing inventory price information.</p>
+<p class="wi3"><span class="CButton">Demanded</span>: If you choose this option, the default is to use the "<span class="CField">Demanded Cost</span>" in this window as a basis for the "actual item" cost.</p>
+<p class="wi2"><span class="CField">Expense Category</span>: The expense category to which this item belongs. For more on expense categories, see <a href="ExpenseCategories.htm">Expense Categories</a>.</p>
+<p class="wi"><span class="CButton">Actuals</span> section: Records what the work order actually used (as opposed to the preliminary estimates given in the <span class="CButton">Details</span> section). The <span class="CButton">Actuals</span> section also lets you correct any mistakes made in previous "actual" entries.</p>
+<p class="wi2">List: The central part of the window is a list of "actual" entries, specifying actual uses of this item on this work order.</p>
+<p class="wi2"><span class="CButton">New Actual Item</span>: Lets you record an actual use of this item on this work order. For more information, see <a href="Edit.Actual Item.htm">Actual Item</a>.</p>
+<p class="wi2"><span class="CButton">Correct</span>: Lets you correct an existing actual entry. For more, see <a href="Edit.Correction of Actual Item.htm">Corrections of Actual Items</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: Lets you edit an existing actual entry. You will <span class="Emphasis">not</span> be able to change the cost or quantity specified in the entry; for that, you must use <span class="CButton">Correct</span>.</p>
+<p class="wi2"><span class="CButton">View</span>: Lets you view an existing entry in read-only mode.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Opens a window to search for a particular record.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on resources, see <a href="Resources.htm">Resources</a>. For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Resources.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Demand Hourly Inside.htm">Next section &gt;</a></p>
+</body>
+</html>
+

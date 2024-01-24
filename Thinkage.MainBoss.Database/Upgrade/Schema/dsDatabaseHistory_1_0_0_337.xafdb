@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database name="http://thinkage.ca/MB3/dsMB.xsd:dsDatabaseHistory_1_0_0_337" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+  <table name="DatabaseHistory" defaults="false" log="false" id="Id" labelkey="Database History">
+	<doc>
+	  This table records in text form significant Database events - creation, upgrades etc
+	</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="EntryDate" type="RequiredDateTime">
+	  <extension name="serversetsDateTime"/>
+	</field>
+	<field name="Subject" type="RequiredSubject">
+	  <doc>A 1-line description of the entry to be done</doc>
+	</field>
+	<field name="Description" type="Comment">
+	  <doc>The full description of the log entry</doc>
+	</field>
+  </table>
+</database>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="Chargeback" defaults="true" log="false" id="Id" xid="Code WorkOrderID" xunique="true" labelkey="Chargeback">
+	<field name="Id" read="RequiredGUID" />
+	<field name="Code" type="RequiredCode">
+	  <doc>The identification for this chargeback. You might consider this to be an Invoice number in some cases.</doc>
+	</field>
+	<field name="WorkOrderID" type="RequiredGUIDREF" link="WorkOrder">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="BillableRequestorID" type="RequiredGUIDREF"  link="BillableRequestor">
+	  <doc>The Requestor these charges apply to.</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="Comment" type="Comment">
+	  <doc>Comment about this particular chargeback.</doc>
+	</field>
+	<field name="TotalCost" read="RequiredCurrency" >
+	  <doc>The calculated total value currently for this Chargeback</doc>
+	  <!-- dbo.mbfn_Chargeback_TotalCost( [ID] ) -->
+	  <result hosting="cached">
+		cast(42 as Requiredcurrency)
+	  </result>
+	  <extension name="dependson">mbfn_Chargeback_TotalCost()</extension>
+	</field>
+	<extension name="lastupdate">WorkOrderID</extension>
+	<extension name="costrights">Chargeback</extension>
+	<extension name="costrights">UnitValue</extension>
+	<extension name="costrights">WorkOrderItem,WorkOrderInside,WorkOrderOutside,WorkOrderMiscellaneous,InventoryActivity,PurchaseOrderItem,PurchaseOrderLabor,PurchaseOrderMiscellaneous</extension>
+  </table>
+  <object class="function" name="mbfn_Chargeback_TotalCost">
+	<doc>Calculate the total cost of all associated chargeback line items.</doc>
+	<extension name="body">
+	  (@ChargebackID		uniqueidentifier)
+	  RETURNS money
+	  as
+	  begin
+		  return (select isnull(sum(Cost),0) from ChargebackLine
+			  join AccountingTransaction on AccountingTransaction.ID = ChargebackLine.AccountingTransactionID
+			  where ChargebackLine.ChargebackID = @ChargebackID)
+	  end
+	</extension>
+	<extension name="dependson">Chargeback.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ChargebackLine</extension>
+  </object>
+  <table name="AccountingTransaction"/>
+  <table name="WorkOrder"/>
+  <table name="BillableRequestor"/>
+  <table name="ChargebackLine"/>
+</database>

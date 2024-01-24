@@ -1,0 +1,12 @@
+@model Thinkage.MainBoss.WebAccess.Models.NoPermissionException
+@using Thinkage.MainBoss.WebAccess
+
+@{
+	ViewBag.Title = T.Text("No Permission");
+}
+@section MainContent {
+	<h2>@ViewBag.Title</h2>
+<span style="white-space:pre-line; font-size:larger;font-weight: bolder">
+	@(Model.Message)
+</span>
+}

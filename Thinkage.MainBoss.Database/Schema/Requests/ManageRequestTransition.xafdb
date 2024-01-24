@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ManageRequestTransition" defaults="false" log="false" id="Id" xid="RequestStateID WorkOrderStateID" xunique="true" labelkey="Work Order Request State Transition">
+	<doc>
+		When ManageRequests option is enabled, this table drives the new RequestState of a linked request to a workorder based on the current
+		RequestState and the Current(or new) WorkOrder state. Triggers on the RequestedWorkOrder and WorkOrderStateHistory use this table to change the state of linked
+		Requests
+	  </doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="RequestStateID" type="RequiredGUIDREF" link="RequestState">
+	  <doc>Current state of a Request</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="WorkOrderStateID" type="RequiredGUIDREF" link="WorkOrderState">
+	  <doc>Current state of existing workorders (RequestedWorkOrder trigger) or New WorkOrderState for changes in WorkOrderState (WorkOrderStateHistory trigger)</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="ChangeToRequestStateID" type="RequiredGUIDREF" link="RequestState">
+	  <doc>The request state to put the Request into if we match the above conditions</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="CommentToRequestorUserMessageKeyID" type="GUIDREF" link="UserMessageKey" labelkey="Comment To Requestor">
+	  <doc>The message to add to the CommentToRequestor field when RequestState changes</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<extension name="deletemethod">delete</extension>
+  </table>
+  <object class="trigger" name="mbtg_ManageRequestTransitionCycleDetection">
+	<doc>
+	  Prevent attempt to create endless transition cycle definitions
+	</doc>
+	<extension name="body">
+on ManageRequestTransition
+after insert
+as
+begin
+	BEGIN TRY
+		declare @junk int;
+		with CycleDetect(RequestStateID, WorkOrderStateID, ChangeToRequestStateID)
+		as (
+			select RequestStateID, WorkOrderStateID, ChangeToRequestStateID
+				from ManageRequestTransition
+			union all
+			select M.RequestStateID, M.WorkOrderStateID, M.ChangeToRequestStateID
+				from ManageRequestTransition as M
+				INNER JOIN CycleDetect C
+					ON M.ChangeToRequestStateID = C.RequestStateID and M.WorkOrderStateID = C.WorkOrderStateID
+				where M.RequestStateID &lt;&gt; M.ChangeToRequestStateID
+			)
+		select @junk = count(*) from CycleDetect
+	END TRY
+	BEGIN CATCH
+		raiserror('Adding a transition would result in an infinite cycle of state transitions', 16, 2)
+		rollback transaction
+	END CATCH;
+end
+		</extension>
+  </object>
+  <table name="WorkOrderState"/>
+  <table name="RequestState"/>
+  <table name="UserMessageKey"/>
+</database>

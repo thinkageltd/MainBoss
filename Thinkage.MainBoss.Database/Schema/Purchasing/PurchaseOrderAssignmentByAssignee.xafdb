@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="PurchaseOrderAssignmentByAssignee" defaults="false" log="false" id="Id"  labelkey="">
+	<doc>
+	  This view provides records to determine PO assignments and unassigned POs, grouped by ContactID for draft/open POs
+	</doc>
+	<field name="Id" read="RequiredGUID">
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIGeneralMB3.UnassignedNameProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="PurchaseOrderAssignmentID" type="GUIDREF" link="PurchaseOrderAssignment" labelkey="Assignment">
+	  <doc>The PurchaseOrderAssignee assigned to PurchaseOrders.</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="PurchaseOrderID" type="GUIDREF" link="PurchaseOrder">
+	  <doc>The PurchaseOrder the Assignee is assigned to</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="ContactID" type="GUIDREF" link="Contact">
+	  <doc>The PurchaseOrder the Assignee is assigned to as defined by the PurchaseOrderAssign.ContactID</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<extension name="query">
+		select 'A0000000-0000-0000-0000-00000000000A', NULL, NULL, NULL			-- The Unassigned 'ContactID' <!--KnownIds.UnassignedID-->
+	union all
+		select POA.ContactID, NULL, NULL, POA.ContactID												-- The possible PurchaseOrderAssignee Contacts
+			from PurchaseOrderAssignee as POA					
+	union all
+		select PO.ID, NULL, PO.ID, 'A0000000-0000-0000-0000-00000000000A'		-- The Unassigned PurchaseOrders
+			from PurchaseOrder as PO 
+			join PurchaseOrderStateHistory as RSH on RSH.ID = PO.CurrentPurchaseOrderStateHistoryID
+			join PurchaseOrderState as POS on POS.ID = RSH.PurchaseOrderStateID
+			where PO.ID NOT IN (select PurchaseOrderID from PurchaseOrderAssignment as A
+				 join PurchaseOrderAssignee as POA on POA.ID = A.PurchaseOrderAssigneeID
+				 join Contact as C on C.ID = POA.ContactID
+				 where C.Hidden IS NULL)
+				and (POS.FilterAsDraft = 1 or POS.FilterAsIssued = 1)
+	union all
+		select A.ID, A.ID, A.PurchaseOrderID, POA.ContactID			-- The PurchaseOrderAssignments
+				from PurchaseOrderAssignment as A
+				join PurchaseOrderAssignee as POA on A.PurchaseOrderAssigneeID = POA.ID
+				join PurchaseOrder as PO on PO.ID = A.PurchaseOrderID
+				join PurchaseOrderStateHistory as RSH on RSH.ID = PO.CurrentPurchaseOrderStateHistoryID
+				join PurchaseOrderState as POS on POS.ID = RSH.PurchaseOrderStateID
+				where (POS.FilterAsDraft = 1 or POS.FilterAsIssued = 1)		
+		</extension>
+	<extension name="dependson">PurchaseOrder</extension>
+	<extension name="dependson">PurchaseOrderAssignee</extension>
+	<extension name="dependson">PurchaseOrderAssignment</extension>
+	<extension name="dependson">PurchaseOrderStateHistory</extension>
+	<extension name="dependson">PurchaseOrderState</extension>
+	<extension name="dependson">Contact</extension>
+  </table>
+  <table name="PurchaseOrder" />
+  <table name="PurchaseOrderAssignee"/>
+  <table name="PurchaseOrderAssignment"/>
+  <table name="PurchaseOrderStateHistory" />
+  <table name="PurchaseOrderState" />
+  <table name="Contact"/>
+</database>

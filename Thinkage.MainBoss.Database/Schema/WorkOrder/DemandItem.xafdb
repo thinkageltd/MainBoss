@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="DemandItem" defaults="true" log="false" id="Id" xid="DemandID ItemLocationID" labelkey="Demand Item">
+	<doc>
+	  This record is the derived record type for the Demand record when the resource demanded by the work order is a
+	  tangible resource (i.e. an Item).
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="DemandID" read="RequiredGUIDREF" base="Demand"/>
+	<field name="ItemLocationID" type="RequiredGUIDREF" link="ItemLocation">
+	  <doc>The Item required and a suggested location to take it from.</doc>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.AllActualItemLocationPickerTblCreator,Thinkage.MainBoss.Controls</extension>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Quantity" type="integer(min 1, max 2147483647)" labelkey="Demanded">
+	  <doc>The (estimated) number of items required</doc>
+	</field>
+	<field name="ActualQuantity" read="RequiredQuantity" labelkey="Actual">
+	  <doc>The total quantity of all the associated actuals</doc>
+	  <result hosting="cached">
+		cast(42 as RequiredQuantity)
+	  </result>
+	  <extension name="dependson">mbfn_DemandItem_ActualQuantity()</extension>
+	</field>
+	<extension name="equate">DemandID.WorkOrderID=ItemLocationID.ActualItemLocationID.TemporaryItemLocationID.WorkOrderID</extension>
+	<extension name="deletemethod">delete</extension>
+	<extension name="costrights">WorkOrderItem</extension>
+  </table>
+  <table name="Demand"/>
+  <table name="ItemLocation"/>
+  <table name="ActualItemLocation"/>
+  <table name="ActualItem"/>
+  <table name="AccountingTransaction"/>
+
+  <object class="function" name="mbfn_DemandItem_ActualQuantity">
+	<doc>
+	  Calculate the total actual quantities for actuals linked to this DemandItem
+	</doc>
+	<extension name="body">
+	  (
+		@DIID uniqueidentifier -- DemandItemID
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		return (
+			select sum(Quantity)
+				from ActualItem
+				where ActualItem.DemandItemID = @DIID
+		)
+	  end
+	</extension>
+	<extension name="dependson">DemandItem.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualItem</extension>
+  </object>
+  <object class="function" name="mbfn_DemandItem_ActualCost">
+	<doc>
+	  Calculate the total actual cost for actuals linked to this DemandItem
+	</doc>
+	<extension name="body">
+	  (
+		@DIID uniqueidentifier -- DemandItemID
+	  )
+	  RETURNS money
+	  as
+	  begin
+		return (
+			select sum(Cost)
+				from ActualItem
+					join AccountingTransaction on AccountingTransaction.ID = ActualItem.AccountingTransactionID
+				where ActualItem.DemandItemID = @DIID
+		)
+	  end
+	</extension>
+	<extension name="dependson">DemandItem.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualItem</extension>
+  </object>
+  <object class="trigger" name="mbtg_DemandItem_Updates_ActualItemLocation">
+	<doc>
+	  Maintain the OnReserve amount in ActualItemLocation based on changes to DemandItem
+	</doc>
+	<extension name="body">
+	  on DemandItem
+	  after insert, update, delete
+	  as
+	  begin
+		update ActualItemLocation
+			set OnReserve = dbo.mbfn_ActualItemLocation_OnReserve(ActualItemLocation.ID)
+			from ActualItemLocation join ItemLocation on ItemLocation.ID = ActualItemLocation.ItemLocationID
+			where ActualItemLocation.ID in (
+					  select distinct ActualItemLocation.ID from ActualItemLocation
+									  join inserted on ActualItemLocation.ItemLocationID = inserted.ItemLocationID
+				union select distinct ActualItemLocation.ID from ActualItemLocation
+									  join deleted on ActualItemLocation.ItemLocationID = deleted.ItemLocationID
+
+			  )
+	  end
+	</extension>
+	<extension name="references">mbfn_ActualItemLocation_OnReserve()</extension>
+	<extension name="references">ActualItemLocation</extension>
+  </object>
+</database>

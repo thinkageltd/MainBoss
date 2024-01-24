@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="DemandMiscellaneousWorkOrderCostTemplate" defaults="true" log="false" id="Id" xid="DemandTemplateID MiscellaneousWorkOrderCostID" labelkey="Task Demand Miscellaneous Cost">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="DemandTemplateID" read="RequiredGUIDREF" base="DemandTemplate"/>
+	<field name="MiscellaneousWorkOrderCostID" type="RequiredGUIDREF" link="MiscellaneousWorkOrderCost">
+	  <doc></doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<extension name="costrights">WorkOrderMiscellaneous</extension>
+	<extension name="deletemethod">delete</extension>
+  </table>
+  <table name="DemandTemplate"/>
+  <table name="MiscellaneousWorkOrderCost"/>
+</database>

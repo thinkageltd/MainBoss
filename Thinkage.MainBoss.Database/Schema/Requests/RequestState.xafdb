@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="RequestState" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Request State">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="translationkey(nonnull)"/>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="Desc" type="translationkey(null)"/>
+	<field name="Comment" type="Comment"/>
+	<field name="FilterAsNew" type="Requiredbool">
+	  <doc>For filter support, this state identifies this request as in the New state</doc>
+	</field>
+	<field name="FilterAsInProgress" type="Requiredbool">
+	  <doc>For filter support, this state identifies this workorder as in the InProgress state</doc>
+	</field>
+	<field name="FilterAsClosed" type="Requiredbool">
+	  <doc>For filter support, this state identifies this workorder as in the Closed state</doc>
+	</field>
+
+	<extension name="deletemethod">hide</extension>
+  </table>
+</database>

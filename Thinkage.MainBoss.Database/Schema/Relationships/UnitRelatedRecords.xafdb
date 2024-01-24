@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="UnitRelatedRecords" defaults="false" log="false" id="Id" labelkey="Unit Related Records">
+		<field name="Id" read="blob(minlength 17, maxlength 17, nonnull)"/>
+		<field name="ParentID" type="GUIDREF" link="UnitRelatedRecords" labelkey="Unit Related Records"/>
+		<field name="ThisUnitLocationID" type="GUIDREF" link="Location"/>
+		<field name="Reverse" type="requiredBool"/>
+		<field name="RelationshipID" type="RequiredGUIDREF" link="Relationship"/>
+		<field name="UnitRelatedContactID" type="GUIDREF" link="UnitRelatedContact"/>
+		<field name="UnitRelatedUnitID" type="GUIDREF" link="UnitRelatedUnit"/>
+		<extension name="query">
+				<!-- Get all the forward relationship role records whose AType is a Unit -->
+				select cast(R.ID as binary(16)) + 0x00, null, null, 0, R.ID, null, null
+				from Relationship as R
+				where R.AType = 0
+			union
+				<!-- Get all the reverse relationship role records where the BType is a Unit and either AType is not a unit or the relationship is asymmetric -->
+				select cast(R.ID as binary(16)) + 0x01, null, null, 1, R.ID, null, null
+				from Relationship as R
+				where R.BType = 0 and (R.AType != 0 or R.BAsRelatedToAPhrase != R.AAsRelatedToBPhrase)
+			union
+				<!-- Get all the forward related units of UnitUnit -->
+				select cast(URU.ID as binary(16)) + 0x00, cast(URU.RelationshipID as binary(16)) + 0x00, URU.AUnitLocationID, 0, null, null, URU.ID
+					from UnitRelatedUnit as URU
+			union
+				<!-- Get all the reverse related units -->
+				select
+						cast(URU.ID as binary(16)) + 0x01,
+						cast(URU.RelationshipID as binary(16)) + CASE WHEN R.BAsRelatedToAPhrase = R.AAsRelatedToBPhrase THEN 0x00 ELSE 0x01 END,
+						URU.BUnitLocationID,
+						1, null, null, URU.ID
+					from UnitRelatedUnit as URU
+					join Relationship as R on R.ID = URU.RelationshipID
+			union
+				<!-- Get all the forward relationships of UnitContact -->
+				select cast(URC.ID as binary(16)) + 0x00, cast(URC.RelationshipID as binary(16)) + 0x00, URC.UnitLocationID, 0, null, URC.ID, null
+					from UnitRelatedContact as URC
+		</extension>
+		<extension name="dependson">UnitRelatedUnit</extension>
+		<extension name="dependson">UnitRelatedContact</extension>
+		<extension name="dependson">Relationship</extension>
+	</table>
+	<table name="UnitRelatedUnit"/>
+	<table name="UnitRelatedContact"/>
+	<table name="Relationship"/>
+	<table name="Contact"/>
+	<table name="Location"/>
+
+	<table name="UnitRelatedRecordsContainment" defaults="false" log="false" id="Id" labelkey="Unit Related Records">
+		<doc></doc>
+		<field name="Id" read="RequiredGUID"/>
+		<field name="FilterID" link="UnitRelatedRecords" type="RequiredGUIDREF">
+		</field>
+		<field name="DisplayID" link="UnitRelatedRecords" type="RequiredGUIDREF">
+		</field>
+		<!-- The remaining fields are required by the limitations of CompositeTbl or Tree-Structured Tbls -->
+		<field name="IsPrimary" type="RequiredBool">
+			<!-- ListControl needs this field directly and the Tbl.IAttr that specifies this only lets you name a DBI_Column not a DBI_Path -->
+		</field>
+		<extension name="query">
+			select UR.ParentID, UR.ID, UR.ParentID, 0
+			from UnitRelatedRecords as UR
+			where UR.ParentID is not null
+	  
+			union
+	  
+			select UR.ID, UR.ID, UR.ID, 1
+			from UnitRelatedRecords as UR
+
+		</extension>
+		<extension name="dependson">UnitRelatedRecords</extension>
+	</table>
+</database>

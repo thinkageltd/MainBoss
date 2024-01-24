@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="RequestCountsByStatus" defaults="false" log="false" id="Id" labelkey="">
+		<field name="Id" read="RequiredGUID"/>
+		<field name="RequestStateHistoryStatusID" type="RequiredGUIDREF" link="RequestStateHistoryStatus" labelkey="Status" />
+		<field name="RequestCount" type="RequiredQuantity"  />
+		<extension name="query">
+			select RSH.RequestStateHistoryStatusID, RSH.RequestStateHistoryStatusID, count(*)
+				from Request as R
+					join RequestStateHistory as RSH on RSH.Id = R.CurrentRequestStateHistoryID
+					join RequestState as RS on RS.Id = RSH.RequestStateID
+				where RS.FilterAsInProgress != 0 and RSH.RequestStateHistoryStatusID is not null
+				group by RSH.RequestStateHistoryStatusID
+    </extension>
+		<extension name="dependson">Request</extension>
+		<extension name="dependson">RequestStateHistory</extension>
+		<extension name="dependson">RequestState</extension>
+	</table>
+	<table name="Request"/>
+	<table name="RequestState"/>
+	<table name="RequestStateHistory"/>
+	<table name="RequestStateHistoryStatus"/>
+</database>

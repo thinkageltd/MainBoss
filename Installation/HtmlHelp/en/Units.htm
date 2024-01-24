@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Units</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Units</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Task Miscellaneous Expense.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="UnitRecords.htm">Next section &gt;</a></p>
+
+
+<p>The equipment and facilities you maintain are called <span class="NewTerm">units</span>. Every unit has a location; in fact, units can <span class="Emphasis">be</span> locations. For example, in a shopping mall, stores might be considered locations, but they might also be considered units, since they are facilities you maintain. Here are some examples of units:</p>
+
+<ul class="b1"><li>Vehicles (e.g. company cars, forklift trucks, lawn tractors)</li>
+<li>Manufacturing equipment</li>
+<li>Office suites, hotel rooms, stores in a mall, cottages in a resort, and other spaces a maintenance department may have to deal with</li>
+<li>Heating/air-conditioning equipment</li>
+<li>Washrooms, elevators, and other public spaces
+</li></ul><p>Sub-Units: Units can contain other units. For example, if a shopping mall treats each store as a unit, then it might be useful to divide large stores into smaller sections (e.g. "Store X Northwest Section", "Store X Northeast Section", and so on.) As another example, consider a forklift truck. This is a single unit, but you might treat the engine and forklift mechanism as sub-units of the truck.</p>
+
+<p>Because units are like locations, and because units can have sub-units (which can also have sub-units), MainBoss depicts units using a <span class="NewTerm">map</span> similar to the structure used to depict folders, subfolders, and files in Windows Explorer. The map shows locations and the units they contain.</p>
+
+<p><span class="CInset">Organization is Important! </span>Since locations and units are shown in map format, you can make your life easier by setting up your location and unit records in some well-organized manner. For example, suppose you're maintaining a large commercial building. It's a bad idea to set up your location records like this:</p>
+
+<p>  <img src="image043.png" alt="MainBoss" /></p>
+
+<p>With one long list of rooms, it's harder to find the one you want (and you end up scrolling a lot back and forth through the list). Here's a better way to organize the same locations:</p>
+
+<p>  <img src="image044.png" alt="MainBoss" /></p>
+
+<p>Organizing rooms by floor (or in some other sensible way) makes it easier to find the location you want, since you don't have to search through long lists. Organizing your locations also makes it easier to find units, since every unit is a location.</p>
+
+<p><span class="CInset">Coding Definitions:</span> The following appear under <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Units</span> to define codes used in unit records:</p>
+
+<ul class="b1"><li><span class="CPanel">Asset Codes</span> (<a href="AssetCodes.htm">Asset Codes</a>): Balance sheet account numbers that are used to capitalize equipment in your organization's general ledger.</li>
+<li><span class="CPanel">Meter Classes</span> (<a href="MeterClasses.htm">Meter Classes</a>): Codes used to categorize meters by type.</li>
+<li><span class="CPanel">Meters</span> (<a href="Meters.htm">Meters</a>): Information on meters that are associated with units.</li>
+<li><span class="CPanel">Ownerships</span> (<a href="Ownerships.htm">Ownerships</a>): Codes used to identify who owns which unit.</li>
+<li><span class="CPanel">Parts</span> (<a href="SpareParts.htm">Spare Parts</a>): A table recording which spare parts (items) are used by each unit.</li>
+<li><span class="CPanel">Service Contracts</span> (<a href="ServiceContracts.htm">Service Contracts</a>): Information about the service contracts that cover your units.</li>
+<li><span class="CPanel">Specification Forms</span> (<a href="SpecificationForms.htm">Specification Forms</a>): Used in recording specific information about different types of equipment. For example, the specification for a forklift truck might include info like height, weight, motor size, lifting capacity, and so on. You create your own specification forms so that you can record distinctive information about any type of unit.</li>
+<li><span class="CPanel">Systems</span> (<a href="Systems.htm">Systems</a>): Codes that allow you to state that a number of units form an interconnected system.</li>
+<li><span class="CPanel">Unit Categories</span> (<a href="UnitCategories.htm">Unit Categories</a>): Codes used to categorize your units by type.</li>
+<li><span class="CPanel">Unit Usages</span> (<a href="UnitUsages.htm">Unit Usages</a>): Codes that let you classify units according to their use.
+</li></ul><p>Before you start recording information about your units, you should think about which of the above codes you intend to use. You don't have to use all the possibilities immediately; for example, when you're just starting out you may decide to omit service contract information&#8212;you can always add it later on. However, the more information you record what you start out, the more useful MainBoss can be.</p>
+
+<p>As an example, consider information about spare parts. It can be a lot of work recording which spare parts are used in which unit. Nevertheless, this information can save you a lot of wasted effort: when workers go out to a job, they can look up spare part requirements in advance and can head to the work site prepared. To take a simple example, suppose you record what type of light bulbs are used in every room in your company. (In this case, rooms are the units and the bulbs are spare parts.) When you get a call that a light has burned out, your workers can immediately find out what type of replacement bulb is needed; they never end up having to make two trips because they brought the wrong kind of bulb.</p>
+
+<p>You get back what you put in. Even if you don't record all possible spare parts used by your units, recording <span class="Emphasis">some</span> spare part information will save you <span class="Emphasis">some</span> wasted effort. Recording more information gives you the potential for more savings. Gradually adding more information (or phasing in the use of different types of codes) will help you get the most from your software.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="UnitRecords.htm">Unit Records</a></li>
+
+<li><a href="Edit.Attachment.htm">Attachments</a></li>
+
+<li><a href="Edit.Specification.htm">Specifications</a></li>
+
+<li><a href="MeterReadings.htm">Meter Readings</a></li>
+
+<li><a href="UnitRelatedReports.htm">Unit-Related Reports</a></li>
+</ul>
+<p><a href="Report.Task Miscellaneous Expense.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="UnitRecords.htm">Next section &gt;</a></p>
+</body>
+</html>
+

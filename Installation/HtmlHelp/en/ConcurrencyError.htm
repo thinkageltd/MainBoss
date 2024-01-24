@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Concurrency Errors</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Concurrency Errors</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="UsingEditors.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="ImportingandExportingDatainTables.htm">Next section &gt;</a></p>
+
+<p>In the rare case that two people try to edit the same record at the same time, MainBoss will report a <span class="NewTerm">concurrency error</span>.</p>
+
+<p>For example, suppose you start editing a <span class="CPanel">Units</span> table record and before you're done, someone else tries to edit the same record. The first person to save the record will succeed. The second person to save the record will receive an error message indicating that the record has changed while you were making your changes:</p>
+
+<p><img src="image025.png" alt="MainBoss" /></p>
+
+<p>MainBoss is asking you to resolve conflicts between the changes that were just made. The error message lists the fields in the record. For each field, there are three columns:</p>
+
+<ul class="b1"><li>The first column shows the field's value at the time you began editing</li>
+<li>The second shows what the value is now (saved by the other person)</li>
+<li>The third shows the new value you've specified yourself
+</li></ul><p>Where the values are different, you can see fields where your values differed from the other persons. The <span class="CButton">Next Conflict</span> and <span class="CButton">Previous Conflict</span> buttons jump to fields where the values conflict.</p>
+
+<p>As shown in the picture, some field values will look like nonsense strings of characters. These strings are actually links to other tables. For example, the "<span class="CField">Category</span>" field refers to an entry in the <span class="CPanel">Unit Categories</span> list. The field's value is a meaningless string that serves as a pointer. You can see if two pointers have the same value, but you can't tell anything about the record they point to.</p>
+
+<p>In case of a conflict, you have two choices:</p>
+
+<p class="wi"><span class="CButton">Yes</span>: Means you want the value you just typed in to overwrite the value from the other person.</p>
+<p class="wi"><span class="CButton">No</span>: Means you want to keep the value that's already in the database (the one saved by the other person).</p>
+<p>You must choose <span class="CButton">Yes</span> or <span class="CButton">No</span> for every field where values conflict.</p>
+
+<p>When conflicts occur, it's best to click the <span class="CButton">No</span> button on every conflict; this basically says, "Ignore what I just did." ) Then just go back and start editing the record again. This time you'll see the values that the other person put in. You can then decide which of these you want to change.</p>
+
+
+<p><a href="UsingEditors.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="ImportingandExportingDatainTables.htm">Next section &gt;</a></p>
+</body>
+</html>
+

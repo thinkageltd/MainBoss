@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<?include Common.wxi?>
+	<Module Id="Documentation.$(var.LCID)" Language="1033" Version="$(var.VERSION).$(var.UPDATE).$(var.BUILD)">
+		<Package Id="7FFDDAD8-7318-4C89-A37A-6E8FAA216AE9" Manufacturer="$(var.COMPANY)" InstallerVersion="200"/>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="MergeRedirectFolder">
+				<?include HelpFiles.wxs?>
+			</Directory>
+		</Directory>
+	</Module>
+</Wix>
+

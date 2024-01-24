@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="POLineItemTemplate" defaults="true" log="false" id="Id" xid="POLineTemplateID" labelkey="Purchase Item Template">
+	<field name="Id" read="RequiredGUID" />
+	<field name="POLineTemplateID" read="RequiredGUIDREF"  base="POLineTemplate"/>
+	<field name="ItemLocationID" type="RequiredGUIDREF"  link="ItemLocation">
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.PermanentOrTemporaryTaskItemLocationPickerTblCreator,Thinkage.MainBoss.Controls</extension>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Quantity" type="integer(min 1, max 2147483647, nonnull)" />
+	<extension name="deletemethod">delete</extension>
+	<extension name="costrights">PurchaseOrderItem</extension>
+  </table>
+  <table name="ItemLocation"/>
+  <table name="POLineTemplate"/>
+</database>

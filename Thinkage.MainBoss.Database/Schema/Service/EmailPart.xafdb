@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="EmailPart" defaults="false" log="false" id="Id" labelkey="Email Part">
+		<field name="Id" read="RequiredGUID"/>
+		<field name="ParentID" type="GUIDREF" link="EmailPart" labelkey="Email Part">
+			<doc>The parent EmailPart record to this part</doc>
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="EmailRequestID" type="RequiredGUIDREF" link="EmailRequest" cascade="true">
+			<doc>Which EmailRequestID this part originates with</doc>
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="ContentType" type="string(minlength 1, 128, lines 0, trim both)" labelkey="Content Type">
+			<doc>Expected MIME identification type and subtype </doc>
+		</field>
+		<field name="ContentTypeDisposition" type="string(minlength 1, 128, lines 0, trim both)" labelkey="Content Type Disposition">
+			<doc>From rfc1806 Should normally be "inline" or "attachment"</doc>
+		</field>
+		<field name="ContentEncoding" type="string(minlength 1, 128, lines 0, trim both)" labelkey="Content Encoding">
+			<doc>Expected MIME identification content encoding</doc>
+		</field>
+		<field name="Header" type="MultiLineUnlimited">
+			<doc>The full header for this Part</doc>
+		</field>
+		<field name="ContentLength" type="RequiredCount" labelkey="Content Length">
+			<doc>The length of "Content"</doc>
+		</field>
+		<field name="Name" type="string(minlength 1, 128, lines 0, trim both)">
+			<doc>The name of the section from "Content-Type", if it can be determined.</doc>
+		</field>
+		<field name="FileName" type="string(minlength 1, 128, lines 0, trim both)">
+			<doc>the file name from the "Content-Disposition" if it can be determined.</doc>
+		</field>
+		<field name="Order" type="integer(16, nonnull)">
+			<doc>The order the part originated when deconstructed from the email message</doc>
+		</field>
+		<field name="Content" type="blob(minlength 0, maxlength 2147483647)">
+			<doc>The unencoded contents of the part</doc>
+		</field>
+		<extension name="deletemethod">delete</extension>
+	</table>
+	<table name="EmailRequest"/>
+</database>

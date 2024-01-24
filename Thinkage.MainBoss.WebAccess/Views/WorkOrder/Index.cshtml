@@ -1,0 +1,62 @@
+@model IEnumerable<WorkOrderEntities.WorkOrder>
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.Web.Mvc.Html
+
+@{
+	Layout = "~/Views/Shared/_LayoutBrowse.cshtml";
+	ViewBag.Title = T.Text("Assigned Work Orders");
+}
+@section BrowseContent {
+	<thead>
+		<tr>
+			<th>
+				@Html.NBSP()
+			</th>
+			<th>
+				@(T.Text("Number"))
+			</th>
+			<th>
+				@(T.Text("Priority"))
+			</th>
+			<th>
+				@(T.Text("Status"))
+			</th>
+			@*			@if (! Request.Browser.IsMobileDevice) { *@
+			<th class="Subject">
+				@(T.Text("Subject"))
+			</th>
+			@*			} *@
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model) {
+			<tr class="Info">
+				<td>
+					@(Html.ActionLink(T.Text("Close"), "Close", "WorkOrderStateHistory", new
+				{
+					ParentID = item.Id,
+					CurrentStateHistoryID = item.CurrentWorkOrderStateHistoryID
+				}, new
+				{
+					@class = "StateActionLink"
+				}))
+			</td>
+			<td>@(Html.ActionLink(item.Number, "View", new
+				{
+					id = item.Id,
+					resultMessage = ""
+				}))</td>
+			@(Html.CodeValue(item.WorkOrderPriority))
+			@(Html.CodeValue(item.CurrentWorkOrderStateHistory.WorkOrderStateHistoryStatus))
+			@*
+				@if (Request.Browser.IsMobileDevice) {
+				</tr>
+				<tr class="Subject">
+					<td>&nbsp;</td>
+				}
+			*@
+			<td class="Subject" colspan="2">@(item.Subject) </td>
+		</tr>
+		}
+	</tbody>
+}

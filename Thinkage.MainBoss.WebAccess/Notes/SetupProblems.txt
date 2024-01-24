@@ -1,0 +1,39 @@
+﻿When setting up MainBossWebAccess on GEHIRN, accessing the SQL Server on mozek:
+
+Initially, after creating a 'MainBossWebAccess' application in the DefaultWebSite on GEHIRN, with the virtual directory set to 'C:\inetpub\wwwroot\mainbossremote'
+IIS was configured to
+a) Disable Anonymous Authentication
+b) Enable Windows Authentication
+c) Disabled ASP.NET Impersonation (default)
+
+The application files were copied to the directory (published from VS) on \\GEHIRN\C$\inetput\wwwroot\mainbossremote and the Application Settings for the
+IIS application modified to add 'dbname = ThinkageMainBossErrorTracking' and 'dbserver = mozek.thoughts.thinkage.ca'
+
+On first access to http://gehirn/mainbossremote, the error received was
+Server Error in '/MainBossWebAccess' Application. Login failed for user 'THOUGHTS\GEHIRN$'. 
+
+To permit access from GEHIRN to MOZEK's SQL server, I had to:
+
+1) Create a domain account called IIS_GEHIRNSQL
+2) Configure MOZEK's SQL Logins to allow IIS_GEHIRNSQL to login
+3) Configure the MainBoss Database (ThinkageMainBossErrorTracking) to have IIS_GEHIRNSQL as a user of the database, and placed it in the 'MainBoss Role'
+(no need to add it to the Users table in MainBoss, but it DOES require access to the database as far as SQL is concerned)
+4) Change ASP.NET impersonation from disabled to enabled and to a specific User (THOUGHTS\IIS_GEHIRNSQL). This also required entering the password (which will
+end up in PLAIN text in the web.config file !) See http://support.microsoft.com/default.aspx?scid=kb;EN-US;329290
+for (old) information on how to fix this.
+
+On Next access after the above changes, the error received was:
+'Could not load file or assembly 'System.Web.Mvc' or one of its dependencies. Access is denied. '
+
+This was fixed by adding THOUGHTS\IIS_GEHIRNSQL with read/write file system privileges to the directory %SystemRoot%\Microsoft.NET\Framework64\versionNumber\Temporary ASP.NET Files.
+Note that on a non X64 system, the Framework is simply %SystemRoot%\Microsoft.NET\Framework\versionNumber\Temporary ASP.NET Files
+This was gleaned from http://msdn.microsoft.com/en-us/library/kwzs111e.aspx (ASP.NET Required Access Control Lists (ACLs))
+
+Next, I got 'No licenses found for the application 'MainBoss Web'; 
+this requires putting the MainBossWeb license into the MainBoss database.
+
+Next, I managed to get the FIRST (Home) page loaded, but nothing else; All results were HTTP Error 404.
+IIS on GEHIRN was running in CLASSIC mode! A note in the MVC global.asax file referred me to 	// visit http://go.microsoft.com/?LinkId=9394801
+
+I choose to configure my OWN application pool called MainBossWeb, running in Integrated mode, and switched the installed
+MainBossWebAccess to that pool.

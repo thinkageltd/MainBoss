@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ActualOtherWorkOutsideNonPO" defaults="true" log="false" id="Id" xid="DemandOtherWorkOutsideID" labelkey="Actual Per Job Outside">
+	<field name="Id" read="RequiredGUID" />
+	<field name="AccountingTransactionID" read="RequiredGUIDREF"  base="AccountingTransaction"/>
+	<field name="DemandOtherWorkOutsideID" type="RequiredGUIDREF" link="DemandOtherWorkOutside">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="VendorID" type="RequiredGUIDREF"  link="Vendor">
+	  <doc>The ID of the Vendor to purchase this other work from</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Quantity" type="RequiredQuantity" />
+	<field name="CorrectionID" type="RequiredGUIDREF" link="ActualOtherWorkOutsideNonPO" labelkey="Actual Per Job Outside Correction">
+	  <doc>The ID of the original ActualOtherWorkOutsideNonPO record for a family of original record and its corrections</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="CorrectedQuantity" read="Quantity">
+	  <doc>
+		  The corrected quantity of this ActualOtherWorkOutsideNonPO and all corrections (all those with a CorrectionID linking
+		  to this record).  Note this is only stored in the main ActualOtherWorkOutsideNonPO record (with CorrectionID==ID),
+		  not in the correction records.
+	  </doc>
+	  <result hosting="cached">
+		cast(42 as Quantity)
+	  </result>
+	  <extension name="dependson">mbfn_ActualOtherWorkOutsideNonPO_CorrectedQuantity()</extension>
+	</field>
+	<field name="CorrectedCost" read="Currency">
+	  <doc>
+		  The corrected cost of this ActualOtherWorkOutsideNonPO and all corrections (all those with a CorrectionID linking
+		  to this record).  Note this is only stored in the main ActualOtherWorkOutsideNonPO record (with CorrectionID==ID),
+		  not in the correction records.
+	  </doc>
+	  <result hosting="cached">
+		cast(42 as Currency)
+	  </result>
+	  <extension name="dependson">mbfn_ActualOtherWorkOutsideNonPO_CorrectedCost()</extension>
+	</field>
+	<extension name="costrights">WorkOrderOutside</extension>
+  </table>
+  <table name="Demand"/>
+  <table name="DemandOtherWorkOutside"/>
+  <table name="AccountingTransaction"/>
+  <table name="Vendor"/>
+  <object class="function" name="mbfn_ActualOtherWorkOutsideNonPO_CorrectedQuantity">
+	<doc>
+	</doc>
+	<extension name="body">
+	(
+	  @ALONPOID uniqueidentifier -- ActualOtherWorkOutsideNonPO
+	)
+	RETURNS integer
+	as
+	begin
+	  return(
+		select sum(Quantity)
+			  from ActualOtherWorkOutsideNonPO
+			  where ActualOtherWorkOutsideNonPO.CorrectionID = @ALONPOID
+	  )
+	end
+	</extension>
+	<extension name="dependson">ActualOtherWorkOutsideNonPO.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualOtherWorkOutsideNonPO</extension>
+  </object>
+  <object class="function" name="mbfn_ActualOtherWorkOutsideNonPO_CorrectedCost">
+	<doc>
+	</doc>
+	<extension name="body">
+	(
+	  @ALONPOID uniqueidentifier -- ActualOtherWorkOutsideNonPO
+	)
+	RETURNS money
+	as
+	begin
+	  return (
+		select sum(Cost)
+		  from ActualOtherWorkOutsideNonPO
+			join AccountingTransaction on AccountingTransaction.ID = ActualOtherWorkOutsideNonPO.AccountingTransactionID
+		  where ActualOtherWorkOutsideNonPO.CorrectionID = @ALONPOID
+	  )
+	end
+	</extension>
+	<extension name="dependson">ActualOtherWorkOutsideNonPO.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualOtherWorkOutsideNonPO</extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualOtherWorkOutsideNonPO_Updates_Corrected">
+	<doc></doc>
+	<extension name="body">
+	  on ActualOtherWorkOutsideNonPO
+	  after insert, update, delete
+	  as
+	  begin
+		  update ActualOtherWorkOutsideNonPO
+			  set CorrectedQuantity = dbo.mbfn_ActualOtherWorkOutsideNonPO_CorrectedQuantity(ActualOtherWorkOutsideNonPO.ID),
+				  CorrectedCost = dbo.mbfn_ActualOtherWorkOutsideNonPO_CorrectedCost(ActualOtherWorkOutsideNonPO.ID)
+			  where ActualOtherWorkOutsideNonPO.ID in (
+					 select distinct CorrectionID from inserted
+			   union select distinct CorrectionID from deleted 
+			  )
+	  end
+	</extension>
+	<extension name="references">mbfn_ActualOtherWorkOutsideNonPO_CorrectedQuantity()</extension>
+	<extension name="references">mbfn_ActualOtherWorkOutsideNonPO_CorrectedCost()</extension>
+	<extension name="references">ActualOtherWOrkOutsideNonPO</extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualOtherWorkOutsideNonPO_Updates_DemandOtherWorkOutsideEtAl">
+	<doc></doc>
+	<extension name="body">
+	  on ActualOtherWorkOutsideNonPO
+	  after insert, update, delete
+	  as
+	  begin
+		  update DemandOtherWorkOutside
+			  set ActualQuantity = dbo.mbfn_DemandOtherWorkOutside_ActualQuantity(DemandOtherWorkOutside.ID),
+				  OrderQuantity = dbo.mbfn_DemandOtherWorkOutside_OrderQuantity(DemandOtherWorkOutside.ID)
+			  where DemandOtherWorkOutside.ID in (
+						select distinct DemandOtherWorkOutsideID from inserted
+				  union select distinct DemandOtherWorkOutsideID from deleted	
+				)
+		  update Demand
+			  set ActualCost = dbo.mbfn_DemandOtherWorkOutside_ActualCost(DemandOtherWorkOutside.ID)
+			  from Demand join DemandOtherWorkOutside on Demand.ID = DemandOtherWorkOutside.DemandID
+			  where Demand.ID in (
+						select distinct DemandID
+										from DemandOtherWorkOutside
+										join inserted on inserted.DemandOtherWorkOutsideID = DemandOtherWorkOutside.ID
+				  union select distinct DemandID
+										from DemandOtherWorkOutside
+										join deleted on deleted.DemandOtherWorkOutsideID = DemandOtherWorkOutside.ID
+				)
+	  end
+	</extension>
+	<extension name="references">mbfn_DemandOtherWorkOutside_ActualQuantity()</extension>
+	<extension name="references">mbfn_DemandOtherWorkOutside_OrderQuantity()</extension>
+	<extension name="references">mbfn_DemandOtherWorkOutside_ActualCost()</extension>
+	<extension name="references">DemandOtherWorkOutside</extension>
+	<extension name="references">Demand</extension>
+  </object>
+</database>

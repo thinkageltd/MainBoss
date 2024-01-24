@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Form Customization</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Form Customization</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="CustomizedTableSettings.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="SelectingMultipleTableEntries.htm">Next section &gt;</a></p>
+
+<p>MainBoss lets users with the <span class="CU">Administration</span> security role control what information is displayed in table viewers, editor windows, and report windows. This is done by means of <span class="NewTerm">form customization</span>. Using form customization, you can reduce the amount of information being displayed; this may be useful if you don't care about some of the usual information, or if you're working on a small display screen. (Note that some information cannot be removed from a window, e.g. compulsory fields.)</p>
+
+<p class="box">It is possible to disable form customization. To do so, go to the <span class="CMenu">View</span> menu and click <span class="CMenu">Form Customization</span>. In the resulting menu, remove the checkmark on <span class="CMenu">Enable</span>.
+
+<br /><br />If you are attempting to customize a window and it doesn't work, make sure that form customization is enabled (i.e. make sure that <span class="CMenu">Enable</span> has a checkmark beside it).</p>
+
+<p>To customize a particular table viewer, editor window or report window, click the drop-down arrow beside the customization button:</p>
+
+<p> <img src="image016.png" alt="MainBoss" /></p>
+
+<p>(This button appears in the top right corner of table viewers and report windows, but the bottom right corner of editor windows.) After clicking the drop-down arrow, click <span class="CMenu">Customize Form</span> in the resulting menu.</p>
+
+<p>MainBoss will display a window where you can use checkboxes to determine which information will appear in the associated form. Each table viewer, editor window and report window has its own customization form. For example, here's the form for customizing the <span class="CPanel">Work Orders</span> table viewer:</p>
+
+<p><img src="image017.png" alt="MainBoss" /></p>
+
+<p>There is a checkbox for each column that usually appears at the top of the table viewer. If you blank out a checkbox, the corresponding column will no longer appear in the table viewer.</p>
+
+<p>The <span class="CButton">Panel</span> button in the customization form lets you customize the panel that appears at the bottom of the table viewer (under the list of work orders). The <span class="CButton">Editor</span> button lets you customize the standard work order editor. If you click either button, MainBoss will open another window where you can use checkboxes to specify which information will and won't appear in the corresponding location.</p>
+
+<p>The customization form also has a button labeled <span class="CButton">Customize Work Order Report Form</span>. This lets you customize the standard report for printing work orders (<span class="CPanel">Work Orders</span> | <span class="CPanel">Print</span>). It is included here so that the same window lets you customize the work orders table viewer, the work orders editor, and the work order report.</p>
+
+<p>After you have specified any changes you want to make to a form, click <span class="CButton">Apply</span> to save those changes. Click <span class="CButton">Apply &amp; Close</span> to save the changes and close the customization window, or click <span class="CButton">Close</span> just to close the customization window.</p>
+
+<p class="box"><span class="CInset">Note:</span> If you customize a form, it will no longer match the help files associated with the form. For example, if your customization leaves out certain fields, the help files will still describe those fields. This may confuse people who wonder why the help file doesn't match what they see on the screen.</p>
+
+<p><span class="CInset">Publishing Your Customizations:</span> By default, any customizations you have made will be discarded when you quit MainBoss. If you want to keep your customizations from one MainBoss session to the next, you have to <span class="NewTerm">publish</span> them.</p>
+
+<p>To publish your customizations, go to the <span class="CMenu">View</span> menu, click <span class="CMenu">Form Customization</span>, and then click <span class="CMenu">Publish</span>. This saves <span class="Emphasis">all</span> your current customizations. From this point onward, those customizations will be used every time MainBoss starts. If you make a new customization, then want to go back to your old customizations, you can click <span class="CMenu">Restore from published</span> in the same menu.</p>
+
+<p>You can use <span class="CMenu">Clear all customization</span> from the same menu to get rid of all the customizations you have made. However, you'll go back to your published customizations the next time you start MainBoss, unless you <span class="CMenu">Clear all customization</span> and then <span class="CMenu">Publish</span> (so that the "cleared" customizations are your "official" ones).</p>
+
+<p><span class="CInset">Exporting Customizations:</span> You can save your current customizations in a file. This makes it easy to restore the customizations later if you wish, or to switch between different sets of customizations.</p>
+
+<p>To save your current customizations, go to the <span class="CMenu">View</span> menu, click <span class="CMenu">Form Customization</span>, and then click <span class="CMenu">Export</span>. MainBoss will ask you to specify the name of a file to hold your customizations.</p>
+
+<p>At a later date, you can use <span class="CMenu">Replace from file</span> in the same menu to get rid of any current customizations and instead use the ones you exported to the file. You can use <span class="CMenu">Add from file</span> in the same menu to add the saved customizations to any other customizations that are currently in effect. With <span class="CMenu">Add from file</span>, if a saved customization conflicts with one of your current customizations, the saved customization replaces your current one.</p>
+
+
+<p><a href="CustomizedTableSettings.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="SelectingMultipleTableEntries.htm">Next section &gt;</a></p>
+</body>
+</html>
+

@@ -1,0 +1,44 @@
+@model WorkOrderStateHistoryModel
+@using Thinkage.Libraries.MVC.Models
+@using Thinkage.MainBoss.Database
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.MainBoss.WebAccess.Models
+@using Thinkage.Web.Mvc.Html
+@{
+	Layout = "~/Views/Shared/_LayoutEditForm.cshtml";
+	ViewBag.Title = T.Text("Self Assign to Work Order {0}", ViewData["WorkOrderNumber"]);
+}
+@section EditFormContent {
+	@(Html.ValidationSummary(true, T.Text("Self Assign was unsuccessful. Please correct the errors and try again.")))
+	<div class="viewPanel">
+		<table>
+			<tbody>
+				@(Html.LabelValue(T.Text("Number"), dsMB.Schema.T.WorkOrder.F.Number.EffectiveType, Model.WorkOrderNumber))
+				@(Html.LabelValue(T.Text("Current State"), dsMB.Schema.T.WorkOrderState.F.Code.EffectiveType, Model.CurrentStateCode))
+				@(Html.LabelValue(T.Text("Current Status"), dsMB.Schema.T.WorkOrderStateHistoryStatus.F.Code.EffectiveType, Model.CurrentStatusCode))
+			</tbody>
+		</table>
+	</div>
+	<br />
+	@using (Html.BeginForm()) {
+		FormMap<WorkOrderStateHistoryModel> f = Thinkage.MainBoss.WebAccess.Models.WorkOrderStateHistoryRepository.StateHistoryForm;
+
+		<fieldset>
+			@(Html.HiddenFor(s => s.WorkOrderID))
+			@(Html.HiddenFor(s => s.WorkOrderStateID))
+			@(Html.HiddenFor(s => s.CurrentStateHistoryID))
+			@(Html.InputControlFor(f, s => s.EffectiveDate))
+			@if (Model.WorkOrderStateHistoryStatusPickList.Count<SelectListItem>() > 1) {
+				<p>
+					@(Html.LabelFor(f, s => s.WorkOrderStateHistoryStatusID))
+					@(Html.DropDownListFor(Model.WorkOrderStateHistoryStatusPickList, s => s.WorkOrderStateHistoryStatusID))
+					@(Html.ValidationMessageFor(s => s.WorkOrderStateHistoryStatusID))
+				</p>
+			}
+			@(Html.InputControlFor(f, s => s.Comment))
+			<p>
+				<input type="submit" value="@(T.Text("Self Assign"))" />
+			</p>
+		</fieldset>
+	}
+}

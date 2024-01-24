@@ -1,0 +1,507 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="dsDatabasesOnServerLabel§AccessError" xml:space="preserve">
+    <value>Erreur d'accès</value>
+  </data>
+  <data name="dsDatabasesOnServerLabel§Database" xml:space="preserve">
+    <value>Nom de la base</value>
+  </data>
+  <data name="dsDatabasesOnServerLabel§Databases On Server" xml:space="preserve">
+    <value>Bases de données sur le serveur</value>
+  </data>
+  <data name="dsDatabasesOnServerLabel§Id" xml:space="preserve">
+    <value>Ça</value>
+  </data>
+  <data name="dsDatabasesOnServerLabel§OrganizationName" xml:space="preserve">
+    <value>Nom de l'organisation</value>
+  </data>
+  <data name="dsDatabasesOnServerLabel§ServerName" xml:space="preserve">
+    <value>Nom du serveur</value>
+  </data>
+  <data name="dsDatabasesOnServerLabel§UserRecordExists" xml:space="preserve">
+    <value>Enregistrement d'utilisateur existe</value>
+  </data>
+  <data name="dsDatabasesOnServerLabel§Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§¯SQL Servers Enumerator" xml:space="preserve">
+    <value>Serveurs SQL recenseur</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§A password is not required for this authentication method" xml:space="preserve">
+    <value>Un mot de passe n'est pas requis pour cette méthode d'authentification</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§A username is not required for this authentication method" xml:space="preserve">
+    <value>Un nom d'utilisateur n'est pas nécessaire pour cette méthode d'authentification</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§A valid email address is required to send the full license to you." xml:space="preserve">
+    <value>Une adresse email valide est nécessaire pour vous envoyer la licence complète.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§About..." xml:space="preserve">
+    <value>À propos de...</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Add Existing Organization" xml:space="preserve">
+    <value>Ajouter organisation existante</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§AllUsers configuration has set the preferred organization to its configuration." xml:space="preserve">
+    <value>La configuration d'AllUsers a configuré l'organisation privilégiée dans sa configuration.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Application mode {0} is unknown" xml:space="preserve">
+    <value>Mode d'application {0} inconnu</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Backup file" xml:space="preserve">
+    <value>Le fichier de sauvegarde</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Backup Set number" xml:space="preserve">
+    <value>Numéro jeu de sauvegarde</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Cannot drop database '{0}'" xml:space="preserve">
+    <value>Impossible de supprimer la base de données '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Change Maintenance Organization" xml:space="preserve">
+    <value>Modifier l'organisation de maintenance</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Clear Default" xml:space="preserve">
+    <value>Effacer défaut</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Clear the default organization so MainBoss always asks you to select one on program startup" xml:space="preserve">
+    <value>Désactivez l'organisation par défaut afin MainBoss vous demande toujours de sélectionner l'un au démarrage du programme</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Close this organization and switch to a different organization" xml:space="preserve">
+    <value>Fermer cette organisation et passer à une autre</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Close this window" xml:space="preserve">
+    <value>Fermer cette fenêtre</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Contents" xml:space="preserve">
+    <value>Table des matières</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create Database from Backup" xml:space="preserve">
+    <value>Créer la base de données à partir de Backup</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create Database using 2.9 Export Data" xml:space="preserve">
+    <value>Créer la base de données en utilisant 2,9 Exporter des données</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create Empty Database" xml:space="preserve">
+    <value>Créer base de données vide</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create New Organization" xml:space="preserve">
+    <value>Créer un nouveau Organisation</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create New Organization from a Backup" xml:space="preserve">
+    <value>Créer un nouveau Organisation partir d'une sauvegarde</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create New Organization using MainBoss Basic 2.9 export file" xml:space="preserve">
+    <value>Créer un nouveau Organisation utilisant MainBoss de base 2,9 fichier d'exportation</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create the database and close this editor" xml:space="preserve">
+    <value>Créer la base de données et fermer cet éditeur</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Creating database {0} on database server {1}" xml:space="preserve">
+    <value>Création de la base de données {0} sur le serveur de base de données {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Creating database from backup file" xml:space="preserve">
+    <value>Création base de données à partir du fichier de sauvegarde</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Creating database from MB2.9 export data" xml:space="preserve">
+    <value>Création base de données à partir des données d'exportation MB2.9</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Creating empty database" xml:space="preserve">
+    <value>Créer base de données vide</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Creating new database from backup file" xml:space="preserve">
+    <value>Création d'une nouvelle base de données du fichier de sauvegarde</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Creating new database from data exported from MainBoss Basic" xml:space="preserve">
+    <value>Création d'une nouvelle base de données à partir des données exportées de MainBoss de base</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Credentials" xml:space="preserve">
+    <value>Pièce d'identité</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§CultureInfo" xml:space="preserve">
+    <value>Informations culturelles</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Database Operations" xml:space="preserve">
+    <value>Opérations de base de données</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Delete Database '{0}' from Server '{1}'. ALL Data will be destroyed" xml:space="preserve">
+    <value>Supprimer Database '{0}' du serveur '{1}'. Toutes les données seront détruites</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Delete database and organization" xml:space="preserve">
+    <value>Supprimer la base de données et l'organisation</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Delete the saved organization and its associated SQL database" xml:space="preserve">
+    <value>Supprimer l'organisation sauvé et sa base de données SQL associé</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Demonstration" xml:space="preserve">
+    <value>Démonstration</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Do you want to keep the database {0} on database server {1}" xml:space="preserve">
+    <value>Voulez-vous garder la base de données {0} sur le serveur de base de données {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Email Address" xml:space="preserve">
+    <value>Adresse électronique</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Exit" xml:space="preserve">
+    <value>&amp;Quitter</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Exit this application" xml:space="preserve">
+    <value>Quittez cette application</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Free Limited Single User" xml:space="preserve">
+    <value>Gratuit Limitée Utilisateur Unique</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Get Technical Support" xml:space="preserve">
+    <value>Obtenir un Support Technique</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Go to Help Index" xml:space="preserve">
+    <value>Aller à l'index de l'Aide</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Go to Help Table of Contents" xml:space="preserve">
+    <value>Aller à la table des matières de l'Aide</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Go to technical support information" xml:space="preserve">
+    <value>Aller à l'information de support technique</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Help" xml:space="preserve">
+    <value>Aid&amp;e</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Help Index" xml:space="preserve">
+    <value>Index de l'Aide</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Hide Panels" xml:space="preserve">
+    <value>Masquer les panneaux</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Import Conversion Step {0} Errors{1}" xml:space="preserve">
+    <value>Étape {0} de la conversion des données importées, erreurs{1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Import Conversion Step {0}{1}" xml:space="preserve">
+    <value>Étape {0} de la conversion des données importées {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Input SQL database {0}" xml:space="preserve">
+    <value>Entrer la base de données SQL {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Invalid CultureInfo '{0}'" xml:space="preserve">
+    <value>Informations culturelles '{0}' invalide</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Licenses To Request" xml:space="preserve">
+    <value>Licences à Demander</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Licenses were not received from the MainBoss license provider." xml:space="preserve">
+    <value>Les licences n'ont pas été reçues du fournisseur de licence MainBoss.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Licensing" xml:space="preserve">
+    <value>Licences</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Line {0}, Position {1}" xml:space="preserve">
+    <value>Ligne {0}, {1} Position</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Loading MainBoss 2.9 import data" xml:space="preserve">
+    <value>Chargement des données importées de MainBoss 2.9</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§MainBoss 2.9 data import has errors" xml:space="preserve">
+    <value>MainBoss 2.9 import de données a des erreurs</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§MainBoss 2.9 data imported" xml:space="preserve">
+    <value>Données provenant de MainBoss 2.9 importées</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§MainBoss 2.9 data imported with errors" xml:space="preserve">
+    <value>Données provenant de MainBoss 2.9 importées avec erreurs</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§MainBoss Basic 2.9 export file" xml:space="preserve">
+    <value>MainBoss Basic 2.9 fichier d'exportation</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§MB2.9 data source {0}" xml:space="preserve">
+    <value>Source de données MainBoss 2.9 {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§No License" xml:space="preserve">
+    <value>Pas de licence</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Open Organization" xml:space="preserve">
+    <value>Ouvrir une organisation</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Open the selected organization in the preferred mode specified in the saved organization" xml:space="preserve">
+    <value>Ouvrez l'organisation sélectionnée dans le mode par défaut spécifié dans l'organisation sauvé</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Organization {0}" xml:space="preserve">
+    <value>Organisation {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Organization record requires you to enter login credentials." xml:space="preserve">
+    <value>L'enregistrement d'organisation vous oblige à entrer les informations d'identification de connexion.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Organization record was created from the AllUsers configuration entry." xml:space="preserve">
+    <value>L'enregistrement d'organisation a été créé à partir de l'entrée de configuration d'AllUsers.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Organization record was updated from the AllUsers configuration entry." xml:space="preserve">
+    <value>L'enregistrement de l'organisation a été mis à jour à partir de l'entrée de configuration d'AllUsers.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§ProductName" xml:space="preserve">
+    <value>Nom du produit</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§ProductVersion" xml:space="preserve">
+    <value>Version du produit</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Remove from list" xml:space="preserve">
+    <value>Supprimer de la liste</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Remove the organization from the list of saved organizations. The underlying database is NOT deleted." xml:space="preserve">
+    <value>Retirer l'organisation de la liste des organisations enregistrées. La base de données sous-jacente ne est pas supprimé.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Reset to user {0} security" xml:space="preserve">
+    <value>Ramener à la sécurité {0} de l’utilisateur</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Restore Organization" xml:space="preserve">
+    <value>Rétablir l’organisation</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Restore the selected organization from one of its backups" xml:space="preserve">
+    <value>Restaurer l'organisation choisie parmi l'une de ses sauvegardes</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Run a script against the organization database" xml:space="preserve">
+    <value>Exécuter un script sur la base de données de l'organisation</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Run a SQL script against the selected organization" xml:space="preserve">
+    <value>Exécuter un script SQL contre l'organisation sélectionnée</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Run Script" xml:space="preserve">
+    <value>Exécuter le script</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Run Script has errors" xml:space="preserve">
+    <value>Exécuter le script a des erreurs</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Running script on database {0} on database server {1}" xml:space="preserve">
+    <value>Exécution du script sur la base de données {0} sur le serveur de base de données {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Running SQL script" xml:space="preserve">
+    <value>Exécution du script SQL</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Script file" xml:space="preserve">
+    <value>Fichier de script</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Script source {0}" xml:space="preserve">
+    <value>Source de script {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Script Step {0} Errors{1}" xml:space="preserve">
+    <value>Script Étape {0} Erreurs {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Script Step {0}{1}" xml:space="preserve">
+    <value>Script Étape {0}{1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Security roles will be set back to the logged in user name" xml:space="preserve">
+    <value>Les rôles de sécurité seront ramenés au nom de l'utilisateur ayant ouvert la session.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Select from available database servers" xml:space="preserve">
+    <value>Sélectionnez à partir de serveurs de bases de données disponibles</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Select from available databases" xml:space="preserve">
+    <value>Sélectionnez des bases de données disponibles</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Session" xml:space="preserve">
+    <value>Session</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Set Default" xml:space="preserve">
+    <value>Configuration par défaut</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Set default Organization" xml:space="preserve">
+    <value>Réglez Organisation par défaut</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Set the selected organization to be the one MainBoss opens by default" xml:space="preserve">
+    <value>Réglez l'organisation choisie pour être l'une MainBoss ouvre par défaut</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Show information about this application" xml:space="preserve">
+    <value>Afficher les renseignements sur cette application</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Source Database Name" xml:space="preserve">
+    <value>Nom de la base de données source</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§SQL Script completed {0}" xml:space="preserve">
+    <value>Script SQL complété {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§SQL Script completed with errors {0}" xml:space="preserve">
+    <value>Script SQL complété avec des erreurs {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§SQL servers enumerator" xml:space="preserve">
+    <value>serveurs SQL recenseur</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Start" xml:space="preserve">
+    <value>Début</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Start MainBoss showing only user's assignments." xml:space="preserve">
+    <value>Démarrer MainBoss en montrant uniquement les assignations de l’utilisateur</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Start MainBoss with all permitted licenses." xml:space="preserve">
+    <value>Démarrer MainBoss avec toutes les licences permises</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Start only MainBoss Requests" xml:space="preserve">
+    <value>Démarrer uniquement Demandes MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Start Support Connection" xml:space="preserve">
+    <value>Lancer Support Connection</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Start the MainBoss Administration program." xml:space="preserve">
+    <value>Démarrer le programme d'administration MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Start the Teamviewer support connection with Thinkage" xml:space="preserve">
+    <value>Démarrez la connexion de support Teamviewer avec Thinkage</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§The default application requires a newer database version" xml:space="preserve">
+    <value>L'application par défaut nécessite une version plus récente de la base de données</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§The following information will be sent to Thinkage when requesting the licenses" xml:space="preserve">
+    <value>Les informations suivantes seront envoyées à Thinkage lors de la demande des licences</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§The license provider returned an empty response" xml:space="preserve">
+    <value>Le fournisseur de licence a renvoyé une réponse vide</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§There is already a saved organization with this name" xml:space="preserve">
+    <value>Il existe déjà une organisation enregistrée avec ce nom</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§This application requires a newer database version" xml:space="preserve">
+    <value>Cette application nécessite une version plus récente de la base de données</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§This is not a MainBoss DataBase" xml:space="preserve">
+    <value>Ce ne est pas une base de données MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Unable to determine ActivationURI from network deployment" xml:space="preserve">
+    <value>Impossible de déterminer ActivationURI à partir du déploiement du réseau</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Unable to import organization into database {0} on server {1}" xml:space="preserve">
+    <value>Incapable d'importer l'organisation dans la base de données {0} sur le serveur {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Unknown source column in ColumnEvaluator" xml:space="preserve">
+    <value>Colonne de source inconnue dans ColumnEvaluator</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Upgrade" xml:space="preserve">
+    <value>Mise à jour</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Upgrade the database structure to the one used by this version of MainBoss" xml:space="preserve">
+    <value>Mise à niveau de la structure de base de données à celle utilisée par cette version de MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§User {0}" xml:space="preserve">
+    <value>Utilisateur {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§View the MainBoss sessions currently in use." xml:space="preserve">
+    <value>Afficher les sessions MainBoss en cours</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§WindowsVersion" xml:space="preserve">
+    <value>Version Windows</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§You require CONTROL permission, or ALTER ANY DATABASE, or be the db_owner" xml:space="preserve">
+    <value>Vous avez besoin d'une permission de CONTRÔLE, ou ALTER N'AVEZ PAS DE BASE DE DONNÉES, ou db_owner</value>
+  </data>
+</root>

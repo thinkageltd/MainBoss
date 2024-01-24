@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="POLineMiscellaneousTemplate" defaults="true" log="false" id="Id" xid="POLineTemplateID" labelkey="Purchase Miscellaneous Template">
+	<field name="Id" read="RequiredGUID" />
+	<field name="POLineTemplateID" read="RequiredGUIDREF"  base="POLineTemplate"/>
+	<field name="MiscellaneousID" type="RequiredGUIDREF"  link="Miscellaneous">
+	  <doc>Miscellaneous purchase reference</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Quantity" type="integer(min 1, max 2147483647, nonnull)" />
+	<extension name="deletemethod">delete</extension>
+	<extension name="costrights">PurchaseOrderMiscellaneous</extension>
+  </table>
+  <table name="Miscellaneous"/>
+  <table name="POLineTemplate"/>
+</database>

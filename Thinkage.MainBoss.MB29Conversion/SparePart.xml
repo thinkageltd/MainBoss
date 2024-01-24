@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+<table name="SparePart">
+<dependency table="Item"/>
+<dependency table="Unit"/>
+<data>
+INSERT INTO <ODB/>.dbo.SparePart ([ID],[ItemID],[UnitLocationID],[Quantity])
+	SELECT SP.[ID],I.[ID],UL.[LocationID],SP.[QTY]
+	from <IDB/>.dbo.SpareParts as SP
+		join <IDB/>.dbo.InvItems as I on SP.[ITEMKEY] = I.[KEY]
+		join <IDB/>.dbo.Units as U on SP.[EQUIPKEY] = U.[KEY]
+		join <IDB/>.dbo.UnitLinkages as UL on U.id = UL.id
+</data>
+</table>
+</dbconversion>

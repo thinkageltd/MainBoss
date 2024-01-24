@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="Schedule" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Schedule">
+	<doc>
+	  This record defines a schedule, i.e. the parameters to an algorithm which, given the scheduling history and in particular the last scheduled
+	  time, calculates the next scheduled time.
+	  This record implicitly defines a weekday availability and a seasonal availability, and two boolean values control whether unavailability based
+	  on these criteria cause the future schedule point to be deferred or not.
+	</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="RequiredCode"/>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="Desc" type="Desc"/>
+	<field name="Comment" type="Comment"/>
+	<field name="InhibitSeason" type="Requiredbool" labelkey="Off Season">
+	  <doc>
+		Causes seasonal unavailability to produce an unaltered scheduling time but marking the result as unavailable, causing a reschedule but no WO.
+		If this is false, seasonal unavability will instead cause the new scheduling time to be advanced (deferred) until seasonally available.
+	  </doc>
+	</field>
+	<field name="InhibitWeek" type="Requiredbool" labelkey="Disabled Weekday">
+	  <doc>
+		Causes weekday unavailability to produce an unaltered scheduling time but marking the result as unavailable, causing a reschedule but no WO
+		If this is false, seasonal unavability will instead cause the new scheduling time to be advanced (deferred) until weekday-available.
+	  </doc>
+	</field>
+	<field name="EnableSunday" type="Requiredbool">
+	  <doc>Available on Sunday</doc>
+	</field>
+	<field name="EnableMonday" type="Requiredbool">
+	  <doc>Available on Monday</doc>
+	</field>
+	<field name="EnableTuesday" type="Requiredbool">
+	  <doc>Available on Tuesday</doc>
+	</field>
+	<field name="EnableWednesday" type="Requiredbool">
+	  <doc>Available on Wednesday</doc>
+	</field>
+	<field name="EnableThursday" type="Requiredbool">
+	  <doc>Available on Thursday</doc>
+	</field>
+	<field name="EnableFriday" type="Requiredbool">
+	  <doc>Available on Friday</doc>
+	</field>
+	<field name="EnableSaturday" type="Requiredbool">
+	  <doc>Available on Saturday</doc>
+	</field>
+	<field name="InhibitIfOverdue" type="Requiredbool" labelkey="Overdue">
+	  <doc>Causes the WO generation to be inhibited (no WO) but still advance the schedule if the new schedule date is in the past</doc>
+	</field>
+	<field name="SeasonStart" type="DayOfYear">
+	  <doc>The first available day of the season.</doc>
+	</field>
+	<field name="SeasonEnd" type="DayOfYear">
+	  <doc>The last available day of the season.</doc>
+	</field>
+	<extension name="deletemethod">hide</extension>
+  </table>
+</database>

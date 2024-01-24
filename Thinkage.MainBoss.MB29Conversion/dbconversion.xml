@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion" first="ConversionFunctions" last="CleanUp">
+  <include uri="Initialization.xml"/>
+
+  <include uri="BasicTables.xml"/>
+  <include uri="PostalAddress.xml"/>
+  <include uri="Storeroom.xml"/>
+  <include uri="Contact.xml"/>
+  <include uri="Vendor.xml"/>
+  <include uri="Employee.xml"/>
+  <include uri="Unit.xml"/>
+  <include uri="ServiceContract.xml"/>
+  <include uri="Meter.xml"/>
+  <include uri="Specification.xml"/>
+  <include uri="Inventory.xml"/>
+  <include uri="SparePart.xml"/>
+  <include uri="PurchaseOrders.xml"/>
+  <include uri="Tasks.xml"/>
+  <include uri="Schedule.xml"/>
+  <include uri="AtRequests.xml"/>
+  <!-- remove all work tables created in Initialization -->
+  <table name="CleanUp">
+	<data>
+drop function dbo.fn_DTIME;
+drop function dbo.fn_MONEY;
+DROP FUNCTION dbo.fn_DURATION;
+drop function dbo.fn_season;
+drop function dbo.fn_weekdays;
+drop function dbo.fn_weekday;
+	</data>
+  </table>
+</dbconversion>

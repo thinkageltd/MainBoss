@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+<!-- Construct postal address records for all tables that need to reference them. -->
+<table name="PostalAddress">
+<dependency table="SiteLinkages"/> 
+<dependency table="VendorLinkages"/>
+<data>
+delete from <IDB/>.dbo.CodeManagement;
+INSERT INTO <IDB/>.dbo.CodeManagement ([ID], [Code], [Hidden29])
+	SELECT B.[MAINBOSSID], B.[SITEID], 0
+	from <IDB/>.dbo.SITE as B
+	where B.MAINBOSSEXCLUDE = 0;
+
+INSERT INTO <IDB/>.dbo.CodeManagement ([ID], [Code], [Hidden29])
+	SELECT V.[MAINBOSSID], V.[VENDORID], 0
+	from <IDB/>.dbo.VENDOR as V
+	where V.MAINBOSSEXCLUDE = 0;
+
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.Location ([ID],[Desc],[Comment])
+	SELECT [MAINBOSSID],[DESCRIPTION], 'SITE'
+	from <IDB/>.dbo.SITE
+	where MAINBOSSEXCLUDE = 0;
+
+INSERT INTO <ODB/>.dbo.PostalAddress ([ID],[Code],[Hidden],[LocationID],[Address1],[Address2],[City],[Territory],[Country],[PostalCode])
+	SELECT SL.PostalAddressID, CM.[Code], CM.[HIDDEN30], SL.LocationID, LEFT([ADDR1], 30), LEFT([ADDR2], 30), [CITY], [STATE], [COUNTRY], [ZIP]
+	from <IDB/>.dbo.SITE as S
+	  join <IDB/>.dbo.SiteLinkages as SL on S.[MAINBOSSID] = SL.ID
+	  join <IDB/>.dbo.CodeManagement as CM on CM.[ID] = S.[MAINBOSSID]
+	where MAINBOSSEXCLUDE = 0;
+	
+INSERT INTO <ODB/>.dbo.Location ([ID],[Desc],[Comment]) 
+	SELECT VL.LocationID, [NAME], 'VENDOR'
+	from <IDB/>.dbo.VENDOR as V
+		join <IDB/>.dbo.VendorLinkages as VL on V.[MAINBOSSID] = VL.ID;
+
+INSERT INTO <ODB/>.dbo.PostalAddress ([ID],[Code],[Hidden],[LocationID],[Address1],[Address2],[City],[Territory],[Country],[PostalCode])
+	SELECT VL.PostalAddressID, CM.[CODE], CM.[HIDDEN30], VL.LocationID, LEFT([ADDR1], 30), LEFT([ADDR2], 30), [CITY], [STATE], [COUNTRY], [ZIP]
+	from <IDB/>.dbo.VENDOR as V
+		join <IDB/>.dbo.VendorLinkages as VL on V.[MAINBOSSID] = VL.ID
+	  join <IDB/>.dbo.CodeManagement as CM on CM.[ID] = V.[MAINBOSSID];
+</data>
+</table>
+</dbconversion>
+ 

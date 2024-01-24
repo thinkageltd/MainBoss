@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="BillableRequestor" defaults="true" log="false" id="Id" xid="ContactID Hidden" xunique="true" labelkey="Billable Requestor">
+	<field name="Id" read="RequiredGUID" />
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="ContactID" type="RequiredGUIDREF" link="Contact">
+	  <doc>Contact reference associated to this billable requestor</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Comment" type="Comment"  />
+	<field name="AccountsReceivableCostCenterID" type="RequiredGUIDREF"  link="CostCenter">
+	  <doc></doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<extension name="deletemethod">hide</extension>
+  </table>
+  <table name="Contact"/>
+  <table name="CostCenter"/>
+</database>

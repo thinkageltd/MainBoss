@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ItemAdjustmentCode" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Item Adjustment Code">
+	<doc>
+	  This record defines a particular reason for an inventory adjustment and provides the Cost Center that should be
+	  used for balancing any change in inventory value caused by the adjustment.
+	</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="RequiredCode"/>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="Desc" type="Desc"/>
+	<field name="Comment" type="Comment"/>
+	<field name="CostCenterID" type="RequiredGUIDREF" link="CostCenter">
+	  <doc>The Cost Center that is used for balancing the value change caused by the adjustment</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+
+	<extension name="deletemethod">hide</extension>
+  </table>
+  <table name="CostCenter"/>
+</database>

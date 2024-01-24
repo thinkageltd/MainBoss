@@ -1,0 +1,10 @@
+﻿/*
+	For the operation of the RequestComplete autocompletion widget.
+*/
+.ui-autocomplete {
+        max-height: 600px;
+        overflow-y: auto;
+        /* prevent horizontal scrollbar */
+        overflow-x: hidden;
+		list-style:none;
+    }

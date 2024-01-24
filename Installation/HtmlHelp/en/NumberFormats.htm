@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Number Formats</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Number Formats</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="MultiSelectFeatures.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="MainBossModules.htm">Next section &gt;</a></p>
+
+<p>MainBoss lets you specify the format of identification numbers for requests, work orders, and purchase orders. For example, you might want to give work orders identification numbers like <span class="CU">WO-000001</span>, <span class="CU">WO-000002</span>, and so on.</p>
+
+<p>Number formats are specified in the appropriate default sections. For example, you specify the number format for work orders in the <span class="CButton">Defaults for Work Orders</span> section of the <span class="CPanel">Work Orders</span> table viewer.</p>
+
+<p>The default format of work order identification numbers is given by</p>
+
+<pre>WO {0:D8}</pre>
+
+<p>This means the letters <span class="CU">WO</span>, followed by a blank character, followed by a number. The number is 8 digits long (specified by the <span class="CU">D8</span>) and is padded with leading zeros if necessary. To get the format discussed above, you would specify</p>
+
+<pre>WO-{0:D6}</pre>
+
+<p>This means the characters <span class="CU">WO-</span>, followed by a six-digit number, padded with leading zeroes if necessary.</p>
+
+<p class="box">If you have programming experience, you can specify very sophisticated number formats. These formats are represented by <span class="NewTerm">format strings</span> which will be passed to the Microsoft .NET <span class="CU">String::Format</span> library function. For more information, see Microsoft's .NET documentation.</p>
+
+
+<p><a href="MultiSelectFeatures.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="MainBossModules.htm">Next section &gt;</a></p>
+</body>
+</html>
+

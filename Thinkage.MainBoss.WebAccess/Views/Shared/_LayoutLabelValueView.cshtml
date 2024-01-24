@@ -1,0 +1,19 @@
+﻿@using Thinkage.Web.Mvc.Html;
+@{
+	Layout = "~/Views/Shared/_LayoutSite.cshtml";
+}
+@section MainContent {
+	<h2>@ViewBag.Title@RenderSection("LabelValueViewHeader", required: false)</h2>
+	@(Html.ResultMessage(@ViewData["ResultMessage"]))
+	<div class="viewPanel">
+		<table>
+			<tbody>
+				@RenderSection("LabelValueViewPanel")
+			</tbody>
+		</table>
+	</div>
+	@RenderSection("LabelValueViewTrailer", required: false)
+}
+@section scripts{
+	@RenderSection("scripts", required: false)
+}

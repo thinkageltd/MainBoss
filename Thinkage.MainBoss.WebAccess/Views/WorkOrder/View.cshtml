@@ -1,0 +1,196 @@
+@model WorkOrderEntities.WorkOrder
+@using Thinkage.MainBoss.WebAccess.Models
+@using Thinkage.MainBoss.Database
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.Web.Mvc.Html
+@using Thinkage.Libraries.MVC.Models
+@{
+	Layout = "~/Views/Shared/_LayoutLabelValueView.cshtml";
+	ViewBag.Title = T.Text("View WorkOrder {0}", Model.Number);
+}
+@section LabelValueViewHeader {
+	@(Html.NBSP())<a href="#History">@(T.Text("History"))</a>@if (Model.Resources.Count > 0) {@Html.NBSP()<a href="#Resources">@(T.Text("Resources"))</a>}
+}
+@section LabelValueViewPanel {
+@(Html.LabelValue(dsMB.Path.T.WorkOrder.F.Number, Model.Number))
+@(Html.LabelValue(dsMB.Path.T.WorkOrder.F.Subject, Model.Subject))
+@(Html.CodeDescLabelValue(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderStateID, Model.CurrentWorkOrderStateHistory.WorkOrderState))
+@(Html.CodeDescLabelValue(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderStateHistoryStatusID, Model.CurrentWorkOrderStateHistory.WorkOrderStateHistoryStatus))
+@(Html.LabelValue(dsMB.Path.T.WorkOrder.F.RequestorID, Html.ValueIfDefined<WorkOrderEntities.Requestor>(Model.Requestor, m => Html.ContactValue(m.Contact.Code, m.Contact.BusinessPhone, m.Contact.Email, m.Contact.Hidden != null || m.Hidden != null))))
+@if (Model.UnitLocationID != null) {@(Html.LabelActionValue<WorkOrderEntities.Location>(dsMB.Path.T.WorkOrder.F.UnitLocationID, Model.UnitLocation, m => m.Code, i => Model.UnitLocationID, m => m.DerivedRelativeLocation.Hidden != null))}
+@(Html.LabelValue(dsMB.Path.T.WorkOrder.F.StartDateEstimate, Model.StartDateEstimate))
+@(Html.LabelValue(dsMB.Path.T.WorkOrder.F.EndDateEstimate, Model.EndDateEstimate))
+@(Html.CodeDescLabelValue(dsMB.Path.T.WorkOrder.F.WorkCategoryID, Model.WorkCategory))
+@(Html.CodeDescLabelValue(dsMB.Path.T.WorkOrder.F.AccessCodeID.F.Code, Model.AccessCode))
+@(Html.CodeDescLabelValue(dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Code, Model.WorkOrderPriority))
+@(Html.CodeDescLabelValue(dsMB.Path.T.WorkOrder.F.ProjectID, Model.Project))
+@(Html.LabelValueMultiLine(dsMB.Path.T.WorkOrder.F.Description, Model.Description, false))
+@(Html.LabelValueMultiLine(dsMB.Path.T.WorkOrder.F.ClosingComment, Model.ClosingComment, true))
+}
+@section LabelValueViewTrailer {
+	@(Html.ActionLink(T.Text("Add Comment"), ((bool)ViewData["UnAssigned"]) ? "UnAssignedAddComment" : "AddComment", "WorkOrderStateHistory", new
+		{
+			ParentID = Model.Id,
+			CurrentStateHistoryID = Model.CurrentWorkOrderStateHistoryID
+		}, new
+		 {
+			 @class = "StateActionLink"
+		 }))
+	@if ((bool)ViewData["UnAssigned"]) {
+		if ((bool)ViewData["CanSelfAssign"]) {
+			@(Html.ActionLink(T.Text("Self Assign"), "SelfAssign", "WorkOrderStateHistory", new
+			{
+				ParentID = Model.Id,
+				CurrentStateHistoryID = Model.CurrentWorkOrderStateHistoryID
+			}, new
+			{
+				@class = "StateActionLink"
+			}))
+		}
+	}
+	else { // The already assigned version allows Close
+		if (Model.CurrentWorkOrderStateHistory.WorkOrderState.FilterAsOpen) {
+
+			@(Html.ActionLink(T.Text("Close Work Order"), "Close", "WorkOrderStateHistory", new
+	 {
+		 ParentID = Model.Id,
+		 CurrentStateHistoryID = Model.CurrentWorkOrderStateHistoryID
+	 }, new
+				{
+					@class = "StateActionLink"
+				}))
+		}
+	}
+	<p></p>
+	<div id="History">
+		<h2>@(T.Text("Current History"))</h2>
+		<div class="viewHistoryItem">
+			<div class="title">
+				@(Model.CurrentWorkOrderStateHistory.EffectiveDate)@Html.NBSP()@if (Model.CurrentWorkOrderStateHistory.User != null && Model.CurrentWorkOrderStateHistory.User.Contact != null) {@(Model.CurrentWorkOrderStateHistory.User.Contact.Code)@Html.NBSP()}<span class="StateCode">@(Model.CurrentWorkOrderStateHistory.WorkOrderState.Code.Translate())</span>@if (Model.CurrentWorkOrderStateHistory.WorkOrderStateHistoryStatus != null) {@Html.NBSP()<span class="StatusCode">@(Model.CurrentWorkOrderStateHistory.WorkOrderStateHistoryStatus.Code)</span>}
+			</div>
+			<div class="body">
+				@if (Model.CurrentWorkOrderStateHistory.Comment != null) {
+					<div class="MultiLine">@(Model.CurrentWorkOrderStateHistory.Comment)</div>
+				}
+			</div>
+		</div>
+		<h2>@T.Text("All History")</h2>
+		<div>
+			@foreach (var h in (from wsh in Model.WorkOrderStateHistoryWorkOrder
+							   orderby wsh.EffectiveDate ascending
+							   select wsh)) {
+				<div class="viewHistoryItem">
+					<div class="title">
+						@(h.EffectiveDate)@Html.NBSP()@if (h.User != null && h.User.Contact != null) {@(h.User.Contact.Code)@Html.NBSP()}<span class="StateCode">@(h.WorkOrderState.Code.Translate())</span>@if (h.WorkOrderStateHistoryStatus != null) {@Html.NBSP()<span class="StatusCode">@(h.WorkOrderStateHistoryStatus.Code)</span>}
+					</div>
+					<div class="body">
+						@if (h.Comment != null) {
+							<div class="MultiLine">@(h.Comment)</div>
+						}
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+
+	@if (Model.Resources.Count > 0) {
+		<h2 id="Resources">@(T.Text("Resources"))</h2>
+		<div id="resourcePanel">
+			@using (Html.BeginForm("Actualize", "WorkOrder")) {
+				bool SelfAssignView = (bool)ViewData["UnAssigned"];
+				<fieldset>
+					@(Html.Hidden("OriginalValuesModel", SerializationUtils.Serialize(Model.Resources)))
+					@(Html.Hidden("WorkOrderID", ViewData["WorkOrderID"]))
+					<table>
+						<tr>
+							@if (!SelfAssignView) {
+								<th>
+									@Html.NBSP()
+								</th>
+								<th>
+									@(T.Text("Actualize"))
+								</th>
+							}
+							<th>
+								@(T.Text("Demanded"))
+							</th>
+							<th>
+								@(T.Text("Actual"))
+							</th>
+							<th>
+								@(T.Text("Remaining"))
+							</th>
+							@*			@if (!Request.Browser.IsMobileDevice) { *@
+							<th class="Subject" colspan="2">
+								@(T.Text("Description"))
+							</th>
+							@*			}*@
+						</tr>
+						@foreach (var item in Model.Resources) {
+							string checkId = String.Format("CheckBox_{0}", item.Id);
+							string inputId = String.Format("Input_{0}", item.Id);
+							<tr class="Info">
+								@if (!SelfAssignView) {
+									<td>@(item.CanBeActualized && Model.CurrentWorkOrderStateHistory.WorkOrderState.FilterAsOpen ? Html.CheckBox(checkId) : MvcHtmlString.Create("&nbsp;"))</td>
+									if (item.CanBeActualized && Model.CurrentWorkOrderStateHistory.WorkOrderState.FilterAsOpen) {
+										<td>@(Html.TextBox(inputId, item.RemainingToActualize, item.InputAttributes))@(Html.ValidationMessage(inputId))</td>
+									}
+									else {
+										<td></td>
+									}
+								}
+								<td class="IntegralValue">@(item.Quantity)</td>
+								<td class="IntegralValue">@(item.ActualQuantity)</td>
+								<td class="IntegralValue">@(item.RemainingToActualize)</td>
+								@*
+									@if (Request.Browser.IsMobileDevice) {
+										</tr>
+										<tr class="Subject">
+										<td>@Html.NBSP()</td>
+									}
+								*@
+								@(Html.ValueOnly(Thinkage.Libraries.TypeInfo.StringTypeInfo.Universe, item.Description.Description, item.Description.HiddenDescription))@Html.NBSP()@(Html.ValueOnly(Thinkage.Libraries.TypeInfo.StringTypeInfo.Universe, item.Description.Location, item.Description.HiddenLocation))
+							</tr>
+						}
+					</table>
+					@if (Model.CurrentWorkOrderStateHistory.WorkOrderState.FilterAsOpen && !SelfAssignView) {
+						var whyCantWe = Model.CannotActualizeBecause;
+						if (whyCantWe == null) {
+							<p><input type="submit" value="@(T.Text("Actualize Resources"))" /></p>
+						}
+						else {
+							<p>@T.Text("Actualize Resources is disabled.")<br />@whyCantWe</p>
+						}
+					}
+				</fieldset>
+			}
+		</div>
+	}
+	<div>
+		@(Html.BackOperation(T.Text("Back to List"), TempData))
+	</div>
+}
+@section scripts {
+	<script type="text/javascript">
+		$(function () {
+			$("input[type='text']").focus(function () {
+				$(this).css("background-color", "yellow");
+				var inputId = $(this).attr("id");
+				var checkId = inputId.replace(/Input_/gi, "CheckBox_");
+				var selector = "input[id='" + checkId + "']";
+				$(selector).attr("checked", "true");
+			});
+			$("input[type='text']").blur(function () {
+				$(this).css("background-color", "white");
+			});
+			$(".selector").accordion({ header: "h2" });
+			$("#History").accordion({
+				collapsible: true,
+				active: 0,
+				heightStyle: "content"
+			});
+		});
+	</script>
+}
+
+

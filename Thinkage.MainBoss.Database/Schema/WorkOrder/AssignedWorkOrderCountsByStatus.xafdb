@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="AssignedWorkOrderCountsByStatus" defaults="false" log="false" id="Id" labelkey="">
+		<field name="Id" read="RequiredGUID"/>
+		<field name="WorkOrderAssigneeID" type="RequiredGUIDREF" link="WorkOrderAssignee" labelkey="Assignee"/>
+		<field name="WorkOrderStateHistoryStatusID" type="RequiredGUIDREF" link="WorkOrderStateHistoryStatus" labelkey="Status"/>
+		<field name="WorkOrderCount" type="RequiredQuantity"  />
+		<extension name="query">
+		select  X.WorkOrderStateHistoryStatusID, X.WorkOrderAssigneeID, X.WorkOrderStateHistoryStatusId, count(*)
+			from (select WO.ID, WOAsst.WorkOrderAssigneeId, WOSH.WorkOrderStateHistoryStatusID
+				from WorkOrder as WO
+					join WorkOrderStateHistory as WOSH on WOSH.Id = WO.CurrentWorkOrderStateHistoryId
+					join WorkOrderState as WOS on WOS.Id = WOSH.WorkOrderStateId
+					join (
+						select distinct WorkOrderID, WorkOrderAssigneeID from WorkOrderAssignment
+								union -- distinct
+									select distinct D.WorkOrderID, WOAee.Id
+										from
+											DemandLaborInside as DLI
+											join Demand as D on D.Id = DLI.DemandID
+											join LaborInside as LI on LI.Id = DLI.LaborInsideID
+											join Employee as E on E.Id = LI.EmployeeId
+											join WorkOrderAssignee as WOAee on WOAee.ContactId = E.ContactID
+								union -- distinct
+									select distinct D.WorkOrderID, WOAee.Id
+										from
+											DemandOtherWorkInside as DOWI
+											join Demand as D on D.Id = DOWI.DemandID
+											join OtherWorkInside as OWI on OWI.Id = DOWI.OtherWorkInsideID
+											join Employee as E on E.Id = OWI.EmployeeId
+											join WorkOrderAssignee as WOAee on WOAee.ContactId = E.ContactID
+							) as WOAsst(WorkOrderID, WorkOrderAssigneeId) on WOAsst.WorkOrderID = WO.ID
+				where WOS.FilterAsOpen != 0 and WOSH.WorkOrderStateHistoryStatusId is not null
+				) as X(WorkOrderID, WorkOrderAssigneeID, WorkOrderStateHistoryStatusID)
+				group by WorkOrderStateHistoryStatusId, X.WorkOrderAssigneeID
+		</extension>
+		<extension name="dependson">WorkOrder</extension>
+		<extension name="dependson">WorkOrderStateHistory</extension>
+		<extension name="dependson">WorkOrderState</extension>
+		<extension name="dependson">WorkOrderAssignment</extension>
+		<extension name="dependson">WorkOrderAssignee</extension>
+		<extension name="dependson">DemandLaborInside</extension>
+		<extension name="dependson">DemandOtherWOrkInside</extension>
+		<extension name="dependson">Demand</extension>
+		<extension name="dependson">LaborInside</extension>
+		<extension name="dependson">OtherWorkInside</extension>
+		<extension name="dependson">Employee</extension>
+		<extension name="dependson">WorkOrderStateHistoryStatus</extension>
+	</table>
+	<table name="WorkOrder"/>
+	<table name="WorkOrderState"/>
+	<table name="WorkOrderStateHistory"/>
+	<table name="WorkOrderAssignment"/>
+	<table name="WorkOrderAssignee"/>
+	<table name="DemandLaborInside"/>
+	<table name="DemandOtherWOrkInside"/>
+	<table name="Demand"/>
+	<table name="LaborInside"/>
+	<table name="OtherWorkInside"/>
+	<table name="Employee"/>
+	<table name="WorkOrderStateHistoryStatus"/>
+</database>

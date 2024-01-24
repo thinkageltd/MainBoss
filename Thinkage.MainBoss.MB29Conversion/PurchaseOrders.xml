@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+<table name="PurchaseOrderTemplate">
+<data>
+-- Only Prototype PO's were not excluded from input set
+
+delete from <IDB/>.dbo.CodeManagement;
+INSERT INTO <IDB/>.dbo.CodeManagement
+	(ID, [CODE])
+		SELECT PO.ID, COALESCE(PO.[PONUM],'PO')
+	from <IDB/>.dbo.Purchases as PO
+	WHERE PO.EXCLUDE = 0;
+
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.PurchaseOrderTemplate
+	([ID], [Code], [Subject], [Comment], [RequiredByInterval], [VendorID], [ShipToLocationID],
+		[ShippingModeID], [PaymentTermID], [CommentToVendor], SelectPrintFlag)
+
+	SELECT PO.[ID], CM.[CODE], PO.[DESC], PO.[COMMENT], dbo._INew(0,0,0,0,0), V.[ID],
+		B.[ID], SM.[ID], PT.[ID], PO.[VCOMMENT], 1
+	from <IDB/>.dbo.Purchases as PO
+		join <IDB/>.dbo.CodeManagement as CM on CM.[ID] = PO.[ID]
+		join <IDB/>.dbo.Vendors as V on PO.[VENDOR] = V.[KEY]
+		left join <IDB/>.dbo.Buildings as B on PO.[SHIPTO] = B.[KEY]
+		left join <IDB/>.dbo.ShippingModes as SM on PO.[SHIPPING] = SM.[CODE]
+		left join <IDB/>.dbo.Terms as PT on PO.[TERMS] = PT.[CODE]
+	WHERE PO.EXCLUDE = 0;
+</data>
+</table>
+</dbconversion>

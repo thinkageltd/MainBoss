@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Specifying a Schedule Basis</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Specifying a Schedule Basis</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Unit Maintenance Plan.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Unplanned Maintenance Work Order.htm">Next section &gt;</a></p>
+
+<p>The <span class="NewTerm">schedule basis</span> for a unit maintenance plan is when MainBoss should start the clock ticking for scheduling future tasks. For example, suppose you're setting up MainBoss and you specify that a particular vehicle needs an oil change every three months. During set-up, you have to tell MainBoss the last time that vehicle had an oil change; then MainBoss can correctly schedule oil changes in future.</p>
+
+<p>Similarly, when you buy new equipment that needs planned maintenance, you must specify when to start the clock for future maintenance. Usually, the schedule basis will be the day you start using the equipment.</p>
+
+<p>For tasks that are scheduled by meter readings rather than date, the schedule basis is the meter reading on which to base future planned maintenance. For example, if a vehicle gets an oil change every 3000 miles, the schedule basis is the odometer reading for the most recent time the oil was changed.</p>
+
+<p><span class="CInset">Important:</span> If you use <span class="CButton">New Unplanned Maintenance Work Order</span> (from <span class="CPanel">Unit Maintenance Plans</span>) to create a new work order, the new work order will become a basis for future scheduling. The date when you create the work order becomes both the "<span class="CField">Work Start Date</span>" and the "<span class="CField">Scheduled Date</span>" for the work order. As a result:</p>
+
+<ul class="b1"><li>If the unit maintenance plan's timing basis is "<span class="CField">Scheduled Date</span>", the date you made the unplanned work order will be the basis for future scheduling.</li>
+<li>If the unit maintenance plan's timing basis is "<span class="CField">Work Start Date</span>", the "<span class="CField">Work Start Date</span>" of the unplanned work order will be the basis for future scheduling. By default, this is the date when you created the work order.</li>
+<li>If the unit maintenance plan's timing basis is "<span class="CField">Work End Date</span>", the "<span class="CField">Work End Date</span>" of the unplanned work order will be the basis for future scheduling. By default, this is the date when you created the work order plus the "<span class="CField">Duration</span>" of the task.
+</li></ul><p>You may change the "<span class="CField">Work Start Date</span>" and/or "<span class="CField">Work End Date</span>" of the unplanned work order, in which case the new date will be used as the schedule basis. (This is also true for preventive maintenance work orders that are generated using <span class="CPanel">Unit Maintenance Plans</span> | <span class="CPanel">Generate Planned Maintenance</span>.)</p>
+
+<p>If a preventive maintenance job is scheduled by meter reading, creating an unplanned maintenance work order causes MainBoss to calculate an estimated meter reading based on the current date. For best results, you should take an actual meter reading on the unit when you carry out the unplanned work order; this will avoid any inaccuracies that may arise by MainBoss calculating an estimate rather than using a real meter reading.</p>
+ 
+
+<p>To set the schedule basis for a unit maintenance plan, go to the unit maintenance plan viewer (<span class="CPanel">Coding Definitions</span> | <span class="CPanel">Unit Maintenance Plans</span>). Select the task whose basis you want to set, then click <span class="CButton">Change Schedule Basis</span>. MainBoss opens a window that contains the following:</p>
+
+<p class="wi"><span class="CField">Unit Maintenance Plan</span>: The unit maintenance plan record for which you're specifying a basis.</p>
+<p class="wi"><span class="CField">New Scheduling Basis</span>: The date or meter reading that should serve as the basis for future task scheduling.</p>
+<p class="wi"><span class="CField">Comments</span>: Any comments you want to record (e.g. an explanation of why a particular date was chosen as the schedule basis).</p>
+<p class="wi"><span class="CButton">Save Scheduling Basis</span>: Saves the schedule basis you have specified. The window automatically closes after the value has been saved.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p>For more on unit maintenance plans, see <a href="UnitMaintenancePlans.htm">Unit Maintenance Plans</a>. For more on viewing unit maintenance plans, see <a href="Browse.Unit Maintenance Plan.htm">Viewing Unit Maintenance Plans</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Report.Unit Maintenance Plan.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Unplanned Maintenance Work Order.htm">Next section &gt;</a></p>
+</body>
+</html>
+

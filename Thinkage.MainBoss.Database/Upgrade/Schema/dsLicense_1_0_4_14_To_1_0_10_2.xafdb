@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database name="http://thinkage.ca/MB3/dsMB.xsd:dsLicense_1_0_4_14_To_1_0_10_2" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="Types.xafdb"/>
+
+	<type name="LicenseKey" type="string(minlength 1, nonnull, 29, lines 0, trim both)" />
+
+	<table name="License" defaults="false" log="false" id="Id">
+		<field name="Id" read="RequiredGUID" />
+		<field name="License" type="LicenseKey" />
+		<unique>
+			<field name="License"/>
+		</unique>
+		<field name="ApplicationID" type="integer(nonnull, 32)" />
+		<field name="ApplicationName" type="string(minlength 1, nonnull, 150, lines 0, trim both)" />
+		<field name="Expiry" type="datetime(min 1/1/1753, max 12/31/9999, by 1.00:00:00)" />
+		<field name="ExpiryModel" type="integer(nonnull, 16)" />
+		<field name="ExpiryModelName" type="string(minlength 1, nonnull, 150, lines 0, trim both)" />
+		<field name="LicenseCount" type="integer(nonnull, 64)" />
+		<field name="LicenseModel" type="integer(nonnull, 16)" />
+		<field name="LicenseModelName" type="string(minlength 1, nonnull, 150, lines 0, trim both)" />
+		<field name="LicenseID" type="integer(nonnull, 64)" labelkey="License Id"/>
+		<extension name="deletemethod">delete</extension>
+		<extension name="tablerights">Administrator=*</extension>
+	</table>
+</database>

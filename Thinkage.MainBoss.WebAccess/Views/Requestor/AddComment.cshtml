@@ -1,0 +1,65 @@
+@model RequestStateHistoryModel
+@using Thinkage.Libraries.MVC.Models
+@using Thinkage.MainBoss.Database
+@using Thinkage.Libraries.TypeInfo
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.MainBoss.WebAccess.Models
+@using Thinkage.Web.Mvc.Html
+@{
+	Layout = "~/Views/Shared/_LayoutEditForm.cshtml";
+	ViewBag.Title = T.Text("Add Remarks to Request {0}", ViewData["ParentXID"]);
+}
+@section EditFormContent {
+	@(Html.ValidationSummary(true, T.Text("Save Remarks was unsuccessful. Please correct the errors and try again.")))
+	<br />
+	<div class="viewPanel">
+		<table>
+			<tbody>
+				@(Html.LabelValue(dsMB.Path.T.Request.F.Number, Model.RequestNumber))
+				@(Html.LabelValue(dsMB.Path.T.Request.F.Subject, Model.RequestSubject))
+				@(Html.LabelValueMultiLine(dsMB.Path.T.Request.F.Description, Model.RequestDescription, false))
+			</tbody>
+		</table>
+		<div id="LastComment">
+			<h2>@(T.Text("Most Recent Comments"))</h2>
+			<div class="MultiLine">@(Model.LastRequestorComment)</div>
+		</div>
+	</div>
+	@using (Html.BeginForm()) {
+		FormMap<RequestStateHistoryModel> f = Thinkage.MainBoss.WebAccess.Models.RequestStateHistoryRepository.StateHistoryForm;
+		<fieldset>
+			@(Html.HiddenFor(s => s.RequestID))
+			@(Html.HiddenFor(s => s.RequestStateID))
+			@(Html.HiddenFor(s => s.RequestStateHistoryStatusID))
+			@(Html.HiddenFor(s => s.CurrentStateHistoryID))
+			@(Html.InputControlFor(f, s => s.EffectiveDate, null, new
+		{
+			@hidden = "true"
+		}))
+			<p>
+				@(Html.LabelOnly(T.Text("Confirm your email address")))
+				@(Html.InputControlFor(f, m => m.EmailAddress, null, new {
+					@data_val = "true",
+					@data_val_required = "This is required"
+					
+			}))
+			</p>
+			@(Html.InputControlFor(f, s => s.CommentToRequestor, T.Text("Your Remarks")))
+			<p>
+				<input type="submit" value="@(T.Text("Save Remarks"))" />
+			</p>
+		</fieldset>
+	}
+}
+@section scripts {
+	<script type="text/javascript">
+		$(function () {
+			$(".selector").accordion({ header: "h2" });
+			$("#LastComment").accordion({
+				collapsible: true,
+				active: false,
+				heightStyle: "content"
+			});
+		});
+	</script>
+}

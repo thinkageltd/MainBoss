@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="WorkOrderAssignment" defaults="true" log="false" id="Id" xid="WorkOrderID WorkOrderAssigneeID" xunique="true" labelkey="Work Order Assignment">
+		<doc>
+	  Records in this table represent association of a WorkOrderAssignee to a WorkOrder. 
+	  Reassignment is done via deletion and creation of a new record
+	</doc>
+		<field name="Id" read="RequiredGUID" />
+		<field name="WorkOrderAssigneeID" type="RequiredGUIDREF" link="WorkOrderAssignee" cascade="true" labelkey="Assignee">
+			<doc>The WorkOrderAssignee assigned to WorkOrders.</doc>
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="WorkOrderID" type="RequiredGUIDREF" link="WorkOrder" cascade="true">
+			<doc>The WorkOrder the Assignee is assigned to</doc>
+			<extension name="linkage">captive</extension>
+		</field>
+		<extension name="deletemethod">delete</extension>
+		<extension name="lastupdate">WorkOrderID</extension>
+	</table>
+	<table name="WorkOrderAssignee"/>
+	<table name="WorkOrder"/>
+</database>

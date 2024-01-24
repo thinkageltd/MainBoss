@@ -1,0 +1,57 @@
+@model UnitEntities.Unit
+@using Thinkage.MainBoss.WebAccess.Models
+@using Thinkage.MainBoss.Database
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.Web.Mvc.Html
+@{
+	Layout = "~/Views/Shared/_LayoutLabelValueView.cshtml";
+	ViewBag.Title = T.Text("View Unit {0}", Model.BaseRelativeLocation.Code);
+}
+@section LabelValueViewHeader {
+	@if (Model.UnitGISLocationURL != null) {@(Html.NBSP())@(Html.ValueOnlyAsUrlLink(T.Text("Show on Map"), Model.UnitGISLocationURL))}
+}
+@section LabelValueViewPanel {
+	@(Html.LabelValue(dsMB.Path.T.Unit.F.RelativeLocationID.F.LocationID.F.Code, Model.BaseRelativeLocation.Code))
+	@(Html.LabelValue(dsMB.Path.T.Unit.F.RelativeLocationID.F.LocationID.F.Desc, Model.BaseRelativeLocation.BaseLocation.Desc))
+	@(Html.LabelValue(dsMB.Path.T.Unit.F.RelativeLocationID.F.ContainingLocationID.F.Code, Model.BaseRelativeLocation.BaseLocation.Code))
+	@(Html.LabelValue(dsMB.Path.T.Unit.F.RelativeLocationID.F.LocationID.F.GISLocation, Model.UnitGISLocation))
+	@(Html.LabelValue(dsMB.Path.T.Unit.F.Make, Model.Make))
+	@(Html.LabelValue(dsMB.Path.T.Unit.F.Model, Model.Model))
+	@(Html.LabelValue(dsMB.Path.T.Unit.F.Serial, Model.Serial))
+	@(Html.CodeDescLabelValue(dsMB.Path.T.Unit.F.UnitUsageID.F.Code, Model.UnitUsage))
+	@(Html.CodeDescLabelValue(dsMB.Path.T.Unit.F.UnitCategoryID.F.Code, Model.UnitCategory))
+	@(Html.CodeDescLabelValue(dsMB.Path.T.Unit.F.SystemCodeID.F.Code, Model.SystemCode))
+	@(Html.LabelValue(dsMB.Path.T.Unit.F.Drawing, Model.Drawing))
+	@(Html.LabelValueMultiLine(dsMB.Path.T.Unit.F.RelativeLocationID.F.LocationID.F.Comment, Model.BaseRelativeLocation.BaseLocation.Comment, true))
+}
+@section LabelValueViewTrailer {
+	@if (Model.BaseRelativeLocation.BaseLocation.AttachmentUnitLocation.Count() > 0) {
+		<h2>@(T.Text("Attachments"))</h2>
+		<div class="viewPanel">
+			<table>
+				<tbody>
+					@foreach (var a in (from att in Model.BaseRelativeLocation.BaseLocation.AttachmentUnitLocation
+									   orderby att.Code
+									   select att)) {
+						<tr>
+							@(Html.LabelOnly(a.Code))@(Html.ValueOnlyAsUrlLink(a.Path, a.Path))
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	}
+	@if (Model.BaseRelativeLocation.BaseLocation.SpecificationUnitLocation.Count() > 0) {
+		<h2>@(T.Text("Specifications"))</h2>
+		foreach (var a in (from att in Model.BaseRelativeLocation.BaseLocation.SpecificationUnitLocation
+						   orderby att.Code
+						   select att)) {
+			<div class="Specification">
+				<h3>@(a.Code)</h3>
+<pre>
+@(a.ReportText)
+</pre>
+			</div>
+		}
+	}
+}

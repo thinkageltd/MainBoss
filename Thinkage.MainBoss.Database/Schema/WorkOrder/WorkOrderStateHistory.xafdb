@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderStateHistory" defaults="true" log="false" id="Id" xid="WorkOrderID EffectiveDate" labelkey="Work Order State History">
+	<doc>Records all WorkOrderState transitions for a WorkOrder.</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="EntryDate" type="RequiredDateTime">
+	  <doc>The actual date/time the record was created</doc>
+	  <extension name="serversetsDateTime"/>
+	</field>
+	<field name="EffectiveDate" type="RequiredDateTime">
+	  <doc>The effective date this record applies to the WorkOrder.</doc>
+	  <extension name="servergetsDateTime"/>
+	</field>
+	<field name="UserID" type="GUIDREF" link="User">
+	  <doc>Link to the originator of this record; may be null because generation of state may be done by non mainboss user processes</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="EffectiveDateReadonly" type="Requiredbool">
+	  <doc>True if this particular state requires that the EffectiveDate not be changeable.</doc>
+	</field>
+	<field name="WorkOrderID" type="RequiredGUIDREF" link="WorkOrder" cascade="true">
+	  <doc>The WorkOrder record to which this history record applies.</doc>
+	  <extension name="linkage">owner</extension>
+	</field>
+	<unique>
+	  <field name="EffectiveDate"/>
+	  <field name="WorkOrderID"/>
+	</unique>
+	<field labelkey="State" name="WorkOrderStateID" type="RequiredGUIDREF" link="WorkOrderState">
+	  <doc>The actual state for this entry.</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field labelkey="Status" name="WorkOrderStateHistoryStatusID" type="GUIDREF" link="WorkOrderStateHistoryStatus">
+	  <doc>The state history status associated with this instance</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Comment" type="Comment">
+	  <doc>Comment as to why this particular history record exists</doc>
+	</field>
+	<extension name="costrights">UnitValue</extension>
+	<extension name="lastupdate"></extension>
+	<!-- We only want to limit the WorkOrders that refer to us, not our records themselves so we specify a null lastupdate designation to avoid the default EffectiveDate from being used -->
+  </table>
+  <object class="trigger" name="mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl">
+	<doc>
+	  Maintain the current state history reference in the WorkOrder.
+	  Maintain ActualItemLocation that depends on the state of a workorder.
+	  Optionally alter states or related Requests
+	</doc>
+	<extension name="body">
+	<!--
+	  When saving a new WO and a new RequestedWO record the code setting the request InProgress is only effective when the save order is
+	  (new WO, new RequestedWO, new WOStateHistory). The equally-valid order (new WO, new WOStateHistory, new RequestedWO)
+	  is handled by the RequestedWorkOrder trigger.
+	  TODO: It is a total misuse of the "FilterAs..." flags here. The states should have separate flags for use by this trigger,
+	  and the new request state should be identified by a db variable.
+	-->
+	  on WorkOrderStateHistory
+	  after insert
+	  as
+	  begin
+		  -- Theoretically we should do this after updates and before deletes too
+		  -- but those operations are not allowed by the app (at least, not in any
+		  -- manner that alters the result of the calculation).
+		  -- First, before updating the current WO state history ID, we check if any Request state transitions should be created.
+		  -- Request transistions are based solely on the New workorder state history value as defined in the ManageRequestTransition table
+		  if dbo._vgetManageRequestStates() = 1 begin
+				declare @datestamp datetime
+				declare @includeWSHComment bit
+				set @includeWSHComment = dbo._vgetCopyWSHCommentToRSH() -- TODO: in future a value in the WSH record itself to whether to include the WSH information
+				set @datestamp = dbo._DClosestValue(getdate(), 2, 100)
+
+				-- Same state (non-transition) case (Request State History remains in existing state
+				insert into RequestStateHistory (ID, EntryDate, EffectiveDate, EffectiveDateReadonly, UserID, RequestID, RequestStateID,
+									CommentToRequestor,
+									RequestStateHistoryStatusID, PredictedCloseDate)
+				select newid(), @datestamp, @datestamp, WSH.EffectiveDateReadonly, WSH.UserID, R.ID, MRST.ChangeToRequestStateID,
+					dbo.mbfn_UserMessageTranslateFromID(MRST.CommentToRequestorUserMessageKeyID, C.PreferredLanguage)
+					+
+					CASE WHEN @includeWSHComment = 1 and WStatus.Code IS NOT NULL
+					THEN Char(13)+Char(10)+'----'+Char(13)+Char(10)+WStatus.Code
+					ELSE ''
+					END
+					+
+					CASE WHEN  @includeWSHComment = 1 and WSH.Comment IS NOT NULL
+					THEN Char(13)+Char(10)+'----'+Char(13)+Char(10)+WSH.Comment
+					ELSE ''
+					END				
+					,
+					ORSH.RequestStateHistoryStatusID, ORSH.PredictedCloseDate
+
+				from RequestedWorkOrder as RWO
+				join Request as R on R.ID = RWO.RequestID
+					join Requestor on Requestor.ID = R.RequestorID
+					join Contact as C on C.Id = Requestor.ContactID	
+					join RequestStateHistory as ORSH on ORSH.ID = R.CurrentRequestStateHistoryID
+				
+					join inserted as WSH on WSH.WorkOrderID = RWO.WorkOrderID
+					left join WorkOrderStateHistoryStatus as WStatus on WStatus.ID = WSH.WorkOrderStateHistoryStatusID
+			  
+				join ManageRequestTransition as MRST
+					on MRST.RequestStateID = ORSH.RequestStateID and MRST.WorkOrderStateID = WSH.WorkOrderStateID 
+				where
+					-- where new state of request is  the same state it is in (e.g. Add a comment)
+					MRST.ChangeToRequestStateID = ORSH.RequestStateID
+					and
+					-- Only on requests where there is a single tied Work Order (this one)
+					(select count(*) from RequestedWorkOrder as CRWO where CRWO.RequestID = RWO.RequestID) = 1
+
+				-- Do the state transitions (where Request State History changes State)
+				while 1 = 1
+				begin
+					set @datestamp = dateadd(ms, 1000, @datestamp) -- use a 1000 millisecond interval between successive inserts
+					-- do the transition
+					insert into RequestStateHistory (ID, EntryDate, EffectiveDate, EffectiveDateReadonly, UserID, RequestID, RequestStateID,
+							 CommentToRequestor)
+					select newid(), @datestamp, @datestamp, WSH.EffectiveDateReadonly, WSH.UserID, R.ID, MRST.ChangeToRequestStateID,
+						 dbo.mbfn_UserMessageTranslateFromID(MRST.CommentToRequestorUserMessageKeyID, C.PreferredLanguage)
+						+
+						CASE WHEN @includeWSHComment = 1 and WStatus.Code IS NOT NULL
+						THEN Char(13)+Char(10)+'----'+Char(13)+Char(10)+WStatus.Code
+						ELSE ''
+						END
+						+
+						CASE WHEN  @includeWSHComment = 1 and WSH.Comment IS NOT NULL
+						THEN Char(13)+Char(10)+'----'+Char(13)+Char(10)+WSH.Comment
+						ELSE ''
+						END				
+					
+					from RequestedWorkOrder as RWO
+					join Request as R on R.ID = RWO.RequestID
+						join RequestStateHistory as ORSH on ORSH.ID = R.CurrentRequestStateHistoryID
+					join Requestor on Requestor.ID = R.RequestorID
+						join Contact as C on C.Id = Requestor.ContactID
+
+					join inserted as WSH on WSH.WorkOrderID = RWO.WorkOrderID
+					left join WorkOrderStateHistoryStatus as WStatus on WStatus.ID = WSH.WorkOrderStateHistoryStatusID
+					join ManageRequestTransition as MRST
+							on MRST.RequestStateID = ORSH.RequestStateID and MRST.WorkOrderStateID = WSH.WorkOrderStateID 
+						where
+							-- where new state of request is NOT the same state it is in (e.g. Add a comment)
+							MRST.ChangeToRequestStateID &lt;&gt; ORSH.RequestStateID
+							and							-- Only on requests where there is a single tied Work Order (this one)
+							(select count(*) from RequestedWorkOrder as CRWO where CRWO.RequestID = RWO.RequestID) = 1
+					-- we are done if there were no transitions, otherwise continue if the New Request State requires more transitions
+					-- or we transitioned from the same state to the same state; we create only ONE new history record
+					if @@ROWCOUNT = 0
+						break
+					set @includeWSHComment = 0 -- only include WSH comment ONCE if we do multiple transition records
+				end
+		  end
+
+		  update WorkOrder
+			  set CurrentWorkOrderStateHistoryID = dbo.mbfn_WorkOrder_CurrentWorkOrderStateHistory(WorkOrder.ID)
+			  where WorkOrder.ID in (
+				select WorkOrderID from inserted
+				)
+
+		-- Now that the work order state has changed, update the OnReserve counts of ItemLocations mentioned in Demands.
+		update ActualItemLocation
+			set OnReserve = dbo.mbfn_ActualItemLocation_OnReserve(ActualItemLocation.ID)
+			where ActualItemLocation.ItemLocationID in (
+					 select distinct ItemLocationID from DemandItem
+						   join Demand on DemandID = Demand.ID
+						   join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
+						   join inserted on inserted.ID = WorkOrder.CurrentWorkOrderStateHistoryID
+					  )
+
+	  end
+	;
+	</extension>
+	<extension name="references">WorkOrder</extension>
+	<extension name="references">WorkOrderStateHistory</extension>
+	<extension name="references">WorkOrderState</extension>
+	<extension name="references">Request</extension>
+	<extension name="references">Requestor</extension>
+	<extension name="references">Contact</extension>
+	<extension name="references">mbfn_UserMessageTranslate()</extension>
+	<extension name="references">RequestStateHistory</extension>
+	<extension name="references">RequestState</extension>
+	<extension name="references">RequestedWorkOrder</extension>
+	<extension name="references">mbfn_WorkOrder_CurrentWorkOrderStateHistory()</extension>
+	<extension name="references">mbfn_ActualItemLocation_OnReserve()</extension>
+	<!-- <extension name="dependson">ManageRequestStates</extension> We have no syntax to express depensency on a Variable -->
+  </object>
+  <variable name="ManageRequestStates" type="RequiredBool">
+	<doc>A flag indicating that MainBoss should attempt to automatically manage Request states based on related WO states to mimic MB Basic behaviour.</doc>
+  </variable>
+  <variable name="CopyWSHCommentToRSH" type="RequiredBool">
+	<doc>A flag indicating the WSH Comment contents and Status should be copied to the RSH CommentToRequestor on a Request state transition driven by an addition to the WSH</doc>
+  </variable>
+  <object class="trigger" name="mbtg_EnforceWorkOrderStateHistoryOrdering">
+	<doc>This enforces the fact that updates to history records cannot alter their existing EffectiveDate ordering for any particular WO</doc>
+	<extension name="body">
+	  on WorkOrderStateHistory
+	  for update
+	  as
+		declare @count int;	<!-- Because we can't use a WITH inside EXISTS(query) we need to query the count into a variable. -->
+		<!-- The following query yields the columns from the history table as they were before the update operation -->
+		with OriginalHistory as (
+			select WorkOrderStateHistory.Id, WorkOrderStateHistory.WorkOrderID, WorkOrderStateHistory.EffectiveDate
+			  from WorkOrderStateHistory
+			  left join inserted on WorkOrderStateHistory.id = inserted.id
+			  where inserted.id is null
+		  union
+			select Id, WorkOrderID, EffectiveDate
+			  from deleted
+		)
+		<!-- Count the number of records for which the update causes the predecessor or successor records (same WO) to change -->
+		select @count = count(*)
+		  from
+			(select
+			  Id,
+			  (select top 1 Id from WorkOrderStateHistory
+				where WorkOrderID = inserted.WorkOrderID and EffectiveDate &gt; inserted.EffectiveDate
+				order by EffectiveDate asc),
+			  (select top 1 Id from WorkOrderStateHistory
+				where WorkOrderID = inserted.WorkOrderID and EffectiveDate &lt; inserted.EffectiveDate
+				order by EffectiveDate desc)
+			from inserted) as newNeighbours(id, nextid, previd)
+		  inner join
+			(select
+			  Id,
+			  (select top 1 Id from OriginalHistory
+				where WorkOrderID = deleted.WorkOrderID and EffectiveDate &gt; deleted.EffectiveDate
+				order by EffectiveDate asc),
+			  (select top 1 Id from OriginalHistory
+				where WorkOrderID = deleted.WorkOrderID and EffectiveDate &lt; deleted.EffectiveDate
+				order by EffectiveDate desc)
+			from deleted) as oldNeighbours(id, nextid, previd)
+		  on newNeighbours.id = oldneighbours.id
+		  where oldNeighbours.nextId != newNeighbours.nextId
+			or (oldNeighbours.nextId is null and newNeighbours.nextId is not null)
+			or (oldNeighbours.nextId is not null and newNeighbours.nextId is null)
+			or oldNeighbours.previd != newNeighbours.previd
+			or (oldNeighbours.previd is null and newNeighbours.previd is not null)
+			or (oldNeighbours.previd is not null and newNeighbours.previd is null)
+		if @count &gt; 0 begin
+		  raiserror('EffectiveDate-order of records in table ''%s'' cannot be altered', 16, 1, 'WorkOrderStateHistory')
+		  rollback transaction
+		end
+	</extension>
+	<extension name="references">WorkOrderStateHistory</extension>
+  </object>
+  <object class="trigger" name="mbtg_EnforceNewWorkOrderStateHistoryOrdering">
+	<doc>This enforces the rule that new state history records cannot predate (in EffectiveDate order) existing ones for the same WO</doc>
+	<extension name="body">
+	  on WorkOrderStateHistory
+	  for insert
+	  as
+		declare @count int;	<!-- Because we can't use a WITH inside EXISTS(query) we need to query the count into a variable. -->
+		<!-- The following query yields the columns from the history table as they were before the insert operation -->
+		with OriginalHistory as (
+		  select WorkOrderStateHistory.Id, WorkOrderStateHistory.WorkOrderID, WorkOrderStateHistory.EffectiveDate
+			from WorkOrderStateHistory
+			left join inserted on WorkOrderStateHistory.id = inserted.id
+			where inserted.id is null
+		)
+		<!-- Count the number of History records that post-date any newly inserted ones on the same work orders -->
+		select @count = count(*)
+		  from OriginalHistory
+		  inner join inserted on OriginalHistory.WorkOrderID = inserted.WorkOrderID
+		  where OriginalHistory.EffectiveDate &gt; inserted.EffectiveDate
+		if @count &gt; 0 begin
+		  raiserror('EffectiveDate-order of new records in table ''%s'' must be later than those of existing records for the same %s', 16, 1, 'WorkOrderStateHistory', 'Work Order')
+		  rollback transaction
+		end
+	</extension>
+	<extension name="references">WorkOrderStateHistory</extension>
+  </object>
+  <table name="WorkOrder"/>
+  <table name="WorkOrderState"/>
+  <table name="WorkOrderStateHistoryStatus"/>
+  <table name="Request"/>
+  <table name="Requestor"/>
+  <table name="Contact"/>
+  <table name="RequestStateHistory"/>
+  <table name="RequestState"/>
+  <table name="RequestedWorkOrder"/>
+  <table name="User"/>
+</database>

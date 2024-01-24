@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<schema id="DatabaseScript"
+	targetNamespace="http://www.thinkage.ca/XmlNamespaces/MBUtility/Script"
+	elementFormDefault="qualified"
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://www.thinkage.ca/XmlNamespaces/MBUtility/Script"
+	xmlns:vs='http://schemas.microsoft.com/Visual-Studio-Intellisense'
+	xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+	vs:friendlyname='MainBoss MBUtility Script'
+	vs:ishtmlschema='false'
+	version='1.0'>
+  <!-- TODO: Figure out how to have context-free resolution of the following schemaLocation (embed the schema in the program???) -->
+  <import namespace='http://www.w3.org/2000/09/xmldsig#' schemaLocation='C:\Program Files\Microsoft Visual Studio 9.0\xml\Schemas\xmlsig.xsd'/>
+  <element name='Script' type='this:ScriptType'/>
+  
+  <!-- TODO: A method of passing a dataset from a command-line option into a temp table in the target DB:
+	  The script would have an element describing the information needed to build an optable entry to name the input file,
+	  a schema for the data, and the name of the table to place the data into. Note that if we start encrypting parts
+	  of the script files, these elements should remain unencrypted so users can obtain schema information. Alternatively,
+	  the Script command could have some syntax for extracting these schemata, either as XSD files or as empty instance documents. -->
+  <!-- TODO: A method of extracting output from steps, either a scalar (string text) to write to stdout, or a table to be written
+	  to a file named by an option. In the former case, the <Step> element could just have an attribute Output="ScalarStdout".
+	  In the latter case there would be an element to define the option (with all the optable info) that names the output file, with
+	  some identifying tag; then a <Step> would have attribute Output="tag1 tag2 tag3", and the step would be executed using ExecuteReturningTables, and
+	  the resulting tables written to the corresponding tags.-->
+  <!-- TODO: A form of <Step> that returns a timeout value to use for subsequent <Step>s -->
+  <!-- TODO: A form of <Step> that, rather than containing a bunch of SQL, refers to another <Step> element so that SQL common to multiple
+	  Cases does not have to be repeated. Perhaps these "named" steps should be defined before any of the Cases so it is clear they are shared. -->
+
+  <simpleType name='VersionString'>
+	<restriction base='string'>
+	  <pattern value='[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+'/>
+	</restriction>
+  </simpleType>
+
+  <simpleType name='ApplicationIDType'>
+	<union memberTypes='nonNegativeInteger'>
+	  <simpleType>
+		<restriction base='string'>
+		  <pattern value='\p{L}[\p{L}\p{N}_]*'/>
+		</restriction>
+	  </simpleType>
+	</union>
+  </simpleType>
+
+  <simpleType name='SingleLineText'>
+	<restriction base='string'>
+	  <pattern value='[^\p{Zl}\p{Zp}\p{C}]*'/>	<!-- everything except line separators, paragraph separators, and 'Other' (e.g. control characters) -->
+	</restriction>
+  </simpleType>
+
+  <complexType name='ScriptType'>
+	<sequence>
+	  <!-- The Description element is used to describe to the user what the script is for, and what it does. -->
+	  <element name='Description' type='string'/>
+	  <!-- The VerificationQuestion is used once a valid Case is found to describe to the user the dire consequence of running the script and asking
+		  if they are sure they want to do it. The text should end in a question which makes sense for a "Yes" response meaning go ahead and run the
+		  script and a "No" reponse meaning don't do it. -->
+	  <element name='VerificationQuestion' type='string' minOccurs='0'/>
+	  <!-- The DBHistoryEntry element describes how to build the default DatabaseHistory table entries for the script. -->
+	  <element name='HistoryEntry'>
+		<!-- The body of the element provides the Description field for the table -->
+		<complexType mixed='true'>
+		  <!-- The Subject attribute is used in canned messages for the Subject field in the table (something like "Script 'Ssssss' started"
+			  with the given Description, "Script 'Ssssss' completed" with ???statistics??? in the Description, and "Script 'Ssssss' failed"
+			  with the errors in the Description. The SQL code itself is free to make additional entries in this table. -->
+		  <attribute name='Subject' use='required'>
+			<simpleType>
+			  <restriction base='this:SingleLineText'>
+				<maxLength value='50'/>	<!-- reserve 50 additional characters for building the full message -->
+			  </restriction>
+			</simpleType>
+		  </attribute>
+		</complexType>
+	  </element>
+	  <element minOccurs='0' name='Licenses'>
+		<!-- This element controls the handling of the License command-line option; licenses on the command line can be saved to a table
+			in the database to allow SQL manipulations and/or they may be used in the CheckLicense element -->
+		<complexType>
+		  <!-- minOccurs defines the minimum number of times the command-line option can be specified (default 1) -->
+		  <attribute name='minOccurs' type='nonNegativeInteger'/>
+		  <!-- maxOccurs defines the maximum number of times the command-line option can be specified (default 1) -->
+		  <attribute name='maxOccurs'>
+			<simpleType>
+			  <union memberTypes="nonNegativeInteger">
+				<simpleType>
+				  <restriction base="NMTOKEN">
+					<enumeration value="unbounded"/>
+				  </restriction>
+				</simpleType>
+			  </union>
+			</simpleType>
+		  </attribute>
+		  <!-- SaveToTable names a table with the same structure as the License table but no XAF schema, where the licenses from the command line should be saved -->
+		  <attribute name='SaveToTable' type='NMTOKEN'/>
+		</complexType>
+	  </element>
+	  <element minOccurs='1' maxOccurs='unbounded' name='Case' type='this:CaseType'/>
+	  <element minOccurs='0' ref='ds:Signature'/>
+	</sequence>
+	
+	<!-- The DeemedReleaseDate attribute is used for version-based license checking. Default is antiquity, causing all such licenses to appear expired. -->
+	<attribute name='DeemedReleaseDate' type='date'/>
+	<!-- The MinEngineVersion and MaxEngineVersion attributes are used to manager versioning on scripts.
+		Scripts will be run by MBUtility as long as its version number falls within the range expressed in these attributes.
+		The default for MaxEngineVersion is MinEngineVersion; this means that each time the engine is changed, scripts must be
+		reviewed to verify that no feature removed from the engine will prevent the script from running. -->
+	<attribute name='MinEngineVersion' use='required' type='this:VersionString'/>
+	<attribute name='MaxEngineVersion' type='this:VersionString'/>
+  </complexType>
+
+  <complexType name='CaseType'>
+	<sequence>
+	  <group minOccurs='0' maxOccurs='unbounded' ref='this:CaseChecks'/>
+	  <!-- The SQL script to actually run. Once a case passes its Case Checks, the exclusive lock is made if requested, the "start" message added
+		  to the DatabaseHistory table, a transaction started, and the script element contents are executed one at a time in the order given.
+		  Note that allowing multiple elements here eliminates the need for GO directives; these are discouraged and someday will be forbidden.
+		  If a Script execution fails, the work is rolled back (preserving DatabaseHistory records written by the scripts) and a failure message
+		  added to DatabaseHistory and MBUtility will exit with a failure status. If all the scripts succeed, the success message is added to
+		  DatabaesHistory, the transaction is committed, and MBUtility will exit with a success status. -->
+		  <!-- TODO: Define what 'failure' and 'success' mean -->
+	  <element name='Script' type='string' minOccurs='1' maxOccurs='unbounded'/>
+	</sequence>
+	<!-- The UserValidation attribute determines if this case requires a valid User table and a record therein matching the user running the script.
+		This acts as a Case Check, i.e. if UserValidation is requested and fails, the case is bypassed and the next case considered. Default true -->
+	<attribute name='UserValidation' type='boolean'/>
+	<!-- The ApplicationID attribute, if used, causes a Session record to be created for the duration of the script (assuming this case is selected to run)
+		The attribute value is used as the Application identification in the record. Default is no Session record is created. -->
+	<attribute name='ApplicationID' type='this:ApplicationIDType'/>
+	<!-- The Exclusive attribute indicates whether an exclusive lock should be used on the DB to lock out all other users.
+		Note that this is NOT a Case Check; if the locking fails, the script fails (and not even any DB history records are created). Default false -->
+	<attribute name='Exclusive' type='boolean'/>
+  </complexType>
+
+  <group name='CaseChecks'>
+	<choice>
+	  <element name='CheckLicense'>
+	  <!-- This element is used to check if a particular license is available. -->
+		<complexType>
+		  <!-- ApplicationID names the licensing Application ID we are looking for; it can be numeric or a known Application name. -->
+		  <attribute name='ApplicationID' type='this:ApplicationIDType'/>
+		  <!-- LicenseSource defines the location(s) which should be searched to find the licenses -->
+		  <attribute name='LicenseSource'>
+			<simpleType>
+			  <restriction base='NMTOKEN'>
+				<enumeration value='Database'/>		<!-- the database License table is searched for the desired license -->
+				<enumeration value='CommandLine'/>	<!-- the licenses provided on the command-line are searched for the desired license -->
+				<enumeration value='Either'/>		<!-- both the License table and the command-line are searched for the desired license -->
+			  </restriction>
+			</simpleType>
+		  </attribute>
+		  <!-- AllowDemonstrationLicense determines if a Demonstration license is considered acceptable (default false) -->
+		  <attribute name='AllowDemonstrationLicense' type='boolean'/>
+		  <!-- MinimumCount can be used to verify that the Count field of the license equals or exceeds the given minimum value (default 0, i.e. no check) -->
+		  <attribute name='MinimumCount' type='nonNegativeInteger'/>
+		  <!-- MaximumCount can be used to verify that the Count field of the license does not exceed the given maximum value (default unbounded, i.e. no check)-->
+		  <attribute name='MaximumCount' type='nonNegativeInteger'/>
+		  <!-- TableCount can be used to verify the the row count of the names table does not exceed he Count field of the given license (default no check) -->
+		  <attribute name='TableCount' type='NMTOKEN'/>
+		</complexType>
+	  </element>
+	  <element name='CheckPermission'>
+		<!-- This element is used to check if the User has the specified Permission according to the Permission table.
+			This should not be used if UserValidation="false".
+			If this element is not used in a case, the case will pass even if the Permission table is damaged or missing.
+			You can specify <CheckPermission Permission=""/> to ensure the table is value without requireing any permission. -->
+		<complexType>
+		  <attribute name='Permission'>
+			<simpleType>
+			  <restriction base='string'>
+				<pattern value='|\p{L}[\p{L}\p{N}_]*(\.\p{L}[\p{L}\p{N}_]*)*'/>
+			  </restriction>
+			</simpleType>
+		  </attribute>
+		</complexType>
+	  </element>
+	  <element name='MinDBVersion'>
+		<!-- This element defines a minimum version that the DB must have reached for this case to be used. -->
+		<complexType>
+		  <attribute name='Version' type='this:VersionString'/>
+		</complexType>
+	  </element>
+	  <element name='MaxDBVersion'>
+		<!-- This element defines a maximum version that the DB may have reached for this case to be used. -->
+		<complexType>
+		  <attribute name='Version' type='this:VersionString'/>
+		</complexType>
+	  </element>
+	</choice>
+  </group>
+</schema>

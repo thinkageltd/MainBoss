@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="Receipt" defaults="true" log="false" id="Id" xid="EntryDate PurchaseOrderID" xunique="true" labelkey="Receipt">
+	<doc>This record records receives documents associated with Purchase Orders of materials received</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Waybill" type="RequiredCode">
+	  <doc>The identification of the shipping document</doc>
+	</field>
+	<field name="Reference" type="Desc">
+	  <doc>an optional field to identify what this receipt is referencing, typically an invoice number or RMA number</doc>
+	</field>
+	<field name="PurchaseOrderID" type="RequiredGUIDREF" link="PurchaseOrder">
+	  <doc>The purchase order associated with these goods being received</doc>
+	  <extension name="linkage">owner</extension>
+	</field>
+	<field name="TotalReceive" read="RequiredCurrency">
+	  <doc>
+		The total of all Receives on this Receipt, maintained by a trigger in the various ReceiveXXX tables
+	  </doc>
+	  <result hosting="cached">
+		cast(42 as RequiredCurrency)
+	  </result>
+	  <extension name="dependson">mbfn_Receipt_TotalReceive()</extension>
+	</field>
+	<field name="Desc" type="Desc"/>
+	<field name="Comment" type="Comment"/>
+	<field name="EntryDate" type="RequiredDateTime">
+	  <extension name="serversetsDateTime"/>
+	</field>
+	<extension name="deletemethod">delete</extension>
+	<extension name="costrights">PurchaseOrderItem,PurchaseOrderLabor,PurchaseOrderMiscellaneous</extension>
+  </table>
+  <object class="function" name="mbfn_Receipt_TotalReceive">
+	<doc>
+	  Total all the Receive costs for this Receipt
+	</doc>
+	<extension name="body">
+	  (
+		@RID		uniqueidentifier	-- ReceiptID
+	  )
+	  RETURNS money
+	  as
+	  begin
+		  return (
+			select coalesce(SUM(Cost), 0)
+				from (
+					select RI.ReceiptID, RI.CorrectedCost
+					from ReceiveItemPO as RI
+					where RI.CorrectionID = RI.ID
+				  union all
+					select ALO.ReceiptID, ALO.CorrectedCost
+					from ActualLaborOutsidePO as ALO
+					where ALO.CorrectionID = ALO.ID
+				  union all
+					select AOWO.ReceiptID, AOWO.CorrectedCost
+					from ActualOtherWorkOutsidePO as AOWO
+					where AOWO.CorrectionID = AOWO.ID
+				  union all
+					select RM.ReceiptID, RM.CorrectedCost
+					from ReceiveMiscellaneousPO as RM
+					where RM.CorrectionID = RM.ID
+				) as X (ReceiptID, Cost)
+				where ReceiptID = @RID
+		  )
+	  end
+	</extension>
+	<extension name="dependson">Receipt.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ReceiveItemPO</extension>
+	<extension name="dependson">ReceiveMiscellaneousPO</extension>
+	<extension name="dependson">ActualOtherWorkOutsidePO</extension>
+	<extension name="dependson">ActualLaborOutsidePO</extension>
+  </object>
+  <table name="PurchaseOrder"/>
+  <table name="ReceiveItemPO"/>
+  <table name="ReceiveMiscellaneousPO"/>
+  <table name="ActualOtherWorkOutsidePO"/>
+  <table name="ActualLaborOutsidePO"/>
+</database>

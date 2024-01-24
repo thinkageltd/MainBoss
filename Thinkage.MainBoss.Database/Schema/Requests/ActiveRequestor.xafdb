@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="ActiveRequestor" log="false" id="Id" labelkey="">
+		<doc>View to return all Requestors that are considered Active (for license counting)</doc>
+		<field name="Id" read="RequiredGUID"/>
+		<field name="ContactID" type="GUIDREF" link="Contact">
+			<extension name="linkage">property</extension>
+		</field>
+		<field name="RequestorID" type="GUIDREF" link="Requestor">
+			<extension name="linkage">property</extension>
+		</field>
+		<extension name="query">
+	select
+		R.ID,
+		C.ID,
+		R.ID
+		from Requestor as R
+			join Contact as C on R.ContactID = C.ID
+			where R.Hidden is null and C.Hidden is null
+	</extension>
+		<extension name="dependson">Contact</extension>
+		<extension name="dependson">Requestor</extension>
+	</table>
+	<table name="Contact"/>
+	<table name="Requestor"/>
+</database>
+

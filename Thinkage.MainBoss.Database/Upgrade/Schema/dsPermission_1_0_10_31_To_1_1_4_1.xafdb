@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database name="http://thinkage.ca/MB3/dsMB.xsd:dsPermission_1_0_10_31_To_1_1_4_1" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="Types.xafdb"/>
+	<merge uri="Permission_1_0_4_14.xafdb"/>
+	<merge uri="Principal_1_0_10_16.xafdb"/>
+	<merge uri="Role_1_0_4_14.xafdb"/>
+	<merge uri="dsUser_1_0_4_14_To_1_1_4_1.xafdb"/>
+	<merge uri="UserRole_1_0_10_31.xafdb"/>
+	<merge uri="UserPermission_1_0_10_31.xafdb"/>
+</database>

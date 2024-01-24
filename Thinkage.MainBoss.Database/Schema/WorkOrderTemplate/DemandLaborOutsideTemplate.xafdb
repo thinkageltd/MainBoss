@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="DemandLaborOutsideTemplate" defaults="true" log="false" id="Id" xid="DemandTemplateID LaborOutsideID" labelkey="Task Demand Hourly Outside">
+	<field name="Id" read="RequiredGUID" />
+	<field name="DemandTemplateID" read="RequiredGUIDREF" base="DemandTemplate"/>
+	<field name="LaborOutsideID" type="RequiredGUIDREF" link="LaborOutside">
+	  <doc>Hourly Outside work reference</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Quantity" type="interval(min 00:01:00, max 36500.00:00:00, by 00:01:00)" labelkey="Demanded">
+	  <doc>Labor time required</doc>
+	</field>
+	<field name="OrderQuantity" read="RequiredLaborDuration">
+	  <doc>The total labor time ordered</doc>
+	  <result hosting="cached">
+		  cast(42 as RequiredLaborDuration)
+	  </result>
+	  <extension name="dependson">mbfn_DemandLaborOutsideTemplate_OrderQuantity()</extension>
+	</field>
+	<extension name="costrights">WorkOrderOutside</extension>
+	<extension name="deletemethod">delete</extension>
+  </table>
+  <table name="DemandTemplate"/>
+  <table name="LaborOutside"/>
+  <table name="POLineLaborTemplate"/>
+  <object class="function" name="mbfn_DemandLaborOutsideTemplate_OrderQuantity">
+	<doc>
+	  Calculate the total order quantities linked to this DemandLaborOutsideTemplate
+	</doc>
+	<extension name="body">
+	  (
+		@DLOTIID uniqueidentifier -- DemandLaborOutsideTemplateID
+	  )
+	  RETURNS XAFInterval
+	  as
+	  begin
+		return (
+		  select coalesce(dbo._ISumToI(sum(dbo._IIToSum(Quantity))),dbo._INew(0,0,0,0,0))
+				  from POLineLaborTemplate
+				  where POLineLaborTemplate.DemandLaborOutsideTemplateID = @DLOTIID
+		)
+	  end
+	</extension>
+	<extension name="dependson">POLineLaborTemplate</extension>
+  </object>
+</database>

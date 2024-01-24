@@ -1,0 +1,978 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Generated on 2004/08/11 from mainboss database at c:\mainboss -->
+<database name="http://thinkage.ca/MB29/MB29.xsd:MB29" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<type name="GUID" type="id" />
+	<type name="RequiredGUID" type="id(nonnull)" />
+	<type name="VariableLengthString" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+	<type name="Date" type="datetime(min 1/1/1753, max 12/31/9999, by 1.00:00:00)" />
+	<!-- 
+  <type name="Address" type="string(minlength 1, 30, lines 0, trim both)" />
+  <type name="AutoNumber" type="string(minlength 1, 20, lines 0, trim both)" />
+  <type name="Code" type="string(minlength 1, 50, lines 0, trim both)" />
+  <type name="Comment" type="string(minlength 1, 1073741823, trim both)" />
+  <type name="CultureInfo" type="string(minlength 1, 4, lines 0, trim both)" />
+  <type name="Currency" type="currency(min -922337203685477.5808, max 922337203685477.5807, by 0.01)" />
+  <type name="Date" type="datetime(min 1/1/1753, max 12/31/9999, by 1.00:00:00)" />
+  <type name="DateTime" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)" />
+  <type name="DayOfYear" type="interval(min 00:00:00, max 365.00:00:00, by 1.00:00:00)" />
+  <type name="DaySpan" type="interval(min 00:00:00, max 36500.00:00:00, by 1.00:00:00)" />
+  <type name="Desc" type="string(minlength 1, 150, lines 0, trim both)" />
+  <type name="Downtime" type="interval(min 00:00:00, max 36500.00:00:00, by 00:00:01)" />
+  <type name="EmailAddress" type="string(minlength 1, 128, lines 0, trim both)" />
+  <type name="GUIDREF" type="link" />
+  <type name="GenerationValue" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)" />
+  <type name="LaborDuration" type="interval(min 00:00:00, max 36500.00:00:00, by 00:01:00)" />
+  <type name="LaborDurationCorrection" type="interval(min -36500.00:00:00, max 36500.00:00:00, by 00:01:00)" />
+  <type name="LineText" type="string(minlength 1, 160, lines 0, trim both)" />
+  <type name="MeterReadingValue" type="integer(64)" />
+  <type name="MeterSpan" type="integer(64)" />
+  <type name="MonthSpan" type="Monthinterval(min 0m, max 1200m, by 1m)" />
+  <type name="MultiLineUnlimited" type="string(minlength 1, 1073741823, trim both)" />
+  <type name="PhoneNumber" type="string(minlength 1, 50, lines 0, trim both)" />
+  <type name="PostalCode" type="string(minlength 1, 10, lines 0, trim both)" />
+  <type name="ProcessName" type="string(minlength 1, 100, lines 0, trim both)" />
+  <type name="Quantity" type="integer(32)" />
+  <type name="ScheduleDuration" type="interval(min -36500.00:00:00, max 36500.00:00:00, by 00:01:00)" />
+  <type name="ScheduleEntryType" type="integer(8, nonnull)" />
+  <type name="ScheduleMonth" type="Monthinterval(min 0m, max 1200m, by 1m)" />
+  <type name="Subject" type="string(minlength 1, 100, lines 0, trim both)" />
+  <type name="UnitCost" type="currency(min -922337203685477.5808, max 922337203685477.5807, by 0.0001)" />
+  <type name="URL" type="string(minlength 1, 256, lines 0, trim both)" />
+  <type name="UserName" type="string(minlength 1, 200, lines 0, trim both)" />
+  <type name="VariableLengthString" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <type name="VersionInfo" type="string(minlength 1, 23)" />
+  <type name="WorkOrderDuration" type="interval(min 00:00:00, max 36500.00:00:00, by 1.00:00:00)" />
+  -->
+	<extension name="SqlDefaultLockName">MainBossSession</extension>
+	<extension name="SqlLockingPrincipal">MainBoss</extension>
+	<table name="CustomImportDirectives" defaults="false" log="false" id="Id" labelkey="">
+		<doc>
+			Each row in this table is a SQL directive that is exec'd at the start of Initialization
+			after the ConversionFunctions have been defined, but before the exclude field is added to the input tables
+			or any other table adjustments.
+			Statements are executed in ascending RECNO order.
+		</doc>
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="DIRECTIVE" type="VariableLengthString"  />
+	</table>
+	<table name="AtRequestAccounts" defaults="false" log="false" id="Id" labelkey="">
+		<doc>Contains @Request ACCOUNT.DBF definitions, if present in the original MB database</doc>
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="FLAGS" type="integer(32)"  />
+		<field name="CONTACTKEY" type="integer(32)"  />
+	</table>
+	<table name="AtRequestConfiguration" defaults="false" log="false" id="Id" labelkey="">
+		<doc>Contains @Request atrserv.cfg values, if present in the original MB database</doc>
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="VALUE" type="string(512, lines 0, trim both)"  />
+	</table>
+	<table name="Defaults" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="LGEND" type="Date"  />
+		<field name="GFREQ" type="string(3, lines 0, trim both)"  />
+		<field name="PHONEPREX" type="string(16, lines 0, trim both)"  />
+		<field name="EDITPKEY" type="integer(32)"  />
+		<field name="SERIAL" type="string(10, lines 0, trim both)"  />
+		<field name="COMPANYNAM" type="string(30, lines 0, trim both)"  />
+		<field name="COMPANYADD" type="string(250, lines 0, trim both)"  />
+		<field name="BILLADDR" type="string(250, lines 0, trim both)"  />
+		<field name="POCONTACT" type="string(250, lines 0, trim both)"  />
+		<field name="REINDEX" type="integer(32)"  />
+		<field name="PRFORMAT" type="string(15, lines 0, trim both)"  />
+		<field name="POFORMAT" type="string(15, lines 0, trim both)"  />
+		<field name="WRFORMAT" type="string(15, lines 0, trim both)"  />
+		<field name="WOFORMAT" type="string(15, lines 0, trim both)"  />
+		<field name="CURRSYM" type="string(10, lines 0, trim both)"  />
+		<field name="FRDATE" type="string(30, lines 0, trim both)"  />
+		<field name="FRCPOS" type="string(20, lines 0, trim both)"  />
+		<field name="FRCNEG" type="string(20, lines 0, trim both)"  />
+		<field name="FRCDEC" type="string(1, lines 0, trim both)"  />
+		<field name="FRCGROUP" type="string(1, lines 0, trim both)"  />
+		<field name="FRCGSIZE" type="integer(32)"  />
+		<field name="FRCLGSIZE" type="integer(32)"  />
+		<field name="FCDORDER" type="integer(32)"  />
+		<field name="FCDDELIM" type="integer(32)"  />
+		<field name="FCDMFORM" type="integer(32)"  />
+		<field name="FCTAMPM" type="bool"  />
+		<field name="DBVERSION" type="string(3, lines 0, trim both)"  />
+		<field name="MINVERSION" type="string(1, lines 0, trim both)"  />
+		<field name="UPGRSTEP" type="string(1, lines 0, trim both)"  />
+	</table>
+	<table name="ArchivedSets" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="BACKDATE" type="Date"  />
+		<field name="S_DATE" type="Date"  />
+		<field name="E_DATE" type="Date"  />
+		<field name="DESC" type="string(50, lines 0, trim both)"  />
+		<field name="LZHFILE" type="string(15, lines 0, trim both)"  />
+		<field name="DBVERSION" type="string(23, lines 0, trim both)"  />
+		<field name="RESTORED" type="Date"  />
+		<field name="ARCHIVING" type="bool"  />
+	</table>
+	<table name="Permissions" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="NAME" type="string(30, lines 0, trim both)"  />
+		<field name="PASSWORD" type="string(10, lines 0, trim both)"  />
+		<field name="STATUS" type="string(1, lines 0, trim both)"  />
+		<field name="L11" type="bool"  />
+		<field name="L12" type="bool"  />
+		<field name="L13" type="bool"  />
+		<field name="L14" type="bool"  />
+		<field name="L15" type="bool"  />
+		<field name="L16" type="bool"  />
+		<field name="L17" type="bool"  />
+		<field name="L18" type="bool"  />
+		<field name="L19" type="bool"  />
+		<field name="L21" type="bool"  />
+		<field name="L22" type="bool"  />
+		<field name="L23" type="bool"  />
+		<field name="L24" type="bool"  />
+		<field name="L25" type="bool"  />
+		<field name="L26" type="bool"  />
+		<field name="L27" type="bool"  />
+		<field name="L28" type="bool"  />
+		<field name="L29" type="bool"  />
+		<field name="L31" type="bool"  />
+		<field name="L32" type="bool"  />
+		<field name="L33" type="bool"  />
+		<field name="L34" type="bool"  />
+		<field name="L35" type="bool"  />
+		<field name="L36" type="bool"  />
+		<field name="L37" type="bool"  />
+		<field name="L38" type="bool"  />
+		<field name="L39" type="bool"  />
+		<field name="L41" type="bool"  />
+		<field name="L42" type="bool"  />
+		<field name="L43" type="bool"  />
+		<field name="L44" type="bool"  />
+		<field name="L45" type="bool"  />
+		<field name="L46" type="bool"  />
+		<field name="L47" type="bool"  />
+		<field name="L48" type="bool"  />
+		<field name="L49" type="bool"  />
+		<field name="L410" type="bool"  />
+		<field name="L51" type="bool"  />
+		<field name="L52" type="bool"  />
+		<field name="L53" type="bool"  />
+		<field name="L54" type="bool"  />
+		<field name="L55" type="bool"  />
+		<field name="L56" type="bool"  />
+		<field name="L57" type="bool"  />
+		<field name="L58" type="bool"  />
+		<field name="L59" type="bool"  />
+		<field name="L510" type="bool"  />
+		<field name="L511" type="bool"  />
+		<field name="L512" type="bool"  />
+		<field name="L513" type="bool"  />
+		<field name="L514" type="bool"  />
+		<field name="L515" type="bool"  />
+		<field name="L516" type="bool"  />
+		<field name="L517" type="bool"  />
+		<field name="L518" type="bool"  />
+		<field name="L519" type="bool"  />
+		<field name="L520" type="bool"  />
+		<field name="L521" type="bool"  />
+		<field name="L522" type="bool"  />
+		<field name="L523" type="bool"  />
+		<field name="L524" type="bool"  />
+		<field name="L525" type="bool"  />
+		<field name="L526" type="bool"  />
+		<field name="L527" type="bool"  />
+		<field name="L528" type="bool"  />
+		<field name="L529" type="bool"  />
+		<field name="L530" type="bool"  />
+		<field name="L61" type="bool"  />
+		<field name="L62" type="bool"  />
+		<field name="L63" type="bool"  />
+		<field name="L64" type="bool"  />
+		<field name="L65" type="bool"  />
+		<field name="L66" type="bool"  />
+		<field name="L67" type="bool"  />
+		<field name="L68" type="bool"  />
+		<field name="L69" type="bool"  />
+		<field name="L610" type="bool"  />
+		<field name="L611" type="bool"  />
+		<field name="L612" type="bool"  />
+		<field name="L613" type="bool"  />
+		<field name="L614" type="bool"  />
+		<field name="L615" type="bool"  />
+		<field name="L616" type="bool"  />
+		<field name="L617" type="bool"  />
+		<field name="L618" type="bool"  />
+		<field name="L619" type="bool"  />
+		<field name="L620" type="bool"  />
+		<field name="L621" type="bool"  />
+		<field name="L622" type="bool"  />
+		<field name="L623" type="bool"  />
+		<field name="L624" type="bool"  />
+		<field name="L625" type="bool"  />
+		<field name="L626" type="bool"  />
+		<field name="ADMIN1" type="bool"  />
+		<field name="ADMIN2" type="bool"  />
+		<field name="ADMIN3" type="bool"  />
+		<field name="ADMIN4" type="bool"  />
+		<field name="ADMIN5" type="bool"  />
+		<field name="ADMIN6" type="bool"  />
+		<field name="ADMIN7" type="bool"  />
+		<field name="ADMIN8" type="bool"  />
+		<field name="ADMIN9" type="bool"  />
+		<field name="ADMIN10" type="bool"  />
+		<field name="ADMIN11" type="bool"  />
+		<field name="ADMIN12" type="bool"  />
+		<field name="ADMIN13" type="bool"  />
+		<field name="ADMIN14" type="bool"  />
+		<field name="ADMIN15" type="bool"  />
+		<field name="ADMIN16" type="bool"  />
+		<field name="ADMIN17" type="bool"  />
+		<field name="ADMIN18" type="bool"  />
+		<field name="ADMIN19" type="bool"  />
+		<field name="ADMIN20" type="bool"  />
+		<field name="ADMIN21" type="bool"  />
+		<field name="ADMIN22" type="bool"  />
+		<field name="ADMIN23" type="bool"  />
+		<field name="ADMIN24" type="bool"  />
+		<field name="ADMIN25" type="bool"  />
+		<field name="L121" type="bool"  />
+		<field name="L122" type="bool"  />
+		<field name="L123" type="bool"  />
+		<field name="L124" type="bool"  />
+		<field name="L125" type="bool"  />
+		<field name="L126" type="bool"  />
+		<field name="L127" type="bool"  />
+		<field name="L128" type="bool"  />
+		<field name="L129" type="bool"  />
+		<field name="L130" type="bool"  />
+		<field name="L131" type="bool"  />
+		<field name="L132" type="bool"  />
+		<field name="L133" type="bool"  />
+		<field name="L134" type="bool"  />
+		<field name="L135" type="bool"  />
+		<field name="L136" type="bool"  />
+		<field name="L137" type="bool"  />
+		<field name="L138" type="bool"  />
+		<field name="L139" type="bool"  />
+		<field name="L140" type="bool"  />
+	</table>
+	<table name="EditPrograms" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="PRONAME" type="string(50, lines 0, trim both)"  />
+		<field name="VIEWCMD" type="VariableLengthString"  />
+		<field name="PRINTCMD" type="VariableLengthString"  />
+		<field name="STARTUP" type="string(1, lines 0, trim both)"  />
+	</table>
+	<table name="Settings" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="IDD" type="string(32, lines 0, trim both)"  />
+		<field name="IDC" type="string(32, lines 0, trim both)"  />
+		<field name="ORIGINATOR" type="integer(32)"  />
+		<field name="VALUE" type="string(64, lines 0, trim both)"  />
+	</table>
+	<table name="AccessCodes" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+	</table>
+	<table name="Adjustments" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+	</table>
+	<table name="AssetCodes" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(15, lines 0, trim both)"  />
+		<field name="DESC" type="string(40, lines 0, trim both)"  />
+	</table>
+	<table name="Buildings" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="CODE" type="string(15, lines 0, trim both)"  />
+		<field name="DESC" type="string(50, lines 0, trim both)"  />
+		<field name="ADDRESS1" type="string(30, lines 0, trim both)"  />
+		<field name="ADDRESS2" type="string(30, lines 0, trim both)"  />
+		<field name="CITY" type="string(30, lines 0, trim both)"  />
+		<field name="TERRITORY" type="string(20, lines 0, trim both)"  />
+		<field name="COUNTRY" type="string(20, lines 0, trim both)"  />
+		<field name="PCODE" type="string(10, lines 0, trim both)"  />
+		<field name="HIDDEN" type="bool"  />
+	</table>
+	<table name="Chargebacks" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="WOKEY" type="integer(32)"  />
+		<field name="CHARGETO" type="string(30, lines 0, trim both)"  />
+		<field name="LABOR" type="integer(32)"  />
+		<field name="MATERIAL" type="integer(32)"  />
+	</table>
+	<table name="ClosingCodes" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+	</table>
+	<table name="Contacts" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="CODE" type="string(50, lines 0, trim both)"  />
+		<field name="BTEL" type="string(42, lines 0, trim both)"  />
+		<field name="HTEL" type="string(42, lines 0, trim both)"  />
+		<field name="PAGER" type="string(42, lines 0, trim both)"  />
+		<field name="MOBILE" type="string(42, lines 0, trim both)"  />
+		<field name="HIDDEN" type="bool"  />
+		<field name="EMAIL" type="string(128, lines 0, trim both)"  />
+		<field name="COMMENT" type="VariableLengthString"  />
+		<field name="LANGID" type="string(4, lines 0, trim both)"  />
+	</table>
+	<table name="CostCenters" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(15, lines 0, trim both)"  />
+		<field name="DESC" type="string(40, lines 0, trim both)"  />
+	</table>
+	<table name="InvCategories" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+	</table>
+	<table name="InvItems" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="CODE" type="string(30, lines 0, trim both)"  />
+		<field name="DESC" type="string(50, lines 0, trim both)"  />
+		<field name="CAT" type="string(10, lines 0, trim both)"  />
+		<field name="UOMKEY" type="integer(32)"  />
+		<field name="MINI" type="integer(32)"  />
+		<field name="MAXI" type="integer(32)"  />
+		<field name="TOTALCOST" type="integer(32)"  />
+		<field name="ONHAND" type="integer(32)"  />
+		<field name="ONORDER" type="integer(32)"  />
+		<field name="ONRESERVE" type="integer(32)"  />
+		<field name="TOTALSEQ" type="integer(32)"  />
+		<field name="INVENTORY" type="bool"  />
+		<field name="COMMENT" type="VariableLengthString"  />
+	</table>
+	<table name="InvLocations" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="STRMKEY" type="integer(32)"  />
+		<field name="ITEMKEY" type="integer(32)"  />
+		<field name="LOC" type="string(20, lines 0, trim both)"  />
+		<field name="ONHAND" type="integer(32)"  />
+		<field name="TOTALCOST" type="integer(32)"  />
+	</table>
+	<table name="InvTransactions" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="ITEMKEY" type="integer(32)"  />
+		<field name="TYPE" type="string(2, lines 0, trim both)"  />
+		<field name="DATE" type="Date"  />
+		<field name="TIME" type="string(6, lines 0, trim both)"  />
+		<field name="QTY" type="integer(32)"  />
+		<field name="TOTALCOST" type="integer(32)"  />
+		<field name="REASON" type="string(10, lines 0, trim both)"  />
+		<field name="STRMKEY" type="integer(32)"  />
+		<field name="LOC" type="string(20, lines 0, trim both)"  />
+		<field name="REFER" type="string(30, lines 0, trim both)"  />
+	</table>
+	<table name="Issues" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+	</table>
+	<table name="Labor" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="WOKEY" type="integer(32)"  />
+		<field name="LABORKEY" type="integer(32)"  />
+		<field name="TRADE" type="string(10, lines 0, trim both)"  />
+		<field name="STARTDATE" type="Date"  />
+		<field name="STARTTIME" type="string(6, lines 0, trim both)"  />
+		<field name="TIME" type="string(6, lines 0, trim both)"  />
+		<field name="LABORRATE" type="integer(32)"  />
+		<field name="ESTIMATE" type="bool"  />
+	</table>
+	<table name="MeterHistory" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="METERKEY" type="integer(32)"  />
+		<field name="DATE" type="Date"  />
+		<field name="TIME" type="string(6, lines 0, trim both)"  />
+		<field name="ORIGINKEY" type="integer(32)"  />
+		<field name="READING" type="integer(32)"  />
+		<field name="EFFECTIVE" type="integer(32)"  />
+	</table>
+	<table name="Meters" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+		<field name="TYPE" type="string(1, lines 0, trim both)"  />
+		<field name="UNITKEY" type="integer(32)"  />
+		<field name="OFFSET" type="integer(32)"  />
+		<field name="UOMKEY" type="integer(32)"  />
+		<field name="CREATEDATE" type="Date"  />
+		<field name="CREATETIME" type="string(6, lines 0, trim both)"  />
+	</table>
+	<table name="Obsoletes" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+	</table>
+	<table name="Ownerships" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+	</table>
+	<table name="Personnel" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="CODE" type="string(15, lines 0, trim both)"  />
+		<field name="DESC" type="string(40, lines 0, trim both)"  />
+		<field name="TRADE" type="string(10, lines 0, trim both)"  />
+		<field name="BTEL" type="string(42, lines 0, trim both)"  />
+		<field name="HTEL" type="string(42, lines 0, trim both)"  />
+		<field name="PAGER" type="string(42, lines 0, trim both)"  />
+		<field name="MOBILE" type="string(42, lines 0, trim both)"  />
+		<field name="CURRATE" type="integer(32)"  />
+		<field name="NEWRATE" type="integer(32)"  />
+		<field name="EFFDATE" type="Date"  />
+		<field name="HIDDEN" type="bool"  />
+		<field name="EMAIL" type="string(128, lines 0, trim both)"  />
+		<field name="COMMENT" type="VariableLengthString"  />
+	</table>
+	<table name="PreventiveSchedules" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="WOKEY" type="integer(32)"  />
+		<field name="TYPE" type="string(1, lines 0, trim both)"  />
+		<field name="METERKEY" type="integer(32)"  />
+		<field name="LASTSCHED" type="integer(32)"  />
+		<field name="INTERVAL" type="integer(32)"  />
+		<field name="SEASONBEG" type="string(4, lines 0, trim both)"  />
+		<field name="SEASONEND" type="string(4, lines 0, trim both)"  />
+		<field name="INHSEASON" type="bool"  />
+		<field name="WEEKMASK" type="string(2, lines 0, trim both)"  />
+		<field name="INHWEEK" type="bool"  />
+		<field name="ALGORITHM" type="string(1, lines 0, trim both)"  />
+		<field name="INHIBIT" type="bool"  />
+		<field name="LASTWOMADE" type="integer(32)"  />
+		<field name="LATEINHIB" type="bool"  />
+		<field name="LASTDATE" type="Date"  />
+	</table>
+	<table name="Priorities" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+	</table>
+	<table name="Projects" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+	</table>
+	<table name="PurchaseExtras" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<field name="POKEY" type="integer(32)"  />
+		<field name="QTY" type="integer(32)"  />
+		<field name="UOMKEY" type="integer(32)"  />
+		<field name="COST" type="integer(32)"  />
+		<field name="DESC" type="string(40, lines 0, trim both)"  />
+		<field name="CATNO" type="string(20, lines 0, trim both)"  />
+		<field name="ESTIMATE" type="bool"  />
+		<field name="TYPE" type="string(1, lines 0, trim both)"  />
+		<field name="WOKEY" type="integer(32)"  />
+	</table>
+	<table name="Purchases" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="PONUM" type="string(15, lines 0, trim both)"  />
+		<field name="VENDOR" type="integer(32)"  />
+		<field name="ORDERNUM" type="string(40, lines 0, trim both)"  />
+		<field name="COSTCENTER" type="string(15, lines 0, trim both)"  />
+		<field name="NEEDED" type="Date"  />
+		<field name="EXPECTED" type="Date"  />
+		<field name="COMMENT" type="VariableLengthString"  />
+		<field name="STATE" type="string(1, lines 0, trim both)"  />
+		<field name="VOID" type="bool"  />
+		<field name="CREATED" type="Date"  />
+		<field name="CREATET" type="string(6, lines 0, trim both)"  />
+		<field name="COMPLETED" type="Date"  />
+		<field name="COMPLETET" type="string(6, lines 0, trim both)"  />
+		<field name="SUBMITD" type="Date"  />
+		<field name="SUBMITT" type="string(6, lines 0, trim both)"  />
+		<field name="CLOSED" type="Date"  />
+		<field name="CLOSET" type="string(6, lines 0, trim both)"  />
+		<field name="SHIPPING" type="string(10, lines 0, trim both)"  />
+		<field name="TERMS" type="string(10, lines 0, trim both)"  />
+		<field name="VCOMMENT" type="VariableLengthString"  />
+		<field name="SHIPTO" type="integer(32)"  />
+		<field name="DESC" type="string(60, lines 0, trim both)"  />
+		<field name="NEEDPRINT" type="bool"  />
+		<field name="ORIGINATOR" type="integer(32)"  />
+	</table>
+	<table name="Receipts" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="POKEY" type="integer(32)"  />
+		<field name="DATE" type="Date"  />
+		<field name="TIME" type="string(6, lines 0, trim both)"  />
+		<field name="WAYBILL" type="string(15, lines 0, trim both)"  />
+		<field name="EXTRACOST" type="integer(32)"  />
+		<field name="COMMENT" type="VariableLengthString"  />
+	</table>
+	<table name="ServiceContracts" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="CODE" type="string(15, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+		<field name="VENDOR" type="integer(32)"  />
+		<field name="STARTDATE" type="Date"  />
+		<field name="EXPIRYDATE" type="Date"  />
+		<field name="PART" type="bool"  />
+		<field name="LABOR" type="bool"  />
+		<field name="COST" type="integer(32)"  />
+		<field name="COMMENT" type="VariableLengthString"  />
+	</table>
+	<table name="ServicedEquipment" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="SVCKEY" type="integer(32)"  />
+		<field name="EQUIPKEY" type="integer(32)"  />
+	</table>
+	<table name="ShippingModes" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(40, lines 0, trim both)"  />
+	</table>
+	<table name="SpareParts" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="EQUIPKEY" type="integer(32)"  />
+		<field name="ITEMKEY" type="integer(32)"  />
+		<field name="QTY" type="integer(32)"  />
+	</table>
+	<table name="Specifications" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="ASSOCKEY" type="integer(32)"  />
+		<field name="TYPE" type="string(1, lines 0, trim both)"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="TKEY" type="integer(32)"  />
+		<field name="INFO" type="VariableLengthString"  />
+	</table>
+	<table name="Storerooms" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="BUILDING" type="integer(32)"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+		<field name="HIDDEN" type="bool"  />
+	</table>
+	<table name="Systems" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+	</table>
+	<table name="Templates" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+		<field name="HIDDEN" type="bool"  />
+		<field name="PLATE" type="VariableLengthString"  />
+	</table>
+	<table name="Terms" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+	</table>
+	<table name="Trades" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+	</table>
+	<table name="UnitCategories" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="UTYPE" type="string(1, lines 0, trim both)"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+	</table>
+	<table name="Units" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="UTYPE" type="string(1, lines 0, trim both)"  />
+		<field name="BUILDING" type="integer(32)"  />
+		<field name="CODE" type="string(30, lines 0, trim both)"  />
+		<field name="DESC" type="string(50, lines 0, trim both)"  />
+		<field name="LOCATION" type="string(40, lines 0, trim both)"  />
+		<field name="CATEGORY" type="string(10, lines 0, trim both)"  />
+		<field name="MAKE" type="string(30, lines 0, trim both)"  />
+		<field name="MODEL" type="string(30, lines 0, trim both)"  />
+		<field name="SERIAL" type="string(30, lines 0, trim both)"  />
+		<field name="DRAW" type="string(10, lines 0, trim both)"  />
+		<field name="PURCHASE" type="Date"  />
+		<field name="ORGCOST" type="integer(32)"  />
+		<field name="REPCOST" type="integer(32)"  />
+		<field name="ESTIMATE" type="Date"  />
+		<field name="TLIFE" type="integer(32)"  />
+		<field name="VENDOR" type="integer(32)"  />
+		<field name="SERVICE" type="integer(32)"  />
+		<field name="WEXPIRY" type="Date"  />
+		<field name="OWNER" type="string(10, lines 0, trim both)"  />
+		<field name="ASSET" type="string(15, lines 0, trim both)"  />
+		<field name="COSTCENTER" type="string(15, lines 0, trim both)"  />
+		<field name="SYSTEM" type="string(10, lines 0, trim both)"  />
+		<field name="OBSOLETE" type="string(10, lines 0, trim both)"  />
+		<field name="DEPRATE" type="integer(32)">
+			<doc>This field was defined but never set in MB 2.9 so will be ignored on import</doc>
+		</field>
+		<field name="SCRAPD" type="Date"  />
+		<field name="SCRAPV" type="integer(32)"  />
+		<field name="CONTACT" type="integer(32)"  />
+		<field name="ACCESS" type="string(10, lines 0, trim both)"  />
+		<field name="COMMENT" type="VariableLengthString"  />
+		<field name="HIDDEN" type="bool"  />
+	</table>
+	<table name="UoM" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+	</table>
+	<table name="VendorCategories" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+	</table>
+	<table name="Vendors" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="CODE" type="string(15, lines 0, trim both)"  />
+		<field name="DESC" type="string(40, lines 0, trim both)"  />
+		<field name="CONTACT" type="string(30, lines 0, trim both)"  />
+		<field name="CATEGORY" type="string(10, lines 0, trim both)"  />
+		<field name="ADD1" type="string(30, lines 0, trim both)"  />
+		<field name="ADD2" type="string(30, lines 0, trim both)"  />
+		<field name="ADD3" type="string(30, lines 0, trim both)"  />
+		<field name="TEL" type="string(42, lines 0, trim both)"  />
+		<field name="FAX" type="string(42, lines 0, trim both)"  />
+		<field name="WEB" type="string(128, lines 0, trim both)"  />
+		<field name="ACCOUNTNUM" type="string(30, lines 0, trim both)"  />
+		<field name="EMAIL" type="string(128, lines 0, trim both)"  />
+		<field name="HIDDEN" type="bool"  />
+		<field name="COMMENT" type="VariableLengthString"  />
+	</table>
+	<table name="WorkCategories" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="CODE" type="string(10, lines 0, trim both)"  />
+		<field name="DESC" type="string(30, lines 0, trim both)"  />
+	</table>
+	<table name="WorkOrders" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="WONUM" type="string(15, lines 0, trim both)"  />
+		<field name="TYPE" type="string(1, lines 0, trim both)"  />
+		<field name="CLASS" type="string(1, lines 0, trim both)"  />
+		<field name="LINKKEY" type="integer(32)"  />
+		<field name="UNITKEY" type="integer(32)"  />
+		<field name="WTYPE" type="string(10, lines 0, trim both)"  />
+		<field name="COSTCENTER" type="string(15, lines 0, trim both)"  />
+		<field name="PROJECT" type="string(10, lines 0, trim both)"  />
+		<field name="ACCESSCODE" type="string(10, lines 0, trim both)"  />
+		<field name="PRIORITY" type="string(10, lines 0, trim both)"  />
+		<field name="ORIGINATOR" type="integer(32)"  />
+		<field name="REQUESTOR" type="integer(32)"  />
+		<field name="SUBJECT" type="string(60, lines 0, trim both)"  />
+		<field name="WDESC" type="VariableLengthString"  />
+		<field name="CREATEDATE" type="Date"  />
+		<field name="CREATETIME" type="string(6, lines 0, trim both)"  />
+		<field name="CLOSEDATE" type="Date"  />
+		<field name="CLOSETIME" type="string(6, lines 0, trim both)"  />
+		<field name="CLOSECODE" type="string(10, lines 0, trim both)"  />
+		<field name="CLOSECOMM" type="VariableLengthString"  />
+		<field name="DOWNTIME" type="string(6, lines 0, trim both)"  />
+		<field name="NEEDPRINT" type="bool"  />
+		<field name="WORKDATE" type="Date"  />
+		<field name="WINTERVAL" type="integer(32)"  />
+	</table>
+	<table name="WorkRequests" defaults="false" log="false" id="Id"  labelkey="">
+		<field name="RECNO" type="integer(32)"  />
+		<unique>
+			<field name="RECNO"/>
+		</unique>
+		<field name="Id" read="RequiredGUID"  />
+		<field name="KEY" type="integer(32)"  />
+		<unique>
+			<field name="KEY"/>
+		</unique>
+		<field name="WRNUM" type="string(15, lines 0, trim both)"  />
+		<field name="STATUS" type="string(1, lines 0, trim both)"  />
+		<field name="DATE" type="Date"  />
+		<field name="TIME" type="string(6, lines 0, trim both)"  />
+		<field name="REQUESTOR" type="integer(32)"  />
+		<field name="UNITKEY" type="integer(32)"  />
+		<field name="WTYPE" type="string(10, lines 0, trim both)"  />
+		<field name="SUBJECT" type="string(60, lines 0, trim both)"  />
+		<field name="ACCESSCODE" type="string(10, lines 0, trim both)"  />
+		<field name="PRIORITY" type="string(10, lines 0, trim both)"  />
+		<field name="WDESC" type="VariableLengthString"  />
+		<field name="CLOSEDATE" type="Date"  />
+		<field name="CLOSETIME" type="string(6, lines 0, trim both)"  />
+		<field name="COMMENT" type="VariableLengthString"  />
+	</table>
+</database>

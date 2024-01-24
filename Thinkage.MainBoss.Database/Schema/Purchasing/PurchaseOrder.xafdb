@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+
+  <variable name="POSequence" type="integer(unsigned 63,nonnull)">
+	<doc>The integer to be used in conjunction with POSequenceFormat to produce the new Purchase Order Number</doc>
+  </variable>
+  <variable name="POSequenceFormat" type="RequiredAutoNumber">
+	<doc>The format specification for producing the new Purchase Order Number</doc>
+  </variable>
+  <variable name="BillingContactID" type="link(Contact)">
+	<doc>Contact record to use for the billing information on Purchase Orders stored as whateverSystem.Guid.ToString generates</doc>
+  </variable>
+  <variable name="PurchaserContactID" type="link(Contact)">
+	<doc>Contact record to use for the identify the buyer information on Purchase Orders stored as whateverSystem.Guid.ToString generates</doc>
+  </variable>
+  <table name="Contact"/>
+
+  <table name="PurchaseOrder" defaults="true" log="false" id="Id" xid="Number" xunique="true" labelkey="Purchase Order">
+	<doc>
+	  This record represents a Purchase Order listing items and services whose purchase is desired. The site can treat these as true
+	  purchase orders, or as purchase requisitions handled by an independent purchasing department.
+	</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Number" type="RequiredAutoNumber"/>
+	<field name="Subject" type="Subject" labelkey="Summary">
+	  <doc>A short description of the purpose of the Purchase Order</doc>
+	</field>
+	<field name="Comment" type="Comment">
+	  <doc>A long description of the Purchase Order, for internal purposes</doc>
+	  <extension name="lines">2</extension>
+	</field>
+	<field name="RequiredByDate" type="Date">
+	  <doc>A date by which the purchased resources are required, which appears on the printed Purchase Order form</doc>
+	</field>
+	<field name="CurrentPurchaseOrderStateHistoryID" read="RequiredGUIDREF"  link="PurchaseOrderStateHistory" labelkey="Current State History">
+	  <doc>A link to the current PurchaseOrder State History record</doc>
+	  <result hosting="cached">
+		cast(purchaseorder.id as link(PurchaseOrderStateHistory, nonnull))
+	  </result>
+	  <extension name="dependson">PurchaseOrderStateHistory@PurchaseOrderStateHistory.PurchaseOrderID->PurchaseOrder.ID</extension>
+	  <extension name="dependson">PurchaseOrderStateHistory.PurchaseOrderID@PurchaseOrderStateHistory.PurchaseOrderID->PurchaseOrder.ID</extension>
+	  <extension name="dependson">PurchaseOrderStateHistory.EffectiveDate@PurchaseOrderStateHistory.PurchaseOrderID->PurchaseOrder.ID</extension>
+	</field>
+	<field name="VendorID" type="RequiredGUIDREF"  link="Vendor">
+	  <doc>The Vendor from which the item should be purchased</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="ShipToLocationID" type="GUIDREF"  link="Location">
+	  <doc>The Location that the items should be shipped to (appears on printed Purchase Order)</doc>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.AllShipToLocationPickerTblCreator,Thinkage.MainBoss.Controls</extension>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="ShippingModeID" type="GUIDREF"  link="ShippingMode">
+	  <doc>Shipping mode and instructions to be includes on printed Purchase Order</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="PaymentTermID" type="GUIDREF"  link="PaymentTerm">
+	  <doc>Terms for payment to be included on printed Purchase Order</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="PurchaseOrderCategoryID" type="GUIDREF"  link="PurchaseOrderCategory">
+	  <doc>A user defined category for this Purchase Order</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="ProjectID" type="GUIDREF"  link="Project">
+	  <doc>A project associated with this Purchase Order</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="CommentToVendor" type="Comment">
+	  <doc>Additional comments to be passed on to the Vendor on the printed Purchase Order</doc>
+	</field>
+	<field name="SelectPrintFlag" type="Requiredbool" labelkey="Select for Printing">
+	  <doc>Interim flag for support of a SelectForPrint operation; will migrate to general flags model in future</doc>
+	</field>
+	<field name="HasReceiving" read="RequiredBool">
+	  <doc>An indication of whether any net receiving has occurred on this PO</doc>
+	  <result hosting="cached">
+		true
+	  </result>
+	  <extension name="dependson">mbfn_PurchaseOrder_HasReceiving()</extension>
+	</field>
+	<field name="TotalPurchase" read="RequiredCurrency">
+	  <doc>
+		The total of all POLines made against this PurchaseOrder, maintained by a trigger in the POLine Table
+	  </doc>
+	  <result hosting="cached">
+		cast(42 as RequiredCurrency)
+	  </result>
+	  <extension name="dependson">mbfn_PurchaseOrder_TotalPurchase()</extension>
+	</field>
+	<field name="TotalReceive" read="RequiredCurrency">
+	  <doc>
+		The total of all Receives against POLines made against this PurchaseOrder, maintained by a trigger in the POLine table
+	  </doc>
+	  <result hosting="cached">
+		cast(42 as RequiredCurrency)
+	  </result>
+	  <extension name="dependson">mbfn_PurchaseOrder_TotalReceive()</extension>
+	</field>
+	<extension name="lastupdate">CurrentPurchaseOrderStateHistoryID.EffectiveDate</extension>
+	<extension name="costrights">PurchaseOrderItem,PurchaseOrderLabor,PurchaseOrderMiscellaneous</extension>
+	<extension name="equate">CurrentPurchaseOrderStateHistoryID.PurchaseOrderID=Id</extension>
+  </table>
+  <object class="function" name="mbfn_PurchaseOrder_CurrentPurchaseOrderStateHistory">
+	<doc>
+	  Return the PurchaseOrderStateHistory record that represents the Current state for a purchase order
+	</doc>
+	<extension name="body">
+	  (
+	  @POID uniqueidentifier -- PurchaseOrderID
+	  )
+	  RETURNS	uniqueidentifier
+	  as
+	  begin
+	  return (
+	  select top 1 ID from PurchaseOrderStateHistory
+	  where PurchaseOrderStateHistory.PurchaseOrderID = @POID
+	  order by EffectiveDate desc
+	  )
+	  end
+	</extension>
+	<extension name="dependson">PurchaseOrderStateHistory</extension>
+  </object>
+  <object class="function" name="mbfn_PurchaseOrder_HasReceiving">
+	<doc>
+	  Return the HasReceiving value for the given PO
+	</doc>
+	<extension name="body">
+	  (
+	  @POID uniqueidentifier -- PurchaseOrderID
+	  )
+	  RETURNS	int
+	  as
+	  begin
+	  return (
+	  case when
+	  exists(select * from ReceiveItemPO as RI
+	  join Receipt as R on R.ID = RI.ReceiptID
+	  where R.PurchaseOrderID = @POID and RI.CorrectionID = RI.ID and (RI.CorrectedQuantity != 0 or RI.CorrectedCost != 0))
+	  or
+	  exists(select * from ActualLaborOutsidePO as ALO
+	  join Receipt as R on R.ID = ALO.ReceiptID
+	  where R.PurchaseOrderID = @POID and ALO.CorrectionID = ALO.ID and (ALO.CorrectedQuantity != 0 or ALO.CorrectedCost != 0))
+	  or
+	  exists(select * from ActualOtherWorkOutsidePO as AOWO
+	  join Receipt as R on R.ID = AOWO.ReceiptID
+	  where R.PurchaseOrderID = @POID and AOWO.CorrectionID = AOWO.ID and (AOWO.CorrectedQuantity != 0 or AOWO.CorrectedCost != 0))
+	  or
+	  exists(select * from ReceiveMiscellaneousPO as RM
+	  join Receipt as R on R.ID = RM.ReceiptID
+	  where R.PurchaseOrderID = @POID and RM.CorrectionID = RM.ID and (RM.CorrectedQuantity != 0 or RM.CorrectedCost != 0))
+	  then 1 else 0 end)
+	  end
+	</extension>
+	<extension name="dependson">PurchaseOrder.Id</extension>
+	<!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ReceiveItemPO</extension>
+	<extension name="dependson">ActualLaborOutsidePO</extension>
+	<extension name="dependson">ActualOtherWorkOutsidePO</extension>
+	<extension name="dependson">ReceiveMiscellaneousPO</extension>
+  </object>
+  <object class="function" name="mbfn_PurchaseOrder_TotalPurchase">
+	<doc>
+	  Total all the Costs for this PurchaseOrder over all POLines
+	</doc>
+	<extension name="body">
+	  (
+	  @POID		uniqueidentifier	-- PurchaseOrderID
+	  )
+	  RETURNS money
+	  as
+	  begin
+	  return (
+	  select coalesce(SUM(POLine.Cost), 0)
+	  from POLine
+	  where POLine.PurchaseOrderID = @POID
+	  )
+	  end
+	</extension>
+	<extension name="dependson">POLine</extension>
+	<extension name="dependson">POLine.Cost</extension>
+  </object>
+  <object class="function" name="mbfn_PurchaseOrder_TotalReceive">
+	<doc>
+	  Total all the Receive costs for this PurchaseOrder over all POLines
+	</doc>
+	<extension name="body">
+	  (
+	  @POID		uniqueidentifier	-- PurchaseOrderID
+	  )
+	  RETURNS money
+	  as
+	  begin
+	  return (
+	  select coalesce(SUM(POLine.ReceiveCost), 0)
+	  from POLine
+	  where POLine.PurchaseOrderID = @POID
+	  )
+	  end
+	</extension>
+	<extension name="dependson">POLine.ReceiveCost</extension>
+  </object>
+  <table name="PurchaseOrderStateHistory">
+	<field name="PurchaseOrderID"/>
+	<field name="EffectiveDate"/>
+  </table>
+  <table name="Vendor"/>
+  <table name="Location"/>
+  <table name="ShippingMode"/>
+  <table name="PaymentTerm"/>
+  <table name="ReceiveItemPO"/>
+  <table name="ActualLaborOutsidePO"/>
+  <table name="ActualOtherWorkOutsidePO"/>
+  <table name="ReceiveMiscellaneousPO"/>
+  <table name="Receipt"/>
+  <table name="PurchaseOrderCategory"/>
+  <table name="Project"/>
+  <table name="POLine">
+	<field name="Cost"/>
+	<field name="ReceiveCost"/>
+  </table>
+</database>

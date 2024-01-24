@@ -1,0 +1,54 @@
+﻿using Thinkage.Libraries.CommandLineParsing;
+using Thinkage.Libraries.DBAccess;
+using Thinkage.Libraries.Presentation;
+using Thinkage.MainBoss.Database;
+namespace Thinkage.MainBoss.MBUtility
+{
+	internal class ExportAllVerb
+	{
+		public class Definition : UtilityVerbWithDatabaseDefinition
+		{
+			public Definition()
+				: base()
+			{
+				Add(OutputPackageFilename = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("Output"), KB.I("Filename to receive the packaged dataset export data"), true));
+				Add(EmbedSchema = new BooleanOption(KB.I("EmbeddedSchema"), KB.I("Indicates if the output XML file should contain an embedded schema"), '+', false));
+				Add(ExcludeDeleted = new BooleanOption(KB.I("ExcludeDeleted"), KB.I("Exclude deleted records"), '+', false));
+				EmbedSchema.Value = false;
+				MarkAsDefaults();
+			}
+			public readonly StringValueOption OutputPackageFilename;
+			public readonly BooleanOption EmbedSchema;
+			public readonly BooleanOption ExcludeDeleted;
+			public override string Verb
+			{
+				[return: Thinkage.Libraries.Translation.Invariant]
+				get
+				{
+					return "ExportAll";
+				}
+			}
+			public override void RunVerb()
+			{
+				new ExportAllVerb(this).Run();
+			}
+		}
+		private ExportAllVerb(Definition options)
+		{
+			Options = options;
+		}
+		private readonly Definition Options;
+		private void Run()
+		{
+			DataImportExportHelper.Setup();
+			Thinkage.MainBoss.Controls.DataImportExportPackage p = new Thinkage.MainBoss.Controls.DataImportExportPackage();
+			p.AddAllExports();
+			string oName;
+			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			DataImportExportHelper.SetupDatabaseAccess(oName, connect);
+			// Get a connection to the database that we are exporting from
+			Thinkage.Libraries.DBAccess.XAFClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
+			p.ExportXml(Options.OutputPackageFilename.Value, db, dsMB.Schema, Options.ExcludeDeleted.HasValue ? Options.ExcludeDeleted.Value : false, schemaIdentification => new DataImportExport(schemaIdentification));
+		}
+	}
+}

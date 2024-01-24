@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+  <table name="SingleRecordNoDataTable" log="false" id="Id" labelkey="">
+	<doc>
+	  A view to generate a single record of one field (no data, just an ID) for use when a table Schema is expected, but no data within the table is referenced.
+	  The ID was picked arbitrarily but is fixed so that the "same" record is found after a clear and refresh.
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+    <extension name="query">
+	  select cast('2E3B9222-3303-422C-8C94-F2EC31B1AF31' as uniqueidentifier)
+	</extension>
+  </table>
+</database>

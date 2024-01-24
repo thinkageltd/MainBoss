@@ -1,0 +1,369 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Thinkage.MainBoss.MBUtility§'{0}' can only work if the computer is in a domain; if you are in a domain, then the domain controller is currently inaccessible" xml:space="preserve">
+    <value>'{0}' can only work if the computer is in a domain; if you are in a domain, then the domain controller is currently inaccessible</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Access failed: {0}" xml:space="preserve">
+    <value>Access failed: {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Access OK" xml:space="preserve">
+    <value>Access OK</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§All contacts with Active Directory References excluding these email addresses will have their contacts updated from Active Directory" xml:space="preserve">
+    <value>All contacts with Active Directory References excluding these email addresses will have their contacts updated from Active Directory</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§All contacts with Active Directory References whose primary email address matches this pattern will have their contacts updated from Active Directory" xml:space="preserve">
+    <value>All contacts with Active Directory References whose primary email address matches this pattern will have their contacts updated from Active Directory</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Any contact whose primary email address matches this pattern will be excluded from being updated from Active Directory" xml:space="preserve">
+    <value>Any contact whose primary email address matches this pattern will be excluded from being updated from Active Directory</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Application" xml:space="preserve">
+    <value>Application</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Cannot get the Active Directory entry for Contact '{0}'" xml:space="preserve">
+    <value>Cannot get the Active Directory entry for Contact '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Cannot have both '{0}' and '{1}'" xml:space="preserve">
+    <value>Cannot have both '{0}' and '{1}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Cannot update Contact '{0}'; {1}" xml:space="preserve">
+    <value>Cannot update Contact '{0}'; {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Cannot update Contact ID '{0}'; {1}" xml:space="preserve">
+    <value>Cannot update Contact ID '{0}'; {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Clear the Active Directory Reference for any Contact that does not have a valid Active Directory Reference" xml:space="preserve">
+    <value>Clear the Active Directory Reference for any Contact that does not have a valid Active Directory Reference</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Contact '{0}' email address is defined in multiple Active Directory Users {1}" xml:space="preserve">
+    <value>Contact '{0}' email address is defined in multiple Active Directory Users {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Contact '{0}' was deleted" xml:space="preserve">
+    <value>Contact '{0}' was deleted</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Contact '{0}' was updated" xml:space="preserve">
+    <value>Contact '{0}' was updated</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Contact '{0}' was updated, and was changed to {1}" xml:space="preserve">
+    <value>Contact '{0}' was updated, and was changed to {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Contact '{0}' was updated, but was unable to change the Contact Code to {1}" xml:space="preserve">
+    <value>Contact '{0}' was updated, but was unable to change the Contact Code to {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Contact '{0}' with email address '{1}' already existed" xml:space="preserve">
+    <value>Contact '{0}' with email address '{1}' already existed</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Contacts that do not have a valid Active Directory Reference are deleted" xml:space="preserve">
+    <value>Contacts that do not have a valid Active Directory Reference are deleted</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Database Name" xml:space="preserve">
+    <value>Database Name</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Defaults" xml:space="preserve">
+    <value>Defaults</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Delete the AllUsers organization entry" xml:space="preserve">
+    <value>Delete the AllUsers organization entry</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Error in XML Document" xml:space="preserve">
+    <value>Error in XML Document</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Error in XML Schema" xml:space="preserve">
+    <value>Error in XML Schema</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Error: {0}" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Error: '{0}' is not a valid email address" xml:space="preserve">
+    <value>Error: '{0}' is not a valid email address</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Exception: {0}" xml:space="preserve">
+    <value>Exception: {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§For help, type 'mbutility help'" xml:space="preserve">
+    <value>For help, type 'mbutility help'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Full error details can be found in {0}" xml:space="preserve">
+    <value>Full error details can be found in {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Import of physical counts failed" xml:space="preserve">
+    <value>Import of physical counts failed</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Line {0}, Position {1}" xml:space="preserve">
+    <value>Line {0}, Position {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Line {0}, Position {1}:{2}" xml:space="preserve">
+    <value>Line {0}, Position {1}:{2}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Need a '{0}' or a '{1}' option to specify which Contacts to update" xml:space="preserve">
+    <value>Need a '{0}' or a '{1}' option to specify which Contacts to update</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§No certificate issued to Thinkage Ltd. was found in the script &lt;Signature&gt; element" xml:space="preserve">
+    <value>No certificate issued to Thinkage Ltd. was found in the script &lt;Signature&gt; element</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Order the list by the Database Name" xml:space="preserve">
+    <value>Order the list by the Database Name</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Order the list by the Database Server Name" xml:space="preserve">
+    <value>Order the list by the Database Server Name</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Organization" xml:space="preserve">
+    <value>Organization</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Organization {0} already exists; use the /+Replace option if you want to replace it" xml:space="preserve">
+    <value>Organization {0} already exists; use the /+Replace option if you want to replace it</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Organization {0} does not exist." xml:space="preserve">
+    <value>Organization {0} does not exist.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Overwrite any existing organization of the same name" xml:space="preserve">
+    <value>Overwrite any existing organization of the same name</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Preserve the Contact's primary email address if it exists; otherwise the Active Directory Mail address will be added to the Contacts Alternate email address" xml:space="preserve">
+    <value>Preserve the Contact's primary email address if it exists; otherwise the Active Directory Mail address will be added to the Contacts Alternate email address</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Press any key to end program" xml:space="preserve">
+    <value>Press any key to end program</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Probe Status" xml:space="preserve">
+    <value>Probe Status</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Provide additional information about changes that have occurred" xml:space="preserve">
+    <value>Provide additional information about changes that have occurred</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Registry Key" xml:space="preserve">
+    <value>Registry Key</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Requestor '{0}' with email address '{1}' already existed" xml:space="preserve">
+    <value>Requestor '{0}' with email address '{1}' already existed</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Script '{0}' contains multiple &lt;Signature&gt; elements" xml:space="preserve">
+    <value>Script '{0}' contains multiple &lt;Signature&gt; elements</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Server" xml:space="preserve">
+    <value>Server</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Set the default start organization to this entry" xml:space="preserve">
+    <value>Set the default start organization to this entry</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Show the AllUsers organization entry instead of the list" xml:space="preserve">
+    <value>Show the AllUsers organization entry instead of the list</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Show the real (registry) organization names as well as their display names" xml:space="preserve">
+    <value>Show the real (registry) organization names as well as their display names</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Show the Start Default if any (and Last Selected Organization if different)" xml:space="preserve">
+    <value>Show the Start Default if any (and Last Selected Organization if different)</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Show the verion of the MainBoss database, if the database is accessible" xml:space="preserve">
+    <value>Show the verion of the MainBoss database, if the database is accessible</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify the /ErrorOutput: option to record all error details" xml:space="preserve">
+    <value>Specify the /ErrorOutput: option to record all error details</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify the name of the file containing the customizations to be imported" xml:space="preserve">
+    <value>Specify the name of the file containing the customizations to be imported</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify the name of the file containing the security definitions to be loaded" xml:space="preserve">
+    <value>Specify the name of the file containing the security definitions to be loaded</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify the name of the file to backup the database" xml:space="preserve">
+    <value>Specify the name of the file to backup the database</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify the name of the file where the customizations will be exported" xml:space="preserve">
+    <value>Specify the name of the file where the customizations will be exported</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify the name of the script file to be run" xml:space="preserve">
+    <value>Specify the name of the script file to be run</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify the SQL authentication credential of the MainBoss user" xml:space="preserve">
+    <value>Specify the SQL authentication credential of the MainBoss user</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Test if it is possible to connect to the referenced database and show error message if it is not possible" xml:space="preserve">
+    <value>Test if it is possible to connect to the referenced database and show error message if it is not possible</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§The {0} could not be parsed" xml:space="preserve">
+    <value>The {0} could not be parsed</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§The email addresses used to find the Active Directory entry for the contacts to be updated" xml:space="preserve">
+    <value>The email addresses used to find the Active Directory entry for the contacts to be updated</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§The email addresses used to find the Active Directory entry for the users" xml:space="preserve">
+    <value>The email addresses used to find the Active Directory entry for the users</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§The root element in script '{0}' is missing or has no content" xml:space="preserve">
+    <value>The root element in script '{0}' is missing or has no content</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§The schema identification {0} does not exist." xml:space="preserve">
+    <value>The schema identification {0} does not exist.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§The script signature does not verify against the Thinkage Ltd. certificate in the &lt;Signature&gt; element or this certificate is invalid" xml:space="preserve">
+    <value>The script signature does not verify against the Thinkage Ltd. certificate in the &lt;Signature&gt; element or this certificate is invalid</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§There are no customizations to export from this database." xml:space="preserve">
+    <value>There are no customizations to export from this database.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§There are no saved organizations" xml:space="preserve">
+    <value>There are no saved organizations</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§There was a problem validating access to the database {0} on server {1}" xml:space="preserve">
+    <value>There was a problem validating access to the database {0} on server {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Too many errors to continue" xml:space="preserve">
+    <value>Too many errors to continue</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Unable to access database {0} on server {1}" xml:space="preserve">
+    <value>Unable to access database {0} on server {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Unable to load MainBoss Basic exported data from {0}" xml:space="preserve">
+    <value>Unable to load MainBoss Basic exported data from {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Unable to save error output to {0}" xml:space="preserve">
+    <value>Unable to save error output to {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Update all the contacts that have Active Directory References" xml:space="preserve">
+    <value>Update all the contacts that have Active Directory References</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Use the primary email address in the contact as well as the Active Directory Reference to find the Active Directory entry" xml:space="preserve">
+    <value>Use the primary email address in the contact as well as the Active Directory Reference to find the Active Directory entry</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§User table change attempt using SQL CONTROL permission" xml:space="preserve">
+    <value>User table change attempt using SQL CONTROL permission</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§User table change using SQL CONTROL permission completed" xml:space="preserve">
+    <value>User table change using SQL CONTROL permission completed</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Verify that the organization database is accessible" xml:space="preserve">
+    <value>Verify that the organization database is accessible</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Warning: {0}" xml:space="preserve">
+    <value>Warning: {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§You cannot use EmbeddedSchema together with EXCEL" xml:space="preserve">
+    <value>You cannot use EmbeddedSchema together with EXCEL</value>
+  </data>
+</root>

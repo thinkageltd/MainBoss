@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="OtherWorkOutside" defaults="true" log="false" id="Id" xid="Code Hidden VendorID" xunique="true" labelkey="Per Job Outside">
+	<doc>Description of Per Job outside work requirement</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="RequiredCode"/>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="Desc" type="Desc"/>
+	<field name="Comment" type="Comment"/>
+	<field name="VendorID" type="GUIDREF"  link="Vendor">
+	  <doc>Optional specific vendor to obtain the work from</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="TradeID" type="GUIDREF" link="Trade">
+	  <doc>Optional specific Trade that the Per Job labor should be sourced from</doc>
+	  <extension name="linkage">property</extension>
+	</field>	
+	<field name="PurchaseOrderText" type="LineText">
+	  <doc>Prototype for PurchaseOrderLine if converted to PO</doc>
+	</field>
+	<field name="Cost" type="Currency">
+	  <doc>The estimated total cost for this job</doc>
+	</field>
+	<extension name="deletemethod">hide</extension>
+	<!-- CostCenterID is the Vendor A/P CC -->
+	<extension name="costrights">LaborOutside</extension>
+  </table>
+  <table name="Vendor"/>
+  <table name="Trade"/>
+</database>

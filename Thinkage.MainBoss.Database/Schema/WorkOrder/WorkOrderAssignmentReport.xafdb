@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderAssignmentReport" log="false" id="Id" labelkey="">
+	<doc>
+	  This view provides all the WorkOrderFormReport records crossed with the WorkOrderAssignmentAll records.
+	  Each WO Form Report record is duplicated for each assignment (assignee? What if there are multiple assignments to one assignee?) record.
+	  If a particular WO has no assignees, we generate one copy of the WO FOrm Report linkages with null references to the assignee because of the outer join.
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="WorkOrderAssigneeID" link="WorkOrderAssignee" type="GUIDREF" labelkey="Assignee"/>
+	<field name="WorkOrderFormReportID" link="WorkOrderFormReport" type="RequiredGUIDREF" labelkey=""/>
+	<extension name="query">
+	  select
+		newid()
+		,WorkOrderAssignmentAll.WorkOrderAssigneeId
+		,WorkOrderFormReport.ID
+	  from WorkOrderFormReport
+	  left outer join WorkOrderAssignmentAll on WorkOrderAssignmentAll.WorkOrderID = WorkOrderFormReport.WorkOrderID
+	</extension>
+	<extension name="dependson">WorkOrderAssignmentAll</extension>
+	<extension name="dependson">WorkOrderFormReport</extension>
+	<extension name="costrights">UnitValue</extension>
+	<extension name="lastupdate">WorkOrderFormReportID</extension>
+  </table>
+  <table name="WorkOrderAssignmentAll"/>
+  <table name="WorkOrderAssignee"/>
+  <table name="WorkOrderFormReport" />
+</database>

@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+  <table name="Project">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.MAINBOSSID, I.PROJECTTYPE from <IDB/>.dbo.PROJTYPE as I where I.MAINBOSSEXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.Project ([ID],[Code],[Desc]) SELECT I.[MAINBOSSID], CM.[CODE], [DESCRIPTION] from <IDB/>.dbo.PROJTYPE AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[MAINBOSSID] = CM.[ID];
+	</data>
+  </table>
+  <table name="AssetCode">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.MAINBOSSID, I.TYPE from <IDB/>.dbo.ASSETYPE as I where I.MAINBOSSEXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.AssetCode ([ID],[Code],[Desc]) SELECT I.[MAINBOSSID], CM.[CODE], [DESCRIPTION] from <IDB/>.dbo.ASSETYPE AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[MAINBOSSID] = CM.[ID];
+	</data>
+  </table>
+  <table name="CostCenter">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.MAINBOSSID, I.COSTCENTER from <IDB/>.dbo.COSTCTR as I where I.MAINBOSSEXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.CostCenter ([ID],[Code],[Desc]) SELECT I.[MAINBOSSID], CM.[CODE], [DESCRIPTION] from <IDB/>.dbo.COSTCTR AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[MAINBOSSID] = CM.[ID];
+	</data>
+  </table>
+  <table name="UnitOfMeasure">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.MAINBOSSID, I.UNIT from <IDB/>.dbo.UOMUOP as I where I.MAINBOSSEXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.UnitOfMeasure ([ID],[Code],[Desc]) SELECT I.[MAINBOSSID], CM.[Code], NULL from <IDB/>.dbo.UOMUOP AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[MAINBOSSID] = CM.[ID] WHERE I.MAINBOSSEXCLUDE = 0;
+	</data>
+  </table>
+	<table name="PaymentTerm">
+		<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.MAINBOSSID, I.TERMS from <IDB/>.dbo.PAYTERM as I where I.MAINBOSSEXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.PaymentTerm ([ID],[Code],[Desc]) SELECT I.[MAINBOSSID], CM.[CODE],[DESCRIPTION] from <IDB/>.dbo.PAYTERM AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[MAINBOSSID] = CM.[ID];
+	</data>
+	</table>
+  <table name="Trade">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+UPDATE <IDB/>.dbo.CRAFTS SET MAINBOSSEXCLUDE = 1 where CRAFT = '-'
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.MAINBOSSID, I.CRAFT from <IDB/>.dbo.CRAFTS as I where I.MAINBOSSEXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+INSERT INTO <ODB/>.dbo.Trade ([ID],[Code],[Desc]) SELECT I.[MAINBOSSID], CM.[Code],[DESCRIPTION] from <IDB/>.dbo.CRAFTS AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[MAINBOSSID] = CM.[ID];
+	</data>
+  </table>
+  <table name="WorkOrderCategory">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.MAINBOSSID, I.WOTYPE from <IDB/>.dbo.WOTYPE as I where I.MAINBOSSEXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.WorkOrderCategory ([ID],[Code],[Desc]) SELECT I.[MAINBOSSID], CM.[CODE],[DESCRIPTION] from <IDB/>.dbo.WOTYPE AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[MAINBOSSID] = CM.[ID];
+	</data>
+  </table>
+	<table name="Ownership">
+		<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.MAINBOSSID, I.DEPARTMENT from <IDB/>.dbo.DEPT as I where I.MAINBOSSEXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+INSERT INTO <ODB/>.dbo.Ownership ([ID],[Code],[Desc]) SELECT I.[MAINBOSSID], CM.[CODE], [DESCRIPTION] from <IDB/>.dbo.DEPT AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[MAINBOSSID] = CM.[ID];
+	</data>
+	</table>
+
+	<table name="VendorCategory">
+		<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) SELECT NEWID(), VC.CODE FROM (select DISTINCT I.VENDORTYPE AS CODE from <IDB/>.dbo.VENDOR as I where I.MAINBOSSEXCLUDE = 0) AS VC;
+exec <IDB/>.dbo.FixCodes 50
+if object_id('dbo.VendorCategories', 'U') is not null drop table dbo.VendorCategories;
+GO
+		
+	  CREATE TABLE <IDB/>.dbo.VendorCategories (
+		  [ID]            uniqueidentifier NOT NULL PRIMARY KEY,
+		  [Code]          nvarchar(50) NOT NULL
+	  );
+	  INSERT INTO <IDB/>.dbo.VendorCategories
+			  ([ID], [Code])
+		SELECT [ID], [Code]
+		  from <IDB/>.dbo.CodeManagement;
+
+INSERT INTO <ODB/>.dbo.VendorCategory ([ID],[Code],[Desc]) SELECT I.[ID], CM.[Code], NULL from <IDB/>.dbo.VendorCategories AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+	</data>
+	</table>
+<!-- We constructed Priority Codes from the WO and TASK table-->
+	<table name="PriorityCodes">
+		<dependency table="ConversionFunctions"/>
+		<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement ([ID], [Code], [Context], [Hidden29])
+select NEWID(), P.PP, NULL, 0 FROM (
+SELECT DISTINCT [PRIORITY] as PP
+  FROM [MP2P60S_new].[dbo].[WO] where [PRIORITY] IS NOT NULL
+  union
+  SELECT DISTINCT [Priority] as PP
+  from [MP2P60S_new].[dbo].[Task] where [PRIORITY] IS NOT NULL
+ ) as P
+ 
+	  -- Generate the unique Code's
+	  exec <IDB/>.dbo.FixCodes 50;
+ GO  
+	  -- Extract the results.
+		if object_id('dbo.PriorityCodes', 'U') is not null drop table dbo.PriorityCodes;
+		GO
+		
+	  CREATE TABLE <IDB/>.dbo.PriorityCodes (
+		  [ID]            uniqueidentifier NOT NULL PRIMARY KEY,
+		  [Code]          nvarchar(50) NOT NULL,
+		  [Rank]					int
+	  );
+	  INSERT INTO <IDB/>.dbo.PriorityCodes
+			  ([ID], [Code], [Rank])
+		SELECT [ID], [Code], CONVERT(INT, [Code])
+		  from <IDB/>.dbo.CodeManagement;
+		</data>
+	</table>
+	<table name="WorkOrderPriority">
+	<data>
+INSERT INTO <ODB/>.dbo.WorkOrderPriority ([ID],[Code],[Desc],[Rank]) SELECT I.[ID], I.[Code],NULL, [Rank] from <IDB/>.dbo.PriorityCodes AS I;
+	</data>
+  </table>
+  <table name="RequestPriority">
+	<data>
+INSERT INTO <ODB/>.dbo.RequestPriority ([ID],[Code],[Desc],[Rank]) SELECT I.[ID], I.[Code], NULL, [Rank] from <IDB/>.dbo.PriorityCodes AS I ;
+	</data>
+  </table>
+</dbconversion>

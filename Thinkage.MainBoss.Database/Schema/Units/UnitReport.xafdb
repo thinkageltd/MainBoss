@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="UnitReport" log="false" id="Id" labelkey="">
+	<field name="Id" read="requiredGUID"/>
+	<field name="UnitID" type="requiredGUIDREF" link="Unit" unique="true"/>
+	<field name="UnitPostalAddressID" link="PostalAddress" type="GUIDREF" labelkey="Postal Address" />
+	<field name="UnitPostalAddress" type="MultiLineUnlimited" labelkey="Postal Address"/>
+	<field name="UnitSpecification" type="MultiLineUnlimited">
+	  <extension name="dependson">mbfn_Specification_Summary()</extension>
+	</field>
+	<field name="UnitAttachment" type="MultiLineUnlimited">
+	  <extension name="dependson">mbfn_Attachment_Summary()</extension>
+	</field>
+	<field name="UnitRelationship" type="MultiLineUnlimited">
+	  <extension name="dependson">mbfn_Relationship_Summary()</extension>
+	</field>
+	<field name="CostDate" type="Date">
+	  <doc>The date on which CostBasis should be considered current and valid</doc>
+	</field>
+	<field name="CostBasis" type="Currency">
+	  <doc>An estimate of the cost to replace the Unit, based on ReplacementCost or, if not specified, OriginalCost</doc>
+	</field>
+	<field name="Lifetime" 	type="DurationDays">
+	  <doc>The expected lifetime of the Unit from original purchase</doc>
+	</field>
+	<field name="EndOfLife" type="Date">
+	  <doc>The expected date when the Unit will reach the end of its lifetime</doc>
+	</field>
+	<field name="WorkingEndOfLife" type="Date">
+	  <doc>The EndOfLife extended to the current date</doc>
+	</field>
+	<field name="TimeSinceCostBasis" type="DurationDays">
+	</field>
+	<field name="LifetimeAfterCostBasis" type="DurationDays">
+	</field>
+	<field name="RemainingLifetime" type="DurationDays">
+	</field>
+	<extension name="query">
+	  with
+		unitCalculations1(
+		  "UnitID",
+		  "RelativeLocationID",
+		  "PurchaseDate",
+		  "CostDate",
+		  "CostBasis",
+		  "Lifetime",
+		  "EndOfLife",
+		  "CurrentDate"
+		) as (
+		  select
+			ID
+			, RelativeLocationID
+			, PurchaseDate
+			, CASE WHEN ReplacementCost is not null then COALESCE(ReplacementCostLastDate, dbo._DClosestValue(getdate(),2,100)) else COALESCE(PurchaseDate, dbo._DClosestValue(getdate(),2,100)) END
+			, COALESCE(Unit.ReplacementCost, Unit.OriginalCost)
+			, COALESCE(dbo._IDateDiff(PurchaseDate,ScrapDate), DateAdd(year, TypicalLife, '1900-01-01T00:00:00.000'))
+			, COALESCE(ScrapDate, DateAdd(year, TypicalLife, PurchaseDate))
+			, dbo._DClosestValue(getdate(), 0, 846000000000) <!-- TimeSpan.TicksPerDay -->
+		  from Unit
+		),
+		unitCalculations2(
+		  "UnitID",
+		  "RelativeLocationID",
+		  "PurchaseDate",
+		  "CostDate",
+		  "CostBasis",
+		  "Lifetime",
+		  "EndOfLife",
+		  "WorkingEndOfLife",
+		  "CurrentDate"
+		) as (
+		  select
+			UnitID
+			, RelativeLocationID
+			, PurchaseDate
+			, CostDate
+			, CostBasis
+			, Lifetime
+			, EndOfLife
+			, CASE When EndofLife is null or CurrentDate > EndOfLife then CurrentDate else EndOfLife end
+			, CurrentDate
+		  from unitCalculations1
+		)
+	select
+		  unitID
+		, UnitID -- UnitID
+		, PostalAddress.Id
+		, dbo.mbfn_Location_PostalAddress(RL.[LocationID])
+		, dbo.mbfn_Specification_Summary(RL.[LocationID])  -- UnitSpecification
+		, dbo.mbfn_Attachment_Summary(RL.[LocationID])     -- UnitAttachment
+		, dbo.mbfn_Relationship_Summary(RL.[LocationID])   -- UnitRelationship
+		, CostDate
+		, CostBasis
+		, Lifetime
+		, EndOfLife
+		, WorkingEndOfLife
+		, dbo._IDateDiff(CostDate,CurrentDate)             -- time since last estimated cost
+		, dbo._IDateDiff(CostDate,WorkingEndOfLife)        -- lifetime after cost estimate
+		, dbo._IDateDiff(CurrentDate,EndOfLife)            -- Remaining life time
+	  from unitCalculations2
+	  join RelativeLocation as RL on RL.[ID] = RelativeLocationID
+	  join LocationContainment on RL.LocationID = LocationContainment.ContainedLocationID
+	  join PostalAddress ON PostalAddress.[LocationID] = LocationContainment.ContainingLocationID
+	</extension>
+	<extension name="dependson">RelativeLocation</extension>
+	<extension name="dependson">Location</extension>
+	<extension name="dependson">LocationContainment</extension>
+	<extension name="dependson">PostalAddress</extension>
+	<extension name="dependson">Unit</extension>
+	<extension name="dependson">Contact</extension>
+	<extension name="lastupdate">UnitID</extension>
+	<extension name="costrights">UnitValue</extension>
+  </table>
+  <table name="RelativeLocation"/>
+  <table name="Location"/>
+  <table name="Contact"/>
+  <table name="LocationContainment"/>
+  <table name="PostalAddress"/>
+  <table name="Unit"/>
+  <object class="function" name="mbfn_Specification_Summary">
+	<doc>
+	  returns the summary text of all the specifications for a given unit
+	</doc>
+	<extension name="body">
+(
+	@IID		uniqueidentifier	-- Unit's Location id
+)
+RETURNS nvarchar(max)
+as
+begin
+	declare @result as nvarchar(max)
+	declare @speccode as nvarchar(60)
+	declare @spectext as nvarchar(max)
+	declare speccursor cursor scroll
+	for
+		select Code, ReportText from Specification
+		where [UnitLocationID] = @IID
+
+	set @result = ''
+	open speccursor
+	fetch first from speccursor into @speccode, @spectext
+	while @@FETCH_STATUS = 0
+	begin
+		set @result = @result + '[' + @speccode + ']' + char(13) + char(10) + @spectext + char(13) + char(10)
+		fetch next from speccursor into @speccode, @spectext
+	end
+	close speccursor
+	if len(@result) > 2
+				return left(@result,len(@result)-2) -- trim off the extra crlf
+	return null
+end
+	</extension>
+	<!-- TODO: Remove comment and add dependency when DatabaseCreation code handles view dependencies on functions properly
+	<extension name="dependson">Specification</extension>
+-->
+  </object>
+  <object class="function" name="mbfn_Attachment_Summary">
+	<doc>
+			returns the summary text of all the attachments for a given unit
+		</doc>
+	<extension name="body">
+(
+	@IID		uniqueidentifier	-- Unit's Location id
+)
+RETURNS nvarchar(max)
+as
+begin
+	declare @result as nvarchar(max)
+	declare @code as nvarchar(50)
+	declare @desc as nvarchar(150)
+	declare @comment as nvarchar(max)
+	declare @path as nvarchar(max)
+	declare acursor cursor scroll
+	for
+		select Code, [Desc], Comment, [Path] from Attachment
+		where [UnitLocationID] = @IID
+
+	set @result = ''
+	open acursor
+	fetch first from acursor into @code, @desc, @comment, @path
+	while @@FETCH_STATUS = 0
+	begin
+		set @result = @result + @code + ': ' + @path + char(13) + char(10)
+		if @desc is not null 
+			set @result = @result + @desc + CHAR(13) + CHAR(10)
+
+		if @comment is not null
+		 set @result = @result + @comment + CHAR(13) + CHAR(10)
+		
+		fetch next from acursor into @code, @desc, @comment, @path
+	end
+	close acursor
+	if len(@result) > 2
+		return left(@result,len(@result)-2) -- trim off the extra crlf
+	return null
+end
+		</extension>
+	<!-- TODO: Remove comment and add dependency when DatabaseCreation code handles view dependencies on functions properly
+	<extension name="dependson">Specification</extension>
+-->
+  </object>
+  <object class="function" name="mbfn_Relationship_Summary">
+	<doc>
+		TODO: returns the summary text of all the relationships for a given unit
+	</doc>
+	<extension name="body">
+(
+	@IID		uniqueidentifier	-- Unit's Location id
+)
+RETURNS nvarchar(max)
+as
+begin
+	declare @result as nvarchar(max)
+	declare @phrase as nvarchar(150)
+	declare @object as nvarchar(max)
+	declare @count as int
+	declare acursor cursor scroll
+	for
+	select relationPhrase, otherObjectIdentification, COUNT(*)
+	from (
+			select URU.AUnitLocationID, R.AAsRelatedToBPhrase, L2.Code
+				from UnitRelatedUnit as URU
+				join Location as L2 on URU.BUnitLocationID = L2.ID
+				join Relationship as R on URU.RelationshipID = R.ID
+		union all
+			select URU.BUnitLocationID, R.BAsRelatedToAPhrase, L2.Code
+				from UnitRelatedUnit as URU
+				join Location as L2 on URU.AUnitLocationID = L2.ID
+				join Relationship as R on URU.RelationshipID = R.ID
+		union all
+			select URC.UnitLocationID, R.AAsRelatedToBPhrase, C.Code	
+				from UnitRelatedContact as URC
+				join Contact as C on URC.ContactID = C.ID
+				join Relationship as R on URC.RelationshipID = R.ID
+	) as relatedObjects (thisUnitLocationID, relationPhrase, otherObjectIdentification)
+	where thisUnitLocationID = @IID
+	group by relationPhrase, otherObjectIdentification with rollup
+	having relationPhrase is not null
+	order by relationPhrase, otherObjectIdentification
+	set @result = ''
+	open acursor
+	fetch first from acursor into  @phrase, @object, @count
+	while @@FETCH_STATUS = 0
+	begin
+		if @object is null
+			set @result = @result + @phrase + CHAR(13) + CHAR(10)
+		else
+			set @result = @result + '    ' + @object + char(13) + char(10)
+		fetch next from acursor into @phrase, @object, @count
+	end
+	close acursor
+	if len(@result) > 2
+		return left(@result,len(@result)-2) -- trim off the extra crlf
+	return null
+end
+		</extension>
+	<!-- TODO: Remove comment and add dependency when DatabaseCreation code handles view dependencies on functions properly
+	<extension name="dependson">Specification</extension>
+-->
+  </object>
+</database>

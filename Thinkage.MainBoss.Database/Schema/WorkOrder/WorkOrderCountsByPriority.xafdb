@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="WorkOrderCountsByPriority" defaults="false" log="false" id="Id" labelkey="">
+		<field name="Id" read="RequiredGUID"/>
+		<field name="WorkOrderPriorityID" type="RequiredGUIDREF" link="WorkOrderPriority" labelkey="Priority"/>
+		<field name="WorkOrderCount" type="RequiredQuantity"  />
+		<extension name="query">
+			select WO.WorkOrderPriorityId, WO.WorkOrderPriorityID, count(*)
+				from WorkOrder as WO
+					join WorkOrderStateHistory as WOSH on WOSH.Id = WO.CurrentWorkOrderStateHistoryID
+					join WorkOrderState as WOS on WOS.Id = WOSH.WorkOrderStateID
+				where WOS.FilterAsOpen != 0 and WO.WorkOrderPriorityID is not null
+				group by WO.WorkOrderPriorityID
+    </extension>
+		<extension name="dependson">WorkOrder</extension>
+		<extension name="dependson">WorkOrderStateHistory</extension>
+		<extension name="dependson">WorkOrderState</extension>
+	</table>
+	<table name="WorkOrder"/>
+	<table name="WorkOrderPriority"/>
+	<table name="WorkOrderState"/>
+	<table name="WorkOrderStateHistory"/>
+</database>

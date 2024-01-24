@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ItemActivity" defaults="false" log="false" id="Id" labelkey="Item Activity">
+	<field name="Id" read="RequiredGUID">
+	  <doc>The ID of this record, which is also the ID of the AccountingTransaction record</doc>
+	</field>
+	<field name="TableEnum" labelkey="Item Activity" type="integer(min 0, max 15,nonnull)">
+	  <doc>An Enum ViewRecordTypes.ItemActivity identifying the record type</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIItem.ItemActivityProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="ParentID" type="link" link="ItemActivity" labelkey="Item Activity">
+	  <doc>The parent record for the tree structure. This is used to make corrections/voiding records children of the corrected/voided record</doc>
+	</field>
+	<field name="Quantity" type="Quantity">
+	  <doc>The value to show in the browser Quantity column</doc>
+	</field>
+	<field name="Cost" type="Currency">
+	  <doc>The value to show in the browser Cost column</doc>
+	</field>
+	<field name="UnitCost" type="UnitCost">
+	  <doc>The value to show in the browser Unit Cost column</doc>
+	  <extension name="dependson">mbfn_CalculateUnitCost()</extension>
+	</field>
+	<field name="ItemLocationID" type="RequiredGUIDREF" link="ItemLocation">
+	  <doc>The ItemLocation (Storeroom/Temporary Storage assignment) required to produce the browsette filtered views</doc>
+	</field>
+	<field name="AccountingTransactionID" type="RequiredGUIDREF" link="AccountingTransaction" labelkey="">
+	  <doc>The AccountingTransaction record that is the base record for the row returned by this View</doc>
+	</field>
+	<extension name="query">
+		select a.ID, cast(a.TableEnum as tinyint), a.ParentID,
+				case when a.TableEnum in (1, 15) then null else a.Quantity end,
+				case a.TableEnum
+				  when 0 then a.Cost
+				  when 1 then null
+				  when 15 then null
+				  else AccountingTransaction.Cost
+				end,
+				case a.TableEnum
+				  when 0 then dbo.mbfn_CalculateUnitCost(a.Cost, a.Quantity, 1)
+				  when 1 then null
+				  when 15 then null
+				  else dbo.mbfn_CalculateUnitCost(AccountingTransaction.Cost, a.Quantity, 1)
+				 end,
+				a.ItemLocationID,
+				a.AccountingTransactionID
+		from
+	(
+		-- For all record types except Physical Count, Voided Physical Count, and Void Physical Count, the Cost comes from the
+		-- accounting transaction so the inner query returns a null cost.
+		  select AccountingTransactionID, case when VoidingItemCountValueVoidID is null then 0 else 15 end, NULL, ItemLocationID, Quantity, Cost, AccountingTransactionID
+			from ItemCountValue
+		union all
+		  select ItemCountValueVoid.AccountingTransactionID, 1, ItemCountValue.AccountingTransactionID, ItemCountValue.ItemLocationID, null, null, ItemCountValueVoid.AccountingTransactionID
+			from ItemCountValueVoid
+				join ItemCountValue on ItemCountValue.id = ItemCountValueVoid.VoidedItemCountValueID
+		union all
+		  select AccountingTransactionID, 2, null, ItemLocationID, Quantity, null, AccountingTransactionID
+			from ItemAdjustment
+		union all
+		  select B.AccountingTransactionID, case when B.ID = B.CorrectionID then 3 else 9 end, case when B.ID = B.CorrectionID then null else C.AccountingTransactionID end, B.ItemLocationID, B.Quantity, null, B.AccountingTransactionID
+			from ItemIssue as B
+				join ItemIssue as C on C.ID = B.CorrectionID
+		union all
+		  select B.AccountingTransactionID, case when B.ID = B.CorrectionID then 4 else 13 end, case when B.ID = B.CorrectionID then null else C.AccountingTransactionID end, B.FromItemLocationID, B.Quantity, null, B.AccountingTransactionID
+			from ItemTransfer as B
+				join ItemTransfer as C on C.ID = B.CorrectionID
+		union all
+		  select B.ID, case when B.ID = B.CorrectionID then 5 else 14 end, case when B.ID = B.CorrectionID then null else C.ID end, B.ToItemLocationID, B.Quantity, null, B.AccountingTransactionID
+			from ItemTransfer as B
+				join ItemTransfer as C on C.ID = B.CorrectionID
+		union all
+		  select B.AccountingTransactionID, case when B.ID = B.CorrectionID then 6 else 10 end, case when B.ID = B.CorrectionID then null else C.AccountingTransactionID end, B.ItemLocationID, B.Quantity, null, B.AccountingTransactionID
+			from ReceiveItemPO as B
+				join ReceiveItemPO as C on C.ID = B.CorrectionID
+		union all
+		  select B.AccountingTransactionID, case when B.ID = B.CorrectionID then 7 else 11 end, case when B.ID = B.CorrectionID then null else C.AccountingTransactionID end, B.ItemLocationID, B.Quantity, null, B.AccountingTransactionID
+			from ReceiveItemNonPO as B
+				join ReceiveItemNonPO as C on C.ID = B.CorrectionID
+		union all
+		  select B.AccountingTransactionID, case when B.ID = B.CorrectionID then 8 else 12 end, case when B.ID = B.CorrectionID then null else C.AccountingTransactionID end, DI.ItemLocationID, B.Quantity, null, B.AccountingTransactionID
+			from ActualItem as B
+				join DemandItem as DI on DI.ID = B.DemandItemID
+				join ActualItem as C on C.ID = B.CorrectionID
+		) as a (ID, TableEnum, ParentID, ItemLocationID, Quantity, Cost, AccountingTransactionID)
+		join AccountingTransaction on AccountingTransaction.id = a.AccountingTransactionID
+
+	</extension>
+	<extension name="dependson">ItemLocation</extension>
+	<extension name="dependson">Location</extension>
+	<extension name="dependson">AccountingTransaction</extension>
+	<extension name="dependson">ItemCountValue</extension>
+	<extension name="dependson">ItemAdjustment</extension>
+	<extension name="dependson">ItemIssue</extension>
+	<extension name="dependson">ItemTransfer</extension>
+	<extension name="dependson">DemandItem</extension>
+	<extension name="dependson">Demand</extension>
+	<extension name="dependson">ActualItem</extension>
+	<extension name="dependson">ReceiveItemPO</extension>
+	<extension name="dependson">ReceiveItemNonPO</extension>
+	<extension name="dependson">ItemCountValueVoid</extension>
+	<extension name="costrights">InventoryActivity</extension>
+	<extension name="lastupdate">AccountingTransactionID</extension>
+  </table>
+  <table name="ItemLocation"/>
+  <table name="ItemAdjustment"/>
+  <table name="ItemCountValue"/>
+  <table name="ItemCountValueVoid"/>
+  <table name="ItemIssue"/>
+  <table name="ItemTransfer"/>
+  <table name="ReceiveItemPO"/>
+  <table name="ReceiveItemNonPO"/>
+  <table name="ActualItem"/>
+  <table name="Location"/>
+  <table name="AccountingTransaction"/>
+  <table name="DemandItem"/>
+  <table name="Demand"/>
+</database>

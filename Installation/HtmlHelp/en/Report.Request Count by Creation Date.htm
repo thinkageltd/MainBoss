@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Request Count by Creation Date Chart</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Request Count by Creation Date Chart</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="RequestCharts.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Request Count by In Progress Date.htm">Next section &gt;</a></p>
+
+<p>The Request Count by Creation Date chart provides one or more charts showing how many requests were created in various periods within a range of dates.</p>
+
+<p>For example, suppose you use the <span class="CButton">Filters</span> section to specify that you want to see requests created between January 1 and February 28. You can then use the <span class="CButton">Advanced</span> section to say that you want to divide that range of dates into weeks. The resulting chart will show how many requests were created each week between the given dates.</p>
+
+<p>If you specify options in the <span class="CButton">Grouping</span> section of the chart window, MainBoss will create a separate chart for each appropriate group. For example, if you group by request category, there will be a separate bar chart for each category.</p>
+
+<p>The creation date for a request is taken from the request history: the date on which you began to create the request (i.e. the date on which you saved the first draft of the request).</p>
+
+<p>You obtain the chart with <span class="CPanel">Requests</span> | <span class="CPanel">Charts</span> | <span class="CPanel">Request Count by Creation Date</span>. The resulting window contains the following:</p>
+
+<p class="wi"><span class="CButton">Grouping</span> section: Options controlling what charts actually appear in the report. You must specify at least one grouping option to have any charts appear.</p>
+<p class="wi"><span class="CButton">Sorting</span> section: Options controlling how the bars are sorted within bar-chart.</p>
+<p class="box">For more on how to use <span class="CButton">Grouping</span> and <span class="CButton">Sorting</span>, see <a href="ReportSections.htm">Report Sections</a>.</p>
+
+<p class="wi"><span class="CButton">Filters</span> section: Options controlling which requests will be included in the report. For more information, see <a href="ReportFilter.htm">Report Filters</a>.</p>
+<p class="wi2"><span class="CButton">Include Inactive records</span>: If this checkbox is checkmarked, all relevant records will be included in the report, no matter how old they are. If this checkbox is blank, only active records will be included; this means that old "inactive" records will be ignored.
+
+<br /><br />For more about the active filter, see <a href="Edit.Active Filter.htm">The Active Filter</a>.</p>
+<p class="wi"><span class="CButton">Field Selection</span> section: Options controlling which information fields will be included in the report.</p>
+<p class="wi2"><span class="CButton">Suppress Costs</span>: Omits any money information that might otherwise be displayed in the report.</p>
+<p class="wi"><span class="CButton">Advanced</span> section: Miscellaneous options.</p>
+<p class="wi2"><span class="CField">Report width in pages</span>: Makes it possible to have lines that are wider than a single page. This is particularly useful when you are previewing reports on a monitor screen. For further information, see <a href="ReportSections.htm">Report Sections</a>.</p>
+<p class="wi2"><span class="CField">Title</span>: The title to be printed at the beginning of the report.</p>
+<p class="wi2"><span class="CField">Main Font</span>: The font that will be used for most of the characters in the report. This should be a font that is supported by both your Windows system and your printer.</p>
+<p class="wi2"><span class="CField">Fixed-width Font</span>: The font that will be used for information that is printed with fixed-width characters (mostly unit specifications). This should be a font that is supported by both your Windows system and your printer.</p>
+<p class="wi2"><span class="CField">Chart Axis Interval</span>: Specifies how to divide the range of dates into periods. For example, if you specify days, the charts will show you how many requests were created on each day within the range of dates.</p>
+<p class="wi2"><span class="CButton">Show Summary charts for each group</span>: If this box is checkmarked, the chart will include summaries for each group. For example, if the report is grouped by unit, then there'll be summary information for each unit.</p>
+<p class="wi2"><span class="CButton">Show Summary charts for the report</span>: If this box is checkmarked, the report will have a summary covering all the information in the report.</p>
+<p class="wi"><span class="CButton">Preview</span> section: Displays a visual preview of the report. If you click the <span class="CButton"><img src="Refresh.png" alt="Refresh" /></span> button, you automatically go to this section.
+
+<br /><br />The <span class="CButton">Preview</span> section contains buttons for looking through the report preview and for actually printing the information. For more on using the <span class="CButton">Preview</span> section, see <a href="ReportButtons.htm">Report Buttons</a>.</p>
+<p class="wi"><span class="CButton"><img src="PrintHS.png" alt="Print" /></span>: Immediately prints the report.</p>
+<p class="wi"><span class="CButton">Export Data</span>: Exports the report's data in XML format.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Cancels the preparation and printing of a report. This button is enabled only when MainBoss is preparing a report, i.e. gathering the data and formatting it. For more information, see <a href="ReportButtons.htm">Report Buttons</a>.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window.</p>
+<p class="wi"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Clicking this button generates a preview of the report, displayed in the <span class="CButton">Preview</span> section of the window.</p>
+<p>For more on requests, see <a href="Requests.htm">Requests</a>. For more on charts in general, see <a href="Charts.htm">Charts</a>.</p>
+
+
+<p><a href="RequestCharts.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Request Count by In Progress Date.htm">Next section &gt;</a></p>
+</body>
+</html>
+

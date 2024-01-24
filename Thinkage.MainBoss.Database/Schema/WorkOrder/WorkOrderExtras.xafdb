@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderExtras" log="false" id="Id" xid="Id" xunique="true" labelkey="">
+	<field name="Id" read="RequiredGUID" />
+	<field name="WorkOrderID" link="WorkOrder" type="RequiredGUIDREF" labelkey="" unique="true" />
+	<field name="CreatedDate" type="DateTime" labelkey="Created Date">
+	  <doc>
+		First date from state history,
+	  </doc>
+	  <extension name="dependson">WorkOrderStateHistory@WorkOrderStateHistory.WorkOrderID->WorkOrderExtras.WorkOrderID</extension>
+	</field>
+	<field name="FirstOpenedDate" type="DateTime" labelkey="Opened Date">
+	  <doc>
+		Date from state History of first open, null if never opened
+	  </doc>
+	  <extension name="dependson">WorkOrderStateHistory@WorkOrderStateHistory.WorkOrderID->WorkOrderExtras.WorkOrderID</extension>
+	  <extension name="dependson">WorkOrderState.FilterAsDraft</extension>
+	</field>
+	<field name="EndedDateIfEnded" type="DateTime" labelkey="Ended Date">
+	  <doc>
+		Last date from state history when workorder is closed or voided if it is currently closed or voided, else null
+	  </doc>
+	  <extension name="dependson">WorkOrderStateHistory@WorkOrderStateHistory.WorkOrderID->WorkOrderExtras.WorkOrderID</extension>
+	  <extension name="dependson">WorkOrderState.FilterAsClosed</extension>
+	  <extension name="dependson">WorkOrderState.FilterAsVoid</extension>
+	</field>
+	<field name="EarliestOpenDate" type="DateTime" >
+	  <doc>
+		OpenedDate if non null, or latest of Today and WorkOrder.StartDateEstimate
+	  </doc>
+	  <extension name="dependson">WorkOrderStateHistory@WorkOrderStateHistory.WorkOrderID->WorkOrderExtras.WorkOrderID</extension>
+	  <extension name="dependson">WorkOrderState.FilterAsDraft</extension>
+	  <extension name="dependson">WorkOrder.StartDateEstimate@WorkOrder.Id->WorkOrderExtras.WorkOrderID</extension>
+	</field>
+	<field name="EarliestEndDate" type="DateTime" >
+	  <doc>
+		EndedDateIfEnded if non null, or later of WorkOrder.EndDateEstimate and EarliestOpenDate+WorkOrder.EndDateEstimate-WorkOrder.StartDateEstimate+1
+	  </doc>
+	  <extension name="dependson">WorkOrderStateHistory@WorkOrderStateHistory.WorkOrderID->WorkOrderExtras.WorkOrderID</extension>
+	  <extension name="dependson">WorkOrderState.FilterAsDraft</extension>
+	  <extension name="dependson">WorkOrderState.FilterAsClosed</extension>
+	  <extension name="dependson">WorkOrderState.FilterAsVoid</extension>
+	  <extension name="dependson">WorkOrder.StartDateEstimate@WorkOrder.Id->WorkOrderExtras.WorkOrderID</extension>
+	  <extension name="dependson">WorkOrder.EndDateEstimate@WorkOrder.Id->WorkOrderExtras.WorkOrderID</extension>
+	</field>
+	<field name="WorkOrderAssigneesAsText" type="SingleLineUnlimited" labelkey="Assignees">
+	  <extension name="dependson">Contact.Code</extension>
+	  <extension name="dependson">WorkOrderAssignee.Id</extension>
+	  <extension name="dependson">WorkOrderAssignee.ContactID</extension>
+	  <extension name="dependson">WorkOrderAssignmentAll@WorkOrderAssignmentAll.WorkOrderID->WorkOrderExtras.WorkOrderID</extension>
+	  <extension name="dependson">WorkOrderAssignmentAll.WorkOrderAssigneeID@WorkOrderAssignmentAll.WorkOrderID->WorkOrderExtras.WorkOrderID</extension>
+	</field>
+	<field name="WorkOrderTemplateID" link="WorkOrderTemplate" type="GUIDREF">
+	  <!-- Apparent dependencies on PMGenerationDetail.WorkOrderID and PMGenerationDetail.ScheduledWorkOrderID are not coded because these fields cannot change -->
+	  <extension name="dependson">ScheduledWorkOrder.WorkOrderTemplateID</extension>
+	  <extension name="dependson">WorkOrderTemplate.Code</extension>
+	</field>
+	<field name="StateHistoryAsText" type="MultiLineUnlimited">
+	  <extension name="dependson">WorkOrderState.Code</extension>
+	  <extension name="dependson">WorkOrderStateHistoryStatus.Code</extension>
+	  <extension name="dependson">User.ContactID</extension>
+	  <extension name="dependson">Contact.Code</extension>
+	  <extension name="dependson">WorkOrderStateHistory@WorkOrderStateHistory.WorkOrderID->WorkOrderExtras.WorkOrderID</extension>
+	</field>
+	<!-- A single view for reporting a listing of WorkOrders. -->
+	<extension name="query">
+	with WorkOrderCalculations (
+			Id,
+			CreatedDate,
+			FirstOpenedDate,
+			EndedDateIfEnded,
+			StartDateEstimate,
+			EndDateEstimate,
+			CurrentDate
+		) as (
+		select WorkOrder.Id
+			, (select min(EffectiveDate) from WorkOrderStateHistory	where WorkOrder.Id = WorkOrderStateHistory.WorkOrderID) 
+			, (select min(EffectiveDate) from WorkOrderStateHistory
+								join WorkOrderState on WorkOrderStateHistory.WorkOrderStateID = WorkOrderState.Id
+								where WorkOrderState.FilterAsDraft = 0 and WorkOrder.Id = WorkOrderStateHistory.WorkOrderID
+				) 
+			, case when WorkOrderState.FilterAsClosed = 1 or WorkOrderState.FilterAsVoid = 1 then WorkOrderStateHistory.EffectiveDate end
+			, WorkOrder.StartDateEstimate
+			, WorkOrder.EndDateEstimate
+			, dbo._DClosestValue(getdate(),2,100)
+			from WorkOrder
+			join WorkOrderStateHistory on WorkOrderStateHistory.Id = WorkOrder.CurrentWorkOrderStateHistoryID
+			join WorkOrderState on WorkOrderState.Id = WorkOrderStateHistory.WorkOrderStateID
+		),
+		WorkOrderCalculation2 (
+			Id,
+			CreatedDate,
+			FirstOpenedDate,
+			EndedDateIfEnded,
+			StartDateEstimate,
+			EndDateEstimate,
+			CurrentDate,
+			
+			EarliestOpenDate
+		) as (
+		select
+			  Id
+			, CreatedDate
+			, FirstOpenedDate
+			, EndedDateIfEnded
+			, StartDateEstimate
+			, EndDateEstimate
+			, CurrentDate
+			
+			, coalesce(FirstOpenedDate, case when StartDateEstimate > CurrentDate then StartDateEstimate else CurrentDate end)
+			from WorkOrderCalculations
+		),
+		WorkOrderCalculations3 (
+			Id,
+			CreatedDate,
+			FirstOpenedDate,
+			EndedDateIfEnded,
+			EarliestOpenDate,
+			
+			DeclaredEarliestEndDate,
+			CalculatedEarliestEndDate
+		) as (
+		select 
+			  Id
+			, CreatedDate
+			, FirstOpenedDate
+			, EndedDateIfEnded
+			, EarliestOpenDate
+			
+			, case when EndDateEstimate > CurrentDate then EndDateEstimate else CurrentDate end
+			, dbo._IAdd(EarliestOpenDate, dbo._IAdd(dbo._IDateDiff(StartDateEstimate, EndDateEstimate), dbo._INew(1,0,0,0,0)))
+			from WorkOrderCalculation2
+		)
+		select
+			  Id -- == WorkOrder.Id
+			, Id
+
+			, CreatedDate
+			, FirstOpenedDate
+			, EndedDateIfEnded
+			, EarliestOpenDate
+			, coalesce(EndedDateIfEnded, case when CalculatedEarliestEndDate > DeclaredEarliestEndDate then CalculatedEarliestEndDate else DeclaredEarliestEndDate end)
+
+			, STUFF(
+				(SELECT '; ' + Contact.Code
+				  FROM WorkOrderAssignmentAll
+					JOIN WorkOrderAssignee on WorkOrderAssignee.Id = WorkOrderAssigneeID
+					JOIN Contact on Contact.Id = WorkOrderAssignee.ContactID
+				  where WorkOrderAssignmentAll.WorkOrderID = WorkOrderCalculations3.Id
+				  ORDER BY Contact.Code
+				  for xml path(''), TYPE
+				).value('.','varchar(max)'), 1 , 2, '')
+			, (select TOP 1 WOT.Id from ScheduledWorkOrder as SWO	-- all WOT.Id's will be the same, we want quickest way to get that single value
+								join WorkOrderTemplate as WOT on SWO.WorkOrderTemplateID = WOT.Id
+								join PMGenerationDetail as PMGD on PMGD.ScheduledWorkOrderID = SWO.Id
+								where PMGD.WorkOrderID = WorkOrderCalculations3.Id)
+			, (select
+				  CAST(WorkOrderStateHistory.[EffectiveDate] as  nchar(24))
+				  +'§'
+				  +CAST(Coalesce(WorkOrderState.[Code], '') as nchar(43))
+				  +CAST(Coalesce(Contact.Code,'') as nchar(25))
+				  +Coalesce(WorkOrderStateHistoryStatus.[Code],'')
+				  +Coalesce(CHAR(13)+CHAR(10)+WorkOrderStateHistory.[Comment],'')
+				  +CHAR(13)+CHAR(10)+CHAR(13)+CHAR(10)
+				from WorkOrderStateHistory
+					join WorkOrderState on WorkOrderState.Id = WorkOrderStateHistory.WorkOrderStateID
+					left outer join WorkOrderStateHistoryStatus on WorkOrderStateHistoryStatus.Id = WorkOrderStateHistory.WorkOrderStateHistoryStatusID
+					left outer join [User] on [User].Id = WorkOrderStateHistory.UserID
+					left outer join Contact on [User].ContactID = Contact.Id
+					where WorkOrderStateHistory.WorkOrderID = WorkOrderCalculations3.Id
+					order by WorkOrderStateHistory.EffectiveDate
+					for xml path(''), TYPE).value('.','varchar(max)')
+		from WorkOrderCalculations3
+	</extension>
+	<extension name="dependson">WorkOrder@WorkOrder.Id->WorkOrderExtras.WorkOrderID</extension>
+	<extension name="references">PMGenerationDetail</extension>
+	<extension name="costrights">UnitValue</extension>
+	<extension name="lastupdate">WorkOrderID</extension>
+	<extension name="equate">Id=WorkOrderID</extension>
+  </table>
+  <table name="Contact">
+	<field name="Code"/>
+  </table>
+  <table name="User">
+	<field name="ContactID"/>
+  </table>
+  <table name="WorkOrder">
+	<field name="StartDateEstimate"/>
+	<field name="EndDateEstimate"/>
+  </table>
+  <table name="WorkOrderState">
+	<field name="Code"/>
+	<field name="FilterAsDraft"/>
+	<field name="FilterAsClosed"/>
+	<field name="FilterAsVoid"/>
+  </table>
+  <table name="WorkOrderStateHistory">
+	<field name="WorkOrderID"/>
+  </table>
+  <table name="WorkOrderAssignmentAll">
+	<field name="WorkOrderID"/>
+	<field name="WorkOrderAssigneeID"/>
+  </table>
+  <table name="WorkOrderAssignee">
+	<field name="ContactID"/>
+  </table>
+  <table name="WorkOrderStateHistoryStatus">
+	<field name="Code"/>
+  </table>
+  <table name="PMGenerationDetail"/>
+  <table name="ScheduledWorkOrder">
+	<field name="WorkOrderTemplateID"/>
+  </table>
+  <table name="WorkOrderTemplate">
+	<field name="Code"/>
+  </table>
+</database>

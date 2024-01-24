@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+  <table name="Storeroom">
+	<dependency table="StoreroomLinkages"/>
+	<dependency table="PostalAddress"/>
+	<dependency table="RelativeLocationCodes"/>
+	<data>
+	  -- Create the top-level storerooms. These come from the WAREHOUSE table in MP2
+	  INSERT INTO <ODB/>.dbo.Location ([ID],[Desc])
+		  SELECT SL.[LocationID], S.[DESCRIPTION]
+		  FROM <IDB/>.dbo.WAREHOUSE as S
+			  join <IDB/>.dbo.StoreroomLinkages as SL on S.[MAINBOSSID] = SL.[ID]
+
+	  INSERT INTO <ODB/>.dbo.RelativeLocation ([ID], [LocationID], [Code], [ContainingLocationID], [Hidden])
+		  SELECT SL.[RelativeLocationID], SL.LocationID, RLC.[Code], B.[MAINBOSSID], RLC.[HIDDEN]
+		  FROM <IDB/>.dbo.WAREHOUSE as S
+			  join <IDB/>.dbo.StoreroomLinkages as SL on S.[MAINBOSSID] = SL.[ID]
+			  join <IDB/>.dbo.SITE as B on S.[PRIMARYSITE] = B.[SITEID]
+			  join <IDB/>.dbo.RelativeLocationCodes as RLC on SL.[RelativeLocationID] = RLC.ID
+
+	  INSERT INTO <ODB/>.dbo.PermanentStorage ([ID], [RelativeLocationID])
+		  SELECT SL.[PermanentStorageID], SL.RelativeLocationID
+		  FROM <IDB/>.dbo.WAREHOUSE as S
+			  join <IDB/>.dbo.StoreroomLinkages as SL on S.[MAINBOSSID] = SL.[ID]
+				
+	  -- Create the sublocation storerooms. These come from the STOCK table in MP2 where we built a SubStoreroomLinkage in Initialization
+	  INSERT INTO <ODB/>.dbo.Location ([ID],[Desc])
+		  SELECT SL.[LocationID], NULL
+		  FROM <IDB/>.dbo.SubStoreroomLinkages as SL
+
+	  INSERT INTO <ODB/>.dbo.RelativeLocation ([ID], [LocationID], [Code], [ContainingLocationID])
+		  SELECT SL.[RelativeLocationID], SL.LocationID, SL.[Code], SL.[StoreroomLocationID]
+		  FROM <IDB/>.dbo.SubStoreroomLinkages as SL
+
+	  INSERT INTO <ODB/>.dbo.PermanentStorage ([ID], [RelativeLocationID])
+		  SELECT SL.[PermanentStorageID], SL.RelativeLocationID
+		  FROM <IDB/>.dbo.SubStoreroomLinkages as SL
+</data>
+  </table>
+</dbconversion>
+

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="DemandMiscellaneousWorkOrderCost" defaults="true" log="false" id="Id" xid="DemandID MiscellaneousWorkOrderCostID" labelkey="Demand Miscellaneous Cost">
+	<field name="Id" read="RequiredGUID" />
+	<field name="DemandID" read="RequiredGUIDREF" base="Demand"/>
+	<field name="MiscellaneousWorkOrderCostID" type="RequiredGUIDREF" link="MiscellaneousWorkOrderCost">
+	  <doc></doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<extension name="deletemethod">delete</extension>
+	<extension name="costrights">WorkOrderMiscellaneous</extension>
+  </table>
+  <object class="function" name="mbfn_DemandMiscellaneousWorkOrderCost_ActualCost">
+	<doc>
+	  Calculate the total actual cost for actuals linked to this DemandMiscellaneousWorkOrderCost
+	</doc>
+	<extension name="body">
+	  (
+		@DOWIID uniqueidentifier -- DemandMiscellaneousWorkOrderCostID
+	  )
+	  RETURNS money
+	  as
+	  begin
+		return (
+			select sum(Cost)
+				from ActualMiscellaneousWorkOrderCost
+				  join AccountingTransaction on AccountingTransaction.ID = ActualMiscellaneousWorkOrderCost.AccountingTransactionID
+				where ActualMiscellaneousWorkOrderCost.DemandMiscellaneousWorkOrderCostID = @DOWIID
+		)
+	  end
+	</extension>
+	<extension name="dependson">DemandMiscellaneousWorkOrderCost.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualMiscellaneousWorkOrderCost</extension>
+  </object>
+  <table name="Demand"/>
+  <table name="MiscellaneousWorkOrderCost"/>
+  <table name="ActualMiscellaneousWorkOrderCost"/>
+  <table name="AccountingTransaction"/>
+</database>

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="PurchaseOrderAssigneeStatistics" defaults="false" log="false" id="Id" labelkey="">
+	<doc>
+	  This view provides records counting the PurchaseOrderAssignments of all PurchaseOrderAssignees for the (Draft) New and (Issued) InProgress PurchaseOrder States
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="PurchaseOrderAssigneeID" link="PurchaseOrderAssignee" type="RequiredGUIDREF" unique="true" labelkey="Assignee">
+	  <extension name="linkage">property</extension>
+	</field>
+	<field labelkey="Number Draft" name="NumNew" type="RequiredQuantity" />
+	<field labelkey="Number Issued" name="NumInProgress" type="RequiredQuantity" />
+	<extension name="query">
+		select RA.ID, RA.ID, coalesce(sum(cast(FilterAsDraft as int)), 0), coalesce(sum(cast(FilterAsIssued as int)),0)
+		  from PurchaseOrderAssignee as RA
+			left JOIN PurchaseOrderAssignment as A on A.PurchaseOrderAssigneeID = RA.ID
+			left JOIN PurchaseOrder on PurchaseOrder.ID = A.PurchaseOrderID
+			left JOIN PurchaseOrderStateHistory ON PurchaseOrderStateHistory.ID = PurchaseOrder.CurrentPurchaseOrderStateHistoryID
+			left JOIN PurchaseOrderState ON PurchaseOrderState.[ID] = PurchaseOrderStateHistory.PurchaseOrderStateID
+		  GROUP BY RA.ID
+    </extension>
+	<extension name="dependson">PurchaseOrder</extension>
+	<extension name="dependson">PurchaseOrderAssignee</extension>
+	<extension name="dependson">PurchaseOrderAssignment</extension>
+	<extension name="dependson">PurchaseOrderStateHistory</extension>
+	<extension name="dependson">PurchaseOrderState</extension>
+  </table>
+  <table name="PurchaseOrder" />
+  <table name="PurchaseOrderAssignee"/>
+  <table name="PurchaseOrderAssignment"/>
+  <table name="PurchaseOrderStateHistory" />
+  <table name="PurchaseOrderState" />
+</database>

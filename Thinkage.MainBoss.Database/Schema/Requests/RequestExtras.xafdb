@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="RequestExtras" log="false" id="Id"  labelkey="">
+	<field name="Id" read="RequiredGUID" />
+	<field name="RequestID" type="RequiredGUIDREF" link="Request" unique="true" labelkey=""/>
+	<field name="CreatedDate" type="DateTime" labelkey="Created Date">
+	  <extension name="dependson">RequestStateHistory@RequestStateHistory.RequestID->RequestExtras.RequestID</extension>
+	</field>
+	<field name="InProgressDate" type="DateTime" labelkey="In Progress Date">
+	  <extension name="dependson">RequestStateHistory@RequestStateHistory.RequestID->RequestExtras.RequestID</extension>
+	  <extension name="dependson">RequestState.FilterAsInProgress</extension>
+	</field>
+	<field name="EndedDateIfEnded" type="DateTime" labelkey="Ended Date">
+	  <extension name="dependson">RequestStateHistory@RequestStateHistory.RequestID->RequestExtras.RequestID</extension>
+	  <extension name="dependson">RequestState.FilterAsClosed</extension>
+	</field>
+	<field name="EarliestInProgressDate" type="DateTime">
+	  <extension name="dependson">RequestStateHistory@RequestStateHistory.RequestID->RequestExtras.RequestID</extension>
+	  <extension name="dependson">RequestState.FilterAsInProgress</extension>
+	  <extension name="dependson">RequestState.FilterAsClosed</extension>
+	</field>
+	<field name="EarliestEndDate" type="DateTime">
+	  <extension name="dependson">RequestStateHistory@RequestStateHistory.RequestID->RequestExtras.RequestID</extension>
+	  <extension name="dependson">RequestState.FilterAsClosed</extension>
+	</field>
+	<field name="InNewDuration" type="DurationFine" labelkey="Time as New">
+	  <extension name="dependson">RequestStateHistory@RequestStateHistory.RequestID->RequestExtras.RequestID</extension>
+	  <extension name="dependson">RequestState.FilterAsInProgress</extension>
+	</field>
+	<field name="InProgressDuration" type="DurationFine" labelkey="Time Active">
+	  <extension name="dependson">RequestStateHistory@RequestStateHistory.RequestID->RequestExtras.RequestID</extension>
+	  <extension name="dependson">RequestState.FilterAsInProgress</extension>
+	  <extension name="dependson">RequestState.FilterAsClosed</extension>
+	</field>
+	<field name="Lifetime" type="DurationFine">
+	  <extension name="dependson">RequestStateHistory@RequestStateHistory.RequestID->RequestExtras.RequestID</extension>
+	  <extension name="dependson">RequestState.FilterAsClosed</extension>
+	</field>
+	<field name="CountOfLinkedWorkOrders" type="Quantity" labelkey="Count of Linked Work Orders">
+	  <extension name="dependson">RequestedWorkOrder@RequestedWorkOrder.RequestID->RequestExtras.RequestID</extension>
+	</field>
+	<field name="RequestAssigneesAsText" type="SingleLineUnlimited" labelkey="Assignees">
+	  <extension name="dependson">Contact.Code</extension>
+	  <extension name="dependson">RequestAssignee.Id</extension>
+	  <extension name="dependson">RequestAssignee.ContactID</extension>
+	  <extension name="dependson">RequestAssignment@RequestAssignment.RequestID->RequestExtras.RequestID</extension>
+	  <extension name="dependson">RequestAssignment.RequestAssigneeID@RequestAssignment.RequestID->RequestExtras.RequestID</extension>
+	</field>
+	<extension name="query">
+	  with
+	  Y (
+		  RequestID
+		, CreatedDate
+		, InProgressDate
+		, EndedDateIfEnded
+		, CurrentDate
+	  ) as (
+		select
+		    Request.Id
+		  , (select min(EffectiveDate) as CreateDate from RequestStateHistory where Request.Id = RequestStateHistory.RequestID	)
+		  , (select min(EffectiveDate) as OpenDate from RequestStateHistory
+				join RequestState on RequestStateHistory.RequestStateID = RequestState.Id
+				where RequestState.FilterAsInProgress = 1 and Request.Id = RequestStateHistory.RequestID
+			)
+		  , case when RequestState.FilterAsClosed = 1 then RequestStateHistory.EffectiveDate end
+		  , dbo._DClosestValue(getdate(),2,100)
+		from Request
+		join RequestStateHistory on RequestStateHistory.Id = Request.CurrentRequestStateHistoryID
+		join RequestState on RequestState.Id = RequestStateHistory.RequestStateID
+	  ),
+	  Z (
+		  RequestID
+		, CreatedDate
+		, InProgressDate
+		, EndedDateIfEnded
+		, EarliestInProgressDate
+		, EarliestEndDate
+	  ) as (
+		select
+			RequestID
+		  , CreatedDate
+		  , InProgressDate
+		  , EndedDateIfEnded
+		  , COALESCE(InProgressDate, EndedDateIfEnded, CurrentDate)
+		  , COALESCE(EndedDateIfEnded, CurrentDate)
+		from Y
+	  )
+	  select
+		  RequestID
+		, RequestID
+		, CreatedDate
+		, InProgressDate
+		, EndedDateIfEnded
+		, EarliestInProgressDate
+		, EarliestEndDate
+		, dbo._IDateDiff(CreatedDate, EarliestInProgressDate)
+		, dbo._IDateDiff(EarliestInProgressDate, EarliestEndDate)
+		, dbo._IDateDiff(CreatedDate, EarliestEndDate)
+		, (select COUNT(*) from RequestedWorkOrder where RequestedWorkOrder.RequestID = RequestID)
+		, STUFF((SELECT 
+					'; ' + Contact.Code
+					FROM RequestAssignment
+					JOIN RequestAssignee on RequestAssignee.Id = RequestAssigneeID
+					JOIN Contact on Contact.Id = RequestAssignee.ContactID
+						where RequestAssignment.RequestID = Z.RequestID
+						ORDER BY Contact.Code
+						for xml path(''), TYPE).value('.','varchar(max)'), 1 ,2,'')
+	  from Z
+	</extension>
+	<extension name="dependson">Request@Request.Id->RequestExtras.RequestID</extension>
+	<extension name="lastupdate">RequestID</extension>
+	<extension name="equate">Id=RequestID</extension>
+  </table>
+  <table name="Request"/>
+  <table name="RequestStateHistory">
+	<field name="RequestID"/>
+  </table>
+  <table name="RequestState">
+	<field name="FilterAsInProgress"/>
+	<field name="FilterAsClosed"/>
+  </table>
+  <table name="RequestAssignment">
+	<field name="RequestID"/>
+	<field name="RequestAssigneeID"/>
+  </table>
+  <table name="RequestAssignee">
+	<field name="ContactID"/>
+  </table>
+  <table name="RequestedWorkOrder">
+	<field name="RequestID"/>
+  </table>
+  <table name="Contact">
+	<field name="Code"/>
+  </table>
+</database>

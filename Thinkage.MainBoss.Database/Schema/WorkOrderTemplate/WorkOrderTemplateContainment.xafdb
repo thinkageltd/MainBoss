@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderTemplateContainment" defaults="false" log="false" xid="ContainedWorkOrderTemplateID ContainingWorkOrderTemplateID" id="Id" labelkey="">
+	<doc>
+	  This table represents the recursive containment between all the WorkOrderTemplate records. There is one record in this table for
+	  each combination of container/contained including the trivial (improper) containment of a Work Order Template within itself.
+	</doc>
+	<!-- The concatenation of the contained and containing work order template ids in the Id field means no unique constraint is needed on the xid. -->
+	<field name="Id" read="blob(minlength 32, maxlength 32, nonnull)" />
+	<field name="ContainedWorkOrderTemplateID" type="RequiredGUIDREF" link="WorkOrderTemplate" cascade="true">
+	  <!-- The cascade=true is required; otherwise the reference from the containment record would prevent deletion of any WorkOrderTemplate records should we decide to allow that. -->
+	  <doc>The Work Order Template contained (possibly indirectly) within the ContainingWorkOrderTemplateID</doc>
+	  <extension name="linkage">captive</extension>
+	  <extension name="dependson">WorkOrderTemplate.ContainingWorkOrderTemplateID</extension>
+	</field>
+	<field name="ContainingWorkOrderTemplateID" type="RequiredGUIDREF" link="WorkOrderTemplate">
+	  <doc>The Work Order Template containing (possibly indirectly) the ContainedWorkOrderTemplateID</doc>
+	  <extension name="linkage">captive</extension>
+	  <extension name="dependson">WorkOrderTemplate.ContainingWorkOrderTemplateID</extension>
+	</field>
+	<field name="Depth" type="integer(32, nonnull)">
+	  <doc>The relative depth between the Contained and Containing WorkOrderTemplates; this is zero for the self-containment
+	  and increases by one for each level of containment.</doc>
+	  <extension name="dependson">WorkOrderTemplate.ContainingWorkOrderTemplateID</extension>
+	</field>
+	<extension name="dependson">WorkOrderTemplate</extension>
+  </table>
+  <table name="WorkOrderTemplate">
+	<field name="ContainingWorkOrderTemplateID"/>
+  </table>
+</database>

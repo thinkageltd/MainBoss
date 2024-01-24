@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="RequestAssignmentByAssignee" defaults="false" log="false" id="Id"  labelkey="">
+	<doc>
+	  This view provides records to determine request assignments and unassigned request assignments, grouped by ContactID for the assignment
+	</doc>
+	<field name="Id" read="RequiredGUID">
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIGeneralMB3.UnassignedNameProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="RequestAssignmentID" type="GUIDREF" link="RequestAssignment" labelkey="Assignment">
+	  <doc>The RequestAssignee assigned to Requests.</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="RequestID" type="GUIDREF" link="Request">
+	  <doc>The Request the Assignee is assigned to</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="ContactID" type="GUIDREF" link="Contact">
+	  <doc>The Request the Assignee is assigned to as defined by the RequestAssign.ContactID</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<extension name="query">
+		select 'A0000000-0000-0000-0000-00000000000A', NULL, NULL, NULL			-- The Unassigned 'ContactID' <!--KnownIds.UnassignedID-->
+	union all
+		select RA.ContactID, NULL, NULL, RA.ContactID												-- The possible RequestAssignee Contacts
+			from RequestAssignee as RA					
+	union all
+		select R.ID, NULL, R.ID, 'A0000000-0000-0000-0000-00000000000A'		-- The Unassigned Requests
+			from Request as R 
+			join RequestStateHistory as RSH on RSH.ID = R.CurrentRequestStateHistoryID
+			join RequestState as RS on RS.ID = RSH.RequestStateID
+			where R.ID NOT IN (select RequestID from RequestAssignment as A
+				 join RequestAssignee as RA on RA.ID = A.RequestAssigneeID
+				 join Contact as C on C.ID = RA.ContactID
+				 where C.Hidden IS NULL)
+				and (RS.FilterAsNew = 1 or RS.FilterAsInProgress = 1)
+	union all
+		select A.ID, A.ID, A.RequestID, RA.ContactID			-- The RequestAssignments
+				from RequestAssignment as A
+				join RequestAssignee as RA on A.RequestAssigneeID = RA.ID
+				join Request as R on R.ID = A.RequestID
+				join RequestStateHistory as RSH on RSH.ID = R.CurrentRequestStateHistoryID
+				join RequestState as RS on RS.ID = RSH.RequestStateID
+				where (RS.FilterAsNew = 1 or RS.FilterAsInProgress = 1)		
+		</extension>
+	<extension name="dependson">Request</extension>
+	<extension name="dependson">RequestAssignee</extension>
+	<extension name="dependson">RequestAssignment</extension>
+	<extension name="dependson">RequestStateHistory</extension>
+	<extension name="dependson">RequestState</extension>
+	<extension name="dependson">Contact</extension>
+  </table>
+  <table name="Request" />
+  <table name="RequestAssignee"/>
+  <table name="RequestAssignment"/>
+  <table name="RequestStateHistory" />
+  <table name="RequestState" />
+  <table name="Contact"/>
+</database>

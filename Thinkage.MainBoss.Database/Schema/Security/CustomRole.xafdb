@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="../Types.xafdb"/>
+	<table name="CustomRole" defaults="true" log="false" id="Id" xid="Code" xunique="true" labelkey="Custom Role">
+		<doc>This is the user CustomRole definition for associating Permission definitions within the database</doc>
+		<field name="Id" read="RequiredGUID"/>
+		<field name="PrincipalID" base="Principal" read="RequiredGUIDREF"/>
+		<field name="Code" type="RequiredCode"/>
+		<field name="Desc" type="Desc"/>
+		<field name="Comment" type="Comment"/>
+		<extension name="deletemethod">delete</extension>
+	</table>
+  <table name="Principal"/>
+</database>

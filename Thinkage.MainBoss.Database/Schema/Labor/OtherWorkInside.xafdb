@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="OtherWorkInside" defaults="true" log="false" id="Id" xid="Code EmployeeID Hidden TradeID" xunique="true" labelkey="Per Job Inside">
+	<doc>Coding definition for per job work that describes the cost per job for this form of labor. You can associate Employees and/or Trades or neither.</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="RequiredCode">
+	  <doc>User selection code</doc>
+	</field>
+	<field name="EmployeeID" type="GUIDREF" link="Employee">
+	  <doc>Employee associated with this form of per job labor</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="TradeID" type="GUIDREF" link="Trade">
+	  <doc>Trade associated with this form of per job labor</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="Hidden" type="GenerationValue">
+	  <doc>Datetime this record was considered. NULL indicates active record.</doc>
+	</field>
+	<field name="Desc" type="Desc">
+	  <doc>Long description for user selection</doc>
+	</field>
+	<field name="Comment" type="Comment">
+	  <doc>General comment about usage of this record</doc>
+	</field>
+	<field name="CostCenterID" type="RequiredGUIDREF" link="CostCenter">
+	  <doc>Payroll cost center for employee doing this form of per job labor</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="Cost" type="Currency">
+	  <doc>Per Job cost of this labor definition</doc>
+	</field>
+	<extension name="deletemethod">hide</extension>
+	<extension name="costrights">LaborInside</extension>
+  </table>
+  <table name="Employee"/>
+  <table name="Trade"/>
+  <table name="CostCenter"/>
+</database>

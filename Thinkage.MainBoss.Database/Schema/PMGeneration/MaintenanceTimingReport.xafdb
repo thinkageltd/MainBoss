@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="../Types.xafdb"/>
+  <table name="MaintenanceTimingReport" log="false" id="Id" labelkey="">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="ScheduleID" link="Schedule" type="GUIDREF" labelkey=""/>
+	<field name="PeriodicityID" link="Periodicity" type="GUIDREF" labelkey=""/>
+	<extension name="query">
+		select Schedule.ID, Schedule.ID, null
+			from Schedule
+		union all
+		select Periodicity.Id, Periodicity.ScheduleID, Periodicity.Id
+			from Periodicity
+	</extension>
+	<extension name="dependson">Schedule</extension>
+	<extension name="dependson">Periodicity</extension>
+  </table>
+  <table name="Schedule"/>
+  <table name="Periodicity"/>
+</database>

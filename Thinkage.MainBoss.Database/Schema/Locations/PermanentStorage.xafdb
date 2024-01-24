@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="PermanentStorage" defaults="true" log="false" id="Id" xid="RelativeLocationID" xunique="true" labelkey="Storeroom">
+    <field name="Id" read="RequiredGUID" />
+    <field name="RelativeLocationID" read="RequiredGUIDREF" base="RelativeLocation"/>
+    <field name="Rank" type="integer(16)" labelkey="Physical Count Sheet Rank" />
+
+	<extension name="deletemethod">hide</extension>
+  </table>
+  <table name="RelativeLocation"/>
+</database>

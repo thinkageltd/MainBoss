@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="Types.xafdb"/>
+	<table name="Permission" defaults="true" log="false" id="Id" labelkey="Permission">
+		<field name="Id" read="RequiredGUID"/>
+		<field name="PrincipalID" type="RequiredGUIDREF" link="Principal">
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="PermissionPathPattern" type="RequiredPermissionPathPattern"/>
+		<extension name="deletemethod">delete</extension>
+		<extension name="tablerights">Administrator=*</extension>
+	</table>
+	<table name="Principal"/>
+</database>

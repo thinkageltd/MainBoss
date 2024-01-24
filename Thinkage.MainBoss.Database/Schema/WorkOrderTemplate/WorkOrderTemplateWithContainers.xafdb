@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderTemplateWithContainers" defaults="false" log="false" id="Id"  labelkey="Task">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="IsPrimary" type="RequiredBool">
+	  <doc>Flag indicating this record names itself as the container</doc>
+	</field>
+	<field name="BaseWorkOrderTemplateID" type="GUIDREF" link="WorkOrderTemplate">
+	  <doc>The reference to the WorkOrderTemplate to be used for filtering.</doc>
+	</field>
+	<field name="WorkOrderTemplateID" type="GUIDREF" link="WorkOrderTemplate">
+	  <doc>Typed linkage to the browse record for type 0 records</doc>
+	</field>
+	<extension name="query">
+	  select WOTC.ContainingWorkOrderTemplateID, case when WOTC.Depth = 0 then 1 else 0 end, WOTC.ContainedWorkOrderTemplateID, WOTC.ContainingWorkOrderTemplateID
+		from 
+		  WorkOrderTemplateContainment as WOTC
+	</extension>
+	<extension name="dependson">WorkOrderTemplateContainment</extension>
+  </table>
+  <table name="WorkOrderTemplate"/>
+  <table name="WorkOrderTemplateContainment" id="Id">
+	<field name="Id" read="blob(minlength 32, maxlength 32, nonnull)"/>
+  </table>
+</database>

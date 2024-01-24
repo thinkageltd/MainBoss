@@ -1,0 +1,64 @@
+@model IEnumerable<RequestEntities.Request>
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.MainBoss.WebAccess.Models
+@using Thinkage.MainBoss.Database
+@using Thinkage.Web.Mvc.Html
+@{
+	Layout = "~/Views/Shared/_LayoutBrowse.cshtml";
+	ViewBag.Title = T.Text("Assigned Requests");
+}
+@section BrowseContent {
+	<thead>
+		<tr>
+			<th>
+				@(Html.NBSP())
+			</th>
+			<th>
+				@(T.Text("Number"))
+			</th>
+			<th>
+				@(T.Text("Priority"))
+			</th>
+			<th>
+				@(T.Text("Status"))
+			</th>
+			@*			@if (! Request.Browser.IsMobileDevice) { *@
+			<th class="Subject">
+				@(T.Text("Subject"))
+			</th>
+			@*			} *@
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model) {
+			<tr class="Info">
+				<td>
+					@(Html.ActionLink(T.Text("Close"), "Close", "RequestStateHistory", new
+			{
+				parentID = item.Id,
+				CurrentStateHistoryID = item.CurrentRequestStateHistoryID
+			}, new
+			{
+				@class = "StateActionLink"
+			}))
+			</td>
+			<td>@(Html.ActionLink(item.Number, "View", new
+			{
+				id = item.Id,
+				resultMessage = ""
+			}))</td>
+			@(Html.CodeValue(item.RequestPriority))
+			@(Html.CodeValue(item.CurrentRequestStateHistory.RequestStateHistoryStatus))
+
+			@*
+				@if (Request.Browser.IsMobileDevice) {
+					</tr>
+					<tr class="Subject">
+						<td>@(Html.NBSP())</td>
+				}
+			*@
+			<td class="Subject" colspan="2">@(item.Subject) </td>
+		</tr>
+		}
+	</tbody>
+}

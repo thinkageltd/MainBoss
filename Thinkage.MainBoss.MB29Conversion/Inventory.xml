@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+  <table name="Item">
+	<dependency table="UnitOfMeasure"/>
+	<data>
+	  INSERT INTO <ODB/>.dbo.ItemCategory ([ID],[Code],[Desc]) SELECT [ID],[Code],[Desc] from <IDB/>.dbo.InvCategories;
+	  <!--
+	  We enhance the code for non-inventory items with '(NI)' where the non-inventory item code in 2.9 matches the same code for an inventoried item.
+	  This makes the Code look a little better in 3.0 than viewing the (non-determistic) effect of FixCodes adding the value '1000' to the code (sometimes
+	  not the non-inventoried code either).
+	  -->
+	  delete from <IDB/>.dbo.CodeManagement;
+	  insert into <IDB/>.dbo.CodeManagement (id, code)
+		select I.ID, I.Code
+		  from <IDB/>.dbo.InvItems as I
+		  where I.EXCLUDE = 0 and I.Inventory != 0;
+
+	  insert into <IDB/>.dbo.CodeManagement (id, code)
+		select I.ID, I.Code + ' (NI)'
+		  from <IDB/>.dbo.InvItems as I
+		  where I.EXCLUDE = 0 and I.Inventory = 0 and exists(SELECT CODE from <IDB/>.dbo.CodeManagement where CODE = I.Code);
+
+	  insert into <IDB/>.dbo.CodeManagement (id, code)
+		select I.ID, I.Code
+		  from <IDB/>.dbo.InvItems as I
+		  where I.EXCLUDE = 0 and I.Inventory = 0 and not exists(SELECT CODE from <IDB/>.dbo.CodeManagement where CODE = I.Code);
+
+	  exec <IDB/>.dbo.FixCodes 50
+
+	  INSERT INTO <ODB/>.dbo.Item ([ID],[CODE], [DESC],[ItemCategoryID],[UnitOfMeasureID],[Comment], Available, OnHand, OnOrder, OnReserve, TotalCost)
+		  select I.[ID], CM.[CODE], I.[DESC], IC.[ID], UM.[ID], I.[COMMENT], 0, 0, 0, 0, 0.0
+		  from <IDB/>.dbo.InvItems as I
+			join <IDB/>.dbo.CodeManagement as CM on I.ID = CM.ID
+			  left join <IDB/>.dbo.InvCategories as IC on I.[CAT] = IC.[CODE]
+			  left join <IDB/>.dbo.UoM as UM on I.[UOMKEY] = UM.[KEY]
+		  where I.EXCLUDE = 0;
+	</data>
+  </table>
+  <table name="ItemLocation">
+	<dependency table="Permanent Item Location Item Count Value"/>
+	<dependency table="Item Pricing"/>
+	<data></data>
+  </table>
+  <table name="Item Adjustment Codes">
+	<data>
+	  -- Create a hidden adjustment code for the import to use on its ItemCountValue records.
+	  -- We have two adjustment codes. One identifies inventory records whose import costs/onhands were less than 0
+	  -- and we set to 0 during import.
+	  declare @IAC_Id uniqueidentifier
+	  declare @IACZero_Id uniqueidentifier
+	  declare @ccid uniqueidentifier
+	  select @IAC_Id = newid()
+	  select @IACZero_Id = newid()
+
+	  select @ccid = (select DIAC.CostCenterID from <ODB/>.dbo._DItemAdjustmentCode as DIAC)
+
+	  insert into <ODB/>.dbo.ItemAdjustmentCode
+		  (ID, Code, [Hidden], [CostCenterID])
+		values (@IAC_Id, 'MB2.9 Import', dbo._DClosestValue(getdate(),2,100), @ccid)
+
+	  UPDATE <IDB/>.dbo.InvLocations SET AdjustmentID = @IAC_ID
+
+	  if  exists(select * from <IDB/>.dbo.InvLocations as IL
+		join <IDB/>.dbo.InvItems as I on I.[KEY] = IL.ITEMKEY
+		where IL.ONHAND &lt; 0 
+		or IL.TOTALCOST &lt; 0
+		or (I.TOTALCOST &gt; 0 and I.ONHAND = 0))
+	  BEGIN
+		insert into <ODB/>.dbo.ItemAdjustmentCode
+			(ID, Code, [Hidden], [CostCenterID])
+		 values (@IACZero_Id, 'MB2.9 Import Invalid Values Cleared', dbo._DClosestValue(getdate(),2,100), @ccid)
+
+		UPDATE <IDB/>.dbo.InvLocations SET ONHAND = 0, TOTALCOST = 0, AdjustmentID = @IACZero_Id
+		  FROM <IDB/>.dbo.InvLocations as IL join <IDB/>.dbo.InvItems as I on IL.ITEMKEY = I.[KEY]
+		  where IL.ONHAND &lt; 0 
+		  or IL.TOTALCOST &lt; 0
+		  or (I.TOTALCOST &gt; 0 and I.ONHAND = 0)
+	  END
+  </data>
+  </table>
+  <table name="Permanent Item Location Base">
+	<dependency table="Item"/>
+	<dependency table="Storeroom"/>
+	<data>
+	  insert into <ODB/>.dbo.ItemLocation ([ID], [ItemID], [LocationID], [ItemPriceID])
+		select ILL.ItemLocationID, I.ID, ILL.PermanentStorageLocationID, null
+		  from <IDB/>.dbo.InvLocations as IL
+			join <IDB/>.dbo.InvLocationLinkages as ILL on IL.ID = ILL.ItemLocationID
+			join <IDB/>.dbo.InvItems as I on IL.[ITEMKEY] = I.[KEY]
+	</data>
+  </table>
+  <table name="Permanent Item Location Actual">
+	<dependency table="Permanent Item Location Base"/>
+	<data>
+	  insert into <ODB/>.dbo.ActualItemLocation ([ID], OnHand, TotalCost, OnReserve, OnOrder, EffectiveMinimum, EffectiveMaximum, ItemLocationID, [CostCenterID])
+		select ILL.ActualItemLocationID,
+				0, 0.0, 0, 0, 0, 0,<!-- Initial values to bypass CHECK directive -->
+			   ILL.ItemLocationID, 
+			   (select DAIL.CostCenterID
+				  from <ODB/>.dbo._DActualItemLocation as DAIL
+					join <ODB/>.dbo._DPermanentItemLocation as DPIL on DAIL.ID = DPIL.ActualItemLocationID)
+		  from <IDB/>.dbo.InvLocations as IL
+			join <IDB/>.dbo.InvLocationLinkages as ILL on IL.ID = ILL.ItemLocationID
+			join <IDB/>.dbo.InvItems as I on IL.[ITEMKEY] = I.[KEY]
+	</data>
+  </table>
+  <table name="Permanent Item Location">
+	<dependency table="Permanent Item Location Actual"/>
+	<data>
+	  -- TODO: Distribute Min and Max across the various perm storages rather than assigning the full numbers to each???
+	  INSERT INTO <ODB/>.dbo.PermanentItemLocation ([ID], [ActualItemLocationID], [Minimum], [Maximum])
+		  select ILL.PermanentItemLocationID, ILL.ActualItemLocationID, Coalesce(I.[MINI],0), Coalesce(I.[MAXI],0)
+		  from <IDB/>.dbo.InvLocations as IL
+			join <IDB/>.dbo.InvLocationLinkages as ILL on IL.ID = ILL.ItemLocationID
+			join <IDB/>.dbo.InvItems as I on IL.[ITEMKEY] = I.[KEY]
+	</data>
+  </table>
+  <table name="Permanent Item Location Transaction">
+	<dependency table="Permanent Item Location"/>
+	<data>
+	  declare @ccid uniqueidentifier
+	  declare @userId uniqueidentifier
+	  select @ccid = (select DIAC.CostCenterID from <ODB/>.dbo._DItemAdjustmentCode as DIAC)
+			-- TODO: Get the EffectiveDate, ENtryDate, and ItemAdjustmentCode from the last transaction record in the original data (not exported)
+	  -- We use the 'only' userid present at this point in the User table as we are in the process of importing and 'know' only one user exists at this time
+	  select TOP 1 @userId = ID from <ODB/>.dbo.[User]
+	  insert into <ODB/>.dbo.AccountingTransaction (ID, UserID, EntryDate, EffectiveDate, Cost, FromCostCenterID, ToCostCenterID)
+		  select ILL.AccountingTransactionID, @userId, dbo._DClosestValue(getdate(), 2, 100), dbo._DClosestValue(getdate(),2,100), dbo.fn_MONEY(IL.[TOTALCOST]), AILoc.CostCenterID, @ccid 
+		  from <IDB/>.dbo.InvLocations as IL
+			join <IDB/>.dbo.InvLocationLinkages as ILL on IL.ID = ILL.ItemLocationID
+			join <IDB/>.dbo.InvItems as I on IL.[ITEMKEY] = I.[KEY]
+			join <ODB/>.dbo.ActualItemLocation as AILoc on ILL.ActualItemLocationID = AILoc.ID
+	</data>
+  </table>
+  <table name="Permanent Item Location Item Count Value">
+	<dependency table="Permanent Item Location Transaction"/>
+	<dependency table="Item Adjustment Codes"/>
+	<data>
+	  INSERT INTO <ODB/>.dbo.ItemCountValue ([ID], [AccountingTransactionID], [ItemLocationID], [Quantity], [Cost], [ItemAdjustmentCodeID])
+		select ILL.ItemCountValueID, ILL.AccountingTransactionID, ILL.ItemLocationID, IL.[ONHAND], dbo.fn_MONEY(IL.[TOTALCOST]), IL.AdjustmentID
+		from <IDB/>.dbo.InvLocations as IL
+		  join <IDB/>.dbo.InvLocationLinkages as ILL on IL.ID = ILL.ItemLocationID
+		  join <IDB/>.dbo.InvItems as I on IL.[ITEMKEY] = I.[KEY]
+	</data>
+  </table>
+  <table name="Item Pricing">
+	<dependency table="Item"/>
+	<data>
+	  INSERT INTO <ODB/>.dbo.ItemPrice ([ID], [EffectiveDate], [ItemID], [VendorID], [Quantity], [Cost], [PurchaseOrderText])
+		select NEWID(), dbo.fn_DTIME( TX.[DATE], TX.[TIME] ),
+						 I.[ID], V.[ID], ISNULL(ABS(TX.[QTY]),0), dbo.fn_MONEY(Coalesce(ABS(TX.[TOTALCOST]),0)), TX.REFER
+		from <IDB/>.dbo.InvTransactions as TX
+			join <IDB/>.dbo.InvItems as I on TX.[ITEMKEY] = I.[KEY]
+			join <IDB/>.dbo.Vendors as V on CAST(TX.[REASON] as INT) = V.[KEY]
+		where TX.[TYPE] = 'PQ';
+	</data>
+  </table>
+</dbconversion>

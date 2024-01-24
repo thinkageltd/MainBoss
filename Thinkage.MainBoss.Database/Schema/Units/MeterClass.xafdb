@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="MeterClass" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Meter Class">
+    <field name="Id" read="RequiredGUID"/>
+    <field name="Code" type="RequiredCode"/>
+    <field name="Hidden" type="GenerationValue"/>
+    <field name="Desc" type="Desc"/>
+    <field name="Comment" type="Comment"/>
+	<field name="UnitOfMeasureID" type="GUIDREF" link="UnitOfMeasure">
+	  <doc>Unit of Measurement for this meter class</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<extension name="deletemethod">hide</extension>
+  </table>
+  <table name="UnitOfMeasure" id="Id"/> 
+</database>

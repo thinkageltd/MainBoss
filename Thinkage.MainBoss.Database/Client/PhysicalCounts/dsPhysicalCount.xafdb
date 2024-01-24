@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database name="http://thinkage.ca/MB3/dsPhysicalCount.xsd:dsPhysicalCount" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <table name="PhysicalCount" defaults="false" log="false" id="ID">
+	<doc>
+	  These records represent a Physical Count and inventory valuation operation to a specific PermanentItemLocation (StoreroomAssignmentId).
+	</doc>
+	<field name="ID" read="id(nonnull)"/>
+	<field name="StoreroomAssignmentID" read="id(nonnull)" labelkey="StoreroomAssignmentID" />
+	<field name="Quantity" type="integer(32)" labelkey="Quantity">
+	  <doc>The quantity as counted at the location.</doc>
+	</field>
+	<field name="Cost" type="currency(min -922337203685477.5808, max 922337203685477.5807, by 0.01)" labelkey="Cost">
+	  <doc>The deemed value of the items found at the location.</doc>
+	</field>
+  </table>
+</database>

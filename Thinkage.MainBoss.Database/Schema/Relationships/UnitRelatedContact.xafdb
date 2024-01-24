@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="UnitRelatedContact" defaults="true" log="false" id="Id" xid="UnitLocationID ContactID RelationshipID" xunique="true" labelkey="Unit Related Contact">
+	<doc>
+	  This record represents that a relationship exists between a unit and a contact
+	</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="RelationshipID" type="RequiredGUIDREF" link="Relationship">
+	  <doc>Define the relationship for this record</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="UnitLocationID" labelkey="Unit" type="RequiredGUIDREF" link="Location">
+	  <extension name="linkage">property</extension>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.UnitBrowseTblCreator,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="ContactID" type="RequiredGUIDREF" link="Contact">
+	  <extension name="linkage">property</extension>
+	</field>
+	<extension name="deletemethod">delete</extension>
+  </table>
+  <table name="Relationship"/>
+  <table name="Location"/>
+  <table name="Contact"/>
+</database>
+

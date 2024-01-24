@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderMiscellaneous" defaults="false" log="false" id="Id" labelkey="Work Order Miscellaneous">
+	<doc>
+	  This view unifies the various WO miscellaneous cost records. 
+	</doc>
+	<field name="Id" read="RequiredGUID">
+	</field>
+	<field name="TableEnum" type="integer(min 0, max 1, nonnull)">
+	  <doc>The type of resource record</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderMiscellaneousProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<!-- the base linkages of the unified records -->
+	<field name="DemandID" type="GUIDREF" link="Demand">
+	  <doc>the base Demand record linkage for resources derived from this (demands)</doc>
+	</field>
+	<field name="MiscellaneousWorkOrderCostID" type="GUIDREF" link="MiscellaneousWorkOrderCost">
+	  <doc>the MiscellaneousWorkOrderCost record linkage for employees doing per-job work</doc>
+	</field>
+	<!-- Other fields required by restrictions in Tbl etc representations -->
+	<field name="WorkOrderExpenseModelEntryID" type="GUIDREF" link="WorkOrderExpenseModelEntry">
+	  <!-- This has to be here because the double-field join operation is not followable in XAF -->
+	  <doc>the Id of the WorkOrderExpenseModelEntry associated with a Demand record based on the WorkOrder's expense model which determines the C/C to actualize to.
+	  This will be null if there is no model entry (preventing actualization) and for all non-Demand and non-Actual record types.</doc>
+	</field>
+	<field name="WorkOrderID" type="RequiredGUIDREF" link="WorkOrder">
+	  <!-- This must remain until we can put per-view filters on all the CompositeViews all with the same tag and target them as a group with
+	the BrowserFilterTarget init target. -->
+	  <doc>a unified Work Order id</doc>
+	</field>
+	<field name="ParentID" type="GUIDREF" link="WorkOrderMiscellaneous" labelkey="Work Order Miscellaneous">
+	  <!-- This must remain until we have some way of expressing the row parent on a per-view basis -->
+	  <doc>the Id of another record in this table that is the parent of this record in the tree view</doc>
+	</field>
+	<extension name="query">
+	  with DemandExt as (
+		select D.ID, D.WorkOrderID, WOXME.ID as WorkOrderExpenseModelEntryID
+		  from
+			Demand as D
+		  join
+			WorkOrder as WO on WO.ID = D.WorkOrderID
+		  left join
+			WorkOrderExpenseModelEntry as WOXME
+			  on WOXME.WorkOrderExpenseModelID = WO.WorkOrderExpenseModelID
+				and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
+	  )	
+		select M.ID, 0,					<!-- WorkOrderMiscellaneous.MiscellaneousWorkOrderCost -->
+			  NULL, M.ID,
+			  NULL, NULL, NULL
+		  from
+			MiscellaneousWorkOrderCost as M
+	  union all
+		<!-- Demands: DemandMiscellaneousWorkOrderCost -->
+		select D.ID, 1,					<!-- WorkOrderMiscellaneous.DemandMiscellaneousWorkOrderCost -->
+			  D.ID, NULL,
+			  D.WorkOrderExpenseModelEntryID, D.WorkOrderID, DM.MiscellaneousWorkOrderCostID
+		  from
+			DemandMiscellaneousWorkOrderCost as DM
+		  join
+			DemandExt as D on D.ID = DM.DemandID
+	</extension>
+	<extension name="dependson">Demand</extension>
+	<extension name="dependson">DemandMiscellaneousWorkOrderCost</extension>
+	<extension name="dependson">WorkOrder</extension>
+	<extension name="dependson">WorkOrderExpenseModelEntry</extension>
+	<extension name="dependson">WorkOrderExpenseModel</extension>
+	<extension name="dependson">MiscellaneousWorkOrderCost</extension>
+	<extension name="costrights">WorkOrderMiscellaneous</extension>
+  </table>
+  <table name="WorkOrderMiscellaneousTreeView" defaults="false" log="false" id="Id" labelkey="Work Order Miscellaneous">
+	<doc>This is the filter/display driver for the WorkOrderMiscellaneous view required for the tree-structured display</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="FilterID" type="GUIDREF" link="WorkOrderMiscellaneous">
+	</field>
+	<field name="DisplayID" type="GUIDREF" link="WorkOrderMiscellaneous">
+	</field>
+	<field name="IsPrimary" type="RequiredBool">
+	</field>
+	<extension name="query">
+	  -- Self-containment on resource records
+	  select ID, ID, ID, 1
+		from MiscellaneousWorkOrderCost
+	union all
+	  -- Self-containment on Demand records
+	  select DemandID, DemandID, DemandID, 1
+		from DemandMiscellaneousWorkOrderCost
+	union all
+	  -- COntainment of Demands within Resources
+	  select MiscellaneousWorkOrderCostID, DemandID, MiscellaneousWorkOrderCostID, 0
+		from DemandMiscellaneousWorkOrderCost
+	</extension>
+	<extension name="dependson">MiscellaneousWorkOrderCost</extension>
+	<extension name="dependson">DemandMiscellaneousWorkOrderCost</extension>
+	<extension name="costrights">WorkOrderMiscellaneous</extension>
+  </table>
+  <table name="Demand"/>
+  <table name="DemandMiscellaneousWorkOrderCost"/>
+  <table name="WorkOrder"/>
+  <table name="WorkOrderExpenseModelEntry"/>
+  <table name="WorkOrderExpenseModel"/>
+  <table name="MiscellaneousWorkOrderCost"/>
+</database>

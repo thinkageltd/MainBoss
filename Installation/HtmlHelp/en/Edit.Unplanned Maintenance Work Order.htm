@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Creating an Unplanned Maintenance Work Order</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Creating an Unplanned Maintenance Work Order</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Scheduling Basis.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="MaintenanceTimings.htm">Next section &gt;</a></p>
+
+<p>You can use a unit maintenance plan record to create a work order immediately, rather than following the specified timing. For example, suppose you have a unit maintenance plan that describes an oil change on a particular vehicle. You can use this record to create an immediate oil change work order, even if the usual oil change hasn't come due.</p>
+
+<p>Creating this kind of work order automatically updates the schedule of maintenance on the associated unit. In other words, MainBoss sets the clock back to zero when calculating future service. For example, suppose that a job is supposed to be done every 30 days. However, after 10 days, you create an unplanned work order for the job immediately. MainBoss sets the clock back to zero; the next time the job will be scheduled is 30 days after the work order you just created.</p>
+
+<p><span class="CInset">Important:</span> If you use <span class="CButton">New Unplanned Maintenance Work Order</span> (from <span class="CPanel">Unit Maintenance Plans</span>) to create a new work order, the new work order will become a basis for future scheduling. The date when you create the work order becomes both the "<span class="CField">Work Start Date</span>" and the "<span class="CField">Scheduled Date</span>" for the work order. As a result:</p>
+
+<ul class="b1"><li>If the unit maintenance plan's timing basis is "<span class="CField">Scheduled Date</span>", the date you made the unplanned work order will be the basis for future scheduling.</li>
+<li>If the unit maintenance plan's timing basis is "<span class="CField">Work Start Date</span>", the "<span class="CField">Work Start Date</span>" of the unplanned work order will be the basis for future scheduling. By default, this is the date when you created the work order.</li>
+<li>If the unit maintenance plan's timing basis is "<span class="CField">Work End Date</span>", the "<span class="CField">Work End Date</span>" of the unplanned work order will be the basis for future scheduling. By default, this is the date when you created the work order plus the "<span class="CField">Duration</span>" of the task.
+</li></ul><p>You may change the "<span class="CField">Work Start Date</span>" and/or "<span class="CField">Work End Date</span>" of the unplanned work order, in which case the new date will be used as the schedule basis. (This is also true for preventive maintenance work orders that are generated using <span class="CPanel">Unit Maintenance Plans</span> | <span class="CPanel">Generate Planned Maintenance</span>.)</p>
+
+<p>If a preventive maintenance job is scheduled by meter reading, creating an unplanned maintenance work order causes MainBoss to calculate an estimated meter reading based on the current date. For best results, you should take an actual meter reading on the unit when you carry out the unplanned work order; this will avoid any inaccuracies that may arise by MainBoss calculating an estimate rather than using a real meter reading.</p>
+ 
+
+<p>To create this kind of work order, you go to <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Unit Maintenance Plans</span>, select the plan you want to use, then click <span class="CButton">New Unplanned Maintenance Work Order</span>. This opens a window that contains the following:</p>
+
+<p class="wi"><span class="CField">Unit Maintenance Plan</span>: The unit maintenance plan that you want to use as a basis for the work order.</p>
+<p class="wi"><span class="CField">Purchase Order Creation State</span>: This field may be useful if "<span class="CField">Scheduled Work Order</span>" has an associated template for creating purchase orders. The unit maintenance plan will specify the state of a purchase order created from such a template: <span class="CReport">Draft</span>, <span class="CReport">Issued</span>, <span class="CReport">Closed</span>, <span class="CReport">Voided</span>. When you create a work order "by hand," you may decide that a different state is more appropriate. Therefore, you can use "<span class="CField">Purchase Order Creation State</span>" to specify the state of any purchase order that's created. (For more on purchase order templates, see <a href="PurchaseOrderTemplates.htm">Purchase Order Templates</a>.)</p>
+<p class="wi"><span class="CField">Work Order Creation State</span>: Similar to "<span class="CField">Purchase Order Creation State</span>". By default, each generated work order is created in the draft state. However, you may wish to put generated work orders into some other state instead&#8212;most likely the open state, indicating that the work order is ready to be printed. (Remember though that if a work order is open, some of its information is locked down and can't be changed unless you first <span class="CButton">Suspend</span> the work order.)</p>
+<p class="wi"><span class="CField">For Access Code</span> options: Let you specify what to do when the access code for a unit is different than the access code for the plan's task description:</p>
+<p class="wi2"><span class="CButton">Prefer value from Task</span>: If both the task and the unit record specify an access code, MainBoss assigns generated work orders the access code from the task. However, if the task record doesn't have an access code, MainBoss uses the code from the unit.</p>
+<p class="wi2"><span class="CButton">Prefer value from Unit</span>: If both the task record and the unit record specify an access code, MainBoss assigns generated work orders the access code from the unit. However, if the unit record doesn't have an access code, MainBoss uses the code from the task.</p>
+<p class="wi2"><span class="CButton">Only use value from Task</span>: MainBoss always uses the access code from the task record. (If the task record doesn't have an access code, generated work orders won't have an access code either.)</p>
+<p class="wi2"><span class="CButton">Only use value from Unit</span>: MainBoss always uses the access code from the unit record. (If the unit record doesn't have an access code, generated work orders won't have an access code either.)</p>
+<p class="wi"><span class="CField">For Expense Model</span> options: Let you specify what to do when the expense model in the unit record is different from the one in the task record. The options work the same way as the options in <span class="CField">For Access Code</span>.</p>
+<p class="wi"><span class="CField">Comments</span>: Any comments you want to record about what you're doing.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Clicking this button creates the work order. The work order will be recorded in the <span class="CButton">Scheduling History</span> section of the unit maintenance plan record.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. MainBoss will ask if you really want to close the window without creating a work order.</p>
+<p>For more on unit maintenance plans, see <a href="UnitMaintenancePlans.htm">Unit Maintenance Plans</a>. For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Scheduling Basis.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="MaintenanceTimings.htm">Next section &gt;</a></p>
+</body>
+</html>
+

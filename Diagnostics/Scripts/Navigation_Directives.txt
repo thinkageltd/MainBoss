@@ -1,0 +1,180 @@
+; MainBoss Control View
+;==========================================================
+; Here is a list of directives to pass into the MainBoss 
+;	test suite _NavControl Function.
+;==========================================================
+; Requests Menu
+[Req]
+[New Req] 
+[In Progress Req]
+[Transferred Req]
+[Closed Req]
+[Print Req]
+[Req Reports]
+
+;;-----------------------------------------------------------------------------
+; Request Reports Sub SubMenu
+[Req History Report]
+[Req Status]
+
+
+;;=============================================================================	
+[Work Orders]
+[Overdue Work]
+[Open Work]
+[Closed Work]
+[Void Work]
+[Print Work]
+[Chargebacks Work]
+[Work Reports]
+
+;;-----------------------------------------------------------------------------
+; Work Order Reports Sub SubMenu
+[WO Overdue]
+[WO History]
+[WO Status]
+[Wo HrIn Labor]
+[WO HrOut Labor]
+[WO Stats]
+
+
+;;=============================================================================
+; generate PM's
+[Generate PM]
+[Labor Forecast]
+
+
+;;=============================================================================
+;Units
+[Units]
+[Unit Reports]
+[Listing]
+[Unit History]
+[Unit Replace]
+[Unit Meters]
+
+
+;;=============================================================================
+; Items Menu
+[Items]
+[Item Reports]
+[Item Listing]
+[Item Activity]
+[Item Issued]
+[Item Restock]
+[Item Location]
+[Item Usage]
+
+
+;;=============================================================================
+; Purchase Orders Menu
+[Purchase Orders]
+[PO Open]
+[PO Issued]
+[PO Closed]
+[PO Void]
+[PO Print]
+[PO Receipt]
+
+;;-----------------------------------------------------------------------------
+; Purchase Order Reports SubMenu
+[PO Reports]
+[POR On Order]
+[PO Receiving]
+[PO History]
+
+
+;;=============================================================================
+; Coding Definitions Menu
+[Coding Definitions]
+[CD AccessCodes]
+[CD Contacts]
+[CD Locations]
+[CD UOM]
+
+;;-----------------------------------------------------------------------------
+; Coding Definitions Items SubMenu
+[CD Items]
+[CD Items Adj]
+[CD Items Cat]
+[CD Items Iss]
+[CD Items SA]
+[CD Items Str]
+[CD Items TmpStr]
+[CD Items Void]
+
+;;-----------------------------------------------------------------------------
+; Coding Definitions Purchase Orders SubMenu
+[CD Purchase Orders]
+[CD PO Misc]
+[CD PO PayTerm]
+[CD PO ShipMode]
+
+;;-----------------------------------------------------------------------------
+; Coding Definitions Requests SubMenu
+[CD Req]
+[CD Req Priority]
+[CD Req Req]
+ 
+;;-----------------------------------------------------------------------------
+ ;Coding Definitions Unit Maintenance SubMenu
+[CD UMP]
+[CD UMP MaintTime]
+[CD UMP POTemp]
+
+;;-----------------------------------------------------------------------------
+;Coding Definitions Unit Maintenance Plan Task SubMenu
+[CD UMP Tasks]
+[CD UMP TaskTemp]
+
+;;-----------------------------------------------------------------------------
+; Coding Definitions Units SubMenu
+[CD Units]
+[CD Unit AC]
+[CD Unit Cat]
+[CD Unit MetClass]
+[CD Unit Meters]
+[CD Unit Owner]
+[CD Unit Parts]
+[CD Unit Contracts]
+[CD Unit Specs]
+[CD Unit Systems]
+[CD Unit Usage]
+
+;;-----------------------------------------------------------------------------
+; Coding Definitions Vendors SubMenu
+[CD Vendors]
+[CD Vend Cat]
+
+;;-----------------------------------------------------------------------------
+; Coding Definitions Work Orders SubMenu
+[CD Work]
+[CD Work BillReq]
+[CD Work Crgeback]
+[CD Work ClCode]
+[CD Work ExpCat]
+[CD Work Exp]
+[CD Work Labor]
+
+;;-----------------------------------------------------------------------------
+;Coding Definitions Work Orders Labor SubMenu
+[CD Work Emp]
+[CD Work HrIn]
+[CD Work HrOut]
+[CD Work PerJobIn]
+[CD Work PerJobOut]
+[CD Work Trades]
+[CD Work Prior]
+[CD Work Proj]
+[CD Work Cat]
+
+
+;;=============================================================================
+; Administration Menu
+[Administration]
+[Company Info]
+[Users]
+[Licenses]
+[DB Hist]
+
+; Fin!

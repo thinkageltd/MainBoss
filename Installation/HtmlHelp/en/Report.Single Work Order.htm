@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Printing Single Work Orders</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Printing Single Work Orders</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Work Order.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Resources.htm">Next section &gt;</a></p>
+
+<p>You can print single work orders by clicking the <span class="CButton"><img src="PrintHS.png" alt="Print" /></span> button in a work order editor window. The resulting window contains the following:</p>
+
+<p class="wi"><span class="CButton">Field Selection</span> section: Options controlling which information fields will be included in the report.</p>
+<p class="wi2"><span class="CButton">Suppress Costs</span>: Omits any money information that might otherwise be displayed in the report.</p>
+<p class="wi2"><span class="CButton">Show Fields</span>: Checkboxes that specify the information that should appear on the printed work order.</p>
+<p class="wi2"><span class="CButton">Show Child Records</span>: Checkboxes that specify information to be obtained from records that the work order refers to. For example, you can obtain information from item and labor records that appear in the <span class="CButton">Resources</span> section of the work order, or work order states and statuses that appear in the work order's state history.</p>
+<p class="wi"><span class="CButton">Advanced</span> section: Miscellaneous options.</p>
+<p class="wi2"><span class="CField">Report width in pages</span>: Makes it possible to have lines that are wider than a single page. This is particularly useful when you are previewing reports on a monitor screen. For further information, see <a href="ReportSections.htm">Report Sections</a>.</p>
+<p class="wi2"><span class="CField">Title</span>: The title to be printed at the beginning of the report.</p>
+<p class="wi2"><span class="CField">Main Font</span>: The font that will be used for most of the characters in the report. This should be a font that is supported by both your Windows system and your printer.</p>
+<p class="wi2"><span class="CField">Fixed-width Font</span>: The font that will be used for information that is printed with fixed-width characters (mostly unit specifications). This should be a font that is supported by both your Windows system and your printer.</p>
+<p class="wi2"><span class="CButton">Bar Code Symbology</span>: Specifies a format to be used for printing bar codes in this report. If you choose <span class="CButton">None</span>, no bar codes will be printed; otherwise, a bar code containing the work order number will be printed for every work order in the report. For more information, see <a href="BarCodeSupport.htm">Bar Code Support</a>.</p>
+<p class="wi2"><span class="CField">Additional blank lines</span>: May be filled in with a number. If so, MainBoss will add that number of blank lines in the labor/material section of the work order. Workers can write in this blank area to record labor and/or materials not included in the original work report (e.g. materials you didn't expect to need).</p>
+<p class="wi2"><span class="CField">Additional information</span>: Extra information to be printed in the work order. For example, you can use this area to specify that the work order should contain a signature line where customers can sign off once the job is finished.
+
+<br /><br />You can set the default text for this additional information by using the <span class="CPanel">Work Orders</span> table viewer. Go to the <span class="CButton">Defaults for Work Orders</span> section and then to <span class="CButton">Printed Form</span>.</p>
+<p class="wi"><span class="CButton">Preview</span> section: Displays a visual preview of the report. If you click the <span class="CButton"><img src="Refresh.png" alt="Refresh" /></span> button, you automatically go to this section.
+
+<br /><br />The <span class="CButton">Preview</span> section contains buttons for looking through the report preview and for actually printing the information. For more on using the <span class="CButton">Preview</span> section, see <a href="ReportButtons.htm">Report Buttons</a>.</p>
+<p class="wi"><span class="CButton"><img src="PrintHS.png" alt="Print" /></span>: Immediately prints the report.</p>
+<p class="wi"><span class="CButton">Export Data</span>: Exports the report's data in XML format.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Cancels the preparation and printing of a report. This button is enabled only when MainBoss is preparing a report, i.e. gathering the data and formatting it. For more information, see <a href="ReportButtons.htm">Report Buttons</a>.</p>
+<p class="wi"><span class="CButton">Clear Select for Printing</span>: If you click this button, MainBoss removes the checkmark from all <span class="CButton">Select for Printing</span> boxes on all work orders. Typically, you do this after printing work orders that have been marked <span class="CButton">Select for Printing</span>. For more, see <a href="SelectPrintFlags.htm">Select Print Flags</a>.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window.</p>
+<p class="wi"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Clicking this button generates a preview of the report, displayed in the <span class="CButton">Preview</span> section of the window.</p>
+<p>For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For more on reports in general, see <a href="Reports.htm">Reports</a>.</p>
+
+
+<p><a href="Report.Work Order.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Resources.htm">Next section &gt;</a></p>
+</body>
+</html>
+

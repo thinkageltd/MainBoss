@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ItemRestocking" defaults="false" log="false" id="Id" labelkey="Item Restocking">
+	<!--
+		TODO: We really should use the *concatenation* of the two IDs for the "duplicated" records.
+		The type of our Id field would then be blob(minlength 32, maxlength 32, nonnull). This is generally
+		assumed to work properly in a browser, except that the ID generation service complains about it.
+		It does not know this is a Query (rather than a stored table) and assumes that it would have to create
+		new ID's for new rows, and does not know how to do this. The fact that it is a query is only in an
+		extension outside of the XAF level.
+		For now, we just xor the two id's together and turn it back into an ID type. Because of the strange rules of
+		SQL types, we must do this in halves, converting half of one of the GUID's into bigint, xoring it with the same
+		half of the other GUID as binary(8), convert the half back to binary(8), and concat it with the corresponding result
+		for the second halves. Why in heaven's name can't you just xor binary to binary???????
+		TODO: Temporary Item Locations (both short-stocked and surplus) should only show if the associated WO state has TemporaryStorageActive set.
+		Note though that since TILs without this state will have zero on-hand and min is always zero, so they can be neither under- nor over-stocked,
+		assuming there is no loophole anywhere.
+	-->
+	<field name="Id" read="blob(minlength 32, maxlength 32, nonnull)">
+	  <doc>The Id of this row</doc>
+	</field>
+	<field name="ItemID" type="GUIDREF" link="Item">
+	  <doc>the ItemID if the record is an Item record</doc>
+	</field>
+	<field name="ItemLocationID" type="GUIDREF" link="ItemLocation">
+	  <doc>
+	  	The base ItemLocation ID if the referenced record is a derivation thereof.
+		Note that ItemLocation records appear either as ones with a shortage as children of Item records,
+		or as ones with a surplus to be transferred, as children of other ItemLocation records.
+		These can be distinguished by looking at the Available vs EffectiveMinimum situation
+	  </doc>
+	</field>
+	<field name="ItemPriceID" type="GUIDREF" link="ItemPrice">
+	  <doc>the ItemPriceID if the record is an ItemPrice record</doc>
+	</field>
+	<field name="AccountingTransactionID" type="GUIDREF" link="AccountingTransaction">
+	  <doc>The base AccountingTransaction ID if the referenced record is a derivation thereof</doc>
+	</field>
+	<field name="ParentID" type="GUIDREF" link="ItemRestocking" labelkey="Item Restocking"/>
+	<extension name="query">
+			<!-- First variant - Items that have at least one non-deleted AIL with a shortage. -->
+			select cast(I.ID as binary(32)), I.ID, null, null, null, null
+				from Item as I
+				where exists(select *
+								from ActualItemLocation as AIL
+								join ItemLocation as IL on IL.ID = AIL.ItemLocationID
+								where IL.ItemID = I.ID
+									and AIL.EffectiveMinimum > AIL.Available
+									and IL.Hidden is null)
+		union
+			<!-- Second variant. Non-deleted AILs with shortage (naming the Item as parent) -->
+			select cast(IL.ID as binary(32)), null, IL.ID, null, null, cast(IL.ItemID as binary(32))
+				from ActualItemLocation as AIL
+				join ItemLocation as IL on IL.ID = AIL.ItemLocationID
+				where AIL.EffectiveMinimum > AIL.Available and IL.Hidden is null
+		union
+			<!-- Third variant. AIL2s with excess that can send items to non-deleted AIL having a shortage -->
+			select cast(IL.ID as binary(16))+cast(IL2.ID as binary(16)), null, IL2.ID, null, null, cast(IL.ID as binary(32))
+				from ActualItemLocation as AIL2
+				join ItemLocation as IL2 on IL2.ID = AIL2.ItemLocationID
+				join ItemLocation as IL on IL.ItemID = IL2.ItemID
+				join ActualItemLocation as AIL on AIL.ItemLocationID = IL.ID
+				where AIL2.Available > AIL2.EffectiveMinimum
+					and AIL2.OnHand > 0
+					and AIL.EffectiveMinimum > AIL.Available
+					and IL.Hidden is null
+		union
+			<!-- Fourth variant. Price Quotes that join to non-deleted AIL having shortage (only if pricing forms a valid basis) -->
+			select cast(IL.ID as binary(16))+cast(IP.ID as binary(16)), null, null, IP.ID, null, cast(IL.ID as binary(32))
+				from ItemPrice as IP
+				join ItemLocation as IL on IL.ItemID = IP.ItemID
+				join ActualItemLocation as AIL on AIL.ItemLocationID = IL.ID
+				where AIL.EffectiveMinimum > AIL.Available
+					and IL.Hidden is null
+					and IP.Quantity > 0
+		union
+			<!-- Fifth variant. non-correction non-po Received records that join to non-deleted AIL having shortage (only if pricing forms a valid basis).
+				Note that as coded Received records only suggest to the same IL they received to, not to all ILs for the Item -->
+			select cast(RI.AccountingTransactionID as binary(32)), null, null, null, RI.AccountingTransactionID, cast(RI.ItemLocationID as binary(32))
+				from ReceiveItemNonPO as RI
+				join ActualItemLocation as AIL on AIL.ItemLocationID = RI.ItemLocationID
+				join ItemLocation as IL on IL.ID = AIL.ItemLocationID
+				where AIL.EffectiveMinimum > AIL.Available
+					and IL.Hidden is null
+					and RI.CorrectedQuantity > 0
+					and RI.CorrectionID = RI.Id
+		union
+			<!-- Sixth variant. non-correction PO Received records that join to non-deleted AIL having shortage (only if pricing forms a valid basis).
+				Note that as coded Received records only suggest to the same IL they received to, not to all ILs for the Item -->
+			select cast(RI.AccountingTransactionID as binary(32)), null, null, null, RI.AccountingTransactionID, cast(RI.ItemLocationID as binary(32))
+				from ReceiveItemPO as RI
+				join ActualItemLocation as AIL on AIL.ItemLocationID = RI.ItemLocationID
+				join ItemLocation as IL on IL.ID = AIL.ItemLocationID
+				where AIL.EffectiveMinimum > AIL.Available
+					and IL.Hidden is null
+					and RI.CorrectedQuantity > 0
+					and RI.CorrectionID = RI.Id
+	</extension>
+	<extension name="dependson">Item</extension>
+	<extension name="dependson">ItemLocation</extension>
+	<extension name="dependson">ActualItemLocation</extension>
+	<extension name="dependson">ItemPrice</extension>
+	<extension name="dependson">AccountingTransaction</extension>
+	<extension name="dependson">ReceiveItemNonPO</extension>
+	<extension name="dependson">ReceiveItemPO</extension>
+	<extension name="costrights">InventoryActivity</extension>
+  </table>
+  <table name="Item"/>
+  <table name="ItemLocation"/>
+  <table name="ActualItemLocation"/>
+  <table name="ItemPrice"/>
+  <table name="AccountingTransaction"/>
+  <table name="ReceiveItemNonPO"/>
+  <table name="ReceiveItemPO"/>
+</database>

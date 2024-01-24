@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="PurchaseOrderTemplate" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Purchase Order Template">
+	<doc>
+	  This record contains the information required to build a Purchase Order during PM generation
+	</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="RequiredCode"/>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="Desc" type="Desc"/>
+	<field name="Subject" type="Subject" labelkey="Summary">
+	  <doc>A short description of the purpose of the Purchase Order</doc>
+	</field>
+	<field name="Comment" type="Comment">
+	  <doc>A long description of the Purchase Order, for internal purposes</doc>
+	</field>
+	<field name="RequiredByInterval" type="RequiredByInterval">
+	  <doc>A date expressed as an interval from the PM Generate Date by which the purchased resources are required, which appears on the printed Purchase Order form</doc>
+	</field>
+	<field name="PurchaseOrderStateID" type="GUIDREF"  link="PurchaseOrderState" labelkey="Initial State">
+	  <doc>The initial state to assign to the generated Purchase Order</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="VendorID" type="RequiredGUIDREF"  link="Vendor">
+	  <doc>The Vendor from which the item should be purchased</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="ShipToLocationID" type="GUIDREF"  link="Location">
+	  <doc>The Location that the items should be shipped to (appears on printed Purchase Order)</doc>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.ShipToLocationForPurchaseOrderTemplatePickerTblCreator,Thinkage.MainBoss.Controls</extension>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="ShippingModeID" type="GUIDREF"  link="ShippingMode">
+	  <doc>Shipping mode and instructions to be includes on printed Purchase Order</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="PaymentTermID" type="GUIDREF"  link="PaymentTerm">
+	  <doc>Terms for payment to be included on printed Purchase Order</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="PurchaseOrderCategoryID" type="GUIDREF"  link="PurchaseOrderCategory">
+	  <doc>A user defined category for this Purchase Order</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="ProjectID" type="GUIDREF"  link="Project">
+	  <doc>A project associated with this Purchase Order</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="CommentToVendor" type="Comment">
+	  <doc>Additional comments to be passed on to the Vendor on the printed Purchase Order</doc>
+	</field>
+	<field name="SelectPrintFlag" type="bool" labelkey="Select for Printing">
+	  <doc>Interim flag for support of a SelectForPrint operation; will migrate to general flags model in future</doc>
+	</field>
+	<extension name="deletemethod">hide</extension>
+  </table>
+  <table name="PurchaseOrderState"/>
+  <table name="Vendor"/>
+  <table name="Location"/>
+  <table name="ShippingMode"/>
+  <table name="PaymentTerm"/>
+  <table name="PurchaseOrderCategory"/>
+  <table name="Project"/>
+</database>

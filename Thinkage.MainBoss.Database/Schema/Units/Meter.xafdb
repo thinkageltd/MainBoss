@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="Meter" defaults="true" log="false" id="Id" xid="MeterClassID UnitLocationID Hidden" xunique="true" labelkey="Meter">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="UnitLocationID" labelkey="Unit" type="RequiredGUIDREF" link="Location">
+	  <extension name="linkage">captive</extension>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.UnitBrowseTblCreator,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="MeterClassID" type="RequiredGUIDREF" link="MeterClass">
+	  <doc>The class of meter associated to this Unit</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="Comment" type="Comment"/>
+	<field name="MeterReadingOffset" type="RequiredMeterReadingValue" labelkey="Reading Offset">
+	  <doc>Offset applied to meter reading to compute EffectiveReading value</doc>
+	</field>
+	<field name="CurrentMeterReadingID" read="GUIDREF"  link="MeterReading" labelkey="Current Reading">
+	  <doc>This is a current link to the last reading entry MeterReading table for quick reference to the last reading information for reporting and browsing use.</doc>
+	  <result hosting="cached">
+		(select id from MeterReading)
+	  </result>
+	  <extension name="dependson">mbfn_Meter_CurrentMeterReading()</extension>
+	</field>
+	<extension name="costrights">UnitValue</extension>	
+	<extension name="deletemethod">hide</extension>
+  </table>
+  <object class="function" name="mbfn_Meter_CurrentMeterReading">
+	<doc>This function calculates the value for the CurrentMeterReading field in a given record</doc>
+	<extension name="body">
+	  (@MeterID UNIQUEIDENTIFIER)
+	  returns UNIQUEIDENTIFIER
+	  as
+	  begin
+	  return (select top 1 MeterReading.ID
+	  from MeterReading
+	  where MeterReading.MeterID = @MeterID
+	  and MeterReading.Hidden is NULL
+	  order by MeterReading.EffectiveDate DESC)
+	  end
+	</extension>
+	<extension name="dependson">MeterReading</extension>
+  </object>
+  <table name="Location"/>
+  <table name="MeterClass"/>
+  <table name="MeterReading"/>
+</database>

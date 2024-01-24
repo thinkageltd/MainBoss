@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+
+	<variable name="POFormAdditionalBlankLines" type="integer(min 0, max 40)">
+		<doc>The number of blank lines for additional item lines in printed Purchase Order forms</doc>
+	</variable>
+	<variable name="POFormAdditionalInformation" type="MultiLineUnlimited">
+		<doc>The text to be placed in the additional-information section of the printed Purchase Order forms</doc>
+	</variable>
+	<variable name="POInvoiceContactID" type="link(Contact)">
+		<doc>The ID of the contact that should receive the PO invoices from vendors</doc>
+	</variable>
+	<variable name="POFormTitle" type="MultiLineUnlimited">
+		<doc>The text to be placed in the title report text parameter. Allows users to change default to Purchase Request (for example)</doc>
+	</variable>
+
+	<table name="PurchaseOrderFormReport" defaults="false" log="false" id="Id" labelkey="">
+		<field name="Id" read="RequiredGUID"/>
+		<field name="PurchaseOrderID" type="RequiredGUIDREF" link="PurchaseOrder" labelkey=""/>
+		<field name="StateHistory" type="MultiLineUnlimited">
+			<extension name="dependson">mbfn_PurchaseOrder_History_As_String()</extension>
+		</field>
+		<field name="InvoiceContactID" type="GUIDREF" link="Contact"/>
+		<field name="POLineID" type="GUIDREF" link="POLine" labelkey=""/>
+		<field name="AccountingTransactionID" type="GUIDREF" link="AccountingTransaction"/>
+		<field name="CostCenterId" type="GUIDREF" link="CostCenter"/>
+		<!--
+			This view returns:
+			Purchase Orders
+			POLines (with the associated PurchaseOrderID) and suggested CostCenter for that POLINE
+			PO Receiving as their base Accounting Transactions (with the associated POLineID and PurchaseOrderID)
+		-->
+		<extension name="query">
+				select
+					PurchaseOrder.Id, PurchaseOrder.Id, dbo.mbfn_PurchaseOrder_History_As_String(PurchaseOrder.Id), dbo._vgetPOInvoiceContactID(), null, null, null
+				from
+					PurchaseOrder
+			union all
+				select
+					POLine.Id, POLine.PurchaseOrderID, dbo.mbfn_PurchaseOrder_History_As_String(POLine.PurchaseOrderID), dbo._vgetPOInvoiceContactID(), POLine.Id, null, POLineLinkage.CostCenterID
+				from
+						(
+								select POLineID, CostCenterID from POLineItem	join ItemLocation as IL on IL.Id = POLineItem.ItemLocationID
+																				join ActualItemLocation as AIL on AIL.ItemLocationID = IL.Id
+							union all
+								select POLineID, CostCenterID from POLineLabor	join DemandLaborOutside as DLO on DLO.Id = POLineLabor.DemandLaborOutsideID
+																				join Demand on Demand.Id = DLO.DemandID
+																				join WorkOrder as WO on WO.Id = Demand.WorkOrderID
+																				join WorkOrderExpenseModelEntry as WOEME on WOEME.WorkOrderExpenseCategoryID = Demand.WorkOrderExpenseCategoryID and WOEME.WorkOrderExpenseModelID = WO.WorkOrderExpenseModelID
+							union all
+								select POLineID, CostCenterID from POLineOtherWork	join DemandOtherWorkOutside as DOWO on DOWO.Id = POLineOtherWork.DemandOtherWorkOutsideID
+																					join Demand on Demand.Id = DOWO.DemandID
+																					join WorkOrder as WO on WO.Id = Demand.WorkOrderID
+																					join WorkOrderExpenseModelEntry as WOEME on WOEME.WorkOrderExpenseCategoryID = Demand.WorkOrderExpenseCategoryID and WOEME.WorkOrderExpenseModelID = WO.WorkOrderExpenseModelID
+							union all
+								select POLineID, CostCenterID from POLineMiscellaneous join Miscellaneous as M on M.Id = POLineMiscellaneous.MiscellaneousID
+						) as POLineLinkage(POLineID, CostCenterID)
+					join
+						POLine on POLine.ID = POLineLinkage.POLineID
+			union all
+				select
+					PurchaseReceiveLinkage.AccountingTransactionID, POLine.PurchaseOrderID, dbo.mbfn_PurchaseOrder_History_As_String(POLine.PurchaseOrderID), dbo._vgetPOInvoiceContactID(), PurchaseReceiveLinkage.POLineID, PurchaseReceiveLinkage.AccountingTransactionId, null
+				from
+						(
+								select POLineID, AccountingTransactionID from POLineItem join ReceiveItemPO on ReceiveItemPO.POLineItemID = POLineItem.Id
+							union all
+								select POLineID, AccountingTransactionID from POLineLabor join ActualLaborOutsidePO on ActualLaborOutsidePO.POLineLaborID = POLineLabor.Id
+							union all
+								select POLineID, AccountingTransactionID from POLineOtherWork join ActualOtherWorkOutsidePO on ActualOtherWorkOutsidePO.POLineOtherWorkID = POLineOtherWork.Id
+							union all
+								select POLineID, AccountingTransactionID from POLineMiscellaneous join ReceiveMiscellaneousPO on ReceiveMiscellaneousPO.POLineMiscellaneousID = POLineMiscellaneous.Id
+						) as PurchaseReceiveLinkage(POLineID, AccountingTransactionID)
+					join
+						POLine on POLine.ID = PurchaseReceiveLinkage.POLineID
+		</extension>
+		<extension name="dependson">PurchaseOrder</extension>
+		<extension name="dependson">POLine</extension>
+		<extension name="dependson">POLineItem</extension>
+		<extension name="dependson">POLineLabor</extension>
+		<extension name="dependson">POLineOtherWork</extension>
+		<extension name="dependson">POLineMiscellaneous</extension>
+		<extension name="dependson">ReceiveItemPO</extension>
+		<extension name="dependson">ActualLaborOutsidePO</extension>
+		<extension name="dependson">ActualOtherWorkOutsidePO</extension>
+		<extension name="dependson">ReceiveMiscellaneousPO</extension>
+		<extension name="dependson">DemandLaborOutside</extension>
+		<extension name="dependson">ItemLocation</extension>
+		<extension name="dependson">ActualItemLocation</extension>
+		<extension name="dependson">DemandOtherWorkOutside</extension>
+		<extension name="dependson">Demand</extension>
+		<extension name="dependson">WorkOrder</extension>
+		<extension name="dependson">WorkOrderExpenseModelEntry</extension>
+		<extension name="dependson">Miscellaneous</extension>
+		<extension name="costrights">PurchaseOrderItem,PurchaseOrderLabor,PurchaseOrderMiscellaneous</extension>
+		<extension name="lastupdate">PurchaseOrderID</extension>
+	</table>
+	<object class="function" name="mbfn_PurchaseOrder_History_As_String">
+		<doc>
+		returns the state history of a PurchaseOrder as a sql string.
+		needed by the work order form, since the report writer does not allow to differing type of sub records
+	</doc>
+		<extension name="body">
+			(
+			@PurchaseOrderID		uniqueidentifier
+			)
+			RETURNS VARCHAR(MAX)
+			AS
+			BEGIN
+			return (select
+							CAST(PurchaseOrderStateHistory.[EffectiveDate] as  nchar(24))
+							+'§'
+							+CAST( isnull(PurchaseOrderState.[Code], '') as nchar(43))
+							+CAST(Coalesce(Contact.Code,'') as nchar(25))
+							+Coalesce(PurchaseOrderStateHistoryStatus.[Code],'')
+							+Coalesce(CHAR(13)+CHAR(10)+PurchaseOrderStateHistory.[Comment],'')
+							+CHAR(13)+CHAR(10)+CHAR(13)+CHAR(10)
+								as line
+					  from
+						  PurchaseOrderStateHistory
+						join
+						  PurchaseOrderState on PurchaseOrderState.[ID] = PurchaseOrderStateHistory.PurchaseOrderStateID
+						left join
+						  PurchaseOrderStateHistoryStatus on PurchaseOrderStateHistoryStatus.[ID] = PurchaseOrderStateHistory.PurchaseOrderStateHistoryStatusID
+					    left join
+						  [User] on [User].Id = PurchaseOrderStateHistory.UserID
+						left join
+						  Contact on [User].ContactID = Contact.[ID]
+					  where PurchaseOrderStateHistory.PurchaseOrderID = @PurchaseOrderID
+					  order by PurchaseOrderStateHistory.EffectiveDate
+					  for xml path(''), TYPE).value('.','varchar(max)')
+			END
+	</extension>
+		<extension name="dependson">PurchaseOrderStateHistory</extension>
+		<extension name="dependson">PurchaseOrderState</extension>
+		<extension name="dependson">PurchaseOrderStateHistoryStatus</extension>
+		<extension name="dependson">User</extension>
+		<extension name="dependson">Contact</extension>
+	</object>
+	<table name="PurchaseOrder"/>
+	<table name="PurchaseOrderState"/>
+	<table name="PurchaseOrderStateHistory"/>
+	<table name="PurchaseOrderStateHistoryStatus"/>
+	<table name="AccountingTransaction"/>
+	<table name="POLine"/>
+	<table name="POLineItem"/>
+	<table name="POLineLabor"/>
+	<table name="POLineOtherWork"/>
+	<table name="POLineMiscellaneous"/>
+	<table name="ReceiveItemPO"/>
+	<table name="ActualLaborOutsidePO"/>
+	<table name="ActualOtherWorkOutsidePO"/>
+	<table name="ReceiveMiscellaneousPO"/>
+	<table name="User"/>
+	<table name="Contact"/>
+	<table name="DemandLaborOutside"/>
+	<table name="ItemLocation"/>
+	<table name="ActualItemLocation"/>
+	<table name="DemandOtherWorkOutside"/>
+	<table name="Demand"/>
+	<table name="WorkOrder"/>
+	<table name="WorkOrderExpenseCategory"/>
+	<table name="WorkOrderExpenseModelEntry"/>
+	<table name="Miscellaneous"/>
+	<table name="CostCenter"/>
+</database>

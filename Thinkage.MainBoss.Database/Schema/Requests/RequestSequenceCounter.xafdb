@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="RequestSequenceCounter" defaults="false" log="false" id="Id" labelkey="">
+	<doc>Contains allocated but unused Request sequence numbers. Single sequence numbers that are required will be allocated from here first.</doc>
+	<field name="Id" read="RequiredGUID">
+	  <doc>Unique ID to identify record.</doc>
+	</field>
+	<field name="SpoiledValue" type="integer(unsigned 63,nonnull)">
+	  <doc>A sequence value that was not used and will be reallocated next time a sequence number is obtained.</doc>
+	</field>
+	<field name="FormattedValue" type="RequiredAutoNumber">
+	  <doc>The formatted form of the SpoiledValue</doc>
+	</field>
+  </table>
+</database>

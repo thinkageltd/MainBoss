@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="Types.xafdb"/>
+	<table name="UserRole" defaults="true" log="false" id="Id" xid="UserID PrincipalID" xunique="true" labelkey="">
+		<doc>This is the Role assignment for a user</doc>
+		<field name="Id" read="RequiredGUID"/>
+		<field name="PrincipalID" link="Principal" type="RequiredGUIDREF">
+			<doc>The associated role to the Role record (through the base record for a Role or CustomRole)</doc>
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="UserID" link="User" type="RequiredGUIDREF">
+			<doc>The associated User record</doc>
+			<extension name="linkage">captive</extension>
+		</field>
+		<extension name="deletemethod">delete</extension>
+		<extension name="tablerights">Administrator=*</extension>
+	</table>
+	<table name="User"/>
+	<table name="Principal"/>
+</database>

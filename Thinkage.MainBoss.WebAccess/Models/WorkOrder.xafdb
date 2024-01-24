@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database labelcontext="dsMBLabel" name="http://thinkage.ca/MB3/dsMB.xsd:WorkOrder" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="../../Thinkage.MainBoss.Database/Schema/Types.xafdb"/>
+  <variable name="DBVersion" type="RequiredVersionInfo">
+	<doc>The version of the database intended to prevent newer versions of the applications from accessing older databases.</doc>
+  </variable>
+  <table name="WorkOrderAssignment" labelkey="Work Order Assignment"/>
+  <table name="WorkOrderTemplate" labelkey="Task"/>
+  <table name="RequestState" labelkey="Request State"/>
+  <table name="RequestStateHistory" labelkey="Request State History"/>
+  <table name="PostalAddress" labelkey="Postal Address"/>
+  <table name="TemporaryStorage" labelkey="Temporary Storage"/>
+  <table name="TemplateTemporaryStorage" labelkey="Task Temporary Storage"/>
+
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/WorkOrderStateTransition.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/WorkOrderAssignmentAll.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/WorkOrderAssignee.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/WorkOrderAssignmentByAssignee.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/WorkOrder.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/WorkOrderState.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/WorkOrderPriority.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/AccessCode.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/CloseCode.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/WorkCategory.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/project.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Locations/Location.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Requests/Requestor.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Contact.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Locations/RelativeLocation.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/WorkOrderStateHistory.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/WorkOrder/WorkOrderStateHistoryStatus.xafdb"/>
+</database>

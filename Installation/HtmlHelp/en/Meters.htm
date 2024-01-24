@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Meters</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Meters</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Meter Class.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Meter.htm">Next section &gt;</a></p>
+
+<p>Pieces of equipment and other units may have meters measuring hours of use, power consumption, mileage, and so on. MainBoss lets you schedule planned maintenance work by meter readings (for example, every 500 hours of use); therefore, it is useful to set up a regular schedule for recording meter readings in MainBoss's database.</p>
+
+<p>Before you create a record for a specific meter, you must define a corresponding <span class="NewTerm">meter class</span>. For example, before you can create a record for the odometer of a specific vehicle, you must create a meter class record for such odometers. For more on meter classes, see <a href="MeterClasses.htm">Meter Classes</a>.</p>
+
+<p>When you define a meter record, you must specify its meter class and the unit with which the meter is associated. You may record the current meter reading at the same time that you create the meter record.</p>
+
+<p>MainBoss retains a list of all meter readings made on a particular meter. You can examine these readings to see the pattern of use over time. When scheduling planned maintenance, MainBoss uses past meter readings to estimate future ones. For example, if a car is scheduled for an oil change every 3000 miles, MainBoss can use past odometer readings to estimate when the car will be due for its next oil change. The more readings you record, the more accurate MainBoss's estimates are likely to be. By recording readings regularly, you can also ensure that MainBoss has frequent updates on each meter's value.</p>
+
+<p><span class="CInset">Effective vs. Actual Readings:</span> In order for MainBoss to schedule planned maintenance based on meter readings, the reading values must keep increasing&#8212;they should never go backwards. In practice, however, meters sometimes go down instead of up. This can happen, for example, if an old meter is replaced by a new meter, or if an existing meter rolls over back to zero.</p>
+
+<p>To deal with such situations, MainBoss lets you specify a <span class="NewTerm">meter offset</span> for each meter. The offset is a number that MainBoss adds to the actual meter reading in order to calculate the <span class="NewTerm">effective</span> (true) reading for the meter.</p>
+
+<p>For example, suppose a meter only shows four digits so that values run from 0000 to 9999. When the meter rolls over after 9999, you would set the meter offset to 10000. After that, when a worker enters a meter reading like 0100, MainBoss adds the offset to determine that the effective meter reading is now 10100. This is what the meter would read if it could display more digits. The next time the meter rolls over, you set the meter offset to 20000, and so on. In this way, MainBoss can determine true measurements (as opposed to what the meter actually says).</p>
+
+<p>As another example, suppose that a meter breaks and has to be replaced. The old meter broke at the 5273 mark, but the new meter starts at zero. In this case, you would set the meter offset to 5273. MainBoss can then make appropriate corrections so that it keeps track of how long equipment has actually been in use, no matter what the meter says.</p>
+
+<p>For information on viewing meter records, see <a href="Browse.Meter.htm">Viewing Meter Records</a>. For information on creating and editing meter records, see <a href="Edit.Meter.htm">Editing Meter Records</a>. For information on printing meter readings, see <a href="Report.Meter.htm">Meter Readings Report</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Browse.Meter.htm">Viewing Meter Records</a></li>
+
+<li><a href="Edit.Meter.htm">Editing Meter Records</a></li>
+</ul>
+<p><a href="Report.Meter Class.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Meter.htm">Next section &gt;</a></p>
+</body>
+</html>
+

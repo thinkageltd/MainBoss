@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing Sublocations</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Editing Sublocations</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Postal Address.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Location.htm">Next section &gt;</a></p>
+
+<p>You create or modify sublocations using the sublocation editor. The usual way to open the editor is to click <span class="CButton">New Sub Location</span> or <span class="CButton">Edit</span> in the <span class="CButton">View</span> section of <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Locations</span>.</p>
+
+<p>The sublocation editor contains the following:</p>
+
+<p class="wi"><span class="CButton">Details</span> section: Shows basic information for the record.</p>
+<p class="wi2"><span class="CField">Code</span>: A brief code to identify this record. No two records may have the same code.</p>
+<p class="wi2"><span class="CField">Description</span>: A longer description of the sublocation.</p>
+<p class="wi2"><span class="CField">GIS Location</span>: The geographic position of this sub location. Coordinates are specified in longitude and latitude.</p>
+<p class="box">As a special feature, MainBoss makes it easy for you to use Google Maps to specify "<span class="CField">GIS Location</span>". First, use Google Maps to find the location's geographic position. Then, right-click on the location in the Google Maps display and click <span class="BL">What's here</span> in the resulting menu. Google Maps will display the GIS coordinates as two numbers on the screen, typically in the upper left-hand corner. You can copy and paste these numbers into MainBoss. (Note that Google may change how Google Maps works at any time.)</p>
+
+<p class="wi2"><span class="CField">Containing Location</span>: The location that contains this sublocation. This may be a postal address or another sublocation.</p>
+<p class="wi2"><span class="CField">Comments</span>: Any comments you want to associate with the sublocation.</p>
+<p class="wi"><span class="CButton">Contacts</span> section: Shows any contacts at this sublocation. You can also create contacts using this section, but you can only do so once you <span class="CButton">Save</span> the sublocation record. For more on contacts, see <a href="Contacts.htm">Contacts</a>.</p>
+<p class="wi"><span class="CButton">Units</span> section: Shows units at this location. For more, see <a href="Units.htm">Units</a>.</p>
+<p class="wi"><span class="CButton">Storerooms</span> section: Shows storerooms at this location. For more, see <a href="Storerooms.htm">Storerooms</a>.</p>
+<p class="wi"><span class="CButton">Temporary Storage and Items</span> section: Shows temporary storage and temporary storage assignments at this location. For more, see <a href="Edit.Temporary Storage.htm">Temporary Storage Locations</a> and <a href="Edit.Temporary Storage Assignment.htm">Temporary Storage Assignments</a>.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p class="wi"><span class="CButton">Show on Map</span>: If this sub location record has a "<span class="CField">GIS Location</span>" value, MainBoss attempts to open Google Maps to a map showing the sub location's geographic location. If the record doesn't have a GIS location, MainBoss checks the location record that contains the sub location, then the container of the container, and so on, until MainBoss either finds a record that has a GIS location or else reaches a record with no container.
+
+<br /><br />If MainBoss finds no record with a GIS location, but does find a postal address record containing postal information, MainBoss passes the postal information to Google Maps.
+
+<br /><br />In order to see the geographic position in Google Maps, you must have an active Internet connection and a suitable web browser.</p>
+<p>For more on locations, see <a href="Locations.htm">Locations</a>. For more on viewing locations, see <a href="Browse.Location.htm">Viewing Locations</a>. For more on editing postal addresses, see <a href="Edit.Postal Address.htm">Editing Postal Addresses</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Postal Address.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Location.htm">Next section &gt;</a></p>
+</body>
+</html>
+

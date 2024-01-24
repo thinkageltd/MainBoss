@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+  <table name="AssignmentNotification" defaults="false" log="false" id="Id" labelkey="">
+	<doc>
+	  Return one row for each unnotified xxxStateHistory record for all xxxAssignment records currently assigned to 'InProgress/Open/Issued' Requests/WorkOrders/PurchaseOrders
+	  We also return the ID of the xxxAssignee records so that everything useful can be reached by paths from this view.
+	  Note that WorkOrder Notification relies on the side table WorkOrderAssignmentNotification that is maintained by the MainBoss Service due to implied assignments
+	  for workorders from WorkOrder labor demands (see WorkOrderAssignmentAll view)
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="RequestAssignmentID" type="GUIDREF"  link="RequestAssignment" />
+	<field name="WorkOrderAssignmentNotificationID" type="GUIDREF"  link="WorkOrderAssignmentNotification" />
+	<field name="PurchaseOrderAssignmentID" type="GUIDREF"  link="PurchaseOrderAssignment" />
+
+	<extension name="query">
+	  select RA.ID, RA.ID, null, null
+	  from RequestAssignment as RA
+			join Request as R on R.ID = RA.RequestID
+			join RequestStateHistory as CRSH on CRSH.ID = R.CurrentRequestStateHistoryID
+			join RequestState as CRS on CRS.ID = CRSH.RequestStateID
+	  where
+		  CRS.FilterAsInProgress &lt;&gt; 0
+		  and (
+			RA.LastNotificationDate is null 
+			or exists (select RSH.EntryDate from RequestStateHistory as RSH where RA.RequestID = RSH.RequestID and RA.LastNotificationDate &lt; RSH.[EntryDate])
+		)
+	union
+	  select WOAN.ID, null, WOAN.ID, null
+	  from WorkOrderAssignmentNotification as WOAN
+			join WorkOrder as WO on WO.ID = WOAN.WorkOrderID
+			join WorkOrderStateHistory as CWOSH on CWOSH.ID = WO.CurrentWorkOrderStateHistoryID
+			join WorkOrderState as CWOS on CWOS.ID = CWOSH.WorkOrderStateID
+	  where
+		  CWOS.FilterAsOpen &lt;&gt; 0
+		  and (
+			WOAN.LastNotificationDate is null 
+			or exists (select WOSH.EntryDate from WorkOrderStateHistory as WOSH where WOAN.WorkOrderID = WOSH.WorkOrderID and WOAN.LastNotificationDate &lt; WOSH.[EntryDate])
+		)
+	union
+	  select POA.ID, null, null, POA.ID
+	  from PurchaseOrderAssignment as POA
+			join PurchaseOrder as PO on PO.ID = POA.PurchaseOrderID
+			join PurchaseOrderStateHistory as CPOSH on CPOSH.ID = PO.CurrentPurchaseOrderStateHistoryID
+			join PurchaseOrderState as CPOS on CPOS.ID = CPOSH.PurchaseOrderStateID
+	  where
+		  CPOS.FilterAsIssued &lt;&gt; 0
+		  and (
+			POA.LastNotificationDate is null 
+			or exists (select POSH.EntryDate from PurchaseOrderStateHistory as POSH where POA.PurchaseOrderID = POSH.PurchaseOrderID and POA.LastNotificationDate &lt; POSH.[EntryDate])
+		)
+			
+  </extension>
+	<extension name="dependson">RequestStateHistory</extension>
+	<extension name="dependson">RequestState</extension>
+	<extension name="dependson">RequestAssignment</extension>
+	<extension name="dependson">WorkOrderStateHistory</extension>
+	<extension name="dependson">WorkOrderState</extension>
+	<extension name="dependson">WorkOrderAssignmentNotification</extension>
+	<extension name="dependson">PurchaseOrderStateHistory</extension>
+	<extension name="dependson">PurchaseOrderState</extension>
+	<extension name="dependson">PurchaseOrderAssignment</extension>
+  </table>
+  <table name="RequestStateHistory"/>
+  <table name="RequestState"/>
+  <table name="RequestAssignment"/>
+  <table name="WorkOrderStateHistory"/>
+  <table name="WorkOrderState"/>
+  <table name="WorkOrderAssignmentNotification"/>
+  <table name="PurchaseOrderStateHistory"/>
+  <table name="PurchaseOrderState"/>
+  <table name="PurchaseOrderAssignment"/>
+</database>

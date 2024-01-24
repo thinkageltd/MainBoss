@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ActualLaborOutsideNonPO" defaults="true" log="false" id="Id" xid="DemandLaborOutsideID" labelkey="Actual Hourly Outside">
+	<field name="Id" read="RequiredGUID" />
+	<field name="AccountingTransactionID" read="RequiredGUIDREF"  base="AccountingTransaction"/>
+	<field name="DemandLaborOutsideID" type="RequiredGUIDREF" link="DemandLaborOutside">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="VendorID" type="RequiredGUIDREF"  link="Vendor">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Quantity" type="LaborDurationCorrection">
+	  <doc>Labor time used (possibly a correction)</doc>
+	</field>
+	<field name="CorrectionID" type="RequiredGUIDREF" link="ActualLaborOutsideNonPO" labelkey="Actual Hourly Outside Correction">
+	  <doc>The ID of the original ActualLaborOutsideNonPO record for a family of original record and its corrections</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="CorrectedQuantity" read="LaborDuration">
+	  <doc>
+		  The corrected quantity of this ActualLaborOutsideNonPO and all corrections (all those with a CorrectionID linking
+		  to this record).  Note this is only stored in the main ActualLaborOutsideNonPO record (with CorrectionID==ID),
+		  not in the correction records.
+	  </doc>
+	  <result hosting="cached">
+		cast(42 as LaborDuration)
+	  </result>
+	  <extension name="dependson">mbfn_ActualLaborOutsideNonPO_CorrectedQuantity()</extension>
+	</field>
+	<field name="CorrectedCost" read="Currency">
+	  <doc>
+		  The corrected cost of this ActualLaborOutsideNonPO and all corrections (all those with a CorrectionID linking
+		  to this record).  Note this is only stored in the main ActualLaborOutsideNonPO record (with CorrectionID==ID),
+		  not in the correction records.
+	  </doc>
+	  <result hosting="cached">
+		cast(42 as Currency)
+	  </result>
+	  <extension name="dependson">mbfn_ActualLaborOutsideNonPO_CorrectedCost()</extension>
+	</field>
+	<extension name="costrights">WorkOrderOutside</extension>
+  </table>
+  <table name="DemandLaborOutside"/>
+  <table name="AccountingTransaction"/>
+  <table name="Vendor"/>
+  <table name="Demand"/>
+  <object class="function" name="mbfn_ActualLaborOutsideNonPO_CorrectedQuantity">
+	<doc>
+	</doc>
+	<extension name="body">
+	(
+	  @ALONPOID uniqueidentifier -- ActualLaborOutsideNonPO
+	)
+	RETURNS XAFInterval
+	as
+	begin
+	  return(
+		select dbo._ISumToI(sum(dbo._IIToSum(Quantity)))
+			  from ActualLaborOutsideNonPO
+			  where ActualLaborOutsideNonPO.CorrectionID = @ALONPOID
+	  )
+	end
+	</extension>
+	<extension name="dependson">ActualLaborOutsideNonPO.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualLaborOutsideNonPO</extension>
+  </object>
+  <object class="function" name="mbfn_ActualLaborOutsideNonPO_CorrectedCost">
+	<doc>
+	</doc>
+	<extension name="body">
+	(
+	  @ALONPOID uniqueidentifier -- ActualLaborOutsideNonPO
+	)
+	RETURNS money
+	as
+	begin
+	  return (
+		select sum(Cost)
+		  from ActualLaborOutsideNonPO
+			join AccountingTransaction on AccountingTransaction.ID = ActualLaborOutsideNonPO.AccountingTransactionID
+		  where ActualLaborOutsideNonPO.CorrectionID = @ALONPOID
+	  )
+	end
+	</extension>
+	<extension name="dependson">ActualLaborOutsideNonPO.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualLaborOutsideNonPO</extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualLaborOutsideNonPO_Updates_Corrected">
+	<doc></doc>
+	<extension name="body">
+	  on ActualLaborOutsideNonPO
+	  after insert, update, delete
+	  as
+	  begin
+		  update ActualLaborOutsideNonPO
+			  set CorrectedQuantity = dbo.mbfn_ActualLaborOutsideNonPO_CorrectedQuantity(ActualLaborOutsideNonPO.ID),
+				  CorrectedCost = dbo.mbfn_ActualLaborOutsideNonPO_CorrectedCost(ActualLaborOutsideNonPO.ID)
+			  where ActualLaborOutsideNonPO.ID in (
+					 select distinct CorrectionID from inserted
+			   union select distinct CorrectionID from deleted 
+			  )
+	  end
+	</extension>
+	<extension name="references">mbfn_ActualLaborOutsideNonPO_CorrectedQuantity()</extension>
+	<extension name="references">mbfn_ActualLaborOutsideNonPO_CorrectedCost()</extension>
+	<extension name="references">ActualLaborOutsideNonPO</extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualLaborOutsideNonPO_Updates_DemandLaborOutsideEtAl">
+	<doc></doc>
+	<extension name="body">
+	  on ActualLaborOutsideNonPO
+	  after insert, update, delete
+	  as
+	  begin
+		  update DemandLaborOutside
+			  set ActualQuantity = dbo.mbfn_DemandLaborOutside_ActualQuantity(DemandLaborOutside.ID),
+				  OrderQuantity = dbo.mbfn_DemandLaborOutside_OrderQuantity(DemandLaborOutside.ID)
+			  where DemandLaborOutside.ID in (
+						select distinct DemandLaborOutsideID from inserted
+				  union select distinct DemandLaborOutsideID from deleted	
+				)
+		  update Demand
+			  set ActualCost = dbo.mbfn_DemandLaborOutside_ActualCost(DemandLaborOutside.ID)
+			  from Demand join DemandLaborOutside on Demand.ID = DemandLaborOutside.DemandID
+			  where Demand.ID in (
+						select distinct DemandID
+										from DemandLaborOutside
+										join inserted on inserted.DemandLaborOutsideID = DemandLaborOutside.ID
+				  union select distinct DemandID
+										from DemandLaborOutside
+										join deleted on deleted.DemandLaborOutsideID = DemandLaborOutside.ID
+				)
+	  end
+	</extension>
+	<extension name="references">mbfn_DemandLaborOutside_ActualQuantity()</extension>
+	<extension name="references">mbfn_DemandLaborOutside_OrderQuantity()</extension>
+	<extension name="references">mbfn_DemandLaborOutside_ActualCost()</extension>
+	<extension name="references">DemandLaborOutside</extension>
+	<extension name="references">Demand</extension>
+  </object>
+</database>

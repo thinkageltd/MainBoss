@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Unit Replacement Forecast Report</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Unit Replacement Forecast Report</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Maintenance History.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Meter.htm">Next section &gt;</a></p>
+
+<p>The <span class="NewTerm">Unit Replacement Forecast</span> report lists information about expected replacement of units due to age. Information for this report is taken from the <span class="CButton">Value</span> section of a unit record. (For more, see <a href="Edit.Unit.htm">Editing Units</a>.)</p>
+
+<p class="box">The more information you record in the unit record's <span class="CButton">Value</span> section, the better your replacement forecasts will be. If you don't fill in some of the section's fields, MainBoss will do its best to choose substitute values; however, the results will probably be less reliable.
+
+<br /><br />If too many <span class="CButton">Value</span> fields are blank, MainBoss will not be able to calculate meaningful information. In this case, MainBoss will either omit forecast values or will completely omit the unit from the report.</p>
+
+<p>The Replacement Forecast report is designed to calculate the replacement costs for units once the units reach the end of their operational lives. There are many ways this can work, but here are a few examples:</p>
+
+<ul class="b1"><li>When you purchase a unit, you specify the purchase cost and the unit's expected lifetime as given by the manufacturer. MainBoss then calculates the unit's expected end-of-life date, increases the purchase cost to account for inflation, and gives you the result as the expected replacement cost.</li>
+<li>Periodically, you might review your units and enter new replacement cost estimates. For example, you might say, "If we had to replace this unit today, we'd have to pay $1000." MainBoss would then calculate the unit's expected end-of-life date and would inflate the $1000 appropriately to get the actual expected replacement cost.</li>
+<li>After a unit has been in operation for a while, you may set a "<span class="CField">Scrap Date</span>" estimate that is different from "<span class="CField">Purchase Date</span>" plus "<span class="CField">Typical Life</span>". In this case, MainBoss will calculate replacement cost based on the "<span class="CField">Scrap Date</span>" you set (again using price information inflated by an appropriate amount).
+</li></ul><p>Many other scenarios are possible. In each case, MainBoss applies a given rate of inflation to obtain an estimate of the final replacement cost for a unit. You set your expected rate of inflation in the <span class="CButton">Advanced</span> section of the window for generating the report.</p>
+
+<p>In order for a unit to be listed in the replacement forecast, the unit record must have replacement-related information. Specifically:</p>
+
+<ul class="b1"><li>Either the record has a non-blank "<span class="CField">Scrap Date</span>", or the record has a non-blank "<span class="CField">Purchase Date</span>" and a "<span class="CField">Typical Life</span>" greater than zero.</li>
+<li>Either the "<span class="CField">Purchase Cost</span>" or "<span class="CField">Replacement Cost</span>" must be non-zero</li>
+<li>Either the record has a non-blank "<span class="CField">Replacement Cost Last Date</span>" or a non-blank "<span class="CField">Purchase Date</span>"
+</li></ul><p>When calculating values for the Replacement Forecast report, the following rules apply:</p>
+
+<ul class="b1"><li>If you specify a "<span class="CField">Scrap Date</span>" and a "<span class="CField">Purchase Date</span>", the unit's lifetime will be calculated as "<span class="CField">Scrap Date</span>" minus "<span class="CField">Purchase Date</span>"; in this case, "<span class="CField">Typical Life</span>" will be ignored (since "<span class="CField">Scrap Date</span>" is taken to be more authoritative)</li>
+<li>MainBoss must calculate an expected end-of-life date for the unit. This will be:
+</li></ul><ul class="b2"><li>The "<span class="CField">Scrap Date</span>" if given</li>
+<li>The "<span class="CField">Purchase Date</span>" plus "<span class="CField">Typical Life</span>" if "<span class="CField">Scrap Date</span>" is not given; if the unit record doesn't give a "<span class="CField">Purchase Date</span>", MainBoss assumes the unit was purchased today</li>
+<li>Today's date if neither of the two preceding options is available, or if the options give a date in the past; for example, if "<span class="CField">Scrap Date</span>" is in the past but the unit is still active, MainBoss uses today's date as the end of the unit's life
+</li></ul>
+<ul class="b1"><li>MainBoss must also calculate a "basis cost" to be used in determining the actual replacement cost. This is the cost that will be inflated to determine the final replacement cost. The basis cost is:
+</li></ul><ul class="b2"><li>The "<span class="CField">Replacement Cost</span>" if given</li>
+<li>The "<span class="CField">Purchase Cost</span>" if there is no "<span class="CField">Replacement Cost</span>"
+</li></ul>
+<ul class="b1"><li>Note that "<span class="CField">Scrap Value</span>" is never used in determining the replacement cost. "<span class="CField">Scrap Value</span>" is assumed to have nothing to do with replacement cost.
+</li></ul><p class="box">The assumptions listed above may sometimes give unsatisfactory cost estimates. However, they are considered to be the best choices available in the absence of useful information.</p>
+
+<p>To print a replacement forecast, go to <span class="CPanel">Units</span> | <span class="CPanel">Reports</span> | <span class="CPanel">Unit Replacement Forecast</span>. The window contains the following:</p>
+
+<p class="wi"><span class="CButton">Grouping</span> section: Options controlling how the report is broken into sections and sub-sections.</p>
+<p class="wi2"><span class="CButton">Show summary footer for the overall report</span>: If this box is checkmarked, the report will include a final line summarizing information from the entire report. If the box is blank, no such line will be included.</p>
+<p class="wi"><span class="CButton">Sorting</span> section: Options controlling how records are sorted within each section and sub-section.</p>
+<p class="box">For more on how to use <span class="CButton">Grouping</span> and <span class="CButton">Sorting</span>, see <a href="ReportSections.htm">Report Sections</a>.</p>
+
+<p class="wi"><span class="CButton">Filters</span> section: Options controlling which units will be included in the report. For more information, see <a href="ReportFilter.htm">Report Filters</a>.</p>
+<p class="wi2"><span class="CButton">Include Inactive records</span>: If this checkbox is checkmarked, all relevant records will be included in the report, no matter how old they are. If this checkbox is blank, only active records will be included; this means that old "inactive" records will be ignored.
+
+<br /><br />For more about the active filter, see <a href="Edit.Active Filter.htm">The Active Filter</a>.</p>
+<p class="wi"><span class="CButton">Field Selection</span> section: Options controlling which information fields will be included in the report.</p>
+<p class="wi2"><span class="CButton">Suppress Costs</span>: Omits any money information that might otherwise be displayed in the report.</p>
+<p class="wi"><span class="CButton">Advanced</span> section: Miscellaneous options.</p>
+<p class="wi2"><span class="CButton">Summary Format</span>: If this checkbox is checkmarked, you get a summary of all records in a particular group, as dictated by the options specified in the <span class="CButton">Grouping</span> section. Instead of seeing all the records in a group, there will be a single-line summary for the entire group.</p>
+<p class="wi2"><span class="CField">Report width in pages</span>: Makes it possible to have lines that are wider than a single page. This is particularly useful when you are previewing reports on a monitor screen. For further information, see <a href="ReportSections.htm">Report Sections</a>.</p>
+<p class="wi2"><span class="CField">Title</span>: The title to be printed at the beginning of the report.</p>
+<p class="wi2"><span class="CField">Main Font</span>: The font that will be used for most of the characters in the report. This should be a font that is supported by both your Windows system and your printer.</p>
+<p class="wi2"><span class="CField">Fixed-width Font</span>: The font that will be used for information that is printed with fixed-width characters (mostly unit specifications). This should be a font that is supported by both your Windows system and your printer.</p>
+<p class="wi2"><span class="CField">Inflation rate (%)</span>: The expected annual inflation rate to be used in estimating replacement costs. For example, if you enter <span class="CU">5</span>, MainBoss will calculate costs using an annual 5% inflation rate.
+
+<br /><br />In a unit record, replacement costs should be estimated using <span class="NewTerm">current dollars</span> (i.e. current prices, not adjusted for inflation). To account for inflation, you set "<span class="CField">Inflation rate (%)</span>" to a possible inflation rate; MainBoss will then calculate future replacement costs using this rate.
+
+<br /><br />You might want to run the report several times using different inflation rates to get an idea of replacement costs under various economic conditions.</p>
+<p class="wi"><span class="CButton">Preview</span> section: Displays a visual preview of the report. If you click the <span class="CButton"><img src="Refresh.png" alt="Refresh" /></span> button, you automatically go to this section.
+
+<br /><br />The <span class="CButton">Preview</span> section contains buttons for looking through the report preview and for actually printing the information. For more on using the <span class="CButton">Preview</span> section, see <a href="ReportButtons.htm">Report Buttons</a>.</p>
+<p class="wi"><span class="CButton"><img src="PrintHS.png" alt="Print" /></span>: Immediately prints the report.</p>
+<p class="wi"><span class="CButton">Export Data</span>: Exports the report's data in XML format.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Cancels the preparation and printing of a report. This button is enabled only when MainBoss is preparing a report, i.e. gathering the data and formatting it. For more information, see <a href="ReportButtons.htm">Report Buttons</a>.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window.</p>
+<p class="wi"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Clicking this button generates a preview of the report, displayed in the <span class="CButton">Preview</span> section of the window.</p>
+<p>For general information on MainBoss reports, see <a href="Reports.htm">Reports</a>. For more on units, see <a href="Units.htm">Units</a>.</p>
+
+
+<p><a href="Report.Maintenance History.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Meter.htm">Next section &gt;</a></p>
+</body>
+</html>
+

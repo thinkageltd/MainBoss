@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database name="http://thinkage.ca/MB3/dsMB.xsd:dsBackupFileName_1_0_10_24" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="Types.xafdb"/>
+	<table name="BackupFileName" defaults="false" log="false" id="Id" xid="FileName" xunique="true">
+		<doc>
+	  This table records backup 'filenames' used to store backup contents of the database.
+	</doc>
+		<field name="Id" read="RequiredGUID"/>
+		<field name="LastBackupDate" type="LastBackupDateTime">
+			<doc>The date/time a backup was done (determined from SQL backup at time of successful backup</doc>
+		</field>
+		<field name="FileName" type="RequiredBackupFileName">
+			<doc>The filename in which the backup resides</doc>
+		</field>
+		<field name="Comment" type="Comment">
+			<doc>A description of the backup contents (user specified)</doc>
+		</field>
+		<field name="Message" type="Comment">
+			<doc>A message indicating why this backup file might be invalid, or null if it is valid. Note that a valid backup is indicated by a non-null LastBackupDate and null Message</doc>
+		</field>
+		<field name="DatabaseVersion" type="VersionInfo">
+			<doc>The Database version of the backed-up database</doc>
+		</field>
+		<extension name="deletemethod">delete</extension>
+	</table>
+</database>

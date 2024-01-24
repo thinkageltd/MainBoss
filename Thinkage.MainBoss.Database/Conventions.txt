@@ -1,0 +1,37 @@
+HIDDEN as used in the database is a generational # that if null indicates the record is "ACTIVE" (pickable by the user).
+If non-null, it will be set to the date/time the record was hidden.
+
+HIDDEN is typically used as part of the uniqueness key definition for the identification information of a table. (E.g. CODE)
+
+Tables containing CODE/DESC/HIDDEN information will typically follow the field layout as:
+
+ID
+CODE
+<other identification information fields>
+HIDDEN
+DESC
+COMMENT
+<other specific fields to the table>
+
+If a (non-historical) table [X] refers to another table [Y] as part of its user-visible identification info, then if a record in [Y] is HIDDEN,
+ all record in [X] referrring to the [Y] record should be HIDDEN as well.
+
+EDITING of HIDDEN records is NOT allowed.
+
+Primary Keys will exist in all tables on a field called ID, and with a key
+constraint with the name TABLEPrimary, where TABLE is the name of the table.
+
+Identification Info keys will have the name TABLEIdentification and consist
+of the fields that make up the uniqueness constraint required for identification within the table.
+
+
+If a user submits multiple complains on the same work request, we expect the MB manager to clone/edit the request into individual requests if the MB manager expects the user to receive independent feedback about the status of each complaint. We allow only one WO for any given request, although several requests may be
+linked to a single WO (e.g. 5 people all report the same problem; all 5 should receive feed back about the resolution done through a single WO
+
+Control Site Option to consider: Allow WO actuals to be created even if no WO ExpenseDemand record exists.
+
+Control Site Option to consider: Creating an ACTUAL allows the choice of WO expense category if the ACTUAL is not linked to an existing WOExpenseDemand record.
+
+xxxStateHistory records are not allowed to be postdated since the parent table that the xxxStateHistory applies to will likely have a cached reference to the 'current' State that is only relevant up to the current date/time.
+
+The field name "Comment" found throughout the tables in intended for 'internal reference' to the mainboss user for record documentation/managment notes etc. It is not a field that is typically used on reports (other than reports on table structure) or communicated to external users of the database (e.g. requestors of work)

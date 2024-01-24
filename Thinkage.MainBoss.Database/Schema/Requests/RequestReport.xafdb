@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="RequestReport" log="false" id="Id"  labelkey="">
+	<field name="Id" read="RequiredGUID" />
+	<field name="RequestStateHistoryID" type="RequiredGUIDREF" link="RequestStateHistory" unique="true" labelkey="State History"/>
+	<field name="RequestID" type="RequiredGUIDREF" link="Request" labelkey=""/>
+	<field name="StateStartDate" type="DateTime" />
+	<field name="StateEndDate" type="DateTime" />
+	<field name="StateDuration" type="DurationFine" />
+	<extension name="query">
+	  with
+	  X (
+		rowNum
+		, RequestStateHistoryID
+		, RequestID
+		, StartDate
+		, RequestStateHistoryStatusID
+	  ) as (
+		select
+		row_number() over (order by  RequestID, EffectiveDate), ID
+		, RequestID
+		, EffectiveDate
+		, RequestStateHistoryStatusID
+		from RequestStateHistory
+	  ),
+	  Y (
+		RequestStateHistoryID
+		, RequestID
+		, StateStartDate
+		, StateEndDate
+		, CurrentDate
+	  ) as (
+		select
+		X1.RequestStateHistoryID
+		, X1.RequestID
+		, X1.StartDate
+		, X2.StartDate
+		, dbo._DClosestValue(getdate(),2,100)
+		from X as X1
+		join Request on Request.ID = X1.RequestID
+		join RequestStateHistory on RequestStateHistory.ID = Request.CurrentRequestStateHistoryID
+		join RequestState on RequestState.ID = RequestStateHistory.RequestStateID
+		left outer join X as X2 on X2.RequestID = X1.RequestID and X2.rowNum = (X1.rowNum + 1)
+	  )
+	  select
+	  Y.RequestStateHistoryID
+	  , Y.RequestStateHistoryID
+	  , Y.RequestID
+	  , Y.StateStartDate
+	  , Y.StateEndDate
+	  , dbo._IDateDiff(Y.StateStartDate, COALESCE(Y.StateEndDate,CurrentDate))
+	  from y
+	</extension>
+	<extension name="dependson">RequestStateHistory</extension>
+	<extension name="costrights">UnitValue</extension>
+	<extension name="lastupdate">RequestID</extension>
+  </table>
+  <table name="Request"/>
+  <table name="RequestStateHistory"/>
+</database>

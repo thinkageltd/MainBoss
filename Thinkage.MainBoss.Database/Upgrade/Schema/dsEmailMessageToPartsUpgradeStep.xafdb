@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database name="http://thinkage.ca/MB3/dsMB.xsd:dsEmailRequest" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<table name="Request"/>
+	<table name="EmailRequest" defaults="true" log="false" id="Id" xid="RequestID">
+		<field name="Id" read="id(nonnull)"/>
+		<field name="FromEmailAddress" type="string(minlength 1, 128, lines 0, trim both, nonnull)">
+			<doc>The originating email address of the sender; This will be deleted AFTER conversion</doc>
+			<extension name="usage">EMailLink</extension>
+		</field>
+		<field name="RequestorEmailAddress" type="string(minlength 1, 128, lines 0, trim both, null)">
+			<!-- Although this field is ultimately non-null, at the time of this upgrade step (which sets this column's value) it is a nullable column. We have to declare it as such to get proper "old values" matching of this column in Update calls. -->
+			<doc>The originating email address of the requestor</doc>
+			<extension name="usage">EMailLink</extension>
+		</field>
+		<field name="RequestorEmailDisplayName" type="string(minlength 1, 128, lines 0, trim both)">
+			<doc>The originating email address of the requestor</doc>
+		</field>
+		<field name="ProcessingState" type="integer(16,nonnull)">
+			<doc>The state this record is in. See DatabaseEnums.EmailRequestState enum</doc>
+			<extension name="controlprovider">Thinkage.MainBoss.Controls.TIMainBossService.EmailRequestStateProvider,Thinkage.MainBoss.Controls</extension>
+		</field>
+		<field name="Comment" type="string(minlength 1, 1073741823, trim both)">
+			<doc>Comment attributed to the email request, usually by someone who had reviewed the email request</doc>
+		</field>
+		<field name="ReceiveDate" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100, nonnull)">
+			<doc>Date the email message was received</doc>
+			<extension name="serversetsDateTime"/>
+		</field>
+		<field name="MailHeader" type="string(minlength 1, 1073741823, trim both, null)">
+			<!-- Although this field is ultimately non-null, at the time of this upgrade step (which sets this column's value) it is a nullable column. We have to declare it as such to get proper "old values" matching of this column in Update calls. -->
+			<doc>The MailMessage header as received</doc>
+		</field>
+		<field name="MailMessage" type="string(minlength 1, 1073741823, trim both, nonnull)">
+			<doc>The plain text content of the email message received. </doc>
+		</field>
+		<field name="RequestID" type="link" link="Request">
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="PreferredLanguage" type="integer(32)">
+			<doc>The Accept-Language header (if present) will be placed here as the CultureInfo LCID equivalent</doc>
+		</field>
+		<extension name="deletemethod">delete</extension>
+	</table>
+	<table name="EmailPart" defaults="false" log="false" id="Id">
+		<field name="Id" read="id(nonnull)"/>
+		<field name="ParentID" type="link" link="EmailPart" labelkey="Email Part">
+			<doc>The parent EmailPart record to this part</doc>
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="EmailRequestID" type="link(nonnull)" link="EmailRequest">
+			<doc>Which EmailRequestID this part originates with</doc>
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="ContentType" type="string(minlength 1, 128, lines 0, trim both)">
+			<doc>Expected MIME identification type and subtype </doc>
+		</field>
+		<field name="Header" type="string(minlength 1, 1073741823, trim both)">
+			<doc>The full header for this Part</doc>
+		</field>
+		<field name="ContentLength" type="integer(unsigned 31, nonnull)">
+			<doc>The length of "Content"</doc>
+		</field>
+		<field name="Name" type="string(minlength 1, 128, lines 0, trim both)">
+			<doc>The name of the section, if it can be determined. Maybe the filename on Content-Disposition: attachment; filename="" for example</doc>
+		</field>
+		<field name="Order" type="integer(16, nonnull)">
+			<doc>The order the part originated when deconstructed from the email message</doc>
+		</field>
+		<field name="Content" type="blob(minlength 0, maxlength 2147483647)">
+			<doc>The unencoded contents of the part</doc>
+		</field>
+		<extension name="deletemethod">delete</extension>
+	</table>
+</database>

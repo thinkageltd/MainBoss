@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderTemplate" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Task">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="RequiredCode"/>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="ContainingWorkOrderTemplateID" type="GUIDREF"  link="WorkOrderTemplate">
+	  <doc>The basis WorkOrderTemplate of which this record defines a specialization</doc>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TIWorkOrder.TaskPickerTblCreator,Thinkage.MainBoss.Controls</extension>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="Desc" type="Desc"/>
+	<field name="Comment" type="Comment">
+	  <extension name="lines">2</extension>
+	</field>
+	<field name="Subject" type="Subject">
+	  <doc>Subject to override any existing subject</doc>
+	</field>
+	<field name="Description" type="MultiLineUnlimited" labelkey="Work Description"/>
+	<field name="ClosingComment" type="Comment">
+	  <doc>ClosingComment to append to the work order</doc>
+	  <extension name="lines">2</extension>
+	</field>
+	<field name="WorkOrderExpenseModelID" type="GUIDREF"  link="WorkOrderExpenseModel" labelkey="Expense Model">
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="WorkCategoryID" type="GUIDREF"  link="WorkCategory">
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="AccessCodeID" type="GUIDREF"  link="AccessCode">
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="ProjectID" type="GUIDREF"  link="Project">
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="WorkOrderPriorityID" type="GUIDREF"  link="WorkOrderPriority" labelkey="Priority">
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="CloseCodeID" type="GUIDREF"  link="CloseCode">
+	  <doc>Close Code to override any existing close code</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="Duration" type="RequiredWorkOrderDuration">
+	  <doc>Duration to add to the work order</doc>
+	</field>
+	<field name="GenerateLeadTime" type="RequiredWorkOrderDuration">
+	  <doc>Additional days in which any schedule for this work order template must consider as lead time for the work start date</doc>
+	</field>
+	<field name="Downtime" type="Downtime">
+	  <doc>Downtime to add to the work order</doc>
+	</field>
+	<field name="SelectPrintFlag" type="bool" labelkey="Select for Printing">
+	  <doc>Interim flag for support of a SelectForPrint operation; will migrate to general flags model in future</doc>
+	</field>
+	<field name="DemandCount" read="RequiredQuantity">
+	  <doc>
+				The number of Demands made against this WorkOrderTemplate, maintained by a trigger in the DemandTemplate Table
+			</doc>
+	  <!-- dbo.mbfn_WorkOrderTemplate_DemandCount( [ID] ) -->
+	  <result hosting="cached">
+				cast(42 as RequiredQuantity)
+			</result>
+	  <extension name="dependson">mbfn_WorkOrderTemplate_DemandCount()</extension>
+	</field>
+	<extension name="deletemethod">hide</extension>
+  </table>
+  <table name="WorkOrderExpenseModel"/>
+  <table name="WorkCategory"/>
+  <table name="AccessCode"/>
+  <table name="Project"/>
+  <table name="WorkOrderPriority"/>
+  <table name="CloseCode"/>
+  <object class="trigger" name="mbtg_SetNewWorkOrderTemplateContainment">
+	<doc>This trigger creates the containment for all new or updated WorkOrderTemplate records</doc>
+	<extension name="body">
+	  on WorkOrderTemplate
+	  for insert, update, delete  <!-- even though we don't let the user delete them, the trigger works anyway -->
+	  as
+	  if update(ContainingWorkOrderTemplateID) begin
+		<!-- First delete all the old containment.
+		If several containments are being changed/deleted which are ancestors of each other the spanning containment
+		in WOTC might be selected several times but that is immaterial to the delete statement. -->
+		delete from WOTC
+		  from
+			deleted
+			join WorkOrderTemplateContainment as ed on ed.ContainingWorkOrderTemplateID = deleted.ID
+			join WorkOrderTemplateContainment as ing on ing.ContainedWorkOrderTemplateID = deleted.ID
+			join WorkOrderTemplateContainment as WOTC on WOTC.ContainingWorkOrderTemplateID = ing.ContainingWorkOrderTemplateID and WOTC.ContainedWorkOrderTemplateID = ed.ContainedWorkOrderTemplateID
+			left join inserted on inserted.id = deleted.id
+			where inserted.Id is null																					  <!-- Record is being deleted -->
+			  or (inserted.ContainingWorkOrderTemplateID is null and deleted.ContainingWorkOrderTemplateID is not null)	  <!-- record is moving from sub to top-level -->
+			  or (inserted.ContainingWorkOrderTemplateID is not null and deleted.ContainingWorkOrderTemplateID is null)	  <!-- record is moving from top-level to sub -->
+			  or (inserted.ContainingWorkOrderTemplateID != deleted.ContainingWorkOrderTemplateID)						  <!-- record is moving from one sub to another -->
+
+		<!-- Now check that there is no looping by insisting that all new records be reachable from non-contained Work Order Templates-->
+		<!-- I don't see any way of using a CTE ("with clause") within an exists predicate so we need a named view for the non-looped templates. -->
+		if exists(
+			  select *
+				from inserted
+				  left join NonLoopedWorkOrderTemplates as NLT on NLT.Id = inserted.Id
+				  left join deleted on inserted.id = deleted.id
+			where (deleted.Id is null																							  <!-- Record is being added -->
+  					  or (inserted.ContainingWorkOrderTemplateID is null and deleted.ContainingWorkOrderTemplateID is not null)	  <!-- record is moving from sub to top-level -->
+					  or (inserted.ContainingWorkOrderTemplateID is not null and deleted.ContainingWorkOrderTemplateID is null)	  <!-- record is moving from top-level to sub -->
+	  				  or (inserted.ContainingWorkOrderTemplateID != deleted.ContainingWorkOrderTemplateID))						  <!-- record is moving from one sub to another -->
+				  and NLT.Id is null																							  <!-- record is not in non-looped list -->
+			)
+		begin
+			raiserror('A record in table ''%s'' cannot contain itself directly or indirectly', 16, 1, 'WorkOrderTemplate')	-- There seems to be no call that uses the error's intrinsic severity
+			rollback transaction
+		end
+		
+		while 1=1 begin
+		  <!-- Now add any new containment required -->
+		  <!-- Each time through the loop generates the containment added by the new/changed records along with existing containment.
+		  Iteration is required in case two new/changed records are contained within one another. The first iteration adds the
+		  containment for the intervening pre-existing nodes being contained in the outer new record's containing locations and also
+		  for the intervening pre-existing nodes containing whatever the inner new record contains. The second iteration creates these
+		  again in PartialContainment but a join to WOTC is used to weed these out; however the second iteration also adds the containment
+		  of the contents of the inner new record within the containing records of the outer new record. And so on. We quit the loop when
+		  no new records are added to the containment table. -->
+		  <!-- Make a CTE with the containers of all WorkOrderTemplates that are new or with changed ContainingWorkOrderTemplateID -->
+		  ;with NewContainers (ContainedID, ContainingID)
+			as
+			(
+			  select inserted.Id, inserted.ContainingWorkOrderTemplateID
+				from inserted
+				  left join deleted on inserted.id = deleted.id
+			  where deleted.Id is null																					  <!-- Record is being added -->
+  				or (inserted.ContainingWorkOrderTemplateID is null and deleted.ContainingWorkOrderTemplateID is not null)	  <!-- record is moving from sub to top-level -->
+				or (inserted.ContainingWorkOrderTemplateID is not null and deleted.ContainingWorkOrderTemplateID is null)	  <!-- record is moving from top-level to sub -->
+	  			or (inserted.ContainingWorkOrderTemplateID != deleted.ContainingWorkOrderTemplateID)						  <!-- record is moving from one sub to another -->
+			),
+		  <!-- Make a CTE with the containment created by each of the new records individually -->
+		  PartialContainment (ContainedID, ContainingID, depth)
+			as
+			(
+			  <!-- Prime the CTE with the self-containment of all WorkOrderTemplates that are new or with changed ContainingWorkOrderTemplateID -->
+			  select NewContainers.ContainedID, NewContainers.ContainedID, 0
+				from 
+				  NewContainers
+			union all
+			  <!-- Augment with all the containing WOT's of updated records -->
+			  select NewContainers.ContainedID, WOTC.ContainingWorkOrderTemplateID, WOTC.Depth + 1
+				from
+				  NewContainers
+					join WorkOrderTemplateContainment as WOTC on WOTC.ContainedWorkOrderTemplateID = NewContainers.ContainingID
+			union all
+			  <!-- Augment with all the contained WOT's in updated records -->
+			  select WOTC.ContainedWorkOrderTemplateID, NewContainers.ContainedID, WOTC.Depth + 1
+				from
+				  NewContainers
+					join WorkOrderTemplate as WOT on WOT.ContainingWorkOrderTemplateID = NewContainers.ContainedID
+					join WorkOrderTemplateContainment as WOTC on WOTC.ContainingWorkOrderTemplateID = WOT.Id
+			union all
+			  <!-- Augment with all the containment spanning updated records -->
+			  select ctdWOTC.ContainedWorkOrderTemplateID, ctgWOTC.ContainingWorkOrderTemplateID, ctdWOTC.Depth + ctgWOTC.Depth + 2
+				from
+				  NewContainers
+					join WorkOrderTemplateContainment as ctgWOTC on ctgWOTC.ContainedWorkOrderTemplateID = NewContainers.ContainingID
+					join WorkOrderTemplate as WOT on WOT.ContainingWorkOrderTemplateID = NewContainers.ContainedID
+					join WorkOrderTemplateContainment as ctdWOTC on ctdWOTC.ContainingWorkOrderTemplateID = WOT.Id
+			)
+		  <!-- Insert into WorkOrderTemplateContainment all the new containment records that are not already there. -->
+		  insert into WorkOrderTemplateContainment(Id, ContainedWorkOrderTemplateID, ContainingWorkOrderTemplateID, Depth)
+			select cast(ContainedID as binary(16))+cast(ContainingID as binary(16)), ContainedID, ContainingID, PartialContainment.Depth
+			  from PartialContainment
+			  left join WorkOrderTemplateContainment on ContainedID = ContainedWorkOrderTemplateID and ContainingID = ContainingWorkOrderTemplateID
+			  where WorkOrderTemplateContainment.Id is null
+		  if @@rowcount = 0
+			break
+		end
+	  end
+	</extension>
+	<extension name="references">WorkOrderTemplateContainment</extension>
+	<extension name="references">WorkOrderTemplate</extension>
+  </object>
+  <table name="NonLoopedWorkOrderTemplates" defaults="false" log="false" id="Id"  labelkey="">
+	<doc>Returns the Ids of all the WorkOrderTemplate rows which are properly contained, i.e. are not in a looped structure</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<extension name="query">
+	  With NonLoopedTasks (Id)
+		as
+		(
+		  select Id
+			from WorkOrderTemplate
+			where ContainingWorkOrderTemplateID is null
+		union all
+		  select WOT.Id
+			from WorkOrderTemplate as WOT
+			join NonLoopedTasks as NLT on NLT.ID = WOT.ContainingWorkOrderTemplateID
+		)
+	  select Id
+		from NonLoopedTasks
+    </extension>
+	<extension name="dependson">WorkOrderTemplate</extension>
+  </table>
+  <object class="function" name="mbfn_WorkOrderTemplate_DemandCount">
+	<doc>
+			Count number of DemandTemplates for this workorder template
+		</doc>
+	<extension name="body">
+			(
+				@WID		uniqueidentifier	-- WorkOrderTemplateID
+			)
+			RETURNS integer
+			as
+			begin
+				return (
+				select count(*)
+						 from DemandTemplate
+						 where DemandTemplate.WorkOrderTemplateID = @WID
+				)
+			end
+		</extension>
+	<extension name="dependson">DemandTemplate</extension>
+  </object>
+  <table name="DemandTemplate"/>
+  <table name="WorkOrderTemplateContainment" id="Id">
+	<field name="Id" read="blob(minlength 32, maxlength 32, nonnull)"/>
+  </table>
+</database>

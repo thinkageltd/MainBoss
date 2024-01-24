@@ -1,0 +1,49 @@
+@model HomeModel
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.Libraries.Translation
+@using Thinkage.Web.Mvc.Html
+@using Thinkage.MainBoss.WebAccess.Models;
+
+@{
+	ViewBag.Title = T.Text("MainBoss Web Access Home");
+}
+@section MainContent{
+	@if (!Html.ViewData.ModelState.IsValid) {
+		@(Html.ValidationSummary(true, T.Text("You cannot submit requests.")))
+	}
+	@{
+		var instance = (Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance;
+
+		if ( !instance.HasWebRequestsLicense  && !instance.HasWebAccessLicense ) {
+			@(Html.LabelFor<HomeModel, string>(T.Text("Enter your email address to submit a MainBoss request"), m => m.EmailAddress))@(Html.NBSP())@(Html.TextBoxFor(m => m.EmailAddress))@(Html.NBSP())@(T.Text("You require a Web Requests license to submit requests."))
+			<p>
+				@(Html.ActionLink(T.Text("Login as MainBoss User to view your assignments"), "Index", "Home"))@(Html.NBSP())@(T.Text("You require a Web Access license to view your MainBoss assignments."))
+			</p>
+        }
+        else {
+            if (instance.HasWebRequestsLicense) {
+                using (Html.BeginForm("Index", "Home")) {
+                    if (!User.Identity.IsAuthenticated) { 
+                        @(Html.LabelFor<HomeModel, string>(T.Text("Enter your email address to submit a MainBoss request"), m => m.EmailAddress))@(Html.NBSP())@(Html.TextBoxFor(m => m.EmailAddress)) <input type="submit" value="@(T.Text("Enter my Request"))" />
+                    }
+                    else if (!String.IsNullOrWhiteSpace(Model.EmailAddress)) {
+
+                         @(Html.LabelFor<HomeModel, string>(T.Text("Email address for request will be"), m => m.EmailAddress))@(Html.NBSP())@(Html.TextBoxFor(m => m.EmailAddress,  new {@readonly = true})) <input type="submit" value="@(T.Text("Enter my Request"))" />
+                    }
+                    else { 
+                        <h3>To submit a request you must have an email address associated with your Windows login</h3>
+                    }
+                    @(Html.ValidationMessageFor(m => m.EmailAddress))
+				}
+			}
+			if (instance.HasWebAccessLicense) {
+				if (instance.IsMainBossUser) {
+					<h3>@(Html.ActionLink(T.Text("View your assignments"), "Index", "Assignment"))</h3>
+				}
+				else {
+					<h3>@(Html.ActionLink(T.Text("Login as MainBoss User to view your assignments"), "Index", "Assignment"))</h3>
+				}
+			}
+		}
+	}
+}

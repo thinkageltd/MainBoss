@@ -1,0 +1,46 @@
+@model RequestStateHistoryModel
+@using Thinkage.Libraries.MVC.Models
+@using Thinkage.MainBoss.Database
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.MainBoss.WebAccess.Models
+@using Thinkage.Web.Mvc.Html
+@{
+	Layout = "~/Views/Shared/_LayoutEditForm.cshtml";
+	ViewBag.Title = T.Text("Close Request {0}", ViewData["ParentXID"]);
+}
+@section EditFormContent {
+	@(Html.ValidationSummary(true, T.Text("Close Request was unsuccessful. Please correct the errors and try again.")))
+	<div class="viewPanel">
+		<table>
+			<tbody>
+				@(Html.LabelValue(T.Text("Number"), dsMB.Schema.T.Request.F.Number.EffectiveType, Model.RequestNumber))
+				@(Html.LabelValue(T.Text("Current State"), dsMB.Schema.T.RequestState.F.Code.EffectiveType, Model.CurrentStateCode))
+				@(Html.LabelValue(T.Text("Current Status"), dsMB.Schema.T.RequestStateHistoryStatus.F.Code.EffectiveType, Model.CurrentStatusCode))
+			</tbody>
+		</table>
+	</div>
+	<br />
+	@using (Html.BeginForm()) {
+		FormMap<RequestStateHistoryModel> f = Thinkage.MainBoss.WebAccess.Models.RequestStateHistoryRepository.StateHistoryForm;
+
+		<fieldset>
+			@(Html.HiddenFor(s => s.RequestID))
+			@(Html.HiddenFor(s => s.CurrentStateHistoryID))
+			@(Html.HiddenFor(s => s.RequestStateID))
+			@(Html.InputControlFor(f, s => s.EffectiveDate))
+			@if (Model.RequestStateHistoryStatusPickList.Count<SelectListItem>() > 1) {
+				<p>
+					@(Html.LabelFor(f, s => s.RequestStateHistoryStatusID))
+					@(Html.DropDownListFor(Model.RequestStateHistoryStatusPickList, s => s.RequestStateHistoryStatusID))
+					@(Html.ValidationMessageFor(s => s.RequestStateHistoryStatusID))
+				</p>
+			}
+			@(Html.InputControlFor(f, s => s.PredictedCloseDate))
+			@(Html.InputControlFor(f, s => s.CommentToRequestor))
+			@(Html.InputControlFor(f, s => s.Comment))
+			<p>
+				<input type="submit" value="@(T.Text("Close Request"))" />
+			</p>
+		</fieldset>
+	}
+}

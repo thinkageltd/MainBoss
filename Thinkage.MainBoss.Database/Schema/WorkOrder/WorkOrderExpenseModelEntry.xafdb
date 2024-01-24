@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderExpenseModelEntry" defaults="true" log="false" id="Id" xid="WorkOrderExpenseModelID WorkOrderExpenseCategoryID" xunique="true" labelkey="Work Order Expense Model Entry">
+    <field name="Id" read="RequiredGUID" />
+    <field name="WorkOrderExpenseModelID" type="RequiredGUIDREF" link="WorkOrderExpenseModel" labelkey="Expense Model">
+		<extension name="linkage">captive</extension>
+	</field>
+	<field name="WorkOrderExpenseCategoryID" type="RequiredGUIDREF" link="WorkOrderExpenseCategory" labelkey="Category">
+	  <doc>Identify which Work Order Expense category is associated with which Work Order Expense Model</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="CostCenterID" type="RequiredGUIDREF" link="CostCenter">
+	  <doc>Cost center to use for this expense category</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<extension name="deletemethod">delete</extension>		
+  </table>
+  <table name="WorkOrderExpenseCategory"/>
+  <table name="CostCenter"/>
+  <table name="WorkOrderExpenseModel" id="Id"/> 
+</database>

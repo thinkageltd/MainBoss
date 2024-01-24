@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderInside" defaults="false" log="false" id="Id" labelkey="Work Order Inside">
+	<doc>This is the row data for the simplified WO Inside browsette</doc>
+	<field name="Id" read="RequiredGUID">
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderGroupNameProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="TableEnum" type="integer(min 0, max 3, nonnull)">
+	  <!-- DatabaseEnums.WorkOrderInside -->
+	  <doc>The type of resource record</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderInsideProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<!-- the base linkages of the unified records -->
+	<field name="TradeID" type="GUIDREF" link="Trade">
+	  <doc>the Trade record linkage (the 'agent')</doc>
+	</field>
+	<field name="DemandID" type="GUIDREF" link="Demand">
+	  <doc>the base Demand record linkage for resources derived from this (demands)</doc>
+	</field>
+	<!-- Other fields required by restrictions in Tbl etc representations -->
+	<field name="WorkOrderExpenseModelEntryID" type="GUIDREF" link="WorkOrderExpenseModelEntry">
+	  <!-- This has to be here because the double-field join operation is not followable in XAF -->
+	  <doc>the Id of the WorkOrderExpenseModelEntry associated with a Demand record based on the WorkOrder's expense model which determines the C/C to actualize to.
+	  This will be null if there is no model entry (preventing actualization) and for all non-Demand and non-Actual record types.</doc>
+	</field>
+	<!-- Other fields required for filtering/parentage -->
+	<field name="ParentID" type="GUIDREF" link="WorkOrderInside" labelkey="Work Order Inside">
+	  <!-- This must remain until we have some way of expressing the row parent on a per-view basis -->
+	  <doc>the Id of another record in this table that is the parent of this record in the tree view
+	  For Demands this is the Trade ID or the magic no-agent Id</doc>
+	</field>
+	<extension name="query">
+		<!-- fabricated record: Unspecified Trade -->
+		select '60000000-0000-0000-0000-000000000006', 0,	<!-- WorkOrderInside.UnassignedTrade--><!--KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId-->
+				null, null, null, null
+	  union all
+		<!-- Trade -->
+		select T.ID, 1,					<!-- WorkOrderInside.Trade -->
+			T.ID, NULL, NULL, NULL
+		from
+			Trade as T
+	  union all
+		<!-- Demand Hourly Inside -->
+		select D.ID, 2,				<!-- WorkOrderInside.LaborInside -->
+			NULL, D.ID, WOXME.ID, coalesce(LI.TradeID, '60000000-0000-0000-0000-000000000006') <!-- KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId -->
+		  from
+			Demand as D
+		  inner join
+			DemandLaborInside as DLI on D.ID = DLI.DemandID
+		  inner join
+			LaborInside as LI on LI.ID = DLI.LaborInsideID
+		  join
+			WorkOrder as WO on WO.ID = D.WorkOrderID
+		  left join
+			WorkOrderExpenseModelEntry as WOXME
+			  on WOXME.WorkOrderExpenseModelID = WO.WorkOrderExpenseModelID
+				and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
+	  union all
+		<!-- Demand Other Work Inside -->
+		select D.ID, 3,				<!-- WorkOrderInside.OtherWorkInside -->
+			NULL, D.ID, WOXME.ID, coalesce(OWI.TradeID, '60000000-0000-0000-0000-000000000006') <!-- KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId -->
+		  from
+			Demand as D
+		  inner join
+			DemandOtherWorkInside as DOWI on D.ID = DOWI.DemandID
+		  inner join
+			OtherWorkInside as OWI on OWI.ID = DOWI.OtherWorkInsideID
+		  join
+			WorkOrder as WO on WO.ID = D.WorkOrderID
+		  left join
+			WorkOrderExpenseModelEntry as WOXME
+			  on WOXME.WorkOrderExpenseModelID = WO.WorkOrderExpenseModelID
+				and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
+	</extension>
+	<extension name="dependson">Trade</extension>
+	<extension name="dependson">Demand</extension>
+	<extension name="dependson">DemandLaborInside</extension>
+	<extension name="dependson">DemandOtherWorkInside</extension>
+	<extension name="dependson">WorkOrder</extension>
+	<extension name="dependson">WorkOrderExpenseModelEntry</extension>
+	<extension name="costrights">WorkOrderInside</extension>
+  </table>
+  <table name="WorkOrderInsideTreeView" defaults="false" log="false" id="Id" labelkey="Work Order Inside">
+	<doc>This is the filter/display driver for the WorkOrderInside view required for the tree-structured display</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="FilterID" type="GUIDREF" link="WorkOrderInside">
+	</field>
+	<field name="DisplayID" type="GUIDREF" link="WorkOrderInside">
+	</field>
+	<field name="IsPrimary" type="RequiredBool">
+	</field>
+	<extension name="query">
+	  <!-- We don't need self-containment for the Labor records since they are never primary -->
+		select DLI.DemandID, DLI.DemandID, DLI.DemandID, 1
+		  from DemandLaborInside as DLI
+	  union all
+		select DOWI.DemandID, DOWI.DemandID, DOWI.DemandID, 1
+		  from DemandOtherWorkInside as DOWI
+	  union all
+		select coalesce(LI.TradeID, '60000000-0000-0000-0000-000000000006'), DLI.DemandID, coalesce(LI.TradeID, '60000000-0000-0000-0000-000000000006'), 0
+		  from
+			DemandLaborInside as DLI
+		  join
+			LaborInside as LI on LI.ID = DLI.LaborInsideID
+	  union all
+		select coalesce(OWI.TradeID, '60000000-0000-0000-0000-000000000006'), DOWI.DemandID, coalesce(OWI.TradeID, '60000000-0000-0000-0000-000000000006'), 0
+		  from
+			DemandOtherWorkInside as DOWI
+		  join
+			OtherWorkInside as OWI on OWI.ID = DOWI.OtherWorkInsideID
+	</extension>
+	<extension name="dependson">DemandLaborInside</extension>
+	<extension name="dependson">DemandOtherWorkInside</extension>
+  </table>
+  <table name="Demand"/>
+  <table name="DemandLaborInside"/>
+  <table name="DemandOtherWorkInside"/>
+  <table name="WorkOrder"/>
+  <table name="WorkOrderExpenseModelEntry"/>
+  <table name="WorkOrderExpenseModel"/>
+  <table name="LaborInside"/>
+  <table name="OtherWorkInside"/>
+  <table name="Trade"/>
+</database>

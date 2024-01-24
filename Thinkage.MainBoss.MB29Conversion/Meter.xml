@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+  <table name="Meter">
+	<dependency table="Unit"/>
+	<dependency table="UnitOfMeasure"/>
+	<data>
+	  create table <IDB/>.dbo.MeterClassData (
+		[ID]		uniqueidentifier not null,
+		[MeterCode] varchar(20),
+		[UoMKey]	integer,
+		[Hidden29]	integer
+	  )
+	  <!-- Note that orphaned meters (which do not link to a unit) are not imported. Readings for such meters are also discarded,
+	  but PM schedules referring to them specifically diagnose the meter problem. -->
+	  insert into <IDB/>.dbo.MeterClassData
+		  (id, MeterCode, UoMKey, Hidden29)
+		  select newid(), M.Code, M.UoMKey, min(case when U.Obsolete is not null then 1 else COALESCE(U.Hidden,0) end)
+			from <IDB/>.dbo.Meters as M
+			  join <IDB/>.dbo.Units as U on M.UnitKey = U.[key]	-- The join automatically excludes any prototype records and orphaned meters.
+			group by M.Code, M.UoMKey
+			
+	  delete from <IDB/>.dbo.CodeManagement
+	  
+	  insert into <IDB/>.dbo.CodeManagement
+		(ID, Code, Hidden29)
+		select MCD.id, CASE WHEN MCD.UoMKey is null THEN MCD.MeterCode ELSE MCD.MeterCode+'_'+UoM.Code END, Hidden29
+		  from <IDB/>.dbo.MeterClassData as MCD
+			left join <IDB/>.dbo.UoM on MCD.UoMKey = UoM.[Key]
+			
+	  exec <IDB/>.dbo.FixCodes 50
+
+	  INSERT INTO <ODB/>.dbo.MeterClass ([ID],[Code],[UnitOfMeasureID], Hidden)
+		  SELECT MCD.ID, CM.Code, UOM.[ID], CM.Hidden30
+		  from <IDB/>.dbo.MeterClassData as MCD
+			  left join <IDB/>.dbo.UoM as UOM on UOM.[KEY] = MCD.UOMKEY
+			  join <IDB/>.dbo.CodeManagement as CM on MCD.ID = CM.ID
+
+	  INSERT INTO <ODB/>.dbo.Meter ([ID],[UnitLocationID],[MeterClassID], [MeterReadingOffset], [Hidden] )
+		  SELECT M.[ID], UL.[LocationID], MCD.ID, COALESCE(M.[OFFSET],0), NRL.Hidden
+		  from <IDB/>.dbo.Meters as M
+			  join <IDB/>.dbo.MeterClassData as MCD on M.CODE = MCD.MeterCode and ((M.UOMKEY IS NULL AND MCD.UOMKEY IS NULL) or M.UOMKEY = MCD.UOMKEY)
+			  join <IDB/>.dbo.Units as U on U.[KEY] = M.[UNITKEY]
+			  join <IDB/>.dbo.UnitLinkages as UL on U.id = UL.id  -- The Meters-Units join automatically excludes prototype records.
+			  join <ODB/>.dbo.RelativeLocation as NRL on UL.RelativeLocationID = NRL.ID
+				WHERE M.EXCLUDE = 0;
+	</data>
+  </table>
+  <table name="MeterReadingEffectiveDate">
+	<dependency table="Meter"/>
+	<data>
+	  -- normalize the data in the input MeterHistory table. First we add a combined effective date column
+	  ALTER TABLE <IDB/>.dbo.MeterHistory
+		ADD EffectiveDate datetime null,
+		  defect nvarchar(max) null
+	</data>
+  </table>
+  <table name="MeterReadingValidation">
+	<dependency table="MeterReadingEffectiveDate"/>
+	<data>
+	  -- Continue normalizing the data by forcing non-null values into all readings and setting the combined effective date column
+	  UPDATE <IDB/>.dbo.MeterHistory
+		SET reading = coalesce(reading, 0),
+		  effective = coalesce(effective, 0),
+		  effectivedate = dbo.fn_DTIME([Date], [Time])
+	  -- Delete from the input table any orphaned readings or readings on orphaned meters
+	  Update <IDB/>.dbo.MeterHistory
+		  set defect = 'Meter Reading on ' + cast(effectivedate as nvarchar(max)) + ' is orphaned and not imported'
+		  from <IDB/>.dbo.MeterHistory as MH
+			  left join <IDB/>.dbo.Meters as M on MH.METERKEY = M.[KEY]
+		WHERE M.ID IS NULL
+	  Update <IDB/>.dbo.MeterHistory
+		  set defect = 'Meter Reading on ' + cast(effectivedate as nvarchar(max)) + ' refers to orphaned meter' + M.CODE + ' and is not imported'
+		  from <IDB/>.dbo.MeterHistory as MH
+			  join <IDB/>.dbo.Meters as M on MH.METERKEY = M.[KEY]
+			  left join <ODB/>.dbo.Meter as NM on NM.ID = M.ID
+		WHERE NM.ID IS NULL
+	  -- Delete from the input table any reading with duplicate meter and effectivedate (and reading? why? this duplicates earlier functionality of unknown purpose)
+	  -- The subquery returns a record identical to the meter readings, except only one such record is returned for each (meter, effectivedate, reading) set.
+	  -- In this case we arbitrarily select the one with the largest ID (textually sorted). Any reading record whose id is not in this set of values is deleted.
+	  -- Note that the 2.9 data has greater time precision than the 3.0 database so two readings under 10ms apart will end up with the same effective date.
+	  Update <IDB/>.dbo.MeterHistory
+		  set defect = 'Extra duplicate effective meter readings of ' + cast(MH.Effective as nvarchar(max)) + ' for meter ' + M.Code + ' on ' + cast(effectivedate as nvarchar(max)) + ' will be discarded'
+		  from <IDB/>.dbo.MeterHistory as MH
+			  join <IDB/>.dbo.Meters as M on MH.METERKEY = M.[KEY]
+		WHERE defect is null
+		  and MH.ID NOT IN (
+					SELECT CAST(MAX(CAST(ID as nvarchar(max))) as uniqueidentifier)
+					  FROM <IDB/>.dbo.MeterHistory
+					  WHERE Defect is null
+					  GROUP BY METERKEY, effectivedate, READING
+				  )
+	  -- Verify that all effective readings are non-negative; corrrect by discarding
+	  update <IDB/>.dbo.MeterHistory
+		set defect = 'Negative effective meter reading discarded: Meter ' + M.Code + ', date ' + cast(MH.effectivedate as nvarchar(max))
+		  from <IDB/>.dbo.MeterHistory as MH
+			  join <IDB/>.dbo.Meters as M on MH.METERKEY = M.[KEY]
+		where defect is null and effective &lt; 0
+
+	  -- Verify that all readings are in monotonic order by effective date and effective reading; correct by forcing reading into valid range
+	  -- We check this by comparing each reading on a meter with the min of all later readings; this favours the preservation of more recent
+	  -- readings over older ones, even though the more recent one might be the erroneous lowball entry.
+	  update <IDB/>.dbo.MeterHistory
+		set defect = 'Meter effective reading ' + cast(MH.Effective as nvarchar(max)) + ' for meter ' + M.Code + ' exceeds later readings and will not be imported'
+		from <IDB/>.dbo.MeterHistory as MH
+			  join <IDB/>.dbo.Meters as M on MH.METERKEY = M.[KEY]
+		where defect is null
+		  and effective &gt; (select min(effective) from <IDB/>.dbo.MeterHistory as LMH WHERE LMH.Effectivedate &gt; MH.Effectivedate and LMH.Meterkey = MH.MeterKey)
+
+	  -- finally, report and delete all the dud readings.
+	  declare @BadXID nvarchar(max)
+	  declare BadSched cursor
+		for select defect
+		from <IDB/>.dbo.MeterHistory as MH
+		  where MH.Defect is not null
+	  open BadSched
+	  while 0 = 0
+	  begin
+		fetch next from BadSched into @BadXID
+		if @@Fetch_Status != 0
+		  break
+		raiserror(@BadXID, 16, 1)
+	  end
+	  close BadSched
+	  deallocate BadSched
+	  delete from <IDB/>.dbo.MeterHistory
+		where Defect is not null
+	</data>
+  </table>
+  <table name="MeterReading">
+	<dependency table="MeterReadingValidation"/>
+	<data>
+	  -- Disable the trigger that calculates the effective reading since we are supplying our own effective readings. This also disables the well-ordered
+	  -- test, which is one reason (other than improved error messages) that we pre-checked well-orderedness.
+	  use <ODB/>;
+	  GO
+	  disable trigger mbtg_SetCurrentMeterReading on MeterReading
+	  GO
+	  use <IDB/>;
+	  GO
+	  -- Insert meter readings into the output table. We do this while the trigger that calculates the effective reading is disabled since we want to be able to
+	  -- set both the actual and effective readings independent of the current meter record's offset.
+	  INSERT INTO <ODB/>.dbo.MeterReading (ID, MeterID, EntryDate, EffectiveDate, Reading, EffectiveReading)
+		  SELECT MH.ID, M.ID, EffectiveDate, EffectiveDate, READING, EFFECTIVE
+		  from <IDB/>.dbo.MeterHistory as MH
+			join <IDB/>.dbo.Meters as M on M.[KEY] = MH.METERKEY
+	</data>
+  </table>
+  <table name="MeterReadingTrigger">
+	<dependency table="MeterReading"/>
+	<data>
+	  -- Re-enable the trigger
+	  use <ODB/>;
+	  GO
+	  enable trigger mbtg_SetCurrentMeterReading on MeterReading
+	  GO
+	  use <IDB/>;
+	  GO
+	  
+	  -- Create "initial reading" records for meters that don't appear to have any. For this purpose we count as an "initial reading" record any record
+	  -- with zero actual and effective reading, and any record with the same date/time as the meter creation. This could be a problem though, it that it could
+	  -- create out-of-order records which cannot properly be referred back to the user for correction. This could, however, only happen if there is a record
+	  -- with a negative Effective reading or an effective date preceding the meter create date, and we have already checked the first such condition.
+	  -- When we insert the extra initial reading we just make sure it predates any existing readings.
+	  -- Create a meter reading that mimics the meter create date with a value of 0 for meters with no reading on the meter's create date/time
+	  <!-- This has been removed as it seemed pointless. 2.9 automagically creates a reading when a new meter is created so unless the data
+	  is defective or the user has deliberately deleted the initial readings there will be one. If there isn't one, we really don't care;
+	  all we seem to be doing with it is using it as a place to put the meter create date/time. And this deleted code still won't do that if
+	  there is a reading of zero on some other date (the meter create date is still lost). Losing a date that nothing uses seems like a small price to
+	  avoid inventing fake meter readings that could turn a single real reading into an apparently valid basis for projection.
+	  INSERT INTO <ODB/>.dbo.MeterReading (ID, MeterID, EntryDate, EffectiveDate, Reading, EffectiveReading)
+		  SELECT NEWID(), M.ID, dbo.fn_DTIME(OM.CREATEDATE,OM.CREATETIME), dbo.fn_DTIME(OM.CREATEDATE,OM.CREATETIME), 0, 0
+		  from <ODB/>.dbo.Meter as M
+			  join <IDB/>.dbo.Meters as OM on M.ID = OM.ID
+			  where not exists(select *
+								from <ODB/>.dbo.MeterReading as MR
+								where M.[ID] = MR.[MeterID] and (dbo.fn_DTIME(OM.[CREATEDATE],OM.[CREATETIME]) = MR.EffectiveDate OR (MR.Reading = 0 AND MR.EffectiveReading = 0)))
+	  -->
+	</data>
+</table>
+</dbconversion>
+

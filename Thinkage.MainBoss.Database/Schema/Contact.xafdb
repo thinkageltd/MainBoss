@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+
+  <variable name="PhonePrefix" type="string(minlength 1, 16, lines 0, trim both,nonnull)">
+	<doc>Default phone number prefix to prime phone numbers with for new mode</doc>
+  </variable>
+
+  <table name="Contact" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Contact">
+	<doc>
+	  This record represents a person (or something similar, like a department) with whom it may be necessary to get in touch.
+	  Although we assign meanings to all the fields, they are purely recommendations, as this program does not in general do anything
+	  with the fields other than display them.
+	</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="RequiredCode"/>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="Comment" type="Comment">
+	  <extension name="lines">3</extension>
+	</field>
+	<field name="BusinessPhone" type="PhoneNumber">
+	  <doc>The contact's (voice) phone number at work</doc>
+	</field>
+	<field name="FaxPhone" type="PhoneNumber">
+	  <doc>The contact's Fax number</doc>
+	</field>
+	<field name="HomePhone" type="PhoneNumber">
+	  <doc>The contact's (voice) phone number at home</doc>
+	</field>
+	<field name="PagerPhone" type="PhoneNumber">
+	  <doc>The contact's pager/message service number</doc>
+	</field>
+	<field name="MobilePhone" type="PhoneNumber">
+	  <doc>The contact's mobile (cell) phone number</doc>
+	</field>
+	<field name="Email" type="EmailAddress"  >
+	  <doc>The contact's email address</doc>
+	  <extension name="usage">EMailLink</extension>
+	</field>
+	<field name="AlternateEmail" type="VariableLengthString" labelkey="Alternate Email" >
+	  <doc>The alternate email address for the contact, email can be received but not sent using these addresses</doc>
+	</field>
+	<field name="WebURL" type="URL"  >
+	  <doc>The contact's World Wide Web home page</doc>
+	  <extension name="usage">WebLink</extension>
+	</field>
+	<field name="LDAPGuid" type="GUID" labelkey="AD Reference">
+    <doc>The active directory GUID for the contact</doc>
+	</field>
+	<field name="LocationID" type="GUIDREF"  link="Location">
+	  <doc>The contact's physical mailing address</doc>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.PermanentLocationPickerTblCreator,Thinkage.MainBoss.Controls</extension>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="PreferredLanguage" type="CultureInfoLCID">
+	  <doc>The contact's preferred language/culture</doc>
+		<extension name="pickfrom">Thinkage.Libraries.Presentation.CommonTblPickers.CultureInfoPickerTblCreator,Thinkage.Libraries.Presentation</extension>
+	</field>
+ <extension name="deletemethod">hide</extension>
+  </table>
+  <table name="Location"/>
+  <table name="User">
+		<field name="ContactID" link="Contact" type="RequiredGUIDREF" unique="true"/>
+  </table>
+</database>

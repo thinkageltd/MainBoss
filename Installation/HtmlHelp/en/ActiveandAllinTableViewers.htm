@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Active and All in Table Viewers</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Active and All in Table Viewers</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="TableViewersandEditors.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="UsingTableViewers.htm">Next section &gt;</a></p>
+
+<p>In the bottom right hand corner of most table viewers and editor windows, you'll see either <span class="CU">Active</span> or <span class="CU">All</span>:</p>
+
+<ul class="b1"><li>If the word is <span class="CU">Active</span>, lists of records displayed in the window only include <span class="NewTerm">active</span> records. This means that the window only shows records that haven't been deleted. For requests, work orders, and purchase orders, it also means that it only shows records that are "recent". By default, a record is "recent" if it's less than 500 days old; your MainBoss administrator may change what counts as "recent."
+
+<br /><br /><img src="image006.png" alt="MainBoss" /></li>
+<li>If the word is <span class="CU">All</span>, the viewer is showing <span class="Emphasis">all</span> records, no matter how old, including those that have been deleted. Deleted records are marked with a red X on the left. (Note that if you have many old records, MainBoss may take a considerable time to obtain them all from the database.)
+
+<br /><br /><img src="image007.png" alt="MainBoss" />
+</li></ul><p>In most tables, MainBoss never completely erases deleted records. This makes it possible to maintain a complete audit trail of everything you do.</p>
+
+<p>To switch from <span class="CU">Active</span> to <span class="CU">All</span> or vice versa, <span class="NewTerm">double-click</span> the word. You'll see old and deleted records appear or disappear.</p>
+
+<p>The <span class="CButton">Restore</span> button lets you bring back a record that was previously deleted. MainBoss opens a window where you can examine the record to be restored and make changes if necessary. When you save the record and close the window (typically by using <span class="CButton">Save &amp; Close</span>), the record will be restored to the active list.</p>
+
+<p><span class="CInset">Records That Refer to Deleted Information:</span> When you delete a record, it's possible that other records still refer to it. For example, suppose a worker leaves your organization so you delete that person from your <span class="CPanel">Employees</span> list. That worker's name will still appear in old records (e.g. work orders that the person worked on).</p>
+
+<p>MainBoss indicates that data comes from a deleted record by <span class="StrikeOut">striking out</span> the data. For example, if you delete Joe Smith's employee record, all work orders that refer to that person will show the name as <span class="StrikeOut">Joe Smith</span>. This shows that the associated employee record has been deleted (and will reduce your confusion when you can't find Joe Smith's name in your list of <span class="CU">Active</span> employees).</p>
+
+
+<p><a href="TableViewersandEditors.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="UsingTableViewers.htm">Next section &gt;</a></p>
+</body>
+</html>
+

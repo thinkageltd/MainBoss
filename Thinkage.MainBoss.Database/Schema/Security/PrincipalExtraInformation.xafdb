@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="../Types.xafdb"/>
+  <table name="PrincipalExtraInformation" log="false" id="Id" labelkey="">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="PrincipalID" link="Principal" unique="true" type="RequiredGUIDREF"/>
+	<field name="PermissionsAsText" type="SingleLineUnlimited" labelkey="Permissions">
+	  <extension name="dependson">mbfn_Permissions_As_Text()</extension>
+	</field>
+	<extension name="query">
+		SELECT
+		[Principal].ID
+		, [Principal].ID
+		, dbo.mbfn_Permissions_As_Text( [Principal].ID )
+		FROM [Principal]
+	</extension>
+	<extension name="dependson">Principal</extension>
+  </table>
+  <object class="function" name="mbfn_Permissions_As_Text">
+	<doc>
+		returns all permissions as a newline delimited string
+	</doc>
+	<extension name="body">
+		  (
+		  @PrincipalID		uniqueidentifier
+		  )
+		  RETURNS VARCHAR(MAX)
+		  AS
+		  BEGIN
+		  return STUFF((SELECT CHAR(13)+CHAR(10)+ PermissionPathPattern
+			  from [Permission] where PrincipalID = @PrincipalID
+			  order by PermissionPathPattern
+			  for xml path(''), TYPE).value('.','varchar(max)'), 1, 2, '')
+		  END
+  </extension>
+  </object>
+  <table name="Principal"/>
+  <table name="Permission"/>
+</database>

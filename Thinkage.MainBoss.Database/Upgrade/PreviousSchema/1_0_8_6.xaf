@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <!-- Original Schema Receipt had different XID than this version so we need to have distint definitions at version 1.0.8.6 so as not to mess up earlier upgrade steps-->
+  <table name="Receipt" defaults="true" log="false" xid="EntryDate PurchaseOrderID" xunique="true">
+	<field name="Id" read="id(nonnull)"/>
+	<field name="EntryDate" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
+	<field name="PurchaseOrderID" write="link(null)" link="PurchaseOrder"/>
+  </table>
+  <table name="PurchaseOrder" defaults="true" log="false">
+	<field name="Id" read="id(nonnull)"/>
+  </table>
+</database>

@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FC3A63B6-A2B8-4D8D-B1D6-1644F620A06B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Thinkage.MainBoss.Application</RootNamespace>
+    <AssemblyName>Thinkage.MainBoss.Application</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>Thinkage.MainBoss.Application</SccProjectName>
+    <SccLocalPath>1~cf73bb72-5e59-49d7-bf5d-1423e6537726</SccLocalPath>
+    <SccAuxPath>http://vault.thinkage.ca/VaultService</SccAuxPath>
+    <SccProvider>SourceGear Vault Visual Studio 2005 Client:{1EA47954-8515-402d-82D9-B5C332120A8D}</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CompanyInfo.cs" />
+    <Compile Include="MainBossActiveFilter.cs" />
+    <Compile Include="MainBossDataForm.cs" />
+    <Compile Include="MainBossOptable.cs" />
+    <Compile Include="ModeDefinition.cs" />
+    <Compile Include="ProductInfo.cs" />
+    <Compile Include="SolutionSettings.cs" />
+    <Compile Include="TblDrivenMainBossApplication.cs" />
+    <Compile Include="TICommon.cs" />
+    <Compile Include="Translation.cs" />
+    <Compile Include="UpgraderApplication.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Thinkage.Libraries.DBAccess\Thinkage.Libraries.DBAccess.csproj">
+      <Project>{4c013dd4-7ae5-49ed-9a18-ce2204c9b508}</Project>
+      <Name>Thinkage.Libraries.DBAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary.MSSql\Thinkage.Libraries.DBILibrary.MSSql.csproj">
+      <Project>{71bfb1de-d9e5-48cc-87ba-bbde18496ab2}</Project>
+      <Name>Thinkage.Libraries.DBILibrary.MSSql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary\Thinkage.Libraries.DBILibrary.csproj">
+      <Project>{9398f76e-d6fd-4194-9599-ce4b6512d5a2}</Project>
+      <Name>Thinkage.Libraries.DBILibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.Presentation.MSWindows\Thinkage.Libraries.Presentation.MSWindows.csproj">
+      <Project>{0032bcbc-be62-486d-a78a-8890fdbbc790}</Project>
+      <Name>Thinkage.Libraries.Presentation.MSWindows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.Presentation\Thinkage.Libraries.Presentation.csproj">
+      <Project>{ded2c505-ef02-483c-95a6-f2ad5b60a081}</Project>
+      <Name>Thinkage.Libraries.Presentation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Layout\Thinkage.Libraries.XAF.Database.Layout.csproj">
+      <Project>{d329682f-5e4c-496d-9df4-e94896daec54}</Project>
+      <Name>Thinkage.Libraries.XAF.Database.Layout</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Service.MSSql\Thinkage.Libraries.XAF.Database.Service.MSSql.csproj">
+      <Project>{1a451d90-ff1f-4446-a6c7-983422ca1103}</Project>
+      <Name>Thinkage.Libraries.XAF.Database.Service.MSSql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Service\Thinkage.Libraries.XAF.Database.Service.csproj">
+      <Project>{1bf2ec15-6f92-4ce1-aeb4-fba8e3e147a1}</Project>
+      <Name>Thinkage.Libraries.XAF.Database.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.UI.MSWindows\Thinkage.Libraries.XAF.UI.MSWindows.csproj">
+      <Project>{b4d74fa9-81a9-40ef-bb52-61dee27e3e16}</Project>
+      <Name>Thinkage.Libraries.XAF.UI.MSWindows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.UI\Thinkage.Libraries.XAF.UI.csproj">
+      <Project>{7675980a-46b7-41d8-ad27-1ed46277d959}</Project>
+      <Name>Thinkage.Libraries.XAF.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries\Thinkage.Libraries.csproj">
+      <Project>{f1588fb4-32fc-4718-8982-66c02732df13}</Project>
+      <Name>Thinkage.Libraries</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.MainBoss.Controls\Thinkage.MainBoss.Controls.csproj">
+      <Project>{a599b818-5f91-4113-8978-8aec50046882}</Project>
+      <Name>Thinkage.MainBoss.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.MainBoss.Database\Thinkage.MainBoss.Database.csproj">
+      <Project>{1302bbda-fb21-415f-9ecf-678be8f5f79e}</Project>
+      <Name>Thinkage.MainBoss.Database</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TranslationResources\messages.en.resx" />
+    <EmbeddedResource Include="TranslationResources\messages.es.resx" />
+    <EmbeddedResource Include="TranslationResources\messages.fr.resx" />
+    <EmbeddedResource Include="TranslationResources\messages.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\UpgradeApplication.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>powershell -noprofile $(SolutionDir)GenerateProjectSolutionSettings.ps1 $(ProjectDir) "c#" $(ProjectName)</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

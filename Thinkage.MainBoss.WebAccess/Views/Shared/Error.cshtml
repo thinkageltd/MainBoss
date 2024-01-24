@@ -1,0 +1,16 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.Libraries
+@{
+    ViewBag.Title = T.Text("Error");
+}
+@section MainContent{
+	<hgroup>
+		<h2 class="ResultMessage">@(T.Text("An error occurred while processing your request"))</h2>
+	</hgroup>
+	<p>
+		<span style="white-space:pre-line; font-size:larger;font-weight: bolder">
+			@(Thinkage.Libraries.Exception.FullMessage(Model.Exception))
+		</span>
+	</p>
+}

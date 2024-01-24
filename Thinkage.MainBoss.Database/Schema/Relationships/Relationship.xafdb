@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="Relationship" defaults="true" log="false" id="Id" xid="Code" xunique="true" labelkey="Relationship">
+	<doc>
+	  This record represents a relationship between two entities identified with a FromTo and ToFrom phrase.
+	</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="RequiredCode"/>
+	<field name="Desc" type="Desc"/>
+	<field name="Comment" type="Comment"/>
+	<field name="BAsRelatedToAPhrase" type="RequiredDesc">
+	  <doc>The phrase representing the forward link of the relationship of the AType to the BType linkage. E.g. serves electrics to </doc>
+	</field>
+	<field name="AAsRelatedToBPhrase" type="RequiredDesc">
+	  <doc>The phrase representing the reverse link of the relationship of the BType to the AType linkage. E.g. receives electrics from</doc>
+	</field>
+	<field name="AType" type="integer(min 0, max 1, nonnull)">
+	  <!-- values from DatabaseEnums.RelationshipType -->
+	  <doc>The From table identification. See DatabaseEnums.RelationshipType enum</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIRelationship.FromRoleTypeProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="BType" type="integer(min 0, max 1, nonnull)">
+	  <!-- values from DatabaseEnums.RelationshipType -->
+	  <doc>The To table identification. See DatabaseEnums.RelationshipType enum</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIRelationship.ToRoleTypeProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<extension name="deletemethod">delete</extension>
+  </table>
+</database>

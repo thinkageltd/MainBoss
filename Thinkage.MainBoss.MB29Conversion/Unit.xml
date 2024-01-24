@@ -1,0 +1,441 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+  <table name="UnitCategory">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code)
+  select UC.ID, UC.Code
+	from <IDB/>.dbo.UnitCategories as UC
+	where UC.EXCLUDE = 0;
+GO
+exec <IDB/>.dbo.FixCodes 50
+GO
+INSERT INTO <ODB/>.dbo.UnitCategory ([ID],[Code],[Desc])
+   SELECT UC.[ID], CM.[Code], UC.[Desc]
+	from <IDB/>.dbo.UnitCategories as UC
+	  join <IDB/>.dbo.CodeManagement as CM on CM.[ID] = UC.ID
+	</data>
+  </table>
+
+  <table name="Unit">
+	<dependency table="UnitCategory"/>
+	<dependency table="UnitLinkages"/>
+	<dependency table="PostalAddress"/>
+	<dependency table="RelativeLocationCodes"/>
+	<data>
+	  INSERT INTO <ODB/>.dbo.Location ([ID],[Desc],[Comment])
+		  SELECT UL.[LocationID], U.[DESC], U.[Comment]
+		  FROM <IDB/>.dbo.Units as U
+			  join <IDB/>.dbo.UnitLinkages as UL on U.[ID] = UL.[ID]
+GO
+
+	  INSERT INTO <ODB/>.dbo.RelativeLocation ([ID], [LocationID], [Code], [ContainingLocationID], [Hidden])
+		  SELECT UL.[RelativeLocationID], UL.LocationID, RLC.[Code], B.[ID], RLC.Hidden
+		  FROM <IDB/>.dbo.Units as U
+			  join <IDB/>.dbo.UnitLinkages as UL on U.[ID] = UL.[ID]
+			  join <IDB/>.dbo.Buildings as B on U.BUILDING = B.[KEY]
+			  join <IDB/>.dbo.RelativeLocationCodes as RLC on UL.[RelativeLocationID] = RLC.ID
+GO
+<!--
+Need to construct known UnitUsage values for assigning former MB29 Equipment classification to Equipment, and
+Space classification to Space
+-->
+declare @EUsage uniqueidentifier
+declare @SUsage uniqueidentifier
+
+delete from <IDB/>.dbo.CodeManagement;
+
+SET @EUsage = NEWID()
+insert into <IDB/>.dbo.CodeManagement (id, code)
+	  select @EUsage, 'Equipment'
+
+SET @SUsage = NEWID()
+insert into <IDB/>.dbo.CodeManagement (id, code)
+	  select @SUsage, 'Space'
+
+INSERT INTO <IDB/>.dbo.CodeManagement (ID, CODE)
+  SELECT O.[ID], [CODE] from <IDB/>.dbo.Obsoletes as O;
+
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.UnitUsage ([ID], [CODE], [DESC])
+	  select @EUsage, CM.Code, 'Equipment type from previous MainBoss data'
+		from <IDB/>.dbo.CodeManagement as CM where CM.[ID] = @EUsage
+INSERT INTO <ODB/>.dbo.UnitUsage ([ID], [CODE], [DESC])
+	  select @SUsage, CM.Code, 'Space type from previous MainBoss data'
+		from <IDB/>.dbo.CodeManagement as CM where CM.[ID] = @SUsage
+INSERT INTO <ODB/>.dbo.UnitUsage ([ID],[Code],[Desc])
+   SELECT O.[ID], CM.[Code], O.[Desc]
+	from <IDB/>.dbo.Obsoletes as O
+    join <IDB/>.dbo.CodeManagement as CM on CM.[ID] = O.[ID]
+
+INSERT INTO <ODB/>.dbo.Unit ([ID], [RelativeLocationID],
+	  [UnitCategoryID],[Make],[Model],[Serial],[Drawing],[PurchaseDate], [OriginalCost], [ReplacementCost], [ReplacementCostLastDate],
+	  [TypicalLife], [ScrapDate],[ScrapValue],
+	  [PurchaseVendorID],[OwnershipID],[AssetCodeID],[SystemCodeID],[AccessCodeID],
+	  [UnitUsageID])
+	  SELECT UL.[UnitID], UL.[RelativeLocationID],
+				  UC.[ID], U.[MAKE], U.[MODEL], U.[SERIAL], U.[DRAW], U.[PURCHASE], dbo.fn_MONEY(U.[ORGCOST]), dbo.fn_MONEY(U.[REPCOST]), U.[ESTIMATE],
+				  U.[TLIFE], U.[SCRAPD], dbo.fn_MONEY(U.[SCRAPV]),
+				  PV.[ID], OW.[ID], ASSET.[Id], SY.[ID], AC.[ID],
+				  COALESCE(UU.[ID], CASE U.UTYPE
+								    WHEN 'E' THEN @EUsage
+									WHEN 'S' THEN @SUsage
+									ELSE NULL
+									END)
+		  FROM <IDB/>.dbo.Units as U
+			  join <IDB/>.dbo.UnitLinkages as UL on U.[ID] = UL.[ID]
+			  left join <IDB/>.dbo.UnitCategories as UC on U.[UTYPE]+U.[CATEGORY] = UC.[UTYPE]+UC.[CODE]
+			  left join <IDB/>.dbo.Vendors as PV on U.[VENDOR] = pv.[KEY]
+			  left join <ODB/>.dbo.Ownership as OW on U.[OWNER] = OW.[CODE]
+			  left join <ODB/>.dbo.AssetCode as ASSET on U.[ASSET] = ASSET.[CODE]
+			  left join <ODB/>.dbo.SystemCode as SY on U.[SYSTEM] = SY.[CODE]
+			  left join <ODB/>.dbo.AccessCode as AC on U.[ACCESS] = AC.[CODE]
+			  left join <IDB/>.dbo.Obsoletes as UU on U.[OBSOLETE] = UU.[CODE];
+GO
+IF EXISTS(select * from <IDB/>.dbo.Units as U join <IDB/>.dbo.Contacts as C on U.[CONTACT] = C.[KEY])
+BEGIN
+<!--Manufacture same Relationship structure the 3.4 upgrade step did to convert ContactID in Units to Relationships -->
+	select RL.LocationID as UnitLocationID, C.[ID] as ContactID
+		INTO <IDB/>.dbo.NewUnitRelatedContact
+		from <IDB/>.dbo.Units as U
+			join <IDB/>.dbo.UnitLinkages as UL on U.[ID] = UL.[ID]
+			left join <IDB/>.dbo.Contacts as C on U.[CONTACT] = C.[KEY]			  
+			join <ODB/>.dbo.RelativeLocation as RL on RL.Id = UL.RelativeLocationID
+			where C.[ID] is not null
+
+	if EXISTS(select * from <IDB/>.dbo.NewUnitRelatedContact) 
+	begin
+		DECLARE @RID AS UNIQUEIDENTIFIER
+		SET @RID = NEWID()
+
+		INSERT INTO <ODB/>.dbo.[Relationship] (Id, Code, [Desc], BAsRelatedToAPhrase, AAsRelatedToBPhrase, AType, BType)
+			VALUES (@RID, 'Unit Contact', 'Unit Contact Upgrade', 'is the Unit Contact for', 'has Unit Contact', 0, 1)
+
+		INSERT INTO <ODB/>.dbo.UnitRelatedContact (Id, RelationshipID, UnitLocationID, ContactID) 
+			select NEWID(), @RID, UnitLocationID, ContactID from <IDB/>.dbo.NewUnitRelatedContact
+	end
+	DROP table <IDB/>.dbo.NewUnitRelatedContact
+END
+GO
+<!-- Finally, move Units into sublocations if the original Unit from 2.9 had a LOCATION field that identified the location of the unit within the building -->
+<!-- Define a view of the Units that want to move, along with the code and containing building of their desired destination.		 -->
+create view UnitsToMove (UnitID, DestinationContainerBuildingKey, DestinationCode) as
+	select OU.ID, OU.BUILDING, OU.LOCATION
+		from
+			<IDB/>.dbo.UNITS as OU
+		join
+			<IDB/>.dbo.UnitLinkages as UL on UL.ID = OU.ID	-- so we only consider Units converted to 3.x locations
+		where
+			OU.LOCATION is not null
+go			
+<!--  Define a view of Units that want to move to destinations already in the 2.9 data, along with the key of the desired destination. -->
+<!--  The nested selects with grouping are there to protect us in the case that the 2.9 data contains duplicate codes by ensuring that each <joined table> has at most one row. -->
+create view UnitsToMoveToExistingDestination (UnitID, targetUnitID, targetStoreroomID) as
+	select U2M.UnitID, cast(coalesce(OS.ID, OE.ID) as uniqueidentifier), case when OS.ID is null and OE.ID is null then cast(OSR.ID as uniqueidentifier) else null end
+		from
+			<IDB/>.dbo.UnitsToMove as U2M
+		left join
+			(select max(cast(id as binary(16))), BUILDING, CODE from <IDB/>.dbo.UNITS where UTYPE = 'S' and HIDDEN = 0 and EXCLUDE = 0 group by BUILDING, CODE) as OS(ID, BUILDING, CODE) on OS.BUILDING = U2M.DestinationContainerBuildingKey and OS.CODE = U2M.DestinationCode
+		left join
+			(select max(cast(id as binary(16))), BUILDING, CODE from <IDB/>.dbo.UNITS where UTYPE = 'E' and HIDDEN = 0 and EXCLUDE = 0 group by BUILDING, CODE) as OE(ID, BUILDING, CODE) on OE.BUILDING = U2M.DestinationContainerBuildingKey and OE.CODE = U2M.DestinationCode
+		left join
+			(select max(cast(id as binary(16))), BUILDING, CODE from <IDB/>.dbo.STOREROOMS where HIDDEN = 0 and EXCLUDE = 0 group by BUILDING, CODE) as OSR(ID, BUILDING, CODE) on OSR.BUILDING = U2M.DestinationContainerBuildingKey and OSR.CODE = U2M.DestinationCode
+		where
+			OS.ID is not null or OE.ID is not null or OSR.ID is not null
+go			
+<!--  Define a view of Units that want to move to a destination that also wants to move, along with the key of the desired destination -->
+create view UnitsMovingToMovingLocations (UnitID, targetUnitID) as
+	select U2M.UnitID, TARGET2M.UnitID
+		from
+			<IDB/>.dbo.UnitsToMoveToExistingDestination as U2M
+		join
+			<IDB/>.dbo.UnitsToMoveToExistingDestination as TARGET2M on U2M.targetUnitID = TARGET2M.UnitID
+go		
+
+
+IF NOT EXISTS(select * from <IDB/>.dbo.Defaults where SERIAL = 'IgnoreLoc') BEGIN
+	declare @text nvarchar(max)	
+	<!--  leave null for no creation, or set to 'SubLocation' or 'Unit' to control what record type is created -->
+	declare @creationType nvarchar(max)
+	set @CreationType = 'SubLocation'			<!-- TODO: Use <IDB/>.dbo.Defaults.SERIAL to control the setting of this (null, 'SubLocation', or 'Unit') -->
+	<!--  Step 0, if post-repairing a database, synthesize the UnitLinkages, BuildingLinkages, and StoreroomLinkages tables by correlating the -->
+	<!--  PostalAddresses, Units, and Storerooms in the database to the ones in the import data. This will perforce be inexact.			 -->
+	<!--  Step 1a, Report Units moving to their own building. -->
+	select U.ID as UnitID
+		into <IDB/>.dbo.AlreadyInDestination
+		from
+			<IDB/>.dbo.UnitsToMove as U2M
+		join
+			<IDB/>.dbo.UNITS as U on U.ID = U2M.UnitID
+		join
+			<IDB/>.dbo.BUILDINGS as B on B.[KEY] = U.BUILDING
+		where
+			U.LOCATION = B.CODE
+	<!--  Step 1b, Clear out Units moving to their own building. -->
+	update UNITS
+		set LOCATION = null
+		from
+			<IDB/>.dbo.UnitsToMove as U2M
+		join
+			<IDB/>.dbo.UNITS as U on U.ID = U2M.UnitID
+		join
+			<IDB/>.dbo.BUILDINGS as B on B.[KEY] = U.BUILDING
+		where
+			U.LOCATION = B.CODE
+	<!--  Step 2a, Report Units moving to themselves. -->
+	select U2M.UnitID as UnitID
+		into <IDB/>.dbo.DestinationIsSelf
+		from
+			<IDB/>.dbo.UnitsToMoveToExistingDestination as U2M
+		where
+			U2M.targetUnitID = U2M.UnitID
+	<!--  Step 2b, Clear out Units moving to themselves. -->
+	update UNITS
+		set LOCATION = null
+		from
+			<IDB/>.dbo.UNITS as U
+		join
+			<IDB/>.dbo.UnitsToMoveToExistingDestination as U2M on U2M.UnitID = U.ID
+		where
+			U2M.targetUnitID = U2M.UnitID
+	<!--  Step 3a, report Units moving to other Units that themselves want to move to existing 2.9 locations -->
+	<!--  Note that units moving to other units that are moving to locations that DON'T exist in 2.9 are left alone. -->
+	<!--  The reasons for this are that the removal of moved-to-moved units is used to prevent loops or long chain generation -->
+	<!--  but such things can't happen for newly-created locations. Furthermore, we may or may not actually be creating -->
+	<!--  containers for the units to be moved to locations that don't exist. -->
+	select UM2ML.UnitID as UnitID, UM2ML.targetUnitID as TargetUnitID
+		into <IDB/>.dbo.DestinationIsMoving
+		from
+			<IDB/>.dbo.UnitsMovingToMovingLocations as UM2ML
+	<!--  Step 3b: Clear out Units moving to other Units that themselves want to move to existing 2.9 locations -->
+	update UNITS
+		set LOCATION = null
+		from
+			<IDB/>.dbo.UNITS as U
+		join
+			<IDB/>.dbo.UnitsMovingToMovingLocations as UM2ML on UM2ML.UnitID = U.ID
+	<!--  Step 4a: Reassign Units where the (Code, ContainingLocationID) already exists and already has a child whose code is the Unit code, in which -->
+	<!--  case the original Unit becomes a child of the child with the clashing code. -->
+	<!--  This can happen if a InvLoc record's Location causes the creation of a sub-storeroom whose code is the same as the Unit's, and -->
+	<!--  contained in a top-level storeroom whose code is the same as the unit's Location. -->
+	Update RL
+		set ContainingLocationID = Clash.LocationID
+		from
+			<ODB/>.dbo.RelativeLocation as RL
+		join
+			<IDB/>.dbo.UnitLinkages as UL on UL.RelativeLocationID = RL.ID
+		join
+			<IDB/>.dbo.UnitsToMoveToExistingDestination as U2M on U2M.UnitID = UL.ID
+		join
+			<IDB/>.dbo.StoreroomLinkages as SL on SL.ID = U2M.TargetStoreroomID
+		join
+			<ODB/>.dbo.RelativeLocation as NewRL on NewRL.ID = SL.RelativeLocationID
+		join
+			<ODB/>.dbo.RelativeLocation as Clash on Clash.ContainingLocationID = NewRL.LocationID
+									and Clash.Code = RL.Code
+		where
+			Clash.Hidden is null		-- We can't clash with a hidden location.
+	<!--  Step 4b: Clear out the Units just reassigned -->
+	<!--  TODO: Report on these? -->
+	Update Units
+		set LOCATION = null
+		from
+			<ODB/>.dbo.RelativeLocation as RL
+		join
+			<IDB/>.dbo.UnitLinkages as UL on UL.RelativeLocationID = RL.ID
+		join
+			<IDB/>.dbo.UnitsToMoveToExistingDestination as U2M on U2M.UnitID = UL.ID
+		join
+			<IDB/>.dbo.Units as U on U.ID = UL.ID
+		join
+			<IDB/>.dbo.StoreroomLinkages as NewSL on NewSL.ID = U2M.TargetStoreroomID
+		join
+			<ODB/>.dbo.RelativeLocation as NewRL on NewRL.ID = NewSL.RelativeLocationID
+		join
+			<ODB/>.dbo.RelativeLocation as Clash on Clash.ContainingLocationID = NewRL.LocationID
+									and Clash.Code = RL.Code
+		where
+			Clash.Hidden is null		-- We can't clash with a hidden location.
+
+	<!--  Step 5a: Reassign Units where the (Code, ContainingLocationID) already exists. -->
+	Update RL
+		set ContainingLocationID = coalesce(NewSL.LocationID, NewUL.LocationID)
+		from
+			<ODB/>.dbo.RelativeLocation as RL
+		join
+			<IDB/>.dbo.UnitLinkages as UL on UL.RelativeLocationID = RL.ID
+		join
+			<IDB/>.dbo.UnitsToMoveToExistingDestination as U2M on U2M.UnitID = UL.ID
+		left join
+			<IDB/>.dbo.StoreroomLinkages as NewSL on NewSL.ID = U2M.TargetStoreroomID
+		left join
+			<IDB/>.dbo.UnitLinkages as NewUL on NewUL.ID = U2M.TargetUnitID
+	<!--  Step 5b: Clear out Units just assigned -->
+	<!--  TODO: Report on these? -->
+	Update Units
+		set LOCATION = null
+		from
+			<IDB/>.dbo.Units as U
+		join
+			<IDB/>.dbo.UnitsToMoveToExistingDestination as U2M on U2M.UnitID = U.ID
+
+	<!--  Step 6: Create PlainRelativeLocation or Unit(usage = Space) records for all the units not already assigned. -->
+	if @CreationType is null begin
+		-- Report: NoDestination(UNITSID)
+		if (select count(*) from UnitsToMove) > 0 begin
+			set @text = 'The following Equipment/Spaces were not relocated because the target specified by their Location does not exist'
+			select @text = (select NCHAR(13)+NCHAR(10)+U.UTYPE+' '+B.CODE+':'+U.CODE+' ('+L.Code+') targeting '+TB.CODE+'('+TL.Code+'):'+A.DestinationCode
+					from
+						<IDB/>.dbo.UnitsToMove as A
+					join
+						<IDB/>.dbo.UNITS as U on U.ID = A.UnitID
+					join
+						<IDB/>.dbo.BUILDINGS as B on B.[KEY] = U.BUILDING
+					join
+						<IDB/>.dbo.UnitLinkages as UL on UL.ID = A.UnitID
+					join
+						<ODB/>.dbo.Location as L on L.ID = UL.LocationID
+					join
+						<IDB/>.dbo.BUILDINGS as TB on TB.[KEY] = A.DestinationContainerBuildingKey
+					join
+						<IDB/>.dbo.BuildingLinkages as TBL on TBL.ID = TB.ID
+					join
+						<ODB/>.dbo.Location as TL on TL.ID = TBL.LocationID
+				  for xml path(''), TYPE).value('.','varchar(max)')
+			insert into <ODB/>.dbo.DatabaseHistory (ID, EntryDate, [Subject], [Description])
+				values (newid(), dbo._DClosestValue(getdate(),2,100), 'Location ignored in MainBoss Basic Equipment/Space records', @text)
+		end
+	end
+	else begin
+		select newid() as LocationID, newid() as RelativeLocationID, newid() as DerivedLocationID, code as OriginalCode, containingID
+			into <IDB/>.dbo.CreatedLocationMappings
+			from (
+				select distinct U2M.DestinationCode, BL.LocationID
+					from
+						<IDB/>.dbo.UnitsToMove as U2M
+					join
+						<IDB/>.dbo.Buildings as B on B.[Key] = U2M.DestinationContainerBuildingKey
+					join
+						<IDB/>.dbo.BuildingLinkages as BL on BL.ID = B.ID
+			) as X(code, containingID)
+		<!-- The RelativeLocation we are creating could be a duplicate. For instance, assuming all the same building, there could be a Space and an Equipment both called 'X'. -->
+		<!-- In the 3.x data one of these will end up called 'X1' instead. If another unit in the same building gives a Location of 'X1' we will not treat it as an existing -->
+		<!-- container because the 2.9 DB has no location called 'X1' in the building. Instead we will try to create a new sublocation called X1 but one such already exists in the 3.x data. -->
+		delete from <IDB/>.dbo.CodeManagement
+		<!-- Insert existing non-hidden relative locations into the uniqueness table -->
+		insert into <IDB/>.dbo.CodeManagement (ID, Code, Context)
+			select LocationID, Code, ContainingLocationID from <ODB/>.dbo.RelativeLocation where Hidden is null
+		<!-- Insert the proposed new locations into the uniqueness table -->
+		insert into <IDB/>.dbo.CodeManagement (ID, Code, Context)
+			select LocationID, OriginalCode, containingID from <IDB/>.dbo.CreatedLocationMappings
+		<!-- Run the procedure the uniquefy the codes. Because our new codes were inserted later in the table they will be the ones to be renamed. -->
+		exec <IDB/>.dbo.FixCodes 50	  -- width of RelativeLocation.Code
+		insert into <ODB/>.dbo.Location (ID)
+			select LocationID
+			from <IDB/>.dbo.CreatedLocationMappings
+		
+		insert into <ODB/>.dbo.RelativeLocation (ID, ContainingLocationID, Code, LocationID)
+			select CLM.RelativeLocationID, CLM.ContainingID, CM.Code, CLM.LocationID
+			from
+				<IDB/>.dbo.CreatedLocationMappings as CLM
+			join
+				<IDB/>.dbo.CodeManagement as CM on CLM.LocationID = CM.ID
+	
+		if @CreationType = 'SubLocation'	
+			insert into <ODB/>.dbo.PlainRelativeLocation (ID, RelativeLocationID)
+				select DerivedLocationID, RelativeLocationID
+				from <IDB/>.dbo.CreatedLocationMappings
+		else if @CreationType = 'Unit'
+			insert into <ODB/>.dbo.Unit (ID, RelativeLocationID, UnitUsageID)
+				select DerivedLocationID, RelativeLocationID, (select ID from <ODB/>.dbo.UnitUsage where code = 'Space')
+				from <IDB/>.dbo.CreatedLocationMappings
+		else
+			raiserror ('Invalid @CreationType ''%s'', must be null, ''SubLocation'', or ''Unit''', 18, 0, @CreationType)
+	
+		Update <ODB/>.dbo.RelativeLocation
+			set ContainingLocationID = CLM.LocationID
+			from
+				<ODB/>.dbo.RelativeLocation as RL
+			join
+				<IDB/>.dbo.UnitLinkages as UL on UL.RelativeLocationID = RL.ID
+			join
+				<IDB/>.dbo.UnitsToMove as U2M on U2M.UnitID = UL.ID
+			join
+				<IDB/>.dbo.Buildings as B on B.[Key] = U2M.DestinationContainerBuildingKey
+			join
+				<IDB/>.dbo.BuildingLinkages as BL on BL.ID = B.ID
+			join
+				<IDB/>.dbo.CreatedLocationMappings as CLM on CLM.OriginalCode = U2M.DestinationCode and CLM.containingID = BL.LocationID
+		<!--TODO: Report on these? -->
+	end
+
+	<!--  Now that all the moving is done we can report on what happened, using both the 2.9 identifications and the 3.0 Location Codes to -->
+	<!--  identify things. -->
+
+	<!--  Report: AlreadyInDestination (UnitID) -->
+	if (select count(*) from AlreadyInDestination) > 0 begin
+		set @text = 'The following Equipment/Spaces were not relocated because their Location was equal to their Building Code'
+		select @text =	(select NCHAR(13)+NCHAR(10)+U.UTYPE+' '+B.CODE+':'+U.CODE+' ('+L.Code+')'
+				from
+					<IDB/>.dbo.AlreadyInDestination as A
+				join
+					<IDB/>.dbo.UNITS as U on U.ID = A.UnitID
+				join
+					<IDB/>.dbo.BUILDINGS as B on B.[KEY] = U.BUILDING
+				join
+					<IDB/>.dbo.UnitLinkages as UL on UL.ID = A.UnitID
+				join
+					<ODB/>.dbo.Location as L on L.ID = UL.LocationID
+        for xml path(''), TYPE).value('.','varchar(max)')
+    insert into <ODB/>.dbo.DatabaseHistory (ID, EntryDate, [Subject], [Description])
+			values (newid(), dbo._DClosestValue(getdate(),2,100), 'Location ignored in MainBoss Basic Equipment/Space records', @text)
+	end
+	<!--  Report: DestinationIsSelf (UnitID) -->
+	if (select count(*) from DestinationIsSelf) > 0 begin
+		set @text = 'The following Equipment/Spaces were not relocated because their Location was equal to their own Code'
+		select @text = (select NCHAR(13)+NCHAR(10)+U.UTYPE+' '+B.CODE+':'+U.CODE+' ('+L.Code+')'
+				from
+					<IDB/>.dbo.DestinationIsSelf as A
+				join
+					<IDB/>.dbo.UNITS as U on U.ID = A.UnitID
+				join
+					<IDB/>.dbo.BUILDINGS as B on B.[KEY] = U.BUILDING
+				join
+					<IDB/>.dbo.UnitLinkages as UL on UL.ID = A.UnitID
+				join
+					<ODB/>.dbo.Location as L on L.ID = UL.LocationID
+       for xml path(''), TYPE).value('.','varchar(max)')
+    insert into <ODB/>.dbo.DatabaseHistory (ID, EntryDate, [Subject], [Description])
+			values (newid(), dbo._DClosestValue(getdate(),2,100), 'Location ignored in MainBoss Basic Equipment/Space records', @text)
+	end
+	<!--  Report: DestinationIsMoving (UnitID, TargetUnitID) -->
+	if (select count(*) from DestinationIsMoving) > 0 begin
+		set @text = 'The following Equipment/Spaces were not relocated because the target specified by their Location was also being relocated'
+		select @text = (select NCHAR(13)+NCHAR(10)+U.UTYPE+' '+B.CODE+':'+U.CODE+' ('+L.Code+') targeting '+TU.UTYPE+' '+TB.CODE+':'+TU.CODE+' ('+TL.Code+')'
+				from
+					<IDB/>.dbo.DestinationIsMoving as A
+				join
+					<IDB/>.dbo.UNITS as U on U.ID = A.UnitID
+				join
+					<IDB/>.dbo.BUILDINGS as B on B.[KEY] = U.BUILDING
+				join
+					<IDB/>.dbo.UnitLinkages as UL on UL.ID = A.UnitID
+				join
+					<ODB/>.dbo.Location as L on L.ID = UL.LocationID
+				join
+					<IDB/>.dbo.UNITS as TU on TU.ID = A.TargetUnitID
+				join
+					<IDB/>.dbo.BUILDINGS as TB on TB.[KEY] = TU.BUILDING
+				join
+					<IDB/>.dbo.UnitLinkages as TUL on TUL.ID = A.TargetUnitID
+				join
+					<ODB/>.dbo.Location as TL on TL.ID = TUL.LocationID
+        for xml path(''), TYPE).value('.','varchar(max)')
+    insert into <ODB/>.dbo.DatabaseHistory (ID, EntryDate, [Subject], [Description])
+			values (newid(), dbo._DClosestValue(getdate(),2,100), 'Location ignored in MainBoss Basic Equipment/Space records', @text)
+	end
+end
+	</data>
+  </table>
+</dbconversion>

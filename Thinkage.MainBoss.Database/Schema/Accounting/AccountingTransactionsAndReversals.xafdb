@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="AccountingTransactionsAndReversals" log="false" id="Id" labelkey="">
+	<field name="Id" read="blob(minlength 17, maxlength 17, nonnull)" />
+	<field name="AccountingTransactionID" type="requiredGUIDREF" link="AccountingTransaction" labelkey=""/>
+	<field name="IsReversed" type="Bool" />
+	<extension name="query">
+		select cast(id as binary(16))+0x00, id, 0
+		  from AccountingTransaction
+	  union all
+		select cast(id as binary(16))+0x01, id, 1
+		  from AccountingTransaction
+	</extension>
+	<extension name="dependson">AccountingTransaction</extension>
+	<extension name="costrights">WorkOrderItem,WorkOrderInside,WorkOrderOutside,WorkOrderMiscellaneous,InventoryActivity,PurchaseOrderItem,PurchaseOrderLabor,PurchaseOrderMiscellaneous</extension>
+	<extension name="lastupdate">AccountingTransactionID</extension>
+  </table>
+  <table name="AccountingTransaction"/>
+</database>

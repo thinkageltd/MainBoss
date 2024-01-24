@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion" first="ConversionFunctions" last="CleanUp">
+  <include uri="Initialization.xml"/>
+
+  <include uri="BasicTables.xml"/>
+  <include uri="PostalAddress.xml"/>
+  <include uri="Storeroom.xml"/>
+  <include uri="Contact.xml"/>
+  <include uri="Vendor.xml"/>
+  <include uri="Employee.xml"/>
+  <include uri="Unit.xml"/>
+  <include uri="Meter.xml"/>
+  <include uri="Inventory.xml"/>
+  <include uri="Tasks.xml"/>
+  <include uri="Schedule.xml"/>
+  <!-- remove all work tables created in Initialization -->
+  <table name="CleanUp">
+	<data>
+<!--
+DROP FUNCTION dbo.fn_DTIME;
+DROP FUNCTION dbo.fn_MONEY;
+DROP FUNCTION dbo.fn_DURATION;
+DROP FUNCTION dbo.fn_season;
+DROP FUNCTION dbo.fn_weekdays;
+DROP FUNCTION dbo.fn_weekday;
+
+DROP PROCEDURE dbo.FixCodes;
+DROP PROCEDURE dbo.ExcludeMissingLinks;
+DROP TABLE <IDB/>.dbo.CodeManagement;
+DROP TABLE <IDB/>.dbo.VendorCategories;
+DROP TABLE <IDB/>.dbo.PriorityCodes;
+DROP TABLE <IDB/>.dbo.VendorLinkages;
+DROP TABLE <IDB/>.dbo.SiteLinkages;
+DROP TABLE <IDB/>.dbo.LocationLinkages;
+DROP TABLE <IDB/>.dbo.UnitLinkages;
+DROP TABLE <IDB/>.dbo.StoreroomLinkages;
+DROP TABLE <IDB/>.dbo.SubStoreroomLinkages;
+DROP TABLE <IDB/>.dbo.InvLocationLinkages;
+DROP TABLE <IDB/>.dbo.PersonnelLinkages;
+DROP TABLE <IDB/>.dbo.MeterClassData;
+DROP TABLE <IDB/>.dbo.RelativeLocationCodes;
+DROP TABLE <IDB/>.dbo.ScheduleLinkages;
+DROP TABLE <IDB/>.dbo.SrecTaskLinkage;
+DROP TABLE <IDB/>.dbo.UniqueLabor;
+DROP TABLE <IDB/>.dbo.LaborConsolidated;
+
+DECLARE tnames_cursor CURSOR
+FOR
+   SELECT TABLE_CATALOG, TABLE_NAME FROM <IDB/>.information_schema.tables AS t WHERE TABLE_TYPE = 'BASE TABLE'
+OPEN tnames_cursor;
+DECLARE @tablename sysname;
+DECLARE @tablecatalog sysname;
+declare @fqn nvarchar(max)
+FETCH NEXT FROM tnames_cursor INTO @tablecatalog, @tablename;
+WHILE (@@FETCH_STATUS != -1)
+BEGIN
+   IF (@@FETCH_STATUS != -2)
+   BEGIN
+	select @fqn = '[' + RTRIM(@tablecatalog) + '].dbo.[' + RTRIM(@tablename) + ']'
+		if COLUMNPROPERTY(OBJECT_ID(@fqn), 'MAINBOSSEXCLUDE', 'ColumnId') IS NOT NULL
+		BEGIN
+			EXEC ('ALTER TABLE ' + @fqn + ' DROP COLUMN MAINBOSSEXCLUDE');
+		END
+		if COLUMNPROPERTY(OBJECT_ID(@fqn), 'MAINBOSSID', 'ColumnId') IS NOT NULL
+		BEGIN
+			EXEC ('ALTER TABLE ' + @fqn + ' DROP COLUMN MAINBOSSID');
+		END
+   END;
+   FETCH NEXT FROM tnames_cursor INTO @tablecatalog, @tablename;
+END;
+CLOSE tnames_cursor;
+DEALLOCATE tnames_cursor;
+GO
+	-->
+</data>
+  </table>
+</dbconversion>

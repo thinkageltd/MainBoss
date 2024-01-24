@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="Employee" defaults="true" log="false" id="Id" xid="ContactID Hidden" xunique="true" labelkey="Employee">
+	<field name="Id" read="RequiredGUID" />
+	<field name="ContactID" type="RequiredGUIDREF" link="Contact">
+	  <doc>Associated contact to this employee for contact information etc.</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="Desc" type="Desc"/>
+	<field name="Comment" type="Comment"/>
+
+	<extension name="deletemethod">hide</extension>
+  </table>
+  <table name="Contact"/>
+</database>

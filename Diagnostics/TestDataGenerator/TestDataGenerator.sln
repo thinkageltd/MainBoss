@@ -1,0 +1,122 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.Libraries", "..\..\Thinkage.Libraries\Thinkage.Libraries.csproj", "{F1588FB4-32FC-4718-8982-66C02732DF13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.Libraries.Sql", "..\..\Thinkage.Libraries.Sql\Thinkage.Libraries.Sql.csproj", "{F83BDC83-15EB-4778-A127-80BB86A7ACE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.Libraries.XAF.Database.Service", "..\..\Thinkage.Libraries.XAF.Database.Service\Thinkage.Libraries.XAF.Database.Service.csproj", "{1BF2EC15-6F92-4CE1-AEB4-FBA8E3E147A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.Libraries.XAF.Database.Layout", "..\..\Thinkage.Libraries.XAF.Database.Layout\Thinkage.Libraries.XAF.Database.Layout.csproj", "{D329682F-5E4C-496D-9DF4-E94896DAEC54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.Libraries.XAF.UI", "..\..\Thinkage.Libraries.XAF.UI\Thinkage.Libraries.XAF.UI.csproj", "{7675980A-46B7-41D8-AD27-1ED46277D959}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.MainBoss.Database", "..\..\Thinkage.MainBoss.Database\Thinkage.MainBoss.Database.csproj", "{1302BBDA-FB21-415F-9ECF-678BE8F5F79E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.Libraries.DBAccess", "..\..\Thinkage.Libraries.DBAccess\Thinkage.Libraries.DBAccess.csproj", "{4C013DD4-7AE5-49ED-9A18-CE2204C9B508}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.Libraries.DBILibrary", "..\..\Thinkage.Libraries.DBILibrary\Thinkage.Libraries.DBILibrary.csproj", "{9398F76E-D6FD-4194-9599-CE4B6512D5A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.MB3TestDataGenerator", "Application.MB3TestDataGenerator.csproj", "{3E384899-C363-4E0F-9651-203C9B51E3B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.Libraries.DBILibrary.MSSql", "..\..\Thinkage.Libraries.DBILibrary.MSSql\Thinkage.Libraries.DBILibrary.MSSql.csproj", "{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.Libraries.XAF.Database.Service.MSSql", "..\..\Thinkage.Libraries.XAF.Database.Service.MSSql\Thinkage.Libraries.XAF.Database.Service.MSSql.csproj", "{1A451D90-FF1F-4446-A6C7-983422CA1103}"
+EndProject
+Global
+	GlobalSection(VaultVsipSolution-v2) = preSolution
+		VaultHost = http://vault.thinkage.ca/VaultService
+		VaultRepositoryID = 1
+		VaultRepositoryGUID = cf73bb72-5e59-49d7-bf5d-1423e6537726
+		ProjectCount = 11
+		ProjectRelativeDiskPath1 = ..\..\Thinkage.Libraries.XAF.Database.Service.MSSql\Thinkage.Libraries.XAF.Database.Service.MSSql.csproj
+		ProjectRelativeDiskPath2 = ..\..\Thinkage.Libraries.DBILibrary.MSSql\Thinkage.Libraries.DBILibrary.MSSql.csproj
+		ProjectRelativeDiskPath3 = Application.MB3TestDataGenerator.csproj
+		ProjectRelativeDiskPath4 = ..\..\Thinkage.Libraries.DBILibrary\Thinkage.Libraries.DBILibrary.csproj
+		ProjectRelativeDiskPath5 = ..\..\Thinkage.Libraries.DBAccess\Thinkage.Libraries.DBAccess.csproj
+		ProjectRelativeDiskPath6 = ..\..\Thinkage.MainBoss.Database\Thinkage.MainBoss.Database.csproj
+		ProjectRelativeDiskPath7 = ..\..\Thinkage.Libraries.XAF.UI\Thinkage.Libraries.XAF.UI.csproj
+		ProjectRelativeDiskPath8 = ..\..\Thinkage.Libraries.XAF.Database.Layout\Thinkage.Libraries.XAF.Database.Layout.csproj
+		ProjectRelativeDiskPath9 = ..\..\Thinkage.Libraries.XAF.Database.Service\Thinkage.Libraries.XAF.Database.Service.csproj
+		ProjectRelativeDiskPath10 = ..\..\Thinkage.Libraries.Sql\Thinkage.Libraries.Sql.csproj
+		ProjectRelativeDiskPath11 = ..\..\Thinkage.Libraries\Thinkage.Libraries.csproj
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Installation|Any CPU = Installation|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F1588FB4-32FC-4718-8982-66C02732DF13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1588FB4-32FC-4718-8982-66C02732DF13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1588FB4-32FC-4718-8982-66C02732DF13}.Installation|Any CPU.ActiveCfg = Installation|Any CPU
+		{F1588FB4-32FC-4718-8982-66C02732DF13}.Installation|Any CPU.Build.0 = Installation|Any CPU
+		{F1588FB4-32FC-4718-8982-66C02732DF13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1588FB4-32FC-4718-8982-66C02732DF13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F83BDC83-15EB-4778-A127-80BB86A7ACE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F83BDC83-15EB-4778-A127-80BB86A7ACE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F83BDC83-15EB-4778-A127-80BB86A7ACE3}.Installation|Any CPU.ActiveCfg = Installation|Any CPU
+		{F83BDC83-15EB-4778-A127-80BB86A7ACE3}.Installation|Any CPU.Build.0 = Installation|Any CPU
+		{F83BDC83-15EB-4778-A127-80BB86A7ACE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F83BDC83-15EB-4778-A127-80BB86A7ACE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BF2EC15-6F92-4CE1-AEB4-FBA8E3E147A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BF2EC15-6F92-4CE1-AEB4-FBA8E3E147A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BF2EC15-6F92-4CE1-AEB4-FBA8E3E147A1}.Installation|Any CPU.ActiveCfg = Installation|Any CPU
+		{1BF2EC15-6F92-4CE1-AEB4-FBA8E3E147A1}.Installation|Any CPU.Build.0 = Installation|Any CPU
+		{1BF2EC15-6F92-4CE1-AEB4-FBA8E3E147A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BF2EC15-6F92-4CE1-AEB4-FBA8E3E147A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D329682F-5E4C-496D-9DF4-E94896DAEC54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D329682F-5E4C-496D-9DF4-E94896DAEC54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D329682F-5E4C-496D-9DF4-E94896DAEC54}.Installation|Any CPU.ActiveCfg = Installation|Any CPU
+		{D329682F-5E4C-496D-9DF4-E94896DAEC54}.Installation|Any CPU.Build.0 = Installation|Any CPU
+		{D329682F-5E4C-496D-9DF4-E94896DAEC54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D329682F-5E4C-496D-9DF4-E94896DAEC54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7675980A-46B7-41D8-AD27-1ED46277D959}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7675980A-46B7-41D8-AD27-1ED46277D959}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7675980A-46B7-41D8-AD27-1ED46277D959}.Installation|Any CPU.ActiveCfg = Installation|Any CPU
+		{7675980A-46B7-41D8-AD27-1ED46277D959}.Installation|Any CPU.Build.0 = Installation|Any CPU
+		{7675980A-46B7-41D8-AD27-1ED46277D959}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7675980A-46B7-41D8-AD27-1ED46277D959}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1302BBDA-FB21-415F-9ECF-678BE8F5F79E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1302BBDA-FB21-415F-9ECF-678BE8F5F79E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1302BBDA-FB21-415F-9ECF-678BE8F5F79E}.Installation|Any CPU.ActiveCfg = Installation|Any CPU
+		{1302BBDA-FB21-415F-9ECF-678BE8F5F79E}.Installation|Any CPU.Build.0 = Installation|Any CPU
+		{1302BBDA-FB21-415F-9ECF-678BE8F5F79E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1302BBDA-FB21-415F-9ECF-678BE8F5F79E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C013DD4-7AE5-49ED-9A18-CE2204C9B508}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C013DD4-7AE5-49ED-9A18-CE2204C9B508}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C013DD4-7AE5-49ED-9A18-CE2204C9B508}.Installation|Any CPU.ActiveCfg = Installation|Any CPU
+		{4C013DD4-7AE5-49ED-9A18-CE2204C9B508}.Installation|Any CPU.Build.0 = Installation|Any CPU
+		{4C013DD4-7AE5-49ED-9A18-CE2204C9B508}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C013DD4-7AE5-49ED-9A18-CE2204C9B508}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9398F76E-D6FD-4194-9599-CE4B6512D5A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9398F76E-D6FD-4194-9599-CE4B6512D5A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9398F76E-D6FD-4194-9599-CE4B6512D5A2}.Installation|Any CPU.ActiveCfg = Installation|Any CPU
+		{9398F76E-D6FD-4194-9599-CE4B6512D5A2}.Installation|Any CPU.Build.0 = Installation|Any CPU
+		{9398F76E-D6FD-4194-9599-CE4B6512D5A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9398F76E-D6FD-4194-9599-CE4B6512D5A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E384899-C363-4E0F-9651-203C9B51E3B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E384899-C363-4E0F-9651-203C9B51E3B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E384899-C363-4E0F-9651-203C9B51E3B3}.Installation|Any CPU.ActiveCfg = Release|Any CPU
+		{3E384899-C363-4E0F-9651-203C9B51E3B3}.Installation|Any CPU.Build.0 = Release|Any CPU
+		{3E384899-C363-4E0F-9651-203C9B51E3B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E384899-C363-4E0F-9651-203C9B51E3B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}.Installation|Any CPU.ActiveCfg = Installation|Any CPU
+		{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}.Installation|Any CPU.Build.0 = Installation|Any CPU
+		{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A451D90-FF1F-4446-A6C7-983422CA1103}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A451D90-FF1F-4446-A6C7-983422CA1103}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A451D90-FF1F-4446-A6C7-983422CA1103}.Installation|Any CPU.ActiveCfg = Installation|Any CPU
+		{1A451D90-FF1F-4446-A6C7-983422CA1103}.Installation|Any CPU.Build.0 = Installation|Any CPU
+		{1A451D90-FF1F-4446-A6C7-983422CA1103}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A451D90-FF1F-4446-A6C7-983422CA1103}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

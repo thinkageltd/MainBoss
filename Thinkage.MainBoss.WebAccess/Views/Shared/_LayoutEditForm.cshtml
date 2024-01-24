@@ -1,0 +1,15 @@
+﻿@using Thinkage.Web.Mvc.Html;
+@using Thinkage.MainBoss.WebAccess;
+@{
+	Layout = "~/Views/Shared/_LayoutSite.cshtml";
+}
+@section MainContent {
+	<h2>@ViewBag.Title@RenderSection("EditFormHeader", required: false)</h2>
+	@(Html.ResultMessage(@ViewData["ResultMessage"]))
+	@RenderSection("EditFormContent")
+	@RenderSection("EditFormTrailer", required: false)
+	@(Html.BackOperation(T.Text("Cancel"), TempData))
+}
+@section scripts{
+	@RenderSection("scripts", required: false)
+}

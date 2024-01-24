@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="TemporaryItemLocation" defaults="true" log="false" id="Id" xid="ActualItemLocationID" xunique="true" labelkey="Temporary Item Location">
+		<doc>This record represents the assignment of an Item to a Temporary storage location</doc>
+		<field name="Id" read="RequiredGUID" />
+		<field name="ActualItemLocationID" read="RequiredGUIDREF" base="ActualItemLocation">
+		</field>
+		<field name="WorkOrderID" type="RequiredGUIDREF" link="WorkOrder">
+			<doc>The workorder that this TemporaryItemLocation is related.</doc>
+			<extension name="linkage">captive</extension>
+		</field>
+		<extension name="equate">WorkOrderID=ActualItemLocationID.ItemLocationID.LocationID.TemporaryStorageID.WorkOrderID</extension>
+		<extension name="deletemethod">hide</extension>
+		<extension name="costrights">InventoryActivity</extension>
+	</table>
+	<table name="ActualItemLocation"/>
+	<table name="WorkOrder"/>
+</database>

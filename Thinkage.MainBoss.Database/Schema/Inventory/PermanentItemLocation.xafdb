@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="PermanentItemLocation" defaults="true" log="false" id="Id" xid="ActualItemLocationID" xunique="true" labelkey="Permanent Item Location">
+	<doc>This record represents the assignment of an Item to a Permanent storage location</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="ActualItemLocationID" read="RequiredGUIDREF" base="ActualItemLocation">
+	</field>
+	<field name="ExternalTag" type="Code" unique="true" where="ExternalTag IS NOT NULL" labelkey="External Tag">
+	  <doc>This represents an external visible tag name for this location. It will be kept UNIQUE on SQL server 2008 systems
+			One possible use is bar code scanning purposes to be able to locate an item location record with scanning. Another use is to tag location with
+			bin names in a storeroom</doc>
+	</field>
+	<field name="Minimum" type="RequiredQuantity">
+	  <doc>
+		The minimum quantity of the item that should be available in this storage location.
+		This is used to determine when an item should be ordered.
+	  </doc>
+	</field>
+	<field name="Maximum" type="RequiredQuantity">
+	  <doc>
+		The amount that should be available after the item is orderd.
+		This is used to suggest a quantity to order when composing purchase orders.
+	  </doc>
+	</field>
+	<field name="CurrentItemCountValueID" link="ItemCountValue" read="GUIDREF">
+	  <doc>
+		linkage to current effect ItemCountValue record representing the base quantity/cost for calculating current onhand/totalcost
+	  </doc>
+	  <result hosting="cached">
+		(select id from ItemCountValue)
+	  </result>
+	  <extension name="dependson">ItemCountValue</extension>
+	</field>
+	<extension name="deletemethod">hide</extension>
+	<extension name="costrights">InventoryActivity</extension>
+  </table>
+  <table name="ActualItemLocation"/>
+  <table name="ItemCountValue">
+	<field name="VoidingItemCountValueVoidID"/>
+  </table>
+  <table name="ItemCountValueVoid"/>
+  <table name="AccountingTransaction"/>
+  <object class="trigger" name="mbtg_PermanentItemLocation_Updates_ActualItemLocation">
+	<doc>
+	  Maintain the EffectiveMaximum/EffectiveMinimum amount in ActualItemLocation based on changes to PermanentItemLocation
+	</doc>
+	<extension name="body">
+	  on PermanentItemLocation
+	  after insert, update, delete
+	  as
+	  begin
+		update ActualItemLocation set
+			EffectiveMaximum = dbo.mbfn_ActualItemLocation_EffectiveMaximum(ActualItemLocation.ID),
+			EffectiveMinimum = dbo.mbfn_ActualItemLocation_EffectiveMinimum(ActualItemLocation.ID)
+			where ActualItemLocation.ID in (
+					 select distinct ActualItemLocationID from inserted 
+	  		   union select distinct ActualItemLocationID ID from deleted
+			  )
+	  end
+	</extension>
+	<extension name="references">mbfn_ActualItemLocation_EffectiveMaximum()</extension>
+	<extension name="references">mbfn_ActualItemLocation_EffectiveMinimum()</extension>
+  </object>
+  <object class="function" name="mbfn_PermanentItemLocation_CurrentItemCountValue">
+	<doc>
+	  Return the current ItemCountValue record for this PermanentItemLocation
+	</doc>
+	<extension name="body">
+	  (
+		@PILID uniqueidentifier -- PermanentItemLocationID
+	  )
+	  RETURNS uniqueidentifier
+	  as
+	  begin
+		return (
+		  select TOP(1) ItemCountValue.ID
+			  from ItemCountValue
+				join AccountingTransaction on AccountingTransaction.ID = ItemCountValue.AccountingTransactionID
+				join ActualItemLocation on ActualItemLocation.ItemLocationID = ItemCountValue.ItemLocationID
+				join PermanentItemLocation on PermanentItemLocation.ActualItemLocationID = ActualItemLocation.ID
+				where (@PILID = PermanentItemLocation.ID) and ItemCountValue.VoidingItemCountValueVoidID is null
+				order by EffectiveDate DESC
+		)
+	  end
+	</extension>
+	<extension name="dependson">ItemCountValue</extension>
+	<extension name="dependson">ItemCountValueVoid</extension>
+	<extension name="dependson">ItemCountValue.VoidingItemCountValueVoidID</extension>
+	<extension name="references">AccountingTransaction</extension>
+	<extension name="references">ActualItemLocation</extension>
+	<extension name="references">PermanentItemLocation</extension>
+  </object>
+</database>

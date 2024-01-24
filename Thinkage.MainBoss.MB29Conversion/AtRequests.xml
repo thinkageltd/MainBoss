@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+  <!-- Construct Contact records for all tables that need to reference them. -->
+  <table name="EmailRequestor">
+	<dependency table="Requestor"/>
+	<dependency table="Contact"/>
+	<data>
+-- Set the Requestor Acknowledgement from the former @Request Requestor table if present in the input data.
+UPDATE <ODB/>.dbo.Requestor SET ReceiveAcknowledgement = 
+  CASE WHEN ARA.FLAGS IN (3, 2) THEN 1 else 0 end
+  from <IDB/>.dbo.AtRequestAccounts as ARA
+	join <IDB/>.dbo.Contacts as C on C.[KEY] = ARA.CONTACTKEY
+	join <ODB/>.dbo.Requestor as R on R.[ContactID] = C.[ID]
+  where C.EXCLUDE = 0;
+
+GO
+<!--Set the AutomaticallyCreateRequestors configuration-->
+<!-- We first check for the existence of the 'required' fields in the ServiceConfiguration record. If values exist for those
+fields, we will create the ServiceConfiguration record with the values for the required fields and from the Default Service Configuration table, then update all the other fields as we
+find them -->
+<!--101 POP3 Server-->
+declare @pop3val nvarchar(max)
+declare @smtpval nvarchar(max)
+declare @AutomaticRequestors bit
+select @AutomaticRequestors = case when exists(select * from <IDB/>.dbo.AtRequestAccounts as ARA where ARA.CONTACTKEY = -1 and (ARA.FLAGS = 3 or ARA.FLAGS = 1)) then 1 else 0 end
+
+SELECT @pop3val = [VALUE] from <IDB/>.dbo.AtRequestConfiguration where [KEY] = 101
+SELECT @smtpval = [VALUE] from <IDB/>.dbo.AtRequestConfiguration where [KEY] = 102
+IF @pop3val IS NOT NULL and @pop3val != ''
+   and @smtpval IS NOT NULL and @smtpval != ''
+begin
+INSERT INTO <ODB/>.dbo.ServiceConfiguration (
+	[Id],
+	[Code],
+	[Desc],
+	[Comment],
+	[MainBossRemoteURL],
+	[HtmlEmailNotification],
+	[NotificationInterval],
+	[ReturnEmailDisplayName],
+	[ReturnEmailAddress],
+	[AutomaticallyCreateRequestors],
+	[AutomaticallyCreateRequestorsFromLDAP],
+	[AutomaticallyCreateRequestorsFromEmail],
+	[WakeUpInterval],
+	[Encryption],
+	[MailServerType],
+	[ProcessNotificationEmail],
+	[ProcessRequestorIncomingEmail],
+	[MailServer],
+	[MailPort],
+	[MailUserName],
+	[MailboxName],
+	[MailEncryptedPassword],
+	[MaxMailSize],
+	[SMTPServer],
+	[SMTPPort],
+	[SMTPUseSSL],
+	[SMTPCredentialType],
+	[SMTPUserDomain],
+	[SMTPUserName],
+	[SMTPEncryptedPassword],
+	[ServiceMachineName]
+)
+SELECT
+	NEWID(),
+	'MainBossService',
+	'Upgrade Parameters',
+	[Comment],
+	[MainBossRemoteURL],
+	[HtmlEmailNotification],
+	[NotificationInterval],
+	[ReturnEmailDisplayName],
+	[ReturnEmailAddress],
+	@AutomaticRequestors,
+	0,
+	@AutomaticRequestors,
+	[WakeUpInterval],
+	1,
+	0,
+	[ProcessNotificationEmail],
+	[ProcessRequestorIncomingEmail],
+	@pop3val,
+	null,
+	[MailUserName],
+	[MailboxName],
+	[MailEncryptedPassword],
+	null,
+	@smtpval,
+	[SMTPPort],
+	[SMTPUseSSL],
+	[SMTPCredentialType],
+	[SMTPUserDomain],
+	[SMTPUserName],
+	[SMTPEncryptedPassword],
+	null
+FROM <ODB/>.dbo._DServiceConfiguration
+end
+GO
+		
+<!--Pop3 User-->
+declare @val nvarchar(max)
+SELECT @val = [VALUE] from <IDB/>.dbo.AtRequestConfiguration where [KEY] = 103
+IF @val IS NOT NULL and @val != ''
+begin
+  UPDATE <ODB/>.dbo.ServiceConfiguration SET [MailUserName] = @val
+end
+GO
+<!--POP3 PORT -->
+declare @val nvarchar(max)
+SELECT @val = [VALUE] from <IDB/>.dbo.AtRequestConfiguration where [KEY] = 105
+IF @val IS NOT NULL and @val != ''
+begin
+  UPDATE <ODB/>.dbo.ServiceConfiguration SET [MailPort] = @val
+end
+GO
+<!--SMTP PORT -->
+declare @val nvarchar(max)
+SELECT @val = [VALUE] from <IDB/>.dbo.AtRequestConfiguration where [KEY] = 106
+IF @val IS NOT NULL and @val != ''
+begin
+  UPDATE <ODB/>.dbo.ServiceConfiguration SET [SMTPPort] = @val
+end
+GO
+<!--WakeupInterval-->
+declare @val nvarchar(max)
+declare @i XAFInterval
+SELECT @val = [VALUE] from <IDB/>.dbo.AtRequestConfiguration where [KEY] = 151
+IF @val IS NOT NULL and cast(@val as int) != 0
+begin
+  SET @i = dbo._INew(0, 0, CONVERT(INT, @val), 0, 0)
+  UPDATE <ODB/>.dbo.ServiceConfiguration SET [WakeUpInterval] = @i
+end
+GO
+<!--Return Address DisplayName-->
+declare @val nvarchar(max)
+SELECT @val = [VALUE] from <IDB/>.dbo.AtRequestConfiguration where [KEY] = 152
+IF @val IS NOT NULL and @val != ''
+begin
+  UPDATE <ODB/>.dbo.ServiceConfiguration SET [ReturnEmailDisplayName] = @val
+end
+GO
+<!--Reply Subject-->
+declare @val nvarchar(max)
+SELECT @val = [VALUE] from <IDB/>.dbo.AtRequestConfiguration where [KEY] = 153
+IF @val IS NOT NULL and @val != ''
+begin
+					INSERT INTO <ODB/>.dbo.UserMessageTranslation (Id, [UserMessageKeyID], [LanguageLCID], [Translation])
+						SELECT TOP 1 NEWID(), UMK.ID, 127, @val
+									FROM <ODB/>.dbo.UserMessageKey as UMK
+									WHERE UMK.[KEY] = 'RequestorNotificationSubjectPrefix'
+end
+GO
+<!--Reply Intro-->
+declare @val nvarchar(max)
+SELECT @val = [VALUE] from <IDB/>.dbo.AtRequestConfiguration where [KEY] = 154
+IF @val IS NOT NULL and @val != ''
+begin
+					INSERT INTO <ODB/>.dbo.UserMessageTranslation (Id, [UserMessageKeyID], [LanguageLCID], [Translation])
+						SELECT TOP 1 NEWID(), UMK.ID, 127, @val
+									FROM <ODB/>.dbo.UserMessageKey as UMK
+									WHERE UMK.[KEY] = 'RequestorNotificationIntroduction'
+end
+GO
+<!--Return Address-->
+declare @val nvarchar(max)
+SELECT @val = [VALUE] from <IDB/>.dbo.AtRequestConfiguration where [KEY] = 155
+IF @val IS NOT NULL and @val != ''
+begin
+  UPDATE <ODB/>.dbo.ServiceConfiguration SET [ReturnEmailAddress] = @val
+end
+	</data>
+  </table>
+</dbconversion>

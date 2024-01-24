@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ActualOtherWorkInside" defaults="true" log="false" id="Id" xid="DemandOtherWorkInsideID" labelkey="Actual Per Job Inside">
+    <field name="Id" read="RequiredGUID" />
+    <field name="AccountingTransactionID" read="RequiredGUIDREF"  base="AccountingTransaction"/>
+    <field name="DemandOtherWorkInsideID" type="RequiredGUIDREF" link="DemandOtherWorkInside">
+	  <extension name="linkage">captive</extension>
+	</field>
+    <field name="Quantity" type="RequiredQuantity" />
+	<field name="CorrectionID" type="RequiredGUIDREF" link="ActualOtherWorkInside" labelkey="Actual Per Job Inside Correction">
+	  <doc>The ID of the original ActualOtherWorkOutide record for a family of original record and its corrections</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="CorrectedQuantity" read="Quantity">
+	  <doc>
+		  The corrected quantity of this ActualOtherWorkInside and all corrections (all those with a CorrectionID linking
+		  to this record).  Note this is only stored in the main ActualOtherWorkInside record (with CorrectionID==ID),
+		  not in the correction records.
+	  </doc>
+	  <result hosting="cached">
+		cast(42 as Quantity)
+	  </result>
+	  <extension name="dependson">mbfn_ActualOtherWorkInside_CorrectedQuantity()</extension>
+	</field>
+	<field name="CorrectedCost" read="Currency">
+	  <doc>
+		  The corrected cost of this ActualOtherWorkInside and all corrections (all those with a CorrectionID linking
+		  to this record).  Note this is only stored in the main ActualOtherWorkInside record (with CorrectionID==ID),
+		  not in the correction records.
+	  </doc>
+	  <result hosting="cached">
+		cast(42 as Currency)
+	  </result>
+	  <extension name="dependson">mbfn_ActualOtherWorkInside_CorrectedCost()</extension>
+	</field>
+	<extension name="costrights">WorkOrderInside</extension>
+  </table>
+  <table name="DemandOtherWorkInside"/>
+  <table name="Demand"/>
+  <table name="AccountingTransaction"/>
+  <object class="function" name="mbfn_ActualOtherWorkInside_CorrectedQuantity">
+	<doc>
+	</doc>
+	<extension name="body">
+	  (
+		@AOWIID uniqueidentifier -- ActualOtherWorkInside
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		return(
+		  select sum(Quantity)
+				from ActualOtherWorkInside
+				where ActualOtherWorkInside.CorrectionID = @AOWIID
+		)
+	  end
+	</extension>
+	<extension name="dependson">ActualOtherWorkInside.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualOtherWorkInside</extension>
+  </object>
+  <object class="function" name="mbfn_ActualOtherWorkInside_CorrectedCost">
+	<doc>
+	</doc>
+	<extension name="body">
+	  (
+		@AOWIID uniqueidentifier -- ActualOtherWorkInside
+	  )
+	  RETURNS money
+	  as
+	  begin
+		return (
+		  select sum(Cost)
+			from ActualOtherWorkInside
+			join AccountingTransaction on AccountingTransaction.ID = ActualOtherWorkInside.AccountingTransactionID
+			where ActualOtherWorkInside.CorrectionID = @AOWIID
+		)
+	  end
+	</extension>
+	<extension name="dependson">ActualOtherWorkInside.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualOtherWorkInside</extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualOtherWorkInside_Updates_Corrected">
+	<doc></doc>
+	<extension name="body">
+	  on ActualOtherWorkInside
+	  after insert, update, delete
+	  as
+	  begin
+		  update ActualOtherWorkInside
+			  set CorrectedQuantity = dbo.mbfn_ActualOtherWorkInside_CorrectedQuantity(ActualOtherWorkInside.ID),
+				  CorrectedCost = dbo.mbfn_ActualOtherWorkInside_CorrectedCost(ActualOtherWorkInside.ID)
+			  where ActualOtherWorkInside.ID in (
+					 select distinct CorrectionID from inserted
+			   union select distinct CorrectionID from deleted 
+			  )
+	  end
+	</extension>
+	<extension name="references">mbfn_ActualOtherWorkInside_CorrectedQuantity()</extension>
+	<extension name="references">mbfn_ActualOtherWorkInside_CorrectedCost()</extension>
+	<extension name="references">ActualOtherWorkInside</extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualOtherWorkInside_Updates_DemandOtherWorkInsideEtAl">
+	<doc></doc>
+	<extension name="body">
+	  on ActualOtherWorkInside
+	  after insert, update, delete
+	  as
+	  begin
+		  update DemandOtherWorkInside
+			  set ActualQuantity = dbo.mbfn_DemandOtherWorkInside_ActualQuantity(DemandOtherWorkInside.ID)
+			  where DemandOtherWorkInside.ID in (
+						select distinct DemandOtherWorkInsideID from inserted
+				  union select distinct DemandOtherWorkInsideID from deleted	
+				)
+		  update Demand
+			  set ActualCost = dbo.mbfn_DemandOtherWorkInside_ActualCost(DemandOtherWorkInside.ID)
+			  from Demand join DemandOtherWorkInside on Demand.ID = DemandOtherWorkInside.DemandID
+			  where Demand.ID in (
+						select distinct DemandID
+										from DemandOtherWorkInside
+										join inserted on inserted.DemandOtherWorkInsideID = DemandOtherWorkInside.ID
+				  union select distinct DemandID
+										from DemandOtherWorkInside
+										join deleted on deleted.DemandOtherWorkInsideID = DemandOtherWorkInside.ID
+				)
+	  end
+	</extension>
+	<extension name="references">mbfn_DemandOtherWorkInside_ActualQuantity()</extension>
+	<extension name="references">mbfn_DemandOtherWorkInside_ActualCost()</extension>
+	<extension name="references">DemandOtherWorkInside</extension>
+	<extension name="references">Demand</extension>
+  </object>
+</database>

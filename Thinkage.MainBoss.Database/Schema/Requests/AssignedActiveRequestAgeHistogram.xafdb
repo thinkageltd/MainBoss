@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="AssignedActiveRequestAgeHistogram" defaults="false" log="false" id="Id" labelkey="">
+		<!-- The Id is only unique if the data is filtered by RequestAssigneeID -->
+		<field name="Id" read="RequiredGUID"/>
+		<field name="RequestAssigneeID" type="RequiredGUIDREF" link="RequestAssignee" labelkey="Assignee"/>
+		<field name="RequestOpenDate" type="RequiredDate"/>
+		<field name="UnconvertedCount" type="RequiredQuantity"  />
+		<field name="ConvertedAllCompleteCount" type="RequiredQuantity"  />
+		<field name="ConvertedSomeIncompleteCount" type="RequiredQuantity"  />
+		<extension name="query">
+			select
+						<!-- TODO: We want a deterministic value for the row ID.
+								The EndDateEstimate would be fine except that IdGenerationService doesn't realize this is a 'view' and no Id generation is required.
+								The IdGenerationService should just 'rubberstamp' the Id field for views, perhaps.
+								For now we forcibly cast the RequestOpenDate into a GUID. -->
+					cast(cast(RequestOpenDate as varbinary(max)) as uniqueidentifier),
+					RequestAssigneeID,
+					RequestOpenDate,
+					coalesce(sum(case when RequestId is not null and HasWorkOrders = 0 then 1 else 0 end), 0),
+					coalesce(sum(case when HasWorkOrders != 0 and HasIncompleteWorkOrders = 0 then 1 else 0 end), 0),
+					coalesce(sum(case when HasIncompleteWorkOrders != 0 then 1 else 0 end), 0)
+				from
+					(select
+						X.RequestId,
+						X.RequestAssigneeID,
+						X.RequestOpenDate,
+						case when exists(select * from RequestedWorkOrder as RWO where RWO.RequestId = X.RequestId) then 1 else 0 end,
+						case when exists(
+							select *
+								from
+									RequestedWorkOrder as RWO
+									join WorkOrder as WO on WO.Id = RWO.WorkOrderID
+									join WorkOrderStateHistory as WOSH on WOSH.Id = WO.CurrentWorkOrderStateHistoryId
+									join WorkOrderState as WOS on WOS.Id = WOSH.WorkOrderStateId
+								where RWO.RequestId = X.RequestId and (WOS.FilterAsOpen = 1 or WOS.FilterAsDraft = 1)
+							) then 1 else 0 end
+						from
+							<!-- The following returns the Id and earliest in-progress effective date for all in-progress requests -->
+							(select RSH.RequestId, RA.RequestAssigneeID, dbo._DClosestValue(min(RSH.EffectiveDate), 0, 846000000000)
+								from
+									RequestStateHistory as RSH
+									join RequestState as RS on RS.Id = RSH.RequestStateId
+									join Request as R on R.Id = RSH.RequestId
+									join RequestStateHistory as CRSH on CRSH.Id = R.CurrentRequestStateHistoryId
+									join RequestState as CRS on CRS.Id = CRSH.RequestStateId
+									join RequestAssignment as RA on RA.RequestId = R.Id
+								where RS.FilterAsInProgress = 1 and CRS.FilterAsInProgress = 1
+								group by RSH.RequestId, RA.RequestAssigneeID
+							) as X(RequestId, RequestAssigneeID, RequestOpenDate)
+					union
+						select null, ID, dbo._DClosestValue(getdate(), 0, 846000000000), 0, 0
+							from RequestAssignee
+					union
+						select null, ID, dbo._DClosestValue(getdate(), 0, 846000000000) + dbo._INew(1, 0, 0, 0, 0), 0, 0
+							from RequestAssignee
+					) as Y(RequestId, RequestAssigneeID, RequestOpenDate, HasWorkOrders, HasIncompleteWorkOrders)
+				group by RequestOpenDate, RequestAssigneeID
+    </extension>
+		<extension name="dependson">WorkOrder</extension>
+		<extension name="dependson">WorkOrderStateHistory</extension>
+		<extension name="dependson">WorkOrderState</extension>
+		<extension name="dependson">RequestedWorkOrder</extension>
+		<extension name="dependson">RequestStateHistory</extension>
+		<extension name="dependson">RequestState</extension>
+		<extension name="dependson">Request</extension>
+		<extension name="dependson">RequestAssignment</extension>
+		<extension name="dependson">RequestAssignee</extension>
+	</table>
+	<table name="WorkOrder"/>
+	<table name="WorkOrderState"/>
+	<table name="WorkOrderStateHistory"/>
+	<table name="RequestedWorkOrder"/>
+	<table name="Request"/>
+	<table name="RequestState"/>
+	<table name="RequestStateHistory"/>
+	<table name="RequestAssignment"/>
+	<table name="RequestAssignee"/>
+</database>

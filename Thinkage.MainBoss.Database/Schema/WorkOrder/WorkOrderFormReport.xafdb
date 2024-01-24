@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+
+  <variable name="WOFormAdditionalBlankLines" type="integer(min 0, max 40)">
+	<doc>The number of blank lines for additional labor/material in printed Work Order forms</doc>
+  </variable>
+  <variable name="WOFormAdditionalInformation" type="MultiLineUnlimited">
+	<doc>The text to be placed in the additional-information section of the printed Work Order forms</doc>
+  </variable>
+
+  <table name="WorkOrderFormReport" log="false" id="Id" xid="Id" xunique="true" labelkey="">
+	<field name="Id" read="RequiredGUID" />
+	<field name="WorkOrderID" type="RequiredGUIDREF" link="WorkOrder" labelkey=""/>
+	<field name="NoLabelWorkOrderID" type="RequiredGUIDREF" link="WorkOrder" labelkey=""/>
+	<field name="DemandID" type="GUIDREF" link="Demand" labelkey="" />
+	<field name="AccountingTransactionID" type="GUIDREF" link="AccountingTransaction" labelkey="" />
+	<!--
+	The next three fields are here under duress so that the user can filter the report based on Trade etc.
+	These fields are necessary because the values can come from one of several records, not just a single path,
+	and it is not possible to build a SqlExpression that follows a path from a record referenced by a (non-path)
+	expression (e.g. Coalesce(various record types.TradeID))
+	-->
+	<field name="TradeID" type="GUIDREF" link="Trade"/>
+	<field name="LaborInsideID" type="GUIDREF" link="LaborInside"/>
+	<field name="LaborOutsideID" type="GUIDREF" link="LaborOutside"/>
+
+	<extension name="query">
+	  with WorkOrderResources (
+		Id
+		, WorkOrderId
+		, DemandId
+		, AccountingTransactionId
+		, TradeId
+		, LaborInsideId
+		, LaborOutsideId
+	  )
+	  as (
+		  select	DemandItem.[ID], Demand.WorkOrderID, DemandItem.DemandID, null, null, null, null
+		  from DemandItem
+			join Demand on Demand.[ID] = DemandItem.DemandID
+		union all
+		  select	DemandLaborInside.[ID], Demand.WorkOrderID, DemandLaborInside.DemandID, null, LaborInside.TradeID, DemandLaborInside.LaborInsideID, null
+		  from DemandLaborInside
+			join Demand on Demand.[ID] = DemandLaborInside.DemandID
+			join LaborInside on LaborInside.Id = DemandLaborInside.LaborInsideID
+		union all
+		  select	DemandLaborOutside.[ID], Demand.WorkOrderID, DemandLaborOutside.DemandID, null, LaborOutside.TradeID, null, DemandLaborOutside.LaborOutsideID
+		  from DemandLaborOutside
+			join Demand on Demand.[ID] = DemandLaborOutside.DemandID
+			join LaborOutside on LaborOutside.Id = DemandLaborOutside.LaborOutsideID
+		union all
+		  select	DemandOtherWorkInside.[ID], Demand.WorkOrderID, DemandOtherWorkInside.DemandID, null, OtherWorkInside.TradeID, null, null
+		  from DemandOtherWorkInside
+			join Demand on Demand.[ID] = DemandOtherWorkInside.DemandID
+			join OtherWorkInside on OtherWorkInside.Id = DemandOtherWorkInside.OtherWorkInsideID
+		union all
+		  select	DemandOtherWorkOutside.[ID], Demand.WorkOrderID, DemandOtherWorkOutside.DemandID, null, OtherWorkOutside.TradeID, null, null
+		  from DemandOtherWorkOutside
+			join Demand on Demand.[ID] = DemandOtherWorkOutside.DemandID
+			join OtherWorkOutside on OtherWorkOutside.Id = DemandOtherWorkOutside.OtherWorkOutsideID
+		union all
+		  select	DemandMiscellaneousWorkOrderCost.[ID], Demand.WorkOrderID, DemandMiscellaneousWorkOrderCost.DemandID, null, null, null, null
+		  from DemandMiscellaneousWorkOrderCost
+			join Demand on Demand.[ID] = DemandMiscellaneousWorkOrderCost.DemandID
+		union all
+		  select	ActualItem.[ID], Demand.WorkOrderID, DemandItem.DemandID, ActualItem.AccountingTransactionID, null, null, null
+		  from ActualItem
+			join DemandItem on DemandItem.[ID] = ActualItem.DemandItemID
+			join Demand on Demand.[ID] = DemandItem.DemandID
+		union all
+		  select	ActualLaborInside.[ID], Demand.WorkOrderID, DemandLaborInside.DemandID, ActualLaborInside.AccountingTransactionID, LaborInside.TradeID, DemandLaborInside.LaborInsideID, null
+		  from ActualLaborInside
+			join DemandLaborInside on DemandLaborInside.[ID] = ActualLaborInside.DemandLaborInsideID
+			join Demand on Demand.[ID] = DemandLaborInside.DemandID
+			join LaborInside on LaborInside.Id = DemandLaborInside.LaborInsideID
+		union all
+		  select	ActualLaborOutsideNonPO.[ID], Demand.WorkOrderID, DemandLaborOutside.DemandID, ActualLaborOutsideNonPO.AccountingTransactionID, LaborOutside.TradeID, null, DemandLaborOutside.LaborOutsideID
+		  from ActualLaborOutsideNonPO
+			join DemandLaborOutside on DemandLaborOutside.[ID] = ActualLaborOutsideNonPO.DemandLaborOutsideID
+			join Demand on Demand.[ID] = DemandLaborOutside.DemandID
+			join LaborOutside on LaborOutside.Id = DemandLaborOutside.LaborOutsideID
+		union all
+		  select	ActualLaborOutsidePO.[ID], Demand.WorkOrderID, DemandLaborOutside.DemandID, ActualLaborOutsidePO.AccountingTransactionID, LaborOutside.TradeID, null, DemandLaborOutside.LaborOutsideID
+		  from ActualLaborOutsidePO
+			join POLineLabor on POLineLabor.[ID] = ActualLaborOutsidePO.POLineLaborID
+			join DemandLaborOutside on DemandLaborOutside.[ID] = POLineLabor.DemandLaborOutsideID
+			join Demand on Demand.[ID] = DemandLaborOutside.DemandID
+			join LaborOutside on LaborOutside.Id = DemandLaborOutside.LaborOutsideID
+		union all
+		  select	ActualOtherWorkInside.[ID], Demand.WorkOrderID, DemandOtherWorkInside.DemandID, ActualOtherWorkInside.AccountingTransactionID, OtherWorkInside.TradeID, null, null
+		  from ActualOtherWorkInside
+			join DemandOtherWorkInside on DemandOtherWorkInside.[ID] = ActualOtherWorkInside.DemandOtherWorkInsideID
+			join Demand on Demand.[ID] = DemandOtherWorkInside.DemandID
+			join OtherWorkInside on OtherWorkInside.Id = DemandOtherWorkInside.OtherWorkInsideID
+		union all
+		  select	ActualOtherWorkOutsideNonPO.[ID], Demand.WorkOrderID, DemandOtherWorkOutside.DemandID, ActualOtherWorkOutsideNonPO.AccountingTransactionID, OtherWorkOutside.TradeID, null, null
+		  from ActualOtherWorkOutsideNonPO
+			join DemandOtherWorkOutside on DemandOtherWorkOutside.[ID] = ActualOtherWorkOutsideNonPO.DemandOtherWorkOutsideID
+			join Demand on Demand.[ID] = DemandOtherWorkOutside.DemandID
+			join OtherWorkOutside on OtherWorkOutside.Id = DemandOtherWorkOutside.OtherWorkOutsideID
+		union all
+		  select	ActualOtherWorkOutsidePO.[ID], Demand.WorkOrderID, DemandOtherWorkOutside.DemandID, ActualOtherWorkOutsidePO.AccountingTransactionID, OtherWorkOutside.TradeID, null, null
+		  from ActualOtherWorkOutsidePO
+			join POLineOtherWork on POLineOtherWork.[ID] = ActualOtherWorkOutsidePO.POLineOtherWorkID
+			join DemandOtherWorkOutside on DemandOtherWorkOutside.[ID] = POLineOtherWork.DemandOtherWorkOutsideID
+			join Demand on Demand.[ID] = DemandOtherWorkOutside.DemandID
+			join OtherWorkOutside on OtherWorkOutside.Id = DemandOtherWorkOutside.OtherWorkOutsideID
+		union all
+		  select	ActualMiscellaneousWorkOrderCost.[ID], Demand.WorkOrderID, DemandMiscellaneousWorkOrderCost.DemandID, ActualMiscellaneousWorkOrderCost.AccountingTransactionID, null, null, null
+		  from ActualMiscellaneousWorkOrderCost
+			join DemandMiscellaneousWorkOrderCost on DemandMiscellaneousWorkOrderCost.[ID] = ActualMiscellaneousWorkOrderCost.DemandMiscellaneousWorkOrderCostID
+			join Demand on Demand.[ID] = DemandMiscellaneousWorkOrderCost.DemandID
+		)
+	  select
+		coalesce( WorkOrderResources.[ID], WorkOrder.ID)
+		  , WorkOrder.ID
+		  , WorkOrder.ID
+		  , WorkOrderResources.DemandID
+		  , WorkOrderResources.AccountingTransactionID
+		  , WorkOrderResources.TradeId
+		  , WorkOrderResources.LaborInsideId
+		  , WorkOrderResources.LaborOutsideId
+		from WorkOrder
+		left outer join WorkOrderResources on WorkOrderResources.[WorkOrderID] = WorkOrder.ID
+	</extension>
+	<extension name="dependson">AccountingTransaction</extension>
+	<extension name="dependson">ActualItem</extension>
+	<extension name="dependson">ActualLaborInside</extension>
+	<extension name="dependson">ActualLaborOutsideNonPO</extension>
+	<extension name="dependson">ActualLaborOutsidePO</extension>
+	<extension name="dependson">ActualOtherWorkInside</extension>
+	<extension name="dependson">ActualOtherWorkOutsideNonPO</extension>
+	<extension name="dependson">ActualOtherWorkOutsidePO</extension>
+	<extension name="dependson">ActualMiscellaneousWorkOrderCost</extension>
+	<extension name="dependson">Demand</extension>
+	<extension name="dependson">DemandLaborInside</extension>
+	<extension name="dependson">DemandLaborOutside</extension>
+	<extension name="dependson">DemandOtherWorkInside</extension>
+	<extension name="dependson">DemandOtherWorkOutside</extension>
+	<extension name="dependson">DemandMiscellaneousWorkOrderCost</extension>
+	<extension name="dependson">POLineItem</extension>
+	<extension name="dependson">POLineLabor</extension>
+	<extension name="dependson">POLineOtherWork</extension>
+	<extension name="dependson">WorkOrder</extension>
+	<extension name="dependson">LaborInside</extension>
+	<extension name="dependson">LaborOutside</extension>
+	<extension name="dependson">OtherWorkInside</extension>
+	<extension name="dependson">OtherWorkOutside</extension>
+	<extension name="costrights">UnitValue</extension>
+	<extension name="lastupdate">WorkOrderID</extension>
+  </table>
+  <table name="AccountingTransaction"/>
+  <table name="ActualItem"/>
+  <table name="ActualLaborInside"/>
+  <table name="ActualLaborOutsideNonPO"/>
+  <table name="ActualLaborOutsidePO"/>
+  <table name="ActualOtherWorkInside"/>
+  <table name="ActualOtherWorkOutsideNonPO"/>
+  <table name="ActualOtherWorkOutsidePO"/>
+  <table name="ActualMiscellaneousWorkOrderCost"/>
+  <table name="Demand"/>
+  <table name="DemandItem"/>
+  <table name="DemandLaborInside"/>
+  <table name="DemandLaborOutside"/>
+  <table name="DemandOtherWorkInside"/>
+  <table name="DemandOtherWorkOutside"/>
+  <table name="DemandMiscellaneousWorkOrderCost"/>
+  <table name="POLineItem"/>
+  <table name="POLineLabor"/>
+  <table name="POLineOtherWork"/>
+  <table name="LaborInside"/>
+  <table name="LaborOutside"/>
+  <table name="OtherWorkInside"/>
+  <table name="OtherWorkOutside"/>
+  <table name="Trade"/>
+  <table name="WorkOrder"/>
+</database>

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="RelativeLocation" defaults="true" log="false" id="Id" xid="ContainingLocationID Code Hidden" xunique="true" labelkey="">
+	<doc>
+	  This intermediate-level derivation is for Locations which are physically contained within other Locations,
+	  and for which the Code identifies this location within its containing location.
+	</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="RequiredCode"/>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="ExternalTag" type="Code" unique="true" where="ExternalTag IS NOT NULL AND Hidden IS NULL" labelkey="External Tag">
+	  <doc>This represents an external visible tag name for this unit. It will be kept UNIQUE on SQL server 2008 systems.
+			One possible use is bar code scanning purposes to be able to locate the unit record with scanning.</doc>
+	</field>
+	<field name="ContainingLocationID" type="RequiredGUIDREF"  link="Location">
+	  <doc>The Location within which this record's location is physically contained</doc>
+	  <!--
+	  All the edit tbls for derivations of this class explicitly choose the correct picker for this field.
+	  However, the SearchFilterControl does not know which derivation of location object it is searching in,
+	  so we specify the most permissive one here. If the user happens to be searching SubLocations, this will
+	  allow them to pick ContainingLocations that could never contain a SubLocation, but this will result in
+	  a failed search, no different than if they had picked an eligible containing location that happened to not
+	  contain any SubLocations.
+	  -->
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.PermanentLocationPickerTblCreator,Thinkage.MainBoss.Controls</extension>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="LocationID" read="RequiredGUIDREF" base="Location">
+	  <doc>The base Location record for this relative location record</doc>
+	</field>
+	<extension name="deletemethod">hide</extension>
+  </table>
+  <object class="trigger" name="mbtg_SetNewRelativeLocationContainment">
+	<doc>This trigger creates the containment and location codes for all new RelativeLocation records</doc>
+	<extension name="body">
+	  on RelativeLocation
+	  for insert
+	  as
+	  begin
+		  -- This has loop prevention to avoid the infinite recursion as described in the UPDATE trigger.
+		  with newContainment (ContainedLocationID, ContainingLocationID, Depth) as (
+			  select ed.ContainedLocationID, ing.ContainingLocationID, ed.Depth+ing.Depth+1
+				  from inserted
+				  join LocationContainment as ed on ed.ContainingLocationID = inserted.LocationID
+				  join LocationContainment as ing on ing.ContainedLocationID = inserted.ContainingLocationID
+		  union all
+			  select ed.ContainedLocationID, ing.ContainingLocationID, ed.Depth+ing.Depth+1
+				  from inserted
+				  join newContainment as ed on ed.ContainingLocationID = inserted.LocationID
+				  join LocationContainment as ing on ing.ContainedLocationID = inserted.ContainingLocationID
+				  where ed.ContainedLocationID != ed.ContainingLocationID
+		  union all
+			  select ed.ContainedLocationID, ing.ContainingLocationID, ed.Depth+ing.Depth+1
+				  from inserted
+				  join LocationContainment as ed on ed.ContainingLocationID = inserted.LocationID
+				  join newContainment as ing on ing.ContainedLocationID = inserted.ContainingLocationID
+				  where ing.ContainedLocationID != ing.ContainingLocationID
+		  )
+		  insert into LocationContainment select newid(), * from newContainment
+	  end
+	  -- Set the compound Location.Code for all our new records and for anything they contain.
+	  -- In general multiple records inserted at once will not be containers for each other but it is possible for the importer
+	  -- for instance to create a whole bunch of Location records without their derived records, then all the corresponding RelativeLocation
+	  -- records, so we have to handle this case anyway.
+	  -- The locations' codes must be updted in top-down order so we sort by depth, and to avoid double-updating records that have more
+	  -- than one container being inserted we group by target record and take the max of the depths
+	  declare @codeUpdateTarget uniqueidentifier
+	  declare c cursor local fast_forward for
+		  select LC.ContainedLocationID from
+			  inserted
+			  join LocationContainment as LC on inserted.LocationID = LC.ContainingLocationID
+			  group by LC.ContainedLocationID
+			  order by max(LC.Depth) asc
+	  open c
+	  fetch next from c into @codeUpdateTarget
+	  while @@fetch_status = 0 begin
+		update Location set Code = RL.Code + ' @ ' + CGL.Code
+			from Location
+				join RelativeLocation as RL on RL.LocationID = Location.ID
+				join Location as CGL on RL.ContainingLocationID = CGL.ID
+			where Location.ID = @codeUpdateTarget
+		update Location set Code = WO.Number + ' @ ' + CGL.Code
+			from Location
+				join TemporaryStorage as TS on TS.LocationID = Location.ID
+				join WorkOrder as WO on TS.WorkOrderID = WO.ID
+				join Location as CGL on TS.ContainingLocationID = CGL.ID
+			where Location.ID = @codeUpdateTarget
+		fetch next from c into @codeUpdateTarget
+	  end
+	</extension>
+	<extension name="references">LocationContainment</extension>
+	<extension name="references">RelativeLocation</extension>
+	<extension name="references">Location</extension>
+	<extension name="references">TemporaryStorage</extension>
+	<extension name="references">WorkOrder</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetUpdatedRelativeLocationContainment">
+	<doc>This trigger updates the containment and location codes for all updates RelativeLocation records</doc>
+	<extension name="body">
+	  on RelativeLocation
+	  for update
+	  as
+	  if update(ContainingLocationID) begin
+		  -- First delete all the old containment.
+		  -- We can't directly use the "delete from T from"... syntax because we refer to T several times in the from clause and only
+		  -- want to delete records from one of the cursors on T. By using a WITH statement we avoid this.
+		  -- The UPDATE(column) test only tells us if the UPDATE statement has the named column in its SET list. Because of the nature of
+		  -- the DataSet.Update processing, this column is *always* in the SET list. So we use a join operation to find only rows where
+		  -- the ContainingLocationID has truly changed.
+		  with containmentToDelete (ContainedLocationID, ContainingLocationID) as (
+			  select ed.ContainedLocationID, ing.ContainingLocationID from
+				  inserted
+				  join deleted on inserted.id = deleted.id
+				  join LocationContainment as ed on ed.ContainingLocationID = deleted.LocationID
+				  join LocationContainment as ing on ing.ContainedLocationID = deleted.ContainingLocationID
+				  where inserted.ContainingLocationID != deleted.ContainingLocationID
+		  )
+		  delete from LocationContainment
+			  from containmentToDelete as TD
+				  join LocationContainment as D on D.ContainingLocationID = TD.ContainingLocationID and D.ContainedLocationID = TD.ContainedLocationID
+
+		  -- Now add the new containment
+		  -- Looped structure technically would produce an infinite number of records, each set representing once more through the loop.
+		  -- The simplest of these would be non-trivial self-containment records for each row in the loop wherein the depth is the loop length.
+		  -- Such records, if inserted into the table, would cause uniqueness violations.
+		  -- I tried using a recursive WITH declaration to generate all the new containment at once, but could not prevent it from recurring forever
+		  -- when given looped structure. Instead we iterate once for each changed record, adding the containment one changed RelativeLocation at a time.
+		  -- Since the program rarely posts more than one update at a time anyway (in fact it hardly *ever* changes existing containment),
+		  -- this loop usually only executes once.
+		  -- The actual detection occurs because the self-containment records generated will conflict with the natural zero-depth
+		  -- self-containment record already in the table.
+		  declare @ed uniqueidentifier
+		  declare @ing uniqueidentifier
+		  declare cc cursor local fast_forward for
+			  select inserted.LocationID, inserted.ContainingLocationID from
+				  inserted
+				  join deleted on inserted.id = deleted.id
+				  where inserted.ContainingLocationID != deleted.ContainingLocationID
+		  open cc
+		  fetch next from cc into @ed, @ing
+		  while @@fetch_status = 0 begin
+			insert into LocationContainment select newid(), ed.ContainedLocationID, ing.ContainingLocationID, ed.Depth+ing.Depth+1
+				from LocationContainment as ed, LocationContainment as ing
+				  where ed.ContainingLocationID = @ed and ing.ContainedLocationID = @ing
+			  fetch next from cc into @ed, @ing
+		  end
+	  end
+	  if update(ContainingLocationiD) or update(Code) begin
+		  -- Update the compound codes of all the altered RelativeLocations and everything contained in them.
+		  -- Note that more than one RL in the containers for a node may have been updated, so we take the max of the depths
+		  -- of the containment to order when the individual row is updated.
+		  declare @codeUpdateTarget uniqueidentifier
+		  declare c cursor local fast_forward for
+			  select LC.ContainedLocationID from
+				  inserted
+				  join deleted on inserted.id = deleted.id
+				  join LocationContainment as LC on inserted.LocationID = LC.ContainingLocationID
+				  where inserted.ContainingLocationID != deleted.ContainingLocationID
+					or convert(varbinary(max), inserted.code) != convert(varbinary(max), deleted.code)
+				  group by LC.ContainedLocationID
+				  order by max(LC.Depth) asc
+		  open c
+		  fetch next from c into @codeUpdateTarget
+		  while @@fetch_status = 0 begin
+			update Location set Code = RL.Code + ' @ ' + CGL.Code
+				from Location
+					join RelativeLocation as RL on RL.LocationID = Location.ID
+					join Location as CGL on RL.ContainingLocationID = CGL.ID
+				where Location.ID = @codeUpdateTarget
+			update Location set Code = WO.Number + ' @ ' + CGL.Code
+				from Location
+					join TemporaryStorage as TS on TS.LocationID = Location.ID
+					join WorkOrder as WO on TS.WorkOrderID = WO.ID
+					join Location as CGL on TS.ContainingLocationID = CGL.ID
+				where Location.ID = @codeUpdateTarget
+			fetch next from c into @codeUpdateTarget
+		  end
+	  end
+	</extension>
+	<extension name="references">LocationContainment</extension>
+	<extension name="references">RelativeLocation</extension>
+	<extension name="references">Location</extension>
+	<extension name="references">TemporaryStorage</extension>
+	<extension name="references">WorkOrder</extension>
+  </object>
+  <table name="Location"/>
+  <table name="LocationContainment"/>
+  <table name="TemporaryStorage" id="Id"/>
+  <table name="WorkOrder" id="Id"/>
+</database>

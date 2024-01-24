@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ItemAdjustment" defaults="true" log="false" id="Id" xid="ItemLocationID" labelkey="Item Adjustment">
+	<doc>
+	  This record is used to make an arbitrary adjustment to the quantity or value on hand in an Item Storage assignment.
+	  The changes are stored as numbers which are added into the total of the quantities and value.
+	  Note that the change in value is stored in our base AccountingTransaction record.
+	</doc>
+    <field name="Id" read="RequiredGUID" />
+    <field name="AccountingTransactionID" read="RequiredGUIDREF"  base="AccountingTransaction"/>
+    <field name="ItemLocationID" type="RequiredGUIDREF" link="ItemLocation">
+	  <doc>The Item Location assignment whose value and quantity are being adjusted</doc>
+	  <extension name="linkage">captive</extension>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.AllActualItemLocationPickerTblCreator,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="ItemAdjustmentCodeID" type="RequiredGUIDREF"  link="ItemAdjustmentCode" labelkey="Adjustment Code">
+	  <doc>The Adjustment code explaining the reason for the adjustment and determining where any value changes are charged against</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Quantity" type="RequiredQuantity">
+	  <doc>The change in quantity effected by this adjustment record</doc>
+	</field>
+	<field name="TotalQuantity" read="RequiredQuantity">
+	  <doc>The total quantity as a result of this adjustment record</doc>
+	  <result hosting="cached">
+		cast(420000 as RequiredQuantity)
+	  </result>
+	  <extension name="dependson">ItemAdjustment</extension>
+	  <extension name="dependson">ItemIssue</extension>
+	  <extension name="dependson">ItemTransfer</extension>
+	  <extension name="dependson">ReceiveItemPO</extension>
+	  <extension name="dependson">ReceiveItemNonPO</extension>
+	  <extension name="dependson">ActualItem</extension>
+	  <extension name="dependson">ItemCountValue</extension>
+	  <extension name="dependson">ItemCountValueVoid</extension>
+	</field>
+	<field name="TotalCost" read="RequiredCurrency">
+	  <doc>The total cost as a result of this adjustment record</doc>
+	  <result hosting="cached">
+		cast(420000 as RequiredCurrency)
+	  </result>
+	  <extension name="dependson">ItemAdjustment</extension>
+	  <extension name="dependson">ItemIssue</extension>
+	  <extension name="dependson">ItemTransfer</extension>
+	  <extension name="dependson">ReceiveItemPO</extension>
+	  <extension name="dependson">ReceiveItemNonPO</extension>
+	  <extension name="dependson">ActualItem</extension>
+	  <extension name="dependson">ItemCountValue</extension>
+	  <extension name="dependson">ItemCountValueVoid</extension>
+	</field>
+	<extension name="costrights">InventoryActivity</extension>
+  </table>
+  <table name="ItemAdjustmentCode"/>
+  <object class="trigger" name="mbtg_ItemAdjustment_Updates_ActualItemLocation">
+	<doc>
+	  Maintain the TotalCost and OnHand quantities in ActualItemLocation and also verify EffectiveDate ordering validity
+	</doc>
+	<extension name="body">
+	  on ItemAdjustment
+	  after insert
+	  as
+	  begin
+		if exists(select *
+					from inserted
+					  join ActualItemLocation as AIL on inserted.ItemLocationID = AIL.ItemLocationID
+					  join PermanentItemLocation as PIL on AIL.ID = PIL.ActualItemLocationID
+					  join ItemCountValue as CICV on CICV.ID = PIL.CurrentItemCountValueID
+					  join AccountingTransaction as CTX on CTX.ID = CICV.AccountingTransactionID
+					  join AccountingTransaction as TX on TX.ID = inserted.AccountingTransactionID
+					where CTX.EffectiveDate &gt;= TX.EffectiveDate) begin
+		  raiserror('''%s'' record predates the latest Physical Count', 16, 1, 'ItemAdjustment')
+		  rollback transaction
+		end
+  		update ItemAdjustment
+	  	  set TotalQuantity = coalesce(
+				(select top 1 X.TotalQuantity
+									from RationalizedInventoryActivityDeltas as X
+									where
+									  X.ItemLocationID = inserted.ItemLocationID
+									  and (TX.EffectiveDate > X.EffectiveDate or (TX.EffectiveDate = X.EffectiveDate and TX.EntryDate > X.EntryDate))
+									order by EffectiveDate desc, EntryDate desc), 0),
+			  TotalCost = coalesce(
+				(select top 1 X.TotalCost
+									from RationalizedInventoryActivityDeltas as X
+									where
+									  X.ItemLocationID = inserted.ItemLocationID
+									  and (TX.EffectiveDate > X.EffectiveDate or (TX.EffectiveDate = X.EffectiveDate and TX.EntryDate > X.EntryDate))
+									order by EffectiveDate desc, EntryDate desc), 0)
+		  from ItemAdjustment
+		  join inserted on ItemAdjustment.ID = inserted.ID
+		  join AccountingTransaction as TX on TX.Id = inserted.AccountingTransactionID
+		<!-- If we could be sure there was only one record per IL, we could do the work here with 14 update calls (for the various inv tx tables)
+			However that would represent a lot of code duplication (over 7 types of inv tx, not to mention ICV and ICVV), so instead we set up
+			a cursor which yields the IL, cost delta, and quantity delta, and call a procedure to do the updating. -->
+		declare Deltas cursor local fast_forward
+		for
+		  select inserted.ItemLocationID, TX.EffectiveDate, TX.EntryDate, inserted.Quantity, TX.Cost
+		  from inserted
+		  join AccountingTransaction as TX on TX.Id = inserted.AccountingTransactionID
+		  
+		declare @ILID uniqueidentifier
+		declare @EffectiveDate datetime
+		declare @EntryDate datetime
+		declare @DeltaQuantity integer
+		declare @DeltaCost money
+		open Deltas
+		fetch next from Deltas into @ILID, @EffectiveDate, @EntryDate, @DeltaQuantity, @DeltaCost
+		while @@Fetch_Status = 0
+		begin
+		  exec mbsp_AddInventoryDeltas @ILID, @EffectiveDate, @EntryDate, @DeltaQuantity, @DeltaCost
+		  fetch next from Deltas into @ILID, @EffectiveDate, @EntryDate, @DeltaQuantity, @DeltaCost
+		end
+	  end
+	</extension>
+	<extension name="references">ActualItemLocation</extension>
+	<extension name="references">PermanentItemLocation</extension>
+	<extension name="references">ItemCountValue</extension>
+	<extension name="references">AccountingTransaction</extension>
+	<extension name="references">ItemAdjustment</extension>
+	<extension name="references">ItemLocation</extension>
+	<extension name="references">RationalizedInventoryActivityDeltas</extension>
+	<extension name="references">mbsp_AddInventoryDeltas[]</extension>
+  </object>
+  <table name="ActualItemLocation"/>
+  <table name="PermanentItemLocation"/>
+  <table name="ItemIssue"/>
+  <table name="ItemTransfer"/>
+  <table name="ReceiveItemPO"/>
+  <table name="ReceiveItemNonPO"/>
+  <table name="ActualItem"/>
+  <table name="ItemCountValueVoid"/>
+  <table name="ItemCountValue" />
+  <table name="AccountingTransaction" />
+  <table name="ItemLocation" />
+  <table name="RationalizedInventoryActivityDeltas" />
+</database>

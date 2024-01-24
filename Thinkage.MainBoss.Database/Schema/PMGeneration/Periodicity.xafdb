@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="Periodicity" defaults="false" log="false" id="Id" xid="ScheduleID MeterClassID" xunique="true" labelkey="Periodicity">
+	<doc>
+	  This record represents (one of the) scheduling period(s) for the referenced schedule. This record is polymorphic, and
+	  the meaning of the Interval depends on other fields in the table.
+	  In particular, (MeterClassID is null) if and only if (CalendarUnit is not null).
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="ScheduleID" type="RequiredGUIDREF" link="Schedule">
+	  <doc>The Schedule to which this periodicity applies</doc>
+	  <extension name="linkage">owner</extension>
+	</field>
+	<field name="Interval" type="integer(unsigned 31, nonnull)">
+	  <doc>the length of the period (as a number of units)</doc>
+	</field>
+	<field name="MeterClassID" type="GUIDREF" link="MeterClass">
+	  <doc>If non-null, identified the Meter Class of the meter on which the period is defined. The Interval is in the same units as the Meter's UoM</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="CalendarUnit" type="integer(min 0, max 1)">
+	  <doc>If non-null, identifies that the period is a calendar period, and the particular value identifies if the interval is in days (0) or in months (1)</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TISchedule.PeriodicityIntervalProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<extension name="deletemethod">delete</extension>
+  </table>
+  <table name="Schedule"/>
+  <table name="MeterClass"/>
+</database>

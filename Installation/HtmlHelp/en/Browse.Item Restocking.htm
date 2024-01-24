@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Item Restocking Table</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Item Restocking Table</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Item Pricing.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Item Restocking.htm">Next section &gt;</a></p>
+
+<p>The <span class="NewTerm">Item Restocking</span> table lists items that need to be restocked. This means that in a particular storeroom, the stock available is less than the minimum specified for that storeroom. (You specify minimums for each storeroom using storeroom assignments. For more, see <a href="StoreroomAssignments.htm">Storeroom Assignments</a>.)</p>
+
+<p>The main part of the table contains an entry for each item that needs to be restocked. Under each item is a list of one or more storerooms that need restocking. If there are one or more storerooms with a surplus of the item, they're also listed; this shows you where you might get stock that you can transfer where it's needed.</p>
+
+<p class="box"><span class="CInset">Note:</span> Stock available is calculated as <span class="CU">On Hand + On Order - On Reserve</span>.</p>
+
+<p>To see the item restocking table, go to <span class="CPanel">Items</span> | <span class="CPanel">Item Restocking</span>. The table contains the following:</p>
+
+<p class="wi"><span class="CField">Code</span>: Click this heading to sort the list by code. Click again to reverse the order (from ascending to descending or vice versa).</p>
+<p class="wi"><span class="CField">Effective Minimum</span>: Click this heading to sort the list by minimum quantity (i.e. the minimum quantity of the item that a given storeroom should contain). Click again to reverse the order.</p>
+<p class="wi"><span class="CField">Available</span>: Click this heading to sort the list by actual quantity available in the given storeroom. Click again to reverse the order.
+
+<br /><br />For storerooms that need to be restocked, "<span class="CField">Available</span>" is always less than "<span class="CField">Effective Minimum</span>". The table may also show storerooms that have a surplus of stock (storerooms whose "<span class="CField">Available</span>" is greater than their "<span class="CField">Effective Minimum</span>"). This tells you where you might get stock to transfer to storerooms that are below their minimum.
+
+<br /><br />If there's an item where there's no surplus of stock in any storeroom, under that item you'll just see a list of storerooms that need restocking.</p>
+<p class="wi"><span class="CField">UOM</span>: Click this heading to sort the list by unit of measurement. Click again to reverse the order.</p>
+<p class="wi"><span class="CField">Unit Cost</span>: Click this heading to sort the list by unit cost. Click again to reverse the order.</p>
+<p class="wi"><span class="CButton">Apply Filter</span>: Lets you set up a <span class="NewTerm">filter</span> to select which records should be shown in the table. For more information, see <a href="Filter.htm">Table Filters</a>.</p>
+<p class="wi">Information area: If you select an inventory item in the main list, the information area below the list shows information from the item's record. For more, see <a href="InventoryItemRecords.htm">Inventory Item Records</a>.
+
+<br /><br />If you select a storeroom in the main list, the information area below the list shows information from the storeroom assignment record associated with the item and storeroom. For more, see <a href="StoreroomAssignments.htm">Storeroom Assignments</a>.
+
+<br /><br />Note that there are two types of storerooms that may be listed in the main list: storerooms that need to be restocked (i.e. their "<span class="CField">Available</span>" is less than their "<span class="CField">Effective Minimum</span>"); and storerooms that contain a surplus of stock (i.e. their "<span class="CField">Available</span>" is greater than their "<span class="CField">Effective Minimum</span>").</p>
+<p class="wi"><span class="CButton">New Item Transfer</span>: Opens a window that lets you record a transfer of item from a "surplus" storeroom to a storeroom that needs restocking. If there are no surplus storerooms for a given item, the <span class="CButton">New Item Transfer</span> button is disabled. For more on item transfers, see <a href="Edit.Item Transfer.htm">Transferring Items from One Storeroom to Another</a>.
+
+<br /><br /><span class="CButton">New Item Transfer</span> has a drop-down button that contains the following:</p>
+<p class="wi2"><span class="CButton">New Purchase Order</span>: Opens a window that lets you create a purchase order for restocking the given item. This button is only enabled if the selected storeroom assignment has a preferred pricing price quote or if there's a history of buying this type of item from a specific vendor.
+
+<br /><br />For more on purchase orders, see <a href="PurchaseOrders.htm">Purchase Orders</a>.</p>
+<p class="wi"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi"><span class="CButton"><img src="PrintHS.png" alt="Print" /></span>: Opens a window that lets you print one or more records from the table. This print window lets you specify options for selecting and organizing what you want to print. For more information, see <a href="Report.Item Restocking.htm">Item Restocking Report</a>.</p>
+<p class="wi"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Lets you search through the list of records for a particular record. For more information, see <a href="Search.htm">Searching for a Particular Record</a>. The <span class="CButton"><img src="Find_VS.png" alt="Search" /></span> button has an accompanying drop-down list containing the following:</p>
+<p class="wi2"><span class="CButton">Find Next</span>: Uses the same search condition(s) as your most recent search and finds the next record in the table that matches the condition(s). If the search reaches the end of the table without finding a matching record, it goes to the start of the table and continues the search.</p>
+<p class="wi2"><span class="CButton">Find Previous</span>: Same as <span class="CButton">Find Next</span> except that it goes backward in the table. If the search reaches the start of the table without finding a matching record, it goes to the end of the table and continues the search.</p>
+<p class="wi"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p>For general information on items, see <a href="InventoryItemRecords.htm">Inventory Item Records</a>. For a description of table viewers in general, see <a href="UsingTableViewers.htm">Using Table Viewers</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Report.Item Restocking.htm">Item Restocking Report</a></li>
+</ul>
+<p><a href="Edit.Item Pricing.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Item Restocking.htm">Next section &gt;</a></p>
+</body>
+</html>
+

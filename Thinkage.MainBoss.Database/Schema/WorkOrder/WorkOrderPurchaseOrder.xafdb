@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+
+  <table name="WorkOrderPurchaseOrder" defaults="false" log="false" id="Id" xunique="true" xid="WorkOrderID PurchaseOrderID" labelkey="Work Order Purchase Order">
+	<field name="Id" read="RequiredGUID" />
+	<field name="WorkOrderID" type="RequiredGUIDREF" link="WorkOrder">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="PurchaseOrderID" type="RequiredGUIDREF" link="PurchaseOrder">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<extension name="deletemethod">delete</extension>
+  </table>
+  <table name="WorkOrder"/>
+  <table name="PurchaseOrder"/>
+</database>

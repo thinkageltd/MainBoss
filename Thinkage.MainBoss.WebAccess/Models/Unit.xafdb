@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database labelcontext="dsMBLabel" name="http://thinkage.ca/MB3/dsMB.xsd:Unit" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="../../Thinkage.MainBoss.Database/Schema/Types.xafdb"/>
+  <variable name="DBVersion" type="RequiredVersionInfo">
+	<doc>The version of the database intended to prevent newer versions of the applications from accessing older databases.</doc>
+  </variable>
+  <table name="WorkOrderExpenseModel" labelkey="Work Order Expense Model"/>
+  <table name="AccessCode" labelkey="Access Code"/>
+  <table name="WorkOrder" labelkey="Work Order"/>
+  <table name="WorkOrderTemplate" labelkey="Task"/>
+  <table name="TemporaryStorage" labelkey="Temporary Storage"/>
+  <table name="TemplateTemporaryStorage" labelkey="Task Temporary Storage"/>
+
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Locations/RelativeLocation.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Units/Unit.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Units/UnitCategory.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Units/UnitUsage.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Units/Ownership.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Units/AssetCode.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Contact.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Locations/PostalAddress.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Locations/PlainRelativeLocation.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Units/SystemCode.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Units/Specification.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Units/Attachment.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Locations/Location.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Locations/LocationContainment.xafdb"/>
+</database>

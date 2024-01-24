@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="Requestor" defaults="true" log="false" id="Id" xid="ContactID Hidden" xunique="true" labelkey="Requestor">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="ContactID" type="RequiredGUIDREF" link="Contact">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Comment" type="Comment"  />
+	<field name="ReceiveAcknowledgement" type="Requiredbool">
+	  <doc>True if this requestor wishes to receive acknowledgements of changes in submitted requests status changes.</doc>
+	</field>
+	<extension name="deletemethod">hide</extension>
+  </table>
+  <table name="Contact"/>
+</database>

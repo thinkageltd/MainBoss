@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="WorkOrderAssigneeProspect" defaults="false" log="false" id="Id" labelkey="">
+	<doc>
+		This view locates all probably prospects to be assigned as a WorkOrderAssignee to workorders that have modifiable demands (CanModifyDemands). It is the
+		basis for a picker filter on WorkOrderAssignee assignment to provide a list of likely assignees for that particular workorder.
+		The 
+	</doc>
+	<field name="Id" read="RequiredGUID">
+	</field>
+	<field name="TableEnum" type="integer(min 0, max 4, nonnull)">
+		<doc>The type of resource record</doc>
+		<extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderAssigneeProspectProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="WorkOrderID" type="RequiredGUIDREF" link="WorkOrder">
+		<doc>The WorkOrder to which the assignee is a prospect (for filtering)</doc>
+	</field>
+	<field name="ContactID" type="RequiredGUIDREF" link="Contact">
+		<doc>The Contact to which the assignee is a prospect (for picker filtering)</doc>
+	</field>
+	<extension name="query">
+		<!--
+		A view to locate all likely WorkOrderAssignees for Draft/Open WorkOrders that appear on any of the Demand
+		records (Employees for Outside, Vendors ServiceContact for outside). Includes any Requestor of the WorkOrder
+		and the Unit ContactID for the associated Unit for the workorder.
+		The unioned terms will generate duplicates but the outer SELECT DISTINCT will prune them out. It is not clear if it would be
+		faster to use plain union and SELECT DISTINCT on each of the terms instead.
+		-->
+		with WoContacts(TableEnum, WorkOrderID, ContactID) AS
+		(
+			select 0, D.WorkOrderID, E.ContactID
+				from DemandLaborInside as DI
+				join Demand as D on D.ID = DI.DemandID
+				join LaborInside as LI on LI.ID = DI.LaborInsideId
+				join Employee as E on E.ID = LI.EmployeeID
+		union all
+			select 0, D.WorkOrderID, E.ContactID
+				from DemandOtherWorkInside as DI
+				join Demand as D on D.ID = DI.DemandID
+				join OtherWorkInside as LI on LI.ID = DI.OtherWorkInsideId
+				join Employee as E on E.ID = LI.EmployeeID
+		union all
+			select 1, D.WorkOrderID, V.ServiceContactID
+				from DemandLaborOutside as DI
+				join Demand as D on D.ID = DI.DemandID
+				join LaborOutside as LI on LI.ID = DI.LaborOutsideId
+				join Vendor as V on V.ID = LI.VendorID
+		union all
+			select 1, D.WorkOrderID, V.ServiceContactID
+				from DemandOtherWorkOutside as DI
+				join Demand as D on D.ID = DI.DemandID
+				join OtherWorkOutside as LI on LI.ID = DI.OtherWorkOutsideId
+				join Vendor as V on V.ID = LI.VendorID
+					where V.ServiceContactID is not null
+		union all
+			select 2, W.ID, R.ContactID
+				from WorkOrder as W
+				join Requestor as R on R.ID = W.RequestorID
+		union all
+			select 3, W.ID, URC.ContactID
+				from Unit as U
+				join RelativeLocation as RL on RL.ID = U.RelativeLocationId
+				join WorkOrder as W on W.UnitLocationID = RL.LocationId
+				join UnitRelatedContact as URC on URC.UnitLocationID = W.UnitLocationID
+		union all
+			select 4, W.ID, A.ContactID
+				from WorkOrder as W
+				join RequestedWorkOrder as RW on RW.WorkOrderID = W.ID
+				join RequestAssignment as P on P.RequestID = RW.RequestID
+				join RequestAssignee as A on P.RequestAssigneeID = A.ID
+		union all
+			select 7, W.ID ,BR.ID
+				from ChargeBack as CB 
+				join WorkOrder as W  on W.ID = CB.WorkOrderID
+				join BillableRequestor as BR on BR.ID = CB.BillableRequestorID
+		)
+		select DISTINCT WC.ContactId, WC.TableEnum, WC.WorkOrderID, WC.ContactID from WOContacts as WC
+			join Contact as C on C.ID = WC.ContactID
+			join WorkOrder as W on W.ID = WC.WorkOrderID
+			join WorkOrderStateHistory as WSH on WSH.ID = W.CurrentWorkOrderStateHistoryID
+			join WorkOrderState as WS on WS.ID = WSH.WorkOrderStateID
+				where WS.CanModifyDemands &lt;&gt; 0
+	</extension>
+	<extension name="dependson">BillableRequestor</extension>
+	<extension name="dependson">ChargeBack</extension>
+	<extension name="dependson">Demand</extension>
+	<extension name="dependson">DemandLaborInside</extension>
+	<extension name="dependson">DemandOtherWorkInside</extension>
+	<extension name="dependson">DemandLaborOutside</extension>
+	<extension name="dependson">DemandOtherWorkOutside</extension>
+	<extension name="dependson">WorkOrder</extension>
+	<extension name="dependson">WorkOrderState</extension>
+	<extension name="dependson">WorkOrderStateHistory</extension>
+	<extension name="dependson">LaborInside</extension>
+	<extension name="dependson">LaborOutside</extension>
+	<extension name="dependson">OtherWorkInside</extension>
+	<extension name="dependson">OtherWorkOutside</extension>
+	<extension name="dependson">Employee</extension>
+	<extension name="dependson">Vendor</extension>
+	<extension name="dependson">Contact</extension>
+	<extension name="dependson">Requestor</extension>
+	<extension name="dependson">RequestedWorkOrder</extension>
+	<extension name="dependson">RequestAssignee</extension>
+	<extension name="dependson">RequestAssignment</extension>
+	</table>
+	<table name="BillableRequestor"/>
+	<table name="ChargeBack"/>
+	<table name="Demand"/>
+	<table name="DemandLaborInside"/>
+	<table name="DemandOtherWorkInside"/>
+	<table name="DemandLaborOutside"/>
+	<table name="DemandOtherWorkOutside"/>
+	<table name="WorkOrder"/>
+	<table name="WorkOrderState"/>
+	<table name="WorkOrderStateHistory"/>
+	<table name="LaborInside"/>
+	<table name="LaborOutside"/>
+	<table name="OtherWorkInside"/>
+	<table name="OtherWorkOutside"/>
+	<table name="Employee"/>
+	<table name="Vendor"/>
+	<table name="Contact"/>
+	<table name="Requestor"/>
+	<table name="RequestedWorkOrder"/>
+	<table name="RequestAssignee"/>
+	<table name="RequestAssignment"/>
+	</database>

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="../Types.xafdb"/>
+
+  <table name="User" defaults="true" log="false" labelkey="User">
+	<field name="ContactID" link="Contact" type="RequiredGUIDREF" unique="true">
+	  <doc>The associated contact information for this user, including name, email address, phone number etc.</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="Desc" type="Desc">
+	  <doc>Long description of the derived record</doc>
+	</field>
+	<field name="Comment" type="Comment">
+	  <doc>User comment on usage of this record</doc>
+	  <extension name="lines">10</extension>
+	</field>
+  </table>
+  <table name="Contact"/>
+  <object class="procedure" name="mbsp_AddDataBaseUser">
+	<doc>
+	  Procedure to add a DBUser for our database.
+	</doc>
+	<extension name="body">
+	( 
+		  @CredentialName nvarchar(256)
+	)
+	AS
+	BEGIN
+		declare @CreateLoginCmd nvarchar(max);
+		declare @Cmd nvarchar(max);
+		declare @UserSid varbinary(max);
+		declare @UserType nvarchar(1)
+		declare @ServerVariant int
+			
+		SELECT @ServerVariant = CONVERT(INT, SERVERPROPERTY('EngineEdition'))
+		-- EngineEdition less than or equal to 4 are SQL servers with traditional login and user model
+		if @ServerVariant &lt;= 4
+		BEGIN
+			-- Determine if this user should have permission on the database.
+			-- Check their name against the users nominally defined for this MainBoss Database: non-hidden User records, and any service accounts in the ServiceConfiguration table.
+			-- @CredentialName should have access to the MainBoss database. Do what is necessary to grant access.
+			-- First we must have a server login, which we use to find a SID.
+			SET @CreateLoginCmd = null
+			select @UserSid = sid, @UserType = type from sys.server_principals
+								where (Name COLLATE database_default) = @CredentialName
+			
+			if @UserSid IS NULL
+			BEGIN
+				-- The login does not exist. This may be wasted effort if @CredentialName turns out to be dbo for the database but we have
+				--     no way of telling this without having a login to map @CredentialName to a SID. If the user turns out to be dbo and we created
+				--     a login we will delete it again.
+				-- we only support creating LOGINs for WINDOWS authenticated users at this time and is principally here for the maintaining the MainBoss Service configuration
+				-- any other type of login must be created externally (and hence we won't be here as we would have found it)
+				SET @CreateLoginCmd = 'CREATE LOGIN [' + @CredentialName + '] from windows;'
+				exec sp_executesql @CreateLoginCmd
+				select @UserSid = sid, @UserType = type from sys.server_principals
+								where (Name COLLATE database_default) = @CredentialName
+			END
+
+			-- From here on we use @UserSid to find existing permissions information.                          
+			-- Check if @UserSid is the database owner (DBO) on this database
+			IF EXISTS(select * from sys.database_principals where sid = @UserSid and principal_id = 1)
+			BEGIN
+				-- The user is DBO. We don't need to create a user for them (DBO is there already) and we don't have to (and in fact are not allowed to)
+				-- put this user in the MainBoss role since DBO always has full db access.
+				-- If we created a Login, delete it now and we are done
+				if @CreateLoginCmd is not null
+				BEGIN
+				SET @Cmd = 'DROP LOGIN [' + @CredentialName + ']';
+				exec sp_executesql @Cmd
+				END
+			END
+			ELSE
+			BEGIN
+				-- @UserSid is not DBO for the database. See if they are already a user.
+				if NOT EXISTS (select * from sys.database_principals where sid = @UserSid)
+				BEGIN
+				BEGIN TRY
+				-- @UserSid is not a DB user. Create the DB User
+					SET @Cmd = 'CREATE USER [' + @CredentialName + '] FROM LOGIN [' + @CredentialName   + '] WITH DEFAULT_SCHEMA = [dbo];'  
+					exec sp_executesql @Cmd
+				END TRY
+				BEGIN CATCH
+					print @Cmd + ':' + ERROR_MESSAGE()
+				END CATCH
+				END
+				BEGIN TRY
+				-- Always ensure the DB User is in the MainBoss role
+				-- Note sp_addrolemember has been deprecated in the TSQL documentation but ALTER ROLE ADD MEMBER only works for SQL 2012 and up
+				SET @Cmd = 'exec sp_addrolemember @rolename = ''MainBoss'', @membername = ''' + (select Name from sys.database_principals where sid = @UserSid) + ''';'  
+				exec sp_executesql @Cmd
+				END TRY
+				BEGIN CATCH
+					print @Cmd + ':' + ERROR_MESSAGE()
+				END CATCH
+			END
+		END
+		-- See if a SQL Database variant (AZURE). LOGINS must already exist in this case (they are part of the MASTER database; we can only add the uesrs and roles at this point)
+		ELSE IF @ServerVariant = 5 
+		BEGIN
+			IF NOT EXISTS (select * from sys.database_principals where [name] = @CredentialName)
+			BEGIN
+				IF charindex('@', @CredentialName) > 0
+				BEGIN
+				BEGIN TRY
+					SET @Cmd = 'CREATE USER [' + @CredentialName + '] FROM EXTERNAL PROVIDER WITH DEFAULT_SCHEMA = [dbo];'  
+					exec sp_executesql @Cmd
+					-- Always ensure the DB User is in the MainBoss role
+					-- Note sp_addrolemember has been deprecated in the TSQL documentation but ALTER ROLE ADD MEMBER only works for SQL 2012 and up
+					SET @Cmd = 'exec sp_addrolemember @rolename = ''MainBoss'', @membername = ''' + @CredentialName + ''';'  
+					exec sp_executesql @Cmd
+				END TRY
+				BEGIN CATCH
+					print @Cmd + ':' + ERROR_MESSAGE()
+				END CATCH
+				END
+				ELSE
+				BEGIN
+				BEGIN TRY
+					SET @Cmd = 'CREATE USER [' + @CredentialName + '] FROM LOGIN [' + @CredentialName   + '] WITH DEFAULT_SCHEMA = [dbo];'  
+					exec sp_executesql @Cmd
+					-- Always ensure the DB User is in the MainBoss role
+					-- Note sp_addrolemember has been deprecated in the TSQL documentation but ALTER ROLE ADD MEMBER only works for SQL 2012 and up
+					SET @Cmd = 'exec sp_addrolemember @rolename = ''MainBoss'', @membername = ''' + @CredentialName + ''';'  
+					exec sp_executesql @Cmd
+				END TRY
+				BEGIN CATCH
+					print @Cmd + ':' + ERROR_MESSAGE()
+				END CATCH
+				END
+			END
+		END
+	END
+	</extension>
+  </object>
+  <object class="procedure" name="mbsp_DropDataBaseUser">
+	<doc>
+	  Procedure to DROP a DBUser for our database.
+	</doc>
+	<extension name="body">
+	( 
+		@CredentialName nvarchar(256) -- must be in the form of domain\user and must exist as a LOGIN
+	)
+	AS
+	BEGIN
+		declare @Cmd nvarchar(max);
+		declare @UserSid varbinary(max);
+		declare @UserType nvarchar(1)
+		declare @ServerVariant int
+			
+		SELECT @ServerVariant = CONVERT(INT, SERVERPROPERTY('EngineEdition'))
+		-- EngineEdition less than or equal to 4 are SQL servers with traditional login and user model
+		if @ServerVariant &lt;= 4
+		BEGIN
+			-- @CredentialName should NOT have access to the MainBoss database. Remove any access that may exist.
+			-- Consult the logins table to find the sid for the user. If the user has no login, @UserSid will end up null.
+			SELECT @UserSid=sid, @UserType=[TYPE] from sys.server_principals where (Name COLLATE database_default) = @CredentialName
+			-- Check if the login exists and is tied to a db user that is not dbo.
+			IF @UserSid is not null and EXISTS(select * from sys.database_principals where sid = @UserSid and principal_id != 1)
+			BEGIN  
+				-- The login exists and is tied to a non-dbo db user. Delete that user. Catch and print any errors. 
+				SET @Cmd = (SELECT 'DROP USER [' + Name + '];' from sys.database_principals where sid = @UserSid)
+				BEGIN TRY
+					exec sp_executesql @Cmd
+				END TRY
+				BEGIN CATCH
+					print @Cmd + ':' + ERROR_MESSAGE()
+				END CATCH
+			END
+		END
+		ELSE IF @ServerVariant = 5 
+		BEGIN
+			IF EXISTS (select * from sys.database_principals where [name] = @CredentialName)
+			BEGIN
+				SET @Cmd = 'DROP USER [' + @CredentialName + '];'
+				BEGIN TRY
+					exec sp_executesql @Cmd
+				END TRY
+				BEGIN CATCH
+					print @Cmd + ':' + ERROR_MESSAGE()
+				END CATCH			
+			END
+		END
+	END
+	</extension>
+  </object>
+  <table name="ServiceConfiguration"/>
+</database>

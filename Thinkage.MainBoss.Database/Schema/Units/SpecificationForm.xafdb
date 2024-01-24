@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="SpecificationForm" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Specification Form">
+	<doc>
+	  This record defines one specification Form. A specification form allows the addition of user fields to a unit. Each specification includes
+	  a list of the fields and optionally a customized layout to use for reporting and screen display of the completed specification based on this form.
+	  The report layout is a well-formed Xml fragment with appropriate escapes for &lt; &gt; and &amp;, and containing empty elements of the form
+	  &lt;FieldName/&gt; where the value of the named field should be inserted. The 'FieldName' is the FieldName from the corresponding SpecificationFormField
+	  record. Note that we are not using generalized Xml processing so we only recognize the above forms. Other character escapes, and other element forms
+	  that should be equivalent (including additional white space and/or a separate end tag) are not recognized.
+	</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="RequiredCode"/>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="Desc" type="Desc"/>
+	<field name="Comment" type="Comment"/>
+	<field name="DefaultReportLayout" read="MultiLineUnlimited" >
+	  <doc>This is the ReportLayout used if CustomizedReportLayout is null</doc>
+	  <!-- dbo.mbfn_SpecificationForm_DefaultReportLayout( [ID] ) -->
+	  <result hosting="server">
+			cast(' ' as Comment)
+		</result>
+	  <extension name="dependson">SpecificationFormField</extension>
+	</field>
+	<field name="CustomizedReportLayout" type="MultiLineUnlimited">
+	  <doc>If non-null, this overrides the DefaultReportLayout</doc>
+	</field>
+	<field name="EditAllowed" read="Requiredbool" >
+	  <!-- dbo.mbfn_SpecificationForm_EditAllowed( [ID] ) -->
+	  <result hosting="server">
+			true
+		</result>
+	  <extension name="dependson">Specification</extension>
+	</field>
+
+	<extension name="deletemethod">hide</extension>
+  </table>
+  <table name="Specification"/>
+  <table name="SpecificationFormField"/>
+  <object class="function" name="mbfn_SpecificationForm_DefaultReportLayout">
+	<doc>returns the composed default Report Layout for a specification form record</doc>
+	<extension name="body">
+(
+	@IID		uniqueidentifier	-- specificationform id
+)
+RETURNS nvarchar(max)
+as
+begin
+	declare @result as nvarchar(max)
+	set @result = ''
+	declare @fieldid as uniqueidentifier
+	declare @editlabel as nvarchar(400)	-- to account for possible inflation from escaping
+	declare @fieldName as nvarchar(32)
+	declare speccursor cursor scroll
+	for
+		select [ID], [EditLabel], [FieldName] from SpecificationFormField
+		where SpecificationFormID = @IID
+		order by [FieldOrder] asc
+
+	open speccursor
+	fetch first from speccursor into @fieldid, @editlabel, @fieldName
+	while @@FETCH_STATUS = 0
+	begin
+		-- TODO: We should insist that the FieldName be alphanumeric, in particular a valid XML element name.
+		set @editLabel = replace(replace(replace(@editLabel, '&amp;', '&amp;amp;'), '>', '&amp;gt;'), '&lt;', '&amp;lt;')
+		set @result = @result + @editlabel + ': &lt;' + @fieldName + '/>' + char(13) + char(10)
+		fetch next from speccursor into @fieldid, @editlabel, @fieldName
+	end
+	close speccursor
+	return @result
+end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_SpecificationForm_EditAllowed">
+	<doc>sets a flag on the SpecificationForm allowing editing provided no Specifications already use it</doc>
+	<extension name="body">
+	  (
+		  @IID		uniqueidentifier	-- specificationform id
+	  )
+	  RETURNS bit
+	  as
+	  begin
+		if exists(select * from Specification where [SpecificationFormID]=@IID)
+		  return 0
+		return 1
+	  end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SpecificationForm_Updates_Specification">
+	<doc>
+	  Maintain the ReportText in the Specification instance on changes to the Report layout
+	</doc>
+	<!-- NOTE: Any changes to this trigger may require additional changes in the MB29 Conversion step SpecificationPostAmble to ensure anything this trigger does is done during conversion -->
+	<extension name="body">
+	  on SpecificationForm
+	  after insert, update, delete
+	  as
+	  begin
+		  update Specification
+			  set ReportText = dbo.mbfn_Specification_ReportText(Specification.ID)
+			  from SpecificationForm
+			  where Specification.ID in (
+					  select distinct Specification.ID from Specification
+						  join inserted on Specification.SpecificationFormId = inserted.ID
+				union select distinct Specification.ID from Specification
+						  join deleted on Specification.SpecificationFormID = deleted.ID
+				)
+	  end
+	</extension>
+	<extension name="references">mbfn_Specification_ReportText()</extension>
+	<extension name="references">SpecificationForm</extension>
+	<extension name="references">Specification</extension>
+  </object>
+</database>

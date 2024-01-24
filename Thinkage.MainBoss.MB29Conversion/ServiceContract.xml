@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+  <table name="ServiceContract">
+	<dependency table="Unit"/>
+	<dependency table="UnitLinkages"/>
+	<dependency table="Vendor"/>
+	<dependency table="ConversionFunctions"/>
+	<data>
+	  -- Generate the unique codes. Service contracts come from 2 sources: True contracts and Warranties.
+	  -- Note that Warranty contracts are hidden under the same circumstances as the Unit they apply to.
+	  delete from <IDB/>.dbo.CodeManagement;
+	  
+	  insert into <IDB/>.dbo.CodeManagement ([ID], [Code])
+		  SELECT SC.[ID], SC.[Code]
+		  from <IDB/>.dbo.ServiceContracts as SC
+		  where SC.EXCLUDE = 0;
+
+	  insert into <IDB/>.dbo.CodeManagement ([ID], [Code], [Hidden29])
+		  SELECT UL.ServiceContractID, ULoc.[Code], CASE WHEN U.OBSOLETE IS NOT NULL THEN 1 ELSE COALESCE(U.[HIDDEN],0) END	-- Treat Obsolete as Hidden
+		  from <IDB/>.dbo.Units as U
+			  join <ODB/>.dbo.Location as ULoc on U.[ID] = ULoc.[ID]
+			  join <IDB/>.dbo.UnitLinkages as UL on U.[ID] = UL.ID
+		  WHERE UL.ServiceContractID is not null
+		  
+	  exec <IDB/>.dbo.FixCodes 50
+
+	  INSERT INTO <ODB/>.dbo.ServiceContract ([ID],[Code], [Desc],[VendorID],[StartDate],[EndDate],[Parts],[Labor],[Cost],[Comment])			
+		  SELECT SC.[ID], CM.[Code], SC.[Desc], V.[ID], SC.[STARTDATE],SC.[EXPIRYDATE],SC.[PART],SC.[LABOR],dbo.fn_MONEY(SC.[COST]),SC.[COMMENT]
+		  from <IDB/>.dbo.ServiceContracts as SC
+			  left join <IDB/>.dbo.Vendors as V on SC.[VENDOR] = V.[KEY]
+			  join <IDB/>.dbo.CodeManagement as CM on SC.ID = CM.ID
+
+	  INSERT INTO <ODB/>.dbo.ServiceContract ([ID],[Code], [Hidden], [Desc],[VendorID],[StartDate],[EndDate],[Parts],[Labor],[Cost],[Comment])			
+		  SELECT UL.ServiceContractID, CM.[Code], CM.[Hidden30], 'WARRANTY '+U.[Desc], V.[ID], U.[PURCHASE], U.[WEXPIRY], 1, 0, null, 'UNIT WARRANTY'
+		  from <IDB/>.dbo.Units as U
+			  join <ODB/>.dbo.Location as ULoc on U.[ID] = ULoc.[ID]
+			  join <IDB/>.dbo.UnitLinkages as UL on U.[ID] = UL.ID
+			  left join <IDB/>.dbo.Vendors as V on U.[SERVICE] = V.[KEY]
+			  join <IDB/>.dbo.CodeManagement as CM on UL.ServiceContractID = CM.ID
+	</data>
+  </table>
+  <table name="UnitServiceContract">
+	<dependency table="Unit"/>
+	<dependency table="ServiceContract"/>
+	<dependency table="UnitLinkages"/>
+	<data>
+	  INSERT INTO <ODB/>.dbo.UnitServiceContract ([ID], [ServiceContractID], [UnitLocationID])
+		  SELECT NEWID(), SC.[ID],U.[ID]
+		  from <IDB/>.dbo.ServicedEquipment as SE
+			  join <IDB/>.dbo.ServiceContracts as SC on SE.[SVCKEY] = SC.[KEY]
+			  join <IDB/>.dbo.Units as U on SE.[EQUIPKEY] = U.[KEY]
+			where SC.EXCLUDE = 0 and U.EXCLUDE = 0
+			GROUP BY SC.[ID], U.[ID];
+
+	  INSERT INTO <ODB/>.dbo.UnitServiceContract ([ID], [ServiceContractID], [UnitLocationID])
+		  SELECT UL.UnitServiceContractID, UL.ServiceContractID, UL.LocationID
+		  from <IDB/>.dbo.UnitLinkages as UL
+		  where UL.UnitServiceContractID is not null;
+	</data>
+  </table>
+</dbconversion>

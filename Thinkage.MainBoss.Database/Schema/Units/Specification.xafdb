@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <!-- There is no unique xid because specifications can have duplicate codes amongst the same associated UNIT associated with the same SpecficationFormID
+       This is the same behaviour allowed in previous mainboss databases for specifications and is required to allow conversions to work properly -->
+  <table name="Specification" defaults="true" log="false" id="Id" xid="Code"  labelkey="Specification">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="RequiredCode"/>
+	<field name="Desc" type="Desc"/>
+	<field name="Comment" type="Comment"/>
+	<field name="UnitLocationID" labelkey="Unit" type="RequiredGUIDREF" link="Location">
+	  <extension name="linkage">captive</extension>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.UnitBrowseTblCreator,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="SpecificationFormID" link="SpecificationForm" type="link(nonnull)">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="ReportText" read="MultiLineUnlimited" >
+	  <!-- dbo.mbfn_Specification_ReportText( [ID] ) -->
+	  <!-- maintained by trigger on SpecificationData -->
+	  <result hosting="cached">
+			cast(' ' as Comment)
+	  </result>
+	  <extension name="dependson">mbfn_Specification_ReportText()</extension>
+	</field>
+
+	<extension name="deletemethod">delete</extension>
+  </table>
+  <table name="Location"/>
+  <table name="SpecificationForm"/>
+  <table name="SpecificationFormField"/>
+  <table name="SpecificationData"/>
+  <object class="function" name="mbfn_Specification_ReportText">
+	<doc>returns the composed Report Text for a specification record</doc>
+	<extension name="body">
+(
+	@IID		uniqueidentifier	-- Specification id
+)
+RETURNS nvarchar(max)
+as
+begin
+	-- get the layout from the form
+	declare @result as nvarchar(max)
+	select @result = coalesce(CustomizedReportLayout, DefaultReportLayout)
+		from SpecificationForm
+			join Specification on Specification.SpecificationFormID = SpecificationForm.id
+		where Specification.ID=@IID
+
+	-- replace field keys with values
+	declare @fieldvalue as nvarchar(100)
+	declare @fieldName as nvarchar(32)
+	-- TODO: We have to use a loop over the template here instead of a loop over the fields, since character escapes
+	-- in the plain text must be converted out, but not ones that happen to occur in the actual @fieldValue.
+	-- For now we just unescape @result after all field substitutions, but this can have the effect that '&gt;' starting in the field
+	-- value will get replaced with '>' even though it should not.
+	declare speccursor cursor scroll
+	for
+		select coalesce(FieldValue, ''), FieldName
+			from SpecificationData join SpecificationFormField on SpecificationData.SpecificationFormFieldID = SpecificationFormField.id
+			where SpecificationID = @IID
+
+	open speccursor
+	fetch first from speccursor into @fieldvalue, @fieldName
+	while @@FETCH_STATUS = 0
+	begin
+		set @result = replace(@result, '&lt;'+@fieldName+'/>', @fieldvalue)
+		fetch next from speccursor into @fieldvalue, @fieldName
+	end
+	set @result = replace(replace(replace(@result, '&amp;gt;', '>'), '&amp;lt;', '&lt;'), '&amp;amp;', '&amp;')
+	close speccursor
+	return @result
+end
+	</extension>
+	<extension name="dependson">SpecificationForm</extension>
+	<extension name="dependson">SpecificationData</extension>
+  </object>
+</database>

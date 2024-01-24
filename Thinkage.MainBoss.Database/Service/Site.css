@@ -1,0 +1,622 @@
+﻿/*----------------------------------------------------------
+The base color for this template is #FFEBA0. If you'd like
+to use a different color start by replacing all instances of
+#FFEBA0 with your new color.
+
+Thinkage Colors
+193,182,125  #C1B67D (brown yellow)
+56,88,21       #385815 (dark green)
+255,235,160 #FFEBA0 (yellow)
+----------------------------------------------------------*/
+body
+{
+    background-color: #FFEBA0;
+    font-size: .75em;
+    font-family: Verdana, Helvetica, Sans-Serif;
+    margin: 0;
+    padding: 0;
+    color: #696969;
+}
+
+a:link
+{
+    color: #034af3;
+    text-decoration: underline;
+}
+a:visited
+{
+    color: #505abc;
+}
+a:hover
+{
+    color: #1d60ff;
+    text-decoration: none;
+}
+a:active
+{
+    color: #12eb87;
+}
+
+p, ul
+{
+    margin-bottom: 20px;
+    line-height: 1.6em;
+}
+
+/* The following apply to the 'Close' State action linkage on browsers */
+a.StateActionLink
+{
+	text-decoration: none;
+	color: #385815;
+	background: #FFEBA0;
+	border: solid 1px #385815;
+}
+a.StateActionLink:hover
+{
+	text-decoration: none;
+	background: #FFFFFF;
+}
+
+
+/* HEADINGS ----------------------------------------------------------*/
+h1, h2, h3, h4, h5, h6
+{
+    font-size: 1.5em;
+    color: #000;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+h1
+{
+    font-size: 2em;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+h2
+{
+    padding: 0 0 10px 0;
+}
+h3
+{
+    font-size: 1.2em;
+}
+h4
+{
+    font-size: 1.1em;
+}
+h5, h6
+{
+    font-size: 1em;
+}
+
+/* this rule styles <h2> tags that are the 
+first child of the left and right table columns */
+.rightColumn > h1, .rightColumn > h2, .leftColumn > h1, .leftColumn > h2
+{
+    margin-top: 0;
+}
+
+/* PRIMARY LAYOUT ELEMENTS ----------------------------------------------------------*/
+/* you can specify a greater or lesser percentage for the 
+page width. Or, you can specify an exact pixel width. */
+.page
+{
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#header
+{
+    position: relative;
+    margin-bottom: 0px;
+    color: #000;
+    padding: 0;
+}
+
+#header h1
+{
+    font-weight: bold;
+    padding: 5px 0;
+    margin: 0;
+    color: #fff;
+    border: none;
+    line-height: 2em;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 32px !important;
+}
+
+#header table
+{
+	border-width: 0;
+	width: 100%;
+}
+
+td.logout
+{
+	padding: 3px;
+	border-width: 0px;
+	outline-width: 0px;
+	text-align: right;
+}
+
+td.logout a.StateActionLink
+{
+	text-decoration: none;
+	background: #385815;
+	color: #FFEBA0;
+	padding-left: 3px;
+	padding-right: 3px;
+	border: solid 1px #385815;
+}
+td.logout a.StateActionLink:hover
+{
+	text-decoration: none;
+	background: #FFFFFF;
+	color: #385815;
+}
+
+#main
+{
+    padding: 10px 10px 10px 10px;
+    background-color: #fff;
+    margin-bottom: 4px;
+    border-color: #000000;
+    border-width: 1px;
+    border-style: solid;
+    _height: 1px; /* only IE6 applies CSS properties starting with an underscrore */
+}
+
+#footer
+{
+    color: #999;
+    padding: 0;
+    float: right;
+    margin: 0;
+    line-height: normal;
+    font-size: .9em;
+}
+
+/* TAB MENU   ---------------------------------------------------------*/
+ul#menu
+{
+    border-bottom: 1px #5C87B2 solid;
+    padding: 0 0 2px;
+    position: relative;
+    margin: 0;
+    text-align: right;
+}
+
+ul#menu li
+{
+    display: inline;
+    list-style: none;
+}
+
+ul#menu li#greeting
+{
+    padding: 10px 20px;
+    font-weight: bold;
+    text-decoration: none;
+    line-height: 2.8em;
+    color: #fff;
+}
+
+ul#menu li a
+{
+    padding: 10px 20px;
+    font-weight: bold;
+    text-decoration: none;
+    line-height: 2.8em;
+    background-color: #e8eef4;
+    color: #034af3;
+}
+
+ul#menu li a:hover
+{
+    background-color: #fff;
+    text-decoration: none;
+}
+
+ul#menu li a:active
+{
+    background-color: #a6e2a6;
+    text-decoration: none;
+}
+
+ul#menu li.selected a
+{
+    background-color: #fff;
+    color: #000;
+}
+
+/* FORM LAYOUT ELEMENTS   ----------------------------------------------------------*/
+
+fieldset 
+{
+    margin: 1em 0;
+    padding: 1em;
+    border: 1px solid #CCC;
+}
+
+fieldset p 
+{
+    margin: 2px 12px 10px 10px;
+}
+
+fieldset label 
+{
+    display: block;
+}
+
+fieldset label.inline 
+{
+    display: inline;
+}
+
+legend 
+{
+    font-size: 1.1em;
+    font-weight: 600;
+    padding: 2px 4px 8px 4px;
+}
+
+input[type="text"] 
+{
+	width:auto;
+    border: 1px solid #CCC;
+}
+input#EmailAddress
+{
+	width: 20em;
+	border: 1px solid #CCC;
+}
+input#Subject
+{
+	width: 44em;
+	border: 1px solid #CCC;
+}
+input[readonly="true"]
+{
+	background-color: #ccc;
+}
+textarea
+{
+	width: 45em; /* keep in 4 to 3 ratio */
+	height: 15em;
+}
+input[type="password"] 
+{
+    width: 20em;
+    border: 1px solid #CCC;
+}
+/* The following correspond to the types defined in Thinkage.Libraries.TypeInfo (typically appear on input and input-validation fields)*/
+.IntervalTypeInfo
+{
+	text-align: right;
+}
+.IntegralTypeInfo
+{
+	text-align: right;
+}
+.CurrencyTypeInfo
+{
+	text-align: right;
+}
+
+/* MISC  ----------------------------------------------------------*/
+.clear
+{
+    clear: both;
+}
+
+.error
+{
+    color:Red;
+}
+
+#menucontainer
+{
+    margin-top:40px;
+}
+
+div#title
+{
+    display:block;
+    float:left;
+    text-align:left;
+}
+.Alert
+{
+	color: Red;
+}
+.field-validation-error
+{
+    color: #ff0000;
+}
+
+.input-validation-error
+{
+    border: 1px solid #ff0000;
+    background-color: #ffeeee;
+}
+
+
+.validation-summary-errors
+{
+    font-weight: bold;
+    color: #ff0000;
+}
+/* anything with class Deleted gets line-through */
+.Deleted
+{
+	text-decoration:line-through;
+}
+/* control the white space from multi-line values*/
+/* Note the serif after Monospace to make browsers use same font sizing as proportional fonts */
+/* see reference: http://meyerweb.com/eric/thoughts/2010/02/12/fixed-monospace-sizing/ for discussion of problem */
+
+.MultiLine
+{
+	vertical-align:text-top;
+	white-space:pre-wrap;
+	border-collapse: collapse;
+	font-family: Monospace, serif;
+}
+
+/* ResultMessage - An error that occurred on some action typically shown immediately below the header */
+.ResultMessage
+{
+	background: Red;
+	color: White;
+	font-size:larger;
+}
+
+/* Panels for View (2 column label on left, value on right) */
+.viewPanel > table
+{
+	border: solid 1px #a9bed3;
+	border-collapse: collapse;
+	font-size: 1.1em;
+	text-align: left;
+	margin: 5px;
+	color: #000000;
+	width: 100%;
+}
+
+.viewPanel td
+{
+	border: solid 1px #a9bed3;
+	border-collapse: collapse;
+	padding-top: 2px;
+	padding-left: 2px;
+	padding-bottom: 4px;
+	padding-right: 6px;
+	text-align: left;
+}	
+.viewPanel td.Label
+{
+	background-color: #e8eef4;
+	font-weight: bolder;
+	width: 15%;
+	text-align: right;
+}
+.viewPanel td.V1{ border-right: none;
+ width: 30%;
+}
+.viewPanel td.V2{ border-left: none;
+ width: 55%;
+ text-align: right;
+}
+/* Panel for enclosing Requestor contact information identified with id="contactPanel" */
+#contactPanel
+{
+	font: inherit;
+	border: hidden;
+	border-collapse: inherit;
+	display: block;
+	text-align: left;
+	margin: 0px;
+	color: #000000;
+	width: 100%;
+}
+#contactPanel td.Name
+{
+	border: none;
+	padding: 0px;
+	width:50%;
+	text-align:left;
+}
+#contactPanel td
+{
+	border: none;
+	padding: 0px;
+	width:25%;
+	text-align:left;
+}
+/* Panel used for Assignment Status (main page) */
+
+#assignmentPanel
+{
+	border-color: Black;
+    border-width: 1px;
+    border-collapse: collapse;
+}
+#assignmentPanel table
+{
+	border:none;
+}
+#assignmentPanel caption
+{
+	padding: 2px;
+	text-align: left;
+	font-size:125%;
+	font-weight:bolder;
+	line-height:100%;
+	white-space: nowrap;
+	margin-bottom: 15px;
+}
+#assignmentPanel tr:nth-child(even)
+{
+	background-color:#ECECEC;
+	border-collapse: collapse;
+}
+#assignmentPanel td.Label
+{
+	border: none;
+	padding: 2px;
+	font-weight:normal;
+	text-align:left;
+}
+#assignmentPanel td
+{
+	padding:0 0 0 20px;
+	font-weight:normal;
+	text-align:left;
+}
+/* Attempts to use col and col group for viewPanel to define style for Label column didn't work out as most browsers only altered
+  the width part of the column and ignored the alignment styles and font.
+col.viewPanel
+{
+	padding: 2px;
+	font-weight: bolder;
+	width:16%;
+	text-align:right;
+	vertical-align:text-top;
+}*/
+
+/* Panels for browsePanels*/
+#browsePanel
+{
+  border: none;
+  border-collapse: collapse;
+}
+#browsePanel table
+{
+	width:100%;
+	border-collapse: collapse;
+}
+#browsePanel tr
+{
+	border: 1px solid #385815;
+}
+#browsePanel tr:nth-child(even)
+{
+	background-color:#ECECEC;
+}
+#browsePanel td 
+{
+	padding: 2px;
+}
+#browsePanel th
+{
+	padding: 2px 2px;
+	text-align: left;
+	background-color: #C1B67D;
+	color: #385815;
+	border: 1px solid #385815;
+}
+
+/* For viewing History Items */
+.viewHistoryItem 
+{
+	position: 				relative;
+	margin:					3px;
+	margin-top:				6px;
+/*	border: 				1px solid #666; */
+	padding:				4px 4px 4px 8px;
+	background-color:		#fff;
+}
+
+.RequestorComment
+{
+	background-color: #f8f8f8;
+}
+.viewHistoryItem div {
+	position: relative;
+}
+
+.viewHistoryItem
+{
+	border: 	1px solid #ddd;
+	margin-top: 10px;
+}
+
+.viewHistoryItem .body .content
+{
+	padding:				0px 3px 0px 3px;
+	/*width: 					100%;	*/
+	overflow: 				auto; 
+}
+
+.viewHistoryItem .title
+{
+	border: none;
+	font-weight:bolder;
+}
+
+/* For displaying set of specifications associated with a Unit */
+.Specification pre
+{
+	white-space:pre-line;
+	margin: 0 0 0 0;
+	border: 1px solid;
+	padding: 2px 2px 2px 2px;
+}
+.Specification h3
+{
+	margin: 0px 0px 0px 0px;
+}
+
+#resourcePanel
+{
+}
+
+#resourcePanel td,table
+{
+	border: solid 1px #a9bed3;
+	border-collapse: collapse;
+}
+#resourcePanel td
+{
+	padding-left: 4px;
+	padding-right: 4px;
+}
+
+#resourcePanel th
+{
+	border: solid 1px #a9bed3;
+	border-collapse: collapse;
+	padding-left: 4px;
+	padding-right: 4px;
+	text-align: left;
+	background-color: #e8eef4;
+	font-weight: bolder;
+}
+#resourcePanel td.IntegralValue
+{
+	text-align: right;
+}
+#resourcePanel tr:nth-child(even)
+{
+	background-color:#ECECEC;
+	border-collapse: collapse;
+}
+
+table.tablesorter {
+	margin:10px 0pt 15px;
+	width: 100%;
+	text-align: left;
+}
+table.tablesorter thead tr .header {
+	background-image: url(/Content/bg.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	cursor: pointer;
+}
+table.tablesorter thead tr .headerSortUp {
+	background-image: url(/Content/asc.gif) ! important;
+}
+table.tablesorter thead tr .headerSortDown {
+	background-image: url(/Content/desc.gif) ! important;
+}

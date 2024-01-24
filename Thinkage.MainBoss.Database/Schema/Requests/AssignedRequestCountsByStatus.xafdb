@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="AssignedRequestCountsByStatus" defaults="false" log="false" id="Id" labelkey="">
+		<field name="Id" read="RequiredGUID"/>
+		<field name="RequestAssigneeID" type="RequiredGUIDREF" link="RequestAssignee" labelkey="Assignee"/>
+		<field name="RequestStateHistoryStatusID" type="RequiredGUIDREF" link="RequestStateHistoryStatus" labelkey="Status"/>
+		<field name="RequestCount" type="RequiredQuantity"  />
+		<extension name="query">
+		select  X.RequestStateHistoryStatusID, X.RequestAssigneeId, X.RequestStateHistoryStatusID, count(*)
+			from (select R.Id, RA.RequestAssigneeId, ROSH.RequestStateHistoryStatusID
+				from Request as R
+					join RequestStateHistory as ROSH on ROSH.Id = R.CurrentRequestStateHistoryID
+					join RequestState as RS on RS.Id = ROSH.RequestStateID
+					join RequestAssignment as RA on RA.RequestID = R.Id
+					where RS.FilterAsInProgress != 0 and ROSH.RequestStateHistoryStatusID is not null
+				) as X(RequestID, RequestAssigneeID, RequestStateHistoryStatusID)
+				group by RequestStateHistoryStatusID, X.RequestAssigneeID
+		</extension>
+		<extension name="dependson">Request</extension>
+		<extension name="dependson">RequestStateHistory</extension>
+		<extension name="dependson">RequestState</extension>
+		<extension name="dependson">RequestAssignment</extension>
+		<extension name="dependson">RequestAssignee</extension>
+		<extension name="dependson">RequestStateHistoryStatus</extension>
+	</table>
+	<table name="Request"/>
+	<table name="RequestState"/>
+	<table name="RequestStateHistory"/>
+	<table name="RequestAssignment"/>
+	<table name="RequestAssignee"/>
+	<table name="RequestStateHistoryStatus"/>
+</database>

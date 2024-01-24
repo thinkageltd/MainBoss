@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database labelcontext="dsMBLabel" name="http://thinkage.ca/MB3/dsMB.xsd:Authentication" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <merge uri="../../Thinkage.MainBoss.Database/Upgrade/Schema/dsDBVersion_1_0_8_2.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Upgrade/Schema/dsPermission_1_1_4_2.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Contact.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Security/User.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/Requests/Requestor.xafdb"/>
+</database>

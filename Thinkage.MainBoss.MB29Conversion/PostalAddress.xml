@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+<!-- Construct postal address records for all tables that need to reference them. -->
+<table name="PostalAddress">
+<dependency table="BuildingLinkages"/> 
+<dependency table="VendorLinkages"/>
+<data>
+delete from <IDB/>.dbo.CodeManagement;
+INSERT INTO <IDB/>.dbo.CodeManagement ([ID], [Code], [Hidden29])
+	SELECT B.[ID], B.[Code], COALESCE(B.[Hidden],0)
+	from <IDB/>.dbo.Buildings as B
+	where B.EXCLUDE = 0;
+
+INSERT INTO <IDB/>.dbo.CodeManagement ([ID], [Code], [Hidden29])
+	SELECT V.[ID], V.[Code], COALESCE(V.[Hidden],0)
+	from <IDB/>.dbo.Vendors as V
+	where V.EXCLUDE = 0;
+
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.Location ([ID],[Desc],[Comment])
+	SELECT [ID],[Desc],'Buildings'
+	from <IDB/>.dbo.Buildings
+	where EXCLUDE = 0;
+
+INSERT INTO <ODB/>.dbo.PostalAddress ([ID],[Code],[Hidden],[LocationID],[Address1],[Address2],[City],[Territory],[Country],[PostalCode])
+	SELECT BL.PostalAddressID, CM.[Code], CM.[HIDDEN30], BL.LocationID, [ADDRESS1], [ADDRESS2], [CITY], [TERRITORY], NULL, [PCODE]
+	from <IDB/>.dbo.Buildings as B
+	  join <IDB/>.dbo.BuildingLinkages as BL on B.[Id] = BL.ID
+	  join <IDB/>.dbo.CodeManagement as CM on CM.[ID] = B.[ID]
+	where EXCLUDE = 0;
+	
+INSERT INTO <ODB/>.dbo.Location ([ID],[Desc],[Comment]) 
+	SELECT VL.LocationID, [Desc], 'Vendors'
+	from <IDB/>.dbo.Vendors as V
+		join <IDB/>.dbo.VendorLinkages as VL on V.[Id] = VL.ID;
+
+INSERT INTO <ODB/>.dbo.PostalAddress ([ID],[Code],[Hidden],[LocationID],[Address1],[Address2],[City],[Territory],[Country],[PostalCode])
+	SELECT VL.PostalAddressID, CM.[CODE], CM.[HIDDEN30], VL.LocationID, [ADD1], [ADD2], NULL, [ADD3], NULL, NULL
+	from <IDB/>.dbo.Vendors as V
+		join <IDB/>.dbo.VendorLinkages as VL on V.[Id] = VL.ID
+	  join <IDB/>.dbo.CodeManagement as CM on CM.[ID] = V.[ID];
+</data>
+</table>
+</dbconversion>
+ 

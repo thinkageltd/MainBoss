@@ -1,0 +1,239 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F14C1547-B5CA-4C6B-BF8B-549309D21208}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JQueryUIHelpers</RootNamespace>
+    <AssemblyName>JQueryUIHelpers</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <JSLintSkip>\Scripts\jquery-ui.unobtrusive.js</JSLintSkip>
+    <SccProjectName>JQueryUIHelpers</SccProjectName>
+    <SccLocalPath>1~cf73bb72-5e59-49d7-bf5d-1423e6537726</SccLocalPath>
+    <SccAuxPath>http://vault.thinkage.ca/VaultService</SccAuxPath>
+    <SccProvider>SourceGear Vault Visual Studio 2005 Client:{1EA47954-8515-402d-82D9-B5C332120A8D}</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\JQueryUIHelpers.xml</DocumentationFile>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\JQueryUIHelpers.xml</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\JQueryUIHelpers.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Accordion.cs" />
+    <Compile Include="AccordionAnimation.cs" />
+    <Compile Include="AccordionAttributeName.cs" />
+    <Compile Include="AccordionBuilder.cs" />
+    <Compile Include="AccordionPanel.cs" />
+    <Compile Include="ActionButton.cs" />
+    <Compile Include="ActionDescription.cs" />
+    <Compile Include="AjaxSettings.cs" />
+    <Compile Include="AjaxSettingsPropertyName.cs" />
+    <Compile Include="Autocomplete.cs" />
+    <Compile Include="AutocompleteAttributeName.cs" />
+    <Compile Include="BuilderBase.cs" />
+    <Compile Include="Button.cs" />
+    <Compile Include="ButtonAttributeName.cs" />
+    <Compile Include="ButtonBase.cs" />
+    <Compile Include="ButtonElement.cs" />
+    <Compile Include="ButtonSet.cs" />
+    <Compile Include="ButtonType.cs" />
+    <Compile Include="CommonHtmlAttributeName.cs" />
+    <Compile Include="Containment.cs" />
+    <Compile Include="Cursor.cs" />
+    <Compile Include="CursorPosition.cs" />
+    <Compile Include="CursorUtility.cs" />
+    <Compile Include="DateDifference.cs" />
+    <Compile Include="DatetimepickerAttributeName.cs" />
+    <Compile Include="Datetimepicker.cs" />
+    <Compile Include="Datepicker.cs" />
+    <Compile Include="DatepickerAnimation.cs" />
+    <Compile Include="DatepickerAttributeName.cs" />
+    <Compile Include="DatepickerCulture.cs" />
+    <Compile Include="DatepickerCultureList.cs" />
+    <Compile Include="DatepickerShowOn.cs" />
+    <Compile Include="Dialog.cs" />
+    <Compile Include="DialogAttributeName.cs" />
+    <Compile Include="DialogBuilder.cs" />
+    <Compile Include="DialogButton.cs" />
+    <Compile Include="Draggable.cs" />
+    <Compile Include="DraggableAttributeName.cs" />
+    <Compile Include="DraggableBuilder.cs" />
+    <Compile Include="Droppable.cs" />
+    <Compile Include="DroppableAttributeName.cs" />
+    <Compile Include="DroppableBuilder.cs" />
+    <Compile Include="DroppableTolerance.cs" />
+    <Compile Include="Duration.cs" />
+    <Compile Include="Easing.cs" />
+    <Compile Include="Effect.cs" />
+    <Compile Include="HeightStyle.cs" />
+    <Compile Include="HtmlElement.cs" />
+    <Compile Include="Event.cs" />
+    <Compile Include="Guard.cs" />
+    <Compile Include="Handle.cs" />
+    <Compile Include="HorizontalPosition.cs" />
+    <Compile Include="HtmlAttributesUtility.cs" />
+    <Compile Include="HtmlHelperExtensions.cs" />
+    <Compile Include="JQueryUI.Accordion.cs" />
+    <Compile Include="JQueryUI.Autocomplete.cs" />
+    <Compile Include="JQueryUI.cs" />
+    <Compile Include="JQueryUI.Datetimepicker.cs" />
+    <Compile Include="JQueryUI.Dialog.cs" />
+    <Compile Include="JQueryUI.Menu.cs" />
+    <Compile Include="JQueryUI.Progressbar.cs" />
+    <Compile Include="JQueryUI.Resizable.cs" />
+    <Compile Include="JQueryUI.Selectable.cs" />
+    <Compile Include="JQueryUI.Slider.cs" />
+    <Compile Include="JQueryUI.Sortable.cs" />
+    <Compile Include="JQueryUI.Tabs.cs" />
+    <Compile Include="JQueryUI.Tooltip.cs" />
+    <Compile Include="JQueryUIType.cs" />
+    <Compile Include="DateFormatUtility.cs" />
+    <Compile Include="Menu.cs" />
+    <Compile Include="MenuAttributeName.cs" />
+    <Compile Include="MenuItem.cs" />
+    <Compile Include="MenuRole.cs" />
+    <Compile Include="Orientation.cs" />
+    <Compile Include="OtherMonths.cs" />
+    <Compile Include="Position.cs" />
+    <Compile Include="PositionCollision.cs" />
+    <Compile Include="Progressbar.cs" />
+    <Compile Include="ProgressbarAttributeName.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RelativeTo.cs" />
+    <Compile Include="Resizable.cs" />
+    <Compile Include="ResizableAttributeName.cs" />
+    <Compile Include="ResizableBuilder.cs" />
+    <Compile Include="ResizableHandles.cs" />
+    <Compile Include="DraggableRevert.cs" />
+    <Compile Include="Selectable.cs" />
+    <Compile Include="SelectableAttributeName.cs" />
+    <Compile Include="SelectableBuilder.cs" />
+    <Compile Include="SelectableTolerance.cs" />
+    <Compile Include="Slider.cs" />
+    <Compile Include="SliderAttributeName.cs" />
+    <Compile Include="SliderLabelStyle.cs" />
+    <Compile Include="SliderRange.cs" />
+    <Compile Include="SnapMode.cs" />
+    <Compile Include="Sortable.cs" />
+    <Compile Include="SortableAttributeName.cs" />
+    <Compile Include="Axis.cs" />
+    <Compile Include="SortableBuilder.cs" />
+    <Compile Include="DragHelper.cs" />
+    <Compile Include="SortableHelper.cs" />
+    <Compile Include="SortableItem.cs" />
+    <Compile Include="SortableTolerance.cs" />
+    <Compile Include="Spinner.cs" />
+    <Compile Include="SpinnerAttributeName.cs" />
+    <Compile Include="StringExtensions.cs" />
+    <Compile Include="StringResource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StringResource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Tabs.cs" />
+    <Compile Include="TabsAttributeName.cs" />
+    <Compile Include="TabsBuilder.cs" />
+    <Compile Include="TabsPanel.cs" />
+    <Compile Include="Properties\VersionInfo.cs" />
+    <Compile Include="TimeFormatUtility.cs" />
+    <Compile Include="Tooltip.cs" />
+    <Compile Include="TooltipAttributeName.cs" />
+    <Compile Include="VerticalPosition.cs" />
+    <Compile Include="Widget.cs" />
+    <Compile Include="YearDefinition.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="JQueryUI.Datepicker.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\JQueryUIHelpers.snk">
+      <Link>JQueryUIHelpers.snk</Link>
+    </None>
+    <Compile Include="JQueryUI.Button.cs" />
+    <Compile Include="JQueryUI.Draggable.cs" />
+    <Compile Include="JQueryUI.Droppable.cs" />
+    <Compile Include="JQueryUI.Spinner.cs" />
+    <None Include="packages.config" />
+    <None Include="Scripts\jquery-ui.unobtrusive.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="StringResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>StringResource.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

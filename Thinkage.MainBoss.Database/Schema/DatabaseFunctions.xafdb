@@ -1,0 +1,147 @@
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+
+<!-- All functions that do not depend on anything else are coded here -->
+
+  <object class="function" name="mbfn_ZeroIfNegative">
+	<doc>
+	  Given an integer, return the same integer or 0 if the given integer is negative.
+	</doc>
+	<extension name="body">
+(
+	@val		integer
+)
+RETURNS integer
+as
+begin
+	return ( select case when @val &lt; 0 then 0 else @val end )
+end
+	</extension>
+  </object>
+
+<object class="function" name="mbfn_CalculateUnitCost">
+  <doc>
+	Total the UnitCost of Quantity items given the Total and OnHand values for the item
+	</doc>
+  <extension name="body">
+	(
+		@TotalCost	money,		-- total value
+		@OnHand		integer,	-- total onhand
+		@Quantity	integer = 1	-- specify DEFAULT when calling 
+	)
+	RETURNS money
+	as
+	begin
+		if (@OnHand = 0)
+			RETURN null
+
+		if (@Quantity = 1)
+			RETURN CONVERT(DECIMAL(19,4),@TotalCost)/@OnHand
+
+		RETURN (CONVERT(DECIMAL(28,4),@TotalCost)*@Quantity) / @OnHand
+	end
+	</extension>
+</object>
+
+<object class="function" name="mbfn_CalculateHourlyCost">
+	<doc>
+	Total the UnitCost of Quantity items given the Total and Duration values for the item
+	</doc>
+	<extension name="body">
+	(
+		@TotalCost          money,		-- total value
+		@TotalDuration		XAFInterval
+	)
+	RETURNS money
+	as
+	begin
+		declare @mseconds BIGINT
+		SET @mseconds = dbo._IIToMilliseconds(@TotalDuration)
+
+		if (@mseconds = 0)
+		RETURN null
+
+		RETURN CONVERT(DECIMAL(28,4), @TotalCost * 3600 * 1000 / @mseconds)
+	end
+	</extension>
+</object>
+
+<object class="function" name="mbfn_ConcatWithSeparator">
+	<doc>
+	  Concat to a string from another strings with a separator string between them
+	</doc>
+	<extension name="body">
+(
+	@Str1	nvarchar(max),
+	@Sep	nvarchar(30),
+	@Str2	nvarchar(max)
+)
+RETURNS nvarchar(max)
+AS
+BEGIN
+	DECLARE @Result nvarchar(max)
+	
+	IF( @Str1 IS NULL )
+		SET @Str1 = ''
+	IF( @Sep IS NULL )
+		SET @Sep = ''
+	IF( @Str2 IS NULL )
+		SET @Str2 = ''
+
+	IF( @Str1 = '' )
+		SET @Result = @Str2
+	ELSE IF( @Str2 = '' )
+		SET @Result = @Str1
+	ELSE
+		SET @Result = @Str1 + @Sep + @Str2
+		
+	RETURN @Result
+END
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ConstraintName">
+	<doc>
+	  Given a table name and column name, return the name of the foreign constraint that constrains the column.
+	</doc>
+	<extension name="body">
+(
+	@TableName		nvarchar(50),
+	@ColumnName		nvarchar(50)
+)
+RETURNS nvarchar(128)
+AS
+BEGIN
+	DECLARE @ConstraintName nvarchar(128)
+	
+	select @ConstraintName = fk.name
+	from sys.tables t
+	join sys.columns c on c.object_id = t.object_id
+	join sys.foreign_key_columns fkc on fkc.parent_object_id = t.object_id and fkc.parent_column_id = c.column_id
+	join sys.foreign_keys fk on fk.object_id = fkc.constraint_object_id
+	where t.name = @TableName and c.name = @ColumnName
+
+	return @ConstraintName
+END
+	</extension>
+  </object>
+  <object class="function" name="ClassifyDateByMonth">
+	<doc>This function is used in report grouping to classify date-time values into month-sized classes</doc>
+	<extension name="body">
+	  (@value as datetime, @epsilon as integer)
+	  returns datetime
+	  as begin
+		  return dbo._DClosestValue(@value, 1, @epsilon)
+	  end	  
+	</extension>
+  </object>
+  <object class="function" name="ClassifyDateByTime">
+	<doc>This function is used in report grouping to classify date-time values into time-sized classes</doc>
+	<extension name="body">
+	  (@value as datetime, @epsilon as XAFInterval)
+	  returns datetime
+	  as begin
+		  return dbo._DClosestValue(@value, 0, 10000 * dbo._IIToMilliseconds(@epsilon))
+	  end	  
+	</extension>
+  </object>
+</database>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+  <table name="ZTestTable" defaults="true" log="false" id="Id" xid="Code GenerationValue" xunique="true" labelkey="">
+	<field name="Id" read="RequiredGUID" />
+	<field name="RequiredAddress" type="RequiredAddress" />
+	<field name="RequiredAutoNumber" type="RequiredAutoNumber" />
+	<field name="RequiredBool" type="Requiredbool" />
+	<field name="RequiredCode" type="RequiredCode" />
+	<field name="RequiredCultureInfoLCID" type="RequiredCultureInfoLCID" />
+	<field name="RequiredCurrency" type="RequiredCurrency" />
+	<field name="RequiredDate" type="RequiredDate" />
+	<field name="RequiredDateTime" type="RequiredDateTime" />
+	<field name="RequiredDayOfYear" type="RequiredDayOfYear" />
+	<field name="RequiredDaySpan" type="RequiredDaySpan" />
+	<field name="RequiredDesc" type="RequiredDesc" />
+	<field name="RequiredDowntime" type="RequiredDowntime" />
+	<field name="RequiredEmailAddress" type="RequiredEmailAddress" />
+	<field name="RequiredGUIDREF" type="RequiredGUIDREF" link="Location">
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="RequiredGenerationValue" type="RequiredGenerationValue" />
+	<field name="RequiredLaborDuration" type="RequiredLaborDuration" />
+	<field name="RequiredLineText" type="RequiredLineText" />
+	<field name="RequiredMeterReadingValue" type="RequiredMeterReadingValue" />
+	<field name="RequiredMeterSpan" type="RequiredMeterSpan" />
+	<field name="RequiredMonthSpan" type="RequiredMonthSpan" />
+	<field name="RequiredPhoneNumber" type="RequiredPhoneNumber" />
+	<field name="RequiredPostalCode" type="RequiredPostalCode" />
+	<field name="RequiredQuantity" type="RequiredQuantity" />
+	<field name="RequiredSubject" type="RequiredSubject" />
+	<field name="RequiredURL" type="RequiredURL" />
+	<field name="RequiredUserName" type="RequiredUserName" />
+	<field name="RequiredVariableLengthString" type="RequiredVariableLengthString" />
+	<field name="RequiredComment" type="RequiredComment" />
+	<field name="RequiredMultiLineUnlimited" type="RequiredMultiLineUnlimited" />
+	<field name="RequiredVersionInfo" type="RequiredVersionInfo" />
+	<field name="RequiredWorkOrderDuration" type="RequiredWorkOrderDuration" />
+	<field name="RequiredUnsigned16" type="integer(unsigned 16,nonnull)" />
+	<field name="RequiredUnsigned32" type="integer(unsigned 32,nonnull)" />
+
+
+	<field name="Address" type="Address"  />
+	<field name="AutoNumber" type="AutoNumber"  />
+	<field name="Bool" type="bool"  />
+	<field name="Code" type="Code"  />
+	<field name="CultureInfo" type="CultureInfo"  />
+	<field name="Currency" type="Currency"  />
+	<field name="Date" type="Date"  />
+	<field name="DateTime" type="DateTime"  />
+	<field name="DayOfYear" type="DayOfYear"  />
+	<field name="DaySpan" type="DaySpan"  />
+	<field name="Desc" type="Desc"  >
+	  <extension name="usage">password</extension>
+	</field>
+	<field name="Downtime" type="Downtime"  />
+	<field name="EmailAddress" type="EmailAddress"  >
+	  <extension name="usage">EMailLink</extension>
+	</field>
+	<field name="GUIDREF" type="GUIDREF" link="Location">
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="GenerationValue" type="GenerationValue"  />
+	<field name="LaborDuration" type="LaborDuration"  />
+	<field name="LineText" type="LineText"  />
+	<field name="MeterReadingValue" type="MeterReadingValue"  />
+	<field name="MeterSpan" type="MeterSpan"  />
+	<field name="MonthSpan" type="MonthSpan"  />
+	<field name="PhoneNumber" type="PhoneNumber"  />
+	<field name="PostalCode" type="PostalCode"  />
+	<field name="ProcessName" type="ProcessName"  />
+	<field name="Quantity" type="Quantity"  />
+	<field name="Subject" type="Subject"  />
+	<field name="URL" type="URL"  >
+	  <extension name="usage">WebLink</extension>
+	</field>
+	<field name="UserName" type="UserName"  />
+	<field name="VariableLengthString" type="VariableLengthString"  />
+	<field name="Comment" type="Comment"  />
+	<field name="MultiLineUnlimited" type="MultiLineUnlimited"  />
+	<field name="VersionInfo" type="VersionInfo"  />
+	<field name="WorkOrderDuration" type="WorkOrderDuration"  />
+	<field name="Unsigned16" type="integer(unsigned 16)"  />
+	<field name="Unsigned32" type="integer(unsigned 32)"  />
+  </table>
+  <table name="Location"/>
+</database>

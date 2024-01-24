@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database labelcontext="dsSavedOrganizationsLabel" name="http://thinkage.ca/MB3/dsCultureInfo.xsd:dsSavedOrganizations" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <table name="Organizations" defaults="false" log="false" id="Id" xid="OrganizationName" labelkey="Organization">
+	<field name="Id" read="id(nonnull)"/>
+	<field name="OrganizationName" type="string(minlength 1, 128, lines 0, trim both, nonnull)">
+	</field>
+	<field name="DataBaseName" type="string(minlength 1, 128, lines 0, trim both, nonnull)">
+	</field>
+	<field name="DataBaseServer" type="string(minlength 1, 128, lines 0, trim both, nonnull)">
+	</field>
+	<field name="CredentialsAuthenticationMethod" type="integer(nonnull, min 0, max 3)" labelkey="Authentication">
+	  <!-- DBILibrary.AuthenticationMethod -->
+	  <extension name="controlprovider">Thinkage.Libraries.DBILibrary.AuthenticationCredentials.AuthenticationMethodProvider,Thinkage.Libraries.DBILibrary</extension>
+	</field>
+	<field name="CredentialsPassword" type="string(minlength 0, maxlength 4096, lines 0, null)" labelkey="Password" >
+	  <!-- stored as encrypted Base64 encoded string (without line breaks) using System.Security.Cryptography.Protect on Current User  -->
+	  <doc>Password for SQL Credentials (encrypted)</doc>
+	  <extension name="usage">password</extension>
+	</field>
+	<field name="CredentialsUsername" type="string(minlength 1, 128, lines 0, trim both, null)" labelkey="User name" >
+	  <doc>Username SQL Credentials</doc>
+	</field>
+	<field name="CompactBrowsers" type="bool">
+	</field>
+	<field name="PreferredApplicationMode" type="integer(nonnull, min 0, max 13)">
+	  <!-- DatabaseEnums.ApplicationModeID.Remote -->
+	  <extension name="controlprovider">Thinkage.MainBoss.MainBoss.PickOrganizationApplication.StartModes,MainBoss</extension>
+	</field>
+	<field name="IsPreferredOrganization" read="bool(nonnull)">
+	  <result hosting="server">'x' = Organizations.OrganizationName</result>
+	  <extension name="dependson">(PreferredOrganization)</extension>
+	  <extension name="dependson">(PreferredOrganizationDebug)</extension>
+	</field>
+	<field name="DBVersion" read="string(minlength 1, 23, lines 0, nonnull)">
+	  <result hosting="builtin">
+        cast('0.0.0.0' as string(minlength 1, 23, lines 0, nonnull))
+      </result>
+	</field>
+	<field name="Access" read="string(minlength 1, 80, lines 0, nonnull)">
+	  <doc>Current users access to the database</doc>
+	  <result hosting="builtin">
+        cast('0.0.0.0' as string(minlength 1, 80, lines 0, nonnull))
+      </result>
+	</field>
+	<field name="CanDropDatabase" read="bool">
+	  <doc>Current user has permission to DROP the database</doc>
+	  <result hosting="builtin">'x'= 'y'</result>
+	</field>
+	<field name="Status" read="string(minlength 0, 1073741823, trim both, null)">
+	  <result hosting="builtin">
+		cast('' as string(minlength 0, 1073741823, trim both, null))
+	  </result>
+	  <extension name="lines">3</extension>
+	</field>
+	<field name="Generation" type="integer(32,nonnull)">
+	  <doc>
+		A unique value each time the row is fetched to ensure CacheManager sees 'new' data each time
+	  </doc>
+	</field>
+	<extension name="deletemethod">delete</extension>
+  </table>
+  <variable name="DBVersion" type="string(minlength 1, 23, lines 0, nonnull)">
+	<doc>The version of the organization intended to detect changes in the schema for upgrading.</doc>
+  </variable>
+  <variable name="PreferredOrganization" type="link(Organizations, null)"/>
+  <variable name="PreferredOrganizationDebug" type="link(Organizations, null)"/>
+  <variable name="SoloOrganization" type="link(Organizations, null)"/>
+  <extension name="VariableStorageType">blob(minlength 0, maxlength 2147483647)</extension>
+  <extension name="VariableEncoderProvider">Thinkage.Libraries.XAF.Database.Service.MSSql.MSSqlServer,Thinkage.Libraries.XAF.Database.Service.MSSql</extension>
+</database>

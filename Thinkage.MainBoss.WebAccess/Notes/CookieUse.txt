@@ -1,0 +1,4 @@
+﻿All cookies used by MainBoss WebAccess will be stored under a single cookie key "MainBossWebAccess" as subkeys
+
+The following subkeys are defined:
+"requestorEmail" - the email address a user last successfully entered (and was recognized as a valid requestor in MainBoss)

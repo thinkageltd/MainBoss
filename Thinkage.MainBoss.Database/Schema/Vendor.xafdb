@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+  <table name="Vendor" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Vendor">
+	<doc>
+	  This record represents a supplier of items, services, or Units (equipment)
+	</doc>
+    <field name="Id" read="RequiredGUID"/>
+    <field name="Code" type="RequiredCode"/>
+    <field name="Hidden" type="GenerationValue"/>
+    <field name="Desc" type="Desc"/>
+    <field name="Comment" type="Comment"/>
+	<field name="SalesContactID" type="GUIDREF"  link="Contact">
+	  <doc>The contact at the vendor for information relating to selection and purchasing of their products and for order submission</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="ServiceContactID" type="GUIDREF"  link="Contact">
+	  <doc>The contact at the vendor for information relating to servicing or repairs</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="PayablesContactID" type="GUIDREF"  link="Contact">
+	  <doc>The contact at the vendor for matters relating to payment for purchased goods or services</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="VendorCategoryID" type="GUIDREF"  link="VendorCategory">
+	  <doc>A cetegory for this vendor</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="AccountNumber" type="Desc">
+	  <doc>The vendor's account or reference number for our organization (the vendor's 'customer number' for us)</doc>
+	</field>
+	<field name="AccountsPayableCostCenterID" type="RequiredGUIDREF"  link="CostCenter">
+	  <doc>The cost center for debts payable to the vendor for purchases</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="PaymentTermID" type="GUIDREF" link="PaymentTerm">
+	  <doc>The default payment term to use when creating a purchase order for this vendor</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+
+	<extension name="deletemethod">hide</extension>
+  </table>
+  <table name="Contact"/>
+  <table name="VendorCategory"/>
+  <table name="CostCenter"/>
+  <table name="PaymentTerm"/>
+</database>

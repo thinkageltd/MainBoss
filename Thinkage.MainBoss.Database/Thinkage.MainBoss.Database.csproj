@@ -1,0 +1,994 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1302BBDA-FB21-415F-9ECF-678BE8F5F79E}</ProjectGuid>
+    <SccProjectName>Thinkage.MainBoss.Database</SccProjectName>
+    <SccLocalPath>1~cf73bb72-5e59-49d7-bf5d-1423e6537726</SccLocalPath>
+    <SccAuxPath>http://vault.thinkage.ca/VaultService</SccAuxPath>
+    <SccProvider>SourceGear Vault Visual Studio 2005 Client:{1EA47954-8515-402d-82D9-B5C332120A8D}</SccProvider>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>Thinkage.MainBoss.Database</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Thinkage.MainBoss.Database</RootNamespace>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;IMPLICIT_FULL_PERMISSIONS</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>pdbonly</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>..\ThinkageRuleSet.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Installation|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Installation\</OutputPath>
+    <DefineConstants>TRACE;IMPLICIT_FULL_PERMISSIONS</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Dart.Mail, Version=4.2.3.1, Culture=neutral, PublicKeyToken=5966291b8955e4bb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Dart.Mail.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary.MSSql\Thinkage.Libraries.DBILibrary.MSSql.csproj">
+      <Project>{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}</Project>
+      <Name>Thinkage.Libraries.DBILibrary.MSSql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary\Thinkage.Libraries.DBILibrary.csproj">
+      <Project>{9398F76E-D6FD-4194-9599-CE4B6512D5A2}</Project>
+      <Name>Thinkage.Libraries.DBILibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.Sql\Thinkage.Libraries.Sql.csproj">
+      <Project>{f83bdc83-15eb-4778-a127-80bb86a7ace3}</Project>
+      <Name>Thinkage.Libraries.Sql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Layout\Thinkage.Libraries.XAF.Database.Layout.csproj">
+      <Project>{D329682F-5E4C-496D-9DF4-E94896DAEC54}</Project>
+      <Name>Thinkage.Libraries.XAF.Database.Layout</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Service.MSSql\Thinkage.Libraries.XAF.Database.Service.MSSql.csproj">
+      <Project>{1A451D90-FF1F-4446-A6C7-983422CA1103}</Project>
+      <Name>Thinkage.Libraries.XAF.Database.Service.MSSql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Service\Thinkage.Libraries.XAF.Database.Service.csproj">
+      <Project>{1BF2EC15-6F92-4CE1-AEB4-FBA8E3E147A1}</Project>
+      <Name>Thinkage.Libraries.XAF.Database.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.UI\Thinkage.Libraries.XAF.UI.csproj">
+      <Project>{7675980A-46B7-41D8-AD27-1ED46277D959}</Project>
+      <Name>Thinkage.Libraries.XAF.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries\Thinkage.Libraries.csproj">
+      <Name>Thinkage.Libraries</Name>
+      <Project>{F1588FB4-32FC-4718-8982-66C02732DF13}</Project>
+      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.DBAccess\Thinkage.Libraries.DBAccess.csproj">
+      <Name>Thinkage.Libraries.DBAccess</Name>
+      <Project>{4C013DD4-7AE5-49ED-9A18-CE2204C9B508}</Project>
+      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Schema\AccessCode.xafdb" />
+    <EmbeddedResource Include="Schema\Service\EmailPart.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Service\EmailRequest.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Service\RequestAcknowledgement.xafdb" />
+    <EmbeddedResource Include="Schema\Contact.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\DatabaseStatus.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Inventory\Item.xafdb" />
+    <EmbeddedResource Include="Schema\Inventory\ItemActivity.xafdb" />
+    <EmbeddedResource Include="Schema\Inventory\ItemActivityReport.xafdb" />
+    <EmbeddedResource Include="Schema\Inventory\ItemAdjustment.xafdb" />
+    <EmbeddedResource Include="Schema\Inventory\ItemAdjustmentCode.xafdb" />
+    <EmbeddedResource Include="Schema\Inventory\ItemCategory.xafdb" />
+    <EmbeddedResource Include="Schema\Inventory\ItemCountValue.xafdb" />
+    <EmbeddedResource Include="Schema\Inventory\ItemIssue.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Inventory\ItemIssueCode.xafdb" />
+    <EmbeddedResource Include="Schema\Inventory\ItemLocation.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Inventory\ItemLocationReport.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Inventory\ItemPrice.xafdb" />
+    <EmbeddedResource Include="Schema\Inventory\ItemReceiving.xafdb" />
+    <EmbeddedResource Include="Schema\Inventory\ItemTransfer.xafdb" />
+    <EmbeddedResource Include="Schema\MainBoss.xafdb">
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>MainBoss.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Purchasing\Miscellaneous.xafdb" />
+    <EmbeddedResource Include="Schema\Purchasing\PaymentTerm.xafdb" />
+    <EmbeddedResource Include="Schema\Purchasing\POLine.xafdb" />
+    <EmbeddedResource Include="Schema\Purchasing\POLineItem.xafdb" />
+    <EmbeddedResource Include="Schema\Purchasing\POLineLabor.xafdb" />
+    <EmbeddedResource Include="Schema\Purchasing\POLineMiscellaneous.xafdb" />
+    <EmbeddedResource Include="Schema\Purchasing\POLineOtherWork.xafdb" />
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrder.xafdb" />
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderFormReport.xafdb" />
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderLine.xafdb">
+      <LastGenOutput>PurchaseOrderLines.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderExtras.xafdb" />
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderState.xafdb" />
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderStateHistory.xafdb" />
+    <EmbeddedResource Include="Schema\Purchasing\ShippingMode.xafdb" />
+    <EmbeddedResource Include="Schema\Receiving\Receipt.xafdb" />
+    <EmbeddedResource Include="Schema\Receiving\ReceiptActivity.xafdb" />
+    <EmbeddedResource Include="Schema\Receiving\ReceiveItemNonPO.xafdb" />
+    <EmbeddedResource Include="Schema\Receiving\ReceiveItemPO.xafdb" />
+    <EmbeddedResource Include="Schema\Receiving\ReceiveMiscellaneousPO.xafdb" />
+    <EmbeddedResource Include="Schema\Requests\Request.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Requests\RequestedWorkOrder.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Requests\Requestor.xafdb" />
+    <EmbeddedResource Include="Schema\Requests\RequestPriority.xafdb" />
+    <EmbeddedResource Include="Schema\Requests\RequestReport.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Requests\RequestState.xafdb" />
+    <EmbeddedResource Include="Schema\Requests\RequestStateHistory.xafdb" />
+    <EmbeddedResource Include="Schema\Types.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\UnitOfMeasure.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Vendor.xafdb" />
+    <EmbeddedResource Include="Schema\VendorCategory.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\WorkOrderTemplate.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\ActualItem.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\ActualLaborInside.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\ActualLaborOutsideNonPO.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\ActualLaborOutsidePO.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\ActualOtherWorkInside.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\ActualOtherWorkOutsideNonPO.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\ActualOtherWorkOutsidePO.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\Demand.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\DemandItem.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\DemandLaborInside.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\DemandLaborOutside.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\DemandOtherWorkInside.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\DemandOtherWorkOutside.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\WorkCategory.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrder.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderExpenseCategory.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderExpenseModel.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderExpenseModelEntry.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderFormReport.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderPriority.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderExtras.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderState.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderStateHistory.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderStateHistoryReport.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\ZTestTable.xafdb" />
+    <Compile Include="ApplicationParameters.cs" />
+    <Compile Include="Client\Compute.cs" />
+    <Compile Include="Client\DatabaseHistoryManager.cs" />
+    <Compile Include="Client\SecurityOnServer.cs">
+      <DependentUpon>SecurityOnServer.xafdb</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Client\DatabaseOnServerInformation.cs" />
+    <Compile Include="Client\Licensing.cs" />
+    <Compile Include="Client\MB3Client.cs" />
+    <Compile Include="Client\MeterReadingAnalysis.cs" />
+    <Compile Include="Client\NamedOrganization.cs" />
+    <Compile Include="Client\PhysicalCounts\dsPhysicalCount.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsPhysicalCount.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Client\PhysicalCounts\PhysicalCountImportExport.cs" />
+    <Compile Include="Client\PMGenerationCode\Availability.cs" />
+    <Compile Include="Client\PMGenerationCode\MakeWorkOrder.cs" />
+    <Compile Include="Client\PMGenerationCode\PMGeneration.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Client\RaiseErrorTranslationKeyBuilder.cs" />
+    <Compile Include="Client\SavedOrganizations.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SavedOrganizations.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Client\SavedOrganizationsProvider.cs" />
+    <Compile Include="Client\SecurityOnServerSession.cs" />
+    <Compile Include="CommonExpressions.cs" />
+    <Compile Include="CompanyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Creation\DatabaseCreation.cs" />
+    <Compile Include="Creation\Resources\Images.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Images.resx</DependentUpon>
+    </Compile>
+    <Compile Include="EmailMessageSource.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Licensing.cs" />
+    <Compile Include="MainbossLicensingInformation.cs" />
+    <Compile Include="MB3RootRights.cs" />
+    <Compile Include="ProductInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Restrictions.cs" />
+    <Compile Include="Schema\MainBoss.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MainBoss.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="MainBossPermissionsManager.cs" />
+    <Compile Include="Schema\Security\Security.cs" />
+    <Compile Include="Service\AssignmentNotificationProcessor.cs" />
+    <Compile Include="Service\AcquireContact.cs" />
+    <Compile Include="Service\LDAPEntry.cs" />
+    <Compile Include="Service\RequestFromEmailActions.cs" />
+    <Compile Include="Service\EmailHelper.cs" />
+    <Compile Include="Service\EmailMessage.cs" />
+    <Compile Include="Service\EmailNotificationProcessor.cs" />
+    <Compile Include="Service\EmailPart.cs" />
+    <Compile Include="Service\EmailProcessor.cs" />
+    <Compile Include="Service\HtmlNotificationEmail.cs" />
+    <Compile Include="Service\InitialNotificationInformation.cs" />
+    <Compile Include="Service\INotificationEmail.cs" />
+    <Compile Include="Service\Logging.cs" />
+    <Compile Include="Service\LogToDatabase.cs" />
+    <Compile Include="Service\MainBossServiceConfiguration.cs" />
+    <Compile Include="Service\MainBossServiceWorkerException.cs" />
+    <Compile Include="Service\AcquireRequestor.cs" />
+    <Compile Include="Service\ServiceUtilities.cs" />
+    <Compile Include="Service\NewRequestFromEmailRequest.cs" />
+    <Compile Include="Service\RequestorNotificationProcessor.cs" />
+    <Compile Include="Service\RequestProcessor.cs" />
+    <Compile Include="Service\RetrieveRequests.cs" />
+    <Compile Include="Service\ServicePassword.cs" />
+    <Compile Include="Service\MainBossServiceDefinition.cs" />
+    <Compile Include="Service\SMTPClient.cs" />
+    <Compile Include="Service\TextNotificationEmail.cs" />
+    <Compile Include="Service\XmlRequest.cs" />
+    <Compile Include="SolutionSettings.cs" />
+    <Compile Include="Translation.cs" />
+    <Compile Include="DatabaseEnums.cs" />
+    <Compile Include="Upgrade\DBVersionHandler30.cs" />
+    <Compile Include="Upgrade\EmailMessageToPartsUpgradeStep.cs" />
+    <Compile Include="Upgrade\PermissionUpgradeStep.cs" />
+    <Compile Include="Upgrade\RepairDefaultTableForeignConstraintsUpgradeStep.cs" />
+    <Compile Include="Upgrade\Schema\dsBackupFileName_1_0_10_24.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsBackupFileName_1_0_10_24.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsBackupFileName_1_0_4_79_To_1_0_10_23.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsBackupFileName_1_0_4_79_To_1_0_10_23.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsDatabaseHistory_1_0_0_337.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsDatabaseHistory_1_0_0_337.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsDBVersion_1_0_0_1_To_1_0_8_1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsDBVersion_1_0_0_1_To_1_0_8_1.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsDBVersion_1_0_8_2.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsDBVersion_1_0_8_2.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsEmailMessageToPartsUpgradeStep.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsEmailMessageToPartsUpgradeStep.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsLicense_1_0_0_1_To_1_0_4_13.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsLicense_1_0_0_1_To_1_0_4_13.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsLicense_1_1_4_2.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsLicense_1_1_4_2.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsMainBossService_1_0_0_1_To_1_0_8_28.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsMainBossService_1_0_0_1_To_1_0_8_28.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsPermission_1_0_0_1_To_1_0_4_13.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsPermission_1_0_0_1_To_1_0_4_13.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsPermission_1_0_10_31_To_1_1_4_1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsPermission_1_0_10_31_To_1_1_4_1.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsPermission_1_0_4_14_To_1_0_10_15.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsPermission_1_0_4_14_To_1_0_10_15.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsLicense_1_0_10_3.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsLicense_1_0_10_3.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsLicense_1_0_4_14_To_1_0_10_2.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsLicense_1_0_4_14_To_1_0_10_2.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsPermission_1_1_4_2.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsPermission_1_1_4_2.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsUpgrade_1_1_4_2.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsUpgrade_1_1_4_2.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsUser_1_0_0_1_To_1_0_4_13.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsUser_1_0_0_1_To_1_0_4_13.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsUser_1_0_4_14_To_1_1_4_1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsUser_1_0_4_14_To_1_1_4_1.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\Schema\dsUser_1_1_4_2.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsUser_1_1_4_2.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\SecurityCreation.cs" />
+    <Compile Include="Upgrade\VersionHistory.cs" />
+    <EmbeddedResource Include="Schema\ContactReport.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Accounting\AccountingTransaction.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Accounting\CostCenter.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\ContactFunctions.xafdb" />
+    <EmbeddedResource Include="Client\SavedOrganizations.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>SavedOrganizations.cs</LastGenOutput>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Client\SecurityOnServer.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>SecurityOnServer.cs</LastGenOutput>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Client\PhysicalCounts\dsPhysicalCount.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsPhysicalCount.cs</LastGenOutput>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Client\PhysicalCounts\MainBossCustomizationPhysicalCount.exportedUI" />
+    <EmbeddedResource Include="Client\PhysicalCounts\PermanentInventoryLocationData.xlsm" />
+    <None Include="Conventions.txt" />
+    <EmbeddedResource Include="Schema\Locations\LocationReport.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\WorkOrderTemplateOutside.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\WorkOrderTemplateInside.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\WorkOrderTemplateItems.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderOutside.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderInside.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderItems.xafdb" />
+    <EmbeddedResource Include="Schema\DatabaseFunctions.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\ChargebackActivity.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Inventory\ActualItemLocation.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\SingleRecordNoDataTable.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\WorkOrderMeterTreeView.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\PMGeneration\Periodicity.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Inventory\PermanentItemLocation.xafdb" />
+    <EmbeddedResource Include="Schema\Inventory\TemplateItemLocation.xafdb" />
+    <EmbeddedResource Include="Schema\Inventory\TemporaryItemLocation.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\WorkOrderTemplateReport.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\PurchaseOrderTemplate\PurchaseOrderTemplateReport.xafdb" />
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderStateTransition.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderStateTransition.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Requests\RequestStateTransition.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Inventory\LocationDerivationsAndItemLocation.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Locations\LocationDerivations.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderPurchaseOrder.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\PMGeneration\PMGenerationDetailTreeView.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\PMGeneration\PMInitializingGenerationDetail.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\WorkOrderTemplatePurchaseOrderTemplate.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\WorkOrderTemplateWithContainers.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Labor\LaborInside.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Labor\LaborOutside.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Labor\Employee.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Labor\OtherWorkInside.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Labor\OtherWorkOutside.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Labor\Trade.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\BillableRequestor.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\WorkOrderTemplateContainment.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\Chargeback.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\ChargebackLine.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\ChargebackLineCategory.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\CloseCode.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\Project.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\AssetCode.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\Meter.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\MeterClass.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\MeterReading.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\Ownership.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\ServiceContract.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\SystemCode.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\Attachment.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\SparePart.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\Specification.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\SpecificationData.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\SpecificationForm.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\SpecificationFormField.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Locations\Location.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Locations\PermanentStorage.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Locations\PlainRelativeLocation.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Locations\PostalAddress.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Locations\RelativeLocation.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Locations\TemporaryStorage.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\Unit.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\UnitCategory.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\UnitReport.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\UnitServiceContract.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Units\UnitUsage.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\PMGeneration\PMGenerationDetail.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\PMGeneration\Schedule.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\PMGeneration\ScheduledWorkOrder.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\PMGeneration\PMGenerationBatch.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderSequenceCounter.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Requests\RequestSequenceCounter.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderSequenceCounter.xafdb" />
+    <EmbeddedResource Include="Schema\PurchaseOrderTemplate\PurchaseOrderTemplateLine.xafdb" />
+    <EmbeddedResource Include="Schema\PurchaseOrderTemplate\POLineMiscellaneousTemplate.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\PurchaseOrderTemplate\POLineOtherWorkTemplate.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\PurchaseOrderTemplate\POLineLaborTemplate.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\PurchaseOrderTemplate\POLineItemTemplate.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\PurchaseOrderTemplate\POLineTemplate.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\PurchaseOrderTemplate\PurchaseOrderTemplate.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\DemandOtherWorkOutsideTemplate.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\DemandOtherWorkInsideTemplate.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\DemandLaborOutsideTemplate.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\DemandLaborInsideTemplate.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\DemandItemTemplate.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\DemandTemplate.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderAssignmentAll.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderAssignmentNotification.xafdb" />
+    <EmbeddedResource Include="Schema\PMGeneration\MaintenanceForecastReport.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderStateHistoryStatus.xafdb" />
+    <EmbeddedResource Include="Schema\Requests\RequestStateHistoryStatus.xafdb" />
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderStateHistoryStatus.xafdb" />
+    <EmbeddedResource Include="Schema\Inventory\ItemRestocking.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderStateHistoryReport.xafdb" />
+    <EmbeddedResource Include="Schema\ExternalTag.xafdb" />
+    <EmbeddedResource Include="Upgrade\PreviousSchema\1_0_8_6.xaf" />
+    <EmbeddedResource Include="Schema\Relationships\Relationship.xafdb" />
+    <EmbeddedResource Include="Schema\Relationships\UnitRelatedUnit.xafdb" />
+    <EmbeddedResource Include="Schema\Relationships\UnitRelatedContact.xafdb" />
+    <EmbeddedResource Include="Schema\Relationships\UnitRelatedRecords.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Relationships\ContactRelatedRecords.xafdb" />
+    <EmbeddedResource Include="Schema\Receiving\ReceivingReport.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderEndDateHistogram.xafdb" />
+    <EmbeddedResource Include="Schema\Requests\ActiveRequestAgeHistogram.xafdb" />
+    <EmbeddedResource Include="Schema\Requests\RequestCountsByStatus.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderCountsByPriority.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderCountsByStatus.xafdb" />
+    <EmbeddedResource Include="Schema\Service\ServiceConfiguration.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\AssignedWorkOrderCountsByStatus.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\AssignedWorkOrderCountsByPriority.xafdb" />
+    <EmbeddedResource Include="Schema\Requests\AssignedRequestCountsByPriority.xafdb" />
+    <EmbeddedResource Include="Schema\Requests\AssignedRequestCountsByStatus.xafdb" />
+    <EmbeddedResource Include="Upgrade\Schema\Principal_1_0_10_16.xafdb" />
+    <EmbeddedResource Include="Upgrade\Schema\Role_1_0_4_14.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\dsUser_1_0_4_14_To_1_1_4_1.xafdb">
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsUser_1_0_4_14_To_1_1_4_1.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\UserMessageKey.xafdb" />
+    <EmbeddedResource Include="Schema\UserMessageTranslation.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Requests\ActiveRequestor.xafdb" />
+    <EmbeddedResource Include="Upgrade\Schema\dsEmailMessageToPartsUpgradeStep.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsEmailMessageToPartsUpgradeStep.cs</LastGenOutput>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\Principal_1_0_4_14_To_1_0_10_15.xafdb" />
+    <EmbeddedResource Include="Upgrade\Schema\dsLicense_1_0_4_14_To_1_0_10_2.xafdb">
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsLicense_1_0_4_14_To_1_0_10_2.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\dsPermission_1_0_4_14_To_1_0_10_15.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+      <LastGenOutput>dsPermission_1_0_4_14_To_1_0_10_15.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\dsDBVersion_1_0_0_1_To_1_0_8_1.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsDBVersion_1_0_0_1_To_1_0_8_1.cs</LastGenOutput>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\dsDBVersion_1_0_8_2.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsDBVersion_1_0_8_2.cs</LastGenOutput>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\dsMainBossService_1_0_0_1_To_1_0_8_28.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsMainBossService_1_0_0_1_To_1_0_8_28.cs</LastGenOutput>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Session.xafdb" />
+    <EmbeddedResource Include="Schema\Variables.xafdb" />
+    <EmbeddedResource Include="Upgrade\Schema\dsUser_1_0_0_1_To_1_0_4_13.xafdb">
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsUser_1_0_0_1_To_1_0_4_13.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\dsLicense_1_0_0_1_To_1_0_4_13.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsLicense_1_0_0_1_To_1_0_4_13.cs</LastGenOutput>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\Permission_1_0_0_1_To_1_0_4_13.xafdb" />
+    <EmbeddedResource Include="Upgrade\Schema\dsPermission_1_0_0_1_To_1_0_4_13.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsPermission_1_0_0_1_To_1_0_4_13.cs</LastGenOutput>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\Extensions.xafdb" />
+    <EmbeddedResource Include="Upgrade\Schema\dsBackupFileName_1_0_10_24.xafdb">
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsBackupFileName_1_0_10_24.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Requests\RequestAssignmentByAssignee.xafdb" />
+    <EmbeddedResource Include="Schema\Service\ServiceLog.xafdb" />
+    <EmbeddedResource Include="Upgrade\Schema\UserRole_1_0_10_31.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\UserPermission_1_0_10_31.xafdb" />
+    <EmbeddedResource Include="Upgrade\Schema\dsPermission_1_0_10_31_To_1_1_4_1.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsPermission_1_0_10_31_To_1_1_4_1.cs</LastGenOutput>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\dsUpgrade_1_1_4_2.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsUpgrade_1_1_4_2.cs</LastGenOutput>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Requests\ManageRequestTransition.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\DefaultSettings.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Settings.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\SettingsName.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderAssignmentByAssignee.xafdb" />
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderAssignmentByAssignee.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderAssignmentReport.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderAssignmentReport.xafdb" />
+    <EmbeddedResource Include="Schema\Requests\RequestAssignmentReport.xafdb" />
+    <EmbeddedResource Include="Schema\SettingsAdministration.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Accounting\AccountingTransactionVariants.xafdb" />
+    <EmbeddedResource Include="Schema\Accounting\AccountingTransactionsAndReversals.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderAssignmentAndUnassignedWorkOrder.xafdb" />
+    <EmbeddedResource Include="Schema\PMGeneration\ExistingAndForecastResources.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\PMGeneration\ResolvedWorkOrderTemplate.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Security\CustomRole.xafdb" />
+    <EmbeddedResource Include="Schema\Security\Role.xafdb" />
+    <EmbeddedResource Include="Schema\Security\SecuritySchema.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Security\User.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Security\PrincipalExtraInformation.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Security\SecurityRoleAndUserRoleReport.xafdb" />
+    <EmbeddedResource Include="Schema\Receiving\ReceiptReport.xafdb" />
+    <EmbeddedResource Include="Schema\PMGeneration\MaintenanceTimingReport.xafdb" />
+    <EmbeddedResource Include="Schema\PMGeneration\ScheduledWorkOrderReport.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Inventory\ItemRestockingReport.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\dsUser_1_1_4_2.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+      <LastGenOutput>dsUser_1_1_4_2.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\dsPermission_1_1_4_2.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsPermission_1_1_4_2.cs</LastGenOutput>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\dsLicense_1_1_4_2.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsLicense_1_1_4_2.cs</LastGenOutput>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderCategory.xafdb" />
+    <EmbeddedResource Include="Schema\Requests\RequestExtras.xafdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Schema\Inventory\ItemCountValueVoid.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="TranslationResources\messages.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TranslationResources\messages.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TranslationResources\messages.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Creation\AddCheckConstraints.sql" />
+    <EmbeddedResource Include="Creation\DatabaseSecurity.sql" />
+    <EmbeddedResource Include="Creation\PostTablesCreation.sql" />
+    <EmbeddedResource Include="Schema\WorkOrder\ChargebackFormReport.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Creation\Resources\Images.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Creation\Resources\Images.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Images.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Locations\ActiveTemporaryStorageWithItemAssignments.xafdb" />
+    <EmbeddedResource Include="Schema\Accounting\VoidCode.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Locations\LocationContainment.xafdb">
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Creation\Resources\DemoLogoEnglish.GIF" />
+    <None Include="Creation\Resources\DemoLogoFrench.GIF" />
+    <EmbeddedResource Include="Schema\AssignmentNotification.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\dsBackupFileName_1_0_4_79_To_1_0_10_23.xafdb">
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsBackupFileName_1_0_4_79_To_1_0_10_23.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\DemandOtherWorkOutsideActivity.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\DemandLaborOutsideActivity.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderAssigneeProspect.xafdb" />
+    <EmbeddedResource Include="Schema\Requests\RequestAssigneeProspect.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderAssigneeProspect.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\UserPermission_1_0_4_14.xafdb" />
+    <EmbeddedResource Include="Upgrade\Schema\Permission_1_0_4_14.xafdb" />
+    <EmbeddedResource Include="Upgrade\Schema\dsDatabaseHistory_1_0_0_337.xafdb">
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsDatabaseHistory_1_0_0_337.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\dsLicense_1_0_10_3.xafdb">
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>dsLicense_1_0_10_3.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Schema\UserRole_1_0_4_14.xafdb" />
+    <EmbeddedResource Include="Upgrade\Schema\Types.xafdb" />
+    <EmbeddedResource Include="Schema\AttentionStatus.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Requests\RequestAssigneeStatistics.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Requests\RequestAssignment.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Requests\RequestAssignee.xafdb">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Locations\TemplateTemporaryStorage.xafdb" />
+    <EmbeddedResource Include="Schema\Inventory\ItemPricing.xafdb" />
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\WorkOrderTemplateMiscellaneous.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\DemandMiscellaneousWorkOrderCostTemplate.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderMiscellaneous.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\ActualMiscellaneousWorkOrderCost.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\DemandMiscellaneousWorkOrderCost.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\MiscellaneousWorkOrderCost.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrderTemplate\WorkOrderTemplatePurchaseOrderTemplateLinkage.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderPurchaseOrderLinkage.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="TranslationResources\messages.es.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\Dummies.xaf">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderAssignee.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderAssigneeStatistics.xafdb" />
+    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderAssignment.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderAssignment.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderAssigneeStatistics.xafdb">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderAssignee.xafdb">
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Schema\Requests\AssignedActiveRequestAgeHistogram.xafdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Schema\WorkOrder\AssignedWorkOrderEndDateHistogram.xafdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Schema\Requests\RequestCountsByPriority.xafdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Schema\Security\rightset.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Requests\RequestStateHistoryReport.xafdb" />
+    <EmbeddedResource Include="Service\Site.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Dart.Mail.dll" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>powershell -noprofile $(SolutionDir)GenerateProjectSolutionSettings.ps1 $(ProjectDir) "c#" $(ProjectName)</PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

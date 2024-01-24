@@ -1,0 +1,478 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+<table name="SrecTaskLinkage">
+<dependency table="ConversionFunctions"/>
+<data>
+CREATE TABLE <IDB/>.dbo.SrecTaskLinkage (
+	[ID]		[uniqueidentifier] NOT NULL,-- SREC record ID
+	[TaskID]	[uniqueidentifier] NOT NULL,-- Task ID for this SREC. Will equal [ID] for SRECS themselves
+	[ParentTaskID] [uniqueidentifier] NOT NULL -- Parent Task for this SREC
+	) ON [PRIMARY];
+	GO
+	-- avoid Srecs that link to themselves (yes, we did discover someone's database with this !)
+	UPDATE <IDB/>.dbo.WorkOrders SET EXCLUDE = 1 WHERE [KEY] = [LINKKEY] and [TYPE] = 'S';
+
+	INSERT INTO <IDB/>.dbo.SrecTaskLinkage
+		([ID], [TaskID], [ParentTaskID])
+		SELECT S.[ID], CASE WHEN
+		<!-- for determining whether SREC doesn't alter parent task values and should simply be the original TASK -->
+				COALESCE(S.[SUBJECT],S.[COSTCENTER],S.[PROJECT],S.[CLOSECODE],S.[ACCESSCODE],S.[WTYPE],S.[PRIORITY],NULL) IS NULL
+				AND COALESCE(S.[CLOSECOMM],S.[WDESC],NULL) IS NULL
+				AND S.[WONUM] IS NULL OR T.[WONUM] = S.[WONUM]
+				AND COALESCE(S.[WINTERVAL],0) = 0
+				AND (S.[DOWNTIME] IS NULL OR S.[DOWNTIME] = '000000')
+				AND (SELECT COUNT(*) FROM <IDB/>.dbo.Labor as L where L.[WOKEY] = S.[KEY]) = 0
+				AND (SELECT COUNT(*) FROM <IDB/>.dbo.InvTransactions as TX where TX.[TYPE] = 'RT' AND CAST(TX.REASON as INT) = S.[KEY]) = 0
+				AND (SELECT COUNT(*) FROM <IDB/>.dbo.PurchaseExtras as PX where PX.WOKEY = S.[KEY]) = 0
+			THEN T.[ID]
+			ELSE S.[ID]
+		END,
+		T.[ID]
+		FROM <IDB/>.dbo.WorkOrders as S
+			join <IDB/>.dbo.WorkOrders as T on S.[LINKKEY] = T.[KEY]
+		where S.[TYPE] = 'S' and S.EXCLUDE = 0;
+</data>
+</table>
+
+
+<table name="TaskCodes">
+  <dependency table="ConversionFunctions"/>
+  <data>
+delete from <IDB/>.dbo.CodeManagement;
+
+INSERT INTO <IDB/>.dbo.CodeManagement
+	([ID], [Code])
+		SELECT W.[ID], W.[WONUM]
+		from <IDB/>.dbo.WorkOrders as W
+		where W.EXCLUDE = 0 and W.TYPE = 'T';
+-- Insert the Srecs that are distinct from their parent tasks (these will become SubTasks)
+INSERT INTO <IDB/>.dbo.CodeManagement
+	([ID], [Code])
+		SELECT W.[ID], 'S_' + W.[WONUM]
+		from <IDB/>.dbo.SrecTaskLinkage as S
+			join <IDB/>.dbo.WorkOrders as W on W.[ID] = S.[ID]
+		where S.[ID] = S.[TaskID];
+
+exec <IDB/>.dbo.FixCodes 50
+GO
+  </data>
+</table>
+<table name="Task">
+  <dependency table="ConversionFunctions"/>
+  <dependency table="AccessCode"/>
+  <dependency table="UnitLinkages"/>
+  <dependency table="SrecTaskLinkage"/>
+  <dependency table="TaskCodes"/>
+  <data>
+
+declare @defaultWorkInterval int
+declare @zerointerval datetime
+set @zerointerval = dbo._INew(0,0,0,0,0)
+select @defaultWorkInterval = W.WINTERVAL from <IDB/>.dbo.WorkOrders as W WHERE w.RECNO = 1
+UPDATE <ODB/>.dbo._DWorkOrderTemplate SET [DURATION] = dbo._INew(COALESCE(@defaultWorkInterval,1),0,0,0,0)
+
+INSERT INTO <ODB/>.dbo.WorkOrderTemplate ([ID], [Code], [Desc], [Subject], [Description], [ClosingComment], [WorkCategoryID],
+												[AccessCodeID], [ProjectID], [WorkOrderPriorityID], [CloseCodeID], [Duration],
+												[Downtime], [WorkOrderExpenseModelID], [ContainingWorkOrderTemplateID], DemandCount, SelectPrintFlag, GenerateLeadTime)
+		SELECT W.[ID], CM.[CODE], NULL, W.[Subject], W.[WDESC], W.[CLOSECOMM], WC.[ID],
+				AC.[ID], PJ.[ID], PR.[ID], CC.[ID], dbo._INew(COALESCE(W.[WINTERVAL],0)+@defaultWorkInterval,0,0,0,0),
+	  			coalesce(dbo.fn_DURATION(W.[DOWNTIME]), dbo._INew(0, 0, 0, 0, 0)),
+				(select top(1) WorkOrderExpenseModelID from <ODB/>.dbo._DWorkOrderTemplate),
+				NULL, 0, 1, @zerointerval
+		from <IDB/>.dbo.WorkOrders as W 
+			left join <IDB/>.dbo.WorkCategories as WC on WC.[CODE] = W.[WTYPE]
+			left join <IDB/>.dbo.AccessCodes as AC on AC.[CODE] = W.[ACCESSCODE]
+			left join <IDB/>.dbo.Projects as PJ on PJ.[CODE] = W.[PROJECT]
+			left join <IDB/>.dbo.Priorities as PR on PR.[CODE] = W.[PRIORITY]
+			left join <IDB/>.dbo.ClosingCodes as CC on CC.[CODE] = W.[CLOSECODE]
+			join <IDB/>.dbo.CodeManagement as CM on CM.[ID] = W.[ID]
+		where W.[TYPE] = 'T'
+<!-- Now do the SREC's where they are required to be supplemental tasks because some values overide/add values to the parent task -->
+
+INSERT INTO <ODB/>.dbo.WorkOrderTemplate ([ID], [Code], [Desc], [Subject], [Description], [ClosingComment], [WorkCategoryID],
+											[AccessCodeID], [ProjectID], [WorkOrderPriorityID], [CloseCodeID], [Duration],
+											[Downtime], [WorkOrderExpenseModelID], [ContainingWorkOrderTemplateID], DemandCount, GenerateLeadTime)
+	SELECT W.[ID], CM.[CODE], NULL, W.[Subject], W.[WDESC], W.[CLOSECOMM], WC.[ID],
+			AC.[ID], PJ.[ID], PR.[ID], CC.[ID], dbo._INew(COALESCE(W.[WINTERVAL],0),0,0,0,0),
+			coalesce(dbo.fn_DURATION(W.[DOWNTIME]), dbo._INew(0, 0, 0, 0, 0)),
+			null, <!-- Specialized Tasks typically have no overriding workorderexpense model -->
+			TL.[ParentTaskID], 0, @zerointerval
+		from <IDB/>.dbo.SrecTaskLinkage as TL
+			join <IDB/>.dbo.WorkOrders as W on W.[ID] = TL.[ID]
+			left join <IDB/>.dbo.WorkCategories as WC on WC.[CODE] = W.[WTYPE]
+			left join <IDB/>.dbo.AccessCodes as AC on AC.[CODE] = W.[ACCESSCODE]
+			left join <IDB/>.dbo.Projects as PJ on PJ.[CODE] = W.[PROJECT]
+			left join <IDB/>.dbo.Priorities as PR on PR.[CODE] = W.[PRIORITY]
+			left join <IDB/>.dbo.ClosingCodes as CC on CC.[CODE] = W.[CLOSECODE]
+			join <IDB/>.dbo.CodeManagement as CM on CM.[ID] = W.[ID]
+	where TL.[ID] = TL.[TaskID]
+GO
+</data>
+</table>
+<table name="DemandLaborInsideTemplate">
+	<dependency table="Task"/>
+	<dependency table="PersonnelLinkages"/>
+	<dependency table="Trade"/>
+	<dependency table="Employee"/>
+<data>
+-- Create unique LaborInside records from combinations of Personnel and/or Trades used in Labor records in 2.9
+
+CREATE TABLE <IDB/>.dbo.UniqueLabor (
+	[LaborInsideID] [uniqueidentifier] NOT NULL,
+	[LABORKEY] [int] NULL,
+	[TRADE] [nvarchar](10) NULL,
+) ON [PRIMARY]
+GO
+INSERT INTO <IDB/>.dbo.UniqueLabor
+(LaborInsideID, LABORKEY, TRADE)
+SELECT 
+	NEWID(), LABORKEY, TRADE
+	FROM <IDB/>.dbo.Labor
+	GROUP BY LABORKEY, TRADE
+GO
+CREATE TABLE <IDB/>.dbo.LaborConsolidated (
+	[ID]							[uniqueidentifier],
+	[LaborInsideID]					[uniqueidentifier],
+	[DemandLaborInsideTemplateID]	[uniqueidentifier]
+) ON [PRIMARY];
+	INSERT INTO <IDB/>.dbo.LaborConsolidated
+		([ID], [LaborInsideID], [DemandLaborInsideTemplateID])
+	SELECT L.ID, UL.LaborInsideID, NEWID()
+	 FROM <IDB/>.dbo.Labor as L
+		JOIN <IDB/>.dbo.UniqueLabor AS UL
+			ON (L.LABORKEY = UL.LABORKEY OR (L.LABORKEY is null and UL.LABORKEY is null))
+			AND (L.TRADE = UL.TRADE OR (L.TRADE is null and UL.TRADE is null))
+		JOIN <IDB/>.dbo.WorkOrders as W ON W.[KEY] = L.WOKEY
+		where L.EXCLUDE = 0 AND L.ESTIMATE != 0 AND (W.[TYPE] = 'T' OR W.[TYPE] = 'S')
+
+delete from <IDB/>.dbo.CodeManagement;
+INSERT INTO <IDB/>.dbo.CodeManagement
+	(ID, [CODE])
+	SELECT UL.LaborInsideID,
+		CASE WHEN E.[DESC] IS NULL
+		THEN CASE WHEN UL.TRADE IS NULL
+			 THEN 'ANY EMPLOYEE OR TRADE'
+			 ELSE UL.TRADE
+			 END
+		ELSE CASE WHEN UL.TRADE IS NULL
+			 THEN E.[DESC]
+			 ELSE E.[DESC]+' AS '+UL.TRADE
+			 END
+		END
+	FROM <IDB/>.dbo.UniqueLabor AS UL
+		left join <IDB/>.dbo.Personnel as P on P.[KEY] = UL.LABORKEY
+			left join <IDB/>.dbo.PersonnelLinkages as PL on PL.ID = P.ID
+			left join <ODB/>.dbo.Employee as E on E.ID = PL.EmployeeID
+
+exec <IDB/>.dbo.FixCodes 50
+
+-- We have only the Labor definitions for tasks that may have certain personnel operating in various trades
+-- and possibly Labor for only trades with no specific personnel.
+-- Create LaborInside records that do identify an employee using their
+-- 'new' rate of pay if specified, else their 'current' rate.
+INSERT INTO <ODB/>.dbo.LaborInside ([ID],[Code],[EmployeeID],[TradeID],[Cost],[CostCenterID] )
+	SELECT UL.[LaborInsideID],CM.[CODE],PL.[EmployeeID],T.[ID],
+		dbo.fn_MONEY(coalesce(p.NEWRATE, P.[CURRATE])),
+		(select [CostCenterID] from <ODB/>.dbo._DLaborInside)
+	from <IDB/>.dbo.UniqueLabor as UL
+		join <IDB/>.dbo.CodeManagement as CM on UL.LaborInsideID = CM.[ID]
+		left join <IDB/>.dbo.Personnel as P on P.[KEY] = UL.LABORKEY
+			left join <IDB/>.dbo.PersonnelLinkages as PL on P.ID = PL.ID
+		left join <ODB/>.dbo.Trade as T on UL.[TRADE] = T.[CODE];
+GO
+
+-- Now Build the DemandLaborInsideTemplate; The WorkOrderExpenseCategoryID should be null for a DemandTemplates (generated workorders will use the expense model for the workorder)
+INSERT INTO <ODB/>.dbo.DemandTemplate
+	(ID, EstimateCost, DemandActualCalculationInitValue, WorkOrderTemplateID, WorkOrderExpenseCategoryID)
+	SELECT L.ID, CASE WHEN LI.Cost IS NULL THEN 0 ELSE 1 END, CASE WHEN LI.Cost IS NULL THEN 1 ELSE 2 END, W.ID, null
+		from <IDB/>.dbo.LaborConsolidated as LC
+		join <IDB/>.dbo.Labor as L on L.ID = LC.ID
+		join <ODB/>.dbo.LaborInside as LI on LI.[ID] = LC.LaborInsideID
+		join <IDB/>.dbo.WorkOrders as W on W.[KEY] = L.[WOKEY];
+INSERT INTO <ODB/>.dbo.DemandLaborInsideTemplate
+	(ID, Quantity, DemandTemplateID, LaborInsideID)
+	SELECT LC.DemandLaborInsideTemplateID, coalesce(dbo.fn_DURATION(L.TIME), dbo._INew(0,0,0,0,0)), LC.ID, LC.LaborInsideID
+	from <IDB/>.dbo.LaborConsolidated as LC
+		join <IDB/>.dbo.Labor as L on L.ID = LC.ID;
+
+</data>
+</table>
+<table name="DemandItemTemplate">
+  <dependency table="Task"/>
+  <dependency table="ItemLocation"/>
+  <data>
+  <!--
+  Create TemplateTemporaryStorage for all the unique (Reason, StrmKey) combinations of RT transactions for which no ItemLocation has been
+  created already. We locate the TemplateTemporaryStorage within the named StrmKey. We assume that the original NULL StrmKey values have already been
+  replaced by an explicit value that is properly linked to a storeroom.
+  -->
+  select
+	newid() as LocationID, newid() as TemplateTemporaryStorageID, S.ID as ContainingLocationID, WO.ID as WorkOrderTemplateID, X.StrmKey, X.TaskKey
+	into <IDB/>.dbo.TemplateTemporaryStorageLinkages
+	from
+	  (select distinct TX.StrmKey, CAST(TX.REASON as INT) as TaskKey
+  		  from
+  			<IDB/>.dbo.InvTransactions as TX
+		  left join
+			<IDB/>.dbo.InvLocations as IL on IL.ItemKey = TX.ItemKey and IL.StrmKey = TX.StrmKey
+		  where TX.[Type] = 'RT' and IL.Recno is null) as X
+	join
+	  <IDB/>.dbo.Storerooms as S on S.[Key] = X.StrmKey
+	join
+	  <IDB/>.dbo.WorkOrders as WO on WO.[Key] = X.TaskKey
+  <!--
+  Create ItemLocation, and TemplateItemLocation ID's for all RT transactions that don't link to an ItemLocation,
+  along with the information necessary to create the TemplateItemLocation record. We also keep the ItemKey and StrmKey to allow later linking back
+  to the RT transactions.
+  -->
+  select
+		  newid() as ItemLocationID,
+		  newid() as TemplateItemLocationID,
+		  TTSL.LocationID as LocationID,
+		  I.ID as ItemID,
+		  X.ItemKey,
+		  X.StrmKey,
+		  X.TaskKey
+	into <IDB/>.dbo.TemplateItemLocationLinkages
+	from
+	  (select distinct TX.ItemKey, TX.StrmKey, CAST(TX.REASON as INT) as TaskKey
+		from
+		  <IDB/>.dbo.InvTransactions as TX
+		left join
+		  <IDB/>.dbo.InvLocations as IL on IL.ItemKey = TX.ItemKey and IL.StrmKey = TX.StrmKey
+		where TX.[Type] = 'RT' and IL.Recno is null) as X
+	join
+	  <IDB/>.dbo.InvItems as I on I.[Key] = X.ItemKey
+	join
+	  <IDB/>.dbo.TemplateTemporaryStorageLinkages as TTSL on TTSL.StrmKey = X.StrmKey and TTSL.TaskKey = X.TaskKey
+
+  <!--
+  Now actually create the records, in the same table order.
+  -->
+  insert into <ODB/>.dbo.Location
+	(ID)
+	select LocationID
+	  from <IDB/>.dbo.TemplateTemporaryStorageLinkages
+
+  insert into <ODB/>.dbo.TemplateTemporaryStorage
+	(ID, LocationID, ContainingLocationID, WorkOrderTemplateID)
+	select TemplateTemporaryStorageID, LocationID, ContainingLocationID, WorkOrderTemplateID
+	  from <IDB/>.dbo.TemplateTemporaryStorageLinkages
+
+  insert into <ODB/>.dbo.ItemLocation
+	(ID, ItemID, LocationID)
+	select ItemLocationID, ItemID, LocationID
+	  from <IDB/>.dbo.TemplateItemLocationLinkages
+
+  insert into <ODB/>.dbo.TemplateItemLocation
+	(ID, ItemLocationID)
+	select TemplateItemLocationID, ItemLocationID
+	  from <IDB/>.dbo.TemplateItemLocationLinkages
+
+  INSERT INTO <ODB/>.dbo.DemandTemplate
+	(ID, EstimateCost, DemandActualCalculationInitValue, WorkOrderTemplateID, WorkOrderExpenseCategoryID)
+	SELECT
+		TX.ID, CASE WHEN TX.TOTALCOST IS NULL THEN 0 ELSE 1 END, CASE WHEN TX.TotalCost IS NULL THEN 1 ELSE 2 END, W.ID,
+		null
+	  from
+		<IDB/>.dbo.InvTransactions as TX
+	  join
+		<IDB/>.dbo.WorkOrders as W on CAST(TX.[REASON] AS INT) = W.[KEY]
+	  WHERE TX.[TYPE] = 'RT'
+
+  -- We use coalesce to find both the permanent ItemLocations and the TemplateTemporaryStorage ones we just created.
+  INSERT INTO <ODB/>.dbo.DemandItemTemplate
+	(ID, Quantity, DemandTemplateID, ItemLocationID)
+	SELECT NEWID(), TX.QTY, TX.ID, COALESCE(IL.ID, TIL.ItemLocationID)
+	  from
+		<IDB/>.dbo.InvTransactions as TX
+	  left join
+		<IDB/>.dbo.InvLocations as IL on IL.STRMKEY = TX.STRMKEY AND IL.ITEMKEY = TX.ITEMKEY
+	  left join
+		<IDB/>.dbo.TemplateItemLocationLinkages AS TIL on TIL.STRMKEY = TX.STRMKEY AND TIL.ITEMKEY = TX.ITEMKEY and TIL.TASKKEY = TX.REASON
+	  WHERE TX.[TYPE] = 'RT'
+</data>
+</table>
+<table name="POLineTemplate">
+	<dependency table="PurchaseOrderTemplate"/>
+<data>
+-- Only deal with items that are linked to Prototype Purchase orders
+
+CREATE TABLE <IDB/>.dbo.UniquePurchaseExtras (
+	[ID] [uniqueidentifier] NOT NULL,
+	[TYPE] [nvarchar](1) NULL,
+	[CATNO] [nvarchar](20) NULL,
+	[DESC] [nvarchar](40) NULL,
+	[VendorID] [uniqueidentifier] NOT NULL,
+	[Cost] [money]
+) ON [PRIMARY]
+GO
+-- Coalese 'M' and 'U' together into Miscellaneous items
+INSERT INTO <IDB/>.dbo.UniquePurchaseExtras
+(ID, [TYPE], CATNO, [DESC], VendorID, Cost)
+SELECT 
+	NEWID(), CASE WHEN [TYPE] = 'U' THEN 'M' ELSE [TYPE] END, CATNO, PX.[DESC], V.[ID],
+						case when [TYPE] = 'L'
+						THEN dbo.fn_MONEY(-[COST])
+						ELSE <ODB/>.dbo.mbfn_CalculateUnitCost(dbo.fn_MONEY(-PX.[Cost]), COALESCE(-PX.[QTY],1), 1)
+						END
+	FROM <IDB/>.dbo.PurchaseExtras as PX
+		join <IDB/>.dbo.Purchases as PO on PO.[KEY] = PX.[POKEY] AND PO.[EXCLUDE] = 0
+		join <IDB/>.dbo.Vendors as V on V.[KEY] = PO.[VENDOR]
+	GROUP BY
+		CASE WHEN [TYPE] = 'U' THEN 'M' ELSE [TYPE] END,
+		CATNO, PX.[DESC], V.[ID],
+		case when [TYPE] = 'L'
+			THEN dbo.fn_MONEY(-[COST])
+			ELSE <ODB/>.dbo.mbfn_CalculateUnitCost(dbo.fn_MONEY(-PX.[Cost]), COALESCE(-PX.[QTY],1), 1)
+		END
+
+DELETE FROM <IDB/>.dbo.UniquePurchaseExtras WHERE [TYPE] IS NULL OR [TYPE] = 'X'  -- delete prototype and linkage records
+GO
+CREATE TABLE <IDB/>.dbo.PXOtherWorkOutside (
+	[ID]					[uniqueidentifier],
+	[OtherWorkOutsideID]	[uniqueidentifier]
+) ON [PRIMARY];
+GO
+	INSERT INTO <IDB/>.dbo.PXOtherWorkOutside
+		([ID], [OtherWorkOutsideID])
+	SELECT PX.ID, UPX.ID
+	 FROM <IDB/>.dbo.PurchaseExtras as PX
+		join <IDB/>.dbo.Purchases as PO on PO.[KEY] = PX.[POKEY] AND PO.[EXCLUDE] = 0
+		join <IDB/>.dbo.Vendors as V on V.[KEY] = PO.[VENDOR]
+		JOIN <IDB/>.dbo.UniquePurchaseExtras as UPX ON
+			UPX.[TYPE] = 'L'
+		AND (UPX.[CATNO] = PX.[CATNO] OR (UPX.CATNO IS NULL AND PX.CATNO IS NULL))
+		AND (UPX.[DESC] = PX.[DESC] OR (UPX.[DESC] IS NULL AND PX.[DESC] IS NULL))
+		AND (UPX.VendorID = V.[ID])
+		AND (UPX.COST = dbo.fn_MONEY(-PX.COST))
+
+
+CREATE TABLE <IDB/>.dbo.PXMiscellaneous (
+	[ID]				[uniqueidentifier],
+	[MiscellaneousID]	[uniqueidentifier]
+) ON [PRIMARY];
+GO
+	INSERT INTO <IDB/>.dbo.PXMiscellaneous
+		([ID], [MiscellaneousID])
+	SELECT PX.ID, UPX.ID
+	 FROM <IDB/>.dbo.PurchaseExtras as PX
+		join <IDB/>.dbo.Purchases as PO on PO.[KEY] = PX.[POKEY] AND PO.[EXCLUDE] = 0
+		join <IDB/>.dbo.Vendors as V on V.[KEY] = PO.[VENDOR]
+		JOIN <IDB/>.dbo.UniquePurchaseExtras as UPX ON
+			UPX.[TYPE] = 'M'
+		AND (UPX.[CATNO] = PX.[CATNO] OR (UPX.CATNO IS NULL AND PX.CATNO IS NULL))
+		AND (UPX.[DESC] = PX.[DESC] OR (UPX.[DESC] IS NULL AND PX.[DESC] IS NULL))
+		AND (UPX.VendorID = V.[ID])
+		AND (UPX.COST = <ODB/>.dbo.mbfn_CalculateUnitCost(dbo.fn_MONEY(-PX.[Cost]), COALESCE(-PX.[QTY],1), 1))
+
+CREATE TABLE <IDB/>.dbo.PurchaseExtrasLinkage (
+	[ID]					[uniqueidentifier] NOT NULL,
+	[OtherWorkOutsideID]	[uniqueidentifier] NULL,
+	[MiscellaneousID]		[uniqueidentifier] NULL,
+	[PurchaseOrderTemplateID] [uniqueidentifier] NOT NULL,
+	[VendorID]				[uniqueidentifier] NOT NULL,
+	[POLineTemplateID]		[uniqueidentifier] NOT NULL,
+	[DemandTemplateID]		[uniqueidentifier] NOT NULL,
+	[WorkOrderTemplateID]	[uniqueidentifier] NULL
+	) ON [PRIMARY];
+	GO
+	INSERT INTO <IDB/>.dbo.PurchaseExtrasLinkage
+		(ID, OtherWorkOutsideID, MiscellaneousID, PurchaseOrderTemplateID, VendorID, POLineTemplateID, DemandTemplateID, WorkOrderTemplateID)
+		SELECT PX.ID, PXOWO.[OtherWorkOutsideID], PXM.[MiscellaneousID], PO.[ID], V.[ID], NEWID(), NEWID(), W.[ID]
+			FROM <IDB/>.dbo.PurchaseExtras as PX
+				left join <IDB/>.dbo.PXMiscellaneous as PXM on PXM.[ID] = PX.[ID]
+				left join <IDB/>.dbo.PXOtherWorkOutside as PXOWO on PXOWO.[ID] = PX.[ID]
+				left join <IDB/>.dbo.WorkOrders as W on W.[KEY] = PX.[WOKEY]
+				join <IDB/>.dbo.Purchases as PO on PO.[KEY] = PX.[POKEY] AND PO.[EXCLUDE] = 0
+				join <IDB/>.dbo.Vendors as V on PO.[VENDOR] = V.[KEY]
+			WHERE PX.EXCLUDE = 0
+				AND (W.[TYPE] = 'T' OR W.[TYPE] = 'S' OR PX.[TYPE] = 'U');
+GO
+-- Create the OtherWorkOutside labor records (PurchaseExtra type 'L')	
+
+delete from <IDB/>.dbo.CodeManagement;
+INSERT INTO <IDB/>.dbo.CodeManagement
+	([ID], [Code])
+	SELECT UPX.[ID], COALESCE(UPX.CATNO,'LABOR')+' FROM '+V.[CODE]
+		 FROM <IDB/>.dbo.UniquePurchaseExtras as UPX
+			join <ODB/>.dbo.Vendor as V ON V.[ID] = UPX.[VendorID]
+		WHERE UPX.[TYPE] = 'L'
+
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.OtherWorkOutside
+	([ID], [Code], [DESC], [PurchaseOrderText], [VendorID], [Cost])
+		SELECT UPX.[ID], CM.[CODE], UPX.[DESC], UPX.[CATNO]+'-'+UPX.[DESC], UPX.VendorID, UPX.[COST]
+		 FROM <IDB/>.dbo.UniquePurchaseExtras as UPX
+			join <IDB/>.dbo.CodeManagement as CM on CM.[ID] = UPX.[ID]
+		WHERE UPX.[TYPE] = 'L'
+GO
+-- Create the Miscellaneous material records (PurchaseExtra type 'M')	
+
+delete from <IDB/>.dbo.CodeManagement;
+INSERT INTO <IDB/>.dbo.CodeManagement
+	([ID], [Code])
+	SELECT UPX.[ID], COALESCE(UPX.CATNO,'MISC')+' FROM '+V.[CODE]
+		 FROM <IDB/>.dbo.UniquePurchaseExtras as UPX
+			join <ODB/>.dbo.Vendor as V ON V.[ID] = UPX.[VendorID]
+		WHERE UPX.[TYPE] = 'M'
+
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.Miscellaneous
+	([ID], [Code], [DESC], [PurchaseOrderText], [CostCenterID], [Cost])
+		SELECT UPX.[ID], CM.[CODE], UPX.[DESC], UPX.[CATNO]+'-'+UPX.[DESC],
+			(SELECT CostCenterID from <ODB/>.dbo._DMiscellaneous),
+			UPX.[COST]
+		 FROM <IDB/>.dbo.UniquePurchaseExtras as UPX
+			join <IDB/>.dbo.CodeManagement as CM on CM.[ID] = UPX.[ID]
+		WHERE UPX.[TYPE] = 'M'
+GO
+-- Create the POLineTemplate records
+INSERT INTO <ODB/>.dbo.POLineTemplate
+	([ID], PurchaseOrderTemplateID)
+		SELECT PXL.POLineTemplateID, PXL.PurchaseOrderTemplateID
+		FROM <IDB/>.dbo.PurchaseExtrasLinkage as PXL
+			join <IDB/>.dbo.PurchaseExtras as PX on PX.[ID] = PXL.[ID]
+			where PX.[TYPE] != 'X';
+GO
+INSERT INTO <ODB/>.dbo.DemandTemplate
+	(ID, EstimateCost, DemandActualCalculationInitValue, WorkOrderTemplateID, WorkOrderExpenseCategoryID)
+	SELECT PXL.DemandTemplateID, CASE WHEN PX.COST IS NULL THEN 0 ELSE 1 END, CASE WHEN PX.Cost IS NULL THEN 1 ELSE 2 END, PXL.WorkOrderTemplateID, null
+		FROM <IDB/>.dbo.PurchaseExtrasLinkage as PXL
+			join <IDB/>.dbo.PurchaseExtras as PX on PX.[ID] = PXL.[ID]
+			where PXL.OtherWorkOutsideID IS NOT NULL;
+GO
+
+INSERT INTO <ODB/>.dbo.DemandOtherWorkOutsideTemplate
+	([ID],DemandTemplateID,OtherWorkOutsideID, Quantity, OrderQuantity)
+	SELECT PXL.[ID], PXL.DemandTemplateID, PXL.OtherWorkOutsideID, 1, 0
+		FROM <IDB/>.dbo.PurchaseExtrasLinkage as PXL
+		WHERE PXL.OtherWorkOutsideID IS NOT NULL;
+GO
+INSERT INTO <ODB/>.dbo.POLineOtherWorkTemplate
+	([ID], POLineTemplateID, DemandOtherWorkOutsideTemplateID, Quantity)
+		SELECT NEWID(), PXL.POLineTemplateID, PXL.[ID], 1
+		FROM <IDB/>.dbo.PurchaseExtrasLinkage as PXL
+		WHERE PXL.OtherWorkOutsideID IS NOT NULL;
+GO
+INSERT INTO <ODB/>.dbo.POLineMiscellaneousTemplate
+	([ID], POLineTemplateID, MiscellaneousID, Quantity)
+		SELECT NEWID(), PXL.POLineTemplateID, PXL.MiscellaneousID, COALESCE(-PX.QTY,1)
+		FROM <IDB/>.dbo.PurchaseExtrasLinkage as PXL
+			join <IDB/>.dbo.PurchaseExtras as PX on PX.[ID] = PXL.[ID]
+		WHERE PXL.MiscellaneousID IS NOT NULL;
+GO
+INSERT INTO <ODB/>.dbo.WorkOrderTemplatePurchaseOrderTemplate
+	([ID], PurchaseOrderTemplateID, WorkOrderTemplateID)
+		SELECT NEWID(), PXL.PurchaseOrderTemplateID, PXL.WorkOrderTemplateID
+			from (SELECT PXL.PurchaseOrderTemplateID, PXL.WorkOrderTemplateID from <IDB/>.dbo.PurchaseExtrasLinkage as PXL
+				 where PXL.PurchaseOrderTemplateID IS NOT NULL AND PXL.WorkOrderTemplateID IS NOT NULL) PXL
+			group by PXL.PurchaseOrderTemplateID, PXL.WorkOrderTemplateID;
+GO
+
+</data>
+</table>
+</dbconversion>
+

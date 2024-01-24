@@ -1,0 +1,2115 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema id="dsMB29"
+	  targetNamespace="http://thinkage.ca/MB29/dsMB29.xsd"
+	  xmlns:mstns="http://thinkage.ca/MB29/dsMB29.xsd"
+	  xmlns="http://thinkage.ca/MB29/dsMB29.xsd"
+	  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	  xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"
+	  attributeFormDefault="qualified"
+	  elementFormDefault="qualified" 
+	  version="2.966">
+  <xs:simpleType name="GUID">
+	<xs:restriction base="xs:ID" />
+  </xs:simpleType>
+  <xs:simpleType name="SqlDate">
+	<xs:restriction base="xs:date">
+	  <xs:minInclusive value="1753-01-01"/>
+	  <xs:maxInclusive value="9999-12-31"/>
+	</xs:restriction>
+  </xs:simpleType>
+  <xs:element name="MB29" msdata:IsDataSet="true" msdata:EnforceConstraints="False">
+	<xs:complexType>
+	  <xs:choice  maxOccurs="unbounded">
+		<xs:element name="CustomImportDirectives">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="DIRECTIVE" minOccurs="0">
+		        <xs:simpleType>
+			      <xs:restriction base="xs:string">
+			     </xs:restriction>
+		       </xs:simpleType>
+		      </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Defaults">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="LGEND" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="GFREQ" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="3" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="PHONEPREX" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="16" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="EDITPKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="SERIAL" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="COMPANYNAM" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="COMPANYADD" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="250" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="BILLADDR" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="250" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="POCONTACT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="250" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="REINDEX" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="PRFORMAT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="POFORMAT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="WRFORMAT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="WOFORMAT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CURRSYM" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="FRDATE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="FRCPOS" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="20" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="FRCNEG" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="20" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="FRCDEC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="FRCGROUP" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="FRCGSIZE" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="FRCLGSIZE" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="FCDORDER" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="FCDDELIM" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="FCDMFORM" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="FCTAMPM" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="DBVERSION" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="3" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="MINVERSION" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="UPGRSTEP" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="ArchivedSets">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="BACKDATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="S_DATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="E_DATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="50" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="LZHFILE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DBVERSION" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="23" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="RESTORED" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="ARCHIVING" type="xs:boolean" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Permissions">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="NAME" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="PASSWORD" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="STATUS" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="L11" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L12" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L13" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L14" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L15" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L16" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L17" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L18" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L19" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L21" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L22" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L23" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L24" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L25" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L26" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L27" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L28" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L29" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L31" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L32" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L33" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L34" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L35" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L36" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L37" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L38" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L39" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L41" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L42" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L43" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L44" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L45" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L46" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L47" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L48" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L49" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L410" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L51" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L52" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L53" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L54" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L55" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L56" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L57" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L58" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L59" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L510" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L511" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L512" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L513" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L514" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L515" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L516" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L517" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L518" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L519" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L520" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L521" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L522" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L523" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L524" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L525" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L526" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L527" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L528" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L529" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L530" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L61" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L62" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L63" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L64" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L65" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L66" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L67" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L68" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L69" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L610" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L611" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L612" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L613" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L614" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L615" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L616" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L617" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L618" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L619" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L620" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L621" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L622" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L623" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L624" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L625" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L626" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN1" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN2" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN3" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN4" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN5" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN6" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN7" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN8" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN9" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN10" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN11" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN12" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN13" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN14" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN15" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN16" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN17" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN18" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN19" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN20" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN21" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN22" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN23" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN24" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ADMIN25" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L121" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L122" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L123" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L124" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L125" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L126" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L127" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L128" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L129" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L130" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L131" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L132" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L133" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L134" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L135" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L136" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L137" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L138" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L139" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="L140" type="xs:boolean" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="EditPrograms">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="PRONAME" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="50" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="VIEWCMD" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="PRINTCMD" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="STARTUP" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Settings">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="IDD" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="32" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="IDC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="32" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="ORIGINATOR" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="VALUE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="64" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="AccessCodes">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Adjustments">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="AssetCodes">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="40" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Buildings">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="50" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="ADDRESS1" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="ADDRESS2" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CITY" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="TERRITORY" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="20" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="COUNTRY" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="20" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="PCODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="HIDDEN" type="xs:boolean" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="ChargeBacks">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="WOKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CHARGETO" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="LABOR" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="MATERIAL" type="xs:integer" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="ClosingCodes">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Contacts">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="50" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="BTEL" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="42" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="HTEL" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="42" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="PAGER" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="42" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="MOBILE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="42" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="HIDDEN" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="EMAIL" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="128" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="COMMENT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="LANGID" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="4" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="CostCenters">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="40" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="InvCategories">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="InvItems">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="50" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CAT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="UOMKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="MINI" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="MAXI" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="TOTALCOST" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="ONHAND" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="ONORDER" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="ONRESERVE" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="TOTALSEQ" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="INVENTORY" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="COMMENT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="InvLocations">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="STRMKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="ITEMKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="LOC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="20" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="ONHAND" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="TOTALCOST" type="xs:integer" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="InvTransactions">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="ITEMKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="TYPE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="2" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="TIME" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="6" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="QTY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="TOTALCOST" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="REASON" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="STRMKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="LOC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="20" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="REFER" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Issues">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Labor">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="WOKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="LABORKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="TRADE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="STARTDATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="STARTTIME" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="6" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="TIME" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="6" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="LABORRATE" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="ESTIMATE" type="xs:boolean" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="MeterHistory">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="METERKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="DATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="TIME" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="6" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="ORIGINKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="READING" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="EFFECTIVE" type="xs:integer" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Meters">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="TYPE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="UNITKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="OFFSET" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="UOMKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CREATEDATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="CREATETIME" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="6" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Obsoletes">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Ownerships">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Personnel">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="40" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="TRADE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="BTEL" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="42" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="HTEL" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="42" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="PAGER" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="42" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="MOBILE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="42" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CURRATE" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="NEWRATE" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="EFFDATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="HIDDEN" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="EMAIL" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="128" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="COMMENT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="PreventiveSchedules">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="WOKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="TYPE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+					<xs:enumeration value="R"/>
+					<xs:enumeration value="M"/>
+					<xs:enumeration value="D"/>
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="METERKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="LASTSCHED" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="INTERVAL" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="SEASONBEG" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="4" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="SEASONEND" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="4" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="INHSEASON" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="WEEKMASK" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="2" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="INHWEEK" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ALGORITHM" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="INHIBIT" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="LASTWOMADE" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="LATEINHIB" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="LASTDATE" type="SqlDate" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Priorities">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Projects">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="PurchaseExtras">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="POKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="QTY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="UOMKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="COST" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="40" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CATNO" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="20" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="ESTIMATE" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="TYPE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="WOKEY" type="xs:integer" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Purchases">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="PONUM" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="VENDOR" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="ORDERNUM" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="40" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="COSTCENTER" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="NEEDED" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="EXPECTED" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="COMMENT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="STATE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="VOID" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="CREATED" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="CREATET" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="6" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="COMPLETED" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="COMPLETET" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="6" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="SUBMITD" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="SUBMITT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="6" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CLOSED" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="CLOSET" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="6" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="SHIPPING" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="TERMS" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="VCOMMENT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="SHIPTO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="60" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="NEEDPRINT" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="ORIGINATOR" type="xs:integer" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Receipts">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="POKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="DATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="TIME" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="6" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="WAYBILL" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="EXTRACOST" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="COMMENT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="ServiceContracts">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="VENDOR" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="STARTDATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="EXPIRYDATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="PART" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="LABOR" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="COST" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="COMMENT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="ServicedEquipment">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="SVCKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="EQUIPKEY" type="xs:integer" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="ShippingModes">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="40" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="SpareParts">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="EQUIPKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="ITEMKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="QTY" type="xs:integer" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Specifications">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="ASSOCKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="TYPE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="TKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="INFO" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Storerooms">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="BUILDING" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="HIDDEN" type="xs:boolean" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Systems">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Templates">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="HIDDEN" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="PLATE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Terms">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Trades">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="UnitCategories">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="UTYPE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Units">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="UTYPE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="BUILDING" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="50" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="LOCATION" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="40" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CATEGORY" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="MAKE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="MODEL" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="SERIAL" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DRAW" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="PURCHASE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="ORGCOST" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="REPCOST" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="ESTIMATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="TLIFE" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="VENDOR" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="SERVICE" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="WEXPIRY" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="OWNER" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="ASSET" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="COSTCENTER" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="SYSTEM" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="OBSOLETE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DEPRATE" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="SCRAPD" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="SCRAPV" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CONTACT" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="ACCESS" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="COMMENT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="HIDDEN" type="xs:boolean" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="UoM">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="VendorCategories">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="Vendors">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="40" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CONTACT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CATEGORY" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="ADD1" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="ADD2" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="ADD3" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="TEL" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="42" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="FAX" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="42" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="WEB" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="128" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="ACCOUNTNUM" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="EMAIL" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="128" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="HIDDEN" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="COMMENT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="WorkCategories">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="30" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="WorkOrders">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="WONUM" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="TYPE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CLASS" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="LINKKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="UNITKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="WTYPE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="COSTCENTER" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="PROJECT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="ACCESSCODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="PRIORITY" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="ORIGINATOR" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="REQUESTOR" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="SUBJECT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="60" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="WDESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CREATEDATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="CREATETIME" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="6" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CLOSEDATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="CLOSETIME" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="6" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CLOSECODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CLOSECOMM" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DOWNTIME" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="6" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="NEEDPRINT" type="xs:boolean" minOccurs="0"/>
+			  <xs:element name="WORKDATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="WINTERVAL" type="xs:integer" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="WorkRequests">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="WRNUM" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="15" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="STATUS" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="1" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="DATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="TIME" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="6" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="REQUESTOR" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="UNITKEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="WTYPE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="SUBJECT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="60" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="ACCESSCODE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="PRIORITY" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="10" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="WDESC" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="CLOSEDATE" type="SqlDate" minOccurs="0"/>
+			  <xs:element name="CLOSETIME" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:maxLength value="6" />
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			  <xs:element name="COMMENT" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="AtRequestAccounts">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="FLAGS" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="CONTACTKEY" type="xs:integer" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+		<xs:element name="AtRequestConfiguration">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="RECNO" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="KEY" type="xs:integer" minOccurs="0"/>
+			  <xs:element name="VALUE" minOccurs="0">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+	  </xs:choice>
+	</xs:complexType>
+  </xs:element>
+</xs:schema>

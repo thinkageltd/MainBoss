@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ItemTransfer" defaults="true" log="false" id="Id" xid="FromItemLocationID ToItemLocationID" labelkey="Item Transfer">
+    <field name="Id" read="RequiredGUID" />
+    <field name="AccountingTransactionID" read="RequiredGUIDREF"  base="AccountingTransaction"/>
+	<field name="FromItemLocationID" type="RequiredGUIDREF" link="ItemLocation" labelkey="Source Storage Assignment">
+		<extension name="linkage">captive</extension>
+		<extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.AllActualItemLocationPickerTblCreator,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="ToItemLocationID" type="RequiredGUIDREF" link="ItemLocation" labelkey="Destination Storage Assignment">
+		<extension name="linkage">captive</extension>
+		<extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.AllActualItemLocationPickerTblCreator,Thinkage.MainBoss.Controls</extension>
+	</field>
+    <field name="Quantity" type="RequiredQuantity" />
+	<field name="CorrectionID" type="RequiredGUIDREF" link="ItemTransfer" labelkey="Item Transfer Correction">
+	  <doc>The ID of the original ItemTransfer record for a family of original record and its corrections</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="CorrectedQuantity" read="Quantity">
+	  <doc>
+		The corrected quantity of this ItemTransfer and all corrections (all those with a CorrectionID linking
+		to this record).  Note this is only stored in the main ItemTransfer record (with CorrectionID==ID),
+		not in the correction records.
+	  </doc>
+	  <result hosting="cached">
+		cast(42 as Quantity)
+	  </result>
+	  <extension name="dependson">mbfn_ItemTransfer_CorrectedQuantity()</extension>
+	</field>
+	<field name="CorrectedCost" read="Currency">
+	  <doc>
+		The corrected cost of this ItemTransfer and all corrections (all those with a CorrectionID linking
+		to this record).  Note this is only stored in the main ItemTransfer record (with CorrectionID==ID),
+		not in the correction records.
+	  </doc>
+	  <result hosting="cached">
+		cast(42 as Currency)
+	  </result>
+	  <extension name="dependson">mbfn_ItemTransfer_CorrectedCost()</extension>
+	</field>
+	<field name="FromTotalQuantity" read="RequiredQuantity">
+	  <doc>The total quantity in the FromLocationID as a result of this adjustment record</doc>
+	  <result hosting="cached">
+		cast(420000 as RequiredQuantity)
+	  </result>
+	  <extension name="dependson">ItemAdjustment</extension>
+	  <extension name="dependson">ItemIssue</extension>
+	  <extension name="dependson">ItemTransfer</extension>
+	  <extension name="dependson">ReceiveItemPO</extension>
+	  <extension name="dependson">ReceiveItemNonPO</extension>
+	  <extension name="dependson">ActualItem</extension>
+	  <extension name="dependson">ItemCountValue</extension>
+	  <extension name="dependson">ItemCountValueVoid</extension>
+	</field>
+	<field name="FromTotalCost" read="RequiredCurrency">
+	  <doc>The total cost in the FromLocationID as a result of this adjustment record</doc>
+	  <result hosting="cached">
+		cast(420000 as RequiredCurrency)
+	  </result>
+	  <extension name="dependson">ItemAdjustment</extension>
+	  <extension name="dependson">ItemIssue</extension>
+	  <extension name="dependson">ItemTransfer</extension>
+	  <extension name="dependson">ReceiveItemPO</extension>
+	  <extension name="dependson">ReceiveItemNonPO</extension>
+	  <extension name="dependson">ActualItem</extension>
+	  <extension name="dependson">ItemCountValue</extension>
+	  <extension name="dependson">ItemCountValueVoid</extension>
+	</field>
+	<field name="ToTotalQuantity" read="RequiredQuantity">
+	  <doc>The total quantity in the ToLocationID as a result of this adjustment record</doc>
+	  <result hosting="cached">
+		cast(420000 as RequiredQuantity)
+	  </result>
+	  <extension name="dependson">ItemAdjustment</extension>
+	  <extension name="dependson">ItemIssue</extension>
+	  <extension name="dependson">ItemTransfer</extension>
+	  <extension name="dependson">ReceiveItemPO</extension>
+	  <extension name="dependson">ReceiveItemNonPO</extension>
+	  <extension name="dependson">ActualItem</extension>
+	  <extension name="dependson">ItemCountValue</extension>
+	  <extension name="dependson">ItemCountValueVoid</extension>
+	</field>
+	<field name="ToTotalCost" read="RequiredCurrency">
+	  <doc>The total cost in the ToLocationID as a result of this adjustment record</doc>
+	  <result hosting="cached">
+		cast(420000 as RequiredCurrency)
+	  </result>
+	  <extension name="dependson">ItemAdjustment</extension>
+	  <extension name="dependson">ItemIssue</extension>
+	  <extension name="dependson">ItemTransfer</extension>
+	  <extension name="dependson">ReceiveItemPO</extension>
+	  <extension name="dependson">ReceiveItemNonPO</extension>
+	  <extension name="dependson">ActualItem</extension>
+	  <extension name="dependson">ItemCountValue</extension>
+	  <extension name="dependson">ItemCountValueVoid</extension>
+	</field>
+	<extension name="equate">FromItemLocationID.ItemID=ToItemLocationID.ItemID</extension>
+	<extension name="costrights">InventoryActivity</extension>
+  </table>
+  <object class="function" name="mbfn_ItemTransfer_CorrectedCost">
+	<doc>
+	</doc>
+	<extension name="body">
+	  (
+		@ISID uniqueidentifier -- ItemTransfer ID
+	  )
+	  RETURNS money
+	  as
+	  begin
+		return(
+		  select sum(Cost)
+			  from ItemTransfer
+					join AccountingTransaction on AccountingTransaction.ID = ItemTransfer.AccountingTransactionID
+			  where CorrectionID = @ISID
+		)
+	  end
+	</extension>
+	<extension name="dependson">ItemTransfer.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ItemTransfer</extension>
+	<extension name="references">AccountingTransaction</extension>
+  </object>
+  <object class="function" name="mbfn_ItemTransfer_CorrectedQuantity">
+	<doc>
+	</doc>
+	<extension name="body">
+	  (
+		@ISID uniqueidentifier -- ItemTransfer ID
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		return(
+		  select sum(Quantity)
+			  from ItemTransfer
+			  where CorrectionID = @ISID
+		)
+	  end
+	</extension>
+	<extension name="dependson">ItemTransfer.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ItemTransfer</extension>
+  </object>
+  <object class="trigger" name="mbtg_ItemTransfer_Updates_Corrected">
+	<doc>
+	  Maintain the Corrected Quantity and Cost values in ItemTransfer
+	</doc>
+	<extension name="body">
+	  on ItemTransfer
+	  after insert
+	  as
+	  begin
+		  update ItemTransfer
+			  set CorrectedCost = dbo.mbfn_ItemTransfer_CorrectedCost(ItemTransfer.ID),
+				  CorrectedQuantity = dbo.mbfn_ItemTransfer_CorrectedQuantity(ItemTransfer.ID)
+			  where ItemTransfer.ID in (
+					  select distinct CorrectionID from inserted
+				union select distinct CorrectionID from deleted
+				)
+	  end
+	</extension>
+	<extension name="references">mbfn_ItemTransfer_CorrectedCost()</extension>
+	<extension name="references">mbfn_ItemTransfer_CorrectedQuantity()</extension>
+	<extension name="references">ItemTransfer</extension>
+  </object>
+  <object class="trigger" name="mbtg_ItemTransfer_Updates_ActualItemLocation">
+	<doc>
+	  Maintain the TotalCost and OnHand quantities in ActualItemLocation and also verify EffectiveDate ordering validity
+	</doc>
+	<extension name="body">
+	  on ItemTransfer
+	  after insert
+	  as
+	  begin
+		  if exists(select *
+					  from inserted
+						join ActualItemLocation as AIL on inserted.FromItemLocationID = AIL.ItemLocationID or inserted.ToItemLocationID = AIL.ItemLocationID
+						join PermanentItemLocation as PIL on AIL.ID = PIL.ActualItemLocationID
+						join ItemCountValue as CICV on CICV.ID = PIL.CurrentItemCountValueID
+						join AccountingTransaction as CTX on CTX.ID = CICV.AccountingTransactionID
+						join AccountingTransaction as TX on TX.ID = inserted.AccountingTransactionID
+					  where CTX.EffectiveDate &gt;= TX.EffectiveDate) begin
+			raiserror('''%s'' record predates the latest Physical Count', 16, 1, 'ItemTransfer')
+			rollback transaction
+		  end
+  		update ItemTransfer
+	  	  set ToTotalQuantity = coalesce(
+				(select top 1 X.TotalQuantity
+									from RationalizedInventoryActivityDeltas as X
+									where
+									  X.ItemLocationID = inserted.ToItemLocationID
+									  and (TX.EffectiveDate > X.EffectiveDate or (TX.EffectiveDate = X.EffectiveDate and TX.EntryDate > X.EntryDate))
+									order by EffectiveDate desc, EntryDate desc), 0),
+			  ToTotalCost = coalesce(
+				(select top 1 X.TotalCost
+									from RationalizedInventoryActivityDeltas as X
+									where
+									  X.ItemLocationID = inserted.ToItemLocationID
+									  and (TX.EffectiveDate > X.EffectiveDate or (TX.EffectiveDate = X.EffectiveDate and TX.EntryDate > X.EntryDate))
+									order by EffectiveDate desc, EntryDate desc), 0),
+	  		  FromTotalQuantity = coalesce(
+				(select top 1 X.TotalQuantity
+									from RationalizedInventoryActivityDeltas as X
+									where
+									  X.ItemLocationID = inserted.FromItemLocationID
+									  and (TX.EffectiveDate > X.EffectiveDate or (TX.EffectiveDate = X.EffectiveDate and TX.EntryDate > X.EntryDate))
+									order by EffectiveDate desc, EntryDate desc), 0),
+			  FromTotalCost = coalesce(
+				(select top 1 X.TotalCost
+									from RationalizedInventoryActivityDeltas as X
+									where
+									  X.ItemLocationID = inserted.FromItemLocationID
+									  and (TX.EffectiveDate > X.EffectiveDate or (TX.EffectiveDate = X.EffectiveDate and TX.EntryDate > X.EntryDate))
+									order by EffectiveDate desc, EntryDate desc), 0)
+		  from ItemTransfer
+		  join inserted on ItemTransfer.ID = inserted.ID
+		  join AccountingTransaction as TX on TX.Id = inserted.AccountingTransactionID
+		<!-- If we could be sure there was only one record per IL, we could do the work here with 14 update calls (for the various inv tx tables)
+			However that would represent a lot of code duplication (over 7 types of inv tx, not to mention ICV and ICVV), so instead we set up
+			a cursor which yields the IL, cost delta, and quantity delta, and call a procedure to do the updating. -->
+		declare Deltas cursor local fast_forward
+		for
+			select inserted.FromItemLocationID, TX.EffectiveDate, TX.EntryDate, -inserted.Quantity, -TX.Cost
+			  from inserted
+			  join AccountingTransaction as TX on TX.Id = inserted.AccountingTransactionID
+		  union
+			select inserted.ToItemLocationID, TX.EffectiveDate, TX.EntryDate, inserted.Quantity, TX.Cost
+			  from inserted
+			  join AccountingTransaction as TX on TX.Id = inserted.AccountingTransactionID
+		  
+		declare @ILID uniqueidentifier
+		declare @EffectiveDate datetime
+		declare @EntryDate datetime
+		declare @DeltaQuantity integer
+		declare @DeltaCost money
+		open Deltas
+		fetch next from Deltas into @ILID, @EffectiveDate, @EntryDate, @DeltaQuantity, @DeltaCost
+		while @@Fetch_Status = 0
+		begin
+		  exec mbsp_AddInventoryDeltas @ILID, @EffectiveDate, @EntryDate, @DeltaQuantity, @DeltaCost
+		  fetch next from Deltas into @ILID, @EffectiveDate, @EntryDate, @DeltaQuantity, @DeltaCost
+		end
+	  end
+	</extension>
+	<extension name="references">ActualItemLocation</extension>
+	<extension name="references">PermanentItemLocation</extension>
+	<extension name="references">ItemCountValue</extension>
+	<extension name="references">AccountingTransaction</extension>
+	<extension name="references">ItemTransfer</extension>
+	<extension name="references">ItemLocation</extension>
+	<extension name="references">RationalizedInventoryActivityDeltas</extension>
+	<extension name="references">mbsp_AddInventoryDeltas[]</extension>
+  </object>
+  <table name="ActualItemLocation"/>
+  <table name="PermanentItemLocation"/>
+  <table name="ItemAdjustment"/>
+  <table name="ItemIssue"/>
+  <table name="ReceiveItemPO"/>
+  <table name="ReceiveItemNonPO"/>
+  <table name="ActualItem"/>
+  <table name="ItemCountValueVoid"/>
+  <table name="ItemCountValue" />
+  <table name="AccountingTransaction" />
+  <table name="ItemLocation" />
+  <table name="RationalizedInventoryActivityDeltas" />
+</database>

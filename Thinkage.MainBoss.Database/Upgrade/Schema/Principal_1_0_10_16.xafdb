@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+  <table name="Principal" defaults="true" log="false" id="Id" labelkey="">
+	<doc>This is the base table for Users and Permissions definitions with the database</doc>
+	<field name="Id" read="RequiredGUID"/>
+  </table>
+  </database>

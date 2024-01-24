@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="DemandLaborOutside" defaults="true" log="false" id="Id" xid="DemandID LaborOutsideID" labelkey="Demand Hourly Outside">
+	<field name="Id" read="RequiredGUID" />
+	<field name="DemandID" read="RequiredGUIDREF" base="Demand"/>
+	<field name="LaborOutsideID" type="RequiredGUIDREF" link="LaborOutside">
+	  <doc>Hourly Outside work reference</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Quantity" type="interval(min 00:01:00, max 36500.00:00:00, by 00:01:00)" labelkey="Demanded">
+	  <doc>Labor time required</doc>
+	</field>
+	<field name="ActualQuantity" read="RequiredLaborDuration" labelkey="Actual">
+	  <doc>The total labor time of all the associated actuals</doc>
+	  <result hosting="cached">
+		  cast(42 as RequiredLaborDuration)
+	  </result>
+	  <extension name="dependson">mbfn_DemandLaborOutside_ActualQuantity()</extension>
+	</field>
+	<field name="OrderQuantity" read="RequiredLaborDuration">
+	  <doc>The total labor time ordered (whether PO or NonPO &amp; whether actualised or not)</doc>
+	  <result hosting="cached">
+		  cast(42 as RequiredLaborDuration)
+	  </result>
+	  <extension name="dependson">mbfn_DemandLaborOutside_OrderQuantity()</extension>
+	</field>
+	<extension name="deletemethod">delete</extension>
+	<extension name="costrights">WorkOrderOutside</extension>
+  </table>
+  <table name="Demand"/>
+  <table name="LaborOutside"/>
+  <table name="ActualLaborOutsideNonPO"/>
+  <table name="ActualLaborOutsidePO"/>
+  <table name="POLineLabor"/>
+  <table name="AccountingTransaction"/>
+  <object class="function" name="mbfn_DemandLaborOutside_ActualQuantity">
+	<doc>
+	  Calculate the total actual quantities for actuals linked to this DemandLaborOutside
+	</doc>
+	<extension name="body">
+	  (
+		@DLOID uniqueidentifier -- DemandLaborOutsideID
+	  )
+	  RETURNS XAFInterval
+	  as
+	  begin
+		return (
+		  select dbo._ISumToI(sum(dbo._IIToSum(Quantity))) from
+			  (
+					select Quantity
+					  from ActualLaborOutsideNonPO
+					  where ActualLaborOutsideNonPO.DemandLaborOutsideID = @DLOID
+			   union all
+					select ActualLaborOutsidePO.Quantity 
+					  from ActualLaborOutsidePO
+					  inner join POLineLabor on ActualLaborOutsidePO.POLineLaborID = POLineLabor.ID
+					  where POLineLabor.DemandLaborOutsideID = @DLOID
+			  ) quantities
+	  )
+	  end
+	</extension>
+	<extension name="dependson">DemandLaborOutside.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualLaborOutsideNonPO</extension>
+	<extension name="dependson">ActualLaborOutsidePO</extension>
+  </object>
+  <object class="function" name="mbfn_DemandLaborOutside_ActualCost">
+	<doc>
+	  Calculate the total actual cost for actuals linked to this DemandLaborOutside
+	</doc>
+	<extension name="body">
+	  (
+		@DLOID uniqueidentifier -- DemandLaborOutsideID
+	  )
+	  RETURNS money
+	  as
+	  begin
+		return (
+			select sum(Cost)
+				from (
+					select Cost from ActualLaborOutsideNonPO
+					join AccountingTransaction on AccountingTransaction.ID = ActualLaborOutsideNonPO.AccountingTransactionID
+					where ActualLaborOutsideNonPO.DemandLaborOutsideID = @DLOID
+			  union all
+					select Cost from ActualLaborOutsidePO
+					join AccountingTransaction on AccountingTransaction.ID = ActualLaborOutsidePO.AccountingTransactionID
+					join POLineLabor on ActualLaborOutsidePO.POLineLaborID = POLineLabor.ID
+					where POLineLabor.DemandLaborOutsideID = @DLOID
+			) costs
+		)
+	  end
+	</extension>
+	<extension name="dependson">DemandLaborOutside.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualLaborOutsideNonPO</extension>
+	<extension name="dependson">ActualLaborOutsidePO</extension>
+  </object>
+  <object class="function" name="mbfn_DemandLaborOutside_OrderQuantity">
+	<doc>
+	  Calculate the total order quantities linked to this DemandLaborOutside
+	</doc>
+	<extension name="body">
+	  (
+		@DLIID uniqueidentifier -- DemandLaborOutsideID
+	  )
+	  RETURNS XAFInterval
+	  as
+	  begin
+		return (
+		  select coalesce(dbo._ISumToI(sum(dbo._IIToSum(Quantity))),dbo._INew(0,0,0,0,0)) from
+			  (
+					select Quantity
+					  from ActualLaborOutsideNonPO
+					  where ActualLaborOutsideNonPO.DemandLaborOutsideID = @DLIID
+			   union all
+					select Quantity 
+					  from POLineLabor
+					  where POLineLabor.DemandLaborOutsideID = @DLIID
+			  ) quantities
+		)
+	  end
+	</extension>
+	<extension name="dependson">ActualLaborOutsideNonPO</extension>
+	<extension name="dependson">POLineLabor</extension>
+  </object>
+</database>

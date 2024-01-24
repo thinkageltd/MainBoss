@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ReceivingReport" log="false" id="Id" labelkey="">
+	<field name="Id" read="RequiredGUID" />
+	<field name="AccountingTransactionID" type="RequiredGUIDREF" link="AccountingTransaction" unique="true" labelkey="" />
+	<field name="Correction" type="RequiredBool"/>
+	<!-- Linkages to Purchase information if this is a PO-based receive -->
+	<field name="ReceiptID" type="GUIDREF" link="Receipt">
+	  <doc>The linkage to the Receipt record (from the specific Receive derived record) if this is PO-based receiving</doc>
+	</field>
+	<field name="POLineID" type="GUIDREF" link="POLine">
+	  <doc>The linkage to the POLine base record (from the specific Receive derived record through the specific POLine derived record) if this is PO-based receiving</doc>
+	</field>
+	<!-- Unified purchase information -->
+	<field name="VendorID" type="RequiredGUIDREF" link="Vendor">
+	  <doc>The linkage to the Vendor, either from the PO or from the specific Non-PO receive record</doc>
+	</field>
+	<!-- Unified linkages to the resource received, depending on receive type -->
+	<field name="ItemLocationID" type="GUIDREF" link="ItemLocation">
+	  <doc>The linkage to the ItemLocation if an item was received. Note this might not be the same as the ItemLocation on the POLineItem (if any)</doc>
+	</field>
+	<field name="LaborOutsideID" type="GUIDREF" link="LaborOutside">
+	  <doc>The linkage to the Labor record if Labor (hourly work) was received</doc>
+	</field>
+	<field name="OtherWorkOutsideID" type="GUIDREF" link="OtherWorkOutside">
+	  <doc>The linkage to the OtherWork record if other work (counted work) was received.</doc>
+	</field>
+	<field name="MiscellaneousID" type="GUIDREF" link="Miscellaneous">
+	  <doc>The linkage to the Miscellaneous if a miscellaneous cost was received on a PO</doc>
+	</field>
+	<field name="WorkOrderID" type="GUIDREF" link="WorkOrder">
+	  <doc>The WorkOrder that work was done for for Labor and Other Work</doc>
+	</field>
+	<field name="Code" type="Code" labelkey="Received">
+	  <doc>The Code of what was received (Labor, OtherWork, Item, PurchaseMiscellaneous)</doc>
+	</field>
+	<field name="TradeID" type="GUIDREF" link="Trade">
+	  <doc>The linkage to the Trade record for Labor and OtherWork</doc>
+	</field>
+	<!-- Unified Receive information -->
+	<field name="QuantityCount" type="Quantity">
+	  <doc>The Quantity received for Items, Other Work, and Miscellaneous</doc>
+	</field>
+	<field name="QuantityDuration" type="DurationMinutes">
+	  <doc>The Quantity received for hourly Labor</doc>
+	</field>
+	<field name="OriginalOrderedQuantity" type="Quantity" />
+	<field name="OriginalOrderedLabor" type="DurationMinutes" />
+	<field name="UnitCost" type="UnitCost">
+	  <extension name="dependson">mbfn_CalculateUnitCost()</extension>
+	  <extension name="dependson">mbfn_CalculateHourlyCost()</extension>
+	</field>
+	<extension name="query">
+		select
+		  RIPO.AccountingTransactionID, RIPO.AccountingTransactionID, case when RIPO.Id = RIPO.CorrectionID then 0 else 1 end,
+		  RIPO.ReceiptID, POLI.POLIneID, PO.VendorID,
+		  RIPO.ItemLocationID, null, null, null, null, I.Code, null,
+		  RIPO.Quantity, null,
+		  POLI.Quantity, null, dbo.mbfn_CalculateUnitCost(TX.Cost, RIPO.Quantity, 1)
+		  from ReceiveItemPO as RIPO
+			join AccountingTransaction as TX on TX.Id = RIPO.AccountingTransactionID
+			join POLineItem as POLI on POLI.[ID] = RIPO.POLineItemID
+			join ItemLocation as IL on IL.[ID] = RIPO.ItemLocationID
+			join Item as I on I.Id = IL.ItemID
+			join POLine as POL on POL.Id = POLI.POLineID
+			join PurchaseOrder as PO on PO.Id = POL.PurchaseOrderID
+	  union all
+		select
+		  RINPO.AccountingTransactionID, RINPO.AccountingTransactionID, case when RINPO.Id = RINPO.CorrectionID then 0 else 1 end,
+		  null, null, RINPO.VendorID,
+		  RINPO.ItemLocationID, null, null, null, null, I.Code, null,
+		  RINPO.Quantity, null,
+		  null, null, dbo.mbfn_CalculateUnitCost(TX.Cost, RINPO.Quantity, 1)
+		  from ReceiveItemNonPO as RINPO
+			join AccountingTransaction as TX on TX.Id = RINPO.AccountingTransactionID
+			join ItemLocation as IL on IL.[ID] = RINPO.ItemLocationID
+			join Item as I on I.Id = IL.ItemID
+	  union all
+		select
+		  AOWOPO.AccountingTransactionID, AOWOPO.AccountingTransactionID, case when AOWOPO.Id = AOWOPO.CorrectionID then 0 else 1 end,
+		  AOWOPO.ReceiptID, POLOW.POLineID, PO.VendorID,
+		  null, null, DOWO.OtherWorkOutsideID, null, D.WorkOrderID, OWO.Code, OWO.TradeID,
+		  AOWOPO.Quantity, null,
+		  POLOW.Quantity, null, dbo.mbfn_CalculateUnitCost(TX.Cost, AOWOPO.Quantity, 1)
+		  from ActualOtherWorkOutsidePO as AOWOPO
+			join AccountingTransaction as TX on TX.Id = AOWOPO.AccountingTransactionID
+			join POLineOtherWork as POLOW on POLOW.[ID] = AOWOPO.POLineOtherWorkID
+			join DemandOtherWorkOutside as DOWO on DOWO.Id = POLOW.DemandOtherWorkOutsideID
+			join OtherWorkOutside as OWO on OWO.Id = DOWO.OtherWorkOutsideID
+			join Demand as D on D.Id = DOWO.DemandID
+			join POLine as POL on POL.Id = POLOW.POLineID
+			join PurchaseOrder as PO on PO.Id = POL.PurchaseOrderID
+	  union all
+		select
+		  AOWONPO.AccountingTransactionID, AOWONPO.AccountingTransactionID, case when AOWONPO.Id = AOWONPO.CorrectionID then 0 else 1 end,
+		  null, null, AOWONPO.VendorID,
+		  null, null, DOWO.OtherWorkOutsideID, null, D.WorkOrderID, OWO.Code, OWO.TradeID,
+		  AOWONPO.Quantity, null,
+		  null, null, dbo.mbfn_CalculateUnitCost(TX.Cost, AOWONPO.Quantity, 1)
+		  from ActualOtherWorkOutsideNonPO as AOWONPO
+			join AccountingTransaction as TX on TX.Id = AOWONPO.AccountingTransactionID
+			join DemandOtherWorkOutside as DOWO on DOWO.Id = AOWONPO.DemandOtherWorkOutsideID
+			join OtherWorkOutside as OWO on OWO.Id = DOWO.OtherWorkOutsideID
+			join Demand as D on D.Id = DOWO.DemandID
+	  union all
+		select
+		  RMPO.AccountingTransactionID, RMPO.AccountingTransactionID, case when RMPO.Id = RMPO.CorrectionID then 0 else 1 end,
+		  RMPO.ReceiptID, POLM.POLineID, PO.VendorID,
+		  null, null, null, POLM.MiscellaneousID, null, M.Code, null,
+		  RMPO.Quantity, null, 
+		  POLM.Quantity, null, dbo.mbfn_CalculateUnitCost(TX.Cost, RMPO.Quantity, 1)
+		  from ReceiveMiscellaneousPO as RMPO
+			join AccountingTransaction as TX on TX.Id = RMPO.AccountingTransactionID
+			join POLineMiscellaneous as POLM on POLM.Id = RMPO.POLineMiscellaneousID
+			join Miscellaneous as M on M.Id = POLM.MiscellaneousID
+			join POLine as POL on POL.Id = POLM.POLineID
+			join PurchaseOrder as PO on PO.Id = POL.PurchaseOrderID
+	  union all
+		select
+		  ALOPO.AccountingTransactionID, ALOPO.AccountingTransactionID, case when ALOPO.Id = ALOPO.CorrectionID then 0 else 1 end,
+		  ALOPO.ReceiptID, POLL.POLineID, PO.VendorID,
+		  null, DLO.LaborOutsideID, null, null, D.WorkOrderID, LO.Code, LO.TradeID,
+		  null, ALOPO.Quantity,
+		  null, POLL.Quantity, dbo.mbfn_CalculateHourlyCost(TX.Cost, ALOPO.Quantity)
+		  from ActualLaborOutsidePO as ALOPO
+			join AccountingTransaction as TX on TX.Id = ALOPO.AccountingTransactionID
+			join POLineLabor as POLL on POLL.Id = ALOPO.POLineLaborID
+			join DemandLaborOutside as DLO on DLO.Id = POLL.DemandLaborOutsideID
+			join LaborOutside as LO on LO.Id = DLO.LaborOutsideID
+			join Demand as D on D.Id = DLO.DemandID
+			join POLine as POL on POL.Id = POLL.POLineID
+			join PurchaseOrder as PO on PO.Id = POL.PurchaseOrderID
+	  union all
+		select
+		  ALONPO.AccountingTransactionID, ALONPO.AccountingTransactionID, case when ALONPO.Id = ALONPO.CorrectionID then 0 else 1 end,
+		  null, null, ALONPO.VendorID,
+		  null, DLO.LaborOutsideID, null, null, D.WorkOrderID, LO.Code, LO.TradeID,
+		  null, ALONPO.Quantity,
+		  null, null, dbo.mbfn_CalculateHourlyCost(TX.Cost, ALONPO.Quantity)
+		  from ActualLaborOutsideNonPO as ALONPO
+			join AccountingTransaction as TX on TX.Id = ALONPO.AccountingTransactionID
+			join DemandLaborOutside as DLO on DLO.Id = ALONPO.DemandLaborOutsideID
+			join LaborOutside as LO on LO.Id = DLO.LaborOutsideID
+			join Demand as D on D.Id = DLO.DemandID
+	</extension>
+	<extension name="dependson">ReceiveItemPO</extension>
+	<extension name="dependson">ReceiveItemNonPO</extension>
+	<extension name="dependson">ReceiveMiscellaneousPO</extension>
+	<extension name="dependson">ActualLaborOutsidePO</extension>
+	<extension name="dependson">ActualLaborOutsideNonPO</extension>
+	<extension name="dependson">ActualOtherWorkOutsidePO</extension>
+	<extension name="dependson">ActualOtherWorkOutsideNonPO</extension>
+	<extension name="dependson">AccountingTransaction</extension>
+	<extension name="dependson">POLineItem</extension>
+	<extension name="dependson">POLineMiscellaneous</extension>
+	<extension name="dependson">POLineLabor</extension>
+	<extension name="dependson">POLineOtherWork</extension>
+	<extension name="dependson">POLine</extension>
+	<extension name="dependson">PurchaseOrder</extension>
+	<extension name="dependson">ItemLocation</extension>
+	<extension name="dependson">Item</extension>
+	<extension name="dependson">LaborOutside</extension>
+	<extension name="dependson">OtherWorkOutside</extension>
+	<extension name="dependson">Miscellaneous</extension>
+	<extension name="dependson">DemandLaborOutside</extension>
+	<extension name="dependson">DemandOtherWorkOutside</extension>
+	<extension name="dependson">Demand</extension>
+	<extension name="costrights">PurchaseOrderItem,PurchaseOrderLabor,PurchaseOrderMiscellaneous</extension>
+	<extension name="lastupdate">AccountingTransactionID</extension>
+  </table>
+  <table name="ReceiveItemPO"/>
+  <table name="ReceiveItemNonPO"/>
+  <table name="ReceiveMiscellaneousPO"/>
+  <table name="ActualLaborOutsidePO"/>
+  <table name="ActualLaborOutsideNonPO"/>
+  <table name="ActualOtherWorkOutsidePO"/>
+  <table name="ActualOtherWorkOutsideNonPO"/>
+  <table name="AccountingTransaction"/>
+  <table name="POLineItem"/>
+  <table name="POLineMiscellaneous"/>
+  <table name="POLineLabor"/>
+  <table name="POLineOtherWork"/>
+  <table name="POLine"/>
+  <table name="PurchaseOrder"/>
+  <table name="ItemLocation"/>
+  <table name="Item"/>
+  <table name="LaborOutside"/>
+  <table name="OtherWorkOutside"/>
+  <table name="Miscellaneous"/>
+  <table name="DemandLaborOutside"/>
+  <table name="DemandOtherWorkOutside"/>
+  <table name="Demand"/>
+  <table name="Receipt"/>
+  <table name="Vendor"/>
+  <table name="Trade"/>
+  <table name="WorkOrder"/>
+</database>
+

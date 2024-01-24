@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+	<table name="Settings" id="Id" defaults="false" log="false" xid="SettingsNameID Code UserID" xunique="true" labelkey="Settings">
+		<doc>
+			This table contains the saved settings, identified by the user they belong to (or null for global ones), the user-selected save-name, and the SettingsName which defines what they apply to.
+		</doc>
+		<field name="Id" read="RequiredGUID"/>
+		<field name="SettingsNameID" type="RequiredGUIDREF" link="SettingsName">
+			<extension name="linkage">property</extension>
+		</field>
+		<field name="Code" type="RequiredCode">
+			<doc>The user-selected name for the Settings</doc>
+		</field>
+		<field name="UserID" type="GUIDREF" link="User">
+			<doc>The user who owns the settings for personal settings, or null for global settings</doc>
+			<extension name="linkage">property</extension>
+		</field>
+		<field name="Value" type="RequiredMaxBlob"/>
+		<field name="Version" type="RequiredVersionInfo"/>
+		<!-- This table has no GUI access so no deletemethod is required -->
+	</table>
+	<table name="SettingsName"/>
+	<table name="User"/>
+</database>

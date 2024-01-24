@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ItemCountValueVoid" defaults="true" log="false" id="Id" xid="VoidedItemCountValueID" xunique="true" labelkey="Physical Count Void">
+	<doc>
+	  A record is created in this table to Void an ItemCountValue record. This record has the reversal of the original accounting
+	  transaction, but with a new EntryDate. If you want to un-void an ItemCountValue record it must be entered anew.
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="AccountingTransactionID" read="RequiredGUIDREF"  base="AccountingTransaction">
+	  <doc>the accounting information and entry date reference</doc>
+	</field>
+	<field name="VoidCodeID" type="RequiredGUIDREF"  link="VoidCode">
+	  <doc>
+		The Void code which explains why the count was voided.
+		The same cost center as the original ItemCountValue's transaction is used.
+	  </doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="VoidedItemCountValueID" type="RequiredGUIDREF" link="ItemCountValue">
+	  <doc>the ItemCountValue record being voided. Its VoidingItemCountValueVoidID will also link back to us.</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<extension name="costrights">InventoryActivity</extension>
+  </table>
+  <table name="VoidCode"/>
+  <object class="trigger" name="mbtg_ItemCountValueVoid_Updates_ItemCountValueEtAl">
+	<doc>Maintain values dependent on insertiong of an ItemCountValueVoid record</doc>
+	<extension name="body">
+	  on ItemCountValueVoid
+	  after insert
+	  as
+	  begin
+		-- Theoretically we should do this after updates and before deletes too
+		-- but those operations are not allowed by the app (at least, not in any
+		-- manner that alters the result of the calculation).
+		update ItemCountValue
+			set VoidingItemCountValueVoidID = dbo.mbfn_ItemCountValue_VoidingItemCountValueVoid(ItemCountValue.ID)
+			where ItemCountValue.ID in (select VoidedItemCountValueID from inserted)
+
+		-- This voiding may alter the CurrentItemCountValueID so reset it here
+		update PermanentItemLocation
+			set CurrentItemCountValueID = dbo.mbfn_PermanentItemLocation_CurrentItemCountValue(PermanentItemLocation.ID)
+			where PermanentItemLocation.ActualItemLocationID in (
+					select AIL.ID
+					  from ActualItemLocation as AIL
+						join ItemCountValue as ICV on ICV.ItemLocationID = AIL.ItemLocationID
+						join inserted as ICVV on ICVV.VoidedItemCountValueID = ICV.ID
+			  )
+
+		-- check against remaining unvoided physical count records only (after recalculating the CurrentItemCountValueID)
+		if exists(select *
+					from inserted
+					  join ItemCountValue as ICV on inserted.VoidedItemCountValueID = ICV.ID
+					  join ActualItemLocation as AIL on ICV.ItemLocationID = AIL.ItemLocationID
+					  join PermanentItemLocation as PIL on AIL.ID = PIL.ActualItemLocationID
+					  join ItemCountValue as CICV on CICV.ID = PIL.CurrentItemCountValueID
+					  join AccountingTransaction as CTX on CTX.ID = CICV.AccountingTransactionID
+					  join AccountingTransaction as TX on TX.ID = ICV.AccountingTransactionID
+					where CTX.EffectiveDate &gt;= TX.EffectiveDate) begin
+		  raiserror('''%s'' record predates the latest Physical Count', 16, 1, 'ItemCountValueVoid')
+		  rollback transaction
+		end
+		if exists(select count(*) from inserted join ItemCountValue on inserted.VoidedItemCountValueID = ItemCountValue.Id group by ItemLocationID having count(*) > 1) begin
+		  raiserror('Cannot insert multiple ''%s'' records for a particular storage assignment in a single insert statement', 16, 1, 'ItemCountValueVoid')
+		  rollback transaction
+		end
+		  
+		<!-- If we could be sure there was only one record per IL, we could do the work here with 14 update calls (for the various inv tx tables)
+			However that would represent a lot of code duplication (over 7 types of inv tx, not to mention ICV and ICVV), so instead we set up
+			a cursor which yields the IL, cost delta, and quantity delta, and call a procedure to do the updating. -->
+		declare Deltas cursor local fast_forward
+		for
+		  select
+			ICV.ItemLocationID,
+			TX.EffectiveDate,
+			TX.EntryDate,
+			coalesce((select top 1 X.TotalQuantity
+									from RationalizedInventoryActivityDeltas as X
+									where
+									  X.ItemLocationID = ICV.ItemLocationID
+									  and (TX.EffectiveDate > X.EffectiveDate or (TX.EffectiveDate = X.EffectiveDate and TX.EntryDate > X.EntryDate))
+									order by EffectiveDate desc, EntryDate desc), 0) - ICV.Quantity,
+			TX.Cost
+		  from inserted
+		  join ItemCountValue as ICV on ICV.Id = inserted.VoidedItemCountValueID
+		  join AccountingTransaction as TX on TX.Id = ICV.AccountingTransactionID
+		  
+		declare @ILID uniqueidentifier
+		declare @EffectiveDate datetime
+		declare @EntryDate datetime
+		declare @DeltaQuantity integer
+		declare @DeltaCost money
+		open Deltas
+		fetch next from Deltas into @ILID, @EffectiveDate, @EntryDate, @DeltaQuantity, @DeltaCost
+		while @@Fetch_Status = 0
+		begin
+		  exec mbsp_AddInventoryDeltas @ILID, @EffectiveDate, @EntryDate, @DeltaQuantity, @DeltaCost
+		  fetch next from Deltas into @ILID, @EffectiveDate, @EntryDate, @DeltaQuantity, @DeltaCost
+		end
+	  end
+	</extension>
+	<extension name="references">mbfn_ItemCountValue_VoidingItemCountValueVoid()</extension>
+	<extension name="references">mbfn_PermanentItemLocation_CurrentItemCountValue()</extension>
+	<extension name="references">ActualItemLocation</extension>
+	<extension name="references">PermanentItemLocation</extension>
+	<extension name="references">ItemCountValue</extension>
+	<extension name="references">AccountingTransaction</extension>
+	<extension name="references">ItemCountValueVoid</extension>
+	<extension name="references">RationalizedInventoryActivityDeltas</extension>
+	<extension name="references">mbsp_AddInventoryDeltas[]</extension>
+  </object>
+  <table name="ActualItemLocation"/>
+  <table name="PermanentItemLocation"/>
+  <table name="ItemCountValue" />
+  <table name="AccountingTransaction" />
+  <table name="ItemLocation" />
+  <table name="RationalizedInventoryActivityDeltas" />
+</database>

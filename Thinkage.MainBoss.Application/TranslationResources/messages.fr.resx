@@ -1,0 +1,411 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Thinkage.MainBoss.Application§About..." xml:space="preserve">
+    <value>À propos de...</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Actions" xml:space="preserve">
+    <value>Actes</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Add form customizations from an external file" xml:space="preserve">
+    <value>Ajouter un formulaire personnalisations à partir d'un fichier externe</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Add from file" xml:space="preserve">
+    <value>Ajouter à partir du fichier</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§All files (*.*)" xml:space="preserve">
+    <value>Tous les fichiers (*. *)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Apply" xml:space="preserve">
+    <value>Appliquer</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Apply &amp;&amp; Close" xml:space="preserve">
+    <value>Appliquer &amp;&amp; Fermer</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Cancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Cancel customization" xml:space="preserve">
+    <value>Annuler personnalisation</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Change Active Filter" xml:space="preserve">
+    <value>Changez Filtre Actif</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Change the number of days back that records are displayed" xml:space="preserve">
+    <value>Modifier le nombre de jours en arrière que les dossiers sont affichés</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Clear all customization" xml:space="preserve">
+    <value>Effacer tout personnalisation</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Close" xml:space="preserve">
+    <value>Fermer</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Close this form and return to the previous application" xml:space="preserve">
+    <value>Fermer cette formulaire et le retourner à l'application précédente</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Close this window" xml:space="preserve">
+    <value>Fermer la fenêtre</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Container nodes are made visible as required by their contents" xml:space="preserve">
+    <value>nœuds de conteneurs sont rendus visibles comme requis par leur contenu</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Customization files (*.xml)" xml:space="preserve">
+    <value>Les fichiers de personnalisation (* .xml)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Customize Main Menu" xml:space="preserve">
+    <value>Personnaliser le menu principal</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Do you want to apply your changes before closing?" xml:space="preserve">
+    <value>Voulez-vous pour appliquer vos modifications avant de fermer?</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Do you want to publish your form customizations before closing?" xml:space="preserve">
+    <value>Voulez-vous de publier vos personnalisations de forme avant la fermeture?</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Do you want to save all errors into a file for later analysis?" xml:space="preserve">
+    <value>Voulez-vous enregistrer toutes les erreurs dans un fichier pour une analyse ultérieure?</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Enable" xml:space="preserve">
+    <value>Permettre</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Export" xml:space="preserve">
+    <value>Exportation</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Export for Excel (includes schema in other file)  (*.xml)" xml:space="preserve">
+    <value>Exportation vers Excel (comprend schéma dans un autre fichier) (* .xml)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Export the current form customizations to an external file" xml:space="preserve">
+    <value>Exporter les personnalisations actuelles de formulaire à un fichier externe</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Export with embedded schema  (*.xml)" xml:space="preserve">
+    <value>Export avec le schéma intégré (* .xml)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Export with no embedded schema (*.xml)" xml:space="preserve">
+    <value>Export avec aucun schéma intégré (* .xml)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§For Excel (*.xml)" xml:space="preserve">
+    <value>Pour Excel (* .xml)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Form Customization" xml:space="preserve">
+    <value>Formulaire de personnalisation</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Get Technical Support" xml:space="preserve">
+    <value>Obtenir un Support Technique</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Go to Help Index" xml:space="preserve">
+    <value>Allez à Index de l'aide</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Go to Help Table of Contents" xml:space="preserve">
+    <value>Allez dans Aide Table des matières</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Go to technical support information" xml:space="preserve">
+    <value>Aller à l'information de support technique</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Help" xml:space="preserve">
+    <value>Aidez-Moi</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Import Errors" xml:space="preserve">
+    <value>Erreurs d'importation</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Import files (*.xml)" xml:space="preserve">
+    <value>Importer des fichiers (* .xml)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Importing Data" xml:space="preserve">
+    <value>Importation de données</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Index" xml:space="preserve">
+    <value>Index</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Is contained in one of" xml:space="preserve">
+    <value>Est contenue dans une des</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§is contained in one of {0}" xml:space="preserve">
+    <value>est contenu dans l'un des {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Line {0}, Position {1}:{2}" xml:space="preserve">
+    <value>Ligne {0}, {1} Position: {2}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Login&amp;User Administrator" xml:space="preserve">
+    <value>Login &amp; Utilisateur Administrateur</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§MainBoss {0}" xml:space="preserve">
+    <value>MainBoss {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§MainBoss will require new license keys after the upgrade.&#xD;&#xA;Do you want to continue with the upgrade?" xml:space="preserve">
+    <value>MainBoss nécessitera de nouvelles clés de licence après la mise à niveau.
+Voulez-vous poursuivre la mise à niveau?</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§No unpublished form customizations exist" xml:space="preserve">
+    <value>Aucun inédits personnalisations de formulaires existent</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Normal (*.xml)" xml:space="preserve">
+    <value>Normal (* .xml)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Open a new main window showing the same data" xml:space="preserve">
+    <value>Ouvrez une nouvelle fenêtre principale montrant les mêmes données</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Open in New Window" xml:space="preserve">
+    <value>Ouvrir dans une nouvelle fenêtre</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Publish" xml:space="preserve">
+    <value>Publier</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Publish all currently applied form customizations to the database for all users" xml:space="preserve">
+    <value>Publier toutes les personnalisations de forme actuellement appliquées à la base de données pour tous les utilisateurs</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Remove all form customizations, discarding any unsaved changes you have made" xml:space="preserve">
+    <value>Retirez toutes les personnalisations de forme, en rejetant les modifications non enregistrées que vous avez faites</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Replace current form customizations from an external file, discarding any unsaved changes you have made" xml:space="preserve">
+    <value>Remplacer actuelles personnalisations de formulaire à partir d'un fichier externe, en rejetant les modifications non enregistrées que vous avez faites</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Replace from file" xml:space="preserve">
+    <value>Remplacer un fichier</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Requested Settings could not be found" xml:space="preserve">
+    <value>Paramètres demandée n'a pas pu être trouvé</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Reset form customizations as currently published, discarding any unsaved changes you have made" xml:space="preserve">
+    <value>Réinitialiser personnalisations actuellement publié, en rejetant les modifications non enregistrées que vous avez faites</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Restore" xml:space="preserve">
+    <value>Restaurer</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Restore from published" xml:space="preserve">
+    <value>Restaurer à partir publié</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Restore the selected organization from one of its backups" xml:space="preserve">
+    <value>Restaurer l'organisation choisie parmi l'une de ses sauvegardes</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Restoring database" xml:space="preserve">
+    <value>Base de données Restauration</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Select which entries in the main menu are visible" xml:space="preserve">
+    <value>Sélectionnez les entrées dans le menu principal sont visibles</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Setting built-in MainBoss security." xml:space="preserve">
+    <value>Réglage sécurité intégrée MainBoss.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Show compact browsers" xml:space="preserve">
+    <value>Afficher navigateurs compacts</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Show information about this application" xml:space="preserve">
+    <value>Affiche des informations sur cette application</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Show only records less than this many days old" xml:space="preserve">
+    <value>Afficher uniquement les documents de moins de cette vieille plusieurs jours</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Show only records since" xml:space="preserve">
+    <value>Afficher uniquement les documents depuis</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Some of the License Keys that were valid for earlier versions of MainBoss&#xD;&#xA;will not be valid for this version" xml:space="preserve">
+    <value>Certains des clés de licence qui étaient valables pour les versions antérieures de MainBoss
+ne sera pas valable pour cette version</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Start Support Connection" xml:space="preserve">
+    <value>Lancer Support Connection</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Start the Teamviewer support connection with Thinkage" xml:space="preserve">
+    <value>Démarrez la connexion de support Teamviewer avec Thinkage</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Table of Contents" xml:space="preserve">
+    <value>Table des matières</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§The culture info to use" xml:space="preserve">
+    <value>L'information culturelle à utiliser</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§The database is already at the latest version and tailored for your current SQL Server version" xml:space="preserve">
+    <value>La base de données est déjà à la dernière version et adaptée à votre version de SQL Server actuel</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§The database requires upgrading for the application '{0}'. Use the 'Upgrade' operation to upgrade the database." xml:space="preserve">
+    <value>La base de données nécessite la mise à niveau de l'application '{0}'. Utilisez l'opération 'Améliorer' pour mettre à jour la base de données.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§The latest database version is {0}" xml:space="preserve">
+    <value>La dernière version de la base de données est {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§The latest database version is {0} tailored for SQL Server version {1}" xml:space="preserve">
+    <value>La dernière version de la base de données est {0} adaptée pour la version SQL Server {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§The upgrade has completed but the update of the database statistics has failed.  A SQL sysadmin should update the MainBoss database statistics to ensure improved performance." xml:space="preserve">
+    <value>La mise à niveau a terminé mais la mise à jour des statistiques de base de données a échoué. Un sysadmin SQL doit mettre à jour les statistiques de la base de données MainBoss afin d'améliorer les performances.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§The URL location for the documentation" xml:space="preserve">
+    <value>L'emplacement de l'URL pour la documentation</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§There are no licenses for the application '{0}'. Use the 'Administration' application to add the required licenses." xml:space="preserve">
+    <value>Il n'y a pas de licences pour l'application '{0}'. Utilisez l'application 'Administration' d'ajouter les licences requises.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§There was a problem validating access to {0}" xml:space="preserve">
+    <value>Il y avait un problème de validation de l'accès à {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§This application does not support personal Settings" xml:space="preserve">
+    <value>Cette application ne supporte pas les paramètres personnels</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§This database uses features available in SQL server version {0} but your server is version {1} which has additional features which would enhance performance. Use the 'Upgrade' operation to update the database to use these newer features." xml:space="preserve">
+    <value>This database uses features available in SQL server version {0} but your server is version {1} which has additional features which would enhance performance. Use the 'Upgrade' operation to update the database to use these newer features.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§This database's current version is {0} tailored for SQL Server version {1}" xml:space="preserve">
+    <value>Version actuelle de cette base de données est {0} adaptée pour la version SQL Server {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Updating Database Index Statistics." xml:space="preserve">
+    <value>Mise à jour des statistiques de l'index de la base de données.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Upgrade" xml:space="preserve">
+    <value>Améliorer</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Upgrade this database to the latest version and optimize for the current SQL Server version" xml:space="preserve">
+    <value>Cette base de données de mise à niveau à la dernière version et optimiser pour la version de SQL Server actuel</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Upgrading MainBoss maintenance organization to current version" xml:space="preserve">
+    <value>Mise à niveau de MainBoss organisme de maintenance à la version actuelle</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Upgrading this database may prevent older MainBoss services&#xD;&#xA;and users of older MainBoss applications from accessing this database" xml:space="preserve">
+    <value>Mise à niveau de cette base de données peut empêcher les services MainBoss âgées
+et les utilisateurs des anciennes applications MainBoss d'accéder à cette base de données</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§User Administrator" xml:space="preserve">
+    <value>Administrateur Utilisateur</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§View" xml:space="preserve">
+    <value>Vue</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§While this form is open other MainBoss users and services will be unable to access this database" xml:space="preserve">
+    <value>Bien que cette forme est ouvert d'autres utilisateurs et les services MainBoss ne pourront pas accéder à cette base de données</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§XML file (*.xml)" xml:space="preserve">
+    <value>Fichier XML (* .xml)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§XML Validation Errors {0}" xml:space="preserve">
+    <value>Erreurs de validation de XML {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§You have no customizations to apply" xml:space="preserve">
+    <value>Vous ne avez pas d'appliquer les personnalisations</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§You have unapplied customizations" xml:space="preserve">
+    <value>Vous avez des personnalisations non appliquées</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§You must close all other MainBoss windows first." xml:space="preserve">
+    <value>Vous devez fermer d'abord toutes les autres fenêtres de MainBoss.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Your current SQL Server version is {0}" xml:space="preserve">
+    <value>Votre version actuelle de SQL Server est {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§Zoom in on View" xml:space="preserve">
+    <value>Zoom sur Voir</value>
+  </data>
+</root>

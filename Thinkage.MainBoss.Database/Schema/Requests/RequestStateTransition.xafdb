@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="RequestStateTransition" defaults="false" log="false" id="Id" labelkey="Request State Transition">
+	<doc>Provides the possible State transitions allowed for a Request among the defined RequestState values.</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="Operation" type="translationkey(nonnull)">
+	  <doc>Text (translatable) of operation for UI to perform the transition</doc>
+	</field>
+	<field name="OperationHint" type="translationkey(nonnull)">
+	  <doc>Text (translatable) of tooltip hint for UI</doc>
+	</field>
+	<field name="CanTransitionWithoutUI" type="RequiredBool">
+	  <doc>Flag to indicate whether a User Interface prompt is required before completing the transition</doc>
+	</field>
+	<field name="CopyStatusFromPrevious" type="RequiredBool">
+	  <doc>Flag to indicate if the current Request State History Status should override the default for the new status</doc>
+	</field>
+	<field name="FromStateID" type="RequiredGUIDREF" link="RequestState" labelkey="From State">
+	  <doc>Starting state for transition operation</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="ToStateID" type="RequiredGUIDREF" link="RequestState" labelkey="To State">
+	  <doc>Resulting state after transition operation</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Rank" type="integer(16,nonnull)">
+	  <doc>Logical Operation progress order of transitions. Used to order UI buttons or commands</doc>
+	</field>
+	<field name="RightName" type="PermissionPathPattern">
+	  <doc>If non null, the name of a right the user must have to perform this transition</doc>
+	</field>
+  </table>
+  <table name="RequestState"/>
+</database>

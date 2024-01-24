@@ -1,0 +1,46 @@
+@model IEnumerable<RequestEntities.Request>
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.Web.Mvc.Html
+@{
+	Layout = "~/Views/Shared/_LayoutBrowse.cshtml";
+	ViewBag.Title = T.Text("UnAssigned Requests");
+}
+@section BrowseContent {
+	<thead>
+		<tr>
+			<th>
+				@(T.Text("Number"))
+			</th>
+			<th>
+				@(T.Text("State"))
+			</th>
+			<th>
+				@(T.Text("Priority"))
+			</th>
+			<th>
+				@(T.Text("Status"))
+			</th>
+			@*			@if (! Request.Browser.IsMobileDevice) { *@
+			<th class="Subject">
+				@(T.Text("Subject"))
+			</th>
+			@*			}*@
+
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model) {
+			<tr class="Info">
+				<td>@(Html.ActionLink(item.Number, "ViewUnAssigned", new
+			{
+				id = item.Id,
+				resultMessage = ""
+			}))</td>
+				@(Html.CodeValue(item.CurrentRequestStateHistory.RequestState))
+				@(Html.CodeValue(item.RequestPriority))
+				@(Html.CodeValue(item.CurrentRequestStateHistory.RequestStateHistoryStatus))
+				<td class="Subject" colspan="2">@(item.Subject) </td>
+			</tr>
+		}
+	</tbody>
+}

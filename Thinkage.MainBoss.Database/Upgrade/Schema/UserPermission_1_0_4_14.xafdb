@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+  <table name="UserPermission" defaults="false" log="false" id="Id" labelkey="User Permission">
+	<doc>
+	  This view returns the permissions for each user (even Hidden users) regardless of whether the permission is applied
+	  directly to the User or whether is it applied to a role that the user is a member of. It is possible that we return
+	  multiple occurrences of the same permission if the same permission is granted by one or more of the user and the roles
+	  they belong to.
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="UserID" type="RequiredGUIDREF" link="User"/>
+	<field name="PermissionPathPattern" type="RequiredPermissionPathPattern"/>
+	<extension name="query">
+		-- The first half returns permissions applied directly to the user. We can use the permission record's ID for the result ID.
+		SELECT Permission.ID, [User].ID, Permission.PermissionPathPattern
+			  FROM [User]
+			  JOIN Permission on [User].PrincipalID = Permission.PrincipalID
+		union all
+		-- The second half returns permissions granted to the user via a role they belong to.
+			SELECT NEWID(), UserRole.UserID, Permission.PermissionPathPattern
+			  FROM UserRole
+				join [Role] on UserRole.RoleID = [Role].ID
+				join Permission on Permission.PrincipalID = Role.PrincipalID
+	</extension>
+	<extension name="dependson">User</extension>
+	<extension name="dependson">Permission</extension>
+	<extension name="dependson">Role</extension>
+	<extension name="dependson">UserRole</extension>
+  </table>
+  <table name="User"/>
+  <table name="Role"/>
+  <table name="UserRole"/>
+  <table name="Permission"/>
+</database>

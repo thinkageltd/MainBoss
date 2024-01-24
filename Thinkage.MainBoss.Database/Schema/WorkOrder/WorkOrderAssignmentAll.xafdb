@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderAssignmentAll" id="Id" xid="WorkOrderID WorkOrderAssigneeID" xunique="true" labelkey="">
+	<doc>
+	  Records in this table represent association of a WorkOrderAssignee to a WorkOrder both explicit (from WorkOrderAssignment) and implicit (Labor demands on workorder) 
+	  Reassignment is done via deletion and creation of a new record
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="WorkOrderAssignmentID" type="GUIDREF" link="WorkOrderAssignment" labelkey="">
+	  <doc>If an explicit assignment, the reference to the actual record. null otherwise</doc>
+	</field>
+	<field name="WorkOrderAssigneeID" type="RequiredGUIDREF" link="WorkOrderAssignee" cascade="true" labelkey="Assignee">
+	  <doc>The WorkOrderAssignee assigned to WorkOrders.</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="WorkOrderID" type="RequiredGUIDREF" link="WorkOrder" cascade="true" labelkey="">
+	  <doc>The WorkOrder the Assignee is assigned to</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+
+	<extension name="query">
+		WITH AllAssignments (ID, WorkOrderAssignmentID, WorkOrderID, WorkOrderAssigneeID) as 
+		(
+		select WOA.ID, WOA.ID, WOA.WorkOrderID, WOA.WorkOrderAssigneeID
+			from WorkOrderAssignment as WOA
+		union all
+		select DLI.ID, null, D.WorkOrderID, Assignee.ID 
+			from DemandLaborInside as DLI
+			join Demand as D on DLI.DemandID = D.Id
+			join LaborInside as LI on LI.Id = DLI.LaborInsideID
+			join Employee as E on LI.EmployeeID = E.Id
+			join WorkOrderAssignee as Assignee on Assignee.ContactID = E.ContactID
+		union all
+		select DOWI.ID, null, D.WorkOrderID, Assignee.ID 
+			from DemandOtherWorkInside as DOWI
+			join Demand as D on DOWI.DemandID = D.Id
+			join OtherWorkInside as OWI on OWI.Id = DOWI.OtherWorkInsideID
+			join Employee as E on OWI.EmployeeID = E.Id
+			join WorkOrderAssignee as Assignee on Assignee.ContactID = E.ContactID
+		)
+		select convert(uniqueidentifier, MAX(CONVERT(binary(16), ID))),
+			convert(uniqueidentifier, max(convert(binary(16), WorkOrderAssignmentID))), 
+			WorkOrderAssigneeID, WorkOrderID
+		from AllAssignments
+		group by WorkOrderID, WorkOrderAssigneeID
+	</extension>
+	<extension name="dependson">WorkOrderAssignee</extension>
+	<extension name="dependson">WorkOrder</extension>
+	<extension name="dependson">WorkOrderAssignment</extension>
+  </table>
+  <table name="WorkOrderAssignee"/>
+  <table name="WorkOrder"/>
+  <table name="WorkOrderAssignment"/>
+</database>

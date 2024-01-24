@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="PurchaseOrderTemplateLine" defaults="false" log="false" id="Id" labelkey="">
+	<field name="Id" read="RequiredGUID" />
+	<field name="TableEnum" type="integer(min 0, max 3, nonnull)">
+	  <!-- PurchaseOrderLines.POLineMiscellaneous -->
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIPurchaseOrder.PurchaseOrderLineProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="POLineTemplateID" type="RequiredGUIDREF" link="POLineTemplate"/>
+	<extension name="query">
+		select	POLineItemTemplate.POLineTemplateID, 0,			  <!-- PurchaseOrderLines.POLineItem -->
+				POLineItemTemplate.POLineTemplateID
+			from POLineItemTemplate
+				join POLineTemplate on POLineTemplate.[ID] = POLineItemTemplate.POLineTemplateID
+		union all
+		select	POLineLaborTemplate.POLineTemplateID, 1,		  <!-- PurchaseOrderLines.POLineLabor -->
+				POLineLaborTemplate.POLineTemplateID
+			from POLineLaborTemplate
+				join POLineTemplate on POLineTemplate.[ID] = POLineLaborTemplate.POLineTemplateID
+		union all
+		select	POLineOtherWorkTemplate.POLineTemplateID, 2,	  <!-- PurchaseOrderLines.POLineOtherWork -->
+				POLineOtherWorkTemplate.POLineTemplateID
+			from POLineOtherWorkTemplate
+				join POLineTemplate on POLineTemplate.[ID] = POLineOtherWorkTemplate.POLineTemplateID
+		union all
+		select	POLineMiscellaneousTemplate.POLineTemplateID, 3,  <!-- PurchaseOrderLines.POLineMiscellaneous -->
+				POLineMiscellaneousTemplate.POLineTemplateID
+			from POLineMiscellaneousTemplate
+				join POLineTemplate on POLineTemplate.[ID] = POLineMiscellaneousTemplate.POLineTemplateID
+	</extension>
+	<extension name="dependson">POLineItemTemplate</extension>
+	<extension name="dependson">POLineLaborTemplate</extension>
+	<extension name="dependson">POLineMiscellaneousTemplate</extension>
+	<extension name="dependson">POLineOtherWorkTemplate</extension>
+	<extension name="dependson">POLineTemplate</extension>
+  </table>
+  <table name="POLineItemTemplate"/>
+  <table name="POLineLaborTemplate"/>
+  <table name="POLineMiscellaneousTemplate"/>
+  <table name="POLineOtherWorkTemplate"/>
+  <table name="POLineTemplate"/>
+</database>

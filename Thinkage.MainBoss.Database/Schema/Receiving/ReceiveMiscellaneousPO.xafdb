@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ReceiveMiscellaneousPO" defaults="true" log="false" id="Id" xid="POLineMiscellaneousID" labelkey="Receive Miscellaneous (PO)">
+    <field name="Id" read="RequiredGUID" />
+    <field name="AccountingTransactionID" read="RequiredGUIDREF"  base="AccountingTransaction"/>
+    <field name="POLineMiscellaneousID" type="RequiredGUIDREF" link="POLineMiscellaneous">
+		<extension name="linkage">captive</extension>
+	</field>
+    <field name="ReceiptID" type="RequiredGUIDREF"  link="Receipt">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Quantity" type="RequiredQuantity" />
+	<field name="CorrectionID" type="RequiredGUIDREF" link="ReceiveMiscellaneousPO" labelkey="Receive Miscellaneous (PO) Correction">
+	  <doc>The ID of the original ReceiveMiscellaneousPO record for a family of original record and its corrections</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="CorrectedQuantity" read="Quantity">
+	  <doc>
+		  The corrected quantity of this ReceiveMiscellaneousPO and all corrections (all those with a CorrectionID linking
+		  to this record).  Note this is only stored in the main ReceiveMiscellaneousPO record (with CorrectionID==ID),
+		  not in the correction records.
+	  </doc>
+	  <result hosting="cached">
+		cast(42 as Quantity)
+	  </result>
+	  <extension name="dependson">mbfn_ReceiveMiscellaneousPO_CorrectedQuantity()</extension>
+	</field>
+	<field name="CorrectedCost" read="Currency">
+	  <doc>
+		  The corrected cost of this ReceiveMiscellaneousPO and all corrections (all those with a CorrectionID linking
+		  to this record).  Note this is only stored in the main ReceiveMiscellaneousPO record (with CorrectionID==ID),
+		  not in the correction records.
+	  </doc>
+	  <result hosting="cached">
+		cast(42 as Currency)
+	  </result>
+	  <extension name="dependson">mbfn_ReceiveMiscellaneousPO_CorrectedCost()</extension>
+	</field>
+	<extension name="equate">POLineMiscellaneousID.POLineID.PurchaseOrderID=ReceiptID.PurchaseOrderID</extension>	<!-- PO linkage integrity -->
+	<extension name="costrights">PurchaseOrderItem</extension>
+  </table>
+  <object class="function" name="mbfn_ReceiveMiscellaneousPO_CorrectedQuantity">
+	<doc>
+	</doc>
+	<extension name="body">
+	  (
+		@RMPOID uniqueidentifier -- ReceiveMiscellaneousPO
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		return (
+		  select sum(Quantity)
+			  from ReceiveMiscellaneousPO
+			  where CorrectionID = @RMPOID
+		)
+	  end
+	</extension>
+	<extension name="dependson">ReceiveMiscellaneousPO.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ReceiveMiscellaneousPO</extension>
+  </object>
+  <object class="function" name="mbfn_ReceiveMiscellaneousPO_CorrectedCost">
+	<doc>
+	</doc>
+	<extension name="body">
+	  (
+		@RMPOID uniqueidentifier -- ReceiveMiscellaneousPO
+	  )
+	  RETURNS money
+	  as
+	  begin
+		return(
+		  select sum(Cost)
+			  from ReceiveMiscellaneousPO
+					join AccountingTransaction on AccountingTransaction.ID = ReceiveMiscellaneousPO.AccountingTransactionID
+			  where CorrectionID = @RMPOID
+		)
+	  end
+	</extension>
+	<extension name="dependson">ReceiveMiscellaneousPO.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ReceiveMiscellaneousPO</extension>
+  </object>
+  <object class="trigger" name="mbtg_ReceiveMiscellaneousPO_Updates_Corrected">
+	<doc>
+	  Maintain the Corrected Quantity and Cost values in ReceiveMiscellaneousPO
+	</doc>
+	<!-- This is all done in 1 trigger because HasReceiving depends on CorrectedXxx fields -->
+	<extension name="body">
+	  on ReceiveMiscellaneousPO
+	  after insert, update, delete
+	  as
+	  begin
+		  update ReceiveMiscellaneousPO
+			  set CorrectedQuantity = dbo.mbfn_ReceiveMiscellaneousPO_CorrectedQuantity(ReceiveMiscellaneousPO.ID),
+				  CorrectedCost = dbo.mbfn_ReceiveMiscellaneousPO_CorrectedCost(ReceiveMiscellaneousPO.ID)
+			  where ReceiveMiscellaneousPO.ID in (
+					  select distinct CorrectionID from inserted
+				union select distinct CorrectionID from deleted
+				)
+		  update PurchaseOrder
+			  set HasReceiving = dbo.mbfn_PurchaseOrder_HasReceiving(PurchaseOrder.ID)
+				from PurchaseOrder
+				  join Receipt on Receipt.PurchaseOrderID = PurchaseOrder.ID
+			  where Receipt.ID in (
+					  select distinct ReceiptID from inserted
+				union select distinct ReceiptID from deleted
+				)
+		  update Receipt
+			  set TotalReceive = dbo.mbfn_Receipt_TotalReceive(Receipt.ID)
+			  where Receipt.ID in (
+					  select distinct ReceiptID from inserted
+				union select distinct ReceiptID from deleted
+			  )
+	  end
+	</extension>
+	<extension name="references">mbfn_ReceiveMiscellaneousPO_CorrectedQuantity()</extension>
+	<extension name="references">mbfn_ReceiveMiscellaneousPO_CorrectedCost()</extension>
+	<extension name="references">mbfn_PurchaseOrder_HasReceiving()</extension>
+	<extension name="references">ReceiveMiscellaneousPO</extension>
+	<extension name="references">mbfn_Receipt_TotalReceive()</extension>
+	<extension name="references">Receipt</extension>
+	<extension name="references">PurchaseOrder</extension>
+  </object>
+  <object class="trigger" name="mbtg_ReceiveMiscellaneousPO_Updates_POLineMiscellaneous">
+	<doc></doc>
+	<extension name="body">
+	  on ReceiveMiscellaneousPO
+	  after insert, update, delete
+	  as
+	  begin
+		  update POLineMiscellaneous
+			  set ReceiveQuantity = dbo.mbfn_POLineMiscellaneous_ReceiveQuantity(POLineMiscellaneous.ID)
+			  where POLineMiscellaneous.ID in (
+					   select distinct POLineMiscellaneousID from inserted
+				 union select distinct POLineMiscellaneousID from deleted
+			  )
+		  update POLine
+			  set ReceiveCost = dbo.mbfn_POLine_ReceiveCost(POLine.ID)
+			  from POLine
+			  join POLineMiscellaneous on POLine.ID = POLineMiscellaneous.POLineID
+			  where POLineMiscellaneous.ID in (
+					  select distinct POLineMiscellaneousID from inserted
+				union select distinct POLineMiscellaneousID from deleted
+			  )
+	  end
+	</extension>
+	<extension name="references">mbfn_POLineMiscellaneous_ReceiveQuantity()</extension>
+	<extension name="references">POLineMiscellaneous</extension>
+	<extension name="references">mbfn_POLine_ReceiveCost()</extension>
+	<extension name="references">POLine</extension>
+  </object>
+  <table name="POLineMiscellaneous"/>
+  <table name="AccountingTransaction"/>
+  <table name="Receipt"/>
+  <table name="POLine"/>
+  <table name="PurchaseOrder"/>
+</database>

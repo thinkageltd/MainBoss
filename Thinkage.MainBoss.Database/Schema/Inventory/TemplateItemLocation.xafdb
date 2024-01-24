@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="TemplateItemLocation" defaults="true" log="false" id="Id" xid="ItemLocationID" xunique="true" labelkey="">
+	<doc>
+	  This record forms the template for generating a TemporaryItemLocation record. Our base ItemLocation.LocationID field must be a reference
+	  to a TemplateTemporaryStorage, which is also instantiated when generating work orders.
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="ItemLocationID" read="RequiredGUIDREF" base="ItemLocation"/>
+	<extension name="deletemethod">delete</extension>
+	<extension name="costrights">InventoryActivity</extension>
+  </table>
+  <table name="ItemLocation"/>
+  <table name="WorkOrderTemplate"/>
+</database>

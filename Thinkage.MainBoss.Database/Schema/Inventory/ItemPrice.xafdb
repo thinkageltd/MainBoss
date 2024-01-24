@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="ItemPrice" defaults="true" log="false" id="Id" xid="ItemID VendorID" labelkey="Item Price">
+		<doc>
+			This record represents a price quote or estimated price for purchasing a particular quantity of a tangible item from a particular vendor.
+		</doc>
+		<field name="Id" read="RequiredGUID" />
+		<field name="EffectiveDate" type="DateTime">
+			<doc>The date at which this pricing comes into force</doc>
+			<extension name="servergetsDateTime"/>
+		</field>
+		<field name="ItemID" type="RequiredGUIDREF" link="Item">
+			<doc>The item whose price is being recorded</doc>
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="VendorID" type="RequiredGUIDREF" link="Vendor">
+			<doc>The vendor for which the price is applicable</doc>
+			<extension name="linkage">property</extension>
+		</field>
+		<field name="PurchaseOrderText" type="LineText">
+			<doc>The description text to use on a Purchase Order Line when ordering this Item. Most commonly used as the CatalogNumber for ordering this item from this Vendor</doc>
+		</field>
+		<field name="Quantity" type="integer(unsigned 31, nonnull)">
+			<doc>The quantity on which this pricing is based</doc>
+		</field>
+		<field name="Cost" type="currency(min 0.00, max 922337203685477.5807, by 0.01, nonnull)">
+			<doc>The quoted price for the stated quantity of the item</doc>
+		</field>
+		<field name="UnitCost" read="UnitCost" >
+			<doc>The calculated unit cost for the states price and quantity</doc>
+			<!-- dbo.mbfn_CalculateUnitCost( Cost, Quantity, 1 ) -->
+			<result hosting="server">
+				cast(42 as UnitCost)
+			</result>
+			<extension name="dependson">mbfn_CalculateUnitCost()</extension>
+			<extension name="dependson">ItemPrice.Cost</extension>
+			<extension name="dependson">ItemPrice.Quantity</extension>
+		</field>
+		<extension name="lastupdate"/>		<!-- prevent EffectiveDate from being used to hide "old" quotes -->
+		<extension name="deletemethod">delete</extension>		<!-- ItemLocation may have a reference to an ItemPrice preventing deletion from occurring -->
+		<extension name="costrights">InventoryActivity</extension>
+	</table>
+	<table name="Item"/>
+	<table name="Vendor"/>
+</database>

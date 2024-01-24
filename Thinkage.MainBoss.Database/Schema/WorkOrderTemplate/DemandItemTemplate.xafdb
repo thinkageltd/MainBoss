@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="DemandItemTemplate" defaults="true" log="false" id="Id" xid="DemandTemplateID ItemLocationID" labelkey="Task Demand Item">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="DemandTemplateID" read="RequiredGUIDREF" base="DemandTemplate"/>
+	<field name="ItemLocationID" type="RequiredGUIDREF" link="ItemLocation">
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.PermanentOrTemporaryTaskItemLocationPickerTblCreator,Thinkage.MainBoss.Controls</extension>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="Quantity" type="integer(min 1, max 2147483647)" labelkey="Demanded"/>
+	<!-- The Debug window may complain that the RHS of this equate traverses modifiable column LocationID, but the UI does not allow modification for this derived record type. -->
+	<extension name="equate">DemandTemplateID.WorkOrderTemplateID=ItemLocationID.LocationID.TemplateTemporaryStorageID.WorkOrderTemplateID</extension>
+	<extension name="costrights">WorkOrderItem</extension>
+	<extension name="deletemethod">delete</extension>
+  </table>
+  <table name="DemandTemplate"/>
+  <table name="ItemLocation"/>
+</database>

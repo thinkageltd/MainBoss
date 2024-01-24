@@ -1,0 +1,70 @@
+@model ItemCountValueEntities.PermanentItemLocation
+@using Thinkage.MainBoss.WebAccess.Models
+@using Thinkage.MainBoss.Database
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.Web.Mvc.Html
+@{
+	Layout = "~/Views/Shared/_LayoutLabelValueView.cshtml";
+	ViewBag.Title = T.Text("View Item Assignment {0}", Model.BaseActualItemLocation.BaseItemLocation.Item.Code);
+}
+@section LabelValueViewPanel {
+	@(Html.CodeDescLabelValue(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID.F.Code, Model.BaseActualItemLocation.BaseItemLocation.Item))
+	@(Html.CodeDescLabelValue(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID.F.UnitOfMeasureID.F.Code, Model.BaseActualItemLocation.BaseItemLocation.Item.UnitOfMeasure))
+	@(Html.LabelValue(dsMB.Path.T.PermanentItemLocation.F.ExternalTag, Model.ExternalTag))
+	@(Html.LabelValue(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID.F.Code, Model.BaseActualItemLocation.BaseItemLocation.Code))
+	@(Html.LabelValue(dsMB.Path.T.PermanentItemLocation.F.Minimum, Model.Minimum))
+	@(Html.LabelValue(dsMB.Path.T.PermanentItemLocation.F.Maximum, Model.Maximum))
+	@(Html.LabelValue(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.OnHand, Model.BaseActualItemLocation.OnHand))
+	@(Html.LabelValue(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.OnOrder, Model.BaseActualItemLocation.OnOrder))
+	@(Html.LabelValue(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.OnReserve, Model.BaseActualItemLocation.OnReserve))
+	@(Html.LabelValue(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.Available, Model.BaseActualItemLocation.Available))
+	@(Html.CodeDescLabelValue(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.CostCenterID.F.Code, Model.BaseActualItemLocation.CostCenter))
+}
+@section LabelValueViewTrailer {
+	<div id="Activity">
+		<h2>@(T.Text("Activity"))</h2>
+		<div id="resourcePanel">
+			<table>
+			<thead>
+				<tr>
+					<th>@(T.Text("Item Activity"))</th>
+					<th>@(T.Text("Effective Date"))</th>
+					<th>@(T.Text("Quantity"))</th>
+					<th>@(T.Text("Unit Cost"))</th>
+					<th>@(T.Text("Total Cost"))</th>
+					<th>@(T.Text("From Cost Center"))</th>
+					<th>@(T.Text("To Cost Center"))</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var h in (from activity in Model.BaseActualItemLocation.BaseItemLocation.ItemActivityItemLocation
+								orderby activity.AccountingTransaction.EffectiveDate ascending
+								select activity)) {
+				<tr>
+					<td>@(h.ItemActivityType)</td>
+					<td>@(h.AccountingTransaction.EffectiveDate)</td>
+					<td class="IntegralValue">@(h.Quantity)</td>
+					<td class="UnitCostValue">@(h.UnitCost)</td>
+					<td class="IntegralValue">@(h.Cost)</td>
+					<td>@(h.AccountingTransaction.FromCostCenter.Code)</td>
+					<td>@(h.AccountingTransaction.ToCostCenter.Code)</td>
+				</tr>
+				}
+				</tbody>
+			</table>
+		</div>
+	@(Html.BackOperation(T.Text("Back to List"), TempData))
+</div>
+}
+@section scripts {
+	<script type="text/javascript">
+	$(function () {
+		$(".selector").accordion({ header: "h2" });
+		$("#Activity").accordion({
+			collapsible: true,
+			active: 0,
+			heightStyle: "content"
+		});
+	});
+	</script>
+}

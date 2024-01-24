@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="MiscellaneousWorkOrderCost" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Miscellaneous Cost">
+	<doc>Description of other miscellaneous costs associated with a work order</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="RequiredCode"/>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="Desc" type="Desc"/>
+	<field name="Comment" type="Comment"/>
+	<field name="Cost" type="Currency">
+	  <doc>Suggested cost estimate when this record is used. Can be used for the cost estimate in DemandMiscellaneousWorkOrderCost when generating WorkOrders</doc>
+	</field>
+	<field name="CostCenterID" type="RequiredGUIDREF"  link="CostCenter">
+	  <doc>Cost center for expense of miscellaneous work order cost to accrue</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<extension name="deletemethod">hide</extension>
+	<extension name="costrights">WorkOrderMiscellaneous</extension>
+  </table>
+  <table name="CostCenter"/>
+</database>

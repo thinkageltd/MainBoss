@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="SparePart" defaults="false" log="false" id="Id" xid="UnitLocationID ItemID" labelkey="Part">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="ItemID" type="RequiredGUIDREF" link="Item">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="UnitLocationID" labelkey="Unit" type="RequiredGUIDREF" link="Location">
+	  <extension name="linkage">captive</extension>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.UnitBrowseTblCreator,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="Quantity" type="RequiredQuantity"/>
+	<field name="Comment" type="Comment"/>
+	<extension name="deletemethod">delete</extension>
+	<extension name="costrights">UnitSparePart</extension>
+  </table>
+  <table name="Item"/>
+  <table name="Location"/>
+</database>

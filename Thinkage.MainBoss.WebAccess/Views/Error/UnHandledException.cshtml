@@ -1,0 +1,17 @@
+@model System.Web.Mvc.HandleErrorInfo
+@using Thinkage.Libraries
+@using Thinkage.MainBoss.WebAccess
+
+@{
+    ViewBag.Title = T.Text("Error");
+}
+@section MainContent{
+    <hgroup>
+        <h2 class="ResultMessage">@(T.Text("An unexpected error occurred"))</h2>
+    </hgroup>
+    <p>
+        <span style="white-space:pre-line; font-size:larger;font-weight: bolder">
+            @(Thinkage.Libraries.Exception.FullMessage(Model.Exception))
+        </span>
+    </p>
+}

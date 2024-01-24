@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="MeterAndReadingVariants" defaults="false" log="false" id="Id" labelkey="">
+	<doc>
+	  This view unifies MeterReading and Meter records, adding a Parent field linking the readings to their meters. 
+	</doc>
+	<field name="Id" read="RequiredGUID">
+	  <doc>ID of the record (meter ID or meter reading ID)</doc>
+	</field>
+	<field name="TableEnum" type="integer(min 0, max 2,nonnull)">
+	  <doc>Record type identification.</doc>
+	</field>
+	<field name="Code" type="RequiredCode">
+	  <doc>
+		The variant code value from the derived table.
+		For readings this is the reading itself, converted to text, so it will sort stupid (100 will sort before 12).
+		This really should be the date in sortable string format ccyy/mm/dd even though this has nothing to do with the user's selected date format.
+	  </doc>
+	</field>
+	<field name="ParentID" type="GUIDREF" link="MeterAndReadingVariants" labelkey="">
+	  <doc>The ID of the parent record for the tree structure</doc>
+	</field>
+	<field name="MeterID" type="GUIDREF" link="Meter">
+	  <doc>
+		The ID of the record if it is a Meter record, or of the referenced Meter if it is a MeterReading record.
+		Note that this is a somewhat non-standard way of having a variant column in a XxxVariants type of view. Normally such a field
+		would only refer to the current record and only if it was a Meter.
+	  </doc>
+	</field>
+	<field name="MeterReadingID" type="GUIDREF" link="MeterReading">
+	  <doc>The ID of the record if it is a MeterReading record</doc>
+	</field>
+	<extension name="query">
+		select M.ID, 0, MC.Code, null, M.ID, null
+		  from Meter as M
+			join MeterClass as MC on MC.ID = M.MeterClassID
+	  union all
+		select R.ID, 1, CAST(R.EffectiveReading as nvarchar(max)), R.MeterID, R.MeterID, R.ID
+		  from MeterReading as R
+		  where R.WorkOrderID is null
+	  union all
+		select R.ID, 2, CAST(R.EffectiveReading as nvarchar(max)), R.MeterID, R.MeterID, R.ID
+		  from MeterReading as R
+		  where R.WorkOrderID is not null
+	</extension>
+	<extension name="dependson">Meter</extension>
+	<extension name="dependson">MeterReading</extension>
+  </table>
+  <table name="WorkOrderMeterTreeView" defaults="false" log="false" id="Id" labelkey="">
+	<doc>
+	  This view provides filter/display structure to allow a full filtered tree view of meter readings.
+	</doc>
+	<field name="Id" read="RequiredGUID">
+	  <doc>ID of the display record (meter ID or meter reading ID)</doc>
+	</field>
+	<field name="DisplayID" type="GUIDREF" link="MeterAndReadingVariants">
+	  <doc>The ID of the display record for the tree structure</doc>
+	</field>
+	<field name="FilterID" type="GUIDREF" link="MeterAndReadingVariants">
+	  <doc>The ID of the filter record for the tree structure</doc>
+	</field>
+	<field name="IsPrimary" type="RequiredBool">
+	  <doc>Flag indicating the two ID's are the same.</doc>
+	</field>
+	<extension name="query">
+		-- The self-records for the Meters
+		select ID, ID, ID, 1
+		  from Meter
+	  union all
+		-- The self-records for the Readings
+		select ID, ID, ID, 1
+		  from MeterReading
+	  union all
+		-- The readings (as filter records) and their containing Meters (as display records)
+		select M.ID, M.ID, R.ID, 0
+		  from Meter as M
+			join MeterReading as R on M.ID = R.MeterID
+	</extension>
+	<extension name="dependson">Meter</extension>
+	<extension name="dependson">MeterReading</extension>
+  </table>
+  <table name="Meter"/>
+  <table name="MeterReading"/>
+</database>

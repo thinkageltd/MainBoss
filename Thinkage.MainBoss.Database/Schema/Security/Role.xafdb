@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="../Types.xafdb"/>
+	<table name="Role" defaults="true" log="false" id="Id" xid="Code" xunique="true" labelkey="Role">
+		<doc>This is the Role definition for associating Permission definitions within the database</doc>
+		<field name="Code" type="RequiredRoleName">
+			<doc>The internal xid code name for this role. Cannot be the translationkey form as we cannot use that type as an INDEX field. All displays should refer to RoleName</doc>
+		</field>
+		<field name="RoleName" type="translationkey(nonnull)" labelkey="Code">
+			<doc>The translationkey for displaying the Role in the user's own language</doc>
+		</field>
+		<field name="RoleDesc" type="translationkey(nonnull)" labelkey="Desc">
+			<doc>Long description of this role record</doc>
+		</field>
+		<field name="RoleComment" type="translationkey(nonnull, maxlines *)" labelkey="Comment">
+			<doc>Usage comment of this role record</doc>
+			<extension name="lines">10</extension>			
+		</field>
+		<extension name="deletemethod">delete</extension>
+	</table>
+  <table name="Principal"/>
+</database>

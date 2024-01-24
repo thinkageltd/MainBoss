@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database name="http://thinkage.ca/MB3/dsMB.xsd:dsUser_1_0_4_14_To_1_1_4_1" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+    <table name="User" defaults="true" log="false" id="Id" xid="UserName ScopeName Hidden" xunique="true">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="PrincipalID" base="Principal" read="RequiredGUIDREF"/>
+	<field name="ScopeName" type="UserName">
+	  <doc>
+		The scope (computer or domain) name to use to match against the windows user requesting access to the database.
+		If this is null it will match a windows user with the correct UserName in any scope (although other User records which
+		specify a ScopeName that matches the window user's scope will match preferentially).
+	  </doc>
+	</field>
+	<field name="UserName" type="RequiredUserName" labelkey="Name">
+	  <doc>The user name to match against the windows user requesting access to the database.</doc>
+	</field>
+	<field name="Hidden" type="GenerationValue"/>
+	<extension name="deletemethod">hide</extension>
+	<extension name="tablerights">Administrator=*</extension>
+  </table>
+  <table name="Principal"/>
+</database>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="WorkOrderExpenseModel" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Work Order Expense Model">
+		<field name="Id" read="RequiredGUID"/>
+		<field name="Code" type="RequiredCode"/>
+		<field name="Hidden" type="GenerationValue"/>
+		<field name="Desc" type="Desc"/>
+		<field name="Comment" type="Comment"/>
+		<field name="NonStockItemHoldingCostCenterID" type="RequiredGUIDREF"  link="CostCenter">
+			<doc>The cost center to use for TemporaryItemLocation is used to temporarily store items</doc>
+			<extension name="linkage">property</extension>
+		</field>
+		<field name="DefaultItemExpenseModelEntryID" type="GUIDREF"  link="WorkOrderExpenseModelEntry" labelkey="Item default Mapping">
+			<doc>Default WO Expense Model Entry for Demand Item expense</doc>
+			<extension name="linkage">property</extension>
+			<extension name="pickfrom">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderExpenseModelEntryAsCategoryPickerTbl,Thinkage.MainBoss.Controls</extension>
+		</field>
+		<field name="DefaultHourlyInsideExpenseModelEntryID" type="GUIDREF"  link="WorkOrderExpenseModelEntry" labelkey="Hourly Inside default Mapping">
+			<doc>Default WO Expense Model Entry for Demand Hourly Inside expense</doc>
+			<extension name="linkage">property</extension>
+			<extension name="pickfrom">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderExpenseModelEntryAsCategoryPickerTbl,Thinkage.MainBoss.Controls</extension>
+		</field>
+		<field name="DefaultHourlyOutsideExpenseModelEntryID" type="GUIDREF"  link="WorkOrderExpenseModelEntry" labelkey="Hourly Outside default Mapping">
+			<doc>Default WO Expense Model Entry for Demand Hourly Outside expense</doc>
+			<extension name="linkage">property</extension>
+			<extension name="pickfrom">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderExpenseModelEntryAsCategoryPickerTbl,Thinkage.MainBoss.Controls</extension>
+		</field>
+		<field name="DefaultPerJobInsideExpenseModelEntryID" type="GUIDREF"  link="WorkOrderExpenseModelEntry" labelkey="Per Job Inside default Mapping">
+			<doc>Default WO Expense Model Entry for Demand Per Job Inside expense</doc>
+			<extension name="linkage">property</extension>
+			<extension name="pickfrom">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderExpenseModelEntryAsCategoryPickerTbl,Thinkage.MainBoss.Controls</extension>
+		</field>
+		<field name="DefaultPerJobOutsideExpenseModelEntryID" type="GUIDREF"  link="WorkOrderExpenseModelEntry" labelkey="Per Job Outside default Mapping">
+			<doc>Default WO Expense Model Entry for Demand Per Job Outside expense</doc>
+			<extension name="linkage">property</extension>
+			<extension name="pickfrom">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderExpenseModelEntryAsCategoryPickerTbl,Thinkage.MainBoss.Controls</extension>
+		</field>
+		<field name="DefaultMiscellaneousExpenseModelEntryID" type="GUIDREF"  link="WorkOrderExpenseModelEntry" labelkey="Miscellaneous default Mapping">
+			<doc>Default WO Expense Model Entry for Demand Miscellaneous expense</doc>
+			<extension name="linkage">property</extension>
+			<extension name="pickfrom">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderExpenseModelEntryAsCategoryPickerTbl,Thinkage.MainBoss.Controls</extension>
+		</field>
+		<extension name="deletemethod">hide</extension>
+		<extension name="equate">DefaultItemExpenseModelEntryID.WorkOrderExpenseModelID=Id</extension>
+		<extension name="equate">DefaultHourlyInsideExpenseModelEntryID.WorkOrderExpenseModelID=Id</extension>
+		<extension name="equate">DefaultHourlyOutsideExpenseModelEntryID.WorkOrderExpenseModelID=Id</extension>
+		<extension name="equate">DefaultPerJobInsideExpenseModelEntryID.WorkOrderExpenseModelID=Id</extension>
+		<extension name="equate">DefaultPerJobOutsideExpenseModelEntryID.WorkOrderExpenseModelID=Id</extension>
+		<extension name="equate">DefaultMiscellaneousExpenseModelEntryID.WorkOrderExpenseModelID=Id</extension>
+	</table>
+	<table name="CostCenter"/>
+	<table name="WorkOrderExpenseCategory"/>
+	<table name="WorkOrderExpenseModelEntry"/>
+</database>

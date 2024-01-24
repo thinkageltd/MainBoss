@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="../Types.xafdb"/>
+  <table name="ReceiptReport" log="false" id="Id" labelkey="">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="ReceiptID" link="Receipt" type="GUIDREF" labelkey=""/>
+	<field name="AccountingTransactionID" link="AccountingTransaction" type="GUIDREF" labelkey=""/>
+		<extension name="query">
+			select R.Id, R.Id, null from Receipt as R
+		union all
+			select RIPO.AccountingTransactionID, RIPO.ReceiptID, RIPO.AccountingTransactionID from ReceiveItemPO as RIPO
+		union all
+			select AOWOPO.AccountingTransactionID, AOWOPO.ReceiptID, AOWOPO.AccountingTransactionID from ActualOtherWorkOutsidePO as AOWOPO
+		union all
+			select RMPO.AccountingTransactionID, RMPO.ReceiptID, RMPO.AccountingTransactionID from ReceiveMiscellaneousPO as RMPO
+		union all
+			select ALOPO.AccountingTransactionID, ALOPO.ReceiptID, ALOPO.AccountingTransactionID from ActualLaborOutsidePO as ALOPO
+		</extension>
+	<extension name="dependson">Receipt</extension>
+	<extension name="dependson">AccountingTransaction</extension>
+	<extension name="costrights">PurchaseOrderItem,PurchaseOrderLabor,PurchaseOrderMiscellaneous</extension>
+  </table>
+  <table name="Receipt"/>
+  <table name="AccountingTransaction"/>
+</database>

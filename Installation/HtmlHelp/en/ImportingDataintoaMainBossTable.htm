@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Importing Data into a MainBoss Table</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Importing Data into a MainBoss Table</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="ViewingExportedDatainMicrosoftExcel.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Reports.htm">Next section &gt;</a></p>
+
+<p>MainBoss can import XML data into a table, provided that the data has the correct format. Each table has its own required format for the records the table contains.</p>
+
+<p>There are several ways to determine the required data format for records in a table:</p>
+
+<ul class="b1"><li>If you have a good understanding of XML, you can determine the proper format from the table's XML schema. See <a href="ObtaininganXMLSchemafromMainBoss.htm">Obtaining an XML Schema from MainBoss</a> for how to obtain an XML schema for a table.</li>
+<li>Export the current contents of the table into Microsoft Excel in order to see the required format. (If the table is currently empty, create a sample record so there's something to export). Then adjust your XML data so that it matches the format you see in Excel. For more on using Excel in this way, see <a href="ViewingExportedDatainMicrosoftExcel.htm">Viewing Exported Data in Microsoft Excel</a>.
+</li></ul><p>Once you have put your XML data into the proper format, you can import it into MainBoss. To do so, go to the table viewer for the table, click the drop-down arrow on <span class="CButton"><img src="Export.png" alt="Export" /></span> and click <span class="CButton">Import</span>. MainBoss will open a standard Windows file dialog where you can specify the file that contains the data to be imported.</p>
+
+<p class="box"><span class="CInset">Important Note:</span> The records in a MainBoss table must all have unique identifiers. For example, every item in the Items table must have a unique "<span class="CField">Code</span>"&#8212;no two items can have the same code. If you try to import an Items record with the same "<span class="CField">Code</span>" as an item that's already in the table, that record will not be imported. You will receive an error message saying that some of the data could not be imported.</p>
+
+<p>Since the importing process requires data to be in exactly the correct format, it may take multiple attempts to get the process to work. This can cause difficulties. If you import a record that has incomplete or erroneous data, the import process will attempt to create a record anyway; then if you correct the data and try to import again, the process won't work because the existing record will have the same identifier as the record you're trying to import.</p>
+
+<p>For this reason, we recommend trying imports with a test database rather than a real one. One way to do this is to backup your existing database, then using the backup to create a test database (as explained in <a href="Organization.CreateFromBackup.htm">Creating a New Maintenance Organization from a Backup File</a>). Try the import process on the test database; if it doesn't work correctly, adjust the import data appropriately, then delete the test database and create a new one before trying the import again. Once the import process works correctly, you can do the import on your real database.</p>
+
+
+<p><a href="ViewingExportedDatainMicrosoftExcel.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Reports.htm">Next section &gt;</a></p>
+</body>
+</html>
+

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="RequestAssigneeStatistics" defaults="false" log="false" id="Id" labelkey="">
+	<doc>
+	  This view provides records counting the RequestAssignments of all RequestAssignees for the New and InProgress Request States
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="RequestAssigneeID" link="RequestAssignee" type="RequiredGUIDREF" unique="true" labelkey="Assignee">
+	  <extension name="linkage">property</extension>
+	</field>
+	<field labelkey="Number New" name="NumNew" type="RequiredQuantity" />
+	<field labelkey="Number In Progress" name="NumInProgress" type="RequiredQuantity" />
+	<extension name="query">
+		select RA.ID, RA.ID, coalesce(sum(cast(FilterAsNew as int)), 0), coalesce(sum(cast(FilterAsInProgress as int)),0)
+		  from RequestAssignee as RA
+			left JOIN RequestAssignment as A on A.RequestAssigneeID = RA.ID
+			left JOIN Request on Request.ID = A.RequestID
+			left JOIN RequestStateHistory ON RequestStateHistory.ID = Request.CurrentRequestStateHistoryID
+			left JOIN RequestState ON RequestState.[ID] = RequestStateHistory.RequestStateID
+		  GROUP BY RA.ID
+    </extension>
+	<extension name="dependson">Request</extension>
+	<extension name="dependson">RequestAssignee</extension>
+	<extension name="dependson">RequestAssignment</extension>
+	<extension name="dependson">RequestStateHistory</extension>
+	<extension name="dependson">RequestState</extension>
+  </table>
+  <table name="Request" />
+  <table name="RequestAssignee"/>
+  <table name="RequestAssignment"/>
+  <table name="RequestStateHistory" />
+  <table name="RequestState" />
+</database>

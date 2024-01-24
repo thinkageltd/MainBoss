@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+  <table name="UnitCategory">
+	<data>
+UPDATE <IDB/>.dbo.EQTYPE SET MAINBOSSEXCLUDE = 1 WHERE [EQTYPE] = '-'
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code)
+  select UC.MAINBOSSID, UC.EQTYPE
+	from <IDB/>.dbo.EQTYPE as UC
+	where UC.MAINBOSSEXCLUDE = 0;
+GO
+exec <IDB/>.dbo.FixCodes 50
+GO
+INSERT INTO <ODB/>.dbo.UnitCategory ([ID],[Code],[Desc])
+   SELECT UC.[MAINBOSSID], CM.[Code], UC.[DESCRIPTION]
+	from <IDB/>.dbo.EQTYPE as UC
+	  join <IDB/>.dbo.CodeManagement as CM on CM.[ID] = UC.MAINBOSSID
+	</data>
+  </table>
+
+  <table name="Unit">
+		<dependency table="LocationLinkages"/>
+	<dependency table="UnitCategory"/>
+	<dependency table="UnitLinkages"/>
+	<dependency table="PostalAddress"/>
+	<dependency table="RelativeLocationCodes"/>
+		<data>
+	-- Make all the LOCATION records Units with UnitUsage as Location. We use our complete synthesized table in LocationLinkages
+	  INSERT INTO <ODB/>.dbo.Location ([ID],[Desc],[Comment])
+		  SELECT LL.[LocationID], 'LOCATION', NULL
+		  FROM  <IDB/>.dbo.LocationLinkages as LL
+			ORDER by LL.[SITE], LL.[LOCATION], LL.[SUB1], LL.[SUB2], LL.[SUB3]
+GO
+-- Do each relative level individually - the LocationContainment trigger builder seems to barf if you feed it all of the records at once
+	  INSERT INTO <ODB/>.dbo.RelativeLocation ([ID], [LocationID], [Code], [ContainingLocationID], [Hidden])
+		  SELECT LL.[RelativeLocationID], LL.LocationID, RLC.[Code], LL.[ContainingLocationID], RLC.Hidden
+		  FROM <IDB/>.dbo.LocationLinkages as LL 
+			  join <IDB/>.dbo.RelativeLocationCodes as RLC on LL.[RelativeLocationID] = RLC.ID
+				WHERE LL.SUB1 IS NULL AND LL.SUB2 IS NULL and LL.SUB3 IS NULL
+GO
+	  INSERT INTO <ODB/>.dbo.RelativeLocation ([ID], [LocationID], [Code], [ContainingLocationID], [Hidden])
+		  SELECT LL.[RelativeLocationID], LL.LocationID, RLC.[Code], LL.[ContainingLocationID], RLC.Hidden
+		  FROM <IDB/>.dbo.LocationLinkages as LL 
+			  join <IDB/>.dbo.RelativeLocationCodes as RLC on LL.[RelativeLocationID] = RLC.ID
+				WHERE LL.SUB1 IS NOT NULL AND LL.SUB2 IS NULL and LL.SUB3 IS NULL
+GO
+	  INSERT INTO <ODB/>.dbo.RelativeLocation ([ID], [LocationID], [Code], [ContainingLocationID], [Hidden])
+		  SELECT LL.[RelativeLocationID], LL.LocationID, RLC.[Code], LL.[ContainingLocationID], RLC.Hidden
+		  FROM <IDB/>.dbo.LocationLinkages as LL 
+			  join <IDB/>.dbo.RelativeLocationCodes as RLC on LL.[RelativeLocationID] = RLC.ID
+				WHERE LL.SUB1 IS NOT NULL AND LL.SUB2 IS NOT NULL and LL.SUB3 IS NULL
+GO
+	  INSERT INTO <ODB/>.dbo.RelativeLocation ([ID], [LocationID], [Code], [ContainingLocationID], [Hidden])
+		  SELECT LL.[RelativeLocationID], LL.LocationID, RLC.[Code], LL.[ContainingLocationID], RLC.Hidden
+		  FROM <IDB/>.dbo.LocationLinkages as LL 
+			  join <IDB/>.dbo.RelativeLocationCodes as RLC on LL.[RelativeLocationID] = RLC.ID
+				WHERE LL.SUB1 IS NOT NULL AND LL.SUB2 IS NOT NULL and LL.SUB3 IS NOT NULL
+GO
+<!-- Need to construct known UnitUsage values for assigning to Locations made into Units -->
+declare @SUsage uniqueidentifier
+SET @SUsage = NEWID()
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code)
+	  select @SUsage, 'LOCATION'
+exec <IDB/>.dbo.FixCodes 50
+INSERT INTO <ODB/>.dbo.UnitUsage ([ID], [CODE], [DESC])
+	  select @SUsage, CM.Code, 'LOCATION'
+		from <IDB/>.dbo.CodeManagement as CM where CM.[ID] = @SUsage
+
+INSERT INTO <ODB/>.dbo.Unit ([ID], [RelativeLocationID], [UnitUsageID])
+	  SELECT LL.[UnitID], LL.[RelativeLocationID], @SUsage
+		  FROM  <IDB/>.dbo.LocationLinkages as LL 
+GO
+ -- Now do the actual Equipment records
+	  INSERT INTO <ODB/>.dbo.Location ([ID],[Desc])
+		  SELECT UL.[LocationID], E.[DESCRIPTION]
+		  FROM <IDB/>.dbo.EQUIP as E
+			  join <IDB/>.dbo.UnitLinkages as UL on E.[MAINBOSSID] = UL.[ID]
+GO
+
+	  INSERT INTO <ODB/>.dbo.RelativeLocation ([ID], [LocationID], [Code], [ContainingLocationID], [Hidden])
+		  SELECT UL.[RelativeLocationID], UL.LocationID, RLC.[Code], L.[MAINBOSSID], RLC.Hidden
+		  FROM <IDB/>.dbo.EQUIP as U
+			join <IDB/>.dbo.LOCATION AS L on
+				 L.SITEID = U.SITEID
+				 and COALESCE(L.LOCATION,'-') = COALESCE(U.LOCATION,'-')
+				  and COALESCE(L.SUBLOCATION1,'-') = COALESCE(U.SUBLOCATION1,'-')
+				   and COALESCE(L.SUBLOCATION2,'-') = COALESCE(U.SUBLOCATION2,'-')
+					and COALESCE(L.SUBLOCATION3,'-') = COALESCE(U.SUBLOCATION3,'-')
+			join <IDB/>.dbo.UnitLinkages as UL on U.[MAINBOSSID] = UL.[ID]
+			join <IDB/>.dbo.RelativeLocationCodes as RLC on UL.[RelativeLocationID] = RLC.ID
+GO
+
+INSERT INTO <ODB/>.dbo.Unit ([ID], [RelativeLocationID],
+	  [UnitCategoryID],[Make],[Model],[Serial],[Drawing],[PurchaseDate], [OriginalCost], [ReplacementCost], [ReplacementCostLastDate],
+	  [TypicalLife], [ScrapDate],[ScrapValue],
+	  [PurchaseVendorID],[OwnershipID],[AssetCodeID],[SystemCodeID],[AccessCodeID], [UnitUsageID])
+	  SELECT UL.[UnitID], UL.[RelativeLocationID],
+				  ET.[MAINBOSSID], E.[MANUFACTURER], E.[MODELNUM], E.[SERIALNUM], NULL, <ODB/>.dbo._DClosestValue(E.[PURCHDATE],2,100), dbo.fn_MONEY(E.[ORIGINALCOST]), dbo.fn_MONEY(E.[REPLACEMENTCOST]), NULL,
+				  NULL, NULL, NULL,
+				  PV.[MAINBOSSID], D.[MAINBOSSID], NULL, NULL, NULL, NULL
+		  FROM <IDB/>.dbo.EQUIP as E
+			  join <IDB/>.dbo.UnitLinkages as UL on E.[MAINBOSSID] = UL.[ID]
+			  left join <IDB/>.dbo.EQTYPE as ET on E.[EQTYPE] = ET.[EQTYPE]
+			  left join <IDB/>.dbo.VENDOR as PV on E.[VENDORID] = pv.[VENDORID]
+				left join <IDB/>.dbo.DEPT as D on E.[DEPT] = D.[DEPARTMENT]
+-- skipped for now as not in use in the sample database SHOULD BE ASSETNUM linkage of some form			  left join <ODB/>.dbo.AssetCode as ASSET on U.[ASSET] = ASSET.[CODE]
+GO
+
+	</data>
+  </table>
+</dbconversion>

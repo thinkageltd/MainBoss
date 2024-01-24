@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="SpecificationData" defaults="true" log="false" id="Id" labelkey="Specification Data">
+    <field name="Id" read="RequiredGUID" />
+	<field name="SpecificationID" link="Specification" type="link(nonnull)" cascade="true">
+	  <doc>The specification that this data is associated with</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="SpecificationFormFieldID" link="SpecificationFormField" type="link(nonnull)">
+	  <doc></doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+    <field name="FieldValue" type="string(minlength 1, 80,lines 0,trim both)"  />
+  </table>
+  <table name="Specification"/>
+  <table name="SpecificationFormField"/>
+  <object class="trigger" name="mbtg_SpecificationData_Updates_Specification">
+	<doc>
+	  Maintain the ReportText in the Specification instance
+	</doc>
+	<!-- NOTE: Any changes to this trigger may require additional changes in the MB29 Conversion step SpecificationPostAmble to ensure anything this trigger does is done during conversion -->
+	<extension name="body">
+	  on SpecificationData
+	  after insert, update, delete
+	  as
+	  begin
+		  update Specification
+			  set ReportText = dbo.mbfn_Specification_ReportText(Specification.ID)
+			  from SpecificationData
+			  where Specification.ID in (
+					  select distinct SpecificationID from inserted
+				union select distinct SpecificationID from deleted
+				)
+	  end
+	</extension>
+	<extension name="references">mbfn_Specification_ReportText()</extension>
+	<extension name="references">SpecificationData</extension>
+	<extension name="references">Specification</extension>
+  </object>
+
+</database>

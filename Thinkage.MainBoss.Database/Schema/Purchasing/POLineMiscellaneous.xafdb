@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="POLineMiscellaneous" defaults="true" log="false" id="Id" xid="POLineID"  labelkey="Purchase Miscellaneous">
+	<field name="Id" read="RequiredGUID" />
+	<field name="POLineID" read="RequiredGUIDREF"  base="POLine"/>
+	<field name="MiscellaneousID" type="RequiredGUIDREF"  link="Miscellaneous">
+	  <doc>Miscellaneous purchase reference</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Quantity" type="integer(min 1, max 2147483647, nonnull)" />
+	<field name="ReceiveQuantity" read="RequiredQuantity">
+	  <doc>The total quantity of all the associated receives</doc>
+	  <result hosting="cached">
+		  cast(42 as RequiredQuantity)
+	  </result>
+	  <extension name="dependson">mbfn_POLineMiscellaneous_ReceiveQuantity()</extension>
+	</field>
+	<extension name="deletemethod">delete</extension>
+	<extension name="costrights">PurchaseOrderMiscellaneous</extension>
+  </table>
+  <table name="Miscellaneous"/>
+  <table name="POLine"/>
+  <table name="ReceiveMiscellaneousPO"/>
+  <object class="function" name="mbfn_POLineMiscellaneous_ReceiveQuantity">
+	<doc>
+	  Calculate the accumulated receives against a designated POLineMiscellaneous
+	</doc>
+	<extension name="body">
+	  (
+		@POLMID uniqueidentifier	-- POLineMiscellaneousID
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		  return (
+			select sum(Quantity)
+			  from ReceiveMiscellaneousPO
+			  where ReceiveMiscellaneousPO.POLineMiscellaneousID = @POLMID
+		  )
+	  end
+	</extension>
+	<extension name="dependson">POLineMiscellaneous.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ReceiveMiscellaneousPO</extension>
+  </object>
+</database>

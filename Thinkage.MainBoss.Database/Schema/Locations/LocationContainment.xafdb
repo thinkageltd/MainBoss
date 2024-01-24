@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="LocationContainment" defaults="false" log="false" xid="ContainedLocationID ContainingLocationID" xunique="true" id="Id" labelkey="">
+	<doc>
+	  This table represents the recursive containment between all the Location records. There is one record in this table for
+	  each combination of container/contained including the trivial (improper) containment of a location within itself.
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="ContainedLocationID" type="RequiredGUIDREF" link="Location" cascade="true">
+	  <doc>The location contained (possibly indirectly) within the ContainingLocationID</doc>
+	  <extension name="linkage">captive</extension>
+	  <extension name="dependson">RelativeLocation.ContainingLocationID</extension>
+	  <extension name="dependson">TemporaryStorage.ContainingLocationID</extension>
+	  <extension name="dependson">TemplateTemporaryStorage.ContainingLocationID</extension>
+	</field>
+	<field name="ContainingLocationID" type="RequiredGUIDREF" link="Location">
+	  <doc>The location containing (possibly indirectly) the ContainedLocationID</doc>
+	  <extension name="linkage">captive</extension>
+	  <extension name="dependson">RelativeLocation.ContainingLocationID</extension>
+	  <extension name="dependson">TemporaryStorage.ContainingLocationID</extension>
+	  <extension name="dependson">TemplateTemporaryStorage.ContainingLocationID</extension>
+	</field>
+	<field name="Depth" type="integer(32, nonnull)">
+	  <doc>The relative depth between the Contained and Containing Locations; this is zero for the self-containment
+	  and increases by one for each level of containment.</doc>
+	  <extension name="dependson">RelativeLocation.ContainingLocationID</extension>
+	  <extension name="dependson">TemporaryStorage.ContainingLocationID</extension>
+	  <extension name="dependson">TemplateTemporaryStorage.ContainingLocationID</extension>
+	</field>
+	<extension name="dependson">Location</extension>
+	<extension name="dependson">RelativeLocation.ContainingLocationID</extension>
+	<extension name="dependson">TemporaryStorage.ContainingLocationID</extension>
+	<extension name="dependson">TemplateTemporaryStorage.ContainingLocationID</extension>
+  </table>
+  <table name="Location"/>
+  <table name="RelativeLocation">
+	<field name="ContainingLocationID"/>
+  </table>
+  <table name="TemporaryStorage">
+	<field name="ContainingLocationID"/>
+  </table>
+  <table name="TemplateTemporaryStorage">
+	<field name="ContainingLocationID"/>
+  </table>
+  <table name="PostalAddress">
+	<field name="Address1"/>
+	<field name="Address2"/>
+	<field name="City"/>
+	<field name="Territory"/>
+	<field name="Country"/>
+	<field name="PostalCode"/>
+  </table>
+  <object class="function" name="mbfn_Location_PostalAddress">
+	<doc>Returns the postal address of the PostalLocation that contains the given location id.</doc>
+	<extension name="body">
+	  (@LocID		uniqueidentifier)
+	  RETURNS nvarchar(max)
+	  AS
+	  BEGIN
+		DECLARE @Addr nvarchar(max)
+		DECLARE @Sep nchar(2)
+		SET @Sep = char(13) + char(10)
+		SET @Addr = NULL
+
+		SELECT @Addr = rtrim(coalesce(PostalAddress.Address1 + @Sep, '')
+							+ coalesce(PostalAddress.Address2 + @Sep, '')
+							+ coalesce(PostalAddress.City + @Sep, '')
+							+ coalesce(PostalAddress.Territory + @Sep, '')
+							+ coalesce(PostalAddress.Country + @Sep, '')
+							+ coalesce(PostalAddress.PostalCode + @Sep, ''))
+		  FROM
+			  LocationContainment
+			JOIN
+			  PostalAddress ON PostalAddress.LocationID = LocationContainment.ContainingLocationid
+		  WHERE locationcontainment.ContainedLocationID = @LocID
+
+		IF len(@Addr) > 0
+		  RETURN @Addr
+		RETURN NULL
+	  END
+	</extension>
+	<extension name="dependson">PostalAddress.Address1</extension>
+	<extension name="dependson">PostalAddress.Address2</extension>
+	<extension name="dependson">PostalAddress.City</extension>
+	<extension name="dependson">PostalAddress.Territory</extension>
+	<extension name="dependson">PostalAddress.Country</extension>
+	<extension name="dependson">PostalAddress.PostalCode</extension>
+	<extension name="dependson">RelativeLocation.ContainingLocationID</extension>
+	<extension name="dependson">TemporaryStorage.ContainingLocationID</extension>
+	<extension name="dependson">TemplateTemporaryStorage.ContainingLocationID</extension>
+	<extension name="references">LocationContainment</extension>
+  </object>
+
+</database>

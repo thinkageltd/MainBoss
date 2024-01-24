@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+
+  <table name="WorkOrderTemplatePurchaseOrderTemplateLinkage" log="false" id="Id" labelkey="">
+	<doc>Find all explicit and implicit linkages between a workorder template and a purchase order template.</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="TableEnum" type="integer(min 0, max 3, nonnull)">
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderTemplatePurchaseOrderTemplateLinkageProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="LinkedWorkOrderTemplateID" type="RequiredGUIDREF" link="WorkOrderTemplate">
+	</field>
+	<field name="LinkedPurchaseOrderTemplateID" type="RequiredGUIDREF" link="PurchaseOrderTemplate">
+	</field>
+	<field name="WorkOrderTemplatePurchaseOrderTemplateID" type="GUIDREF" link="WorkOrderTemplatePurchaseOrderTemplate">
+	</field>
+	<field name="POLineTemplateID" type="GUIDREF" link="POLineTemplate">
+	</field>
+	<extension name="query">
+	  <!-- See ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage for TableEnum values -->
+		select WOTPOT.ID, 0, WOTPOT.WorkOrderTemplateID, WOTPOT.PurchaseOrderTemplateID, WOTPOT.ID, null	<!--ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage.Explicit -->
+			from WorkOrderTemplatePurchaseOrderTemplate as WOTPOT
+	union all
+		select  POLT.ID, 1, D.WorkOrderTemplateID, POLT.PurchaseOrderTemplateID, null, POLT.ID		<!--ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage.UsingLaborDemandTemplate -->
+			from POLineLaborTemplate as POLLT
+			join POLineTemplate as POLT on POLT.Id = POLLT.POLineTemplateID
+ 			join DemandLaborOutsideTemplate as DLO on DLO.Id = POLLT.DemandLaborOutsideTemplateID
+			join DemandTemplate as D on D.Id = DLO.DemandTemplateID
+	union all
+		select  POLT.ID, 2, D.WorkOrderTemplateID, POLT.PurchaseOrderTemplateID, null, POLT.ID		<!--ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage.UsingOtherWorkDemandTemplate -->
+			from POLineOtherWorkTemplate as POLOWT
+			join POLineTemplate as POLT on POLT.Id = POLOWT.POLineTemplateID
+			join DemandOtherWorkOutsideTemplate as DOWO on DOWO.Id = POLOWT.DemandOtherWorkOutsideTemplateID
+			join DemandTemplate as D on D.Id = DOWO.DemandTemplateID
+	union all
+		select POLT.ID, 3, TTS.WorkOrderTemplateID, POLT.PurchaseOrderTemplateID, null, POLT.ID		<!--ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage.UsingPOLineItemTemplateToTemplateItemLocation -->
+			from POLineItemTemplate as POLIT
+			join POLineTemplate as POLT on POLT.Id = POLIT.POLineTemplateID
+			join ItemLocation as IL on IL.ID = POLIT.ItemLocationID
+			join TemplateTemporaryStorage as TTS on TTS.LocationID = IL.LocationID
+	</extension>
+	<extension name="dependson">WorkOrderTemplatePurchaseOrderTemplate</extension>
+	<extension name="dependson">POLineLaborTemplate</extension>
+	<extension name="dependson">POLineOtherWorkTemplate</extension>
+	<extension name="dependson">POLineItemTemplate</extension>
+	<extension name="dependson">POLineTemplate</extension>
+	<extension name="dependson">DemandLaborOutsideTemplate</extension>
+	<extension name="dependson">DemandOtherWorkOutsideTemplate</extension>
+	<extension name="dependson">DemandTemplate</extension>
+	<extension name="dependson">TemplateItemLocation</extension>
+  </table>
+  <table name="WorkOrderTemplatePurchaseOrderTemplateView" defaults="false" log="false" id="Id" xid="WorkOrderTemplateID PurchaseOrderTemplateID" labelkey="">
+	<doc>Find all explicit and implicit linkages between a workorder and a purchase order with records denoting the WorkOrderTemplate and PurchaseOrderTemplate they are linked to.</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="TableEnum" type="integer(min 0, max 5, nonnull)">
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderTemplatePurchaseOrderTemplateViewProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="LinkedWorkOrderTemplateID" type="GUIDREF" link="WorkOrderTemplate">
+	  <doc>Used both for common browser filtering and for tree parentage</doc>
+	</field>
+	<field name="LinkedPurchaseOrderTemplateID" type="GUIDREF" link="PurchaseOrderTemplate">
+	  <doc>Used both for common browser filtering and for tree parentage</doc>
+	</field>
+	<field name="WorkOrderTemplateID" type="GUIDREF" link="WorkOrderTemplate">
+	</field>
+	<field name="PurchaseOrderTemplateID" type="GUIDREF" link="PurchaseOrderTemplate">
+	</field>
+	<field name="WorkOrderTemplatePurchaseOrderTemplateID" type="GUIDREF" link="WorkOrderTemplatePurchaseOrderTemplate">
+	</field>
+	<field name="POLineTemplateID" type="GUIDREF" link="POLineTemplate">
+	</field>
+	<extension name="query">
+	  select A.ID, A.TableEnum+2, A.LinkedWorkOrderTemplateID, A.LinkedPurchaseOrderTemplateID, null, null, A.WorkOrderTemplatePurchaseOrderTemplateID, A.POLineTemplateID
+		  from WorkOrderTemplatePurchaseOrderTemplateLinkage as A
+	  union all
+	  select WO.ID, 0, null, null, WO.ID, null, null, null
+		  from WorkOrderTemplate as WO where WO.ID in (Select LinkedWorkOrderTemplateID from WorkOrderTemplatePurchaseOrderTemplateLinkage)
+	  union all
+	  select PO.ID, 1, null, null, null, PO.ID, null, null
+		  from PurchaseOrderTemplate as PO where PO.ID in (Select LinkedPurchaseOrderTemplateID from WorkOrderTemplatePurchaseOrderTemplateLinkage)
+	</extension>
+	<extension name="dependson">WorkOrderTemplatePurchaseOrderTemplateLinkage</extension>
+	<extension name="dependson">WorkOrderTemplate</extension>
+	<extension name="dependson">PurchaseOrderTemplate</extension>
+  </table>
+  <table name="WorkOrderTemplateLinkedPurchaseOrderTemplatesTreeview" defaults="false" log="false" id="Id" labelkey="">
+	<doc>This is the filter/display driver for the PurchaseOrderTemplates linked to a particular WorkOrderTemplate required for the tree-structured display</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="FilterID" type="GUIDREF" link="WorkOrderTemplatePurchaseOrderTemplateView">
+	</field>
+	<field name="DisplayID" type="GUIDREF" link="WorkOrderTemplatePurchaseOrderTemplateView">
+	</field>
+	<field name="IsPrimary" type="RequiredBool">
+	</field>
+	<extension name="query">
+		  select WOTPOT.ID, WOTPOT.ID, WOTPOT.ID, 1
+			from
+			  WorkOrderTemplatePurchaseOrderTemplateView as WOTPOT
+		union all
+		  select WOTPOT.LinkedPurchaseOrderTemplateID, WOTPOT.ID, WOTPOT.LinkedPurchaseOrderTemplateID, 0
+			from
+			  WorkOrderTemplatePurchaseOrderTemplateView as WOTPOT
+			where WOTPOT.LinkedPurchaseOrderTemplateID is not null
+	</extension>
+	<extension name="dependson">WorkOrderTemplatePurchaseOrderTemplateView</extension>
+  </table>
+  <table name="PurchaseOrderTemplateLinkedWorkOrderTemplatesTreeview" defaults="false" log="false" id="Id" labelkey="">
+	<doc>This is the filter/display driver for the WorkOrderTemplates linked to a particular PurchaseOrderTemplate required for the tree-structured display</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="FilterID" type="GUIDREF" link="WorkOrderTemplatePurchaseOrderTemplateView">
+	</field>
+	<field name="DisplayID" type="GUIDREF" link="WorkOrderTemplatePurchaseOrderTemplateView">
+	</field>
+	<field name="IsPrimary" type="RequiredBool">
+	</field>
+	<extension name="query">
+		  select WOTPOT.ID, WOTPOT.ID, WOTPOT.ID, 1
+			from
+			  WorkOrderTemplatePurchaseOrderTemplateView as WOTPOT
+		union all
+		  select WOTPOT.LinkedWorkOrderTemplateID, WOTPOT.ID, WOTPOT.LinkedWorkOrderTemplateID, 0
+			from
+			  WorkOrderTemplatePurchaseOrderTemplateView as WOTPOT
+			where WOTPOT.LinkedWorkOrderTemplateID is not null
+	</extension>
+	<extension name="dependson">WorkOrderTemplatePurchaseOrderTemplateView</extension>
+  </table>
+
+  <table name="WorkOrderTemplate"/>
+  <table name="PurchaseOrderTemplate"/>
+  <table name="WorkOrderTemplatePurchaseOrderTemplate"/>
+  <table name="POLineLaborTemplate"/>
+  <table name="POLineOtherWorkTemplate"/>
+  <table name="POLineItemTemplate"/>
+  <table name="POLineTemplate"/>
+  <table name="DemandLaborOutsideTemplate"/>
+  <table name="DemandOtherWorkOutsideTemplate"/>
+  <table name="DemandTemplate"/>
+  <table name="ItemLocation"/>
+  <table name="TemplateItemLocation"/>
+</database>

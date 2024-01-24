@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+  <table name="Periodicity">
+	<dependency table="ConversionFunctions"/>
+	<dependency table="Meter"/>
+	<dependency table="Task"/>
+	<data>
+
+-- Add columns with precalculated data all our new encodings for season/enabled weekdays as well as information for new Periodicity records.
+ALTER TABLE <IDB/>.dbo.PreventiveSchedules add
+	  MeterClassID uniqueidentifier null,
+	  CalendarUnit bit null,
+	  SeasonStart [datetime] NULL,
+	  SeasonLast [datetime] NULL,
+	  EnableSunday [bit] NULL,
+	  EnableMonday [bit] NULL,
+	  EnableTuesday [bit] NULL,
+	  EnableWednesday [bit] NULL,
+	  EnableThursday [bit] NULL,
+	  EnableFriday [bit] NULL,
+	  EnableSaturday [bit] NULL
+
+go
+-- Do the precalculations
+-- Correct defective 2.9 PreventiveSchedule records. If a record had at some point been a meter-based one but is now date-based it will
+-- still contain a MeterKey, whose presence will cause problems in the following code. We could have all the joins on MeterKey verify that
+-- it is indeed a meter-based schedule, but it is easier to just clear out these keys.
+update <IDB/>.dbo.PreventiveSchedules
+	set MeterKey = null
+	where [type] != 'R'
+	
+-- Periodicity information for the meter-based entries
+<!-- If the meter was orphaned and thus not imported we will have a null MeterClassID, which we later check for. -->
+update <IDB/>.dbo.PreventiveSchedules
+  set MeterClassID = NM.MeterClassID
+  from <IDB/>.dbo.PreventiveSchedules as OS
+	join <IDB/>.dbo.Meters as OM on OS.MeterKey = OM.[Key]
+	join <ODB/>.dbo.Meter as NM on NM.ID = OM.ID
+  where OS.[Type] = 'R'
+-- Periodicity information for the month-based entries
+update <IDB/>.dbo.PreventiveSchedules
+  set CalendarUnit = 1
+  where [Type] = 'M'
+-- Periodicity information for the day-based entries
+update <IDB/>.dbo.PreventiveSchedules
+  set CalendarUnit = 0
+  where [Type] = 'D'
+-- Check for, Complain, and delete any PreventiveSchedules records that are meter-based but have null meter linkage.
+declare @BadXID nvarchar(max)
+declare BadSched cursor
+  for select 'Meter-based PreventiveSchedule record ignored because meter linkage is missing or defective: Unit ' + L.Code + ', Task ' + T.wonum + '/' + SR.wonum
+  from <IDB/>.dbo.PreventiveSchedules as PS
+	left join <IDB/>.dbo.WorkOrders as SR on SR.[Key] = PS.WOKey
+	left join <IDB/>.dbo.WorkOrders as T on T.[Key] = SR.LinkKey
+	left join <IDB/>.dbo.Units as U on U.[Key] = SR.UnitKey
+	left join <ODB/>.dbo.Location as L on L.ID = U.ID
+	where PS.Exclude = 0 and PS.[Type] = 'R' and PS.MeterClassID is null
+open BadSched
+while 0 = 0
+begin
+  fetch next from BadSched into @BadXID
+  if @@Fetch_Status != 0
+	break
+  raiserror(@BadXID, 16, 1)
+end
+close BadSched
+deallocate BadSched
+  
+delete from <IDB/>.dbo.PreventiveSchedules
+  where Exclude = 0 and [Type] = 'R' and MeterClassID is null
+-- Crack the old season and week mask information
+update <IDB/>.dbo.PreventiveSchedules
+	SET SeasonStart = dbo.fn_season(seasonbeg),
+		SeasonLast = dbo.fn_season(seasonend),
+		EnableSunday = dbo.fn_weekday(2, weekmask),
+		EnableMonday = dbo.fn_weekday(4, weekmask),
+		EnableTuesday = dbo.fn_weekday(8, weekmask),
+		EnableWednesday = dbo.fn_weekday(256, weekmask),
+		EnableThursday = dbo.fn_weekday(512, weekmask),
+		EnableFriday = dbo.fn_weekday(1024, weekmask),
+		EnableSaturday = dbo.fn_weekday(2048, weekmask)
+go
+  </data>
+  </table>
+<table name="Schedule">
+  <dependency table="ConversionFunctions"/>
+  <dependency table="Periodicity"/>
+  <data>
+
+-- Now we build the ScheduledWorkOrders, Schedules, and Periodicities.
+-- This is driver by looking at the SRecs in the old database.
+-- As we go we build tentative codes in the CodeManagement table and (for now) bogus codes in the actual records.
+-- Once all the schedules are done we assign them their final codes.
+-- newSchedule is created in the current database to avoid collation comparison errors in the event the TEMPDB has different collation
+-- than the MainBoss database. 
+create procedure newSchedule @scheduleID uniqueidentifier, @PreventiveScheduleID uniqueidentifier
+as
+  declare @code nvarchar(max)
+  set @code = ''
+  -- Loop over the periodicities accumulating a code.
+  declare PeriodicityCursor cursor
+	for select Interval, MC.Code, CalendarUnit, UoM.Code
+	  from <ODB/>.dbo.Periodicity
+		left join <ODB/>.dbo.MeterClass as MC on MC.ID = MeterClassID
+		left join <ODB/>.dbo.UnitOfMeasure as UoM on UoM.ID = MC.UnitOfMeasureID
+	  where ScheduleID = @scheduleID
+  open PeriodicityCursor
+
+  declare @interval int
+  declare @meterClassCode nvarchar(max)
+  declare @calendarUnit int
+  declare @UoMCode nvarchar(max)
+  while 1 = 1
+	begin
+	fetch next from PeriodicityCursor into @interval, @meterClassCode, @calendarUnit, @UoMCode
+	if @@fetch_status != 0
+	  break
+  	
+	if @code != ''
+	  set @code = @code + ' or '
+    
+	if @meterClassCode is not null
+	  begin
+	  set @code = @code + cast(@interval as nvarchar(32)) + ' ' + @UoMCode + ' on ' + @meterClassCode
+	  continue
+	  end
+  	
+	declare @unitname nvarchar(20)
+	if @calendarUnit = 0
+	  begin
+	  if @interval % 7 = 0
+		begin
+		set @interval = @interval/7
+		set @unitname = 'week'
+		end
+	  else
+		set @unitname = 'day'
+	  end
+	else
+	  begin
+	  if @interval % 12 = 0
+		begin
+		set @interval = @interval/12
+		set @unitname = 'year'
+		end
+	  else
+		set @unitname = 'month'
+	  end
+	set @code = @code + cast(@interval as nvarchar(32)) + ' ' + @unitname
+	if @interval != 1
+	  set @code = @code + 's'
+	end	-- looping over periodicities
+
+  -- Look for familiar combinations of exceptions, add them to @code.
+  declare @weekdays int
+  set @weekdays = (select dbo.fn_weekdays(OPS.WEEKMASK) from <IDB/>.dbo.PreventiveSchedules as OPS where OPS.ID = @PreventiveScheduleID)
+  if @weekdays != (2|4|8|256|512|1024|2048)
+	begin
+	declare @inverse bit	-- if true then enabledDays is really DIsabledDays.
+	declare @enabledDays nvarchar(max)
+	-- If the exception is "never" or "not on a specific weekday" note the inverse condition, i.e. that enabledDays names the *disabled* days instead.
+	set @inverse =
+		  case when @weekdays in
+			(0, (4|8|256|512|1024|2048), (2|8|256|512|1024|2048), (2|4|256|512|1024|2048),
+				(2|4|8|512|1024|2048), (2|4|8|256|1024|2048), (2|4|8|256|512|2048), (2|4|8|256|512|1024)) then 1
+		  else 0
+		  end
+	set @enabledDays = case @weekdays
+	  when 0 then 'any day'
+	  when 2 then 'Sunday'
+	  when 4 then 'Monday'
+	  when 8 then 'Tuesday'
+	  when 256 then 'Wednesday'
+	  when 512 then 'Thursday'
+	  when 1024 then 'Friday'
+	  when 2048 then 'Saturday'
+	  when (2|2048) then 'Weekends'
+	  when (4|8|256|512|1024) then 'Weekdays'
+	  when (4|8|256|512|1024|2048) then 'Sunday'
+	  when (2|8|256|512|1024|2048) then 'Monday'
+	  when (2|4|256|512|1024|2048) then 'Tuesday'
+	  when (2|4|8|512|1024|2048) then 'Wednesday'
+	  when (2|4|8|256|1024|2048) then 'Thursday'
+	  when (2|4|8|256|512|2048) then 'Friday'
+	  when (2|4|8|256|512|1024) then 'Saturday'
+	  else 'selected weekdays'
+	  end
+
+	if @code != ''
+	  set @code = @code + ' '
+	set @code = @code + 'except '
+	if (select InhibitWeek from <ODB/>.dbo.Schedule where ID = @ScheduleID) != 0
+	  if @inverse != 0
+		set @code = @code + 'not on '
+	  else
+	   set  @code = @code + 'only on '
+	else
+	  if @inverse != 0
+		set @code = @code + 'defer on '
+	  else
+	   set  @code = @code + 'defer to '
+	set @code = @code + @enabledDays
+	end	-- exceptional weekday handling
+  close PeriodicityCursor
+  deallocate PeriodicityCursor
+  if @code = ''
+	set @code = 'unscheduled'
+  insert into <IDB/>.dbo.CodeManagement (ID, Code) values (@scheduleID, @code)
+go
+
+create procedure newBatch @bID uniqueidentifier out
+as
+  set @bID = newid();
+  insert into <ODB/>.dbo.PMGenerationBatch
+	(ID, EntryDate, userID, Comment, SinglePurchaseOrders, AccessCodeUnitTaskPriority, WorkOrderExpenseModelUnitTaskPriority)
+	select top 1 @bID, dbo._DClosestValue(getdate(),2,100), ID, 'Scheduling basis values from 2.9 import', 0, 
+	(SELECT TOP 1  AccessCodeUnitTaskPriority from <ODB/>.dbo._DPMGenerationBatch),
+	(SELECT TOP 1  WorkOrderExpenseModelUnitTaskPriority from <ODB/>.dbo._DPMGenerationBatch)
+	  from <ODB/>.dbo.[User]
+go
+
+delete from <IDB/>.dbo.CodeManagement
+declare @codeCount int
+set @CodeCount = 1
+
+-- Loop over the SRec's
+declare SRecCursor cursor
+  for select [Key] from <IDB/>.dbo.WorkOrders as S
+	where S.Exclude = 0 and S.Type = 'S'
+open SRecCursor
+declare @SRecKey int
+while 0 = 0
+begin
+  fetch next from SRecCursor into @SRecKey
+  if @@Fetch_Status != 0
+	break
+	
+  declare @existingScheduleID uniqueidentifier
+  
+  -- Determine the Task ID (based on presence of extra info in SRec) and Unit ID.
+  declare @TaskID uniqueidentifier
+  declare @UnitLocationID uniqueidentifier
+  declare @SchedID uniqueidentifier
+  declare @lastScheduledDate datetime
+  declare @lastScheduledReading int
+  declare @lastScheduledMeterID uniqueidentifier
+  declare @SWOID uniqueidentifier
+  declare @batchID uniqueidentifier
+  
+  set @TaskID = (select TaskID
+					  from <IDB/>.dbo.SrecTaskLinkage
+						join <IDB/>.dbo.WorkOrders as S on S.ID = SRecTaskLinkage.ID
+					  where S.[Key] = @SRecKey)
+  set @UnitLocationID = (select LocationID
+					  from <IDB/>.dbo.UnitLinkages as UL
+						join <IDB/>.dbo.Units as U on U.ID = UL.ID
+						join <IDB/>.dbo.WorkOrders as S on S.UnitKey = U.[Key]
+					  where S.[Key] = @SRecKey)
+	if @UnitLocationID is null or @TaskID is null
+	begin
+		continue
+	end
+  
+  -- Count the number of schedules associated with the SRec.
+  declare @ScheduleCount int
+  select @ScheduleCount = count(*) from <IDB/>.dbo.PreventiveSchedules where WOKEY = @SRecKey
+  
+  if @ScheduleCount &gt; 1
+  begin
+	-- See if the schedules can be merged into a single new Schedule record.
+	-- This requires that they have all the same exception information and algorithm, and the algorithm must be a "from any" one.
+	declare @nVariations int
+	select @nVariations = count(*) from
+	  (select distinct OPS.SEASONBEG, OPS.SEASONEND, OPS.INHSEASON, OPS.WEEKMASK, OPS.INHWEEK, OPS.INHIBIT, OPS.ALGORITHM, OPS.LATEINHIB
+				from <IDB/>.dbo.PreventiveSchedules as OPS where OPS.WOKEY = @SRecKey) as X
+	if @nVariations = 1 and (select top 1 OPS.Algorithm from <IDB/>.dbo.PreventiveSchedules as OPS) in (2, 4)
+	begin
+	  -- All the schedules for this SRec can be combined into a single Schedule and ScheduledWorkOrder.
+	  -- Find or create a Schedule with all the matching periodicities and (new) schedule-level exceptions.
+	  -- The following query has three fanout points
+	  -- One is that the WHERE clause selects multiple PreventiveSchedule records (all the ones
+	  --  for this SRec); this gives a factor equal to the number of PreventiveSchedules on the SRec.
+	  -- The second is the join between the old period information and the new one. This will find an arbitrary number of records
+	  --  since the same period can appear several times in the new DB in differing combinations. The join to the new Schedule may prune out
+	  --  some of these if the exceptions to not match our PreventieSchedule.
+	  -- The third is the join to the second Periodicity (NPX) which we use to count the total number of Periodicities on the Schedule.
+	  --
+	  -- For a matching Schedule, there will be @ScheduleCount NP records attached to any particular NS record. As well, each of the
+	  -- @ScheduleCount NPX records will appear @ScheduleCount times, so we compare their count to the square of @ScheduleCount
+	  -- Note that this will not work in cases where two identical Periodicities exist against a single schedule, but this is prevented
+	  -- by uniquess requirements on that table.
+	  set @existingScheduleID = (select NS.ID
+									from <IDB/>.dbo.PreventiveSchedules as OPS
+									join <ODB/>.dbo.Periodicity as NP on (OPS.CalendarUnit = NP.CalendarUnit OR (OPS.CalendarUnit is null and NP.CalendarUnit is null))
+																	  AND (OPS.MeterClassID = NP.MeterClassID OR (OPS.MeterClassID is null and NP.MeterClassID is null))
+									join <ODB/>.dbo.Schedule as NS on NP.ScheduleID = NS.ID
+																	  and OPS.interval = NP.interval
+																	  and OPS.inhseason = Ns.inhibitseason
+																	  and OPS.inhweek = Ns.inhibitweek
+																	  and (OPS.SeasonStart = Ns.seasonstart or (OPS.seasonbeg is null and Ns.seasonstart is null))
+																	  and (OPS.SeasonLast = Ns.seasonend or (OPS.seasonend is null and Ns.seasonend is null))
+																	  and OPS.EnableSunday = Ns.EnableSunday
+																	  and OPS.EnableMonday = Ns.EnableMonday
+																	  and OPS.EnableTuesday = Ns.EnableTuesday
+																	  and OPS.EnableWednesday = Ns.EnableWednesday
+																	  and OPS.EnableThursday = Ns.EnableThursday
+																	  and OPS.EnableFriday = Ns.EnableFriday
+																	  and OPS.EnableSaturday = Ns.EnableSaturday
+									join <ODB/>.dbo.Periodicity as NPX on NPX.ScheduleID = NS.ID	-- All the periodicities on the Schedule
+								  where OPS.WOKEY = @SRecKey
+								  group by NS.ID
+								  having count(NP.ID) = @ScheduleCount and count(NPX.ID) = @ScheduleCount*@ScheduleCount)
+	  if @existingScheduleID is null
+	  begin
+		set @existingScheduleID = newid()
+		set @SchedID = (select top 1 ID from <IDB/>.dbo.PreventiveSchedules as OPS where OPS.WOKEY = @SRecKey)
+		insert into <ODB/>.dbo.Schedule
+		  (ID, Code, InhibitSeason, SeasonStart, SeasonEnd, InhibitWeek, EnableSunday, EnableMonday, EnableTuesday, EnableWednesday, EnableThursday, EnableFriday, EnableSaturday, InhibitIfOverdue)
+		  select
+			  @existingScheduleID,
+			  'code'+cast(@CodeCount as nvarchar(32)),
+			  OPS.INHSEASON,
+			  OPS.SeasonStart,
+			  OPS.SeasonLast,
+			  OPS.INHWEEK,
+			  OPS.EnableSunday,
+			  OPS.EnableMonday,
+			  OPS.EnableTuesday,
+			  OPS.EnableWednesday,
+			  OPS.EnableThursday,
+			  OPS.EnableFriday,
+			  OPS.EnableSaturday,
+			  OPS.LATEINHIB
+		  from <IDB/>.dbo.PreventiveSchedules as OPS
+			where OPS.ID = @SchedID
+		set @CodeCount = @CodeCount+1
+		insert into <ODB/>.dbo.Periodicity
+		  (ID, ScheduleID, Interval, MeterClassID, CalendarUnit)
+		  select newid(), @existingScheduleID, X.*
+			from (select distinct OPS.Interval, OPS.MeterClassID, OPS.CalendarUnit
+						from <IDB/>.dbo.PreventiveSchedules as OPS
+						where OPS.WOKEY = @SRecKey) as X
+		exec newSchedule @existingScheduleID, @SchedID
+	  end
+	  set @SWOID = newid()
+	  insert into <ODB/>.dbo.ScheduledWorkOrder
+		  (ID, UnitLocationID, ScheduleID, WorkOrderTemplateID, Inhibit, RescheduleBasisAlgorithm)
+		  select top 1 @SWOID, @UnitLocationID, @existingScheduleID, @TaskID, OPS.INHIBIT, case OPS.ALGORITHM when 2 then 0 else 1 end
+			  from <IDB/>.dbo.PreventiveSchedules as OPS where OPS.WOKEY = @SRecKey
+	  
+	  -- Make a detail record for the schedule batch
+	  set @lastScheduledDate = null
+	  select top 1 @lastScheduledDate = LASTDATE, @lastScheduledReading = LASTSCHED, @lastScheduledMeterID = M.ID
+		from <IDB/>.dbo.PreventiveSchedules as OPS
+		  left join <IDB/>.dbo.Meters as M on M.[key] = OPS.METERKEY
+		where OPS.WOKEY = @SRecKey
+		order by LASTDATE DESC
+	  if @lastScheduledDate is not null
+		begin
+		  if @lastScheduledMeterID is null
+			set @lastScheduledReading = null
+		  if @batchID is null
+			exec newBatch @batchID output
+		  insert into <ODB/>.dbo.PMGenerationDetail
+			(ID, DetailType, PMGenerationBatchID, ScheduledWorkOrderID, ScheduleDate, ScheduleReading, TriggeringMeterID, WorkStartDate, NextAvailableDate, FirmScheduleData, Sequence)
+			<!-- 8 is DatabaseEnums.PMType.ManualReschedule -->
+			values (newid(), 8, @batchID, @SWOID, @lastScheduledDate, @lastScheduledReading, @lastScheduledMeterID, @lastScheduledDate, @lastScheduledDate, 1, 0)
+		end
+	  continue
+	end
+  end
+  if @ScheduleCount = 0
+  begin
+	-- A special case when there was nothing scheduled.
+	  set @existingScheduleID = (select NS.ID
+								  from
+									<ODB/>.dbo.Schedule as NS
+									left join <ODB/>.dbo.Periodicity as NPX on NPX.ScheduleID = NS.ID	-- All the periodicities on the Schedule
+								  group by NS.ID
+								  having count(NPX.ID) = 0)
+	  if @existingScheduleID is null
+	  begin
+		set @existingScheduleID = newid()
+		insert into <ODB/>.dbo.Schedule
+		  (ID, Code, InhibitSeason, InhibitWeek, EnableSunday, EnableMonday, EnableTuesday, EnableWednesday, EnableThursday, EnableFriday, EnableSaturday, InhibitIfOverdue)
+		  values(@existingScheduleID, 'code'+cast(@CodeCount as nvarchar(32)), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+		set @CodeCount = @CodeCount+1
+		exec newSchedule @existingScheduleID, null
+	  end
+	  insert into <ODB/>.dbo.ScheduledWorkOrder
+		  (ID, UnitLocationID, ScheduleID, WorkOrderTemplateID, Inhibit, RescheduleBasisAlgorithm)
+		  values(newid(), @UnitLocationID, @existingScheduleID, @TaskID, 1, 2)
+	  continue
+  end
+	
+  -- Loop over each schedule on the SRec, creating a new SWO each time.
+  declare SchedCursor cursor
+	for select ID from <IDB/>.dbo.PreventiveSchedules as PS
+	  where PS.Exclude = 0 and PS.WOKEY = @SRecKey
+  open SchedCursor
+  while 0 = 0
+  begin
+	fetch next from SchedCursor into @SchedID
+	if @@Fetch_Status != 0
+	  break
+	set @existingScheduleID = (select NS.ID
+								from <IDB/>.dbo.PreventiveSchedules as OPS
+								join <ODB/>.dbo.Periodicity as NP on (OPS.CalendarUnit = NP.CalendarUnit OR (OPS.CalendarUnit is null and NP.CalendarUnit is null))
+																	AND (OPS.MeterClassID = NP.MeterClassID OR (OPS.MeterClassID is null and NP.MeterClassID is null))
+								join <ODB/>.dbo.Schedule as NS on NP.ScheduleID = NS.ID
+																	and OPS.interval = NP.interval
+																	and OPS.inhseason = Ns.inhibitseason
+																	and OPS.inhweek = Ns.inhibitweek
+																	and (OPS.SeasonStart = Ns.seasonstart or (OPS.seasonbeg is null and Ns.seasonstart is null))
+																	and (OPS.SeasonLast = Ns.seasonend or (OPS.seasonend is null and Ns.seasonend is null))
+																	and OPS.EnableSunday = Ns.EnableSunday
+																	and OPS.EnableMonday = Ns.EnableMonday
+																	and OPS.EnableTuesday = Ns.EnableTuesday
+																	and OPS.EnableWednesday = Ns.EnableWednesday
+																	and OPS.EnableThursday = Ns.EnableThursday
+																	and OPS.EnableFriday = Ns.EnableFriday
+																	and OPS.EnableSaturday = Ns.EnableSaturday
+								join <ODB/>.dbo.Periodicity as NPX on NPX.ScheduleID = NS.ID	-- All the periodicities on the Schedule
+								where OPS.ID = @SchedID
+								group by NS.ID
+								having count(NPX.ID) = 1)
+	if @existingScheduleID is null
+	begin
+	  set @existingScheduleID = newid()
+	  insert into <ODB/>.dbo.Schedule
+		(ID, Code, InhibitSeason, SeasonStart, SeasonEnd, InhibitWeek, EnableSunday, EnableMonday, EnableTuesday, EnableWednesday, EnableThursday, EnableFriday, EnableSaturday, InhibitIfOverdue)
+		select
+			@existingScheduleID,
+			'code'+cast(@CodeCount as nvarchar(32)),
+			OPS.INHSEASON,
+			  OPS.SeasonStart,
+			  OPS.SeasonLast,
+			  OPS.INHWEEK,
+			  OPS.EnableSunday,
+			  OPS.EnableMonday,
+			  OPS.EnableTuesday,
+			  OPS.EnableWednesday,
+			  OPS.EnableThursday,
+			  OPS.EnableFriday,
+			  OPS.EnableSaturday,
+			  OPS.LATEINHIB
+		  from <IDB/>.dbo.PreventiveSchedules as OPS
+		  where OPS.ID = @SchedID
+
+	  set @CodeCount = @CodeCount+1
+	  insert into <ODB/>.dbo.Periodicity
+		(ID, ScheduleID, Interval, MeterClassID, CalendarUnit)
+		select newid(), @existingScheduleID, OPS.Interval, OPS.MeterClassID, OPS.CalendarUnit
+					  from <IDB/>.dbo.PreventiveSchedules as OPS
+					  where OPS.ID = @SchedID
+	  exec newSchedule @existingScheduleID, @SchedID
+	end
+	set @SWOID = newid()
+	insert into <ODB/>.dbo.ScheduledWorkOrder
+		(ID, UnitLocationID, ScheduleID, WorkOrderTemplateID, Inhibit, RescheduleBasisAlgorithm)
+		select @SWOID, @UnitLocationID, @existingScheduleID, @TaskID, OPS.INHIBIT,
+				 case OPS.ALGORITHM
+				 when 1 then 0 -- SingleFromClose
+				 when 2 then 0 -- SingleFromAnyClose
+				 when 3 then 1 -- SingleFromStart
+				 when 4 then 1 -- SingleFromAnyStart
+				 when 5 then 2 -- SingleFromSchedule
+				 else 2 -- shouldn't happpen
+				 end
+			from <IDB/>.dbo.PreventiveSchedules as OPS where OPS.ID = @SchedID
+	-- Make a detail record for the schedule batch
+	set @lastScheduledDate = null
+	select @lastScheduledDate = LASTDATE, @lastScheduledReading = LASTSCHED, @lastScheduledMeterID = M.ID
+	  from <IDB/>.dbo.PreventiveSchedules as OPS
+		left join <IDB/>.dbo.Meters as M on M.[key] = OPS.METERKEY
+	  where OPS.ID = @SchedID
+	if @lastScheduledDate is not null
+	  begin
+		if @lastScheduledMeterID is null
+		  set @lastScheduledReading = null
+		if @batchID is null
+		  exec newBatch @batchID output
+		insert into <ODB/>.dbo.PMGenerationDetail
+		  (ID, DetailType, PMGenerationBatchID, ScheduledWorkOrderID, ScheduleDate, ScheduleReading, TriggeringMeterID, WorkStartDate, NextAvailableDate, FirmScheduleData, Sequence)
+		  values (newid(), 8, @batchID, @SWOID, @lastScheduledDate, @lastScheduledReading, @lastScheduledMeterID, @lastScheduledDate, @lastScheduledDate, 1, 0)
+	  end
+	continue
+  end
+  close SchedCursor
+  deallocate SchedCursor
+end
+close SRecCursor
+  
+-- Go over all the new Schedule records; generate codes for them based on their periodicities and some special cases for the exceptions
+exec <IDB/>.dbo.FixCodes 50
+update <ODB/>.dbo.Schedule
+  set code = CM.Code
+  from <ODB/>.dbo.Schedule as S join <IDB/>.dbo.CodeManagement as CM on S.ID = CM.ID
+GO
+-- Cleanup for completeness
+DROP PROCEDURE newSchedule
+DROP PROCEDURE newBatch
+</data>
+</table>
+</dbconversion>

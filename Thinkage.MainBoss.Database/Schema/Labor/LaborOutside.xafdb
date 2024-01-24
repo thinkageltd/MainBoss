@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="LaborOutside" defaults="true" log="false" id="Id" xid="Code VendorID Hidden TradeID" xunique="true" labelkey="Hourly Outside">
+	<doc>Description of Hourly Outside labor requirement</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="RequiredCode"/>
+	<field name="VendorID" type="GUIDREF" link="Vendor">
+	  <doc>Optional specific vendor to obtain the Hourly Labor from</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="TradeID" type="GUIDREF" link="Trade">
+	  <doc>Optional specific Trade that the Hourly labor should be sourced from</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="Desc" type="Desc"/>
+	<field name="Comment" type="Comment"/>
+	<field name="Cost" type="Currency">
+	  <doc>The estimated cost per hour of this labor</doc>
+	</field>
+	<field name="PurchaseOrderText" type="LineText">
+	  <doc>Prototype for PurchaseOrderLine if converted to PO</doc>
+	</field>
+	<!--    CostCenterID comes from Vendor A/P cc  -->
+
+	<extension name="deletemethod">hide</extension>
+	<extension name="costrights">LaborOutside</extension>
+  </table>
+  <table name="Vendor"/>
+  <table name="Trade"/>
+</database>

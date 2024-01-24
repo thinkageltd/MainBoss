@@ -1,0 +1,57 @@
+@model Thinkage.MainBoss.WebAccess.Models.Assignment
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.MainBoss.Database
+@using Thinkage.Libraries.Translation
+@using Thinkage.Web.Mvc.Html
+@using System.Web.Optimization;
+
+@{
+	ViewBag.Title = T.Text("View Assignment Status");
+}
+@section MainContent {
+	<div id="assignmentPanel">
+		<h2>@(T.Text("View Assignment Status"))</h2>
+		@if (((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance).HasRequestsLicense) {
+			<table>
+				<caption>@(Html.ActionLink(T.Text("Requests"), "Index", "Request"))</caption>
+				<tbody>
+					@(Html.ActiveLabelValue(Html.ActionLink(T.Text("Not Assigned"), "UnAssigned", "Request"), dsMB.Schema.T.AttentionStatus.F.NumNewWorkOrders.EffectiveType, Model.DatabaseStatus.NumUnAssignedNewRequests + Model.DatabaseStatus.NumUnAssignedInProgressRequests))
+					@(Html.LabelValue(T.Text("New"), dsMB.Schema.T.AttentionStatus.F.NumNewRequests.EffectiveType, Model.AttentionStatus.NumNewRequests))
+					@(Html.ActiveLabelValue(Html.ActionLink(T.Text("In Progress"), "Index", "Request"), dsMB.Schema.T.AttentionStatus.F.NumInProgressRequests.EffectiveType, Model.AttentionStatus.NumInProgressRequests))
+				</tbody>
+			</table>
+		}
+		@if (((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance).HasWorkOrdersLicense) {
+			<br />
+			<br />
+			<table>
+				<caption>@(Html.ActionLink(T.Text("Work Orders"), "Index", "WorkOrder"))</caption>
+				<tbody>
+					@(Html.ActiveLabelValue(Html.ActionLink(T.Text("Not Assigned"), "UnAssigned", "WorkOrder"), dsMB.Schema.T.AttentionStatus.F.NumNewWorkOrders.EffectiveType, Model.DatabaseStatus.NumUnAssignedNewWorkOrders + Model.DatabaseStatus.NumUnAssignedOpenWorkOrders))
+					@(Html.LabelValue(T.Text("Draft"), dsMB.Schema.T.AttentionStatus.F.NumNewWorkOrders.EffectiveType, Model.AttentionStatus.NumNewWorkOrders))
+					@(Html.ActiveLabelValue(Html.ActionLink(T.Text("Open"), "Index", "WorkOrder"), dsMB.Schema.T.AttentionStatus.F.NumInProgressWorkOrders.EffectiveType, Model.AttentionStatus.NumInProgressWorkOrders))
+				</tbody>
+			</table>
+		}
+		@if (((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance).HasInventoryLicense) {
+			<br />
+			<br />
+			<table>
+				<caption>@(Html.ActionLink(T.Text("Inventory"), "Index", "Storeroom"))</caption>
+			</table>
+}
+		@* No Purchasing support for now
+		@if (((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance).HasPurchaseOrdersLicense) {
+		<br />
+		<br />
+		<table class="assignmentPanel">
+			<caption>@(Html.ActionLink(T.Text("Purchase Orders"), "Index", "PurchaseOrder"))</caption>
+			@(Html.LabelValue(T.Text("Draft"), dsMB.Schema.T.AttentionStatus.F.NumNewPurchaseOrders.EffectiveType, Model.AttentionStatus.NumNewPurchaseOrders))
+			@(Html.ActiveLabelValue(Html.ActionLink(T.Text("Open"), "Index", "PurchaseOrder"), dsMB.Schema.T.AttentionStatus.F.NumInProgressPurchaseOrders.EffectiveType, Model.AttentionStatus.NumInProgressPurchaseOrders))
+		</table>
+		}
+		*@
+		<br />
+	</div>
+	@(Html.ActionButton(T.Text("Refresh"), ""))
+}

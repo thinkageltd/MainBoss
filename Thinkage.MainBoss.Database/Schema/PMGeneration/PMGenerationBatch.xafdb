@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="PMGenerationBatch" defaults="true" log="false" id="Id" xid="EntryDate" xunique="true" labelkey="PMGeneration Batch">
+	<doc>Historical information on PM Generation</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="EntryDate" type="RequiredDateTime">
+	  <doc>Date this generation set was committed and workorders actually generated.</doc>
+	  <extension name="serversetsDateTime"/>
+	</field>
+	<field name="UserID" type="RequiredGUIDREF" link="User">
+	  <doc>The identification of the user who created this PMGenerationBatch</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="SessionID" type="GUIDREF" link="Session" cascade="true">
+	  <doc>Linked to Session during creation of the PMGenerationBatch so that automatic cleanup of records can take place. Will be NULL for committed PmGenerationBatch</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="EndDate" type="Date">
+	  <doc>The generation end date for a batch of workorders. Will be NULL for unscheduled workorders, or manual basis changes</doc>
+	</field>
+	<field name="FilterUsed" type="Comment">
+	  <doc>The user specified filter constraints used to select what workorders and schedules were used for this generation</doc>
+	</field>
+	<field name="Comment" type="Comment">
+	  <doc>A user specified comment for the PMGenerationBatch</doc>
+	  <extension name="lines">3</extension>
+	</field>
+	<field name="SinglePurchaseOrders" type="RequiredBool">
+	  <doc>True flag indicating that multiple workorders should use a single purchase order rather than individual purchase orders per work order</doc>
+	</field>
+	<field name="PurchaseOrderCreationStateID" type="GUIDREF" link="PurchaseOrderState" labelkey="Purchase Order Creation State">
+	  <doc>null indicating use PurchaseOrderTemplate specification, else overides the system default for the initial state of created purchase orders</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="WorkOrderCreationStateID" type="GUIDREF" link="WorkOrderState" labelkey="Work Order Creation State">
+	  <doc>null indicating use the default system WorkOrderStateHistory new record value, else overides the system default for the initial state of created work orders</doc>
+	  <extension name="linkage">property</extension>
+	</field>	
+	<field name="AccessCodeUnitTaskPriority" type="integer(min 0, max 3, nonnull)" >
+	  <doc>A value of type DatabaseEnums.TaskUnitPriority which determines whether the Access Code for the generate work orders comes from the Task,
+	  from the Unit, or from both (and in the latter case which source has priority)</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TISchedule.TaskUnitPriorityProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="WorkOrderExpenseModelUnitTaskPriority" type="integer(min 0, max 3, nonnull)" >
+	  <doc>A value of type DatabaseEnums.TaskUnitPriority which determines whether the Work Order Expense Model for the generate work orders comes from the Task,
+	  from the Unit, or from both (and in the latter case which source has priority)</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TISchedule.TaskUnitPriorityProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<extension name="lastupdate">EntryDate</extension>
+  </table>
+  <table name="User"/>
+  <table name="Session"/>
+  <table name="PurchaseOrderState"/>
+  <table name="WorkOrderState"/>
+</database>

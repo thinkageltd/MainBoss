@@ -1,0 +1,507 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{855C00A4-67AF-446A-853B-B9E98F19EA01}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Thinkage.MainBoss.WebAccess</RootNamespace>
+    <AssemblyName>Thinkage.MainBoss.WebAccess</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode />
+    <SccProjectName>Thinkage.MainBoss.WebAccess</SccProjectName>
+    <SccLocalPath>1~cf73bb72-5e59-49d7-bf5d-1423e6537726</SccLocalPath>
+    <SccAuxPath>http://vault.thinkage.ca/VaultService</SccAuxPath>
+    <SccProvider>SourceGear Vault Visual Studio 2005 Client:{1EA47954-8515-402d-82D9-B5C332120A8D}</SccProvider>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PublishDatabases>false</PublishDatabases>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Data.Services" />
+    <Reference Include="System.Data.Services.Client" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebGrease">
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="CompanyInfo.cs" />
+    <Compile Include="Controllers\AssignmentController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\Cookies.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MainBossAuthorization.cs" />
+    <Compile Include="Controllers\RequestController.cs" />
+    <Compile Include="Controllers\RequestorController.cs" />
+    <Compile Include="Controllers\RequestStateHistoryController.cs" />
+    <Compile Include="Controllers\StateHistoryController.cs" />
+    <Compile Include="Controllers\StoreroomController.cs" />
+    <Compile Include="Controllers\UnitController.cs" />
+    <Compile Include="Controllers\WorkOrderController.cs" />
+    <Compile Include="Controllers\WorkOrderStateHistoryController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="HtmlHelperExtensions\MainBossExtensions.cs" />
+    <Compile Include="HtmlHelperExtensions\XAFExtensions.cs" />
+    <Compile Include="MainBossWebAccessApplication.cs" />
+    <Compile Include="Models\Assignment.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Assignment.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ItemCountValue.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ItemCountValue.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Repository\AssignmentRepository.cs" />
+    <Compile Include="Models\Authentication.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Authentication.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Repository\AuthenticationRepository.cs" />
+    <Compile Include="Models\Repository\BaseRepository.cs" />
+    <Compile Include="Models\Repository\ItemCountValueRepository.cs" />
+    <Compile Include="Models\Repository\StateHistoryRepository.cs" />
+    <Compile Include="Models\Repository\CreateRequestRepository.cs" />
+    <Compile Include="Models\EmailValidationModel.cs" />
+    <Compile Include="Models\HomeModel.cs" />
+    <Compile Include="Models\interfaces\IAssignmentRepository.cs" />
+    <Compile Include="Models\interfaces\IAuthenticationRepository.cs" />
+    <Compile Include="Models\interfaces\IBaseRepository.cs" />
+    <Compile Include="Models\interfaces\IBrowse.cs" />
+    <Compile Include="Models\interfaces\IStateHistoryUpdate.cs" />
+    <Compile Include="Models\interfaces\IView.cs" />
+    <Compile Include="Models\Request.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Request.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Repository\RequestRespository.cs" />
+    <Compile Include="Models\Repository\RequestStateHistoryRespository.cs" />
+    <Compile Include="Models\Unit.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Unit.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Repository\UnitRepository.cs" />
+    <Compile Include="Models\WOResources.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>WOResources.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Models\WorkOrder.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>WorkOrder.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Models\WorkOrderClose.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>WorkOrderClose.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Repository\WorkOrderRepository.cs" />
+    <Compile Include="Models\Repository\WorkOrderStateHistoryRepository.cs" />
+    <Compile Include="Models\Wrappers\Assignment.cs" />
+    <Compile Include="Models\Wrappers\CloseCode.cs" />
+    <Compile Include="Models\Wrappers\DerivedDemands.cs" />
+    <Compile Include="Models\Wrappers\ItemCountValue.cs" />
+    <Compile Include="Models\Wrappers\PickListWithEmptyOption.cs" />
+    <Compile Include="Models\Wrappers\Request.cs" />
+    <Compile Include="Models\Wrappers\RequestPriority.cs" />
+    <Compile Include="Models\Wrappers\RequestStateHistoryModel.cs" />
+    <Compile Include="Models\Wrappers\RequestStateHistoryStatus.cs" />
+    <Compile Include="Models\Wrappers\Unit.cs" />
+    <Compile Include="Models\Wrappers\WOResources.cs" />
+    <Compile Include="Models\Wrappers\WorkOrder.cs" />
+    <Compile Include="Models\Wrappers\WorkOrderStateHistoryModel.cs" />
+    <Compile Include="Models\Wrappers\WorkOrderStateHistoryStatus.cs" />
+    <Compile Include="ProductInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SolutionSettings.cs" />
+    <Compile Include="Translation.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Content Include="Content\asc.gif" />
+    <Content Include="Content\bg.gif" />
+    <Content Include="Content\calendar.gif" />
+    <Content Include="Content\Custom\RequestCreate.js" />
+    <Content Include="Content\desc.gif" />
+    <Content Include="Content\favicon.ico" />
+    <Content Include="Content\logo.gif" />
+    <Content Include="Content\mb_thinkage.gif" />
+    <Content Include="Content\MobileSite.css" />
+    <Content Include="Content\Custom\RequestCreate.css" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Content\themes\base\accordion.css" />
+    <Content Include="Content\themes\base\all.css" />
+    <Content Include="Content\themes\base\autocomplete.css" />
+    <Content Include="Content\themes\base\base.css" />
+    <Content Include="Content\themes\base\button.css" />
+    <Content Include="Content\themes\base\core.css" />
+    <Content Include="Content\themes\base\datepicker.css" />
+    <Content Include="Content\themes\base\dialog.css" />
+    <Content Include="Content\themes\base\draggable.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\menu.css" />
+    <Content Include="Content\themes\base\progressbar.css" />
+    <Content Include="Content\themes\base\resizable.css" />
+    <Content Include="Content\themes\base\selectable.css" />
+    <Content Include="Content\themes\base\selectmenu.css" />
+    <Content Include="Content\themes\base\slider.css" />
+    <Content Include="Content\themes\base\sortable.css" />
+    <Content Include="Content\themes\base\spinner.css" />
+    <Content Include="Content\themes\base\tabs.css" />
+    <Content Include="Content\themes\base\theme.css" />
+    <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="Global.asax" />
+    <None Include="LINQGenerationTemplate.xml" />
+    <EmbeddedResource Include="Models\ItemCountValue.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>ItemCountValue.cs</LastGenOutput>
+      <CustomToolNamespace>/define:PLURAL /templateitem:LinqGenerationTemplate.xml /tns:Thinkage.MainBoss.WebAccess.Models</CustomToolNamespace>
+    </EmbeddedResource>
+    <None Include="Notes\CookieUse.txt" />
+    <None Include="Notes\SetupProblems.txt" />
+    <None Include="local.appsettings.sample" />
+    <None Include="Properties\PublishProfiles\ASPNetMerge.pubxml" />
+    <None Include="Properties\PublishProfiles\StringBuilding.pubxml" />
+    <None Include="Scripts\jquery-2.1.4.intellisense.js" />
+    <Content Include="Scripts\jquery-2.1.4.js" />
+    <Content Include="Scripts\jquery-2.1.4.min.js" />
+    <Content Include="Scripts\jquery-ui-1.11.4.js" />
+    <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
+    <Content Include="Scripts\jquery-ui-i18n.js" />
+    <Content Include="Scripts\jquery-ui-i18n.min.js" />
+    <Content Include="Scripts\jquery-ui.unobtrusive-2.2.0.js" />
+    <Content Include="Scripts\jquery-ui.unobtrusive-2.2.0.min.js" />
+    <Content Include="Scripts\jquery-ui.unobtrusive-2.2.1.js" />
+    <Content Include="Scripts\jquery.tablesorter.js" />
+    <Content Include="Scripts\jquery.tablesorter.min.js" />
+    <Content Include="Scripts\jquery-2.1.4.min.map" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\MicrosoftAjax.debug.js" />
+    <Content Include="Scripts\MicrosoftAjax.js" />
+    <Content Include="Scripts\MicrosoftMvcAjax.debug.js" />
+    <Content Include="Scripts\MicrosoftMvcAjax.js" />
+    <Content Include="Scripts\MicrosoftMvcValidation.debug.js" />
+    <Content Include="Scripts\MicrosoftMvcValidation.js" />
+    <Content Include="Scripts\timepicker\dist\i18n\jquery-ui-timepicker-addon-i18n.js" />
+    <Content Include="Scripts\timepicker\dist\i18n\jquery-ui-timepicker-addon-i18n.min.js" />
+    <Content Include="Scripts\timepicker\dist\jquery-ui-sliderAccess.js" />
+    <Content Include="Scripts\timepicker\dist\jquery-ui-timepicker-addon.css" />
+    <Content Include="Scripts\timepicker\dist\jquery-ui-timepicker-addon.js" />
+    <Content Include="Scripts\timepicker\dist\jquery-ui-timepicker-addon.min.css" />
+    <Content Include="Scripts\timepicker\dist\jquery-ui-timepicker-addon.min.js" />
+    <Content Include="Views\_ViewStart.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\Assignment\Index.cshtml" />
+    <Content Include="Views\Shared\_LayoutSite.cshtml" />
+    <Content Include="Views\Shared\LogOnUserControl.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\Logout.cshtml" />
+    <Content Include="Views\Shared\_LayoutLabelValueView.cshtml" />
+    <Content Include="Views\Unit\View.cshtml" />
+    <Content Include="Views\Shared\_LayoutBrowse.cshtml" />
+    <Content Include="Views\Request\Index.cshtml" />
+    <Content Include="Views\Request\View.cshtml" />
+    <Content Include="Views\Request\Create.cshtml" />
+    <Content Include="Views\Request\UnAssigned.cshtml" />
+    <Content Include="Views\WorkOrder\Index.cshtml" />
+    <Content Include="Views\WorkOrder\View.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Views\Shared\_LayoutEditForm.cshtml" />
+    <Content Include="Views\Requestor\AddComment.cshtml" />
+    <Content Include="Views\Requestor\CanNoLongerMakeRemarks.cshtml" />
+    <Content Include="Views\Error\UnHandledException.cshtml" />
+    <Content Include="Views\RequestStateHistory\AddComment.cshtml" />
+    <Content Include="Views\RequestStateHistory\Close.cshtml" />
+    <Content Include="Views\RequestStateHistory\InProgress.cshtml" />
+    <Content Include="Views\WorkOrderStateHistory\AddComment.cshtml" />
+    <Content Include="Views\WorkOrderStateHistory\Close.cshtml" />
+    <Content Include="Views\Shared\NoPermission.cshtml" />
+    <Content Include="Views\WorkOrder\UnAssigned.cshtml" />
+    <Content Include="Views\RequestStateHistory\SelfAssign.cshtml" />
+    <Content Include="Views\WorkOrderStateHistory\SelfAssign.cshtml" />
+    <Content Include="Views\Storeroom\WithExternalTags.cshtml" />
+    <Content Include="Views\Storeroom\Index.cshtml" />
+    <Content Include="Views\Storeroom\ItemAssignments.cshtml" />
+    <Content Include="Views\Storeroom\ViewItemAssignment.cshtml" />
+    <Content Include="Thinkage.MainBoss.WebAccess.wpp.targets" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Views\ItemCountValue\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Models\Assignment.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>Assignment.cs</LastGenOutput>
+      <CustomToolNamespace>/define:IsView  /templateitem:LinqGenerationTemplate.xml /tns:Thinkage.MainBoss.WebAccess.Models</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Models\Authentication.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>Authentication.cs</LastGenOutput>
+      <CustomToolNamespace>/templateitem:LinqGenerationTemplate.xml /tns:Thinkage.MainBoss.WebAccess.Models</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Models\Request.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>Request.cs</LastGenOutput>
+      <CustomToolNamespace>/define:PLURAL /templateitem:LinqGenerationTemplate.xml /tns:Thinkage.MainBoss.WebAccess.Models</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Models\Unit.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>Unit.cs</LastGenOutput>
+      <CustomToolNamespace>/define:IsView  /templateitem:LinqGenerationTemplate.xml /tns:Thinkage.MainBoss.WebAccess.Models</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Models\WOResources.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>WOResources.cs</LastGenOutput>
+      <CustomToolNamespace>/templateitem:LinqGenerationTemplate.xml /tns:Thinkage.MainBoss.WebAccess.Models</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Models\WorkOrder.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>WorkOrder.cs</LastGenOutput>
+      <CustomToolNamespace>/templateitem:LinqGenerationTemplate.xml /tns:Thinkage.MainBoss.WebAccess.Models</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Models\WorkOrderClose.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>WorkOrderClose.cs</LastGenOutput>
+      <CustomToolNamespace>/define:SerializationMode=Unidirectional /templateitem:LinqGenerationTemplate.xml /tns:Thinkage.MainBoss.WebAccess.Models</CustomToolNamespace>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TranslationResources\messages.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TranslationResources\messages.es.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TranslationResources\messages.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TranslationResources\messages.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JQueryUIHelpers\JQueryUIHelpers.csproj">
+      <Project>{f14c1547-b5ca-4c6b-bf8b-549309d21208}</Project>
+      <Name>JQueryUIHelpers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.DBAccess\Thinkage.Libraries.DBAccess.csproj">
+      <Project>{4c013dd4-7ae5-49ed-9a18-ce2204c9b508}</Project>
+      <Name>Thinkage.Libraries.DBAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary.MSSql\Thinkage.Libraries.DBILibrary.MSSql.csproj">
+      <Project>{71bfb1de-d9e5-48cc-87ba-bbde18496ab2}</Project>
+      <Name>Thinkage.Libraries.DBILibrary.MSSql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary\Thinkage.Libraries.DBILibrary.csproj">
+      <Project>{9398f76e-d6fd-4194-9599-ce4b6512d5a2}</Project>
+      <Name>Thinkage.Libraries.DBILibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.MVC\Thinkage.Libraries.MVC.csproj">
+      <Project>{46acf84c-12aa-450c-912c-7353644f44fb}</Project>
+      <Name>Thinkage.Libraries.MVC</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Layout\Thinkage.Libraries.XAF.Database.Layout.csproj">
+      <Project>{d329682f-5e4c-496d-9df4-e94896daec54}</Project>
+      <Name>Thinkage.Libraries.XAF.Database.Layout</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Service.MSSql\Thinkage.Libraries.XAF.Database.Service.MSSql.csproj">
+      <Project>{1a451d90-ff1f-4446-a6c7-983422ca1103}</Project>
+      <Name>Thinkage.Libraries.XAF.Database.Service.MSSql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Service\Thinkage.Libraries.XAF.Database.Service.csproj">
+      <Project>{1bf2ec15-6f92-4ce1-aeb4-fba8e3e147a1}</Project>
+      <Name>Thinkage.Libraries.XAF.Database.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.UI\Thinkage.Libraries.XAF.UI.csproj">
+      <Project>{7675980a-46b7-41d8-ad27-1ed46277d959}</Project>
+      <Name>Thinkage.Libraries.XAF.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries\Thinkage.Libraries.csproj">
+      <Project>{f1588fb4-32fc-4718-8982-66c02732df13}</Project>
+      <Name>Thinkage.Libraries</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.MainBoss.Database\Thinkage.MainBoss.Database.csproj">
+      <Project>{1302bbda-fb21-415f-9ecf-678be8f5f79e}</Project>
+      <Name>Thinkage.MainBoss.Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.MainBoss.WebCommon\Thinkage.MainBoss.WebCommon.csproj">
+      <Project>{ef117fd7-b21f-4408-a09a-9d6ba238ced0}</Project>
+      <Name>Thinkage.MainBoss.WebCommon</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <PropertyGroup>
+    <PreBuildEvent>powershell -noprofile "$(SolutionDir)GenerateProjectSolutionSettings.ps1" $(ProjectDir) "c#" $(ProjectName)</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database name="http://thinkage.ca/MB3/dsMB.xsd:dsDBVersion_1_0_0_1_To_1_0_8_1" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<!-- Database global variables are defined first -->
+	<type name="RequiredVersionInfo" type="string(minlength 1, 23, lines 0, nonnull)" />
+	<variable name="DBVersion" type="RequiredVersionInfo">
+		<doc>The version of the database intended to prevent newer versions of the applications from accessing older databases.</doc>
+	</variable>
+	<merge uri="Extensions.xafdb"/>
+</database>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database name="http://thinkage.ca/MB3/dsMB.xsd:dsUser_1_1_4_2" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+  <table name="User" defaults="true" log="false" id="Id" xid="AuthenticationCredential Hidden" xunique="true">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="PrincipalID" base="Principal" read="RequiredGUIDREF"/>
+	<field name="AuthenticationCredential" type="Requiredsysname" labelkey="Authentication Credential">
+	<doc>
+		The (typically login) credential used to access the database to which we match the corresponding application user record.
+	</doc>
+	</field>
+	<field name="Hidden" type="GenerationValue"/>
+	<extension name="deletemethod">hide</extension>
+	<extension name="tablerights">Administrator=*</extension>
+  </table>
+  <table name="Principal"/>
+</database>

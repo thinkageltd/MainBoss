@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="EmailRequest" defaults="true" log="false" id="Id" xid="RequestID" labelkey="Email Request">
+	<field name="Id" read="RequiredGUID"/>
+		<field name="RequestorEmailAddress" type="string(minlength 1, 128, lines 0, trim both)">
+			<extension name="usage">EMailLink</extension>
+		</field>
+		<field name="RequestorEmailDisplayName" type="string(minlength 1, 128, lines 0, trim both)">
+			<doc>The originating email address of the requestor</doc>
+		</field>
+		<field name="ProcessingState" type="integer(16,nonnull)">
+	  <doc>The state this record is in. See DatabaseEnums.EmailRequestState enum</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIMainBossService.EmailRequestStateProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="Comment" type="Comment">
+	  <doc>Comment attributed to the email request, usually by someone who had reviewed the email request</doc>
+	</field>
+	<field name="ReceiveDate" type="RequiredDateTime">
+	  <doc>Date the email message was received</doc>
+	  <extension name="serversetsDateTime"/>
+	</field>
+	<field name="ProcessedDate" type="DateTime">
+	  <doc>Date the email message was received</doc>
+	  <extension name="serversetsDateTime"/>
+	</field>
+	<field name="MailHeader" type="RequiredMultiLineUnlimited">
+			<doc>The MailMessage header as received</doc>
+		</field>
+	<field name="MailMessage" type="RequiredMultiLineUnlimited">
+		<doc>The plain text content of the email message received. </doc>
+	</field>
+	<field name="RequestID" type="GUIDREF" link="Request" unique="true" where="RequestID IS NOT NULL">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="PreferredLanguage" type="CultureInfoLCID">
+		<doc>The Accept-Language header (if present) will be placed here as the CultureInfo LCID equivalent</doc>
+	</field>
+	<field name="Subject" type="string(minlength 1, 1028, lines 0, trim both)">
+		<doc>The Subject field from the mail message </doc>
+	</field>
+	<extension name="deletemethod">delete</extension>
+	<extension name="costrights">UnitValue</extension>
+  </table>
+  <table name="Request"/>
+</database>

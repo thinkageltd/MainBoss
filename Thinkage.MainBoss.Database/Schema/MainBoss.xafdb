@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database labelcontext="dsMBLabel" name="http://thinkage.ca/MB3/dsMB.xsd:dsMB" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+  <!-- Database global variables are defined first -->
+  <variable name="DBVersion" type="RequiredVersionInfo">
+	<doc>The version of the database intended to prevent newer versions of the applications from accessing older databases.</doc>
+  </variable>
+  <variable name="DBServerVersion" type="RequiredVersionInfo">
+	<doc>The version of the underlying database server whose capabilities this database expects to be present</doc>
+  </variable>
+  <variable name="MinMBAppVersion" type="RequiredVersionInfo">
+	<doc>The version of the MainBoss application intended to prevent older versions of the applications from accessing newer databases.</doc>
+  </variable>
+  <variable name="MinAReqAppVersion" type="RequiredVersionInfo">
+	<doc>The version of the @Request application intended to prevent older versions of the applications from accessing newer databases.</doc>
+  </variable>
+  <variable name="MinMBRemoteAppVersion" type="RequiredVersionInfo">
+	<doc>The version of the MainBoss Remote application intended to prevent older versions of the applications from accessing newer databases.</doc>
+  </variable>
+  <variable name="CompanyLocationID" type="link(Location)" >
+	<doc>Contact record to use for the Company Name header information on external documents (like purchase orders, work orders)</doc>
+	<extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.CompanyLocationPickerTblCreator,Thinkage.MainBoss.Controls</extension>
+  </variable>
+  <variable name="NewsURL" type="string(minlength 1, 1073741823, lines 0, null)">
+	<doc>URL to use to display in the MainBoss News panel</doc>
+  </variable>
+  <variable name="OrganizationName" type="OrganizationName">
+	<doc>The name of the organization typically associated with this database. Assists users in finding their organization's database in a large collection
+    of databases on the same server</doc>
+  </variable>
+  <variable name="CompanyLogo" type="Image" >
+	<doc>Company logo image to use on external documents (like purchase orders, work orders)</doc>
+  </variable>
+  <variable name="ReportFont" type="RequiredCode">
+	<doc>The font to use for the body of reports</doc>
+  </variable>
+  <variable name="ReportFontFixedWidth" type="RequiredCode">
+	<doc>The fixed-width font to use in reports where applicable</doc>
+  </variable>
+  <variable name="ReportFontSize" type="RequiredQuantity">
+	<doc>The font size (points) to use for the body of reports</doc>
+  </variable>
+  <variable name="ReportFontSizeFixedWidth" type="RequiredQuantity">
+	<doc>The font size (points) to use for the fixed-width text in reports</doc>
+  </variable>
+  <variable name="BarCodeSymbology" type="integer(min 0, max 127, nonnull)">
+	<doc>The default BarCodeSymbology to use for printing BarCodes; see Thinkage.Libraries.Presentation.BarCodeSymbology</doc>
+  </variable>
+
+  <variable name="ActiveFilterInterval" type="DaySpan">
+	<doc>The number of days from the current date back that the Active record filter is set to.</doc>
+  </variable>
+  <variable name="ActiveFilterSinceDate" type="Date">
+	<doc>The absolute since date the Active Filter is set to. If both Interval and SinceDate are set, the effective filter is the
+	AND operation of both.</doc>
+  </variable>
+
+  <variable name="HiddenFeatures" type="set(type string(minlength 1, 1073741823, lines 0, nonnull))">
+	<doc>Set containing user customized forms that list features the user wants hidden on screen</doc>
+  </variable>
+
+  <table name="Location"/>
+  <table name="BackupFileName" labelkey="Backup"/>
+
+  <merge uri="DatabaseFunctions.xafdb"/>
+
+  <merge uri="Session.xafdb"/>
+  <merge uri="../../Thinkage.Libraries.DBAccess/Session.xafdb">
+	<else uri="manifest://localhost/Thinkage.Libraries.DBAccess,Thinkage/Libraries/DBAccess/Session.xafdb"/>
+  </merge>
+
+  <merge uri="UserMessageKey.xafdb"/>
+  <merge uri="UserMessageTranslation.xafdb"/>
+  <!-- Audit removed not required in current form for initial release - kadorken 2007/01/26
+  <merge uri="../Thinkage.Libraries.DBAccess/__Audit.xafdb">
+	<else uri="manifest://localhost/Thinkage.Libraries.DBAccess,Thinkage/Libraries/Thinkage.Libraries.DBAccess/__Audit.xafdb"/>
+  </merge>
+-->
+  <merge uri="../Upgrade/Schema/dsUpgrade_1_1_4_2.xafdb"/>
+  <merge uri="Settings.xafdb"/>
+  <merge uri="SettingsName.xafdb"/>
+  <merge uri="DefaultSettings.xafdb"/>
+  <merge uri="SettingsAdministration.xafdb"/>
+  <merge uri="Security/Role.xafdb"/>
+  <merge uri="Security/CustomRole.xafdb"/>
+  <merge uri="Security/User.xafdb"/>
+  <merge uri="Security/PrincipalExtraInformation.xafdb"/>
+  <merge uri="Security/SecurityRoleAndUserRoleReport.xafdb"/>
+  <merge uri="SingleRecordNoDataTable.xafdb"/>
+  <merge uri="Accounting\CostCenter.xafdb"/>
+  <merge uri="Accounting\AccountingTransaction.xafdb"/>
+  <merge uri="Accounting\AccountingTransactionsAndReversals.xafdb"/>
+  <merge uri="Accounting\AccountingTransactionVariants.xafdb"/>
+  <merge uri="Accounting\VoidCode.xafdb"/>
+  <merge uri="AssignmentNotification.xafdb"/>
+  <merge uri="AttentionStatus.xafdb"/>
+  <merge uri="ExternalTag.xafdb"/>
+  <merge uri="Inventory\ActualItemLocation.xafdb"/>
+  <merge uri="Inventory\Item.xafdb"/>
+  <merge uri="Inventory\ItemActivity.xafdb"/>
+  <merge uri="Inventory\ItemActivityReport.xafdb"/>
+  <merge uri="Inventory\ItemAdjustment.xafdb"/>
+  <merge uri="Inventory\ItemAdjustmentCode.xafdb"/>
+  <merge uri="Inventory\ItemCategory.xafdb"/>
+  <merge uri="Inventory\ItemCountValue.xafdb"/>
+  <merge uri="Inventory\ItemCountValueVoid.xafdb"/>
+  <merge uri="Inventory\ItemIssue.xafdb"/>
+  <merge uri="Inventory\ItemIssueCode.xafdb"/>
+  <merge uri="Inventory\ItemLocation.xafdb"/>
+  <merge uri="Inventory\ItemLocationReport.xafdb"/>
+  <merge uri="Inventory\ItemPrice.xafdb"/>
+  <merge uri="Inventory\ItemPricing.xafdb"/>
+  <merge uri="Inventory\ItemReceiving.xafdb"/>
+  <merge uri="Inventory\ItemRestocking.xafdb"/>
+  <merge uri="Inventory\ItemRestockingReport.xafdb"/>
+  <merge uri="Inventory\ItemTransfer.xafdb"/>
+  <merge uri="Inventory\PermanentItemLocation.xafdb"/>
+  <merge uri="Inventory\TemporaryItemLocation.xafdb"/>
+  <merge uri="Inventory\TemplateItemLocation.xafdb"/>
+  <merge uri="Inventory\LocationDerivationsAndItemLocation.xafdb"/>
+  <merge uri="PurchaseOrderTemplate\PurchaseOrderTemplate.xafdb" />
+  <merge uri="PurchaseOrderTemplate\PurchaseOrderTemplateReport.xafdb" />
+  <merge uri="PurchaseOrderTemplate\PurchaseOrderTemplateLine.xafdb" />
+  <merge uri="PurchaseOrderTemplate\POLineTemplate.xafdb" />
+  <merge uri="PurchaseOrderTemplate\POLineItemTemplate.xafdb" />
+  <merge uri="PurchaseOrderTemplate\POLineLaborTemplate.xafdb" />
+  <merge uri="PurchaseOrderTemplate\POLineMiscellaneousTemplate.xafdb" />
+  <merge uri="PurchaseOrderTemplate\POLineOtherWorkTemplate.xafdb" />
+  <merge uri="Purchasing\PaymentTerm.xafdb"/>
+  <merge uri="Purchasing\POLine.xafdb"/>
+  <merge uri="Purchasing\POLineItem.xafdb"/>
+  <merge uri="Purchasing\POLineOtherWork.xafdb"/>
+  <merge uri="Purchasing\POLineMiscellaneous.xafdb"/>
+  <merge uri="Purchasing\POLineLabor.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrder.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrderCategory.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrderAssignee.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrderAssigneeProspect.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrderAssigneeStatistics.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrderAssignment.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrderAssignmentReport.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrderAssignmentByAssignee.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrderLine.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrderExtras.xafdb"/>
+  <merge uri="Purchasing\Miscellaneous.xafdb"/>
+  <merge uri="Purchasing\ShippingMode.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrderState.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrderStateTransition.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrderStateHistory.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrderStateHistoryReport.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrderStateHistoryStatus.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrderFormReport.xafdb"/>
+  <merge uri="Purchasing\PurchaseOrderSequenceCounter.xafdb"/>
+  <merge uri="Receiving\Receipt.xafdb"/>
+  <merge uri="Receiving\ReceiptActivity.xafdb"/>
+  <merge uri="Receiving\ReceiveItemPO.xafdb"/>
+  <merge uri="Receiving\ReceiveItemNonPO.xafdb"/>
+  <merge uri="Receiving\ReceiveMiscellaneousPO.xafdb"/>
+  <merge uri="Receiving\ReceivingReport.xafdb"/>
+  <merge uri="Receiving\ReceiptReport.xafdb"/>
+  <merge uri="Requests\ActiveRequestAgeHistogram.xafdb"/>
+  <merge uri="Requests\ActiveRequestor.xafdb"/>
+  <merge uri="Requests\AssignedActiveRequestAgeHistogram.xafdb"/>
+  <merge uri="Requests\AssignedRequestCountsByPriority.xafdb"/>
+  <merge uri="Requests\AssignedRequestCountsByStatus.xafdb"/>
+  <merge uri="Requests\ManageRequestTransition.xafdb"/>
+  <merge uri="Requests\Request.xafdb"/>
+  <merge uri="Requests\RequestAssignee.xafdb"/>
+  <merge uri="Requests\RequestAssigneeProspect.xafdb"/>
+  <merge uri="Requests\RequestAssigneeStatistics.xafdb"/>
+  <merge uri="Requests\RequestAssignment.xafdb"/>
+  <merge uri="Requests\RequestAssignmentReport.xafdb"/>
+  <merge uri="Requests\RequestAssignmentByAssignee.xafdb"/>
+  <merge uri="Requests\RequestCountsByPriority.xafdb"/>
+  <merge uri="Requests\RequestCountsByStatus.xafdb"/>
+  <merge uri="Requests\RequestedWorkOrder.xafdb"/>
+  <merge uri="Requests\RequestExtras.xafdb"/>
+  <merge uri="Requests\RequestPriority.xafdb"/>
+  <merge uri="Requests\RequestState.xafdb"/>
+  <merge uri="Requests\RequestStateTransition.xafdb"/>
+  <merge uri="Requests\RequestStateHistory.xafdb"/>
+  <merge uri="Requests\RequestStateHistoryReport.xafdb"/>
+  <merge uri="Requests\RequestStateHistoryStatus.xafdb"/>
+  <merge uri="Requests\Requestor.xafdb"/>
+  <merge uri="Requests\RequestReport.xafdb"/>
+  <merge uri="Requests\RequestSequenceCounter.xafdb"/>
+  <merge uri="Service\EmailRequest.xafdb"/>
+  <merge uri="Service\EmailPart.xafdb"/>
+  <merge uri="Service\ServiceLog.xafdb"/>
+  <merge uri="Service\RequestAcknowledgement.xafdb"/>
+  <merge uri="Service\ServiceConfiguration.xafdb"/>
+  <merge uri="WorkOrder\ActualItem.xafdb"/>
+  <merge uri="WorkOrder\ActualLaborInside.xafdb"/>
+  <merge uri="WorkOrder\ActualLaborOutsidePO.xafdb"/>
+  <merge uri="WorkOrder\ActualLaborOutsideNonPO.xafdb"/>
+  <merge uri="WorkOrder\ActualMiscellaneousWorkOrderCost.xafdb"/>
+  <merge uri="WorkOrder\ActualOtherWorkInside.xafdb"/>
+  <merge uri="WorkOrder\ActualOtherWorkOutsidePO.xafdb"/>
+  <merge uri="WorkOrder\ActualOtherWorkOutsideNonPO.xafdb"/>
+  <merge uri="WorkOrder\AssignedWorkOrderCountsByStatus.xafdb"/>
+  <merge uri="WorkOrder\AssignedWorkOrderCountsByPriority.xafdb"/>
+  <merge uri="WorkOrder\AssignedWorkOrderEndDateHistogram.xafdb"/>
+  <merge uri="WorkOrder\BillableRequestor.xafdb"/>
+  <merge uri="WorkOrder\Chargeback.xafdb"/>
+  <merge uri="WorkOrder\ChargebackFormReport.xafdb"/>
+  <merge uri="WorkOrder\ChargebackLine.xafdb"/>
+  <merge uri="WorkOrder\ChargebackLineCategory.xafdb"/>
+  <merge uri="WorkOrder\ChargebackActivity.xafdb"/>
+  <merge uri="WorkOrder\CloseCode.xafdb"/>
+  <merge uri="WorkOrder\Demand.xafdb"/>
+  <merge uri="WorkOrder\DemandItem.xafdb"/>
+  <merge uri="WorkOrder\DemandLaborInside.xafdb"/>
+  <merge uri="WorkOrder\DemandLaborOutside.xafdb"/>
+  <merge uri="WorkOrder\DemandLaborOutsideActivity.xafdb"/>
+  <merge uri="WorkOrder\DemandMiscellaneousWorkOrderCost.xafdb"/>
+  <merge uri="WorkOrder\DemandOtherWorkInside.xafdb"/>
+  <merge uri="WorkOrder\DemandOtherWorkOutside.xafdb"/>
+  <merge uri="WorkOrder\DemandOtherWorkOutsideActivity.xafdb"/>
+  <merge uri="WorkOrder\MiscellaneousWorkOrderCost.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderInside.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderItems.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderMiscellaneous.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderOutside.xafdb"/>
+  <merge uri="WorkOrder\WorkCategory.xafdb"/>
+  <merge uri="WorkOrder\WorkOrder.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderAssignee.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderAssigneeStatistics.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderAssigneeProspect.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderAssignment.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderAssignmentReport.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderAssignmentByAssignee.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderAssignmentAll.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderAssignmentAndUnassignedWorkOrder.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderAssignmentNotification.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderCountsByPriority.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderCountsByStatus.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderEndDateHistogram.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderPriority.xafdb"/>
+  <merge uri="WorkOrder\Project.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderExtras.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderState.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderStateTransition.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderStateHistory.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderStateHistoryStatus.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderStateHistoryReport.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderExpenseModel.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderExpenseCategory.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderExpenseModelEntry.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderFormReport.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderPurchaseOrder.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderPurchaseOrderLinkage.xafdb"/>
+  <merge uri="WorkOrder\WorkOrderSequenceCounter.xafdb"/>
+  <merge uri="WorkOrderTemplate\WorkOrderTemplate.xafdb"/>
+  <merge uri="WorkOrderTemplate\WorkOrderTemplateContainment.xafdb"/>
+  <merge uri="WorkOrderTemplate\WorkOrderTemplateInside.xafdb"/>
+  <merge uri="WorkOrderTemplate\WorkOrderTemplateItems.xafdb"/>
+  <merge uri="WorkOrderTemplate\WorkOrderTemplateOutside.xafdb"/>
+  <merge uri="WorkOrderTemplate\WorkOrderTemplateMiscellaneous.xafdb"/>
+  <merge uri="WorkOrderTemplate\WorkOrderTemplateReport.xafdb"/>
+  <merge uri="WorkOrderTemplate\WorkOrderTemplatePurchaseOrderTemplate.xafdb"/>
+  <merge uri="WorkOrderTemplate\WorkOrderTemplateWithContainers.xafdb"/>
+  <merge uri="WorkOrderTemplate\DemandTemplate.xafdb"/>
+  <merge uri="WorkOrderTemplate\DemandItemTemplate.xafdb"/>
+  <merge uri="WorkOrderTemplate\DemandLaborInsideTemplate.xafdb"/>
+  <merge uri="WorkOrderTemplate\DemandLaborOutsideTemplate.xafdb"/>
+  <merge uri="WorkOrderTemplate\DemandMiscellaneousWorkOrderCostTemplate.xafdb"/>
+  <merge uri="WorkOrderTemplate\DemandOtherWorkInsideTemplate.xafdb"/>
+  <merge uri="WorkOrderTemplate\DemandOtherWorkOutsideTemplate.xafdb"/>
+  <merge uri="WorkOrderTemplate\WorkOrderTemplatePurchaseOrderTemplateLinkage.xafdb"/>
+  <merge uri="AccessCode.xafdb"/>
+  <merge uri="Contact.xafdb"/>
+  <merge uri="ContactReport.xafdb"/>
+  <merge uri="ContactFunctions.xafdb" />
+  <merge uri="DatabaseStatus.xafdb"/>
+  <merge uri="Labor\Employee.xafdb"/>
+  <merge uri="Labor\LaborInside.xafdb"/>
+  <merge uri="Labor\LaborOutside.xafdb"/>
+  <merge uri="Labor\OtherWorkInside.xafdb"/>
+  <merge uri="Labor\OtherWorkOutside.xafdb"/>
+  <merge uri="Labor\Trade.xafdb"/>
+  <merge uri="Locations\Location.xafdb"/>
+  <merge uri="Locations\LocationContainment.xafdb"/>
+  <merge uri="Locations\LocationReport.xafdb"/>
+  <merge uri="Locations\LocationDerivations.xafdb"/>
+  <merge uri="Locations\PermanentStorage.xafdb"/>
+  <merge uri="Locations\PlainRelativeLocation.xafdb"/>
+  <merge uri="Locations\PostalAddress.xafdb"/>
+  <merge uri="Locations\RelativeLocation.xafdb"/>
+  <merge uri="Locations\TemporaryStorage.xafdb"/>
+  <merge uri="Locations\TemplateTemporaryStorage.xafdb"/>
+  <merge uri="Locations\ActiveTemporaryStorageWithItemAssignments.xafdb"/>
+  <merge uri="PMGeneration\Periodicity.xafdb"/>
+  <merge uri="PMGeneration\Schedule.xafdb"/>
+  <merge uri="PMGeneration\MaintenanceTimingReport.xafdb"/>
+  <merge uri="PMGeneration\ScheduledWorkOrder.xafdb"/>
+  <merge uri="PMGeneration\ScheduledWorkOrderReport.xafdb"/>
+  <merge uri="PMGeneration\PMGenerationBatch.xafdb"/>
+  <merge uri="PMGeneration\PMGenerationDetail.xafdb"/>
+  <merge uri="PMGeneration\PMInitializingGenerationDetail.xafdb"/>
+  <merge uri="PMGeneration\PMGenerationDetailTreeView.xafdb"/>
+  <merge uri="PMGeneration\MaintenanceForecastReport.xafdb"/>
+  <merge uri="PMGeneration\ExistingAndForecastResources.xafdb"/>
+  <merge uri="PMGeneration\ResolvedWorkOrderTemplate.xafdb"/>
+  <merge uri="Relationships\Relationship.xafdb"/>
+  <merge uri="Relationships\UnitRelatedUnit.xafdb"/>
+  <merge uri="Relationships\UnitRelatedContact.xafdb"/>
+  <merge uri="Relationships\UnitRelatedRecords.xafdb"/>
+  <merge uri="Relationships\ContactRelatedRecords.xafdb"/>
+  <merge uri="Units\Unit.xafdb"/>
+  <merge uri="Units\AssetCode.xafdb"/>
+  <merge uri="Units\Attachment.xafdb"/>
+  <merge uri="Units\SparePart.xafdb"/>
+  <merge uri="Units\Specification.xafdb"/>
+  <merge uri="Units\SpecificationForm.xafdb"/>
+  <merge uri="Units\SpecificationData.xafdb"/>
+  <merge uri="Units\SpecificationFormField.xafdb"/>
+  <merge uri="Units\UnitCategory.xafdb"/>
+  <merge uri="Units\UnitReport.xafdb"/>
+  <merge uri="Units\UnitServiceContract.xafdb"/>
+  <merge uri="Units\UnitUsage.xafdb"/>
+  <merge uri="Units\ServiceContract.xafdb"/>
+  <merge uri="Units\SystemCode.xafdb"/>
+  <merge uri="Units\Meter.xafdb"/>
+  <merge uri="Units\MeterClass.xafdb"/>
+  <merge uri="Units\MeterReading.xafdb"/>
+  <merge uri="Units\Ownership.xafdb"/>
+  <merge uri="Units\WorkOrderMeterTreeView.xafdb"/>
+  <merge uri="UnitOfMeasure.xafdb"/>
+  <merge uri="Vendor.xafdb"/>
+  <merge uri="VendorCategory.xafdb"/>
+  <!-- <merge uri="WorkOrderSchedulingHistory.xafdb"/> -->
+  <!-- Enable ZTESTABLE #if if you want to use this
+  <merge uri="ZTestTable.xafdb"/>
+  -->
+</database>

@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+  <table name="AccessCode">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.AccessCodes as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.AccessCode ([ID],[Code],[Desc]) SELECT I.[ID], CM.[Code],[Desc] from <IDB/>.dbo.AccessCodes AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+	</data>
+  </table>
+  <table name="AssetCode">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.AssetCodes as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.AssetCode ([ID],[Code],[Desc]) SELECT I.[ID], CM.[Code],[Desc] from <IDB/>.dbo.AssetCodes AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+	</data>
+  </table>
+  <table name="CloseCode">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.ClosingCodes as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.CloseCode ([ID],[Code],[Desc]) SELECT I.[ID], CM.[Code],[Desc] from <IDB/>.dbo.ClosingCodes AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+	</data>
+  </table>
+  <table name="CostCenter">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.CostCenters as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.CostCenter ([ID],[Code],[Desc]) SELECT I.[ID], CM.[Code],[Desc] from <IDB/>.dbo.CostCenters AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+	</data>
+  </table>
+  <table name="UnitOfMeasure">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.UoM as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.UnitOfMeasure ([ID],[Code],[Desc]) SELECT I.[ID], CM.[Code],[Desc] from <IDB/>.dbo.UoM AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID] WHERE I.EXCLUDE = 0;
+	</data>
+  </table>
+  <table name="SystemCode">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.Systems as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.SystemCode ([ID],[Code],[Desc]) SELECT I.[ID], CM.[Code],[Desc] from <IDB/>.dbo.Systems	AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+	</data>
+  </table>
+  <table name="ShippingMode">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.ShippingModes as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.ShippingMode ([ID],[Code],[Desc]) SELECT I.[ID], CM.[Code],[Desc] from <IDB/>.dbo.ShippingModes AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+	</data>
+  </table>
+  <table name="PaymentTerm">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.Terms as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.PaymentTerm ([ID],[Code],[Desc]) SELECT I.[ID], CM.[Code],[Desc] from <IDB/>.dbo.Terms AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+	</data>
+  </table>
+  <table name="Ownership">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.Ownerships as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.Ownership ([ID],[Code],[Desc]) SELECT I.[ID], CM.[Code],[Desc] from <IDB/>.dbo.Ownerships AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+	</data>
+  </table>
+  <table name="Trade">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.Trades as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.Trade ([ID],[Code],[Desc]) SELECT I.[ID], CM.[Code],[Desc] from <IDB/>.dbo.Trades AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+	</data>
+  </table>
+  <table name="WorkCategory">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.WorkCategories as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.WorkCategory ([ID],[Code],[Desc]) SELECT I.[ID], CM.[Code],[Desc] from <IDB/>.dbo.WorkCategories AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+	</data>
+  </table>
+  <table name="Project">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.Projects as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.Project ([ID],[Code],[Desc]) SELECT I.[ID], CM.[Code],[Desc] from <IDB/>.dbo.Projects AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+	</data>
+  </table>
+  <table name="ItemAdjustmentCode">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.Adjustments as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.ItemAdjustmentCode ([ID],[Code],[Desc],[CostCenterID]) SELECT I.[ID], CM.[Code],[Desc],(select [CostCenterID] from <ODB/>.dbo._DItemAdjustmentCode) from <IDB/>.dbo.Adjustments AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+	</data>
+  </table>
+  <table name="ItemIssueCode">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.Issues as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.ItemIssueCode ([ID],[Code],[Desc],[CostCenterID]) SELECT I.[ID], CM.[Code],[Desc],(select [CostCenterID] from <ODB/>.dbo._DItemIssueCode) from <IDB/>.dbo.Issues AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+</data>
+  </table>
+  <table name="VendorCategory">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.VendorCategories as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.VendorCategory ([ID],[Code],[Desc]) SELECT I.[ID], CM.[Code],[Desc] from <IDB/>.dbo.VendorCategories AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+	</data>
+  </table>
+  <!-- Ranking is assigned as alphabetic order of CODE as that is what most people were encouraged to do in 2.9 to have the priorities ordered -->
+  <table name="WorkOrderPriority">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.Priorities as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.WorkOrderPriority ([ID],[Code],[Desc],[Rank]) SELECT I.[ID], CM.[Code],[Desc],ROW_NUMBER() over (order by CM.[Code]) from <IDB/>.dbo.Priorities AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+	</data>
+  </table>
+  <!-- RequestPriority is built from same Priorities table in 2.9 since that was used as the priority in 2.9 -->
+  <table name="RequestPriority">
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+insert into <IDB/>.dbo.CodeManagement (id, code) select I.ID, I.Code from <IDB/>.dbo.Priorities as I where I.EXCLUDE = 0;
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.RequestPriority ([ID],[Code],[Desc],[Rank]) SELECT I.[ID], CM.[Code],[Desc],ROW_NUMBER() over (order by CM.[Code]) from <IDB/>.dbo.Priorities AS I JOIN <IDB/>.dbo.CodeManagement as CM on I.[ID] = CM.[ID];
+	</data>
+  </table>
+</dbconversion>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="DemandOtherWorkOutside" defaults="true" log="false" id="Id" xid="DemandID OtherWorkOutsideID"  labelkey="Demand Per Job Outside">
+	<field name="Id" read="RequiredGUID" />
+	<field name="DemandID" read="RequiredGUIDREF" base="Demand"/>
+	<field name="OtherWorkOutsideID" type="RequiredGUIDREF" link="OtherWorkOutside">
+	  <doc>Per Job Outside work to be done</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Quantity" type="integer(min 1, max 2147483647)" labelkey="Demanded" />
+	<field name="ActualQuantity" read="RequiredQuantity" labelkey="Actual">
+	  <doc>The total quantity of all the associated actuals</doc>
+	  <result hosting="cached">
+		  cast(42 as RequiredQuantity)
+	  </result>
+	  <extension name="dependson">mbfn_DemandOtherWorkOutside_ActualQuantity()</extension>
+	</field>
+	<field name="OrderQuantity" read="RequiredQuantity">
+	  <doc>The total quantity ordered (whether PO or NonPO &amp; whether actualised or not)</doc>
+	  <result hosting="cached">
+		  cast(42 as RequiredQuantity)
+	  </result>
+	  <extension name="dependson">mbfn_DemandOtherWorkOutside_OrderQuantity()</extension>
+	</field>
+	<extension name="deletemethod">delete</extension>
+	<extension name="costrights">WorkOrderOutside</extension>
+  </table>
+  <table name="Demand"/>
+  <table name="OtherWorkOutside"/>
+  <table name="ActualOtherWorkOutsideNonPO"/>
+  <table name="ActualOtherWorkOutsidePO"/>
+  <table name="POLineOtherWork"/>
+  <table name="AccountingTransaction"/>
+
+  <object class="function" name="mbfn_DemandOtherWorkOutside_ActualQuantity">
+	<doc>
+	  Calculate the total actual quantities for actuals linked to this DemandOtherWorkOutside
+	</doc>
+	<extension name="body">
+	  (
+		@DOWOID uniqueidentifier -- DemandOtherWorkOutsideID
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		return (
+		  select sum(Quantity) from
+			  (
+					select Quantity
+					  from ActualOtherWorkOutsideNonPO
+					  where ActualOtherWorkOutsideNonPO.DemandOtherWorkOutsideID = @DOWOID
+			   union all
+					select ActualOtherWorkOutsidePO.Quantity 
+					  from ActualOtherWorkOutsidePO
+					  inner join POLineOtherWork on ActualOtherWorkOutsidePO.POLineOtherWorkID = POLineOtherWork.ID
+					  where POLineOtherWork.DemandOtherWorkOutsideID = @DOWOID
+			  ) quantities
+	  )
+	  end
+	</extension>
+	<extension name="dependson">DemandOtherWorkOutside.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualOtherWorkOutsideNonPO</extension>
+	<extension name="dependson">ActualOtherWorkOutsidePO</extension>
+  </object>
+  <object class="function" name="mbfn_DemandOtherWorkOutside_ActualCost">
+	<doc>
+	  Calculate the total actual cost for actuals linked to this DemandOtherWorkOutside
+	</doc>
+	<extension name="body">
+	  (
+		@DOWOID uniqueidentifier -- DemandOtherWorkOutsideID
+	  )
+	  RETURNS money
+	  as
+	  begin
+		return (
+			select sum(Cost)
+				from (
+					select Cost from ActualOtherWorkOutsideNonPO
+					join AccountingTransaction on AccountingTransaction.ID = ActualOtherWorkOutsideNonPO.AccountingTransactionID
+					where ActualOtherWorkOutsideNonPO.DemandOtherWorkOutsideID = @DOWOID
+			  union all
+					select Cost from ActualOtherWorkOutsidePO
+					join AccountingTransaction on AccountingTransaction.ID = ActualOtherWorkOutsidePO.AccountingTransactionID
+					join POLineOtherWork on ActualOtherWorkOutsidePO.POLineOtherWorkID = POLineOtherWork.ID
+					where POLineOtherWork.DemandOtherWorkOutsideID = @DOWOID
+			) costs
+		)
+	  end
+	</extension>
+	<extension name="dependson">DemandOtherWorkOutside.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualOtherWorkOutsideNonPO</extension>
+	<extension name="dependson">ActualOtherWorkOutsidePO</extension>
+  </object>
+  <object class="function" name="mbfn_DemandOtherWorkOutside_OrderQuantity">
+	<doc>
+	  Calculate the total order quantities linked to this DemandOtherWorkOutside
+	</doc>
+	<extension name="body">
+	  (
+		@DOWOID uniqueidentifier -- DemandOtherWorkOutsideID
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		return (
+		  select coalesce(sum(Quantity),0) from
+			  (
+					select Quantity
+					  from ActualOtherWorkOutsideNonPO
+					  where ActualOtherWorkOutsideNonPO.DemandOtherWorkOutsideID = @DOWOID
+			   union all
+					select Quantity 
+					  from POLineOtherWork
+					  where POLineOtherWork.DemandOtherWorkOutsideID = @DOWOID
+			  ) quantities
+		)
+	  end
+	</extension>
+	<extension name="dependson">ActualOtherWorkOutsideNonPO</extension>
+	<extension name="dependson">POLineOtherWork</extension>
+  </object>
+</database>

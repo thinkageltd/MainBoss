@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Adding Database Users</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Adding Database Users</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.SQL Database User.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.SQL Database Login.htm">Next section &gt;</a></p>
+
+<p>When you authorize someone to use MainBoss, you must specify how that person will access the MainBoss database. There are two possibilities.</p>
+
+<ul class="b1"><li>Windows Authentication recognizes the user based on the person's Windows login name and password</li>
+<li>SQL Server authentication is based on a special name and password registered with SQL Server itself
+</li></ul><p>When you authorize a new person to use MainBoss, you must specify which method will be used. You do this by clicking <span class="CButton">New SQL Database User</span> in the window for selecting a SQL database user. (For more information on this window, see <a href="Browse.SQL Database User.htm">The Database User Table</a>.)</p>
+
+<p>When a new user is added to the database through this window, MainBoss automatically authorizes that user to access the MainBoss database. In order for this to work, you must have administration privileges on the instance of SQL Server that manages the MainBoss database.</p>
+
+<p>The window for creating a new SQL database user contains the following:</p>
+
+<p class="wi"><span class="CField">User name</span>: The name to be associated with the user. This is the name that will appear in MainBoss's Users table.</p>
+<p class="wi"><span class="CField">Login name</span>: The login name of the user, as specified in SQL Server's list of authorized login names. To specify the login name, click the "..." button that follows the field. (Note that "..." only works if you have appropriate SQL Server permissions.) For more about specifying login names, see <a href="Browse.SQL Database Login.htm">The Database Login Table</a>.</p>
+<p class="wi"><span class="CField">Password</span>: The user's SQL Server password. This is only needed if you choose <span class="CButton">SQL Password</span> authentication. If you choose <span class="CButton">Windows Authentication</span>, the "<span class="CField">Password</span>" field will be disabled.</p>
+<p class="wi"><span class="CButton">Authentication</span>: Lets you specify either <span class="CButton">Windows Authentication</span> or login using a <span class="CButton">SQL Password</span>. If you choose <span class="CButton">SQL Password</span>, you must specify the user's SQL password in the "<span class="CField">Password</span>" field.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+
+
+<p><a href="Browse.SQL Database User.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.SQL Database Login.htm">Next section &gt;</a></p>
+</body>
+</html>
+

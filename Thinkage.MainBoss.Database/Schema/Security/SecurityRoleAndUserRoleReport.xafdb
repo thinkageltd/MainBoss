@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="../Types.xafdb"/>
+  <table name="SecurityRoleAndUserRoleReport" log="false" id="Id" labelkey="">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="RolePrincipalID" link="Principal" type="GUIDREF"/>
+	<field name="UserID" link="User" type="GUIDREF"/>
+	<extension name="query">
+		select coalesce(UserRole.ID, allRole.Id), allRole.PrincipalID, UserRole.UserID
+		  from (
+			  select ID, PrincipalID from [Role]
+			union all
+			  select ID, PrincipalID from CustomRole
+		  ) as allRole (ID, PrincipalID)
+		left join UserRole on allRole.PrincipalID = UserRole.PrincipalID
+	</extension>
+	<extension name="dependson">User</extension>
+	<extension name="dependson">UserRole</extension>
+	<extension name="dependson">Role</extension>
+	<extension name="dependson">CustomRole</extension>
+	<extension name="dependson">Principal</extension>
+  </table>
+  <table name="User"/>
+  <table name="Role"/>
+  <table name="CustomRole"/>
+  <table name="UserRole"/>
+  <table name="Principal"/>
+</database>

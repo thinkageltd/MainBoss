@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="SpecificationFormField" defaults="true" log="false" id="Id" labelkey="Specification Form Field">
+		<field name="Id" read="RequiredGUID" />
+		<field name="SpecificationFormID" link="SpecificationForm" type="link(nonnull)" cascade="true">
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="FieldName" type="string(minlength 1, 32, lines 0, trim both,nonnull)"/>
+		<field name="FieldSize" type="integer(32,nonnull)"/>
+		<field name="EditLabel" type="string(minlength 1, 80, lines 0, trim both,nonnull)"/>
+		<field name="FieldOrder" type="integer(32)"/>
+		<extension name="deletemethod">delete</extension>
+	</table>
+	<table name="SpecificationForm"/>
+	<object class="function" name="mbfn_Specification_LayoutField">
+		<doc>Returns an encoded layout field given the SpecificationFormField id</doc>
+		<extension name="body">
+			(
+				@IID	uniqueidentifier	-- id of SpecificationFormField to encode
+			)
+			RETURNS nvarchar(100)
+			as
+			begin
+				declare @fieldname as varchar(100)
+				set @fieldname = (select FieldName from SpecificationFormField where [ID]=@IID)
+				return ('&lt;' + @fieldname + '>')
+			end
+	</extension>
+	</object>
+</database>

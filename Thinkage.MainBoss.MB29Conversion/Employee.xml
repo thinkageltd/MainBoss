@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+<table name="Employee">
+<dependency table="Contact"/>
+<dependency table="Trade"/>
+<dependency table="PersonnelLinkages"/>
+<data>
+delete from <IDB/>.dbo.CodeManagement;
+INSERT INTO <IDB/>.dbo.CodeManagement ([ID], [Code], [Hidden29])
+	SELECT P.[ID], P.[Code], COALESCE(P.[Hidden],0)
+	from <IDB/>.dbo.Personnel as P
+	where P.EXCLUDE = 0;
+
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.Employee ([ID],[ContactID],[Desc],[Comment],[Hidden] )
+	SELECT PL.[EmployeeID], PL.[ContactID],CM.[Code],P.COMMENT, CM.[Hidden30]
+	from <IDB/>.dbo.Personnel as P
+		join <IDB/>.dbo.PersonnelLinkages as PL on P.[ID] = PL.ID
+		join <IDB/>.dbo.CodeManagement as CM on P.[ID] = CM.[ID]
+	where P.EXCLUDE = 0;
+GO
+
+
+</data>
+</table>
+</dbconversion>

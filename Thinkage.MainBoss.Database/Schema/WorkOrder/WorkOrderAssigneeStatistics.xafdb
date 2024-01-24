@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderAssigneeStatistics" defaults="false" log="false" id="Id" labelkey="">
+	<doc>
+	  This view provides records counting the WorkOrderAssignments of all WorkOrderAssignees for the New and InProgress WorkOrder States
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="WorkOrderAssigneeID" link="WorkOrderAssignee" type="RequiredGUIDREF" unique="true" labelkey="Assignee">
+	  <extension name="linkage">property</extension>
+	</field>
+	<field labelkey="Number Draft" name="NumNew" type="RequiredQuantity" />
+	<field labelkey="Number Open" name="NumInProgress" type="RequiredQuantity" />
+	<extension name="query">
+		  select WA.ID, WA.ID, coalesce(sum(cast(FilterAsDraft as int)), 0), coalesce(sum(cast(FilterAsOpen as int)),0)
+			from WorkOrderAssignee as WA
+			  left JOIN WorkOrderAssignmentAll as A on A.WorkOrderAssigneeID = WA.ID
+			  left JOIN WorkOrder on WorkOrder.ID = A.WorkOrderID
+			  left JOIN WorkOrderStateHistory ON WorkOrderStateHistory.ID = WorkOrder.CurrentWorkOrderStateHistoryID
+			  left JOIN WorkOrderState ON WorkOrderState.[ID] = WorkOrderStateHistory.WorkOrderStateID
+			GROUP BY WA.ID
+    </extension>
+	<extension name="dependson">WorkOrder</extension>
+	<extension name="dependson">WorkOrderAssignee</extension>
+	<extension name="dependson">WorkOrderAssignmentAll</extension>
+	<extension name="dependson">WorkOrderStateHistory</extension>
+	<extension name="dependson">WorkOrderState</extension>
+  </table>
+  <table name="WorkOrder" />
+  <table name="WorkOrderAssignee"/>
+  <table name="WorkOrderAssignmentAll"/>
+  <table name="WorkOrderStateHistory" />
+  <table name="WorkOrderState" />
+</database>

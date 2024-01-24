@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="RequestsWithAssignments" log="false" id="Id" labelkey="">
+	<doc>
+	  This view provides rows for all the RequestAssignments along with Requests that have no assignments.
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="RequestID" link="Request" type="RequiredGUIDREF" labelkey=""/>
+	<field name="RequestAssignmentID" link="RequestAssignment" type="GUIDREF" labelkey=""/>
+	<extension name="query">
+		select
+		  coalesce(RequestAssignment.Id, Request.Id),
+		  Request.Id,
+		  RequestAssignment.Id
+		from
+		  Request
+		  left join RequestAssignment on RequestAssignment.RequestID = Request.Id
+	</extension>
+	<extension name="dependson">Request</extension>
+	<extension name="dependson">RequestAssignment</extension>
+	<extension name="costrights">UnitValue</extension>
+	<extension name="lastupdate">RequestID</extension>
+  </table>
+<!-- ************************************************************************************************************************* -->
+  <table name="RequestAssignmentReport" log="false" id="Id" labelkey="">
+	<doc>
+	  This view provides the records for RequestReport for each RequestAssignments
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="RequestAssignmentID" link="RequestAssignment" type="GUIDREF" labelkey=""/>
+	<field name="RequestReportID" link="RequestReport" type="RequiredGUIDREF" labelkey=""/>
+	<extension name="query">
+		select
+		 coalesce(RequestAssignment.Id, RequestReport.Id)
+		,RequestAssignment.Id
+		,RequestReport.Id
+		from RequestReport
+		left outer join RequestAssignment on RequestAssignment.RequestID = RequestReport.RequestID
+	</extension>
+	<extension name="dependson">RequestAssignment</extension>
+	<extension name="dependson">RequestReport</extension>
+	<extension name="costrights">UnitValue</extension>
+	<extension name="lastupdate">RequestReportID</extension>
+  </table>
+  <table name="Request" />
+  <table name="RequestAssignment"/>
+  <table name="RequestReport" />
+</database>

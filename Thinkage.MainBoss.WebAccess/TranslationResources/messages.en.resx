@@ -1,0 +1,1431 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="dsMBLabel§Access Code" xml:space="preserve">
+    <value>Access Code</value>
+  </data>
+  <data name="dsMBLabel§Accounting System Reference" type="" mimetype="">
+    <value>Accounting System Reference</value>
+  </data>
+  <data name="dsMBLabel§Accounting Transaction" xml:space="preserve">
+    <value>Accounting Transaction</value>
+  </data>
+  <data name="dsMBLabel§Actual" xml:space="preserve">
+    <value>Actual</value>
+  </data>
+  <data name="dsMBLabel§Actual Cost" xml:space="preserve">
+    <value>Actual Cost</value>
+  </data>
+  <data name="dsMBLabel§Actual Cost default" xml:space="preserve">
+    <value>Actual Cost Default</value>
+  </data>
+  <data name="dsMBLabel§Actual Hourly Inside" type="" mimetype="">
+    <value>Actual Hourly Inside</value>
+  </data>
+  <data name="dsMBLabel§Actual Hourly Inside Correction" type="" mimetype="">
+    <value>Actual Hourly Inside Correction</value>
+  </data>
+  <data name="dsMBLabel§Actual Item" type="" mimetype="">
+    <value>Actual Item</value>
+  </data>
+  <data name="dsMBLabel§Actual Item Correction" type="" mimetype="">
+    <value>Actual Item Correction</value>
+  </data>
+  <data name="dsMBLabel§Actual Item Location" xml:space="preserve">
+    <value>Actual Storage Assignment</value>
+  </data>
+  <data name="dsMBLabel§Actual Miscellaneous Cost" type="" mimetype="">
+    <value>Actual Miscellaneous Cost</value>
+  </data>
+  <data name="dsMBLabel§Actual Miscellaneous Cost Correction" type="" mimetype="">
+    <value>Actual Miscellaneous Cost Correction</value>
+  </data>
+  <data name="dsMBLabel§Actual Per Job Inside" type="" mimetype="">
+    <value>Actual Per Job Inside</value>
+  </data>
+  <data name="dsMBLabel§Actual Per Job Inside Correction" type="" mimetype="">
+    <value>Actual Per Job Inside Correction</value>
+  </data>
+  <data name="dsMBLabel§ActualItem" type="" mimetype="">
+    <value>Actual Item</value>
+  </data>
+  <data name="dsMBLabel§ActualItemLocation" type="" mimetype="">
+    <value>Actual Item Location</value>
+  </data>
+  <data name="dsMBLabel§ActualQuantity" type="" mimetype="">
+    <value>Actual Quantity</value>
+  </data>
+  <data name="dsMBLabel§AD Reference" type="" mimetype="">
+    <value>AD Reference</value>
+  </data>
+  <data name="dsMBLabel§Address1" xml:space="preserve">
+    <value>Address1</value>
+  </data>
+  <data name="dsMBLabel§Address2" xml:space="preserve">
+    <value>Address2</value>
+  </data>
+  <data name="dsMBLabel§Adjustment Code" type="" mimetype="">
+    <value>Adjustment Code</value>
+  </data>
+  <data name="dsMBLabel§AffectsFuturePMGeneration" xml:space="preserve">
+    <value>Affects Future PM Generation</value>
+  </data>
+  <data name="dsMBLabel§Alternate Email" type="" mimetype="">
+    <value>Alternate Email</value>
+  </data>
+  <data name="dsMBLabel§Asset Code" xml:space="preserve">
+    <value>Asset Code</value>
+  </data>
+  <data name="dsMBLabel§Assignee" xml:space="preserve">
+    <value>Assignee</value>
+  </data>
+  <data name="dsMBLabel§Assignment" xml:space="preserve">
+    <value>Assignment</value>
+  </data>
+  <data name="dsMBLabel§Attachment" type="" mimetype="">
+    <value>Attachment</value>
+  </data>
+  <data name="dsMBLabel§Authentication Credential" type="" mimetype="">
+    <value>Authentication Credential</value>
+  </data>
+  <data name="dsMBLabel§Available" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="dsMBLabel§BackupFileName" type="" mimetype="">
+    <value>BackupFileName</value>
+  </data>
+  <data name="dsMBLabel§BusinessPhone" xml:space="preserve">
+    <value>Business Phone</value>
+  </data>
+  <data name="dsMBLabel§CanModifyActuals" xml:space="preserve">
+    <value>Can Modify Actuals</value>
+  </data>
+  <data name="dsMBLabel§CanModifyChargebackLines" xml:space="preserve">
+    <value>Can Modify Chargeback Lines</value>
+  </data>
+  <data name="dsMBLabel§CanModifyChargebacks" xml:space="preserve">
+    <value>Can Modify Chargebacks</value>
+  </data>
+  <data name="dsMBLabel§CanModifyDefinitionFields" xml:space="preserve">
+    <value>Can Modify Definition Fields</value>
+  </data>
+  <data name="dsMBLabel§CanModifyDemands" xml:space="preserve">
+    <value>Can Modify Demands</value>
+  </data>
+  <data name="dsMBLabel§CanModifyOperationalFields" xml:space="preserve">
+    <value>Can Modify Operational Fields</value>
+  </data>
+  <data name="dsMBLabel§CanModifyPOLines" xml:space="preserve">
+    <value>Can Modify PO Lines</value>
+  </data>
+  <data name="dsMBLabel§CanTransitionWithoutUI" xml:space="preserve">
+    <value>Can Transition Without UI</value>
+  </data>
+  <data name="dsMBLabel§Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="dsMBLabel§City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="dsMBLabel§Close Code" xml:space="preserve">
+    <value>Close Code</value>
+  </data>
+  <data name="dsMBLabel§Code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="dsMBLabel§Comment" xml:space="preserve">
+    <value>Comments</value>
+  </data>
+  <data name="dsMBLabel§Comment To Requestor" xml:space="preserve">
+    <value>Comment To Requestor</value>
+  </data>
+  <data name="dsMBLabel§Contact" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="dsMBLabel§Contained Location" xml:space="preserve">
+    <value>Contained Location</value>
+  </data>
+  <data name="dsMBLabel§Containing Location" type="" mimetype="">
+    <value>Containing Location</value>
+  </data>
+  <data name="dsMBLabel§ContainingLocationID" xml:space="preserve">
+    <value>Containing Location</value>
+  </data>
+  <data name="dsMBLabel§CopyStatusFromPrevious" type="" mimetype="">
+    <value>Copy Status From Previous</value>
+  </data>
+  <data name="dsMBLabel§CorrectedCost" xml:space="preserve">
+    <value>Corrected Cost</value>
+  </data>
+  <data name="dsMBLabel§CorrectedQuantity" xml:space="preserve">
+    <value>Corrected Quantity</value>
+  </data>
+  <data name="dsMBLabel§Cost" xml:space="preserve">
+    <value>Cost</value>
+  </data>
+  <data name="dsMBLabel§Cost Center" xml:space="preserve">
+    <value>Cost Center</value>
+  </data>
+  <data name="dsMBLabel§Country" xml:space="preserve">
+    <value>Country</value>
+  </data>
+  <data name="dsMBLabel§Current Physical Count" xml:space="preserve">
+    <value>Current Physical Count</value>
+  </data>
+  <data name="dsMBLabel§Current State History" xml:space="preserve">
+    <value>Current State History</value>
+  </data>
+  <data name="dsMBLabel§CurrentPurchaseOrderStateHistoryID" type="" mimetype="">
+    <value>Current Purchase Order State History</value>
+  </data>
+  <data name="dsMBLabel§CurrentWorkOrderStateHistoryID" type="" mimetype="">
+    <value>Current Work Order State History</value>
+  </data>
+  <data name="dsMBLabel§Demand" xml:space="preserve">
+    <value>Demand</value>
+  </data>
+  <data name="dsMBLabel§Demand Hourly Inside" xml:space="preserve">
+    <value>Demand Hourly Inside</value>
+  </data>
+  <data name="dsMBLabel§Demand Item" type="" mimetype="">
+    <value>Demand Item</value>
+  </data>
+  <data name="dsMBLabel§Demand Miscellaneous Cost" xml:space="preserve">
+    <value>Demand Miscellaneous Cost</value>
+  </data>
+  <data name="dsMBLabel§Demand Per Job Inside" xml:space="preserve">
+    <value>Demand Per Job Inside</value>
+  </data>
+  <data name="dsMBLabel§DemandCountsActive" xml:space="preserve">
+    <value>Demand Counts Active</value>
+  </data>
+  <data name="dsMBLabel§Demanded" xml:space="preserve">
+    <value>Demanded</value>
+  </data>
+  <data name="dsMBLabel§Demanded Cost" xml:space="preserve">
+    <value>Demanded Cost</value>
+  </data>
+  <data name="dsMBLabel§DemandItem" type="" mimetype="">
+    <value>Demand Item</value>
+  </data>
+  <data name="dsMBLabel§DemandLaborOutside" type="" mimetype="">
+    <value>DemandLaborOutside</value>
+  </data>
+  <data name="dsMBLabel§DemandOtherWorkOutside" type="" mimetype="">
+    <value>DemandOtherWorkOutside</value>
+  </data>
+  <data name="dsMBLabel§Depth" xml:space="preserve">
+    <value>Depth</value>
+  </data>
+  <data name="dsMBLabel§Desc" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="dsMBLabel§Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="dsMBLabel§Downtime" xml:space="preserve">
+    <value>Downtime</value>
+  </data>
+  <data name="dsMBLabel§Drawing" xml:space="preserve">
+    <value>Drawing</value>
+  </data>
+  <data name="dsMBLabel§EffectiveDate" xml:space="preserve">
+    <value>Effective Date</value>
+  </data>
+  <data name="dsMBLabel§EffectiveDateReadonly" xml:space="preserve">
+    <value>Effective Date Readonly</value>
+  </data>
+  <data name="dsMBLabel§EffectiveMaximum" xml:space="preserve">
+    <value>Effective Maximum</value>
+  </data>
+  <data name="dsMBLabel§EffectiveMinimum" xml:space="preserve">
+    <value>Effective Minimum</value>
+  </data>
+  <data name="dsMBLabel§Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="dsMBLabel§EmailRequest" type="" mimetype="">
+    <value>EmailRequest</value>
+  </data>
+  <data name="dsMBLabel§Employee" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="dsMBLabel§EntryDate" xml:space="preserve">
+    <value>Entry Date</value>
+  </data>
+  <data name="dsMBLabel§Expense Category" xml:space="preserve">
+    <value>Expense Category</value>
+  </data>
+  <data name="dsMBLabel§Expense Model" xml:space="preserve">
+    <value>Expense Model</value>
+  </data>
+  <data name="dsMBLabel§External Tag" xml:space="preserve">
+    <value>External Tag</value>
+  </data>
+  <data name="dsMBLabel§FaxPhone" xml:space="preserve">
+    <value>Fax Phone</value>
+  </data>
+  <data name="dsMBLabel§FilterAsClosed" xml:space="preserve">
+    <value>Filter As Closed</value>
+  </data>
+  <data name="dsMBLabel§FilterAsDraft" xml:space="preserve">
+    <value>Filter As Draft</value>
+  </data>
+  <data name="dsMBLabel§FilterAsInProgress" xml:space="preserve">
+    <value>Filter As In Progress</value>
+  </data>
+  <data name="dsMBLabel§FilterAsNew" xml:space="preserve">
+    <value>Filter As New</value>
+  </data>
+  <data name="dsMBLabel§FilterAsOpen" xml:space="preserve">
+    <value>Filter As Open</value>
+  </data>
+  <data name="dsMBLabel§FilterAsVoid" xml:space="preserve">
+    <value>Filter As Void</value>
+  </data>
+  <data name="dsMBLabel§From Cost Center" xml:space="preserve">
+    <value>From Cost Center</value>
+  </data>
+  <data name="dsMBLabel§From State" xml:space="preserve">
+    <value>From State</value>
+  </data>
+  <data name="dsMBLabel§GeneralLedgerAccount" type="" mimetype="">
+    <value>General Ledger Account</value>
+  </data>
+  <data name="dsMBLabel§GISLocation" xml:space="preserve">
+    <value>GIS Location</value>
+  </data>
+  <data name="dsMBLabel§GISZoom" xml:space="preserve">
+    <value>GIS Zoom</value>
+  </data>
+  <data name="dsMBLabel§Hidden" xml:space="preserve">
+    <value>Hidden</value>
+  </data>
+  <data name="dsMBLabel§HomePhone" xml:space="preserve">
+    <value>Home Phone</value>
+  </data>
+  <data name="dsMBLabel§Hourly Inside" xml:space="preserve">
+    <value>Hourly Inside</value>
+  </data>
+  <data name="dsMBLabel§Id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="dsMBLabel§Item" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="dsMBLabel§Item Activity" type="" mimetype="">
+    <value>Item Activity</value>
+  </data>
+  <data name="dsMBLabel§Item Adjustment Code" type="" mimetype="">
+    <value>Item Adjustment Code</value>
+  </data>
+  <data name="dsMBLabel§Item Category" type="" mimetype="">
+    <value>Item Category</value>
+  </data>
+  <data name="dsMBLabel§Item Location" type="" mimetype="">
+    <value>Item Location</value>
+  </data>
+  <data name="dsMBLabel§ItemAdjustment" type="" mimetype="">
+    <value>ItemAdjustment</value>
+  </data>
+  <data name="dsMBLabel§ItemCategory" type="" mimetype="">
+    <value>Item Category</value>
+  </data>
+  <data name="dsMBLabel§ItemIssue" type="" mimetype="">
+    <value>ItemIssue</value>
+  </data>
+  <data name="dsMBLabel§ItemLocation" xml:space="preserve">
+    <value>Storage Assignment</value>
+  </data>
+  <data name="dsMBLabel§ItemLocationID" type="" mimetype="">
+    <value>Item Location</value>
+  </data>
+  <data name="dsMBLabel§ItemPrice" type="" mimetype="">
+    <value>ItemPrice</value>
+  </data>
+  <data name="dsMBLabel§ItemTransfer" type="" mimetype="">
+    <value>ItemTransfer</value>
+  </data>
+  <data name="dsMBLabel§LastBackupDate" xml:space="preserve">
+    <value>Last Backup Date</value>
+  </data>
+  <data name="dsMBLabel§LastBackupFileName" xml:space="preserve">
+    <value>Last Backup File Name</value>
+  </data>
+  <data name="dsMBLabel§LastGenerationEntryDate" xml:space="preserve">
+    <value>Last Generation Entry Date</value>
+  </data>
+  <data name="dsMBLabel§LastNotificationDate" xml:space="preserve">
+    <value>Last Notification Date</value>
+  </data>
+  <data name="dsMBLabel§LastRequestorAcknowledgementDate" xml:space="preserve">
+    <value>Last Requestor Acknowledgement Date</value>
+  </data>
+  <data name="dsMBLabel§LastRequestorAcknowledgementError" xml:space="preserve">
+    <value>Last Requestor Acknowledgement Error</value>
+  </data>
+  <data name="dsMBLabel§LatestGenerationEndDate" xml:space="preserve">
+    <value>Latest Generation End Date</value>
+  </data>
+  <data name="dsMBLabel§Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="dsMBLabel§LocationContainment" type="" mimetype="">
+    <value>LocationContainment</value>
+  </data>
+  <data name="dsMBLabel§Make" xml:space="preserve">
+    <value>Make</value>
+  </data>
+  <data name="dsMBLabel§Maximum" xml:space="preserve">
+    <value>Maximum</value>
+  </data>
+  <data name="dsMBLabel§Minimum" xml:space="preserve">
+    <value>Minimum</value>
+  </data>
+  <data name="dsMBLabel§Miscellaneous Cost" xml:space="preserve">
+    <value>Miscellaneous Cost</value>
+  </data>
+  <data name="dsMBLabel§MobilePhone" xml:space="preserve">
+    <value>Mobile Phone</value>
+  </data>
+  <data name="dsMBLabel§Model" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="dsMBLabel§Number" xml:space="preserve">
+    <value>Number</value>
+  </data>
+  <data name="dsMBLabel§NumDraftPurchaseOrders" xml:space="preserve">
+    <value>Number Draft Purchase Orders</value>
+  </data>
+  <data name="dsMBLabel§NumEmailNeedingManualProcessing" type="" mimetype="">
+    <value>Number Email Needing Manual Processing</value>
+  </data>
+  <data name="dsMBLabel§NumInProgressPurchaseOrders" xml:space="preserve">
+    <value>Number In Progress Purchase Orders</value>
+  </data>
+  <data name="dsMBLabel§NumInProgressRequests" xml:space="preserve">
+    <value>Number In Progress Requests</value>
+  </data>
+  <data name="dsMBLabel§NumInProgressWorkOrders" xml:space="preserve">
+    <value>Number In Progress Work Orders</value>
+  </data>
+  <data name="dsMBLabel§NumIssuedPurchaseOrders" xml:space="preserve">
+    <value>Number Issued Purchase Orders</value>
+  </data>
+  <data name="dsMBLabel§NumNewPurchaseOrders" xml:space="preserve">
+    <value>Number New Purchase Orders</value>
+  </data>
+  <data name="dsMBLabel§NumNewRequests" xml:space="preserve">
+    <value>Number New Requests</value>
+  </data>
+  <data name="dsMBLabel§NumNewWorkOrders" xml:space="preserve">
+    <value>Number New Work Orders</value>
+  </data>
+  <data name="dsMBLabel§NumOpenWorkOrders" xml:space="preserve">
+    <value>Number Open Work Orders</value>
+  </data>
+  <data name="dsMBLabel§NumUnAssignedDraftPurchaseOrders" xml:space="preserve">
+    <value>Number Unassigned Draft Purchase Orders</value>
+  </data>
+  <data name="dsMBLabel§NumUnAssignedInProgressRequests" xml:space="preserve">
+    <value>Number Unassigned In Progress Requests</value>
+  </data>
+  <data name="dsMBLabel§NumUnAssignedIssuedPurchaseOrders" xml:space="preserve">
+    <value>Number Unassigned Issued Purchase Orders</value>
+  </data>
+  <data name="dsMBLabel§NumUnAssignedNewRequests" xml:space="preserve">
+    <value>Number Unassigned New Requests</value>
+  </data>
+  <data name="dsMBLabel§NumUnAssignedNewWorkOrders" xml:space="preserve">
+    <value>Number Unassigned New Work Orders</value>
+  </data>
+  <data name="dsMBLabel§NumUnAssignedOpenWorkOrders" xml:space="preserve">
+    <value>Number Unassigned Open Work Orders</value>
+  </data>
+  <data name="dsMBLabel§OnHand" xml:space="preserve">
+    <value>On Hand</value>
+  </data>
+  <data name="dsMBLabel§OnOrder" xml:space="preserve">
+    <value>On Order</value>
+  </data>
+  <data name="dsMBLabel§OnReserve" xml:space="preserve">
+    <value>On Reserve</value>
+  </data>
+  <data name="dsMBLabel§Operation" xml:space="preserve">
+    <value>Operation</value>
+  </data>
+  <data name="dsMBLabel§OperationHint" xml:space="preserve">
+    <value>Operation Hint</value>
+  </data>
+  <data name="dsMBLabel§OriginalCost" xml:space="preserve">
+    <value>Original Cost</value>
+  </data>
+  <data name="dsMBLabel§Ownership" xml:space="preserve">
+    <value>Ownership</value>
+  </data>
+  <data name="dsMBLabel§PagerPhone" xml:space="preserve">
+    <value>Pager Phone</value>
+  </data>
+  <data name="dsMBLabel§Path" xml:space="preserve">
+    <value>Path</value>
+  </data>
+  <data name="dsMBLabel§Per Job Inside" xml:space="preserve">
+    <value>Per Job Inside</value>
+  </data>
+  <data name="dsMBLabel§Permanent Item Location" type="" mimetype="">
+    <value>Permanent Item Location</value>
+  </data>
+  <data name="dsMBLabel§Permission" type="" mimetype="">
+    <value>Permission</value>
+  </data>
+  <data name="dsMBLabel§PermissionPathPattern" xml:space="preserve">
+    <value>Permission Path Pattern</value>
+  </data>
+  <data name="dsMBLabel§Physical Count" type="" mimetype="">
+    <value>Physical Count</value>
+  </data>
+  <data name="dsMBLabel§Physical Count Sheet Rank" type="" mimetype="">
+    <value>Physical Count Sheet Rank</value>
+  </data>
+  <data name="dsMBLabel§Physical Count Void" type="" mimetype="">
+    <value>Physical Count Void</value>
+  </data>
+  <data name="dsMBLabel§PMGenerationBatch" type="" mimetype="">
+    <value>PM Generation Batch</value>
+  </data>
+  <data name="dsMBLabel§POLine" type="" mimetype="">
+    <value>PO Line</value>
+  </data>
+  <data name="dsMBLabel§POLineItem" type="" mimetype="">
+    <value>PO Line Item</value>
+  </data>
+  <data name="dsMBLabel§Postal Address" type="" mimetype="">
+    <value>Postal Address</value>
+  </data>
+  <data name="dsMBLabel§PostalAddress" type="" mimetype="">
+    <value>Postal Address</value>
+  </data>
+  <data name="dsMBLabel§PostalCode" xml:space="preserve">
+    <value>Postal Code</value>
+  </data>
+  <data name="dsMBLabel§PredictedCloseDate" xml:space="preserve">
+    <value>Estimated Completion Date</value>
+  </data>
+  <data name="dsMBLabel§Preferred Price" type="" mimetype="">
+    <value>Preferred Price</value>
+  </data>
+  <data name="dsMBLabel§PreferredLanguage" xml:space="preserve">
+    <value>Preferred Language</value>
+  </data>
+  <data name="dsMBLabel§Priority" xml:space="preserve">
+    <value>Priority</value>
+  </data>
+  <data name="dsMBLabel§Project" xml:space="preserve">
+    <value>Project</value>
+  </data>
+  <data name="dsMBLabel§Purchase Order" type="" mimetype="">
+    <value>Purchase Order</value>
+  </data>
+  <data name="dsMBLabel§Purchase Order State" type="" mimetype="">
+    <value>Purchase Order State</value>
+  </data>
+  <data name="dsMBLabel§Purchase Order State History" type="" mimetype="">
+    <value>Purchase Order State History</value>
+  </data>
+  <data name="dsMBLabel§Purchase Vendor" xml:space="preserve">
+    <value>Purchase Vendor</value>
+  </data>
+  <data name="dsMBLabel§PurchaseDate" xml:space="preserve">
+    <value>Purchase Date</value>
+  </data>
+  <data name="dsMBLabel§PurchaseOrder" type="" mimetype="">
+    <value>Purchase Order</value>
+  </data>
+  <data name="dsMBLabel§PurchaseOrderAssignee" type="" mimetype="">
+    <value>PurchaseOrderAssignee</value>
+  </data>
+  <data name="dsMBLabel§PurchaseOrderAssigneeStatistics" type="" mimetype="">
+    <value>PurchaseOrderAssigneeStatistics</value>
+  </data>
+  <data name="dsMBLabel§PurchaseOrderAssignment" type="" mimetype="">
+    <value>PurchaseOrderAssignment</value>
+  </data>
+  <data name="dsMBLabel§PurchaseOrderState" type="" mimetype="">
+    <value>Purchase Order State</value>
+  </data>
+  <data name="dsMBLabel§PurchaseOrderStateHistory" type="" mimetype="">
+    <value>Purchase Order State History</value>
+  </data>
+  <data name="dsMBLabel§Quantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="dsMBLabel§Rank" xml:space="preserve">
+    <value>Rank</value>
+  </data>
+  <data name="dsMBLabel§ReceiveAcknowledgement" xml:space="preserve">
+    <value>Receive Acknowledgement</value>
+  </data>
+  <data name="dsMBLabel§ReceiveItemNonPO" type="" mimetype="">
+    <value>Receive Item</value>
+  </data>
+  <data name="dsMBLabel§ReceiveItemPO" type="" mimetype="">
+    <value>Receive Item (with PO)</value>
+  </data>
+  <data name="dsMBLabel§ReceiveNotification" xml:space="preserve">
+    <value>Receive Notification</value>
+  </data>
+  <data name="dsMBLabel§ReceiveQuantity" type="" mimetype="">
+    <value>Receive Quantity</value>
+  </data>
+  <data name="dsMBLabel§Relative Location" xml:space="preserve">
+    <value>Relative Location</value>
+  </data>
+  <data name="dsMBLabel§ReplacementCost" xml:space="preserve">
+    <value>Replacement Cost</value>
+  </data>
+  <data name="dsMBLabel§ReplacementCostLastDate" xml:space="preserve">
+    <value>Replacement Cost Last Date</value>
+  </data>
+  <data name="dsMBLabel§ReportText" xml:space="preserve">
+    <value>Report Text</value>
+  </data>
+  <data name="dsMBLabel§Request" xml:space="preserve">
+    <value>Request</value>
+  </data>
+  <data name="dsMBLabel§Request Assignee" type="" mimetype="">
+    <value>Request Assignee</value>
+  </data>
+  <data name="dsMBLabel§Request Assignment" type="" mimetype="">
+    <value>Request Assignment</value>
+  </data>
+  <data name="dsMBLabel§Request Priority" type="" mimetype="">
+    <value>Request Priority</value>
+  </data>
+  <data name="dsMBLabel§Request State" type="" mimetype="">
+    <value>Request State</value>
+  </data>
+  <data name="dsMBLabel§Request State History" type="" mimetype="">
+    <value>Request State History</value>
+  </data>
+  <data name="dsMBLabel§Request State History Status" type="" mimetype="">
+    <value>Request State History Status</value>
+  </data>
+  <data name="dsMBLabel§Request State Transition" type="" mimetype="">
+    <value>Request State Transition</value>
+  </data>
+  <data name="dsMBLabel§RequestAssignee" type="" mimetype="">
+    <value>RequestAssignee</value>
+  </data>
+  <data name="dsMBLabel§RequestAssigneeStatistics" type="" mimetype="">
+    <value>RequestAssigneeStatistics</value>
+  </data>
+  <data name="dsMBLabel§RequestAssignment" type="" mimetype="">
+    <value>RequestAssignment</value>
+  </data>
+  <data name="dsMBLabel§RequestedWorkOrder" type="" mimetype="">
+    <value>RequestedWorkOrder</value>
+  </data>
+  <data name="dsMBLabel§Requestor" xml:space="preserve">
+    <value>Requestor</value>
+  </data>
+  <data name="dsMBLabel§RightName" xml:space="preserve">
+    <value>Right Name</value>
+  </data>
+  <data name="dsMBLabel§Role" type="" mimetype="">
+    <value>Role</value>
+  </data>
+  <data name="dsMBLabel§ScrapDate" xml:space="preserve">
+    <value>Scrap Date</value>
+  </data>
+  <data name="dsMBLabel§ScrapValue" xml:space="preserve">
+    <value>Scrap Value</value>
+  </data>
+  <data name="dsMBLabel§Select for Printing" xml:space="preserve">
+    <value>Select for Printing</value>
+  </data>
+  <data name="dsMBLabel§Serial" xml:space="preserve">
+    <value>Serial</value>
+  </data>
+  <data name="dsMBLabel§ServiceConfiguration" type="" mimetype="">
+    <value>Service Configuration</value>
+  </data>
+  <data name="dsMBLabel§Shortage" xml:space="preserve">
+    <value>Shortage</value>
+  </data>
+  <data name="dsMBLabel§Specification" type="" mimetype="">
+    <value>Specification</value>
+  </data>
+  <data name="dsMBLabel§SpecificationData" type="" mimetype="">
+    <value>SpecificationData</value>
+  </data>
+  <data name="dsMBLabel§SpecificationForm" xml:space="preserve">
+    <value>Specification Form</value>
+  </data>
+  <data name="dsMBLabel§SpecificationFormField" type="" mimetype="">
+    <value>SpecificationFormField</value>
+  </data>
+  <data name="dsMBLabel§State" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="dsMBLabel§Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="dsMBLabel§Storage Assignment" type="" mimetype="">
+    <value>Storage Assignment</value>
+  </data>
+  <data name="dsMBLabel§Storeroom" type="" mimetype="">
+    <value>Storeroom</value>
+  </data>
+  <data name="dsMBLabel§Subject" xml:space="preserve">
+    <value>Subject</value>
+  </data>
+  <data name="dsMBLabel§System Code" xml:space="preserve">
+    <value>System Code</value>
+  </data>
+  <data name="dsMBLabel§Task" type="" mimetype="">
+    <value>Task</value>
+  </data>
+  <data name="dsMBLabel§Task Temporary Storage" type="" mimetype="">
+    <value>Task Temporary Storage</value>
+  </data>
+  <data name="dsMBLabel§TemplateItemLocation" type="" mimetype="">
+    <value>TemplateItemLocation</value>
+  </data>
+  <data name="dsMBLabel§TemplateTemporaryStorage" type="" mimetype="">
+    <value>Template Temporary Storage</value>
+  </data>
+  <data name="dsMBLabel§Temporary Item Location" type="" mimetype="">
+    <value>Temporary Item Location</value>
+  </data>
+  <data name="dsMBLabel§Temporary Storage" type="" mimetype="">
+    <value>Temporary Storage</value>
+  </data>
+  <data name="dsMBLabel§TemporaryItemLocation" type="" mimetype="">
+    <value>Temporary Item Location</value>
+  </data>
+  <data name="dsMBLabel§TemporaryStorage" type="" mimetype="">
+    <value>Temporary Storage</value>
+  </data>
+  <data name="dsMBLabel§TemporaryStorageActive" xml:space="preserve">
+    <value>Temporary Storage Active</value>
+  </data>
+  <data name="dsMBLabel§TemporaryStorageEmpty" xml:space="preserve">
+    <value>Temporary Storage Empty</value>
+  </data>
+  <data name="dsMBLabel§Territory" xml:space="preserve">
+    <value>Territory</value>
+  </data>
+  <data name="dsMBLabel§To Cost Center" xml:space="preserve">
+    <value>To Cost Center</value>
+  </data>
+  <data name="dsMBLabel§To State" xml:space="preserve">
+    <value>To State</value>
+  </data>
+  <data name="dsMBLabel§TotalActual" xml:space="preserve">
+    <value>Total Actual</value>
+  </data>
+  <data name="dsMBLabel§TotalCost" xml:space="preserve">
+    <value>Total Cost</value>
+  </data>
+  <data name="dsMBLabel§TotalDemand" xml:space="preserve">
+    <value>Total Demand</value>
+  </data>
+  <data name="dsMBLabel§TotalQuantity" type="" mimetype="">
+    <value>Total Quantity</value>
+  </data>
+  <data name="dsMBLabel§Trade" xml:space="preserve">
+    <value>Trade</value>
+  </data>
+  <data name="dsMBLabel§TypicalLife" xml:space="preserve">
+    <value>Typical Life</value>
+  </data>
+  <data name="dsMBLabel§Unit" xml:space="preserve">
+    <value>Unit</value>
+  </data>
+  <data name="dsMBLabel§Unit Category" xml:space="preserve">
+    <value>Unit Category</value>
+  </data>
+  <data name="dsMBLabel§Unit Usage" xml:space="preserve">
+    <value>Unit Usage</value>
+  </data>
+  <data name="dsMBLabel§UnitCost" xml:space="preserve">
+    <value>Unit Cost</value>
+  </data>
+  <data name="dsMBLabel§UOM" xml:space="preserve">
+    <value>UOM</value>
+  </data>
+  <data name="dsMBLabel§User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="dsMBLabel§Vendor" type="" mimetype="">
+    <value>Vendor</value>
+  </data>
+  <data name="dsMBLabel§VoidCode" type="" mimetype="">
+    <value>Void Code</value>
+  </data>
+  <data name="dsMBLabel§Voided Physical Count" type="" mimetype="">
+    <value>Voided Physical Count</value>
+  </data>
+  <data name="dsMBLabel§Voiding Physical Count Void" type="" mimetype="">
+    <value>Voiding Physical Count Void</value>
+  </data>
+  <data name="dsMBLabel§VoidingItemCountValueVoidID" type="" mimetype="">
+    <value>Voiding Item Count Value Void</value>
+  </data>
+  <data name="dsMBLabel§WebURL" xml:space="preserve">
+    <value>Web URL</value>
+  </data>
+  <data name="dsMBLabel§Work Category" xml:space="preserve">
+    <value>Work Category</value>
+  </data>
+  <data name="dsMBLabel§Work Due Date" type="" mimetype="">
+    <value>Work Due Date</value>
+  </data>
+  <data name="dsMBLabel§Work End Date" xml:space="preserve">
+    <value>Work End Date</value>
+  </data>
+  <data name="dsMBLabel§Work Order" xml:space="preserve">
+    <value>Work Order</value>
+  </data>
+  <data name="dsMBLabel§Work Order Assignee" type="" mimetype="">
+    <value>Work Order Assignee</value>
+  </data>
+  <data name="dsMBLabel§Work Order Assignment" type="" mimetype="">
+    <value>Work Order Assignment</value>
+  </data>
+  <data name="dsMBLabel§Work Order Expense Category" type="" mimetype="">
+    <value>Work Order Expense Category</value>
+  </data>
+  <data name="dsMBLabel§Work Order Expense Model" type="" mimetype="">
+    <value>Work Order Expense Model</value>
+  </data>
+  <data name="dsMBLabel§Work Order Expense Model Entry" type="" mimetype="">
+    <value>Work Order Expense Model Entry</value>
+  </data>
+  <data name="dsMBLabel§Work Order Priority" type="" mimetype="">
+    <value>Work Order Priority</value>
+  </data>
+  <data name="dsMBLabel§Work Order State" type="" mimetype="">
+    <value>Work Order State</value>
+  </data>
+  <data name="dsMBLabel§Work Order State History" type="" mimetype="">
+    <value>Work Order State History</value>
+  </data>
+  <data name="dsMBLabel§Work Order State History Status" type="" mimetype="">
+    <value>Work Order State History Status</value>
+  </data>
+  <data name="dsMBLabel§Work Order State Transition" type="" mimetype="">
+    <value>Work Order State Transition</value>
+  </data>
+  <data name="dsMBLabel§Work Start Date" xml:space="preserve">
+    <value>Work Start Date</value>
+  </data>
+  <data name="dsMBLabel§WorkOrder" type="" mimetype="">
+    <value>Work Order</value>
+  </data>
+  <data name="dsMBLabel§WorkOrderAssigneeStatistics" type="" mimetype="">
+    <value>Work Order Assignee Statistics</value>
+  </data>
+  <data name="dsMBLabel§WorkOrderAssignmentAll" type="" mimetype="">
+    <value>Work Order Assignment All</value>
+  </data>
+  <data name="dsMBLabel§WorkOrderExpenseModel" xml:space="preserve">
+    <value>Work Order Expense Model</value>
+  </data>
+  <data name="dsMBLabel§WorkOrderState" type="" mimetype="">
+    <value>Work Order State</value>
+  </data>
+  <data name="dsMBLabel§WorkOrderStateHistory" type="" mimetype="">
+    <value>Work Order State History</value>
+  </data>
+  <data name="dsMBLabel§WorkOrderTemplate" type="" mimetype="">
+    <value>Work Order Template</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Activity" type="" mimetype="">
+    <value>Activity</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Actual" xml:space="preserve">
+    <value>Actual</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Actual Item" type="" mimetype="">
+    <value>Actual Item</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Actual Quantity has been changed before your actualization submission" xml:space="preserve">
+    <value>Actual Quantity has been changed before your actualization submission</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Actualize" xml:space="preserve">
+    <value>Actualize</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Actualize Resources" xml:space="preserve">
+    <value>Actualize Resources</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Actualize Resources is disabled." type="" mimetype="">
+    <value>Actualize Resources is disabled.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Add Comment" xml:space="preserve">
+    <value>Add Comment</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Add comment to Request {0}" type="" mimetype="">
+    <value>Add comment to Request {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Add comment to Work Order {0}" type="" mimetype="">
+    <value>Add comment to Work Order {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Add Remarks to Request {0}" xml:space="preserve">
+    <value>Add Remarks to Request {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§All History" type="" mimetype="">
+    <value>All History</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§An error occurred while processing your request" type="" mimetype="">
+    <value>An error occurred while processing your request</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§An unexpected error occurred" type="" mimetype="">
+    <value>An unexpected error occurred</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Assigned Requests" xml:space="preserve">
+    <value>Assigned Requests</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Assigned Work Orders" xml:space="preserve">
+    <value>Assigned Work Orders</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Attachments" xml:space="preserve">
+    <value>Attachments</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Back to Assignment Status" xml:space="preserve">
+    <value>Back to Assignment Status</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Back to List" xml:space="preserve">
+    <value>Back to List</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Change to In Progress" type="" mimetype="">
+    <value>Change to In Progress</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Change to In Progress Request {0}" type="" mimetype="">
+    <value>Change to In Progress Request {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Change to In Progress Request was unsuccessful. Please correct the errors and try again." type="" mimetype="">
+    <value>Change to In Progress Request was unsuccessful. Please correct the errors and try again.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Close Request" xml:space="preserve">
+    <value>Close Request</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Close Request {0}" xml:space="preserve">
+    <value>Close Request {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Close Request was unsuccessful. Please correct the errors and try again." xml:space="preserve">
+    <value>Close Request was unsuccessful. Please correct the errors and try again.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Close Work Order" xml:space="preserve">
+    <value>Close Work Order</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Close Work Order {0}" type="" mimetype="">
+    <value>Close Work Order {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Close Work Order was unsuccessful. Please correct the errors and try again." type="" mimetype="">
+    <value>Close Work Order was unsuccessful. Please correct the errors and try again.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Confirm your email address" xml:space="preserve">
+    <value>Confirm your email address</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Correction of Actual Item" type="" mimetype="">
+    <value>Correction of Actual Item</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Correction of Item Transfer From" type="" mimetype="">
+    <value>Correction of Item Transfer From</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Correction of Item Transfer To" type="" mimetype="">
+    <value>Correction of Item Transfer To</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Correction of ItemIssue" type="" mimetype="">
+    <value>Correction of Item Issue</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Correction of Receive Item" type="" mimetype="">
+    <value>Correction of Receive Item</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Correction of Receive Item With PO" type="" mimetype="">
+    <value>Correction of Receive Item (with PO)</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Cost cannot be zero" xml:space="preserve">
+    <value>Cost cannot be zero</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Cost must not exceed value on hand" xml:space="preserve">
+    <value>Cost must not exceed value on hand</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Create" type="" mimetype="">
+    <value>Create</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Current History" type="" mimetype="">
+    <value>Current History</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Current State" xml:space="preserve">
+    <value>Current State</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Current Status" xml:space="preserve">
+    <value>Current Status</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Demanded" xml:space="preserve">
+    <value>Demanded</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Draft" xml:space="preserve">
+    <value>Draft</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Effective Date" type="" mimetype="">
+    <value>Effective Date</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Email Address" xml:space="preserve">
+    <value>Email Address</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Email address for request will be" type="" mimetype="">
+    <value>Email address for request will be</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Enter my Request" type="" mimetype="">
+    <value>Enter my Request</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Enter your email address to submit a MainBoss request" xml:space="preserve">
+    <value>Enter your email address to submit a MainBoss request</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Error" type="" mimetype="">
+    <value>Error</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Error calculating total cost" xml:space="preserve">
+    <value>Error calculating total cost</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§External tag '{0}' not found." type="" mimetype="">
+    <value>External tag '{0}' not found.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§From Cost Center" type="" mimetype="">
+    <value>From Cost Center</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§History" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§In Progress" xml:space="preserve">
+    <value>In Progress</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Inventory" type="" mimetype="">
+    <value>Inventory</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Item Activity" type="" mimetype="">
+    <value>Item Activity</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Item Adjustment" type="" mimetype="">
+    <value>Item Adjustment</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Item Issue" type="" mimetype="">
+    <value>Item Issue</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Item Transfer From" type="" mimetype="">
+    <value>Item Transfer From</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Item Transfer To" type="" mimetype="">
+    <value>Item Transfer To</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§ItemAssignment '{0}' not found." type="" mimetype="">
+    <value>ItemAssignment '{0}' not found.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Login as MainBoss User to view your assignments" xml:space="preserve">
+    <value>Login as MainBoss User to view your assignments</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§MainBoss Web Access Home" type="" mimetype="">
+    <value>MainBoss Web Access Home</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Most Recent Comments" type="" mimetype="">
+    <value>Most Recent Comments</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Most Recent Comments to Requestor" type="" mimetype="">
+    <value>Most Recent Comments to Requestor</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§New" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§New Request" xml:space="preserve">
+    <value>New Request</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§No Cost Basis for calculating total cost" xml:space="preserve">
+    <value>No Cost Basis for calculating total cost</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§No Permission" xml:space="preserve">
+    <value>No Permission</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Not Assigned" type="" mimetype="">
+    <value>Not Assigned</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Not Specified" type="" mimetype="">
+    <value>Not Specified</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Number" xml:space="preserve">
+    <value>Number</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§on" xml:space="preserve">
+    <value>on</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Physical Count" type="" mimetype="">
+    <value>Physical Count</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Priority" xml:space="preserve">
+    <value>Priority</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Quantity" type="" mimetype="">
+    <value>Quantity</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Quantity has been changed before your actualization submission" xml:space="preserve">
+    <value>Quantity has been changed before your actualization submission</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Quantity must not exceed quantity on hand" xml:space="preserve">
+    <value>Quantity must not exceed quantity on hand</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Receive Item" type="" mimetype="">
+    <value>Receive Item</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Receive Item With PO" type="" mimetype="">
+    <value>Receive Item (with PO)</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Remaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Request Priority" xml:space="preserve">
+    <value>Request Priority</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Request submission was unsuccessful. Please correct the errors and try again." xml:space="preserve">
+    <value>Request submission was unsuccessful. Please correct the errors and try again.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Requestor Add Comment" xml:space="preserve">
+    <value>Requestor Add Comment</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Requestor Remarks Not Complete" xml:space="preserve">
+    <value>Requestor Remarks Not Complete</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Requests" xml:space="preserve">
+    <value>Requests</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Resource is no longer present for actualization" xml:space="preserve">
+    <value>Resource is no longer present for actualization</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Resource was never available for actualization" xml:space="preserve">
+    <value>Resource was never available for actualization</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Resources" xml:space="preserve">
+    <value>Resources</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Return to MainBoss Web Access" xml:space="preserve">
+    <value>Return to MainBoss Web Access</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Save Comment" xml:space="preserve">
+    <value>Save Comment</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Save Remarks" xml:space="preserve">
+    <value>Save Remarks</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Save Remarks was unsuccessful. Please correct the errors and try again." xml:space="preserve">
+    <value>Save Remarks was unsuccessful. Please correct the errors and try again.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Self Assign" type="" mimetype="">
+    <value>Self Assign</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Self Assign to Request {0}" type="" mimetype="">
+    <value>Self Assign to Request {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Self Assign to Work Order {0}" type="" mimetype="">
+    <value>Self Assign to Work Order {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Self Assign was unsuccessful. Please correct the errors and try again." type="" mimetype="">
+    <value>Self Assign was unsuccessful. Please correct the errors and try again.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Self assigned" type="" mimetype="">
+    <value>Self assigned</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Show on Map" xml:space="preserve">
+    <value>Show on Map</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Specifications" xml:space="preserve">
+    <value>Specifications</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Start Date must be on or before End Date" type="" mimetype="">
+    <value>Start Date must be on or before End Date</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§State" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§State history has changed before we could save your information. Please review any changed information and try again" type="" mimetype="">
+    <value>State history has changed before we could save your information. Please review any changed information and try again</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Subject" xml:space="preserve">
+    <value>Subject</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§The combination of the values entered for '{0}' already exists. Only one instance of that combination is allowed." xml:space="preserve">
+    <value>The combination of the values entered for '{0}' already exists. Only one instance of that combination is allowed.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§The email address is not valid" type="" mimetype="">
+    <value>The email address is not valid</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§The request comment history has been changed, possibly by someone else adding comments. Your remarks were not saved." type="" mimetype="">
+    <value>The request comment history has been changed, possibly by someone else adding comments. Your remarks were not saved.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§The request with Id '{0}' was not found." xml:space="preserve">
+    <value>The request with Id '{0}' was not found.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§The unit with Id '{0}' was not found." xml:space="preserve">
+    <value>The unit with Id '{0}' was not found.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§The value entered already exists. Only one instance of this value is allowed." xml:space="preserve">
+    <value>The value entered already exists. Only one instance of this value is allowed.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§The value entered for '{0}' already exists. Only one instance of this value is allowed." xml:space="preserve">
+    <value>The value entered for '{0}' already exists. Only one instance of this value is allowed.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§The work order with Id '{0}' was not found." xml:space="preserve">
+    <value>The work order with Id '{0}' was not found.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§There is no MainBoss Requestor with this email address." xml:space="preserve">
+    <value>There is no MainBoss Requestor with this email address.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§There was a problem validating access to {0}" xml:space="preserve">
+    <value>There was a problem validating access to {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§This would set quantity on hand to zero but leave non-zero value" xml:space="preserve">
+    <value>This would set quantity on hand to zero but leave non-zero value</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§To Cost Center" type="" mimetype="">
+    <value>To Cost Center</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Total Cost" type="" mimetype="">
+    <value>Total Cost</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§UnAssigned Requests" type="" mimetype="">
+    <value>UnAssigned Requests</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§UnAssigned Work Orders" type="" mimetype="">
+    <value>UnAssigned Work Orders</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Unit Cost" type="" mimetype="">
+    <value>Unit Cost</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Unit Location" type="" mimetype="">
+    <value>Unit Location</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Unspecified Employee" xml:space="preserve">
+    <value>Unspecified Employee</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Unspecified Trade" xml:space="preserve">
+    <value>Unspecified Trade</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§View Assignment Status" xml:space="preserve">
+    <value>View Assignment Status</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§View Item Assignment {0}" type="" mimetype="">
+    <value>View Item Assignment {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§View Request {0}" xml:space="preserve">
+    <value>View Request {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§View Unit {0}" xml:space="preserve">
+    <value>View Unit {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§View WorkOrder {0}" xml:space="preserve">
+    <value>View WorkOrder {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§View your assignments" xml:space="preserve">
+    <value>View your assignments</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Void Physical Count" type="" mimetype="">
+    <value>Void Physical Count</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Welcome MainBoss user" xml:space="preserve">
+    <value>Welcome MainBoss user</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Where" type="" mimetype="">
+    <value>Where</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Work Orders" xml:space="preserve">
+    <value>Work Orders</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§You cannot add a comment to the request in its current state" type="" mimetype="">
+    <value>You cannot add a comment to the request in its current state</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§You cannot add a comment to the work order in its current state" type="" mimetype="">
+    <value>You cannot add a comment to the work order in its current state</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§You cannot add a remark to the request in its current state" type="" mimetype="">
+    <value>You cannot add a remark to the request in its current state</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§You cannot change the request to Closed from its current state" type="" mimetype="">
+    <value>You cannot change the request to Closed from its current state</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§You cannot change the request to In Progress from its current state" type="" mimetype="">
+    <value>You cannot change the request to In Progress from its current state</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§You cannot change the work order to Closed from its current state" type="" mimetype="">
+    <value>You cannot change the work order to Closed from its current state</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§You cannot change the work order to Open from its current state" type="" mimetype="">
+    <value>You cannot change the work order to Open from its current state</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§You cannot Close the request since it is already closed" type="" mimetype="">
+    <value>You cannot Close the request since it is already closed</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§You cannot close the work order since it is already closed" type="" mimetype="">
+    <value>You cannot close the work order since it is already closed</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§You cannot self assign the request in its current state" type="" mimetype="">
+    <value>You cannot self assign the request in its current state</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§You cannot self assign the work order in its current state" type="" mimetype="">
+    <value>You cannot self assign the work order in its current state</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§You cannot submit requests." xml:space="preserve">
+    <value>You cannot submit requests.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§You must be a MainBoss User to view your Assignment status" xml:space="preserve">
+    <value>You must be a MainBoss User to view your Assignment status</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§You require a Web Access license to view your MainBoss assignments." xml:space="preserve">
+    <value>You require a Web Access license to view your MainBoss assignments.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§You require a Web Requests license to submit requests." xml:space="preserve">
+    <value>You require a Web Requests license to submit requests.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Your email address does not match that of the originator of this request." xml:space="preserve">
+    <value>Your email address does not match that of the originator of this request.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Your Remarks" xml:space="preserve">
+    <value>Your Remarks</value>
+  </data>
+</root>

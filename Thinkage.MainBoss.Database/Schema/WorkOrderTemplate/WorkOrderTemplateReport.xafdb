@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderTemplateReport" defaults="false" log="false" id="Id" labelkey="Task Report">
+	<field name="Id" read="RequiredGUID" />
+	<field name="Resource" type="integer(null, min 1, max 7)" labelkey="Resource Type"/>
+	<field name="Code" type="Code" />
+	<field name="Quantity" type="Quantity" labelkey="Demanded"/>
+	<field name="Labor" type="DurationMinutes" labelkey="Demanded Duration"/>
+	<field name="UOM" type="Code"/>
+	<field name="WorkOrderTemplateID" type="RequiredGUIDREF" link="WorkOrderTemplate" labelkey=""/>
+	<extension name="query">
+		with MyWorkOrderLineTemplate (
+			Id,
+			Category,
+			Code,
+			QuantityCount,
+			QuantityTime,
+			UOM,
+			DemandTemplateID,
+			WorkOrderTemplateID
+			) as (
+			  select 
+				DemandItemTemplate.Id, 1,
+				Item.Code,
+				DemandItemTemplate.Quantity,
+				null,
+				UnitOfMeasure.Code,
+				DemandTemplate.ID, DemandTemplate.WorkOrderTemplateID
+ 			  from DemandItemTemplate
+				join DemandTemplate on DemandTemplate.Id = DemandItemTemplate.DemandTemplateID
+				join ItemLocation on ItemLocation.Id = DemandItemTemplate.ItemLocationID
+				join Item on Item.Id = ItemLocation.ItemID
+				left outer join UnitOfMeasure on UnitOfMeasure.Id = Item.UnitOfMeasureID
+			union all
+			  select 
+				DemandLaborInsideTemplate.Id, 2,
+				LaborInside.Code,
+				null,
+				DemandLaborInsideTemplate.Quantity,
+				null,
+				DemandTemplate.ID, DemandTemplate.WorkOrderTemplateID
+			  from DemandLaborInsideTemplate
+				join DemandTemplate on DemandTemplate.Id = DemandLaborInsideTemplate.DemandTemplateID
+				join LaborInside on LaborInside.Id = DemandLaborInsideTemplate.LaborInsideID
+			union all
+			  select 
+				DemandLaborOutsideTemplate.Id, 3,
+				LaborOutside.Code,
+				null,
+				DemandLaborOutsideTemplate.Quantity,
+				null,
+				DemandTemplate.ID, DemandTemplate.WorkOrderTemplateID
+			  from DemandLaborOutsideTemplate
+				join DemandTemplate on DemandTemplate.Id = DemandLaborOutsideTemplate.DemandTemplateID
+				join LaborOutside on LaborOutside.Id = DemandLaborOutsideTemplate.LaborOutsideID
+			union all
+			  select 
+				DemandOtherWorkInsideTemplate.Id, 4,
+				OtherWorkInside.Code,
+				DemandOtherWorkInsideTemplate.Quantity,
+				null,
+				null,
+				DemandTemplate.ID, DemandTemplate.WorkOrderTemplateID
+			  from DemandOtherWorkInsideTemplate
+				join DemandTemplate on DemandTemplate.Id = DemandOtherWorkInsideTemplate.DemandTemplateID
+				join OtherWorkInside on OtherWorkInside.Id = DemandOtherWorkInsideTemplate.OtherWorkInsideID
+			union all
+			  select 
+				DemandOtherWorkOutsideTemplate.Id, 5,
+				OtherWorkOutside.Code,
+				DemandOtherWorkOutsideTemplate.Quantity,
+				null,
+				null,
+				DemandTemplate.ID, DemandTemplate.WorkOrderTemplateID
+			  from DemandOtherWorkOutsideTemplate
+				join DemandTemplate on DemandTemplate.Id = DemandOtherWorkOutsideTemplate.DemandTemplateID
+				join OtherWorkOutside on OtherWorkOutside.Id = DemandOtherWorkOutsideTemplate.OtherWorkOutsideID
+			union all
+			  select 
+				DemandMiscellaneousWorkOrderCostTemplate.Id, 6,
+				MiscellaneousWorkOrderCost.Code,
+				null,
+				null,
+				null,
+				DemandTemplate.ID, DemandTemplate.WorkOrderTemplateID
+			  from DemandMiscellaneousWorkOrderCostTemplate
+				join DemandTemplate on DemandTemplate.Id = DemandMiscellaneousWorkOrderCostTemplate.DemandTemplateID
+				join MiscellaneousWorkOrderCost on MiscellaneousWorkOrderCost.Id = DemandMiscellaneousWorkOrderCostTemplate.MiscellaneousWorkOrderCostID
+			union all
+			  select 
+				WorkOrderTemplatePurchaseOrderTemplate.Id, 7,
+				PurchaseOrderTemplate.Code,
+				null,
+				null,
+				null,
+				null, WorkOrderTemplatePurchaseOrderTemplate.WorkOrderTemplateID
+			  from WorkOrderTemplatePurchaseOrderTemplate
+				left outer join PurchaseOrderTemplate on PurchaseOrderTemplate.Id = WorkOrderTemplatePurchaseOrderTemplate.PurchaseOrderTemplateID
+			)
+
+			select
+			  coalesce(MyWorkOrderLineTemplate.Id, WorkOrderTemplate.ID)
+			  , MyWorkOrderLineTemplate.Category
+			  , MyWorkOrderLineTemplate.Code 
+			  , MyWorkOrderLineTemplate.QuantityCount
+			  , MyWorkOrderLineTemplate.QuantityTime
+			  , MyWorkOrderLineTemplate.UOM
+			  , WorkOrderTemplate.ID
+			from WorkOrderTemplate
+ 			  left outer join MyWorkOrderLineTemplate on MyWorkOrderLineTemplate.WorkOrderTemplateID = WorkOrderTemplate.ID
+		</extension>
+	<extension name="dependson">WorkOrderTemplate</extension>
+	<extension name="dependson">DemandTemplate</extension>
+	<extension name="dependson">DemandItemTemplate</extension>
+	<extension name="dependson">Item</extension>
+	<extension name="dependson">ItemLocation</extension>
+	<extension name="dependson">UnitOfMeasure</extension>
+	<extension name="dependson">LaborInside</extension>
+	<extension name="dependson">LaborOutside</extension>
+	<extension name="dependson">OtherWorkInside</extension>
+	<extension name="dependson">OtherWorkOutside</extension>
+	<extension name="dependson">DemandLaborInsideTemplate</extension>
+	<extension name="dependson">DemandLaborOutsideTemplate</extension>
+	<extension name="dependson">DemandOtherWorkInsideTemplate</extension>
+	<extension name="dependson">MiscellaneousWorkOrderCost</extension>
+	<extension name="dependson">WorkOrderTemplatePurchaseOrderTemplate</extension>
+	<extension name="dependson">PurchaseOrderTemplate</extension>
+  </table>
+  <table name="WorkOrderTemplate"/>
+  <table name="DemandTemplate"/>
+  <table name="DemandItemTemplate"/>
+  <table name="Item"/>
+  <table name="ItemLocation"/>
+  <table name="UnitOfMeasure"/>
+  <table name="LaborInside"/>
+  <table name="LaborOutside"/>
+  <table name="OtherWorkInside"/>
+  <table name="OtherWorkOutside"/>
+  <table name="DemandLaborInsideTemplate"/>
+  <table name="DemandLaborOutsideTemplate"/>
+  <table name="DemandOtherWorkInsideTemplate"/>
+  <table name="MiscellaneousWorkOrderCost"/>
+  <table name="WorkOrderTemplatePurchaseOrderTemplate"/>
+  <table name="PurchaseOrderTemplate"/>
+</database>

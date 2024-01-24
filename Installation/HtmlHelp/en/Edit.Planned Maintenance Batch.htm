@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing Planned Maintenance Generation Records</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Editing Planned Maintenance Generation Records</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.Planned Maintenance Batch.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Unit Maintenance Plan Summary.htm">Next section &gt;</a></p>
+
+<p>The Planned Maintenance Generation Editor lets you generate new planned maintenance work orders. (For more on planned maintenance, see <a href="PlannedMaintenance.htm">Planned Maintenance</a>.)</p>
+
+<p>To open the editor, go to <span class="CPanel">Unit Maintenance Plans</span> | <span class="CPanel">Generate Planned Maintenance</span> in the control panel and click either <span class="CButton">New Planned Maintenance Batch</span> or <span class="CButton">Edit</span>. The editor window contains the following:</p>
+
+<p class="wi"><span class="CButton">Details</span> section: Shows basic information for the record.</p>
+<p class="wi2"><span class="CField">User Contact</span>: A read-only field telling who generated the planned maintenance record. (If you are creating a new record, this will be your own name.)</p>
+<p class="wi2"><span class="CField">Generation Interval</span> [only appears when editing defaults]: Specifies a number of days. This states how often you intend to generate planned maintenance work orders; for example, if "<span class="CField">Generation Interval</span>" is 7, you intend to generate PM work orders every week. For more, see <a href="PlannedMaintenance.htm">Planned Maintenance</a>.</p>
+<p class="wi2"><span class="CField">Entry Date</span>: A read-only field giving the date when this record was created.</p>
+<p class="wi2"><span class="CField">End Date</span>: MainBoss will generate work orders for planned maintenance jobs that should be done up to and including the given date. (The default date set by MainBoss is based on your "<span class="CField">Generation Interval</span>" value.)</p>
+<p class="wi2"><span class="CButton">Single Purchase Orders</span>: If this box is checkmarked, MainBoss will examine all the purchase order templates associated with the work orders to be generated. If several templates are directed to the same vendor, MainBoss will create a single purchase order that contains all the items from all the templates for that vendor. Some users may find the combined purchase order more useful than several separate orders for the same vendor.
+
+<br /><br />If <span class="CButton">Single Purchase Orders</span> is left blank, MainBoss will generate a single purchase order from each purchase order template associated with each generated work order.
+
+<br /><br />For more on purchase order templates, see <a href="PurchaseOrderTemplates.htm">Purchase Order Templates</a>. For more on purchase orders, see <a href="PurchaseOrders.htm">Purchase Orders</a>.</p>
+<p class="wi2"><span class="CField">Purchase Order Creation State</span>: When MainBoss generates a purchase order from a template, the purchase order may be put into several states: Draft, Issued, Voided, or Closed. For example, if you put a purchase order into the Draft state, it is considered tentative and subject to change; if you put a purchase order into the Issued state, it is considered ready to be submitted to the vendor. A purchase order template may specify what state should be used when a purchase order is generated from the template. "<span class="CField">Purchase Order Creation State</span>" lets you specify a different state from the one specified in the template. The state you specify in "<span class="CField">Purchase Order Creation State</span>" will be applied to all purchase orders generated in this batch.</p>
+<p class="wi2"><span class="CField">Work Order Creation State</span>: Similar to "<span class="CField">Purchase Order Creation State</span>". By default, each generated work order is created in the draft state. However, you may wish to put generated work orders into some other state instead&#8212;most likely the open state, indicating that the work order is ready to be printed. (Remember though that if a work order is open, some of its information is locked down and can't be changed unless you first <span class="CButton">Suspend</span> the work order.)</p>
+<p class="wi2"><span class="CField">For Access Code</span> options: Let you specify what to do when the access code for a unit is different than the access code for the task description:</p>
+<p class="wi3"><span class="CButton">Prefer value from Task</span>: If both the task record and the unit record specify an access code, MainBoss assigns generated work orders the access code from the task. However, if the task record doesn't have an access code, MainBoss uses the code from the unit.</p>
+<p class="wi3"><span class="CButton">Prefer value from Unit</span>: If both the task record and the unit record specify an access code, MainBoss assigns generated work orders the access code from the unit. However, if the unit record doesn't have an access code, MainBoss uses the code from the task.</p>
+<p class="wi3"><span class="CButton">Only use value from Task</span>: MainBoss always uses the access code from the task record. (If the task record doesn't have an access code, generated work orders won't have an access code either.)</p>
+<p class="wi3"><span class="CButton">Only use value from Unit</span>: MainBoss always uses the access code from the unit record. (If the unit record doesn't have an access code, generated work orders won't have an access code either.)</p>
+<p class="wi2"><span class="CField">For Expense Model</span> options: Let you specify what to do when the expense model in the unit record is different from the one in the task record. The options work the same way as the options in <span class="CField">For Access Code</span>.</p>
+<p class="wi2"><span class="CField">Comments</span>: Any comments you want to associate with this particular generation process.</p>
+<p class="wi"><span class="CButton">Generation Details</span> section: Lists preliminary details about the work orders to be generated. This section is only filled in when you click the <span class="CButton">Generate</span> button.
+
+<br /><br />Generation details are provided as a way to review the potential schedule before work orders are actually created. This is particularly important when you set up your initial PM scheduling and when you introduce new PM tasks/timing records. You can review the details to make sure they make sense. If not, you can revise your timings and try again (by hitting the section's <span class="CButton"><img src="Refresh.png" alt="Refresh" /></span> button).</p>
+<p class="wi2"><span class="CField">Code</span>: Which unit is involved in each job. Under each unit, you'll see one or more lines indicating jobs that should be scheduled for the unit. Each line has a <span class="NewTerm">sequence number</span>, useful in situations where more than one job needs to be scheduled for the same unit. In this case, the first job is numbered <span class="CU">Seq 0</span>, the next is numbered <span class="CU">Seq 1</span>, and so on.</p>
+<p class="wi2"><span class="CField">PM Generation Detail Work Start Date</span>: The date on which work will be scheduled to start if the work order is actually generated.</p>
+<p class="box">Entries in the <span class="CButton">Generation Details</span> list are marked with various symbols. For an explanation of these symbols, see
+
+<br /><br /><a href="http://www.mainboss.com/english/support/faq/mb30_gendetails.shtml">http://www.mainboss.com/english/support/faq/mb30_gendetails.shtml</a> </p>
+
+<p class="wi2"><span class="CButton">View Work Order</span>: Displays the contents of a work order selected in the <span class="CButton">Generation Details</span> list. Note that the list often contains entries that do not correspond with work orders; the <span class="CButton">View Work Order</span> button will only be enabled when you select an entry that <span class="Emphasis">does</span> have an associated work order.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Searches the generation details for a particular record.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the generation details to reflect any recent changes. In particular, if you adjust any of your maintenance timing records, the details are regenerated with the new timing.
+
+<br /><br />When you are first setting up maintenance plans, you can create a timing record and then <span class="CButton">Generate</span> to see what jobs will be generated. If the list isn't correct, adjust a timing record, then <span class="CButton"><img src="Refresh.png" alt="Refresh" /></span> to see if you've corrected the problem. In this way, you can fine-tune your unit maintenance plans until they work the way you want.</p>
+<p class="wi"><span class="CButton">Work Orders</span> section: Lists actual work orders that have been generated. It's a good idea to review the work orders that you generate, in case they need adjusting. For example, you should make sure that jobs haven't been assigned to people who are on vacation. You should also check <span class="CPanel">Items</span> | <span class="CPanel">Reports</span> | <span class="CPanel">Item Restocking</span> in case you need to order materials for the newly created work orders.
+
+<br /><br />The buttons in this section are similar to the buttons in the work order table viewer. For example, you can use <span class="CButton">Add Work Order Comment</span> to add a comment to the currently selected work order. For more information, see <a href="Browse.Work Order.htm">Viewing Work Orders</a>.</p>
+<p class="wi2"><span class="CButton">View Work Order</span>: Displays the contents of a work order selected in the <span class="CButton">Work Orders</span> list. Note that the list often contains entries that do not correspond with work orders; the <span class="CButton">View Work Order</span> button will only be enabled when you select an entry that <span class="Emphasis">does</span> have an associated work order.</p>
+<p class="wi"><span class="CButton">Errors</span> section: Lists any errors that were encountered during the <span class="CButton">Commit</span> process. Every time you <span class="CButton">Commit</span> a set of generated work orders, you should check this section to see if errors occurred. Check the "<span class="CField">Disposition details</span>" field of each entry in the list to see the nature of the error; in many cases, this will indicate that a task or maintenance timing record has a problem that needs to be corrected.</p>
+<p class="wi"><span class="CButton">Generate</span>: Clicking this button fills the <span class="CButton">Generation Details</span> section with entries. Once these have been generated, the button changes into <span class="CButton">Change Scheduling Parameters</span>.</p>
+<p class="wi"><span class="CButton">Change Scheduling Parameters</span>: Clears out the <span class="CButton">Generation Details</span> section so you can start again with new parameters. For example, if you made a mistake typing "<span class="CField">End Date</span>", you might end up with far more or far fewer work orders than you expect; in this case, click <span class="CButton">Change Scheduling Parameters</span> to delete everything in <span class="CButton">Generation Details</span>, then retype "<span class="CField">End Date</span>" and <span class="CButton">Generate</span> again.</p>
+<p class="wi"><span class="CButton">Commit</span>: Generates the final work orders. MainBoss will create a <span class="CButton">Work Orders</span> section in this record which lists the work orders that were created.</p>
+<p class="wi"><span class="CButton">Commit &amp; Close</span>: Performs a <span class="CButton">Commit</span> operation, then closes the window.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the generation record (if necessary) after work has been done.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. If you've generated <span class="CButton">Generation Details</span> by clicking <span class="CButton">Generate</span>, but have not yet generated actual work orders by clicking <span class="CButton">Commit</span>, MainBoss will ask you if you really want to close the window. If you do close the window, MainBoss does <span class="Emphasis">not</span> create a planned maintenance generation record.</p>
+<p class="wi"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Re-evaluates all unit maintenance plans and fills in <span class="CButton">Generation Details</span> again.</p>
+<p>For general information on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For information on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Browse.Planned Maintenance Batch.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Unit Maintenance Plan Summary.htm">Next section &gt;</a></p>
+</body>
+</html>
+

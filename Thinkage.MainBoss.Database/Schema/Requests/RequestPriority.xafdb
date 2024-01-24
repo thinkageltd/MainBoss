@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="RequestPriority" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Request Priority">
+    <field name="Id" read="RequiredGUID"/>
+    <field name="Code" type="RequiredCode"/>
+    <field name="Hidden" type="GenerationValue"/>
+    <field name="Desc" type="Desc"/>
+    <field name="Comment" type="Comment"/>
+    <field name="Rank" type="integer(16,nonnull)"/>
+
+	<extension name="deletemethod">hide</extension>
+  </table>
+</database>

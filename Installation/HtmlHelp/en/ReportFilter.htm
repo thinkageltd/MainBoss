@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Report Filters</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Report Filters</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="ReportButtons.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="CustomizedReportSettings.htm">Next section &gt;</a></p>
+
+<p>The <span class="CButton">Filters</span> section of a report window lets you restrict the report to a subset of the items it might contain. For example, the window for printing work orders lets you specify filters which restrict the print-out to a subset of the existing work orders. You might ask to see only the work orders for a particular location, or work orders that were created in the past month.</p>
+
+<p>The <span class="CButton">Filters</span> section may begin with one or more checkboxes. For example, one common checkbox has the label <span class="CButton">Include Inactive records</span>. Most reports are designed to ignore inactive records (e.g. very old closed work orders); however, by checkmarking the box, you can tell MainBoss to include such records in the reports. (For more on active and inactive records, see <a href="Edit.Active Filter.htm">The Active Filter</a>.)</p>
+
+<p>After any such checkboxes is a drop-down list that lets you choose what type of information should be used as a filter. For example, if you are printing work orders and you only want to look at ones with a particular priority, you might choose <span class="CU">Work Order Priority</span> from the drop-down list.</p>
+
+<p>Some entries in the drop-down list can be expanded. For example, suppose you are printing work orders. In the drop-down list, you'll see that the entry for <span class="CU">Unit</span> can be expanded. If you expand this entry, you'll be able to choose from properties of the unit. For example, if you choose a unit category, you could ask to see work orders on all units that belong to the chosen category.</p>
+
+<p>Once you choose the information field on which you want to filter, MainBoss offers you options specific to the field you chose. For example, if you want to filter on a field that contains a date, MainBoss will offer you options pertaining to dates; if you want to filter on a field that contains a money value, MainBoss will offer you options pertaining to costs and prices. The general format is similar to the format for specifying table filters. For more information, see <a href="Filter.htm">Table Filters</a>.</p>
+
+<p>Whenever you specify a filter, MainBoss creates a new drop-down box so you can specify additional filters. This lets you set up several filters at a time. For example, you might ask for all high-priority work orders on units in Building X that are scheduled to start in the next week. </p>
+
+<p>When you create a filter, MainBoss adds an associated <span class="CButton">Drop</span> button. This lets you delete the filter if and when you don't need it anymore.</p>
+
+<p>If you specify one or more filters, you can create a customized report setting just like a customized table setting. This lets you set up reports with a standard set of filters, so that you don't have to specify the filters each time you want the reports. For more information on customization, see <a href="CustomizedTableSettings.htm">Customized Table Settings</a>.</p>
+
+<p class="box">You can also use customization in other sections of report windows (e.g. <span class="CButton">Grouping</span>) to select standard options for customized reports.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="CustomizedReportSettings.htm">Customized Report Settings</a></li>
+
+<li><a href="SelectPrintFlags.htm">Select Print Flags</a></li>
+</ul>
+<p><a href="ReportButtons.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="CustomizedReportSettings.htm">Next section &gt;</a></p>
+</body>
+</html>
+

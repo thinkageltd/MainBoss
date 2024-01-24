@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="POLineOtherWorkTemplate" defaults="true" log="false" id="Id" xid="POLineTemplateID" labelkey="Purchase Per Job Outside Template">
+    <field name="Id" read="RequiredGUID" />
+    <field name="POLineTemplateID" read="RequiredGUIDREF"  base="POLineTemplate"/>
+	<field name="DemandOtherWorkOutsideTemplateID" type="RequiredGUIDREF"  link="DemandOtherWorkOutsideTemplate">
+	  <doc>Per Job Outside reference</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+    <field name="Quantity" type="integer(min 1, max 2147483647, nonnull)" />
+	<extension name="deletemethod">delete</extension>
+	<extension name="costrights">PurchaseOrderLabor</extension>
+  </table>
+  <table name="DemandOtherWorkOutsideTemplate"/>
+  <table name="POLineTemplate"/>
+  <object class="trigger" name="mbtg_POLineOtherWorkTemplate_Updates_DemandOtherWorkOutsideTemplate">
+	<doc></doc>
+	<extension name="body">
+	  on POLineOtherWorkTemplate
+	  after insert, update, delete
+	  as
+	  begin
+		  update DemandOtherWorkOutsideTemplate
+			  set OrderQuantity = dbo.mbfn_DemandOtherWorkOutsideTemplate_OrderQuantity(DemandOtherWorkOutsideTemplate.ID)
+			  where DemandOtherWorkOutsideTemplate.ID in (
+					 select distinct DemandOtherWorkOutsideTemplateID from inserted
+			   union select distinct DemandOtherWorkOutsideTemplateID from deleted
+			  )
+	  end
+	</extension>
+	<extension name="references">mbfn_DemandOtherWorkOutsideTemplate_OrderQuantity()</extension>
+	<extension name="references">DemandOtherWorkOutsideTemplate</extension>
+  </object>
+</database>

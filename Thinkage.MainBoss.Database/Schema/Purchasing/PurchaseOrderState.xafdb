@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="PurchaseOrderState" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Purchase Order State">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="translationkey(nonnull)">
+	  <doc>The identification for this purchase order state.</doc>
+	</field>
+	<field name="Hidden" type="GenerationValue">
+	  <doc>This particular state is no longer valid for picking. The GenerationValue indicates the date/time it was hidden.</doc>
+	</field>
+	<field name="Desc" type="translationkey(null)"/>
+	<field name="Comment" type="Comment">
+	<doc>A user comment describing the intent of this particular purchase order state.</doc>
+	</field>
+
+	<field name="OrderCountsActive" type="Requiredbool">
+	  <doc>True to include POLine Items on the purchase order toward the total OnOrder</doc>
+	</field>
+	<field name="CanModifyOrder" type="Requiredbool">
+	  <doc>True to allow creation, editing, deletion of POLines and modification of the main fields of the PO </doc>
+	</field>
+	<field name="CanModifyReceiving" type="Requiredbool">
+	  <doc>True to allow creation, editing of receipts tied to this PO, and creation of ReceiveItemPO/Actual[Labor]OutsidePO lines and their corrections</doc>
+	</field>
+	<field name="CanHaveReceiving" type="Requiredbool">
+	  <doc>True to allow a PO to have receipts in this state. Principally prevents adding receipts to a voided PO.</doc>
+	</field>
+<!--
+	Future direction: New state called WaitInvoice or Received to allow a PO to remain in a state where a CanModifyReceivingCosts flag controls whether the cost values of a receipt may be changed on the
+    any receiving currently attributed to the PO
+	For now,  PO's will have to stay in the "Issued" state until all the invoices are cross-checked and the costs verified. (or the site will have to re-activate the PO to do the changes, then re-close it
+-->
+	<field name="FilterAsDraft" type="Requiredbool">
+	  <doc>For 2.9 behavior filter support, this state identifies this purchase order as in the Draft state</doc>
+	</field>
+	<field name="FilterAsIssued" type="Requiredbool">
+	  <doc>For 2.9 behavior filter support, this state identifies this purchase order as in the Issued state</doc>
+	</field>
+	<field name="FilterAsClosed" type="Requiredbool">
+	  <doc>For 2.9 behavior filter support, this state identifies this purchase order as in the Closed state</doc>
+	</field>
+	<field name="FilterAsVoid" type="Requiredbool">
+	  <doc>For 2.9 behavior filter support, this state identifies this purchase order as in the Void state</doc>
+	</field>
+
+	<extension name="deletemethod">hide</extension>
+  </table>
+  <object class="trigger" name="mbtg_PurchaseOrderState_Updates_ActualItemLocation">
+	<doc>
+	  Maintain the OnOrder amount in ActualItemLocation based on changes to PurchaseOrderState.
+	  This would be the case if someone adds a new State to the PurchaseOrderState table, or changes the value of the
+	  OrderCountsActive flag on an existing PurchaseOrderState
+	</doc>
+	<extension name="body">
+	  on PurchaseOrderState
+	  after insert, update, delete
+	  as
+	  begin
+		update ActualItemLocation
+			set OnOrder = dbo.mbfn_ActualItemLocation_OnOrder(ActualItemLocation.ID)
+			where ActualItemLocation.ItemLocationID in (
+					 select distinct ItemLocationID from POLineItem
+						   join POLine on POLineID = POLine.ID
+						   join PurchaseOrder on PurchaseOrder.ID = POLine.PurchaseOrderID
+						   join PurchaseOrderStateHistory on PurchaseOrderStateHistory.ID = PurchaseOrder.CurrentPurchaseOrderStateHistoryID
+						   join inserted on inserted.ID = PurchaseOrderStateHistory.PurchaseOrderStateID
+	  		   union select distinct ItemLocationID from POLineItem
+						   join POLine on POLineID = POLine.ID
+						   join PurchaseOrder on PurchaseOrder.ID = POLine.PurchaseOrderID
+						   join PurchaseOrderStateHistory on PurchaseOrderStateHistory.ID = PurchaseOrder.CurrentPurchaseOrderStateHistoryID
+						   join deleted on deleted.ID = PurchaseOrderStateHistory.PurchaseOrderStateID
+			  )
+	  end
+	</extension>
+	<extension name="references">mbfn_ActualItemLocation_OnOrder()</extension>
+	<extension name="references">ActualItemLocation</extension>
+	<extension name="references">POLine</extension>
+	<extension name="references">PurchaseOrder</extension>
+	<extension name="references">PurchaseOrderStateHistory</extension>
+  </object>
+  <table name="ActualItemLocation"/>
+  <table name="POLine"/>
+  <table name="PurchaseOrder"/>
+  <table name="PurchaseOrderStateHistory"/>
+</database>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="SystemCode" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="System Code">
+    <field name="Id" read="RequiredGUID"/>
+    <field name="Code" type="RequiredCode"/>
+    <field name="Hidden" type="GenerationValue"/>
+    <field name="Desc" type="Desc"/>
+    <field name="Comment" type="Comment"/>
+
+	<extension name="deletemethod">hide</extension>
+  </table>
+</database>

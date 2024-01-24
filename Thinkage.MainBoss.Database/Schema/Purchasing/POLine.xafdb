@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="POLine" defaults="true" log="false" id="Id" xid="PurchaseOrderID LineNumber" labelkey="Purchase Line">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="PurchaseOrderID" type="RequiredGUIDREF" link="PurchaseOrder">
+	  <extension name="linkage">owner</extension>
+	</field>
+	<field name="LineNumber" type="integer(min 1,  max 32767)"/>
+	<field name="Cost" type="currency(min 0.00, max 922337203685477.5807, by 0.01)"/>
+	<field name="ReceiveCost" read="RequiredCurrency">
+	  <doc>The total cost of all the associated receives</doc>
+	  <result hosting="cached">
+		  cast(42 as RequiredCurrency)
+	  </result>
+	  <extension name="dependson">mbfn_POLine_ReceiveCost()</extension>
+	</field>
+	<field name="PurchaseOrderText" type="LineText"/>
+  </table>
+  <object class="function" name="mbfn_POLine_ReceiveCost">
+	<doc>
+	  Calculate the accumulated receive costs against a designated POLine
+	</doc>
+	<extension name="body">
+	  (
+		@POLID uniqueidentifier	-- POLineID
+	  )
+	  RETURNS money
+	  as
+	  begin
+		  return (
+			  select sum(Cost)
+				from AccountingTransaction
+				where ID in (
+					select AccountingTransactionID
+					  from ReceiveItemPO
+					  join POLineItem on POLineItem.ID = ReceiveItemPO.POLineItemID
+					  where POLineID = @POLID
+				  union
+					select AccountingTransactionID
+					  from ReceiveMiscellaneousPO
+					  join POLineMiscellaneous on POLineMiscellaneous.ID = ReceiveMiscellaneousPO.POLineMiscellaneousID
+					  where POLineID = @POLID
+				  union
+					select AccountingTransactionID
+					  from ActualLaborOutsidePO
+					  join POLineLabor on POLineLabor.ID = ActualLaborOutsidePO.POLineLaborID
+					  where POLineID = @POLID
+				  union
+					select AccountingTransactionID
+					  from ActualOtherWorkOutsidePO
+					  join POLineOtherWork on POLineOtherWork.ID = ActualOtherWorkOutsidePO.POLineOtherWorkID
+					  where POLineID = @POLID
+				)
+		  )
+	  end
+	</extension>
+	<extension name="dependson">POLine.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ReceiveItemPO</extension>
+	<extension name="dependson">ReceiveMiscellaneousPO</extension>
+	<extension name="dependson">ActualLaborOutsidePO</extension>
+	<extension name="dependson">ActualOtherWorkOutsidePO</extension>
+  </object>
+  <object class="trigger" name="mbtg_POLine_Updates_PurchaseOrder">
+	<doc>
+	  Maintain the PurchaseOrder TotalPurchase and TotalReceive values
+	</doc>
+	<extension name="body">
+	  on POLine
+	  after insert, update, delete
+	  as
+	  begin
+		  update PurchaseOrder SET
+			  TotalPurchase = dbo.mbfn_PurchaseOrder_TotalPurchase(PurchaseOrder.ID),
+			  TotalReceive = dbo.mbfn_PurchaseOrder_TotalReceive(PurchaseOrder.ID)
+			  where PurchaseOrder.ID in (
+					  select distinct PurchaseOrderID from inserted
+				union select distinct PurchaseOrderID from deleted
+			  )
+	  end
+	</extension>
+	<extension name="references">mbfn_PurchaseOrder_TotalPurchase()</extension>
+	<extension name="references">mbfn_PurchaseOrder_TotalReceive()</extension>
+	<extension name="references">POLine</extension>
+  </object>
+  <table name="PurchaseOrder"/>
+  <table name="AccountingTransaction"/>
+  <table name="ReceiveItemPO"/>
+  <table name="ReceiveMiscellaneousPO"/>
+  <table name="ActualLaborOutsidePO"/>
+  <table name="ActualOtherWorkOutsidePO"/>
+  <table name="POLineItem"/>
+  <table name="POLineMiscellaneous"/>
+  <table name="POLineLabor"/>
+  <table name="POLineOtherWork"/>
+</database>

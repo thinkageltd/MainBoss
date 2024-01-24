@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="PMInitializingGenerationDetail" defaults="false" log="false" id="Id" labelkey="">
+		<doc>
+	  This view provides linkages to all ScheduledWorkOrder records, and also to any Periodicity records that the SWO's Schedule might own.
+	  You get at least one record for each SWO even if it has no schedule or no periodicities. Otherwise you get one record for each
+	  linked SWO/periodicity combination
+	</doc>
+		<field name="Id" read="RequiredGUID"/>
+		<field name="ScheduledWorkOrderID" type="RequiredGUIDREF" link="ScheduledWorkOrder">
+			<doc>ID of the PMGenerationDetail</doc>
+		</field>
+		<field name="PeriodicityID" type="GUIDREF" link="Periodicity">
+			<doc>ID of any periodicity associated with the schedule. This will be null only if the SWO's Schedule has no Periodicity records accosiated with it.</doc>
+		</field>
+		<field name="MeterID" type="GUIDREF" link="Meter">
+			<doc>The ID of the meter referenced by the combination of Periodicity and ScheduledWorkOrder.UnitLocationID</doc>
+		</field>
+		<extension name="query">
+			select newid(), SWO.ID, P.ID, M.ID
+				from
+						ScheduledWorkOrder as SWO
+					left join
+						Periodicity as P on P.ScheduleID = SWO.ScheduleID
+					left join
+						Meter as M on M.UnitLocationID = SWO.UnitLocationID and M.MeterClassID = P.MeterClassID
+		</extension>
+		<extension name="dependson">ScheduledWorkOrder</extension>
+		<extension name="dependson">Periodicity</extension>
+		<extension name="dependson">Meter</extension>
+	</table>
+	<table name="Periodicity"/>
+	<table name="ScheduledWorkOrder"/>
+	<table name="Meter"/>
+</database>

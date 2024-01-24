@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: General Inventory Control</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">General Inventory Control</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="SchedulingPlannedMaintenance.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="PurchasingandReceiving.htm">Next section &gt;</a></p>
+
+<p>This section outlines a number of actions associated with setting up inventory control. (Purchasing and receiving is treated separately in a later section.)</p>
+
+<ul class="b2"><li>For each item you keep in inventory (spare parts and other materials used in your maintenance work), you may create an entry in the Items table (see <a href="InventoryItemRecords.htm">Inventory Item Records</a>). This entry specifies information about the item, including:</li>
+<li>Where the item can be found. There may be more than one storage location if your stock of the item is divided amongst several different storerooms.</li>
+<li>The minimum quantity of this item that you want to have on hand at any time in each storeroom. If your stock goes below this quantity, MainBoss can notify you that it's time to reorder.</li>
+<li>The maximum quantity of this item that you want to have on hand in each storeroom. When MainBoss reorders, it recommends that you buy the quantity required to get back up to this maximum.</li>
+<li>Where the item is used. For example, if a particular spare part can be used in many different pieces of equipment, you can record all the equipment that uses the spare part. This kind of cross-reference can be useful in projecting future materials use. The cross-reference is also helpful if you need to take spare parts from one piece of equipment in order to repair more important units.</li>
+<li>The quantity of the item currently on hand in each storeroom, and the cost of that quantity.
+</li></ul>
+<ul class="b1"><li>As materials are used, MainBoss automatically adjusts inventory counts according to the information recorded when you close a work order. For example, if a particular work order states that you put a new tire on a forklift truck, MainBoss automatically reduces the count of tires in your inventory.
+</li></ul>
+
+<p><a href="SchedulingPlannedMaintenance.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="PurchasingandReceiving.htm">Next section &gt;</a></p>
+</body>
+</html>
+

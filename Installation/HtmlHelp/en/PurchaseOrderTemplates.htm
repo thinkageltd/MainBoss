@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Purchase Order Templates</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Purchase Order Templates</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Maintenance Timing.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Purchase Order Template.htm">Next section &gt;</a></p>
+
+<p>Suppose that a preventive maintenance task requires help from an outside contractor. Every time you generate a work order from the task, you also want to generate a purchase order that pays for the contractor's work.</p>
+
+<p>In this situation, you can associate a "model" purchase order with the task. This is called a <span class="NewTerm">purchase order template</span>. It's not a real purchase order; instead, it's a collection of information that can be used to create a real purchase order whenever a work order is generated. By associating the purchase order with the task, you can get MainBoss to create a correct purchase order automatically&#8212;you don't have to remember to write up the purchase order yourself.</p>
+
+<p>As another example, suppose that a task requires that you replace a particular spare part in a piece of equipment. Every time you perform the task, you want to reorder the part immediately, so that you always have the part on hand. You could link the task to a purchase order template for the required part; every time MainBoss creates a work order from the task, it also creates a purchase order for the part.</p>
+
+<p>In order to create such a purchase order:</p>
+
+<ol><li>You begin with <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Unit Maintenance Plans</span> | <span class="CPanel">Purchase Order Templates</span>. This lets you create and edit purchase order templates that can be associated with tasks.</li>
+<li>Once you've created a template, you must <span class="NewTerm">link</span> it to the task(s) that will use the purchase order. To do this, go to the <span class="CButton">Tasks</span> section of the purchase order template and click <span class="CButton">New Task to Purchase Order Template Linkage</span>. MainBoss will open a window where you can specify a task to be associated with the purchase order.
+
+<br /><br />Alternatively, you can go to the <span class="CButton">Purchase Orders</span> section of a task record. Clicking <span class="CButton">New Task to Purchase Order Template Linkage</span> opens a window where you can specify a purchase order template to be associated with the task.
+</li></ol><p><span class="CInset">Item Demands on a Purchase Order Template: </span>When a purchase order template contains demands for items, every purchase order created from the template will include line items for each of the items. If a task is linked to the template, every time a work order is generated from the task, all the items on the purchase order template are added to the work order as demand items.</p>
+
+<p>For this reason, a task and an associated purchase order template should not both contain the same items. Any work order generated from a task will include demands for all the items in the task, <span class="Emphasis">plus</span> all the items in the purchase order template. If the task and the purchase order template have the same items, the items will be duplicated in generated work orders.</p>
+
+<p><span class="CInset">Labor Demands on a Purchase Order Template:</span> Labor expenses are treated differently from item expenses when it comes to purchase order templates. To make things clear, suppose that all your vehicle maintenance is done by an outside contractor named <span class="CU">Our Garage</span>. We suggest you set things up as follows:</p>
+
+<ol><li>Create a purchase order template for <span class="CU">Our Garage</span>. Don't add any line items yet&#8212;leave the <span class="CButton">Purchase Order Template Lines</span> section blank.</li>
+<li>Create hourly outside and/or per job outside labor records for the work done by <span class="CU">Our Garage</span>. For example, if the garage charges for labor at $50 an hour, create an appropriate hourly outside record. If the garage charges a flat fee of $30 for an oil change, create an appropriate per job outside record. (For more on hourly outside records, see <a href="HourlyOutside.htm">Hourly Outside</a>. For more on per job outside records, see <a href="PerJobOutside.htm">Per Job Outside</a>.)
+
+<br /><br />When you create these records, specify <span class="CU">Our Garage</span> in the record's "<span class="CField">Vendor</span>" field.</li>
+<li>In any task associated with <span class="CU">Our Garage</span>, create an hourly outside or per job outside demand. (For more information, see <a href="Edit.Task Demand Hourly Outside.htm">Task Demand Hourly Outside</a> and <a href="Edit.Task Demand Per Job Outside.htm">Task Demand Per Job Outside</a>.) In these demand records, go to the <span class="CButton">Purchase Hourly Outside Template</span> or <span class="CButton">Purchase Per Job Outside Template</span> section and link to the purchase order template for <span class="CU">Our Garage</span>.
+</li></ol><p>These steps will create labor line items in the purchase order template. Multiple tasks can use the same purchase order template. The purchase order template will contain separate labor line items for each different labor demand on each different task.</p>
+
+<p>When MainBoss generates a work order from a task, MainBoss will create a corresponding purchase order from the purchase order template. The generated purchase order will contain a labor line item for each hourly outside or per job outside record that shared by both the task and the purchase order template.</p>
+
+<p>This means that a purchase order template can contain line items for many different tasks, but when a purchase order is being generated, MainBoss only uses the line items associated with a particular task.</p>
+
+<p class="box"><span class="CInset">Important:</span> If you want to delete a labor demand from a task, delete the corresponding line item from the purchase order template first. Then delete the demand from the task.</p>
+
+<p>For more on viewing purchase order templates, see <a href="Browse.Purchase Order Template.htm">Viewing Purchase Order Templates</a>. For information on creating and editing purchase order templates, see <a href="Edit.Purchase Order Template.htm">Editing Purchase Order Templates</a>. For how to print purchase order templates, see <a href="Report.Purchase Order Template.htm">Printing Purchase Order Templates</a>. For the process of linking purchase order templates to tasks, see <a href="Edit.Task to Purchase Order Template Linkage.htm">Linking Purchase Order Templates to Tasks</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Browse.Purchase Order Template.htm">Viewing Purchase Order Templates</a></li>
+
+<li><a href="Edit.Purchase Order Template.htm">Editing Purchase Order Templates</a></li>
+
+<li><a href="Report.Purchase Order Template.htm">Printing Purchase Order Templates</a></li>
+</ul>
+<p><a href="Report.Maintenance Timing.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Purchase Order Template.htm">Next section &gt;</a></p>
+</body>
+</html>
+

@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+<table name="SrecTaskLinkage">
+<dependency table="ConversionFunctions"/>
+<data>
+if object_id('dbo.SrecTaskLinkage', 'U') is not null drop table dbo.SrecTaskLinkage;
+GO
+CREATE TABLE <IDB/>.dbo.SrecTaskLinkage (
+	[ID]		[uniqueidentifier] NOT NULL,-- SREC record ID
+	[TaskID]	[uniqueidentifier] NOT NULL,-- Task ID for this SREC. Will equal [ID] for SRECS themselves
+	[ParentTaskID] [uniqueidentifier] NOT NULL -- Parent Task for this SREC
+	) ON [PRIMARY];
+	GO
+</data>
+</table>
+<table name="TaskCodes">
+  <dependency table="ConversionFunctions"/>
+  <data>
+delete from <IDB/>.dbo.CodeManagement;
+INSERT INTO <IDB/>.dbo.CodeManagement
+	([ID], [Code])
+		SELECT T.[MAINBOSSID], T.[TASKNUM]
+		from <IDB/>.dbo.TASK as T
+		where T.MAINBOSSEXCLUDE = 0;
+
+exec <IDB/>.dbo.FixCodes 50
+GO
+  </data>
+</table>
+<table name="Task">
+  <dependency table="ConversionFunctions"/>
+  <dependency table="UnitLinkages"/>
+  <dependency table="SrecTaskLinkage"/>
+  <dependency table="TaskCodes"/>
+  <data>
+declare @zerointerval datetime
+declare @oneinterval datetime
+set @zerointerval = <ODB/>.dbo._INew(0,0,0,0,0)
+set @oneinterval = <ODB/>.dbo._INew(1,0,0,0,0)
+
+INSERT INTO <ODB/>.dbo.WorkOrderTemplate ([ID], [Code], [Desc], [Subject], [Description], [ClosingComment], [WorkCategoryID],
+												[AccessCodeID], [ProjectID], [WorkOrderPriorityID], [CloseCodeID], [Duration],
+												[Downtime], [WorkOrderExpenseModelID], [ContainingWorkOrderTemplateID], DemandCount, SelectPrintFlag, GenerateLeadTime)
+		SELECT T.[MAINBOSSID], CM.[CODE], NULL, T.[DESCRIPTION], INSTRUCTIONS.INSTRTEXT, NULL, WC.[MAINBOSSID],
+				NULL, NULL, PR.[ID], NULL, @oneinterval,
+	  			@zerointerval,
+				(select top(1) WorkOrderExpenseModelID from <ODB/>.dbo._DWorkOrderTemplate),
+				NULL, 0, 1, @zerointerval
+		from <IDB/>.dbo.TASK as T 
+			left join <IDB/>.dbo.WOTYPE as WC on WC.[WOTYPE] = T.[WOTYPE]
+			left join <IDB/>.dbo.PriorityCodes as PR on PR.[CODE] = T.[PRIORITY]
+			left join <IDB/>.dbo.TSKINSTR as TL on TL.TASKNUM = T.TASKNUM AND TL.SITEID = T.SITEID
+			left join <IDB/>.dbo.INSTR as INSTRUCTIONS on TL.INSTRCODE = INSTRUCTIONS.INSTRCODE 
+			join <IDB/>.dbo.CodeManagement as CM on CM.[ID] = T.[MAINBOSSID]
+GO
+</data>
+</table>
+<table name="DemandLaborInsideTemplate">
+	<dependency table="Task"/>
+	<dependency table="PersonnelLinkages"/>
+	<dependency table="Trade"/>
+	<dependency table="Employee"/>
+<data>
+-- Create unique LaborInside records from TSKCRAFT involving the CRAFT and the number of people
+if object_id('dbo.UniqueLabor', 'U') is not null drop table <IDB/>.dbo.UniqueLabor;
+GO
+CREATE TABLE <IDB/>.dbo.UniqueLabor (
+	[LaborInsideID] [uniqueidentifier] NOT NULL,
+	[NUMPEOPLE] [int] NULL,
+	[TRADE] [nvarchar](10) NULL,
+) ON [PRIMARY]
+GO
+INSERT INTO <IDB/>.dbo.UniqueLabor
+(LaborInsideID, NUMPEOPLE, TRADE)
+SELECT 
+	NEWID(), NUMOFPEOPLE, CRAFT
+	FROM <IDB/>.dbo.TSKCRAFT
+	GROUP BY CRAFT, NUMOFPEOPLE
+GO
+if object_id('dbo.LaborConsolidated', 'U') is not null drop table <IDB/>.dbo.LaborConsolidated;
+GO
+CREATE TABLE <IDB/>.dbo.LaborConsolidated (
+	[ID]							[uniqueidentifier],
+	[LaborInsideID]					[uniqueidentifier],
+	[DemandLaborInsideTemplateID]	[uniqueidentifier]
+) ON [PRIMARY];
+	INSERT INTO <IDB/>.dbo.LaborConsolidated
+		([ID], [LaborInsideID], [DemandLaborInsideTemplateID])
+	SELECT TC.MAINBOSSID, UL.LaborInsideID, NEWID()
+	 FROM <IDB/>.dbo.TSKCRAFT as TC
+		JOIN <IDB/>.dbo.UniqueLabor AS UL
+			ON UL.TRADE = TC.CRAFT AND UL.NUMPEOPLE = TC.NUMOFPEOPLE
+		JOIN <IDB/>.dbo.TASK as T ON T.[TASKNUM] = TC.TASKNUM AND T.SITEID = TC.SITEID
+		where TC.MAINBOSSEXCLUDE = 0
+
+delete from <IDB/>.dbo.CodeManagement;
+INSERT INTO <IDB/>.dbo.CodeManagement
+	(ID, [CODE])
+	SELECT UL.LaborInsideID,
+		CASE WHEN UL.NUMPEOPLE IS NULL
+		THEN UL.TRADE
+		ELSE CONVERT(nvarchar(3), UL.NUMPEOPLE) + ' ' + UL.TRADE
+		END
+	FROM <IDB/>.dbo.UniqueLabor AS UL
+
+exec <IDB/>.dbo.FixCodes 50
+
+-- We have only the Labor definitions for tasks that have CRAFTs associated with them (and number of people)
+-- Create LaborInside records that do identify those crafts and number of people
+-- Cost is set to NULL since we don't know what it is
+INSERT INTO <ODB/>.dbo.LaborInside ([ID],[Code],[EmployeeID],[TradeID],[Cost],[CostCenterID] )
+	SELECT UL.[LaborInsideID],CM.[CODE],NULL,T.[MAINBOSSID],
+		NULL,
+		(select [CostCenterID] from <ODB/>.dbo._DLaborInside)
+	from <IDB/>.dbo.UniqueLabor as UL
+		join <IDB/>.dbo.CodeManagement as CM on UL.LaborInsideID = CM.[ID]
+		left join <IDB/>.dbo.CRAFTS as T on UL.[TRADE] = T.[CRAFT];
+GO
+
+-- Now Build the DemandLaborInsideTemplate; The WorkOrderExpenseCategoryID should be null for a DemandTemplates (generated workorders will use the expense model for the workorder)
+INSERT INTO <ODB/>.dbo.DemandTemplate
+	(ID, EstimateCost, DemandActualCalculationInitValue, WorkOrderTemplateID, WorkOrderExpenseCategoryID)
+	SELECT LC.ID, CASE WHEN LI.Cost IS NULL THEN 0 ELSE 1 END, CASE WHEN LI.Cost IS NULL THEN 1 ELSE 2 END, T.MAINBOSSID, null
+		from <IDB/>.dbo.LaborConsolidated as LC
+		join <IDB/>.dbo.TSKCRAFT as TC on TC.MAINBOSSID = LC.ID
+		join <ODB/>.dbo.LaborInside as LI on LI.[ID] = LC.LaborInsideID
+		join <IDB/>.dbo.TASK as T on T.[TASKNUM] = TC.[TASKNUM] AND T.[SITEID] = TC.[SITEID];
+		
+INSERT INTO <ODB/>.dbo.DemandLaborInsideTemplate
+	(ID, Quantity, DemandTemplateID, LaborInsideID)
+	SELECT LC.DemandLaborInsideTemplateID, coalesce(dbo.fn_DURATION(TC.ESTLABORHOURS), <ODB/>.dbo._INew(0,0,0,0,0)), LC.ID, LC.LaborInsideID
+	from <IDB/>.dbo.LaborConsolidated as LC
+		join <IDB/>.dbo.TSKCRAFT as TC on TC.MAINBOSSID = LC.ID;
+
+</data>
+</table>
+<table name="DemandItemTemplate">
+	<dependency table="Task"/>
+	<dependency table="ItemLocation"/>
+	<data>
+		-- Exclude REQMT records where there is no associated WAREHOUSE
+UPDATE <IDB/>.dbo.REQMT SET MAINBOSSEXCLUDE = 1 WHERE REQMT.WAREHOUSEID IS NULL
+
+if object_id('dbo.ItemDemands', 'U') is not null drop table <IDB/>.dbo.ItemDemands;
+GO
+CREATE TABLE <IDB/>.dbo.ItemDemands (
+	[ID]							[uniqueidentifier],
+	[ItemID]					[uniqueidentifier],
+	[TaskID]					[uniqueidentifier],
+	[ItemLocationID]	[uniqueidentifier],
+	[DemandTemplateID] [uniqueidentifier]
+) ON [PRIMARY];
+	INSERT INTO <IDB/>.dbo.ItemDemands
+		([ID], [ItemID], [TaskID], [ItemLocationID], [DemandTemplateID])
+	SELECT REQMT.MAINBOSSID, I.MAINBOSSID, T.MAINBOSSID, NULL, NEWID()
+	 FROM <IDB/>.dbo.REQMT
+		JOIN <IDB/>.dbo.TASK as T ON T.[TASKNUM] = REQMT.TASKNUM AND T.SITEID = REQMT.SITEID
+		JOIN <IDB/>.dbo.INVY as I on I.[ITEMNUM] = I.ITEMNUM AND I.ITEMNUM = REQMT.ITEMNUM
+		where REQMT.MAINBOSSEXCLUDE = 0 AND I.MAINBOSSEXCLUDE = 0 AND T.MAINBOSSEXCLUDE = 0
+-- Now associate at least ONE StoreroomAssignment for the ITEM. If there is more than one, too bad, we pick the first one
+	UPDATE <IDB/>.dbo.ItemDemands SET ItemLocationID = (SELECT TOP 1 ILL.ItemLocationID from <IDB/>.dbo.InvLocationLinkages as ILL where ItemDemands.ItemID = ILL.ItemId)
+		FROM <IDB/>.dbo.ItemDemands
+
+			
+  INSERT INTO <ODB/>.dbo.DemandTemplate
+	(ID, EstimateCost, DemandActualCalculationInitValue, WorkOrderTemplateID, WorkOrderExpenseCategoryID)
+	SELECT
+		IDEMAND.DemandTemplateID, 0, 1, IDEMAND.TaskID, null
+	  from <IDB/>.dbo.ItemDemands as IDEMAND
+
+  INSERT INTO <ODB/>.dbo.DemandItemTemplate
+	(ID, Quantity, DemandTemplateID, ItemLocationID)
+	SELECT IDEMAND.ID, COALESCE(CONVERT(INT, REQMT.QTY),0), IDEMAND.DemandTemplateID, IDEMAND.ItemLocationID
+		from <IDB/>.dbo.ItemDemands as IDEMAND
+	  join <IDB/>.dbo.REQMT on REQMT.MAINBOSSID = IDEMAND.ID
+</data>
+</table>
+</dbconversion>
+

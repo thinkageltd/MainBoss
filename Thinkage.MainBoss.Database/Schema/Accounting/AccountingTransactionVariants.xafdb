@@ -1,0 +1,248 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="AccountingTransactionVariants" log="false" id="Id" labelkey="">
+	<field name="Id" read="requiredGUID" />
+	<field name="AccountingTransactionID" type="requiredGUIDREF" link="AccountingTransaction" unique="true" labelkey=""/>
+	<field name="FromReference" type="Code" />
+	<field name="ReasonReference" type="Code" />
+	<field name="ToReference" type="Code" />
+	<field name="TransactionType" type="integer(min 0, max 16, nonnull)">	<!-- values for DatabaseEnums.AccountingTransactionVariants -->
+	  <extension name="controlprovider">Thinkage.MainBoss.Database.ViewRecordTypes.TransactionTypeNames,Thinkage.MainBoss.Database</extension>
+	</field>
+	<field name="IsCorrection" type="Bool">
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIReports.IsCorrectionNames,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<extension name="query">
+	  select AccountingTransactionID, AccountingTransactionID, ItemLocation.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 0, case when ActualItem.Id = CorrectionID then 0 else 1 end
+		from ActualItem
+		  join DemandItem on DemandItem.Id = ActualItem.DemandItemID
+		  join ItemLocation on ItemLocation.Id = DemandItem.ItemLocationID
+		  join Demand on Demand.Id = DemandItem.DemandID
+		  join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
+		  join WorkOrderExpenseCategory on WorkOrderExpenseCategory.Id = Demand.WorkOrderExpenseCategoryID
+	  union all
+	  select AccountingTransactionID, AccountingTransactionID, LaborInside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 1, case when ActualLaborInside.Id = CorrectionID then 0 else 1 end
+		from ActualLaborInside
+		  join DemandLaborInside on DemandLaborInside.Id = ActualLaborInside.DemandLaborInsideID
+		  join LaborInside on LaborInside.Id = DemandLaborInside.LaborInsideID
+		  join Demand on Demand.Id = DemandLaborInside.DemandID
+		  join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
+		  join WorkOrderExpenseCategory on WorkOrderExpenseCategory.Id = Demand.WorkOrderExpenseCategoryID
+	  union all
+	  select AccountingTransactionID, AccountingTransactionID, LaborOutside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 2, case when ActualLaborOutsideNonPO.Id = CorrectionID then 0 else 1 end
+		from ActualLaborOutsideNonPO
+		  join DemandLaborOutside on DemandLaborOutside.Id = ActualLaborOutsideNonPO.DemandLaborOutsideID
+		  join LaborOutside on LaborOutside.Id = DemandLaborOutside.LaborOutsideID
+		  join Demand on Demand.Id = DemandLaborOutside.DemandID
+		  join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
+		  join WorkOrderExpenseCategory on WorkOrderExpenseCategory.Id = Demand.WorkOrderExpenseCategoryID
+	  union all
+	  select AccountingTransactionID, AccountingTransactionID, LaborOutside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 3, case when ActualLaborOutsidePO.Id = CorrectionID then 0 else 1 end
+		from ActualLaborOutsidePO
+		  join POLineLabor on POLineLabor.Id = ActualLaborOutsidePO.POLineLaborID
+		  join DemandLaborOutside on DemandLaborOutside.Id = POLineLabor.DemandLaborOutsideID
+		  join LaborOutside on LaborOutside.Id = DemandLaborOutside.LaborOutsideID
+		  join Demand on Demand.Id = DemandLaborOutside.DemandID
+		  join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
+		  join WorkOrderExpenseCategory on WorkOrderExpenseCategory.Id = Demand.WorkOrderExpenseCategoryID
+	  union all
+	  select AccountingTransactionID, AccountingTransactionID, OtherWorkInside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 4, case when ActualOtherWorkInside.Id = CorrectionID then 0 else 1 end
+		from ActualOtherWorkInside
+		  join DemandOtherWorkInside on DemandOtherWorkInside.Id = ActualOtherWorkInside.DemandOtherWorkInsideID
+		  join OtherWorkInside on OtherWorkInside.Id = DemandOtherWorkInside.OtherWorkInsideID
+		  join Demand on Demand.Id = DemandOtherWorkInside.DemandID
+		  join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
+		  join WorkOrderExpenseCategory on WorkOrderExpenseCategory.Id = Demand.WorkOrderExpenseCategoryID
+	  union all
+	  select AccountingTransactionID, AccountingTransactionID, OtherWorkOutside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 5, case when ActualOtherWorkOutsideNonPO.Id = CorrectionID then 0 else 1 end
+		from ActualOtherWorkOutsideNonPO
+		  join DemandOtherWorkOutside on DemandOtherWorkOutside.Id = ActualOtherWorkOutsideNonPO.DemandOtherWorkOutsideID
+		  join OtherWorkOutside on OtherWorkOutside.Id = DemandOtherWorkOutside.OtherWorkOutsideID
+		  join Demand on Demand.Id = DemandOtherWorkOutside.DemandID
+		  join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
+		  join WorkOrderExpenseCategory on WorkOrderExpenseCategory.Id = Demand.WorkOrderExpenseCategoryID
+	  union all
+	  select AccountingTransactionID, AccountingTransactionID, OtherWorkOutside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 6, case when ActualOtherWorkOutsidePO.Id = CorrectionID then 0 else 1 end
+		from ActualOtherWorkOutsidePO
+		  join POLineOtherWork on POLineOtherWork.Id = ActualOtherWorkOutsidePO.POLineOtherWorkID
+		  join DemandOtherWorkOutside on DemandOtherWorkOutside.Id = POLineOtherWork.DemandOtherWorkOutsideID
+		  join OtherWorkOutside on OtherWorkOutside.Id = DemandOtherWorkOutside.OtherWorkOutsideID
+		  join Demand on Demand.Id = DemandOtherWorkOutside.DemandID
+		  join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
+		  join WorkOrderExpenseCategory on WorkOrderExpenseCategory.Id = Demand.WorkOrderExpenseCategoryID
+	  union all
+	  select AccountingTransactionID, AccountingTransactionID, MiscellaneousWorkOrderCost.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 7, case when ActualMiscellaneousWorkOrderCost.Id = CorrectionID then 0 else 1 end
+		from ActualMiscellaneousWorkOrderCost
+		  join DemandMiscellaneousWorkOrderCost on DemandMiscellaneousWorkOrderCost.Id = ActualMiscellaneousWorkOrderCost.DemandMiscellaneousWorkOrderCostID
+		  join MiscellaneousWorkOrderCost on MiscellaneousWorkOrderCost.Id = DemandMiscellaneousWorkOrderCost.MiscellaneousWorkOrderCostID
+		  join Demand on Demand.Id = DemandMiscellaneousWorkOrderCost.DemandID
+		  join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
+		  join WorkOrderExpenseCategory on WorkOrderExpenseCategory.Id = Demand.WorkOrderExpenseCategoryID
+	  union all
+	  select AccountingTransactionID, AccountingTransactionID, ChargebackLineCategory.Code, Chargeback.Code, Contact.Code, 8, case when ChargebackLine.Id = CorrectionID then 0 else 1 end
+		from ChargebackLine
+		  join ChargebackLineCategory on ChargebackLineCategory.Id = CHargebackLine.ChargebackLineCategoryID
+		  join Chargeback on Chargeback.Id = ChargebackLine.ChargebackID
+		  join BillableRequestor on BillableRequestor.Id = ChargeBack.BillableRequestorID
+		  join Contact on Contact.Id = BillableRequestor.ContactID
+	  union all
+	  select AccountingTransactionID, AccountingTransactionID, ItemLocation.Code, ItemAdjustmentCode.Code, null, 9, 0
+		from ItemAdjustment
+		  join ItemLocation on ItemLocation.Id = ItemAdjustment.ItemLocationID
+		  join ItemAdjustmentCode on ItemAdjustmentCode.Id = ItemAdjustment.ItemAdjustmentCodeID
+	  union all
+	  select AccountingTransactionID, AccountingTransactionID, ItemLocation.Code, ItemAdjustmentCode.Code, null, 10, 0
+		from ItemCountValue
+		  join ItemLocation on ItemLocation.Id = ItemCountValue.ItemLocationID
+		  join ItemAdjustmentCode on ItemAdjustmentCode.Id = ItemCountValue.ItemAdjustmentCodeID
+	  union all
+	  select ItemCountValueVoid.AccountingTransactionID, ItemCountValueVoid.AccountingTransactionID, ItemLocation.Code, VoidCode.Code, null, 11, 0
+		from ItemCountValueVoid
+		  join ItemCountValue on ItemCountValue.Id = ItemCountValueVoid.VoidedItemCountValueID
+		  join ItemLocation on ItemLocation.Id = ItemCountValue.ItemLocationID
+		  join VoidCode on VoidCode.Id = ItemCountValueVoid.VoidCodeID
+	  union all
+	  select AccountingTransactionID, AccountingTransactionID, ItemLocation.Code, ItemIssueCode.Code, Contact.Code, 12, case when ItemIssue.Id = CorrectionID then 0 else 1 end
+		from ItemIssue
+		  join ItemLocation on ItemLocation.Id = ItemIssue.ItemLocationID
+		  join ItemIssueCode on ItemIssueCode.Id = ItemIssue.ItemIssueCodeID
+		  left join Employee on Employee.Id = ItemIssue.EmployeeID
+		  left join Contact on Contact.Id = Employee.ContactID
+	  union all
+	  select AccountingTransactionID, AccountingTransactionID, FL.Code, Item.Code, TL.Code, 13, case when ItemTransfer.Id = CorrectionID then 0 else 1 end
+		from ItemTransfer
+		  join ItemLocation as FIL on FIL.Id = ItemTransfer.FromItemLocationID
+		  join Location as FL on FL.Id = FIL.LocationID
+		  join ItemLocation as TIL on TIL.Id = ItemTransfer.ToItemLocationID
+		  join Location as TL on TL.Id = TIL.LocationID
+		  join Item on Item.Id = FIL.ItemID
+	  union all
+	  select AccountingTransactionID, AccountingTransactionID, Vendor.Code, null, ItemLocation.Code, 14, case when ReceiveItemNonPO.Id = CorrectionID then 0 else 1 end
+		from ReceiveItemNonPO
+		  join ItemLocation on ItemLocation.Id = ReceiveItemNonPO.ItemLocationID
+		  join Vendor on Vendor.Id = ReceiveItemNonPO.VendorID
+	  union all
+	  select AccountingTransactionID, AccountingTransactionID, Vendor.Code, PurchaseOrder.Number, ItemLocation.Code, 15, case when ReceiveItemPO.Id = CorrectionID then 0 else 1 end
+		from ReceiveItemPO
+		  join ItemLocation on ItemLocation.Id = ReceiveItemPO.ItemLocationID
+		  join POLineItem on POLineItem.Id = ReceiveItemPO.POLineItemID
+		  join POLine on POLine.Id = POLineItem.POLineID
+		  join PurchaseOrder on PurchaseOrder.Id = POLine.PurchaseOrderID
+		  join Vendor on Vendor.Id = PurchaseOrder.VendorID
+	  union all
+	  select AccountingTransactionID, AccountingTransactionID, Vendor.Code, PurchaseOrder.Number, Miscellaneous.Code, 16, case when ReceiveMiscellaneousPO.Id = CorrectionID then 0 else 1 end
+		from ReceiveMiscellaneousPO
+		  join POLineMiscellaneous on POLineMiscellaneous.Id = ReceiveMiscellaneousPO.POLineMiscellaneousID
+		  join Miscellaneous on Miscellaneous.Id = POLineMiscellaneous.MiscellaneousID
+		  join POLine on POLine.Id = POLineMiscellaneous.POLineID
+		  join PurchaseOrder on PurchaseOrder.Id = POLine.PurchaseOrderID
+		  join Vendor on Vendor.Id = PurchaseOrder.VendorID
+	</extension>
+	<extension name="dependson">ActualItem</extension>
+	<extension name="dependson">ActualLaborInside</extension>
+	<extension name="dependson">ActualLaborOutsideNonPO</extension>
+	<extension name="dependson">ActualLaborOutsidePO</extension>
+	<extension name="dependson">ActualMiscellaneousWorkOrderCost</extension>
+	<extension name="dependson">ActualOtherWorkInside</extension>
+	<extension name="dependson">ActualOtherWorkOutsideNonPO</extension>
+	<extension name="dependson">ActualOtherWorkOutsidePO</extension>
+	<extension name="dependson">BillableRequestor</extension>
+	<extension name="dependson">Chargeback</extension>
+	<extension name="dependson">ChargebackLine</extension>
+	<extension name="dependson">ChargebackLineCategory</extension>
+	<extension name="dependson">Contact</extension>
+	<extension name="dependson">Demand</extension>
+	<extension name="dependson">DemandItem</extension>
+	<extension name="dependson">DemandLaborInside</extension>
+	<extension name="dependson">DemandLaborOutside</extension>
+	<extension name="dependson">DemandMiscellaneousWorkOrderCost</extension>
+	<extension name="dependson">DemandOtherWorkInside</extension>
+	<extension name="dependson">DemandOtherWorkOutside</extension>
+	<extension name="dependson">Employee</extension>
+	<extension name="dependson">Item</extension>
+	<extension name="dependson">ItemAdjustment</extension>
+	<extension name="dependson">ItemAdjustmentCode</extension>
+	<extension name="dependson">ItemCountValue</extension>
+	<extension name="dependson">ItemCountValueVoid</extension>
+	<extension name="dependson">ItemIssue</extension>
+	<extension name="dependson">ItemIssueCode</extension>
+	<extension name="dependson">ItemLocation</extension>
+	<extension name="dependson">ItemTransfer</extension>
+	<extension name="dependson">LaborInside</extension>
+	<extension name="dependson">LaborOutside</extension>
+	<extension name="dependson">Location</extension>
+	<extension name="dependson">Miscellaneous</extension>
+	<extension name="dependson">MiscellaneousWorkOrderCost</extension>
+	<extension name="dependson">OtherWorkInside</extension>
+	<extension name="dependson">OtherWorkOutside</extension>
+	<extension name="dependson">POLine</extension>
+	<extension name="dependson">POLineItem</extension>
+	<extension name="dependson">POLineLabor</extension>
+	<extension name="dependson">POLineMiscellaneous</extension>
+	<extension name="dependson">POLineOtherWork</extension>
+	<extension name="dependson">PurchaseOrder</extension>
+	<extension name="dependson">ReceiveItemNonPO</extension>
+	<extension name="dependson">ReceiveItemPO</extension>
+	<extension name="dependson">ReceiveMiscellaneousPO</extension>
+	<extension name="dependson">Requestor</extension>
+	<extension name="dependson">Vendor</extension>
+	<extension name="dependson">VoidCode</extension>
+	<extension name="dependson">WorkOrder</extension>
+	<extension name="dependson">WorkOrderExpenseCategory</extension>
+	<extension name="costrights">WorkOrderItem,WorkOrderInside,WorkOrderOutside,WorkOrderMiscellaneous,InventoryActivity,PurchaseOrderItem,PurchaseOrderLabor,PurchaseOrderMiscellaneous</extension>
+	<extension name="lastupdate">AccountingTransactionID</extension>
+  </table>
+  <table name="AccountingTransaction"/>
+  <table name="ActualItem"/>
+  <table name="ActualLaborInside"/>
+  <table name="ActualLaborOutsideNonPO"/>
+  <table name="ActualLaborOutsidePO"/>
+  <table name="ActualMiscellaneousWorkOrderCost"/>
+  <table name="ActualOtherWorkInside"/>
+  <table name="ActualOtherWorkOutsideNonPO"/>
+  <table name="ActualOtherWorkOutsidePO"/>
+  <table name="BillableRequestor"/>
+  <table name="Chargeback"/>
+  <table name="ChargebackLine"/>
+  <table name="ChargebackLineCategory"/>
+  <table name="Contact"/>
+  <table name="Demand"/>
+  <table name="DemandItem"/>
+  <table name="DemandLaborInside"/>
+  <table name="DemandLaborOutside"/>
+  <table name="DemandMiscellaneousWorkOrderCost"/>
+  <table name="DemandOtherWorkInside"/>
+  <table name="DemandOtherWorkOutside"/>
+  <table name="Employee"/>
+  <table name="Item"/>
+  <table name="ItemAdjustment"/>
+  <table name="ItemAdjustmentCode"/>
+  <table name="ItemCountValue"/>
+  <table name="ItemCountValueVoid"/>
+  <table name="ItemIssue"/>
+  <table name="ItemIssueCode"/>
+  <table name="ItemLocation"/>
+  <table name="ItemTransfer"/>
+  <table name="LaborInside"/>
+  <table name="LaborOutside"/>
+  <table name="Location"/>
+  <table name="Miscellaneous"/>
+  <table name="MiscellaneousWorkOrderCost"/>
+  <table name="OtherWorkInside"/>
+  <table name="OtherWorkOutside"/>
+  <table name="POLine"/>
+  <table name="POLineItem"/>
+  <table name="POLineLabor"/>
+  <table name="POLineMiscellaneous"/>
+  <table name="POLineOtherWork"/>
+  <table name="PurchaseOrder"/>
+  <table name="ReceiveItemNonPO"/>
+  <table name="ReceiveItemPO"/>
+  <table name="ReceiveMiscellaneousPO"/>
+  <table name="Requestor"/>
+  <table name="Vendor"/>
+  <table name="VoidCode"/>
+  <table name="WorkOrder"/>
+  <table name="WorkOrderExpenseCategory"/>
+</database>

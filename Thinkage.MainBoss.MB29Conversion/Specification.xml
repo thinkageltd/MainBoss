@@ -1,0 +1,327 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+  <table name="Attachment">
+	<dependency table="UnitLinkages"/>
+	<data>
+	DELETE FROM <IDB/>.dbo.CodeManagement;
+	INSERT INTO <IDB/>.dbo.CodeManagement ([ID], [Code], [Context])
+	  SELECT SPEC.[ID], SPEC.[CODE], U.ID
+		from
+		  <IDB/>.dbo.Specifications as SPEC
+		join
+		  <IDB/>.dbo.Units as U on U.[Key] = SPEC.ASSOCKEY
+		where SPEC.[TYPE] = 'P';
+GO
+	exec <IDB/>.dbo.FixCodes 50
+GO
+<!-- The following statement appears to have a superfluous WHERE clause, since the same condition was used to populate
+	CodeManagement, and the inner join here should accomplish the same exclusion of non-attachment Specifications records.
+	It turns out that MSSQL seems to generate incorrect execution plans for this statement (without the WHERE clause)
+	which include casting COALESCE(SPEC.[INFO],'') into nvarchar(256) (the type of Attachment.Path) before doing the
+	record exclusion implied by the first inner join, and thus generating bogus errors about truncation of strings.
+	The 'superfluous' where clause corrects this in two ways:
+	1-It may possibly force generation of the correct execution plan
+	2-Even with the incorrect execution plan, it specifically excludes non-Attachment records so their long INFO fields won't cause errors.
+	It seems that even subtle changes to surrounding whitespace and SQL comments alters the execution plan between a correct and incorrect one.-->
+	INSERT INTO <ODB/>.dbo.Attachment ([ID],[Code],[Path],[UnitLocationID])
+	  SELECT SPEC.[ID],CM.[CODE],COALESCE(SPEC.[INFO],''),UL.LocationID
+	  from <IDB/>.dbo.Specifications as SPEC
+		  join <IDB/>.dbo.CodeManagement as CM on CM.[ID] = SPEC.[ID]
+		  join <IDB/>.dbo.Units as U on SPEC.[ASSOCKEY] = U.[KEY]
+		  join <IDB/>.dbo.UnitLinkages as UL on U.ID = UL.ID
+	  where SPEC.[TYPE] = 'P'
+	</data>
+  </table>
+  
+  <table name="SpecificationPreamble">
+	<data>
+	  -- Cannot explicitly disable triggers in non current database
+	  use <ODB/>;
+	  GO
+	  DISABLE TRIGGER mbtg_SpecificationData_Updates_Specification on SpecificationData
+	  GO
+	  DISABLE TRIGGER mbtg_SpecificationForm_Updates_Specification on SpecificationForm
+	  GO
+	  use <IDB/>;
+	  GO
+	</data>
+  </table>
+
+  <table name="SpecificationForm">
+	<dependency table="SpecificationPreamble"/>
+	<data>
+	DELETE FROM <IDB/>.dbo.CodeManagement;
+	INSERT INTO <IDB/>.dbo.CodeManagement ([ID], [Code], [Hidden29])
+		select TP.[ID], TP.[CODE], COALESCE(TP.[HIDDEN],0)
+		from <IDB/>.dbo.Templates as TP
+		where TP.EXCLUDE = 0;
+GO
+	 exec <IDB/>.dbo.FixCodes 50
+GO	
+	UPDATE <IDB/>.dbo.Templates
+	  SET [PLATE] = ''
+	  where [PLATE] IS NULL;
+GO
+	UPDATE <IDB/>.dbo.Specifications
+	  SET [INFO] = ''
+	  where [INFO] IS NULL AND [TYPE] = 'T';
+GO
+	INSERT INTO <ODB/>.dbo.SpecificationForm ([ID],[Code],[Desc],[CustomizedReportLayout],[Hidden])
+		  SELECT TP.[ID], CM.[CODE], TP.[DESC], '', CM.[Hidden30]
+		  from <IDB/>.dbo.Templates as TP
+			join <IDB/>.dbo.CodeManagement as CM on CM.[ID] = TP.[ID]
+		  where TP.EXCLUDE = 0;
+GO
+	</data>
+  </table>
+  <table name="SpecificationFormField">
+	<dependency table="SpecificationForm"/>
+	<data>
+	  SET NOCOUNT ON	
+	  declare @specFormID as uniqueidentifier
+	  declare @specDataLen as int
+	  declare @specData as varchar(max)
+	  declare @CurrentOffset as int
+	  declare @firstChar as char(1)
+	  declare @lastLf as int
+	  declare @lastCr as int
+	  declare @fieldWidth as int
+	  declare @chunkLength as int
+	  declare @fieldSequence as int
+	  declare @fieldName as varchar(32)
+	  declare @fieldEditLabel as varchar(80)
+	  declare SpecFormCursor CURSOR SCROLL
+		for
+		  select [ID], Plate
+			from <IDB/>.dbo.Templates
+
+	  SET @fieldEditLabel = ''
+	  open SpecFormCursor
+
+	  FETCH FIRST from SpecFormCursor into @specFormID, @specData
+	  WHILE @@FETCH_STATUS = 0
+	  BEGIN
+		set @specDataLen = len(@specData)
+		set @CurrentOffset = 1
+		set @fieldSequence = 1
+		while @CurrentOffset &lt;= @specDataLen
+		begin
+		  set @fieldWidth = 1
+		  -- Fetch the next character to see what's coming up.
+		  set @firstChar = SUBSTRING(@specData, @CurrentOffset, 1 )
+		  if @firstChar = '&lt;'
+		  begin
+			-- Add &amp;lt; to the CustomizedReportLayout
+			update <ODB/>.dbo.SpecificationForm
+			  set CustomizedReportLayout.Write('&amp;lt;', null, null)
+			  where [ID] = @specFormID
+		  end
+		  else if @firstChar = '&gt;'
+		  begin
+			-- Add &amp;gt; to the CustomizedReportLayout
+			update <ODB/>.dbo.SpecificationForm
+			  set CustomizedReportLayout.Write('&amp;gt;', null, null)
+			  where [ID] = @specFormID
+		  end
+		  else if @firstChar = '&amp;'
+		  begin
+			-- Add &amp;amp; to the CustomizedReportLayout
+			update <ODB/>.dbo.SpecificationForm
+			  set CustomizedReportLayout.Write('&amp;amp;', null, null)
+			  where [ID] = @specFormID
+		  end
+		  else
+		  begin
+			-- The remaining cases must search forward more than one character.
+			-- We can't specify a start position for patindex, and it (probably) doesn't like memo fields, so we measure a chunk off the start of
+			-- the remaining field for the test.
+			-- Note that we are now using [n]varchar(max) instead of [n]text so there is no maximum chunk length
+			set @chunkLength = @specDataLen - @CurrentOffset + 1
+			if @firstChar = '_'
+			begin
+			  -- Count the number of '_' into @fieldWidth
+			  set @fieldWidth = patindex('%[^_]%', SUBSTRING(@specData, @CurrentOffset, @chunkLength ))
+			  if @fieldWidth = 0
+				set @fieldWidth = @chunkLength+1
+			  set @fieldWidth = @fieldWidth - 1
+			  -- Define a SpecificationFormField using the next index number and the width from the underscore count
+			  set @fieldName = 'F_'+convert(varchar, @fieldSequence)
+			  if LEN(@fieldEditLabel) = 0
+				SET @fieldEditLabel = @fieldName
+
+			  insert into <ODB/>.dbo.SpecificationFormField
+				(ID, SpecificationFormID, FieldName, FieldSize, EditLabel, FieldOrder)
+				values (newid(), @specFormID, @fieldName, @fieldWidth, @fieldEditLabel, @fieldSequence)
+			  -- Add &lt;fieldname&gt; to the CustomizedReportLayout
+			  update <ODB/>.dbo.SpecificationForm
+				set CustomizedReportLayout.Write('&lt;'+@fieldName+'/&gt;', null, null)
+				where [ID] = @specFormID
+			  -- Increment the field sequence
+			  set @fieldSequence = @fieldSequence+1
+			end
+			else
+			begin
+			  -- Find the next one of &lt; &gt; &amp; _, and set @fieldWidth to the count up to that point.
+			  set @fieldWidth = patindex('%[&lt;&gt;&amp;_]%', SUBSTRING(@specData, @CurrentOffset, @chunkLength ))
+			  if @fieldWidth = 0
+				set @fieldWidth = @chunkLength+1
+			  set @fieldWidth = @fieldWidth - 1
+			  -- Copy text up to that point into the CustomizedReportLayout
+			  update <ODB/>.dbo.SpecificationForm
+				set CustomizedReportLayout.Write(SUBSTRING(@specData, @CurrentOffset, @fieldWidth ), null, null)
+				where [ID] = @specFormID
+			  -- This text will be used for any subsquent field definitions as the edit label.
+			  SET @fieldEditLabel = LTRIM(RTRIM(SUBSTRING(@specData, @CurrentOffset, @fieldWidth)))
+			  -- Remove any trailing line breaks and mixed blanks
+			  WHILE LEN(@fieldEditLabel) > 0 AND (RIGHT(@fieldEditLabel,1) = CHAR(13) OR RIGHT(@fieldEditLabel,1) = CHAR(10))
+			  BEGIN
+					SET @fieldEditLabel = RTRIM(LEFT(@fieldEditLabel, LEN(@fieldEditLabel)-1))
+			  END
+			  -- Any line breaks within the text (and any preceeding text) now gets stripped off
+			  SET @fieldEditLabel = REVERSE(@fieldEditLabel)
+			  SET @lastLf = CHARINDEX(char(10), @fieldEditLabel)
+			  SET @lastCr = CHARINDEX(char(13), @fieldEditLabel)
+			  if @lastLf != 0 and (@lastCr = 0 OR @lastCr > @lastLf)
+				  SET @fieldEditLabel = LEFT( @fieldEditLabel, @lastLf-1)
+			  ELSE IF @lastCr != 0 and (@lastLf = 0 OR @lastLf > @lastCr)
+				SET @fieldEditLabel = LEFT(@fieldEditLabel, @lastCr-1)
+			  SET @fieldEditLabel = LTRIM(REVERSE(@fieldEditLabel))
+			  -- If the text ends in a ":", trim that off
+			  if LEN(@fieldEditLabel) > 0 and RIGHT(@fieldEditLabel,1) = ':'
+				  SET @fieldEditLabel = RTRIM(LEFT(@fieldEditLabel, LEN(@fieldEditLabel)-1))
+
+			end
+		  end
+		  set @CurrentOffset = @CurrentOffset + @fieldWidth
+		end
+		FETCH NEXT from SpecFormCursor into @specFormID, @specData
+	  END
+	  close SpecFormCursor
+	  deallocate SpecFormCursor
+	</data>
+  </table>
+  <table name="Specification">
+	<dependency table="SpecificationForm"/>
+	<data>
+	  INSERT INTO <ODB/>.dbo.Specification ([ID],[Code],[UnitLocationID],[SpecificationFormID])
+		  SELECT SPEC.[ID],SPEC.[CODE],UL.LocationID,TP.[ID]
+		  from <IDB/>.dbo.Specifications as SPEC
+			  join <IDB/>.dbo.Units as U on SPEC.[ASSOCKEY] = U.[KEY]
+			  join <IDB/>.dbo.Templates as TP on SPEC.[TKEY] = TP.[KEY]
+			  join <IDB/>.dbo.UnitLinkages as UL on U.ID = UL.ID
+		  where SPEC.[TYPE] = 'T';
+	</data>
+  </table>
+  <table name="SpecificationData">
+	<dependency table="Specification"/>
+	<dependency table="SpecificationFormField"/>
+	<data>
+	  SET NOCOUNT ON	
+	  declare @specID uniqueidentifier
+	  declare @specFormID uniqueidentifier
+	  declare @specFormFieldID uniqueidentifier
+	  declare @specData varchar(max)
+	  declare @specLen int
+	  declare @chunkLength int
+	  declare @currentOffset int
+	  declare @fieldSequence int
+	  declare @dataLength int
+	  declare @dataValue varchar(max)
+	  declare @fieldWidth int
+	  declare @fieldName as varchar(32)
+	  
+	  declare SpecCursor CURSOR SCROLL
+		for
+		  select Specifications.ID, Specifications.Info, Templates.ID
+			from <IDB/>.dbo.Specifications
+			  join <IDB/>.dbo.Templates on Specifications.TKey = Templates.[Key]
+			  join <ODB/>.dbo.Specification on Specification.ID = Specifications.ID	-- included in case we want to set a comment.
+			where Type = 'T'
+
+	  open SpecCursor
+
+	  FETCH FIRST from SpecCursor into @specID, @specData, @specFormID
+	  WHILE @@FETCH_STATUS = 0
+	  BEGIN
+		set @specLen = len(@specData)
+		set @CurrentOffset = 1
+		set @fieldSequence = 1
+		while @CurrentOffset &lt;= @specLen
+		begin
+		  -- We must search forward more than one character.
+		  -- We can't specify a start position for patindex, and it (probably) doesn't like memo fields, so we measure a chunk off the start of
+		  -- the remaining field for the test.
+		  -- Note that we are now using [n]varchar(max) instead of [n]text so there is no maximum chunk length.
+		  set @chunkLength = @specLen - @CurrentOffset + 1
+		  -- Find the position of the next ':'
+		  set @fieldWidth = patindex('%:%', SUBSTRING(@specData, @CurrentOffset, @chunkLength ))
+		  if @fieldWidth = 0
+		  begin
+			-- We didn't find a colon. This is syntactically invalid (too many digits for a field width) but all we can really do is discard the data.
+			UPDATE <ODB/>.dbo.Specification
+				set [Comment] = 'Data conversion stopped due to missing : at end of MB2.9 specification data'
+				where current of SpecCursor
+			break
+		  end
+		  else
+		  begin
+			-- Find the SpecificationFormField record using the next index number and the Specification Form ID.
+			set @fieldName = 'F_'+convert(varchar, @fieldSequence)
+			set @specFormFieldID = (select ID from <ODB/>.dbo.SpecificationFormField
+										where FieldName = @fieldName AND SpecificationFormID = @specFormID)
+			if @specFormFieldID is null
+			begin
+			  -- We didn't find a field. This is likely because there are more data insertions than fields in the template.
+			  UPDATE <ODB/>.dbo.Specification
+				  set [Comment] = 'Data conversion stopped due to having too many data values in MB2.9 specification data'
+				  where current of SpecCursor
+			  break
+			end
+			-- Parse the scanned data into a data width.
+			set @dataLength = convert(int, SUBSTRING(@specData, @CurrentOffset, @fieldWidth-1 ))
+			-- Obtain the actual data, treating zero width as a null value rather than a zero-length string
+			if @dataLength = 0
+			  set @dataValue = null
+			else
+			  set @dataValue = SUBSTRING(@specData, @CurrentOffset+@fieldWidth, @dataLength )
+			-- Create the SpecificationData record
+			insert into <ODB/>.dbo.SpecificationData
+					(ID, SpecificationID, SpecificationFormFieldID, FieldValue)
+			  values(newid(), @specID, @specFormFieldID, @dataValue)
+			set @fieldWidth = @fieldWidth + @dataLength
+			-- Increment the field sequence
+			set @fieldSequence = @fieldSequence+1
+		  end
+		  set @CurrentOffset = @CurrentOffset + @fieldWidth
+		end
+		-- Ensure we got all the fields.
+		if @fieldSequence &lt;= (select count(*) from <ODB/>.dbo.SpecificationFormField where SpecificationFormID = @specFormID)
+		begin
+		  -- We didn't find a field. This is likely because there are more data insertions than fields in the template.
+		  UPDATE <ODB/>.dbo.Specification
+			  set [Comment] = case when [Comment] is null then '' else [Comment]+char(13)+char(10) end+'Data conversion found insufficient data values in MB2.9 specification data'
+			  where current of SpecCursor
+		end
+		FETCH NEXT from SpecCursor into @specID, @specData, @specFormID
+	  END
+	  close SpecCursor
+	  deallocate SpecCursor
+	</data>
+  </table>
+  <table name="SpecificationPostAmble">
+	<dependency table="SpecificationData"/>
+	<data>
+	-- Renable all triggers and update the data the triggers would have been maintaining
+	  update <ODB/>.dbo.Specification set ReportText = <ODB/>.dbo.mbfn_Specification_ReportText (Specification.ID)
+	  GO
+	  USE <ODB/>;
+	  ENABLE TRIGGER mbtg_SpecificationData_Updates_Specification on SpecificationData
+	  GO
+	  ENABLE TRIGGER mbtg_SpecificationForm_Updates_Specification on SpecificationForm
+	  GO
+	  USE <IDB/>;
+	  GO
+	</data>
+  </table>
+
+</dbconversion>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Specifying Request State Transitions</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Specifying Request State Transitions</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.Request Assignment by Assignee.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Request.htm">Next section &gt;</a></p>
+
+<p>A <span class="NewTerm">request state transition</span> is a rule telling MainBoss to change the state of a request whenever a linked work order changes its state. For example, you could tell MainBoss that every time you close a work order, MainBoss should automatically close all the requests linked to that work order.</p>
+
+<p class="box">You can link a request to a work order using the <span class="CButton">Link Work Orders</span> button in the <span class="CPanel">Requests</span> table viewer or in the window for editing a request. Alternatively, if you create a work order from a request using the <span class="CButton">New Work Order</span> button, the request is automatically linked to the new work order.</p>
+
+<p>To specify request state transitions, go to the <span class="CButton">Defaults for Requests</span> section of the <span class="CPanel">Requests</span> table viewer and click <span class="CButton">Edit Defaults</span>. In the resulting window, go to the <span class="CButton">Close Preferences</span> section.</p>
+
+<p>The <span class="CButton">Close Preferences</span> section has a checkbox labeled <span class="CButton">Requests are automatically changed to a new state when linked to a work order, or when a linked work order state changes</span>. If this checkbox is blank, MainBoss will <span class="Emphasis">not</span> change the state of requests in response to work order changes&#8212;if you want automatic changes, you must checkmark the box.</p>
+
+<p>To specify a rule for changing request states, click <span class="CButton">New Work Order Request Transition</span>. This opens a window where you can specify a request state transition. Each transitation rule states the following: when a request is in state A and a linked work order changes into state B, the request should be changed into state C. For example, when a request is <span class="CPanel">In Progress</span> and a linked work order changes to <span class="CPanel">Closed</span>, then MainBoss should automatically change the request's state to <span class="CPanel">Closed</span>.</p>
+
+<p>When MainBoss changes a request's state in this way, MainBoss automatically sends an email message to the request's requestor, provided that you have the <span class="BL">MainBoss Service</span> module. The request transition record lets you specify text that should be included in such a message. If you don't specify your own text, MainBoss will use default text.</p>
+
+<p>The window for managing a request transition rule contains the following:</p>
+
+<p class="wi"><span class="CField">Request State</span>: A drop-down list specifying all the possible states a request may be in. For more information, see <a href="Requests.htm">Requests</a>.</p>
+<p class="wi"><span class="CField">Work Order State</span>: A drop-down list specifying all the possible states of a work order. For more information, see <a href="View.Work Order States.htm">Work Order States</a>.</p>
+<p class="wi"><span class="CField">Change To Request State</span>: A drop-down list specifying the new state into which the request should be put.
+
+<br /><br />Putting these three fields together, you are saying, "When a request starts off in "<span class="CField">Request State</span>", and a linked work order changes into "<span class="CField">Work Order State</span>", then put the request into "<span class="CField">Change To Request State</span>".
+
+<br /><br />For example, suppose "<span class="CField">Request State</span>" is <span class="CButton">In Progress</span>, and "<span class="CField">Work Order State</span>" is <span class="CButton">Closed</span>, and "<span class="CField">Change To Request State</span>" is <span class="CButton">Closed</span>. This says that when a request is <span class="CButton">In Progress</span> and a linked work order is closed, then MainBoss should close the request too.</p>
+<p class="wi"><span class="CButton">Comment To Requestor</span>: A drop-down list giving possible messages to send to the requestor. You can choose from MainBoss's pre-existing messages. However, in many cases you would use the facilities of the drop-down list to create a new message of your own. To do so, click the right-hand drop-down arrow and then select <span class="CButton">New Message</span> in the resulting menu. This lets you create a new message of your own. For more information on creating new messages, see <a href="Edit.Message Translation.htm">Message String Translations</a>.</p>
+<p class="box"><span class="CInset">Note:</span> The same user message key can have different messages depending on the recipient's preferred language. For example, you might have key named <span class="CU">CommentWhenRequestIsClosed</span>. You could then have an English language message, a French message, a Spanish message and so on, all associated with the same key. MainBoss chooses which translation to send, based on the recipient's preferred language (if any).</p>
+
+<p class="wi"><span class="CButton">Current Translation</span>: A read-only field giving the current translation of the message specified in <span class="CButton">Comment To Requestor</span> (in your chosen language, if such a translation exists).</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on requests, see <a href="Requests.htm">Requests</a>. For more on editing requests, see <a href="Edit.Request.htm">Editing Requests</a>.</p>
+
+
+<p><a href="Browse.Request Assignment by Assignee.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Request.htm">Next section &gt;</a></p>
+</body>
+</html>
+

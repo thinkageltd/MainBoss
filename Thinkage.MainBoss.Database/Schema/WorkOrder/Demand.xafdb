@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="Demand" defaults="true" log="false" id="Id" xid="WorkOrderID CostEstimate" labelkey="Demand">
+	<doc>
+	  This record is the base record for any resource requirement by a work order.
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="WorkOrderID" type="RequiredGUIDREF" link="WorkOrder" cascade="true">
+	  <extension name="linkage">owner</extension>
+	</field>
+	<field name="DemandActualCalculationInitValue" type="integer(min 0, max 2, nonnull)" labelkey="Actual Cost default">
+	  <doc>Values defined in DatabaseEnums.DemandActualCalculationInitValues to govern the default setting for the Cost calculation in an Actual editor when
+	  used with this Demand for calculating the Actual value</doc>
+	</field>
+	<field name="WorkOrderExpenseCategoryID" type="RequiredGUIDREF"  link="WorkOrderExpenseCategory" labelkey="Expense Category">
+	  <doc>The expense category ID, used to determine which Cost Center the resource cost should be charged to</doc>
+	  <extension name="linkage">property</extension>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TIWorkOrder.FilteredWorkOrderExpenseCategoryTbl,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="EntryDate" type="RequiredDateTime">
+	  <doc>The date this record was created</doc>
+	  <extension name="serversetsDateTime"/>
+	</field>
+	<field name="CostEstimate" type="currency(min 0.00, max 922337203685477.5807, by 0.01)" labelkey="Demanded Cost">
+	  <doc>An estimate of the cost for the resource</doc>
+	</field>
+	<field name="ActualCost" read="RequiredCurrency" labelkey="Actual Cost" >
+	  <doc>The total cost of all the actuals against this demand</doc>
+	  <result hosting="cached">
+		cast(42 as Requiredcurrency)
+	  </result>
+	  <extension name="dependson">mbfn_DemandLaborOutside_ActualCost()</extension>
+	  <extension name="dependson">mbfn_DemandLaborInside_ActualCost()</extension>
+	  <extension name="dependson">mbfn_DemandItem_ActualCost()</extension>
+	  <extension name="dependson">mbfn_DemandOtherWorkInside_ActualCost()</extension>
+	  <extension name="dependson">mbfn_DemandOtherWorkOutside_ActualCost()</extension>
+	</field>
+	<extension name="costrights">WorkOrderItem</extension>
+	<extension name="costrights">WorkOrderInside</extension>
+	<extension name="costrights">WorkOrderOutside</extension>
+  </table>
+  <object class="trigger" name="mbtg_Demand_Updates_WorkOrder">
+	<doc></doc>
+	<extension name="body">
+	  on Demand
+	  after insert, update, delete
+	  as
+	  begin
+		  update WorkOrder SET
+			  TotalDemand = dbo.mbfn_WorkOrder_TotalDemand(WorkOrder.ID),
+			  TotalActual = dbo.mbfn_WorkOrder_TotalActual(WorkOrder.ID)
+			  where WorkOrder.ID in (
+						select distinct WorkOrderID from inserted
+				  union select distinct WorkOrderID from deleted	
+				)
+	  end
+	</extension>
+	<extension name="references">mbfn_WorkOrder_TotalDemand()</extension>
+	<extension name="references">mbfn_WorkOrder_TotalActual()</extension>
+	<extension name="references">Demand</extension>
+	<extension name="references">WorkOrder</extension>
+  </object>
+  <table name="DemandWorkOrderExpenseModelEntry" defaults="false" log="false" id="Id" labelkey="Demand">
+	<doc>This view does the lookup of the Demand's Expense Category and the associated WO's Expense Model to yield the ID of the WorkOrderExpenseModelEntry
+	record if any exists</doc>
+	<field name="Id" read="RequiredGUID">
+	  <doc>The Id of this record, which is always the same as the Id of the Demand record</doc>
+	</field>
+	<field name="DerivedDemandID" type="GUID" labelkey=""/>
+	<field name="WorkOrderExpenseModelEntryID" type="GUIDREF" link="WorkOrderExpenseModelEntry">
+	  <doc>The link to the WOXME record associated with this demand, if any</doc>
+	</field>
+	<extension name="query">
+	  select D.ID, DD.ID, WOXME.ID
+		from
+		  (
+			  select ID, DemandID from DemandItem
+			union all
+			  select ID, DemandID from DemandLaborInside
+			union all
+			  select ID, DemandID from DemandOtherWorkInside
+			union all
+			  select ID, DemandID from DemandLaborOutside
+			union all
+			  select ID, DemandID from DemandOtherWorkOutside
+			union all
+			  select ID, DemandID from DemandMiscellaneousWorkOrderCost
+		  ) as DD
+		join
+		  Demand as D on D.ID = DD.DemandID
+		join
+		  WorkOrder as WO on WO.ID = D.WorkOrderID
+		left join
+		  WorkOrderExpenseModelEntry as WOXME
+			on WOXME.WorkOrderExpenseModelID = WO.WorkOrderExpenseModelID
+			and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
+	</extension>
+	<extension name="dependson">Demand</extension>
+	<extension name="dependson">DemandItem</extension>
+	<extension name="dependson">DemandLaborInside</extension>
+	<extension name="dependson">DemandOtherWorkInside</extension>
+	<extension name="dependson">DemandLaborOutside</extension>
+	<extension name="dependson">DemandOtherWorkOutside</extension>
+	<extension name="dependson">DemandItem</extension>
+	<extension name="dependson">DemandMiscellaneousWorkOrderCost</extension>
+	<extension name="dependson">WorkOrderExpenseModelEntry</extension>
+  </table>
+  <table name="WorkOrderExpenseCategory"/>
+  <table name="WorkOrderExpenseModelEntry"/>
+  <table name="WorkOrder"/>
+  <table name="DemandItem"/>
+  <table name="DemandLaborInside"/>
+  <table name="DemandOtherWorkInside"/>
+  <table name="DemandLaborOutside"/>
+  <table name="DemandOtherWorkOutside"/>
+  <table name="DemandMiscellaneousWorkOrderCost"/>
+</database>

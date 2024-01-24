@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ChargebackLine" defaults="true" log="false" id="Id" xid="ChargebackID ChargebackLineCategoryID" labelkey="Chargeback Line">
+	<field name="Id" read="RequiredGUID" />
+	<field name="AccountingTransactionID" read="RequiredGUIDREF"  base="AccountingTransaction">
+	  <doc>Base record this charge is linked to</doc>
+	</field>
+	<field name="ChargebackID" type="RequiredGUIDREF" link="Chargeback">
+	  <doc>The Chargeback to which this particular charge belongs.</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="ChargebackLineCategoryID" type="RequiredGUIDREF"  link="ChargebackLineCategory">
+	  <doc>The category this charge belongs in.</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="CorrectionID" type="RequiredGUIDREF" link="ChargebackLine" labelkey="Chargeback Line Correction">
+	  <doc>The ID of the original ChargebackLine record for a family of original record and its corrections</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="CorrectedCost" read="Currency">
+	  <doc>
+		The corrected cost of this ChargebackLine and all its corrections (all those with a CorrectionID linking
+		to this record).  Note this is only stored in the main ChargebackLine record (with CorrectionID==ID),
+		not in the correction records.
+	  </doc>
+	  <result hosting="cached">
+		cast(42 as Currency)
+	  </result>
+	  <extension name="dependson">mbfn_ChargebackLine_CorrectedCost()</extension>
+	</field>
+	<field name="Comment" type="Comment">
+	  <doc>Description of the charge line item</doc>
+	</field>
+	<extension name="costrights">Chargeback</extension>
+	<extension name="costrights">UnitValue</extension>
+	<extension name="costrights">WorkOrderItem,WorkOrderInside,WorkOrderOutside,WorkOrderMiscellaneous,InventoryActivity,PurchaseOrderItem,PurchaseOrderLabor,PurchaseOrderMiscellaneous</extension>
+  </table>
+  <table name="AccountingTransaction"/>
+  <table name="Chargeback"/>
+  <table name="ChargebackLineCategory"/>
+  <object class="function" name="mbfn_ChargebackLine_CorrectedCost">
+	<doc>
+	</doc>
+	<extension name="body">
+	  (
+		@CBLID uniqueidentifier -- ChargebackLine
+	  )
+	  RETURNS money
+	  as
+	  begin
+		return(
+		  select sum(Cost)
+			  from ChargebackLine
+					join AccountingTransaction on AccountingTransaction.ID = ChargebackLine.AccountingTransactionID
+			  where CorrectionID = @CBLID
+		)
+	  end
+	</extension>
+	<extension name="dependson">ChargebackLine.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ChargebackLine</extension>
+  </object>
+  <object class="trigger" name="mbtg_ChargebackLine_Updates_Corrected">
+	<doc>
+	  Maintain the Corrected Quantity and Cost values in ChargebackLine
+	</doc>
+	<extension name="body">
+	  on ChargebackLine
+	  after insert, update, delete
+	  as
+	  begin
+		  update ChargebackLine
+			  set CorrectedCost = dbo.mbfn_ChargebackLine_CorrectedCost(ChargebackLine.ID)
+			  where ChargebackLine.ID in (
+					  select distinct CorrectionID from inserted
+				union select distinct CorrectionID from deleted
+				)
+	  end
+	</extension>
+	<extension name="references">mbfn_ChargebackLine_CorrectedCost()</extension>
+	<extension name="references">ChargebackLine</extension>
+  </object>
+  <object class="trigger" name="mbtg_ChargebackLine_Updates_Chargeback">
+	<doc>
+	  Maintain the TotalCost in the base Chargeback record
+	</doc>
+	<extension name="body">
+	  on ChargebackLine
+	  after insert, update, delete
+	  as
+	  begin
+		  update Chargeback
+			  set TotalCost = dbo.mbfn_Chargeback_TotalCost(Chargeback.ID)
+			  where Chargeback.ID in (
+					  select distinct ChargebackID from inserted
+				union select distinct ChargebackID from deleted
+				)
+	  end
+	</extension>
+	<extension name="references">mbfn_Chargeback_TotalCost()</extension>
+	<extension name="references">Chargeback</extension>
+  </object>
+
+  </database>

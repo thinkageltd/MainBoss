@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="MaintenanceForecastReport" log="false" id="Id" labelkey="">
+	<field name="Id" read="RequiredGUID" />
+	<field name="PMGenerationDetailType" type="integer(16,nonnull)"/>
+	<field name="PMGenerationBatchID" type="GUIDREF" link="PMGenerationBatch"/>
+
+	<field name="ScheduleID" type="GUIDREF" link="Schedule" />
+	<field name="WorkOrderTemplateID" type="GUIDREF" link="WorkOrderTemplate" />
+	<field name="WorkOrderID" type="GUIDREF" link="WorkOrder" />
+	<field name="Subject" type="Subject" />
+	<field name="WorkCategoryID" type="GUIDREF" link="WorkCategory"/>
+	<field name="AccessCodeID" type="GUIDREF" link="AccessCode"/>
+	<field name="WorkOrderExpenseModelID" type="GUIDREF" link="WorkOrderExpenseModel" labelkey="Expense Model"/>
+	<field name="ProjectID" type="GUIDREF" link="Project" />
+	<field name="WorkOrderPriorityID" type="GUIDREF"  link="WorkOrderPriority" labelkey="Priority"/>
+	<field name="WorkOrderCurrentStateID" type="GUIDREF" link="WorkOrderStateHistory" labelkey="Current State History"/>
+	<field name="UnitLocationID" labelkey="Unit" type="GUIDREF" link="Location"/>
+	<field name="WorkStartDate" type="RequiredDate"/>
+	<extension name="query">
+	  select
+	  newid() as Id
+	  , PGD.DetailType -- PMGenerationDetailType
+	  , PGD.PMGenerationBatchID -- PMGenerationBatchID
+	  -- What
+	  , SWO.ScheduleID -- Schedule
+	  , WOT.ID -- WorkOrderTemplate
+	  , null  -- WorkOrder
+	  -- Common Work Order Fields
+	  , WOT.Subject -- Subject
+	  , WOT.WorkCategoryID -- WorkCategory
+	  , WOT.AccessCodeID -- AccessCode
+	  , WOT.WorkOrderExpenseModelID -- WorkOrderExpenseModel
+	  , WOT.ProjectID -- Project
+	  , WOT.WorkOrderPriorityID -- Priority
+	  -- Related Records
+	  , null -- WorkOrderState
+	  , SWO.UnitLocationID
+	  -- When
+	  , PGD.WorkStartDate -- WorkStartDate
+	  from ScheduledWorkOrder as SWO
+	  join WorkOrderTemplate as WOT on WOT.ID = SWO.WorkOrderTemplateID
+	  join ( -- Use a subquery to merge records that would ultimately share a single work order.
+	  select distinct ScheduledWorkOrderID, DetailType, PMGenerationBatchID, WorkStartDate
+	  from PMGenerationDetail
+	  ) as PGD(ScheduledWorkOrderID, DetailType, PMGenerationBatchID, WorkStartDate) on PGD.ScheduledWorkOrderID = SWO.[ID]
+	  ---- Existing WO
+	  union all
+	  select
+	  newid() -- Id
+	  , null -- PMGenerationDetailType
+	  , null -- PMGenerationBatchID
+	  -- What
+	  , null -- Schedule
+	  , null -- Task
+	  , WO.ID
+	  , WO.Subject -- Subject
+	  , WO.WorkCategoryID -- WorkCategory
+	  , WO.AccessCodeID -- AccessCode
+	  , WO.WorkOrderExpenseModelID -- WorkOrderExpenseModel
+	  , WO.ProjectID -- Project
+	  , WO.WorkOrderPriorityID -- Priority
+	  , WO.CurrentWorkOrderStateHistoryID -- WorkOrderState
+	  -- Related Records
+	  , WO.UnitLocationID -- Unit
+	  -- When
+	  , WOX.EarliestOpenDate -- WorkStartDate
+	  from WorkOrder as WO
+	  join WorkOrderExtras as WOX on WOX.WorkOrderID = WO.ID
+	  join WorkOrderStateHistory as WOSH on WOSH.ID = WO.CurrentWorkOrderStateHistoryID
+	  join WorkOrderState as WOS on WOS.ID = WOSH.WorkOrderStateID
+	  where WOS.FilterAsOpen = 1
+	</extension>
+	<extension name="dependson">PMGenerationDetail</extension>
+	<extension name="dependson">ScheduledWorkOrder</extension>
+	<extension name="dependson">WorkOrderTemplate</extension>
+	<extension name="dependson">Schedule</extension>
+	<extension name="dependson">WorkOrderExtras</extension>
+	<extension name="dependson">WorkOrder</extension>
+	<extension name="dependson">WorkCategory</extension>
+	<extension name="dependson">AccessCode</extension>
+	<extension name="dependson">WorkOrderPriority</extension>
+	<extension name="dependson">Project</extension>
+	<extension name="dependson">WorkOrderExpenseModel</extension>
+	<extension name="dependson">Location</extension>
+	<extension name="dependson">WorkOrderStateHistory</extension>
+	<extension name="costrights">UnitValue</extension>
+  </table>
+	<table name="PMGenerationBatch"/>
+	<table name="PMGenerationDetail"/>
+	<table name="WorkOrderExtras"/>
+	<table name="ScheduledWorkOrder"/>
+	<table name="Schedule"/>
+	<table name="WorkOrderTemplate"/>
+	<table name="WorkOrder"/>
+	<table name="WorkOrderPriority"/>
+	<table name="AccessCode"/>
+	<table name="WorkCategory"/>
+	<table name="Project"/>
+	<table name="WorkOrderExpenseModel"/>
+	<table name="Location"/>
+	<table name="WorkOrderStateHistory"/>
+</database>

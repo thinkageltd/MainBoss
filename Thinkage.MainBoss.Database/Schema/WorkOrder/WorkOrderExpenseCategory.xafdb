@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderExpenseCategory" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Work Order Expense Category">
+    <field name="Id" read="RequiredGUID"/>
+    <field name="Code" type="RequiredCode"/>
+    <field name="Hidden" type="GenerationValue"/>
+    <field name="Desc" type="Desc"/>
+    <field name="Comment" type="Comment"/>
+    <field name="FilterAsLabor" type="RequiredBool" labelkey="Valid for Hourly Inside, Hourly Outside, Per Job Inside, Per Job Outside">
+      <doc>This expense category is identified as eligible for Labor expenses</doc>
+    </field>
+    <field name="FilterAsItem" type="RequiredBool" labelkey="Valid for Items">
+      <doc>This expense category is identified as eligible for Item expenses</doc>
+    </field>
+    <field name="FilterAsMiscellaneous" type="RequiredBool" labelkey="Valid for Miscellaneous Costs">
+      <doc>This expense category is identified as eligible for Miscellaneous expenses</doc>
+    </field>
+    <extension name="deletemethod">hide</extension>
+  </table>
+</database>

@@ -1,0 +1,27 @@
+1) WarrantyExpiry in old Units goes into a "*WARRANTY" Service contract where the warranty expiry is the end date, and the purchase date is the start date.
+   ServiceVendor in Unit becomes the Service Contract Vendor.
+   ServiceContract code is constructed with 'SC_'+ unit code (as corrected for duplicates; see below)
+
+2) Buildings go into Location table, with appropriate construction of Postal Address table. 
+   Vendor addresses create a Location table entry, with a CODE of 'V_' + vendor code
+
+3) Obsolete Units are marked Hidden on conversion; Obsolete code go into UnitUsage category table, and references made as required.
+
+4) CreateDate on Meter becomes a 0 entry reading that predates other history of meter readings if a meter reading doesn't exist for that date/time stamp.
+   MeterClasses are created from the MeterCodes and the UOM CODE for each distinct combination of MeterCode & UOM (METER.[CODE]+'_'+'UOM.[CODE])
+   Null UOM codes are not allowed so MB29 Meters that had NULL UOM specified will be assigned to the special UOM code '*mb29_UOM*' created
+   in the UOM table.
+
+5) CostCenter on Units is not converted to anything; user is expected to set up WorkOrderExpenseModels for units as required.
+
+6) UnitCategories are converted to 'E'+code and 'S'+code for the code.
+
+7) UNIT codes now must be unique across buildings (locations). To this end, data from mb29 that used to have Equipment/Space codes the same across buildings
+   will have those dupliate codes amended with numbers. Example; Unit 'Z' occuring 5 times in 5 different buildings would end up with codes
+   'Z', 'Z1', 'Z12', 'Z123', 'Z1234'.  The conversion breaks if more than 20 consecutive duplications appear....
+   
+   
+Specification conversion will insert a comment in the comment field
+Data conversion stopped due to missing : at end of original specification data'
+for those specifications it finds with malformed data.
+

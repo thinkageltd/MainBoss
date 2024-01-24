@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="WorkOrderState" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Work Order State">
+		<field name="Id" read="RequiredGUID"/>
+		<field name="Code" type="translationkey(nonnull)">
+			<doc>The identification for this work order state.</doc>
+		</field>
+		<field name="Hidden" type="GenerationValue">
+			<doc>This particular state is no longer valid for picking. The GenerationValue indicates the date/time it was hidden.</doc>
+		</field>
+		<field name="Desc" type="translationkey(null)"/>
+		<field name="Comment" type="Comment">
+			<doc>A user comment describing the intent of this particular work order state.</doc>
+		</field>
+		<field name="DemandCountsActive" type="Requiredbool">
+			<doc>True when unsatisfied resource demands are included in the totalling of demands</doc>
+		</field>
+		<field name="TemporaryStorageActive" type="Requiredbool">
+			<doc>
+				True for workorders in this state if
+				1) Non-Demands against Temporary storage may be created, edited and deleted
+				2) whether Temporary Storage appears in the regular Temporary Storage Locations picker.
+				3) whether Temporary storage may contain any net quantity/value.
+		  </doc>
+		</field>
+		<field name="CanModifyDemands" type="Requiredbool">
+			<doc>True if New, Clone and Delete operations are allowed on Demand browsers and allows editing of existing Demand records.</doc>
+		</field>
+		<field name="CanModifyActuals" type="Requiredbool">
+			<doc>True if Actualize operations are allowed on resource browsers and allows editing or correction of existing Actual records.</doc>
+		</field>
+		<field name="CanModifyPOLines" type="Requiredbool">
+			<doc>True if creation, deletion, or midification operations are allowed on outside labor PO Line records.</doc>
+		</field>
+		<field name="CanModifyChargebacks" type="Requiredbool">
+			<doc>True if New, Clone and Delete operations are allowed on Chargeback browsers and allows editing of existing Chargeback records.</doc>
+		</field>
+		<field name="CanModifyChargebackLines" type="Requiredbool">
+			<doc>True if New, Clone and Delete operations are allowed on Chargeback Line browsers and allows editing of existing Chargeback Line records.</doc>
+		</field>
+		<field name="CanModifyDefinitionFields" type="Requiredbool">
+			<doc>True if allows editing of main WorkOrder fields that constitute definition properties.</doc>
+		</field>
+		<field name="CanModifyOperationalFields" type="Requiredbool">
+			<doc>True if allows editing of main WorkOrder fields that constitute operational properties.
+			  This includes but not limited to:
+			  			1) work start/end dates are editable.
+						2) whether Actual's effective dates (or date spans) are allowed to extend beyond the work start/end dates.
+						3) PM Generation treats workorders in this state as having an infinite work end date.
+			</doc>
+		</field>
+		<field name="AffectsFuturePMGeneration" type="Requiredbool">
+			<doc>True if this work order's work start/end dates affect the scheduling (generation) of other work orders during PM Generation</doc>
+		</field>
+		<field name="FilterAsOpen" type="Requiredbool">
+			<doc>For 2.9 behavior filter support, this state identifies this workorder as in the Open state</doc>
+		</field>
+		<field name="FilterAsClosed" type="Requiredbool">
+			<doc>For 2.9 behavior filter support, this state identifies this workorder as in the Closed state</doc>
+		</field>
+		<field name="FilterAsVoid" type="Requiredbool">
+			<doc>For 2.9 behavior filter support, this state identifies this workorder as in the Void state</doc>
+		</field>
+		<field name="FilterAsDraft" type="Requiredbool">
+			<doc>For filtering suppot to show only Draft Work Orders</doc>
+		</field>
+
+		<extension name="deletemethod">hide</extension>
+	</table>
+
+	<object class="trigger" name="mbtg_WorkOrderState_Updates_ActualItemLocation">
+	  <doc>
+		Maintain the OnReserve amount in ActualItemLocation based on changes to WorkOrderState.
+		This would be the case if someone adds a new State to the WorkOrderState table, or changes the value of the
+		DemandCountsActive flag on an existing WorkOrderState
+	  </doc>
+	  <extension name="body">
+		on WorkOrderState
+		after insert, update, delete
+		as
+		begin
+		  update ActualItemLocation
+			  set OnReserve = dbo.mbfn_ActualItemLocation_OnReserve(ActualItemLocation.ID)
+			  where ActualItemLocation.ItemLocationID in (
+					   select distinct ItemLocationID from DemandItem
+							 join Demand on DemandID = Demand.ID
+							 join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
+							 join WorkOrderStateHistory on WorkOrderStateHistory.ID = WorkOrder.CurrentWorkOrderStateHistoryID
+							 join inserted on inserted.ID = WorkOrderStateHistory.WorkOrderStateID
+	  			 union select distinct ItemLocationID from DemandItem
+							 join Demand on DemandID = Demand.ID
+							 join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
+							 join WorkOrderStateHistory on WorkOrderStateHistory.ID = WorkOrder.CurrentWorkOrderStateHistoryID
+							 join deleted on deleted.ID = WorkOrderStateHistory.WorkOrderStateID
+				)
+		end
+	  </extension>
+	  <extension name="references">mbfn_ActualItemLocation_OnReserve()</extension>
+	  <extension name="references">ActualItemLocation</extension>
+	  <extension name="references">Demand</extension>
+	  <extension name="references">WorkOrder</extension>
+	  <extension name="references">WorkOrderStateHistory</extension>
+	</object>
+  <table name="ActualItemLocation"/>
+  <table name="Demand"/>
+  <table name="WorkOrder"/>
+  <table name="WorkOrderStateHistory"/>
+</database>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+  <!-- Construct Contact records for all tables that need to reference them. -->
+  <table name="Contact">
+	<dependency table="PostalAddress"/>
+	<dependency table="VendorLinkages"/>
+	<dependency table="PersonnelLinkages"/>
+
+	<data>
+delete from <IDB/>.dbo.CodeManagement;
+<!-- Get any existing contacts in the output database FIRST to ensure any conflicts with imported contacts are resolved by renaming the IMPORTED contact code. This can happen if the person doing the import has a username that matches a contact record in the import database -->
+INSERT INTO <IDB/>.dbo.CodeManagement ([ID], [Code], [Hidden29])
+	SELECT C.[ID], C.[CODE], 0
+	from <ODB/>.dbo.Contact as C
+	where C.HIDDEN IS NULL;
+<!--
+INSERT INTO <IDB/>.dbo.CodeManagement ([ID], [Code], [Hidden29])
+	SELECT C.[ID], C.[CODE], COALESCE(C.[HIDDEN],0)
+	from <IDB/>.dbo.Contacts as C
+	where C.MAINBOSSEXCLUDE = 0;
+	-->
+
+INSERT INTO <IDB/>.dbo.CodeManagement ([ID],[Code], [Hidden29])
+	SELECT V.MAINBOSSID, [VENDORID], 0
+	from <IDB/>.dbo.VENDOR as V
+	where V.MAINBOSSEXCLUDE = 0;
+<!-- Use the Name from the EMP record for the Contact Name; the EMPCODE Code will become the Employee 'Description' field -->
+INSERT INTO <IDB/>.dbo.CodeManagement ([ID], [Code], [Hidden29])
+	SELECT P.MAINBOSSID, [FIRSTNAME]+' '+[LASTNAME], 0
+	from <IDB/>.dbo.EMP as P
+	where P.MAINBOSSEXCLUDE = 0;
+
+exec <IDB/>.dbo.FixCodes 50
+	
+<!--
+INSERT INTO <ODB/>.dbo.Contact ([ID],[Code],[BusinessPhone],[HomePhone],[PagerPhone],[MobilePhone],[Email],[Hidden])
+	SELECT C.[ID],CM.[CODE],C.[PHONE],NULL,C.[PAGER],C.[MOBILE],C.[EMAIL],CM.[Hidden30]
+	from <IDB/>.dbo.Contacts as C
+	join <IDB/>.dbo.CodeManagement as CM on C.[ID] = CM.[ID];
+GO
+-->
+INSERT INTO <ODB/>.dbo.Contact (V.[ID],[LocationID],[Code],[BusinessPhone],[HomePhone],[FaxPhone],[Email],[WebUrl],[Hidden],[Comment])
+	SELECT VL.ContactID, VL.LocationID, CM.[CODE],[PHONE], [EXT],[TELEXFAX],[EMAIL],NULL,CM.[HIDDEN30], 'VENDOR'
+	from <IDB/>.dbo.VENDOR as V
+		join <IDB/>.dbo.VendorLinkages as VL on V.[MAINBOSSID] = VL.ID
+		join <IDB/>.dbo.CodeManagement as CM on V.[MAINBOSSID] = CM.[ID];
+GO
+
+INSERT INTO <ODB/>.dbo.Contact ([ID],[Code],[BusinessPhone],[HomePhone],[PagerPhone],[MobilePhone],[Email],[Hidden],[Comment])
+	SELECT PL.[ContactID], CM.[CODE], [PHONE], NULL,[PAGERNUM], NULL,[EMAIL], CM.[HIDDEN30],'EMPLOYEE'
+	from <IDB/>.dbo.EMP as P
+		join <IDB/>.dbo.PersonnelLinkages as PL on P.MAINBOSSID = PL.ID
+		join <IDB/>.dbo.CodeManagement as CM on P.MAINBOSSID = CM.[ID];
+GO
+	</data>
+  </table>
+
+</dbconversion>
+ 

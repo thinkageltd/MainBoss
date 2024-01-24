@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Using Editors</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Using Editors</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="SelectingMultipleTableEntries.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="ConcurrencyError.htm">Next section &gt;</a></p>
+
+<p>An editor window shows the contents of a single record. For example, here is the editor window for describing a unit (e.g. a piece of equipment):</p>
+
+<p><img src="image018.png" alt="MainBoss" /></p>
+
+<p>The window consists of a number of information fields. For example, the "<span class="CField">Containing Location</span>" field lets you specify where the unit is.</p>
+
+<p>In the editor window, you can often move the cursor from one field to the next by pressing the <span class="CKey">&lt;Tab&gt;</span> key. For example, if you have just filled in the "<span class="CField">Make</span>" field, pressing <span class="CKey">&lt;Tab&gt;</span> moves the cursor to "<span class="CField">Model</span>". In this way, you can <span class="CKey">&lt;Tab&gt;</span> from one field to the next without having to use the mouse. Of course, you can still use the mouse if you wish.</p>
+
+<p><span class="CKey">&lt;Shift+Tab&gt;</span> goes backwards to the previous field. This is useful if you type something, <span class="CKey">&lt;Tab&gt;</span> out, then notice a typing mistake in the previous field.</p>
+
+<p><span class="CKey">&lt;Ctrl+Tab&gt;</span> moves from one section to another in windows that have sections.</p>
+
+<p><span class="CInset">Mandatory Fields:</span> Many records have fields that must be filled in before the record can be saved. These <span class="NewTerm">mandatory fields</span> are indicated with a red arrow. In the preceding picture, "<span class="CField">Code</span>" is a mandatory field, marked with the red arrow.</p>
+
+<p>Once you enter a value for the field, the arrow disappears. When all the red arrows are gone, the record can be saved. If you try to save the record before filling in all the mandatory fields, MainBoss gives you an error message.</p>
+
+<p class="box"><span class="CInset">Blank Fields:</span> You must fill in the mandatory fields. Other fields may be left blank if you wish. In fact, leaving a field blank is often the best choice&#8212;it's better to leave a field blank than to fill it with inappropriate or unnecessary data. As an example, every work request has a "<span class="CField">Priority</span>" field that lets you indicate how urgent the work is. However, we suggest that you leave this field blank unless there's good reason to give the request some special priority. Don't feel as if you need to fill in every field.</p>
+
+<p><span class="CInset">Types of Fields:</span> There are several types of information fields. The following explains the most common types of fields, using the Unit editor window as an example.</p>
+
+<p class="wi">Text fields: Text fields are simplest type of field. In the window above, "<span class="CField">Make</span>", "<span class="CField">Model</span>" and "<span class="CField">Serial</span>" are all text fields. To fill these in, just click on the field, then type appropriate values (in this case, the make, model, and serial number of a piece of equipment).
+
+<br /><br />Text fields let you use the usual Windows editing features. For example, you can make corrections using <span class="CKey">&lt;Backspace&gt;</span> or the <span class="CKey">&lt;Delete&gt;</span> key. You can copy the current selection with <span class="CKey">&lt;Ctrl+C&gt;</span>, cut the current selection with <span class="CKey">&lt;Ctrl+X&gt;</span>, and paste in the contents of the clipboard using <span class="CKey">&lt;Ctrl+V&gt;</span>. You can also use other standard editing features; for more information, see the documentation on your Windows system.</p>
+<p class="wi">Comments: Most records have one or more "<span class="CField">Comments</span>" fields. This is a catch-all field where you can enter any type of information not covered by other fields.</p>
+<p class="wi">Read-only fields: A read-only field shows information but the information cannot be changed. For example, suppose you're creating a work request. When you specify the requestor (the person who submitted the request), MainBoss automatically obtains the requestor's phone number and email address from the <span class="CPanel">Contacts</span> table (MainBoss's table of contact information). The phone number and email address are displayed in case you want to contact the requestor, but they're for information only&#8212;the request editor won't let you change them.
+
+<br /><br />Read-only fields are easy to distinguish from fields whose contents can be changed. If a field can be changed, its borders are thin black lines. If a field is read-only, it has no borders. In the example below, <span class="CField">Requestor</span> can be changed, while <span class="CField">Phone</span> is read-only.</p>
+<p><img src="image019.png" alt="MainBoss" /></p>
+
+<p class="wi">Date/time fields: A date/time field lets you record a calendar date and/or time of day. For example, when you write up a work order, you can record information like the date you want the job to start, the date you expect it to end, the date you created the work order, and so on.
+
+<br /><br />MainBoss can recognize many date formats, including keywords like <span class="CU">today</span> and <span class="CU">tomorrow</span>.
+
+<br /><br />Many date/time fields end in a drop-down arrow. Clicking this arrow opens a calendar where you can select the date. This calendar also has a space where you can enter a time on the chosen date.</p>
+<p class="box">When MainBoss displays date and time values, it uses the format specified by your Windows "Region and Language" settings. You set these using the Windows control panel.</p>
+
+<p class="wi">Drop-down fields: Drop-down fields end in three buttons:
+
+<br /><br /> <img src="image020.png" alt="MainBoss" />
+
+<br /><br />The left-most button (the first arrow) drops down a list of values. This means that MainBoss displays all existing values that can be entered into the field. For example, using this arrow for a "<span class="CField">Location</span>" field displays your currently defined locations. You fill in the field by selecting a location from the display.
+
+<br /><br />Alternatively, you can click the middle button (with "..." on it). This opens up a table viewer showing all existing values that can be entered into the field. For example, with a "<span class="CField">Location</span>" field, "..." opens a "<span class="CField">Location</span>" table viewer. Click the appropriate entry in the table list, then click the <span class="CButton">Select</span> button. MainBoss will use the chosen record as the value of the original drop-down field. For more about table viewers, see <a href="UsingTableViewers.htm">Using Table Viewers</a>.
+
+<br /><br />Alternatively, the right-most button (the second arrow) displays a list of possible actions that you can use to fill in the value of the drop-down field. Typically, the action list includes viewing a list of existing values (which means opening an appropriate table viewer) or creating a new value of an appropriate type. For example, you might see:
+
+<br /><br /> <img src="image021.png" alt="MainBoss" />
+
+<br /><br />The first action opens the "<span class="CField">Locations</span>" table viewer. The other actions let you create new location records of various kinds. If you click one of the options for creating a new record, MainBoss opens a window where you can create that record. Once you save and close this window, the new location you've create will be used as the value of the original drop-down field.</p>
+<p class="wi">Duration fields: A duration field specifies a length of time. For example, you can use the "<span class="CField">Downtime</span>" field in a work order to record how long a piece of equipment was out of operation due to the need for repair.
+
+<br /><br />Durations are specified in accordance with Microsoft conventions. You use the format <span class="CU">dd.hh:mm</span> for a given number of days, hours, and minutes. For example, <span class="CU">2.10:30</span> stands for 2 days, 10 hours, and 30 minutes. If a duration is less than a day, you can omit the "<span class="CU">dd.</span>". For example, <span class="CU">3:10</span> stands for 3 hours, 10 minutes.</p>
+
+<p class="wi">Multi-select drop-down fields: A multi-select drop-down field is similar to a regular drop-down field, but it lets you select more than one value. For example, the window that lets you assign security roles to users lets you specify multiple roles for the user, rather than having to assign one role at a time. A multi-select drop-down field looks like this:
+
+<br /><br /><img src="image022.png" alt="MainBoss" />
+
+<br /><br />The three buttons work in the same way as in a regular drop-down field. However, when MainBoss offers you a window to choose field values, you can choose multiple values instead of just one. You can specify the values using normal Windows techniques, e.g. dragging the cursor across the values you want, or holding down the <span class="CKey">&lt;Ctrl&gt;</span> key and then clicking each value separately. Right-clicking in the list of values offers a menu of actions that can help you choose the selections you want.</p>
+
+<p class="wi">Option buttons: There are two types of option buttons. The following shows round options, also known as radio options:
+
+<br /><br /><img src="image023.png" alt="MainBoss" />
+
+<br /><br /><span class="NewTerm">Round</span> option buttons are always arranged in groups. They are used for options that are mutually exclusive&#8212;if you select one of the options in the group, it automatically turns off all the other options in the group.
+
+<br /><br />The next picture shows <span class="Emphasis">square</span> option buttons, also known as checkboxes:
+
+<br /><br /> <img src="image024.png" alt="MainBoss" />
+
+<br /><br /><span class="NewTerm">Square</span> option buttons may or may not be arranged in groups. They are used for options that are independent of other options in the window. Checkmarking one of these options does not affect any other options.</p>
+<p class="wi">Editor buttons: Editor windows may have many different types of buttons, but almost every editor has the following:</p>
+<p class="wi2"><span class="CButton">Save</span>: Saves the current record. The editor window stays open so you can make more changes to the same record.</p>
+<p class="wi2"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi2"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi2"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi2"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+
+<p><span class="CInset">List Sections:</span> Many editor windows have sections that contain lists. For example, the window for editing unit record has a section that lists spare parts which are used by the unit.</p>
+
+<p>These lists may have buttons of their own. For example, you might see a <span class="CButton">New</span> button for adding a new entry to the list or <span class="CButton"><img src="Delete.png" alt="Delete" /></span> for deleting an entry that's already there. In fact, these lists are like small-scale table viewers: they show records taken from a table and have buttons that let you create, delete, or modify entries in the list.</p>
+
+<p>When an editor window contains this kind of list, the window will have the word <span class="CU">Active</span> or <span class="CU">All</span> in the lower right hand corner. For more on the meaning of <span class="CU">Active</span> and <span class="CU">All</span>, see <a href="ActiveandAllinTableViewers.htm">Active and All in Table Viewers</a>.</p>
+
+<p><span class="CInset">Fields that can't be changed:</span> Some fields can only be edited at certain times. For example, some fields on a purchase order can't be changed once the purchase order is issued&#8212;issuing the purchase order implies that the purchase order is ready to be sent to the supplier, at which point, some information is considered "unchangeable". (Actually, some of this information <span class="Emphasis">can</span> be changed, but you have to withdraw the purchase order before you're allowed to make the change.)
+
+<br /><br />MainBoss also prevents you from changing information that has already generated accounting records&#8212;for the sake of security, accounting records can't be changed or deleted. For example, when you record the use of materials in connection with a work order, MainBoss generates accounting records indicating the cost of those materials. You can't directly edit this information once the accounting records have been written; if necessary, you must create a <span class="NewTerm">correction</span>, which will generate a <span class="Emphasis">new</span> accounting record to correct any mistakes in an old one.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="ConcurrencyError.htm">Concurrency Errors</a></li>
+</ul>
+<p><a href="SelectingMultipleTableEntries.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="ConcurrencyError.htm">Next section &gt;</a></p>
+</body>
+</html>
+

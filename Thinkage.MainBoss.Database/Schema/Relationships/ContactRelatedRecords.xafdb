@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ContactRelatedRecords" defaults="false" log="false" id="Id" labelkey="Contact Related Records">
+	<field name="Id" read="requiredGUID"/>
+	<field name="ParentID" type="GUIDREF" link="ContactRelatedRecords" labelkey="Contact Related Records"/>
+	<field name="ThisContactID" type="GUIDREF" link="Contact"/>
+	<field name="RelationshipID" type="RequiredGUIDREF" link="Relationship"/>
+	<field name="UnitRelatedContactID" type="GUIDREF" link="UnitRelatedContact"/>
+	<extension name="query">
+				<!-- Get all the reverse relationship role records whose AType is a Unit and BType is a Contact-->
+				select R.ID, null, null, R.ID, null
+					from Relationship as R
+					where R.AType = 0 and R.BType = 1
+			union
+				<!-- Get all the reverse relationships of UnitContact -->
+				select URC.ID, URC.RelationshipID, URC.ContactID, null, URC.ID
+					from UnitRelatedContact as URC
+		</extension>
+	<extension name="dependson">UnitRelatedContact</extension>
+	<extension name="dependson">Relationship</extension>
+  </table>
+  <table name="UnitRelatedContact"/>
+  <table name="Relationship"/>
+  <table name="Contact"/>
+  <table name="Location"/>
+
+  <table name="ContactRelatedRecordsContainment" defaults="false" log="false" id="Id" labelkey="Contact Related Records">
+	<doc></doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="FilterID" link="ContactRelatedRecords" type="RequiredGUIDREF">
+	  <doc></doc>
+	</field>
+	<field name="DisplayID" link="ContactRelatedRecords" type="RequiredGUIDREF">
+	  <doc></doc>
+	</field>
+	<!-- The remaining fields are required by the limitations of CompositeTbl or Tree-Structured Tbls -->
+	<field name="IsPrimary" type="RequiredBool">
+	  <!-- ListControl needs this field directly and the Tbl.IAttr that specifies this only lets you name a DBI_Column not a DBI_Path -->
+	  <doc></doc>
+	</field>
+	<extension name="query">
+	  select UR.ParentID, UR.ID, UR.ParentID, 0
+	  from ContactRelatedRecords as UR
+	  where UR.ParentID is not null
+	  
+	  union
+	  
+	  select UR.ID, UR.ID, UR.ID, 1
+	  from ContactRelatedRecords as UR
+	</extension>
+	<extension name="dependson">ContactRelatedRecords</extension>
+  </table>
+</database>

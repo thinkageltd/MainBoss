@@ -1,0 +1,31 @@
+﻿@using Thinkage.Web.Mvc.Html;
+@using Thinkage.MainBoss.WebAccess;
+@{
+	Layout = "~/Views/Shared/_LayoutSite.cshtml";
+}
+@section MainContent {
+	<h2>@ViewBag.Title</h2>
+	<div id="browsePanel">
+		<table class="tablesorter">
+			@RenderSection("BrowseContent")
+		</table>
+	</div>
+	<br />
+	@(Html.ActionButton(T.Text("Refresh"), (string)@ViewData["Refresh"]))@Html.NBSP()@Html.NBSP()@(Html.ActionLink(T.Text("Back to Assignment Status"), "Index", "Assignment"))
+}
+@section scripts {
+	@Scripts.Render("~/bundles/tablesorter")
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$(".tablesorter").tablesorter({
+				headers: {
+					0: { // disable first column (contains operations on browseHeaders)
+						sorter: false
+					}
+				},
+				sortList: [[1, 0]] // second column sorted ascending
+			});
+		});
+		@RenderSection("scripts", required: false)
+	</script>
+}

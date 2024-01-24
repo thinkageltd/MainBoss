@@ -1,0 +1,3037 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <table name="ContactRelatedRecordsContainment" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ContactRelatedRecords" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="UnitRelatedRecordsContainment" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="UnitRelatedRecords" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="DemandTemplateWorkOrderExpenseModelEntry" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ResolvedWorkOrderTemplate" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ServiceConfiguration" defaults="true" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<field name="ServiceName" type="string(minlength 1, 128, lines 0, trim both)"/>
+	<field name="ServiceVersion" type="string(minlength 1, 128, lines 0, trim both)"/>
+	<field name="ANRequestIntroduction" type="string(minlength 1, 1073741823, trim both)" />
+	<field name="ANRequestSubjectPrefix" type="string(minlength 1, 1073741823, lines 0, trim leading)" />
+	<field name="ANWorkOrderIntroduction" type="string(minlength 1, 1073741823, trim both)" />
+	<field name="ANWorkOrderSubjectPrefix" type="string(minlength 1, 1073741823, lines 0, trim leading)" />
+	<field name="ANPurchaseOrderIntroduction" type="string(minlength 1, 1073741823, trim both)" />
+	<field name="ANPurchaseOrderSubjectPrefix" type="string(minlength 1, 1073741823, lines 0, trim leading)" />
+	<field name="RequestorNotificationIntroduction" type="string(minlength 1, 1073741823, trim both)" />
+	<field name="RequestorNotificationSubjectPrefix" type="string(minlength 1, 1073741823, lines 0, trim leading)" />
+  </table>
+  <table name="Session" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)"/>
+	<field name="Expiry" type="datetime(nonnull, min 1/1/1753, max 12/31/9999, divided 100)"/>
+	<field name="SessionID" type="id(nonnull)" />
+  </table>
+  <table name="AssignmentNotification" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PurchaseOrderAssignee" defaults="true" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<field name="PurchaseOrderAssigneeStatisticsID" link="PurchaseOrderAssigneeStatistics" read="Id">
+	  <result hosting="server">
+				(select ID from PurchaseOrderAssigneeStatistics)
+		  </result>
+	</field>
+  </table>
+  <table name="PurchaseOrderAssigneeStatistics" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PurchaseOrderAssigneeReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderAssignee" defaults="true" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<field name="WorkOrderAssigneeStatisticsID" link="WorkOrderAssigneeStatistics" read="Id">
+	  <result hosting="server">
+				(select ID from WorkOrderAssigneeStatistics)
+		  </result>
+	</field>
+  </table>
+  <table name="UserRole" defaults="true" log="false" id="Id" xid="UserID RoleID" xunique="true">
+	<field name="Id" read="id(nonnull)" />
+	<field name="RoleID" link="Role" type="link(nonnull)"/>
+	<field name="UserID" link="User" type="link(nonnull)"/>
+  </table>
+  <table name="WorkOrderAssignment" defaults="true" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<field name="LastNotificationDate" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
+  </table>
+  <table name="WorkOrderAssignmentAll" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<field name="WorkOrderAssignmentID" type="id(null)"/>
+	<field name="WorkOrderAssigneeID" type="id(null)"/>
+	<field name="WorkOrderID" type="id(null)"/>
+	<extension name="query">
+		select newid(), newid(), newid(), newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderAssignmentReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PurchaseOrderAssignmentByAssignee" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderAssignmentByAssignee" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="RequestAssignmentByAssignee" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="RationalizedInventoryActivityDeltas" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderAssigneeStatistics" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<field name="WorkOrderAssigneeID" link="WorkOrderAssignee" type="link(nonnull)"/>
+	<field name="NumNew" type="integer(32)" />
+	<field name="NumInProgress" type="integer(32)" />
+	<extension name="query">
+		select newid(), newid(), 0, 0 where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderAssigneeReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="AttentionStatus" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="UnexpiredSession" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="CompanyInformation" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="AccountingTransactionDerivations" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ActualItemAndCorrections" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ActiveClient" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+			select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="CustomMessage" defaults="true" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+  </table>
+  <table name="SpecificationForm" defaults="true" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<field name="SpecificationCount" read="integer(32)"/>
+  </table>
+  <table name="ZTestTable" defaults="true" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+  </table>
+  <table name="OverdueWorkOrder" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="RelativeLocationDerivations" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="LocationDerivations" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="MiscellaneousWorkOrderCostReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+			select newid() where 1 = 2
+		</extension>
+  </table>
+	<variable name="ManageServerSecurity" type="bool(nonnull)" />
+  <variable name="MBSAssignmentNotificationIntroduction" type="string(minlength 1, 1073741823, trim both)" />
+  <variable name="MBSAssignmentNotificationSubjectPrefix" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="AnonymousUserID" type="link(User)"/>
+  <variable name="ATRAdminEmailAddress" type="string(minlength 1, 128, lines 0, trim both)"/>
+  <variable name="ATRAcknowledgmentTitle" type="string(minlength 1, 1073741823, lines 0, trim both)"/>
+  <variable name="ATRAcknowledgmentFirstLine" type="string(minlength 1, 128, lines 0, trim both)"/>
+  <variable name="ATRAcknowledgmentSubjectPrefix" type="string(minlength 1, 128, lines 0, trim both)" />
+  <variable name="MBSNotificationIntroduction" type="string(minlength 1, 1073741823, trim both)"/>
+  <variable name="MBSNotificationSubjectPrefix" type="string(minlength 1, 1073741823, lines 0, trim both)"/>
+
+  <variable name="MinSDAppVersion" type="integer(32)"/>
+  <variable name="MinNotificationAppVersion" type="integer(32)"/>
+  <variable name="MinLicKeyMgrAppVersion" type="integer(32)"/>
+  <variable name="DatabaseRegistrationNumber" type="integer(32)" />
+  <variable name="ATRWRSequenceFormat" type="string(minlength 1, 20, lines 0, trim both, nonnull)" />
+  <variable name="ATRAcknowledgeWorkOrderCreation" type="bool(nonnull)" />
+  <variable name="ATRAcknowledgeWorkOrderRescheduled" type="bool(nonnull)" />
+  <variable name="ATRAcknowledgeWorkOrderClosed" type="bool(nonnull)" />
+  <variable name="ATRWorkOrderScheduleMessage" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="ATRWorkOrderCreationMessage" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="ATRWorkOrderRescheduledMessage" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="ATRWorkOrderClosedMessage" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="ATRMailUseIMAP4" type="bool(nonnull)" />
+  <variable name="ATRMailAttemptTLS" type="bool(nonnull)" />
+
+  <variable name="MBSMainBossRemoteURL" type="string(minlength 1, 1073741823, lines 0, trim both)"/>
+  <variable name="MBSANRequestIntroduction" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="MBSANRequestSubjectPrefix" type="string(minlength 1, 1073741823, lines 0, trim leading)" />
+  <variable name="MBSANWorkOrderIntroduction" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="MBSANWorkOrderSubjectPrefix" type="string(minlength 1, 1073741823, lines 0, trim leading)" />
+  <variable name="MBSANPurchaseOrderIntroduction" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="MBSANPurchaseOrderSubjectPrefix" type="string(minlength 1, 1073741823, lines 0, trim leading)" />
+  <variable name="MBSHtmlEmailNotification" type="bool(nonnull)"/>
+  <variable name="MBSNotificationInterval" type="interval(min 00:01:00, max 1.00:00:00, by 0.00:01:00, nonnull)" />
+  <variable name="MBSReturnEmailDisplayName" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="MBSReturnEmailAddress" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="MBSRequestorNotificationIntroduction" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="MBSRequestorNotificationSubjectPrefix" type="string(minlength 1, 1073741823, lines 0, trim leading)" />
+  <variable name="ATRAutomaticallyCreateRequestors" type="bool(nonnull)"/>
+  <variable name="ATRWakeUpInterval" type="interval(min 00:01:00, max 1.00:00:00, by 0.00:01:00, nonnull)" />
+  <variable name="ATRMailServerType" type="integer(min 0, max 5, nonnull)"/>
+  <variable name="ATRMailServer" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="ATRMailPort" type="integer(32, nonnull)" />
+  <variable name="ATRMailUserName" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="ATRMailboxName" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="ATRMailEncryptedPassword" type="blob(minlength 8, maxlength 32, null)" />
+  <variable name="ATRSMTPServer" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="ATRSMTPPort" type="integer(32, nonnull)" />
+  <variable name="ATRSMTPUseSSL" type="bool(nonnull)"/>
+  <variable name="ATRSMTPCredentialType" type="integer(min 0, max 2, nonnull)"/>
+  <variable name="ATRSMTPUserDomain" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="ATRSMTPUserName" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="ATRSMTPEncryptedPassword" type="blob(minlength 8, maxlength 32, null)" />
+  <variable name="ATRServiceMachineName" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="ATRServiceName" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="ATRServiceVersion" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+  <variable name="CommentToRequestorWhenNewRequestedWorkOrder" type="string(minlength 1, 1073741823, lines 0, trim both)"/>
+  <variable name="CommentToRequestorWhenWorkOrderCloses" type="string(minlength 1, 1073741823, lines 0, trim both)"/>
+
+  <table name="WorkOrderItems2" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplateStorage" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplateStorageTreeView" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemporaryStorage" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemporaryStorageTreeView" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderItems2TreeView" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderInside2" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderInside2TreeView" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="LocationDerivationsAndItemLocations" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="LocationAndContainers" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="LocationReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+			select newid() where 1 = 2
+		</extension>
+  </table>
+  <table name="PermanentStorageReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+			select newid() where 1 = 2
+		</extension>
+  </table>
+  <table name="TemporaryStorageReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+			select newid() where 1 = 2
+		</extension>
+  </table>
+  <table name="TemporaryStorageTemplateReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+			select newid() where 1 = 2
+		</extension>
+  </table>
+  <table name="ItemLocationReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="RoleAndUserReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="UserReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="RoleReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PermanentItemLocationReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+			select newid() where 1 = 2
+		</extension>
+  </table>
+  <table name="TemporaryItemLocationReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+			select newid() where 1 = 2
+		</extension>
+  </table>
+  <table name="TemplateItemLocationReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+			select newid() where 1 = 2
+		</extension>
+  </table>
+
+  <table name="ItemLocationContainment" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ProperLocationContainment" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="LocationContainment" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<field name="ContainedLocationID" type="link(nonnull)" link="Location"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ItemLocationAndContainers" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="EmailRequestReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+			select newid() where 1 = 2
+		</extension>
+  </table>
+  <table name="EmailRequestorReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="RequestorReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="BillableRequestorReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ContactReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="EmployeeReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="VendorReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+			select newid() where 1 = 2
+		</extension>
+  </table>
+  <table name="WorkOrderTemplateContainment" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplateWithContainers" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderItems" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderMiscellaneous" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplateItems" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplateInside" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplateMiscellaneous" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplateOutside" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplatePurchaseOrderTemplateLinkage" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplatePurchaseOrderTemplateView" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplateLinkedPurchaseOrderTemplatesTreeView" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PurchaseOrderTemplateLinkedWorkOrderTemplatesTreeView" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="Miscellaneous" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<field name="PurchaseOrderText" write="string(minlength 1, 150, lines 0, trim both)"/>
+  </table>
+  <table name="PurchaseReceiveLinkage" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+  </table>
+  <table name="ItemPrice" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<field name="PurchaseOrderText" write="string(minlength 1, 150, lines 0, trim both)"/>
+  </table>
+  <table name="POLine" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<field name="POText" write="string(minlength 1, 160, lines 0, trim both)"/>
+	<field name="Rank" write="integer(32)"/>
+	<field name="EntryDate" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
+  </table>
+  <table name="POLineItem" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<field name="CatalogNumber" write="string(minlength 1, 150, lines 0, trim both)"/>
+  </table>
+  <table name="POLineItemTemplate" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<field name="CatalogNumber" write="string(minlength 1, 150, lines 0, trim both)"/>
+  </table>
+  <table name="POLineTemplate" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<field name="POText" write="string(minlength 1, 160, lines 0, trim both)"/>
+	<field name="PurchaseOrderText" write="string(minlength 1, 160, lines 0, trim both)"/>
+	<field name="Rank" write="integer(32)"/>
+	<field name="Cost" write="currency(min -922337203685477.5808, max 922337203685477.5807, by 0.01)" />
+  </table>
+  <table name="DemandReceiveActualLinkage" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+  </table>
+  <table name="Location" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<field name="TemporaryStorageID" write="link(null)" link="TemporaryStorage"/>
+	<field name="RelativeLocationID" write="link(null)" link="RelativeLocation"/>
+	<field name="Code" write="string(minlength 1, 50, lines 0, trim both)"/>
+  </table>
+  <table name="OtherWorkInside" defaults="true" log="false" id="Id" xid="Code" xunique="true">
+	<field name="Id" read="id(nonnull)"/>
+	<field name="Code" type="string(minlength 1, 50, lines 0, trim both,nonnull)"/>
+  </table>
+  <table name="Vendor" defaults="true" log="false">
+	<field name="Id" read="id(nonnull)"/>
+  </table>
+  <table name="Receipt" defaults="true" log="false" xid="Waybill" xunique="true">
+	<field name="Id" read="id(nonnull)"/>
+	<field name="Waybill" write="string(minlength 1, 50, lines 0, trim both)"/>
+	<field name="VendorID" write="link(null)" link="Vendor"/>
+	<field name="EffectiveDate" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
+	<field name="Hidden" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
+  </table>
+  <table name="Meter" defaults="true" log="false">
+	<field name="Id" read="id(nonnull)"/>
+  </table>
+  <table name="MeterReading" defaults="true" log="false" xid="MeterID EffectiveDate" xunique="true">
+	<field name="Id" read="id(nonnull)"/>
+	<field name="MeterID" write="link(null)" link="Meter"/>
+	<field name="EffectiveDate" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
+  </table>
+  <table name="WorkOrderTemplate" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<field name="FullCode" write="string(minlength 1, 50, lines 0, trim both)"/>
+	<field name="MaxGenerateLeadTime" write="interval(min 00:00:00, max 36500.00:00:00, by 1.00:00:00, nonnull)"/>
+	<field name="TotalDuration" write="interval(min 00:00:00, max 36500.00:00:00, by 1.00:00:00, nonnull)"/>
+  </table>
+  <table name="RelativeLocation" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<field name="PermanentStorageID" write="link(null)" link="PermanentStorage"/>
+	<field name="ExternalTag" type="string(minlength 1, 50, lines 0, trim both)" unique="true" where="ExternalTag IS NOT NULL AND Hidden IS NULL"/>
+	<field name="Hidden" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
+  </table>
+  <table name="TemporaryStorageTemplate" defaults="true" log="false">
+	<field name="LocationID" type="link(nonnull)" base="Location"/>
+  </table>
+  <table name="PermanentStorage" defaults="true" log="false"/>
+  <table name="TemporaryStorage" defaults="true" log="false"/>
+  <table name="EmailRequestor" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+  </table>
+  <table name="CostCenter" defaults="true" log="false">
+	<field name="Id" read="id(nonnull)" />
+  </table>
+  <table name="__Audit" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+  </table>
+  <table name="BillableRequestor" defaults="true" log="false" xid="ContactID" xunique="true">
+	<field name="Id" read="id(nonnull)" />
+	<field name="ContactID" type="link(nonnull)" link="Contact"/>
+  </table>
+  <table name="Requestor" defaults="true" log="false" xid="ContactID" xunique="true">
+	<field name="Id" read="id(nonnull)" />
+	<field name="ContactID" type="link(nonnull)" link="Contact"/>
+  </table>
+  <table name="Contact" defaults="true" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<field name="CultureInfo" type="string(minlength 1, 4, lines 0, trim both)" />
+	<field name="LDAPPath" type="string(minlength 1, 1073741823, trim both)"/>
+	<field name="UserID" type="link(null)" link="User"/>
+  </table>
+  <table name="Request" defaults="true" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<field name="EmailRequestID" read="Id" link="EmailRequest">
+	  <result hosting="server">
+		(select id from EmailRequest)
+	  </result>
+	</field>
+	<field name="CountOfLinkedWorkOrders" read="integer(unsigned 31, nonnull)">
+	  <result hosting="server">
+		0
+	  </result>
+	</field>
+  </table>
+  <table name="RequestAcknowledgementStatus" defaults="true" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<field name="LastAcknowledgementDate" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
+	<field name="LastAcknowledgementError" type="string(minlength 1, 1073741823, trim both)"/>
+  </table>
+  <table name="LaborInside" defaults="true" log="false">
+	<field name="Id" read="id(nonnull)" />
+  </table>
+  <table name="LaborOutside" defaults="true" log="false">
+	<field name="Id" read="id(nonnull)" />
+  </table>
+  <table name="DemandLaborInside" defaults="true" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<field name="LaborID" write="link(nonnull)" link="LaborInside"/>
+  </table>
+  <table name="DemandLaborOutside" defaults="true" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<field name="LaborID" write="link(nonnull)" link="LaborOutside"/>
+  </table>
+  <table name="DemandLaborInsideTemplate" defaults="true" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<field name="LaborID" write="link(nonnull)" link="LaborInside"/>
+  </table>
+  <table name="DemandLaborOutsideTemplate" defaults="true" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<field name="LaborID" write="link(nonnull)" link="LaborOutside"/>
+  </table>
+  <table name="DemandTemplate" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<field name="CostEstimate" read="currency(min -922337203685477.5808, max 922337203685477.5807, by 0.01)" />
+  </table>
+  <table name="Item" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<field name="OnHand" read="integer(32)"/>
+	<field name="OnOrder" read="integer(32)"/>
+	<field name="OnReserve" read="integer(32)" />
+	<field name="Available" read="integer(32)"/>
+	<field name="UnitCost" read="currency(min -922337203685477.5808, max 922337203685477.5807, by 0.0001)" />
+	<field name="TotalCost" read="currency(min -922337203685477.5808, max 922337203685477.5807, by 0.01)" />
+  </table>
+  <table name="ItemLocation" defaults="true" log="false" xid="ItemID" xunique="true">
+	<field name="Id" read="id(nonnull)" />
+	<field name="ItemID" type="link(nonnull)" link="Item"/>
+	<field name="CostCenterID" type="link(nonnull)" link="CostCenter" lname="CostCenterItemLocation"/>
+	<field name="EffectiveMinimum" read="integer(32)"/>
+	<field name="EffectiveMaximum" read="integer(32)"/>
+	<field name="OnHand" read="integer(32)"/>
+	<field name="OnOrder" read="integer(32)"/>
+	<field name="OnReserve" read="integer(32)" />
+	<field name="Available" read="integer(32)"/>
+	<field name="UnitCost" read="currency(min -922337203685477.5808, max 922337203685477.5807, by 0.0001)" />
+	<field name="TotalCost" read="currency(min -922337203685477.5808, max 922337203685477.5807, by 0.01)" />
+	<field name="ActualItemLocationID" write="link(null)" link="ActualItemLocation"/>
+  </table>
+  <table name="ActualItemLocation" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<field name="EffectiveMinimum" read="integer(32)"/>
+	<field name="EffectiveMaximum" read="integer(32)"/>
+	<field name="OnHand" read="integer(32)"/>
+	<field name="OnOrder" read="integer(32)"/>
+	<field name="OnReserve" read="integer(32)" />
+	<field name="Available" read="integer(32)"/>
+	<field name="UnitCost" read="currency(min -922337203685477.5808, max 922337203685477.5807, by 0.0001)" />
+	<field name="TotalCost" read="currency(min -922337203685477.5808, max 922337203685477.5807, by 0.01)" />
+  </table>
+  <table name="PermanentItemLocation" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<field name="ItemLocationID" type="link(nonnull)" link="ItemLocation"/>
+	<field name="ExternalTag" type="string(minlength 1, 50, lines 0, trim both)" unique="true" where="ExternalTag IS NOT NULL"/>
+  </table>
+  <table name="TemporaryItemLocation" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<field name="ItemLocationID" type="link(nonnull)" link="ItemLocation"/>
+  </table>
+  <table name="Unit" defaults="false" log="false" >
+	<field name="DepreciationRate" type="percent(min 0%, max 100%, by 0.01%)"/>
+	<field name="ContactID" type="link(nonnull)" link="Contact"/>
+  </table>
+  <table name="User" defaults="true" log="false">
+	<field name="Name" type="string(minlength 1, 200, lines 0, trim both)"/>
+	<field name="UserName" type="string(minlength 1, 200, lines 0, trim both)"/>
+	<field name="ScopeName" type="string(minlength 1, 200, lines 0, trim both)"/>
+	<field name="IsGroup"/>
+	<field name="Desc"/>
+	<field name="Comment" type="string(minlength 1, 1073741823, trim both)"/>
+  </table>
+  <table name="Principal" defaults="true" log="false">
+	<field name="Desc"/>
+	<field name="Comment" type="string(minlength 1, 1073741823, trim both)"/>
+  </table>
+  <table name="Permission" defaults="true" log="false">
+	<field name="UserID" type="link(nonnull)" link="User"/>
+	<field name="PermissionPathPattern" type="string(minlength 1, 100, lines 0, trim both, nonnull)"/>
+	<field name="Grant" type="bool(nonnull)"/>
+  </table>
+  <table name="PurchaseOrderTemplate" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<field name="PurchaseOrderExpenseModelID" type="link(nonnull)" link="PurchaseOrderExpenseModel"/>
+  </table>
+  <table name="PurchaseOrderExpenseModel" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+  </table>
+  <table name="PurchaseOrderExpenseModelEntry" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+  </table>
+  <table name="PurchaseOrderExpenseCategory" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+  </table>
+  <table name="Chargeback" defaults="true" log="false" >
+	<field name="Code" unique="true"/>
+	<field name="TotalCost" read="currency(min -922337203685477.5808, max 922337203685477.5807, by 0.01)" />
+  </table>
+  <table name="ChargebackActivity" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ItemIssue" defaults="false" log="false" >
+	<field name="EmployeeID" unique="true"/>
+  </table>
+  <table name="RequestStateTransition" defaults="false" log="false" >
+	<field name="Rank"/>
+	<field name="Operation" type="string(minlength 1, 150, lines 0, trim both)"/>
+	<field name="OperationHint" type="string(minlength 1, 150, lines 0, trim both)"/>
+	<field name="FromState" type="link(nonnull)" link="RequestState"/>
+	<field name="ToState" type="link(nonnull)" link="RequestState"/>
+  </table>
+  <table name="WorkOrderStateTransition" defaults="false" log="false" >
+	<field name="Rank"/>
+	<field name="Operation" type="string(minlength 1, 150, lines 0, trim both)"/>
+	<field name="OperationHint" type="string(minlength 1, 150, lines 0, trim both)"/>
+	<field name="FromState" type="link(nonnull)" link="WorkOrderState"/>
+	<field name="ToState" type="link(nonnull)" link="WorkOrderState"/>
+  </table>
+  <table name="PurchaseOrderStateTransition" defaults="false" log="false" >
+	<field name="Rank"/>
+	<field name="Operation" type="string(minlength 1, 150, lines 0, trim both)"/>
+	<field name="OperationHint" type="string(minlength 1, 150, lines 0, trim both)"/>
+	<field name="FromState" type="link(nonnull)" link="PurchaseOrderState"/>
+	<field name="ToState" type="link(nonnull)" link="PurchaseOrderState"/>
+  </table>
+  <table name="WorkOrderState" defaults="true" log="false" >
+	<field name="CanModifyMainFields" type="bool(nonnull)"/>
+	<field name="CanModifyWorkInterval" type="bool(nonnull)"/>
+	<field name="Archive" type="bool"/>
+	<field name="CanModifyNonDemands" type="bool(nonnull)"/>
+	<field name="Code" unique="true"/>
+	<field name="Desc"/>
+  </table>
+  <table name="PurchaseOrderState" defaults="true" log="false" >
+	<field name="FilterAsOpen" type="bool"/>
+	<field name="Code" unique="true"/>
+	<field name="Desc"/>
+  </table>
+  <table name="RequestState" defaults="true" log="false" >
+	<field name="Code" unique="true"/>
+	<field name="Desc"/>
+	<field name="WorkOrderAllowed" type="bool(nonnull)"/>
+	<field name="UnitRequired" type="bool(nonnull)"/>
+  </table>
+  <table name="ContactWithRequestor" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ContactRoles" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ContactFunctions" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PurchaseOrder" defaults="true" xid="Hidden" log="false" >
+	<field name="Hidden" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
+	<field name="PurchaseOrderExpenseModelID" type="link(nonnull)" link="PurchaseOrderExpenseModel"/>
+  </table>
+  <table name="EmailRequest" defaults="true" log="false" xid="Hidden">
+	<field name="Hidden" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
+	<field name="FromEmailAddress" type="string(minlength 1, 128, lines 0, trim both, nonnull)"/>
+	<field name="RequestID" read="id(null)" link="Request"/>
+  </table>
+	<table name="EmailPart" defaults="false" log="false">
+		<field name="Id" read="id(nonnull)"/>
+		<field name="EmailRequestID" type="link(nonnull)" link="EmailRequest"/>
+		<field name="ContentTypeDispostion" type="string(minlength 1, 128, lines 0, trim both)"/>
+		<extension name="query">
+			select newid() where 1 = 2
+		</extension>
+	</table>
+	<table name="ItemCountValueVoid" defaults="true" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<field name="ItemAdjustmentCodeID" type="link(nonnull)" link="ItemAdjustmentCode"/>
+  </table>
+  <table name="ItemAdjustmentCode" defaults="true" log="false" >
+	<field name="Id" read="id(nonnull)" />
+  </table>
+  <table name="Specification" defaults="true" xid="Code Hidden" log="false" >
+	<field name="Code"/>
+	<field name="Hidden" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
+	<field name="ReportText" type="string(minlength 1, 1073741823, trim both)" />
+  </table>
+  <table name="WorkOrderStatisticsReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ManageRequestTransition" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<field name="CommentToRequestor" type="translationkey(null)"/>
+  </table>
+  <table name="AccountingTransactionsWithWorkOrderID" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="AccountingTransactionsWithDemandID" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="AccountingTransactionReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ChargebackLineCategoryReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+			select newid() where 1 = 2
+		</extension>
+  </table>
+  <table name="WorkOrderStateHistoryReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderStatusStatisticsReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PurchaseOrderStatusStatisticsReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PurchaseOrderStateHistoryReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+   <table name="RequestStatusStatisticsReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<field name="UnitCode" type="string(minlength 1, 50, lines 0, trim both)"  />
+	<field name="UnitLocation" type="string(minlength 1, 50, lines 0, trim both)"/>
+	<field name="WorkOrderID" type="id(nonnull)"/>
+	<field name="WorkOrderFilterAsOpen" type="bool"/>
+	<field name="WorkOrderNumber" type="string(minlength 1, 20, lines 0, trim both, nonnull)"/>
+	<field name="WorkOrderSubject" type="string(minlength 1, 100, lines 0, trim both, nonnull)"/>
+	<field name="WorkOrderWorkCategory" type="string(minlength 1, 50, lines 0, trim both)"/>
+	<field name="WorkOrderAccessCode" type="string(minlength 1, 50, lines 0, trim both)"/>
+	<field name="WorkOrderProject" type="string(minlength 1, 50, lines 0, trim both)"/>
+	<field name="WorkOrderPriority" type="string(minlength 1, 50, lines 0, trim both)"/>
+	<field name="WorkOrderStartDateEstimate" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
+	<extension name="query">
+	  select newid(), null, null, newid(), null, '', '', null, null, null, null, null where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplateReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplateDetailedReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderResourcesTreeview" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderResources" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderItemsTreeview" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderMiscellaneousTreeview" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderInside" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderOutside" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderInsideTreeview" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderOutsideTreeview" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplateItemsTreeview" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplateInsideTreeview" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplateMiscellaneousTreeview" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplateOutsideTreeview" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderResourcesTreeviewX" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderResourcesX" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderTemplateResources" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ReceiptActivity" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ItemActivity" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ItemReceiving" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PeriodicityView" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PurchaseOrderLine" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderPurchaseOrderLinkage" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderPurchaseOrderView" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderLinkedPurchaseOrdersTreeview" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PurchaseOrderLinkedWorkOrdersTreeview" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PurchaseOrderTemplateLine" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PurchaseOrderTemplateReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderOverdueReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderFormReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ChargebackFormReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PurchaseOrderReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PurchaseOrderFormReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PurchaseOrderAssignmentReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+			select newid() where 1 = 2
+		</extension>
+  </table>
+  <table name="UnitSparePartsReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="UnitReplacementScheduleReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="UnitMetersReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="SpecificationFormReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="MiscellaneousReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	 select newid() where 1 = 2
+    </extension>
+  </table>
+  <table name="RequestStateHistoryReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="RequestReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="RequestReportX" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="RequestAssignmentReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ScheduledWorkOrderReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ScheduledWorkOrderDetailedReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="LaborHistoryReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="LaborInsideReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="LaborOutsideReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="OtherWorkInsideReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="OtherWorkOutsideReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ItemHistoryReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="LaborInsideHistoryReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="LaborOutsideHistoryReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ItemReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ItemAdjustmentCodeReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ItemIssueCodeReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ItemActivityReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ActiveItemCountValue" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="VoidCodeReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ItemIssueReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ItemOnOrderReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ItemReceivingReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ItemRestocking" defaults="false" log="false">
+	<!-- Note the future upgrade steps may need a different definition for this table, since the ID type changes in 1.0.8.34 -->
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ItemRestockingReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ItemUsageReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="MeterClassReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ServiceContractReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="UnitReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="RequestAcknowledgement" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ManpowerScheduleReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ExistingAndForecastResources" defaults="false" log="false" >
+	<field name="Id" read="blob(minlength 32, maxlength 32, nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="LaborForecastReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="MaintenanceForecastReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="MaterialForecastReport" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PMInitializingGenerationDetail" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PMGenerationDetailTreeView" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderMeterTreeView" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="MeterAndReadingVariants" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PMGenerationDetailAndContainers" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PMGenerationDetailAndScheduledWorkOrderAndLocation" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PMGenerationDetailAndBatches" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PMGenerationDetailAndPMGenerationBatch" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PMGenerationBatch" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<field name="ManualScheduled" type="bool(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ReceivingReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ScheduleDerivations" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="UserOrGroup" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ScheduleInfo" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PMGenerationDetail" defaults="false" log="false">
+	<field name="PreviousPMGenerationDetailID" type="link(nonnull)" link="PMGenerationDetail"/>
+  </table>
+
+  <table name="ScheduledWorkOrder" defaults="true" log="false">
+	<field name="RescheduleAlgorithm" type="integer(unsigned 16,nonnull)" />
+	<field name="RescheduleBasisAlgorithm" type="integer(unsigned 16,nonnull)"/>
+  </table>
+  <table name="Schedule" defaults="true" log="false">
+	<field name="InhibitSchedule" type="bool(nonnull)"/>
+	<field name="RescheduleAlgorithm" type="integer(unsigned 16,nonnull)"/>
+  </table>
+  <table name="DaySchedule" defaults="true" log="false" >
+  </table>
+  <table name="MonthSchedule" defaults="true" log="false" >
+  </table>
+  <table name="MeterSchedule" defaults="true" log="false" >
+  </table>
+  <table name="Relationship" defaults="true" xid="Hidden" xunique="true">
+	<field name="Hidden" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
+	<field name="ReverseID" type="id(nonnull)" />
+  </table>
+  <table name="RelatedRecord" defaults="true" id="Id">
+	<field name="Id" read="id(nonnull)"/>
+	<field name="RelationshipID" type="link(nonnull)" link="Relationship"/>
+  </table>
+  <table name="UnitRelatedUnit" defaults="true" id="Id">
+	<field name="Id" read="id(nonnull)"/>
+	<field name="RelatedRecordID" read="link(nonnull)" base="RelatedRecord"/>
+  </table>
+  <table name="UnitRelatedContact" defaults="true" id="Id">
+	<field name="Id" read="id(nonnull)"/>
+	<field name="RelatedRecordID" read="link(nonnull)" base="RelatedRecord"/>
+  </table>
+  <object class="function" name="mbfn_PermanentItemLocation_CurrentItemCountValue">
+	<extension name="body">
+		  (
+			  @input uniqueidentifier
+		  )
+		  returns datetime
+		  as begin
+  			return getdate()
+		  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ActualItemLocation_TotalCostOnDate">
+	<extension name="body">
+		  (
+			  @input uniqueidentifier
+		  )
+		  returns datetime
+		  as begin
+  			return getdate()
+		  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ActualItemLocation_OnHandOnDate">
+	<extension name="body">
+		  (
+			  @input uniqueidentifier
+		  )
+		  returns datetime
+		  as begin
+  			return getdate()
+		  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ActualItemLocation_TotalCostAtEternity">
+	<extension name="body">
+		  (
+			  @input uniqueidentifier
+		  )
+		  returns datetime
+		  as begin
+  			return getdate()
+		  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ActualItemLocation_OnHandAtEternity">
+	<extension name="body">
+		  (
+			  @input uniqueidentifier
+		  )
+		  returns datetime
+		  as begin
+  			return getdate()
+		  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ItemLocationTotallingBasisBeforeDate">
+	<extension name="body">
+		  (
+			  @input uniqueidentifier
+		  )
+		  returns datetime
+		  as begin
+  			return getdate()
+		  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ItemLocationTotallingBasisOnOrBeforeDate">
+	<extension name="body">
+		  (
+			  @input uniqueidentifier
+		  )
+		  returns datetime
+		  as begin
+  			return getdate()
+		  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ItemLocationLastTotallingBasis">
+	<extension name="body">
+		  (
+			  @input uniqueidentifier
+		  )
+		  returns datetime
+		  as begin
+  			return getdate()
+		  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ItemLocationStatusOnDate">
+	<extension name="body">
+		  (
+			  @input uniqueidentifier
+		  )
+		  returns datetime
+		  as begin
+  			return getdate()
+		  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ItemLocationStatusBeforeDate">
+	<extension name="body">
+		  (
+			  @input uniqueidentifier
+		  )
+		  returns datetime
+		  as begin
+  			return getdate()
+		  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ItemLocationStatusAtEternity">
+	<extension name="body">
+		  (
+			  @input uniqueidentifier
+		  )
+		  returns datetime
+		  as begin
+  			return getdate()
+		  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_WorkOrderTemplate_TotalDuration">
+	<extension name="body">
+		  (
+			  @input uniqueidentifier
+		  )
+		  returns datetime
+		  as begin
+  			return getdate()
+		  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_WorkOrderTemplate_MaxGenerateLeadTime">
+	<extension name="body">
+		  (
+			  @input uniqueidentifier
+		  )
+		  returns datetime
+		  as begin
+  			return getdate()
+		  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_DateFromDateTime">
+	<extension name="body">
+		  (
+			  @input datetime
+		  )
+		  returns datetime
+		  as begin
+  			return getdate()
+		  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_Request_Assignee_List">
+    <extension name="body">
+      (
+      @ID		uniqueidentifier -- PurchaseOrderID
+      )
+      RETURNS VARCHAR(MAX)
+      as
+      begin
+      return null
+      end
+    </extension>
+  </object>
+  <object class="function" name="mbfn_PurchaseOrder_Assignee_List">
+	<extension name="body">
+	  (
+		  @ID		uniqueidentifier -- PurchaseOrderID
+	  )
+	  RETURNS VARCHAR(MAX)
+	  as
+	  begin
+		  return null
+	  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_PurchaseOrder_CreationDate">
+	<extension name="body">
+	  (
+		  @ID		uniqueidentifier -- PurchaseOrderID
+	  )
+	  RETURNS DateTime
+	  as
+	  begin
+		  return null
+	  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_PurchaseOrder_History_As_String">
+	<extension name="body">
+			(
+			@ID		uniqueidentifier -- PurchaseOrderID
+			)
+			RETURNS VARCHAR(MAX)
+			as
+			begin
+			return null
+			end
+		</extension>
+  </object>
+  <object class="function" name="mbfn_Permissions_As_String">
+    <extension name="body">
+      (
+      @ID		uniqueidentifier -- PurchaseOrderID
+      )
+      RETURNS VARCHAR(MAX)
+      as
+      begin
+      return null
+      end
+    </extension>
+  </object>
+  <object class="function" name="mbfn_ItemActivity_OnHand">
+	<extension name="body">
+	  (
+		  @edate		datetime,			-- ItemActivity EffectiveDate
+		  @SID		uniqueidentifier	-- ItemLocation ID
+	  )
+	  RETURNS integer
+	  as
+
+	  begin
+		  return 0
+	  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_Request_CountOfLinkedWorkOrders">
+	<extension name="body">
+	  (
+		  @RID		uniqueidentifier	-- Request ID
+	  )
+	  RETURNS integer
+	  as
+
+	  begin
+		  return 0
+	  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_Item_OnHand_ToDate">
+	<doc>
+	</doc>
+	<extension name="body">
+	  (
+		  @IID		uniqueidentifier,	-- Item ID
+		  @maxedate	datetime			-- Max EffectiveDate to consider
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		  return 0
+	  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_SpecificationForm_SpecificationCount">
+	<extension name="body">
+	(
+		@IID		uniqueidentifier	-- specificationform id
+	)
+	RETURNS int
+	as
+	begin
+	  return 0
+	end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_Specification_Summary">
+	<extension name="body">
+			(
+			@IID		uniqueidentifier
+			)
+			RETURNS nvarchar(max)
+			as
+			begin
+			return null
+			end
+		</extension>
+  </object>
+  <object class="function" name="mbfn_Attachment_Summary">
+	<extension name="body">
+			(
+			@IID		uniqueidentifier
+			)
+			RETURNS nvarchar(max)
+			as
+			begin
+			return null
+			end
+		</extension>
+  </object>
+  <object class="function" name="mbfn_Relationship_Summary">
+	<extension name="body">
+			(
+			@IID		uniqueidentifier
+			)
+			RETURNS nvarchar(max)
+			as
+			begin
+			return null
+			end
+		</extension>
+  </object>
+  <object class="function" name="mbfn_ContactRelationship_Summary">
+	<extension name="body">
+			(
+			@IID		uniqueidentifier
+			)
+			RETURNS nvarchar(max)
+			as
+			begin
+			return null
+			end
+		</extension>
+  </object>
+  <object class="function" name="mbfn_Ordered_Location_Code">
+	<extension name="body">
+	(
+		@IID		uniqueidentifier
+	)
+	RETURNS nvarchar(max)
+	as
+	begin
+	  return null
+	end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_Location_Code">
+	<extension name="body">
+	(
+		@IID		uniqueidentifier
+	)
+	RETURNS nvarchar(max)
+	as
+	begin
+	  return null
+	end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_WorkOrderTemplate_Code">
+	<extension name="body">
+	(
+		@IID		uniqueidentifier
+	)
+	RETURNS nvarchar(max)
+	as
+	begin
+	  return null
+	end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ItemLocation_Code">
+	<extension name="body">
+	(
+		@IID		uniqueidentifier
+	)
+	RETURNS nvarchar(max)
+	as
+	begin
+	  return null
+	end
+	</extension>
+  </object>
+
+  <object class="function" name="mbfn_ScheduledWorkOrder_CurrentPMGenerationDetail">
+	<extension name="body">
+			(@ScheduledWorkOrderID UNIQUEIDENTIFIER)
+			returns UNIQUEIDENTIFIER
+			as
+			begin
+				return null
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ActualItemLocation_OnOrder">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ActualItemLocation_Available">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ActualItemLocation_UnitCost">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns money
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ActualItemLocation_OnHand">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER, @maxedate datetime)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ReceiveItemPO_CorrectedQuantity">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ActualItem_CorrectedQuantity">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ReceiveItemPO_CorrectedCost">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_DemandItem_ActualCost">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_DemandLaborInside_ActualCost">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_DemandLaborOutside_ActualCost">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_DemandOtherWorkInside_ActualCost">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_Receipt_TotalReceive">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns money
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_DemandOtherWorkOutside_ActualCost">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_DemandOtherWorkOutside_OrderQuantity">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_DemandOtherWorkOutside_ActualQuantity">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_DemandOtherWorkOutsideTemplate_OrderQuantity">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_DemandLaborOutside_OrderQuantity">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_DemandLaborOutside_ActualQuantity">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_DemandLaborOutsideTemplate_OrderQuantity">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ActualItemLocation_OnReserve">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_SelectInventoryValuesForItemLocation">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_Item_TotalCost">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_Item_OnReserve">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_Item_OnOrder">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_Item_Available">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_Item_UnitCost">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns money
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_CalculateUnitCost">
+	<extension name="body">
+			(@cost money, @onhand integer, @quantity integer)
+			returns money
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_IsBuiltInRole">
+	<doc>
+	  Return true if the id starts with the prefix reserved for KnownIds associated with a Role
+	</doc>
+	<extension name="body">
+	  (
+		  @ROLEID		uniqueidentifier	-- Role.ID
+	  )
+	  RETURNS bit
+	  as
+	  begin
+		  return
+		  case substring(CONVERT(nvarchar(max), @ROLEID), 0, 24)
+			  when '4D61696E-426F-7373-0001' then 1 <!-- See DatabaseEnums for definition of KnownIds-->
+			  else 0
+		  end
+	  end
+		</extension>
+  </object>
+  <object class="function" name="mbfn_CalculateHourlyCost">
+	<extension name="body">
+		(
+			@TotalCost          money,		-- total value
+			@TotalDuration		XAFInterval
+		)
+			returns money
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_Item_OnHand">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_Service_Sql_Credentials">
+    <extension name="body">
+      (
+      @ServiceAccountName nvarchar(256),
+      @ServiceMachineName nvarchar(256)
+      )
+      returns nvarchar(256)
+      as
+      begin
+      return 'abc\def'
+      end
+    </extension>
+  </object>
+  <object class="function" name="mbfn_User_Sql_Credentials">
+  <extension name="body">
+      (
+      @ServiceAccountName nvarchar(256),
+      @ServiceMachineName nvarchar(256)
+      )
+      returns nvarchar(256)
+      as
+      begin
+      return 'abc\def'
+      end
+  </extension>
+  </object>
+  <object class="function" name="mbfn_User_Has_MainBoss_Access">
+    <extension name="body">
+      (
+      @UserName nvarchar(256)
+      )
+      returns integer
+      begin
+      return 0
+      end
+    </extension>
+  </object>
+	<object class="trigger" name="mbtg_User_Updates_Contact">
+		<extension name="body">
+		  on __Variables  after insert  as  begin  declare @i integer end
+		</extension>
+	</object>
+	<object class="function" name="mbfn_Contact_UserID">
+	<!-- This must be a REAL function doing the work because the trigger exists in upgrade step 1.0.4.7; a dummy function would insert nulls into the Contact table.-->
+	<extension name="body">
+	  (
+		  @CID		uniqueidentifier	-- ContactID
+	  )
+	  RETURNS uniqueidentifier
+	  as
+	  begin
+		  return (select ID 
+				   from [User]
+				   where ContactID = @CID and Hidden IS NULL)
+	  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_Request_EmailRequest">
+	<extension name="body">
+	  (
+		  @CID		uniqueidentifier
+	  )
+	  RETURNS uniqueidentifier
+	  as
+	  begin
+		  return @CID
+	  end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_ManageRequestTransitionCycleDetection">
+	<extension name="body">
+		  on __Variables  after insert  as  begin  declare @i integer end
+		</extension>
+  </object>  <object class="trigger" name="mbtg_ItemIssue_Updates_Corrected">
+	<extension name="body">
+		  on __Variables  after insert  as  begin  declare @i integer end
+		</extension>
+  </object>
+  <object class="trigger" name="mbtg_ItemTransfer_Updates_Corrected">
+	<extension name="body">
+		  on __Variables  after insert  as  begin  declare @i integer end
+		</extension>
+  </object>
+  <object class="trigger" name="mbtg_ReceiveItemNonPO_Updates_Corrected">
+	<extension name="body">
+		  on __Variables  after insert  as  begin  declare @i integer end
+		</extension>
+  </object>
+  <object class="trigger" name="mbtg_WorkOrderTemplateLoopCheck">
+	<extension name="body">
+		  on __Variables  after insert  as  begin  declare @i integer end
+		</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetNewLocationContainment">
+	<extension name="body">
+		  on __Variables  after insert  as  begin  declare @i integer end
+		</extension>
+  </object>
+  <object class="trigger" name="mbtg_PreventDeletionOfLastUser">
+	<extension name="body">
+		  on __Variables  after insert  as  begin  declare @i integer end
+		</extension>
+  </object>
+  <object class="trigger" name="mbtg_Request_Updates_RequestAcknowledgementStatus">
+	<extension name="body">
+		  on __Variables  after insert  as  begin  declare @i integer end
+		</extension>
+  </object>
+  <object class="trigger" name="mbtg_RequestedWorkOrder_ManageRequest">
+	<extension name="body">
+		  on __Variables  after insert  as  begin  declare @i integer end
+		</extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualItemLocation_Updates_Item">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_NewRequestAcknowledgementStatus">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetNewTemplateTemporaryStorageContainment">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_WorkOrderState_Updates_ActualItemLocation">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_RequestedWorkOrder_Sets_RequestState">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetUpdatedTemplateTemporaryStorageContainment">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ClearDeletedTemplateTemporaryStorageContainment">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_MaintainSecurity">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ServiceConfiguration_MaintainSecurity">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_User_MaintainSecurity">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="procedure" name="mbsp_RetotalInventory">
+    <doc></doc>
+    <extension name="body">
+	  (
+	  @ILID uniqueidentifier,
+	  @AdjustmentCodeID uniqueidentifier
+	  )
+      as begin return end
+    </extension>
+  </object>
+  <object class="procedure" name="mbsp_GetDefaultWindowsDomain">
+    <doc></doc>
+    <extension name="body">
+      as begin return end
+    </extension>
+  </object>
+  <object class="procedure" name="mbsp_MaintainSecurity">
+	<doc></doc>
+	<extension name="body">
+	  as begin return end
+  </extension>
+  </object>
+ 	<object class="procedure" name="mbsp_AddDataBaseUser">
+		<doc></doc>
+		<extension name="body">
+	  as begin return end
+  </extension>
+	</object>
+	<object class="procedure" name="mbsp_DropDataBaseUser">
+		<doc></doc>
+		<extension name="body">
+	  as begin return end
+  </extension>
+	</object>
+	<object class="trigger" name="mbtg_SetCurrentMeterReading">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualItem_Updates_ActualItemLocation">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ReceiveItemNonPO_Updates_ActualItemLocation">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ReceiveItemPO_Updates_ActualItemLocation">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ItemTransfer_Updates_ActualItemLocation">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ItemIssue_Updates_ActualItemLocation">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ItemAdjustment_Updates_ActualItemLocation">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandTotalCost">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ItemCountValueVoid_Updates_ItemCountValueEtAl">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ItemCountValue_Updates_ActualItemLocationEtAl">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_WorkOrderTemplateLoopDetector">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_LocationLoopCheck">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetItemIssueCorrectedQuantityAndCost">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandOtherWorkOutsideTemplateOrderQuantity">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandLaborOutsideTemplateOrderQuantity">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetItemTransferCorrectedQuantityAndCost">
+	<doc></doc>
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ReceiveMiscellaneousPO_Updates_POLineMiscellaneous">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ReceiveItemPO_Updates_POLineItem">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualOtherWorkOutsidePO_Updates_DemandOtherWorkOutsideEtAl">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualLaborOutsidePO_Updates_DemandLaborOutsideEtAl">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetReceiveMiscellaneousPOCorrectedQuantityAndCost">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetPOLineMiscellaneousReceiveQuantity">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ReceiveItemPO_Updates_Corrected">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualLaborInside_Updates_Corrected">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetChargebackLineCorrectedCost">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetReceiveItemNonPOCorrectedQuantityAndCost">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetReceiveItemPOCorrectedQuantityAndCost">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetPOLineItemReceiveQuantity">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetCurrentWorkOrderStateHistory">
+	<extension name="body">
+		  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetCurrentPurchaseOrderStateHistory">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetCurrentRequestStateHistory">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetVoidingItemCountValueVoid">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_ItemCountValue_Updates_PermanentItemLocation">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandItemTotalQuantity">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetActualItemCorrectedQuantityAndCost">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandTotalCostForActualItem">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualItem_Updates_Corrected">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetCurrentPMGenerationDetail1">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetCurrentPMGenerationDetail2">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_CloseRequests">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ActualLaborInside_CorrectedQuantity">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ActualItemLocation_TotalCost">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_POLineItem_ReceiveQuantity">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+				return 0
+			end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_WorkOrder_Assignee_List">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns integer
+			as
+			begin
+			return 0
+			end
+		</extension>
+  </object>
+  <object class="function" name="mbfn_WorkOrder_History_As_String">
+	<extension name="body">
+			(@IID UNIQUEIDENTIFIER)
+			returns VARCHAR(MAX)
+			as
+			begin
+			return 0
+			end
+		</extension>
+  </object>
+  <object class="procedure" name="mbsp_UpdateDemandActualCost">
+	<extension name="body">
+			@IID UNIQUEIDENTIFIER
+			as
+			begin
+			  declare @x integer
+			end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_CheckUniqueUser">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_POLineItem_Updates_ActualItemLocation">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_DemandItem_Updates_ActualItemLocation">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandLaborInsideTotalQuantity">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetActualLaborInsideCorrectedQuantityAndCost">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandTotalCostForActualLaborInside">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandLaborOutsideNonPOTotalQuantity">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetActualLaborOutsideNonPOCorrectedQuantityAndCost">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandTotalCostForActualLaborOutsideNonPO">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandLaborOutsideOrderQuantityForActual">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetActualLaborOutsidePOCorrectedQuantityAndCost">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandLaborOutsidePOTotalQuantity">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandTotalCostForActualLaborOutsidePO">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetPOLineLaborReceiveQuantity">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandLaborOutsideOrderQuantityForPOLine">
+	<extension name="body">
+	  	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetActualOtherWorkInsideCorrectedQuantityAndCost">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandOtherWorkInsideTotalQuantity">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandTotalCostForActualOtherWorkInside">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetActualOtherWorkOutsideNonPOCorrectedQuantityAndCost">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandOtherWorkOutsideNonPOTotalQuantity">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandOtherWorkOutsideOrderQuantityForActual">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandTotalCostForActualOtherWorkOutsideNonPO">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetActualOtherWorkOutsidePOCorrectedQuantityAndCost">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandOtherWorkOutsidePOTotalQuantity">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandTotalCostForActualOtherWorkOutsidePO">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetPOLineOtherWorkReceiveQuantity">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetDemandOtherWorkOutsideOrderQuantityForPOLine">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_UpdateBaseTemporaryStorage">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_UpdateBaseRelativeLocation">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_UpdateBasePermanentStorage">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_UpdateBaseActualItemLocation">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetNewRelativeLocationContainment">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetUpdatedRelativeLocationContainment">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetUpdatedPostalAddressCodes">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetUpdatedWorkOrderCodes">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetNewTemporaryStorageContainment">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_SetUpdatedTemporaryStorageContainment">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualLaborOutsidePO_Updates_Corrected">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualOtherWorkOutsidePO_Updates_Corrected">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_ReceiveMiscellaneousPO_Updates_Corrected">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_PurchaseOrderStateHistory_Updates_PurchaseOrderEtAl">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+  <object class="trigger" name="mbtg_PurchaseOrderState_Updates_ActualItemLocation">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+  </extension>
+  </object>
+
+  <table name="DatabaseStatus" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="SingleRecordNoDataTable" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="UserPermission" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<field name="TableEnum" type="integer(min 0, max 1,nonnull)">
+	  <doc>Record type identification. See DatabaseLayout.ViewRecordTypes for values.</doc>
+	</field>
+	<field name="UserID" type="link(nonnull)" link="User"/>
+	<field name="RoleID" type="link(nonnull)" link="Role"/>
+	<extension name="query">
+		select newid(), 0, null, null where 1 = 2
+	</extension>
+  </table>
+  <table name="Role" defaults="false" log="false" id="Id" xid="Class Code" xunique="true">
+	<field name="Id" read="id(nonnull)" />
+	<field name="Code" type="string(minlength 1, 50, lines 0, trim both,nonnull)"/>
+	<field name="Desc" type="string(minlength 1, 150, lines 0, trim both)"/>
+	<field name="Comment" type="string(minlength 1, 1073741823, trim both)"/>
+	<field name="Hidden" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
+	<field name="Class" type="integer(min 0, max 2, nonnull )"/>
+	<field name="IsBuiltInRole" read="bool(nonnull)" />
+  </table>
+  <table name="UserMessageTranslation" defaults="false" log="false" id="Id" xid="UserMessageKeyID LanguageLCID" xunique="true">
+	<field name="Id" read="id(nonnull)"/>
+	<field name="UserMessageKeyID" type="link(null)" link="UserMessageKey"/>
+	<field name="LanguageLCID" type="integer(32)"/>
+	<field name="Translation" type="string(minlength 1, 1073741823, trim both)"/>
+  </table>
+  <table name="UserMessageKey"/>
+  <table name="WorkOrderExpenseModel" defaults="false" id="Id">
+	<field name="DefaultItemExpenseCategoryID" type="link(null)"  link="WorkOrderExpenseCategory"/>
+	<field name="DefaultHourlyInsideExpenseCategoryID" type="link(null)"  link="WorkOrderExpenseCategory"/>
+	<field name="DefaultHourlyOutsideExpenseCategoryID" type="link(null)"  link="WorkOrderExpenseCategory"/>
+	<field name="DefaultPerJobInsideExpenseCategoryID" type="link(null)"  link="WorkOrderExpenseCategory"/>
+	<field name="DefaultPerJobOutsideExpenseCategoryID" type="link(null)"  link="WorkOrderExpenseCategory"/>
+	<field name="DefaultMiscellaneousExpenseCategoryID" type="link(null)"  link="WorkOrderExpenseCategory"/>
+  </table>
+  <table name="WorkOrderExpenseCategory" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+  </table>
+  <table name="WorkOrderAssigneeProspect" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+		select newid() where 1 = 2
+	  </extension>
+  </table>
+  <table name="RequestAssignee" defaults="true" id="Id">
+	<field name="Id" type="id(nonnull)"/>
+	<field name="RequestAssigneeStatisticsID" link="RequestAssigneeStatistics" read="Id">
+	  <result hosting="server">
+				(select ID from RequestAssigneeStatistics)
+		  </result>
+	</field>
+  </table>
+  <table name="RequestAssigneeStatistics" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="RequestAssigneeProspect" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="RequestAssignmentAssistant" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PurchaseOrderAssigneeProspect" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+		select newid() where 1 = 2
+	  </extension>
+  </table>
+
+  <table name="RequestAssigneeReport" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+			select newid() where 1 = 2
+		</extension>
+  </table>
+  <table name="ActiveRequestAgeHistogram" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderEndDateHistogram" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="AssignedActiveRequestAgeHistogram" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="AssignedWorkOrderEndDateHistogram" defaults="false" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
+  <object class="function" name="ClassifyDateByMonth">
+	<extension name="body">
+	  (@value as datetime, @epsilon as integer)
+	  returns datetime
+	  as begin
+		  return getdate()
+	  end	  
+	</extension>
+  </object>
+  <object class="function" name="ClassifyDateByTime">
+	<extension name="body">
+	  (@value as datetime, @epsilon as XAFInterval)
+	  returns datetime
+	  as begin
+		  return getdate()
+	  end	  
+	</extension>
+  </object>
+
+</database>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="LocationDerivationsAndItemLocations" defaults="false" log="false" id="Id" labelkey="">
+	<doc>
+		  This view provides Path information from the base Location record to all the most derived xxxLocation tables
+		  and onto the ItemLocation records that refer to the derived xxxLocation record.
+		  Also provides record type information and a record to edit ID for all the most-derived Location derivations.
+		  This is a flat composite view which allows editing of all derived record types.
+	  </doc>
+	<field name="Id" read="RequiredGUID">
+	  <doc>ID of root Location or ItemLocation record</doc>
+	</field>
+	<field name="TableEnum" type="integer(min 0, max 8,nonnull)">
+	  <doc>Record type identification. See DatabaseLayout.ViewRecordTypes for values.</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TILocations.AllLocationsProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="ContainingLocationID" type="GUIDREF" link="Location">
+	  <doc>The ID of the base Location record of the parent record for the tree structure</doc>
+	</field>
+	<field name="LocationID" type="GUIDREF" link="Location" labelkey="">
+	  <doc>ID of the base Location record if the TableEnum indicates this is a Location derivation</doc>
+	</field>
+	<field name="ItemLocationID" type="GUIDREF" link="ItemLocation" labelkey="">
+	  <doc>ID of the base ItemLocation record if the TableEnum indicates this is an ItemLocation derivation</doc>
+	</field>
+	<extension name="query">
+			<!-- DatabaseEnums.LocationDerivations.PostalAddress -->
+			select LocationID, 0, NULL, LocationID, null
+				from PostalAddress as PA
+	  union all
+			<!-- DatabaseEnums.LocationDerivations.TemporaryStorage -->
+			select LocationID, 1, ContainingLocationID, LocationID, null
+				from TemporaryStorage as TS
+	  union all
+			<!-- DatabaseEnums.LocationDerivations.Unit -->
+			select RL.LocationID, 2, RL.ContainingLocationID, RL.LocationID, null
+				from Unit
+				  left join RelativeLocation as RL on Unit.RelativeLocationID = RL.ID
+	  union all
+			<!-- DatabaseEnums.LocationDerivations.PermanentStorage -->
+			select RL.LocationID, 3, RL.ContainingLocationID, RL.LocationID, null
+				from PermanentStorage as PS
+				  left join RelativeLocation as RL on PS.RelativeLocationID = RL.ID
+	  union all
+			<!-- DatabaseEnums.LocationDerivations.PlainRelativeLocation -->
+			select RL.LocationID, 4, RL.ContainingLocationID, RL.LocationID, null
+				from PlainRelativeLocation as PRL
+				  left join RelativeLocation as RL on PRL.RelativeLocationID = RL.ID
+	  union all
+			<!-- DatabaseEnums.LocationDerivations.TemplateTemporaryStorage -->
+			select TTS.LocationID, 5, TTS.ContainingLocationID, TTS.LocationID, null
+				from TemplateTemporaryStorage as TTS
+		union all
+		  <!-- DatabaseEnums.LocationDerivationsAndItemLocations.PermanentItemLocation -->
+		  select IL.ID, 6, IL.LocationID, NULL, IL.ID
+				from PermanentItemLocation as PIL
+					join ActualItemLocation as AIL on AIL.ID = PIL.ActualItemLocationID
+					join ItemLocation as IL on IL.ID = AIL.ItemLocationID
+		union all
+		  <!-- DatabaseEnums.LocationDerivationsAndItemLocations.TemporaryItemLocation -->
+		  select IL.ID, 7, IL.LocationID, NULL, IL.ID
+				from TemporaryItemLocation as TIL
+					join ActualItemLocation as AIL on AIL.ID = TIL.ActualItemLocationID
+					join ItemLocation as IL on IL.ID = AIL.ItemLocationID
+		union all
+		  <!-- DatabaseEnums.LocationDerivationsAndItemLocations.TemporaryItemLocationTemplate -->
+		  select IL.ID, 8, IL.LocationID, NULL, IL.ID
+				from TemplateItemLocation as TIL
+					join ItemLocation as IL on IL.ID = TIL.ItemLocationID
+		</extension>
+		<extension name="dependson">ActualItemLocation</extension>
+		<extension name="dependson">ItemLocation</extension>
+		<extension name="dependson">Location</extension>
+		<extension name="dependson">PermanentItemLocation</extension>
+		<extension name="dependson">PermanentStorage</extension>
+		<extension name="dependson">PlainRelativeLocation</extension>
+		<extension name="dependson">PostalAddress</extension>
+		<extension name="dependson">RelativeLocation</extension>
+		<extension name="dependson">TemplateItemLocation</extension>
+		<extension name="dependson">TemporaryItemLocation</extension>
+		<extension name="dependson">TemplateTemporaryStorage</extension>
+		<extension name="dependson">TemporaryStorage</extension>
+		<extension name="dependson">Unit</extension>
+	</table>
+  <table name="ActualItemLocation"/>
+  <table name="ItemLocation"/>
+  <table name="Location"/>
+  <table name="PermanentItemLocation"/>
+  <table name="PermanentStorage"/>
+  <table name="PlainRelativeLocation"/>
+  <table name="PostalAddress"/>
+  <table name="RelativeLocation"/>
+  <table name="TemplateItemLocation"/>
+  <table name="TemporaryItemLocation"/>
+  <table name="TemplateTemporaryStorage"/>
+  <table name="TemporaryStorage"/>
+  <table name="Unit"/>
+
+	<!--
+	  ItemLocationContainment. Because this query is only used in one place, ItemLocationAndContainers, it could be rolled into that.
+	  However, this would hide the stupicly simple structure of the ItemLocationAndContainers query.
+	-->
+  <table name="ItemLocationContainment" defaults="false" log="false" id="Id"  labelkey="">
+	<doc>
+			Returns rows of the form (ContainedLocationID, ContainingLocationID).  Both LocationID's can actually
+			refer to either a Location or an ItemLocation, and thus are declared to instead refer to a
+			LocationDerivationsAndItemLocations record. The records	identified by the ContainedLocationID
+			is the same record as or another record contained (possibly indirectly) within ContainingLocationID.
+			Note that this view represents "improper" containment, where an object is considered to contain itself.
+		 </doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="ContainedLocationID" type="GUIDREF" link="LocationDerivationsAndItemLocations" labelkey="Contained Location"/>
+	<field name="ContainingLocationID" type="RequiredGUIDREF" link="LocationDerivationsAndItemLocations" labelkey="Containing Location"/>
+	<extension name="query">
+			-- The complete containment information of all Locations
+	select NewID(), ContainedLocationID, ContainingLocationID
+  		from LocationContainment
+		union all
+			-- ItemLocation records contain themselves
+	select NewID(), ID, ID
+		from ItemLocation
+		union all
+			-- Indirect containing locations of each ItemLocation. Note that LocationContainment represents improper containment
+			-- so this SELECT will also show the ItemLocations as being contained in their immediate Location
+	select NewID(), IL.ID, ContainingLocationID
+		from ItemLocation as IL
+			join LocationContainment as LC on IL.LocationID = LC.ContainedLocationID
+	</extension>
+	<extension name="dependson">ItemLocation</extension>
+	<extension name="dependson">LocationContainment</extension>
+  </table>
+  <table name="LocationContainment"/>
+
+  <!-- ItemLocationAndContainers -->
+  <table name="ItemLocationAndContainers" defaults="false" log="false" id="Id" labelkey="">
+	<doc></doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="FilterID" link="LocationDerivationsAndItemLocations" type="RequiredGUIDREF">
+	  <doc></doc>
+	</field>
+	<field name="DisplayID" link="LocationDerivationsAndItemLocations" type="RequiredGUIDREF">
+	  <doc></doc>
+	</field>
+	<!-- The remaining fields are required by the limitations of CompositeTbl or Tree-Structured Tbls -->
+	<field name="IsPrimary" type="RequiredBool">
+	  <doc></doc>
+	</field>
+	<extension name="query">
+			select ContainingLocationID, 
+				ContainedLocationID,
+				ContainingLocationID, 
+				case when ContainedLocationID = ContainingLocationID then 1 else 0 end
+			from ItemLocationContainment
+	</extension>
+	<extension name="dependson">ItemLocationContainment</extension>
+  </table>
+</database>

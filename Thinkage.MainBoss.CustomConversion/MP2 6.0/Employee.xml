@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+<table name="Employee">
+<dependency table="Contact"/>
+<dependency table="Trade"/>
+<dependency table="PersonnelLinkages"/>
+<data>
+
+
+delete from <IDB/>.dbo.CodeManagement;
+INSERT INTO <IDB/>.dbo.CodeManagement ([ID], [Code], [Hidden29])
+	SELECT P.[MAINBOSSID], P.[EMPCODE], 0 -- Could set HIDDEN true if DEPARTMENT = 'RETIRED' ?
+	from <IDB/>.dbo.EMP as P
+	where P.MAINBOSSEXCLUDE = 0;
+
+exec <IDB/>.dbo.FixCodes 50
+
+INSERT INTO <ODB/>.dbo.Employee ([ID],[ContactID],[Desc],[Comment],[Hidden] )
+	SELECT PL.[EmployeeID], PL.[ContactID],CM.[Code], NULLIF(LTRIM(convert(varchar(max), COALESCE(P.DEPARTMENT, ' ')) + ' ' + RTRIM(convert(varchar(max), COALESCE(P.NOTES, ' ')))), ' '), CM.[Hidden30]
+	from <IDB/>.dbo.EMP as P
+		join <IDB/>.dbo.PersonnelLinkages as PL on P.[MAINBOSSID] = PL.ID
+		join <IDB/>.dbo.CodeManagement as CM on P.[MAINBOSSID] = CM.[ID]
+	where P.MAINBOSSEXCLUDE = 0;
+GO
+</data>
+</table>
+</dbconversion>

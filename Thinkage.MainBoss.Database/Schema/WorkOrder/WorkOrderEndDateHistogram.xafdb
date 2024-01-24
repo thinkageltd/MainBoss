@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="WorkOrderEndDateHistogram" defaults="false" log="false" id="Id" labelkey="">
+		<field name="Id" read="RequiredGUID"/>
+		<field name="WorkEndDate" type="RequiredDate"/>
+		<field name="PMWorkOrderCount" type="RequiredQuantity"  />
+		<field name="CMWorkOrderCount" type="RequiredQuantity"  />
+		<field name="RequestedPMWorkOrderCount" type="RequiredQuantity"  />
+		<field name="RequestedCMWorkOrderCount" type="RequiredQuantity"  />
+		<extension name="query">
+			select
+						<!-- TODO: We want a deterministic value for the row ID.
+								The EndDateEstimate would be fine except that IdGenerationService doesn't realize this is a 'view' and no Id generation is required.
+								The IdGenerationService should just 'rubberstamp' the Id field for views, perhaps.
+								For now we forcibly cast the WorkEndDate into a GUID. -->
+						cast(cast(X.EndDateEstimate as varbinary(max)) as uniqueidentifier),
+						X.EndDateEstimate,
+						coalesce(sum(case when X.IsPM != 0 and X.IsRequested = 0 then 1 else 0 end), 0),
+						coalesce(sum(case when X.WorkOrderID is not null and X.IsPM = 0 and X.IsRequested = 0 then 1 else 0 end), 0),
+						coalesce(sum(case when X.IsPM != 0 and X.IsRequested != 0 then 1 else 0 end), 0),
+						coalesce(sum(case when X.IsPM = 0 and X.IsRequested != 0 then 1 else 0 end), 0)
+				from
+					<!-- TODO: We should only count it as PM if the batch was schedule-generated; not sure it is possible to tell -->
+					(select WO.ID, WO.EndDateEstimate, case when RWO.WorkOrderID is null then 0 else 1 end, case when WO.PMGenerationBatchID is null then 0 else 1 end
+						from
+							WorkOrder as WO
+							left join (select distinct WorkOrderID from RequestedWorkOrder) as RWO(WorkOrderID) on RWO.WorkOrderID = WO.ID
+							join WorkOrderStateHistory as WOSH on WOSH.[ID] = WO.CurrentWorkOrderStateHistoryID
+							join WorkOrderState as WOS on WOS.[ID] = WOSH.WorkOrderStateID
+						where WOS.FilterAsOpen = 1
+					union
+						select null, dbo._DClosestValue(getdate(), 0, 846000000000), null, null
+					union
+						select null, dbo._DClosestValue(getdate(), 0, 846000000000) + dbo._INew(1, 0, 0, 0, 0), null, null
+					) as X(WorkOrderID, EndDateEstimate, IsRequested, IsPM)
+				group by X.EndDateEstimate
+    </extension>
+		<extension name="dependson">WorkOrder</extension>
+		<extension name="dependson">WorkOrderStateHistory</extension>
+		<extension name="dependson">WorkOrderState</extension>
+		<extension name="dependson">RequestedWorkOrder</extension>
+	</table>
+	<table name="WorkOrder"/>
+	<table name="WorkOrderState"/>
+	<table name="WorkOrderStateHistory"/>
+	<table name="RequestedWorkOrder"/>
+</database>

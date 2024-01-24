@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="DemandTemplate" defaults="true" log="false" id="Id" xid="WorkOrderTemplateID" labelkey="Task Demand">
+	<doc>Base record all WorkOrderTemplate resources</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="WorkOrderTemplateID" type="RequiredGUIDREF" link="WorkOrderTemplate" cascade="true">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="DemandActualCalculationInitValue" type="integer(min 0, max 2, nonnull)" labelkey="Actual Cost default">
+	  <doc>Values defined in DatabaseEnums.DemandActualCalculationInitValues to govern the default setting for cost calculation in an Actual editor when
+	  used with this Demand for calculating the Actual value</doc>
+	</field>
+	<field name="WorkOrderExpenseCategoryID" type="GUIDREF" link="WorkOrderExpenseCategory" labelkey="Expense Category">
+	  <doc></doc>
+	  <extension name="linkage">property</extension>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TIWorkOrder.FilteredWorkOrderExpenseCategoryTbl,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="EstimateCost" type="RequiredBool" labelkey="Demanded Cost">
+	  <doc>When true, CostEstimate values are placed into the generated Demand records during PMGeneration</doc>
+	</field>
+  </table>
+  <object class="trigger" name="mbtg_DemandTemplate_Updates_WorkOrderTemplate">
+	<doc></doc>
+	<extension name="body">
+	  on DemandTemplate
+	  after insert, update, delete
+	  as
+	  begin
+		  update WorkOrderTemplate
+			 SET DemandCount = dbo.mbfn_WorkOrderTemplate_DemandCount(WorkOrderTemplate.Id)
+			  where WorkOrderTemplate.ID in (
+						select distinct WorkOrderTemplateID from inserted
+				  union select distinct WorkOrderTemplateID from deleted	
+				)
+	  end
+	</extension>
+	<extension name="references">mbfn_WorkOrderTemplate_DemandCount()</extension>
+	<extension name="references">DemandTemplate</extension>
+	<extension name="references">WorkOrderTemplate</extension>
+  </object>
+  <table name="WorkOrderExpenseCategory"/>
+  <table name="WorkOrderTemplate"/>
+</database>

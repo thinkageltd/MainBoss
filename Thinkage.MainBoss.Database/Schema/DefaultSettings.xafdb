@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+	<table name="DefaultSettings" id="Id" defaults="false" log="false" xid="SettingsNameID UserID" xunique="true" labelkey="">
+		<doc>
+			This table contains the per-user, per-SettingsName default selection for settings. If the user has no default for a particular SettingsName, there will be no record in this table.
+		</doc>
+		<field name="Id" read="RequiredGUID"/>
+		<field name="SettingsNameID" type="RequiredGUIDREF" link="SettingsName">
+			<extension name="linkage">property</extension>
+		</field>
+		<field name="UserID" type="RequiredGUIDREF" link="User">
+			<doc>The user who owns the settings for personal settings, or null for global settings</doc>
+			<extension name="linkage">property</extension>
+		</field>
+		<field name="SettingsID" type="RequiredGUIDREF" link="Settings">
+			<extension name="linkage">property</extension>
+		</field>
+		<!-- This table has no GUI access so no deletemethod is required -->
+	</table>
+	<table name="Settings"/>
+	<table name="SettingsName"/>
+	<table name="User"/>
+</database>

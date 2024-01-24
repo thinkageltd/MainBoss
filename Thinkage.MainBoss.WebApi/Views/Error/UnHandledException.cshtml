@@ -1,0 +1,22 @@
+@model System.Web.Mvc.HandleErrorInfo
+@using Thinkage.Libraries
+@using Thinkage.MainBoss.WebApi
+
+@{ 
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Error</title>
+</head>
+<body>
+    <hgroup>
+        <h2>@(T.Text("An error occurred while processing your request"))</h2>
+    </hgroup>
+    <p>
+        @(Thinkage.Libraries.Exception.FullMessage(Model.Exception))
+    </p>
+</body>
+</html>

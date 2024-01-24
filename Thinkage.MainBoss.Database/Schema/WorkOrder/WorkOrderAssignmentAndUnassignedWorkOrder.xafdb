@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderAssignmentAndUnassignedWorkOrder" defaults="false" log="false" id="Id"  labelkey="">
+	<doc>
+	  This view drives the Work Order By Assignee report, providing a list of all the assignee/wo pairs and also the unassigned WOs with a null assignee reference.
+	</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<field name="WorkOrderAssigneeID" type="GUIDREF" link="WorkOrderAssignee" labelkey="Assignee">
+	  <doc>The assignee, or null for unassigned work orders</doc>
+	</field>
+	<field name="WorkOrderID" type="RequiredGUIDREF" link="WorkOrder" labelkey="">
+	  <doc>The WorkOrder the Assignee is assigned to</doc>
+	</field>
+	<extension name="query">
+	  select Coalesce(WOAA.Id, WO.Id), WOAA.WorkOrderAssigneeID, WO.ID
+		from WorkOrder as WO
+		left join WorkOrderAssignmentAll as WOAA on WOAA.WorkOrderID = WO.Id
+	</extension>
+	<extension name="dependson">WorkOrder</extension>
+	<extension name="dependson">WorkOrderAssignmentAll</extension>
+	<extension name="costrights">UnitValue</extension>
+  </table>
+  <table name="WorkOrder" />
+  <table name="WorkOrderAssignee"/>
+  <table name="WorkOrderAssignmentAll"/>
+</database>

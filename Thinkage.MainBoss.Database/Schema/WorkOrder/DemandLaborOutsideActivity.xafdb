@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="DemandLaborOutsideActivity" defaults="false" log="false" id="Id" labelkey="">
+	<doc>Provide all activity (ActualNonPO, ActualPO and POLines, and corrections) for DemandLaborOutside</doc>
+	<field name="Id" read="RequiredGUID"/>
+	<!--Linkage to various base record types-->
+	<field name="AccountingTransactionID" type="GUIDREF" link="AccountingTransaction" labelkey=""/>
+	<field name="POLineID" type="GUIDREF" link="POLine"/>
+	<!-- Common Filter Fields -->
+	<field name="DemandLaborOutsideID" type="RequiredGUIDREF" link="DemandLaborOutside"/>
+	<extension name="query">
+	  select AccountingTransactionId, AccountingTransactionID, NULL, DemandLaborOutsideID
+		from ActualLaborOutsideNonPO
+	  union
+	  select AccountingTransactionId, AccountingTransactionID, NULL, POLL.DemandLaborOutsideID
+		from ActualLaborOutsidePO as ALOPO
+		  join POLineLabor as POLL on POLL.ID = ALOPO.POLineLaborID
+	  union
+	  select POLineID, NULL, POLineID, POLL.DemandLaborOutsideID
+		from POLineLabor as POLL
+	</extension>
+	<extension name="dependson">ActualLaborOutsideNonPO</extension>
+	<extension name="dependson">ActualLaborOutsidePO</extension>
+	<extension name="dependson">POLineLabor</extension>
+	<extension name="dependson">POLine</extension><!-- POLine is the base record that is deleted; dependency required to refresh after delete -->
+  </table>
+  <table name="AccountingTransaction"/>
+  <table name="POLine"/>
+  <table name="DemandLaborOutside"/>
+  <table name="ActualLaborOutsideNonPO"/>
+  <table name="ActualLaborOutsidePO"/>
+  <table name="POLineLabor"/>
+</database>

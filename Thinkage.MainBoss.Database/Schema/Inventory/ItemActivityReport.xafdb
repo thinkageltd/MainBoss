@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ItemActivityReport" defaults="false" log="false" id="Id" labelkey="">
+	<field name="Id" read="blob(minlength 17, maxlength 17, nonnull)">
+	  <doc>The ID of this record, which is also the ID of the AccountingTransaction record with a "reversed" flag as an extra byte</doc>
+	</field>
+	<field name="ActivityType" type="integer(min 0, max 9, nonnull)">
+	  <doc>An Enum ViewRecordTypes.ItemActivityReport identifying the record type</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Database.ViewRecordTypes.ItemActivityReportProvider,Thinkage.MainBoss.Database</extension>
+	</field>
+	<field name="IsCorrection" type="Bool">
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIReports.IsCorrectionNames,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="QuantityChange" type="Quantity">
+	  <doc>The change in Quantity at the ItemLocation entered in this record</doc>
+	</field>
+	<field name="CostChange" type="Currency">
+	  <doc>The change in Value at the ItemLocation entered in this record</doc>
+	</field>
+	<field name="ResultingQuantity" type="Quantity">
+	  <doc>The total Quantity at the ItemLocation after this record's change</doc>
+	</field>
+	<field name="ResultingCost" type="Currency">
+	  <doc>The total Cost at the ItemLocation after this record's change</doc>
+	</field>
+	<field name="ItemLocationID" type="RequiredGUIDREF" link="ItemLocation">
+	  <doc>The ItemLocation affected by this record</doc>
+	</field>
+	<field name="AccountingTransactionID" type="RequiredGUIDREF" link="AccountingTransaction" labelkey="">
+	  <doc>The AccountingTransaction record that is the base record for the row returned by this View</doc>
+	</field>
+	<extension name="query">
+		select
+		  cast(AccountingTransactionID as binary(16))+case when ActivityType = 6 then 0x01 else 0x00 end,
+		  ActivityType,
+		  IsCorrection,
+		  QuantityChange,
+		  case when ActivityType in (0, 1, 9) then null when ActivityType in (2, 4, 5) then -AccountingTransaction.Cost else AccountingTransaction.Cost end,
+		  a.TotalQuantity,
+		  a.TotalCost,
+		  a.ItemLocationID,
+		  AccountingTransactionID
+		from
+		  (
+			  select AccountingTransactionID, case when VoidingItemCountValueVoidID is null then 0 else 9 end, 0, ItemLocationID, null, case when VoidingItemCountValueVoidID is null then Quantity end, case when VoidingItemCountValueVoidID is null then Cost end
+				from ItemCountValue
+			union all
+			  select ICVV.AccountingTransactionID, 1, 0, ItemLocationID, null, null, null
+				from ItemCountValueVoid as ICVV
+				  join ItemCountValue as ICV on ICV.id = ICVV.VoidedItemCountValueID
+			union all
+			  select AccountingTransactionID, 2, 0, ItemLocationID, -AI.Quantity, AI.TotalQuantity, AI.TotalCost
+				from ActualItem as AI
+				  join DemandItem as DI on DI.ID = AI.DemandItemID
+			union all
+			  select AccountingTransactionID, 3, 0, ItemLocationID, Quantity, TotalQuantity, TotalCost
+				from ItemAdjustment
+			union all
+			  select AccountingTransactionID, 4, case when Id = CorrectionID then 0 else 1 end, ItemLocationID, -Quantity, TotalQuantity, TotalCost
+				from ItemIssue
+			union all
+			  select AccountingTransactionID, 5, case when Id = CorrectionID then 0 else 1 end, FromItemLocationID, -Quantity, FromTotalQuantity, FromTotalCost
+				from ItemTransfer
+			union all
+			  select AccountingTransactionID, 6, case when Id = CorrectionID then 0 else 1 end, ToItemLocationID, Quantity, ToTotalQuantity, ToTotalCost
+				from ItemTransfer
+			union all
+			  select AccountingTransactionID, 7, case when Id = CorrectionID then 0 else 1 end, ItemLocationID, Quantity, TotalQuantity, TotalCost
+				from ReceiveItemNonPO
+			union all
+			  select AccountingTransactionID, 8, case when Id = CorrectionID then 0 else 1 end, ItemLocationID, Quantity, TotalQuantity, TotalCost
+				from ReceiveItemPO
+		  ) as a (AccountingTransactionID, ActivityType, IsCorrection, ItemLocationID, QuantityChange, TotalQuantity, TotalCost)
+		join AccountingTransaction on AccountingTransaction.id = a.AccountingTransactionID
+		join ActualItemLocation as AIL on AIL.ItemLocationID = a.ItemLocationID
+	</extension>
+	<extension name="dependson">AccountingTransaction</extension>
+	<extension name="dependson">ItemCountValue</extension>
+	<extension name="dependson">ItemAdjustment</extension>
+	<extension name="dependson">ItemIssue</extension>
+	<extension name="dependson">ItemTransfer</extension>
+	<extension name="dependson">DemandItem</extension>
+	<extension name="dependson">ActualItem</extension>
+	<extension name="dependson">ReceiveItemPO</extension>
+	<extension name="dependson">ReceiveItemNonPO</extension>
+	<extension name="dependson">ItemCountValueVoid</extension>
+	<extension name="costrights">InventoryActivity</extension>
+	<extension name="lastupdate">AccountingTransactionID</extension>
+  </table>
+  <table name="AccountingTransaction"/>
+  <table name="ItemCountValue"/>
+  <table name="ItemAdjustment"/>
+  <table name="ItemIssue"/>
+  <table name="ItemTransfer"/>
+  <table name="ActualItem"/>
+  <table name="ReceiveItemPO"/>
+  <table name="ReceiveItemNonPO"/>
+  <table name="ItemCountValueVoid"/>
+  <table name="DemandItem"/>
+  <table name="ItemLocation"/>
+</database>

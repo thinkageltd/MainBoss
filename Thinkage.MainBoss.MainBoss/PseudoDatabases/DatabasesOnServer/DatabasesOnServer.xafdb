@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database labelcontext="dsDatabasesOnServerLabel"  name="http://thinkage.ca/MB3/dsEventLog.xsd:dsDatabasesOnServer" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<table name="DatabasesOnServer" defaults="false" log="false" id="Id" xid="Database ServerName" xunique="true" labelkey="Databases On Server">
+		<field name="Id" read="integer(unsigned 63, nonnull)" />	<!-- unsigned 64 cannot be represented in MS SQL... not relevant but still causes an error in xafdb processing -->
+		<field name="ServerName" type="string(minlength 1, 1073741823, lines 0, trim both, nonnull)">
+			<doc>The fully qualified name for the SQL server</doc>
+		</field>
+		<field name="Database" type="string(minlength 1, 1073741823, lines 0, trim both, null)">
+			<doc>The name of the database</doc>
+		</field>
+		<field name="Version" type="string(minlength 1, 23, lines 0, null)">
+			<doc>The version of this database if it can be determined</doc>
+		</field>
+		<field name="OrganizationName" type="string(minlength 1, 1073741823, lines 0, trim both, null)">
+			<doc>The name of the organization (the Code of the Location selected for the Company Information) if it can be determined</doc>
+		</field>
+		<field name="UserRecordExists" type="bool(null)">
+			<doc>Indicates if there is a record in the User table allowing the calling user to open the database, if this can be determined</doc>
+		</field>
+		<field name="AccessError" type="string(minlength 1, 1073741823, trim both, null)">
+			<doc>The error which occurred when an attempt was made to find the Version, OrganizationName, or UserRecordExists</doc>
+		</field>
+	</table>
+</database>

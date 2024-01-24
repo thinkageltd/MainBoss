@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ChargebackActivity" defaults="false" log="false" id="Id" labelkey="">
+	<field name="Id" read="RequiredGUID" />
+	<field name="TableEnum" type="integer(min 0, max 1, nonnull)">
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.ChargebackActivityProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="AccountingTransactionID" type="RequiredGUIDREF" link="AccountingTransaction" labelkey="">
+	  <doc>the base AccountingTransaction record linkage for ChargebackLines derived from this</doc>
+	</field>
+	<field name="ParentID" type="id" labelkey="">
+	  <!-- This must remain until we have some way of expressing the row parent on a per-view basis -->
+	  <doc>the Id of another record in this table that is the parent of this record in the tree view</doc>
+	</field>
+	<field name="ChargebackID" type="RequiredGUIDREF" link="Chargeback">
+	  <!-- This must remain until we can put per-view filters on all the CompositeViews all with the same tag and target them as a group with
+	the BrowserFilterTarget init target. -->
+	  <doc>a unified Chargeback id</doc>
+	</field>
+	<extension name="query">
+		select	ChargebackLine.[ID], 0, AccountingTransactionID, null, ChargebackLine.ChargebackID
+			from ChargebackLine
+			where ChargebackLine.[ID] = ChargebackLine.CorrectionID
+		union all
+		select	ChargebackLine.[ID], 1, AccountingTransactionID, ChargebackLine.CorrectionID, ChargebackLine.ChargebackID
+			from ChargebackLine
+			where	ChargebackLine.[ID] != ChargebackLine.CorrectionID
+	</extension>
+	<extension name="dependson">ChargebackLine</extension>
+	<extension name="dependson">Chargeback</extension>
+	<extension name="dependson">AccountingTransaction</extension>
+	<extension name="costrights">Chargeback</extension>
+  </table>
+  <table name="ChargebackLine"/>
+  <table name="Chargeback"/>
+  <table name="AccountingTransaction"/>
+</database>

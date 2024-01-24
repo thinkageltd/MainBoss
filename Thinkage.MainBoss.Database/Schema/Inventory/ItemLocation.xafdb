@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ItemLocation" defaults="true" log="false" id="Id" xid="ItemID LocationID Hidden" xunique="true" labelkey="Storage Assignment">
+	<doc>This record represents the assignment of an Item to a storage location or template</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="Code" read="SingleLineUnlimited" >
+	  <!-- dbo.mbfn_ItemLocation_Code( [ID] ) -->
+	  <result hosting="server">
+		cast('' as [SingleLineUnlimited])
+	  </result>
+	  <extension name="dependson">mbfn_ItemLocation_Code()</extension>
+	</field>
+	<field name="Hidden" type="GenerationValue"/>
+	<field name="ItemID" type="RequiredGUIDREF" link="Item">
+	  <doc>The Item being assigned</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="LocationID" type="RequiredGUIDREF" link="Location">
+	  <doc>The storage location the Item is assigned to</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="ItemPriceID" type="GUIDREF"  link="ItemPrice" labelkey="Preferred Price">
+	  <doc>A suggested supplier and/or pricing for items assigned to this particular location</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<extension name="equate">ItemID=ItemPriceID.ItemID</extension>
+	<extension name="deletemethod">hide</extension>
+  </table>
+  <object class="function" name="mbfn_ItemLocation_Code">
+	<doc>
+	  Build the full composite Code of the ItemLocation using the Item's Code and the Location's computed Code separated with ' @ '
+	</doc>
+	<extension name="body">
+	  (
+	  @ID uniqueidentifier	-- ItemLocationID
+	  )
+	  RETURNS nvarchar(max)
+	  AS
+	  BEGIN
+		RETURN (
+		  SELECT  Item.Code + ' @ ' + Location.Code
+		  FROM ItemLocation
+		  JOIN Item ON Item.ID = ItemLocation.ItemID
+		  JOIN Location on Location.ID = ItemLocation.LocationID
+		  WHERE ItemLocation.ID = @ID
+		)
+	  END
+	</extension>
+	<extension name="dependson">Location.Code</extension>
+	<extension name="dependson">ItemLocation.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">Item.Code</extension>
+	<extension name="dependson">mbfn_ConcatWithSeparator()</extension>
+  </object>
+  <table name="Item">
+	<field name="Code"/>
+  </table>
+  <table name="Location">
+	<field name="Code"/>
+  </table>
+  <table name="ItemPrice"/>
+</database>

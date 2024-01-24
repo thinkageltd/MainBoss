@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <!--
+	This is the basic level types required required by the DBVersionHandler30 to do its thing.
+  -->
+  <types uri="../../../Thinkage.Libraries.DBILibrary/Types.xafdb">
+	<else uri="manifest://localhost/Thinkage.Libraries.DBILibrary,Thinkage/Libraries/DBILibrary/Types.xafdb"/>
+  </types>
+  <type name="RequiredVersionInfo" type="string(minlength 1, 23, lines 0, nonnull)" />
+  <type name="UserName" type="string(minlength 1, 200, lines 0, trim both)" />
+  <type name="RequiredUserName" type="string(minlength 1, 200, lines 0, trim both, nonnull)" />
+  <type name="RequiredRoleName" type="string(minlength 1, 50, lines 0, trim both, nonnull)" />
+  <type name="GenerationValue" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)" />
+  <type name="RequiredBool" type="bool(nonnull)" />
+  <type name="Desc" type="string(minlength 1, 150, lines 0, trim both)" />
+  <type name="Comment" type="string(minlength 1, 1073741823, trim both)" />
+  <type name="RequiredGUIDREF" type="link(nonnull)" />
+  <type name="RequiredPermissionPathPattern" type="string(minlength 1, 100, lines 0, trim both, nonnull)" />
+  <type name="PermissionPathPattern" type="string(minlength 1, 100, lines 0, trim both, null)" />
+  <type name="RequiredDateTime" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100, nonnull)" />
+  <type name="RequiredSubject" type="string(minlength 1, 100, lines 0, trim both, nonnull)" />
+  <type name="RequiredBackupFileName" type="string(minlength 1, 256, lines 0, trim both, nonnull)" />
+  <type name="LastBackupDateTime" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)" />
+	<type name="VersionInfo" type="string(minlength 1, 23, lines 0)" />
+	<!-- Database object names that we keep track of -->
+	<type name="sysname" type="string(minlength 1, 128, lines 0, trim both)" />
+	<type name="Requiredsysname" type="string(minlength 1, 128, lines 0, trim both, nonnull)" />
+	<!-- should be nonnull but left nullable for initial testing-->
+</database>

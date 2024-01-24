@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="Types.xafdb"/>
+	<variable name="MinMBAppVersion" type="RequiredVersionInfo">
+		<doc>The version of the MainBoss application intended to prevent older versions of the applications from accessing newer databases.</doc>
+	</variable>
+	<variable name="MinAReqAppVersion" type="RequiredVersionInfo">
+		<doc>The version of the @Request application intended to prevent older versions of the applications from accessing newer databases.</doc>
+	</variable>
+	<variable name="MinMBRemoteAppVersion" type="RequiredVersionInfo">
+		<doc>The version of the MainBoss Remote application intended to prevent older versions of the applications from accessing newer databases.</doc>
+	</variable>
+	<variable name="CompanyLocationID" type="link(Location)" >
+		<doc>Contact record to use for the Company Name header information on external documents (like purchase orders, work orders)</doc>
+		<extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.CompanyLocationPickerTblCreator,Thinkage.MainBoss.Controls</extension>
+	</variable>
+	<variable name="OrganizationName" type="OrganizationName">
+		<doc>The name of the organization typically associated with this database. Assists users in finding their organization's database in a large collection
+    of databases on the same server</doc>
+	</variable>
+	<variable name="CompanyLogo" type="Image" >
+		<doc>Company logo image to use on external documents (like purchase orders, work orders)</doc>
+	</variable>
+	<variable name="ReportFont" type="RequiredCode">
+		<doc>The font to use for the body of reports</doc>
+	</variable>
+	<variable name="ReportFontFixedWidth" type="RequiredCode">
+		<doc>The fixed-width font to use in reports where applicable</doc>
+	</variable>
+	<variable name="ReportFontSize" type="RequiredQuantity">
+		<doc>The font size (points) to use for the body of reports</doc>
+	</variable>
+	<variable name="ReportFontSizeFixedWidth" type="RequiredQuantity">
+		<doc>The font size (points) to use for the fixed-width text in reports</doc>
+	</variable>
+	<variable name="BarCodeSymbology" type="integer(min 0, max 127, nonnull)">
+		<doc>The default BarCodeSymbology to use for printing BarCodes; see Thinkage.Libraries.Presentation.BarCodeSymbology</doc>
+	</variable>
+
+	<variable name="ActiveFilterInterval" type="DaySpan">
+		<doc>The number of days from the current date back that the Active record filter is set to.</doc>
+	</variable>
+	<variable name="ActiveFilterSinceDate" type="Date">
+		<doc>The absolute since date the Active Filter is set to. If both Interval and SinceDate are set, the effective filter is the
+	AND operation of both.</doc>
+	</variable>
+
+	<variable name="HiddenFeatures" type="set(type string(minlength 1, 1073741823, lines 0, nonnull))">
+		<doc>Set containing user customized forms that list features the user wants hidden on screen</doc>
+	</variable>
+
+	<table name="Location"/>
+</database>

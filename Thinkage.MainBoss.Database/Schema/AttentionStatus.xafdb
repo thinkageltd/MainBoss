@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="Types.xafdb"/>
+	<table name="AttentionStatus" defaults="false" log="false" id="Id" labelkey="">
+		<doc>
+	  This view provides the records containing the information to display in the right-hand panel of the Attention List node
+	  as filtered by the current Logged in UserID.
+	</doc>
+		<field name="Id" read="RequiredGUID" />
+		<field name="UserID" link="User" type="RequiredGUIDREF">
+			<extension name="linkage">property</extension>
+		</field>
+		<field name="NumNewRequests" type="Quantity" />
+		<field name="NumInProgressRequests" type="Quantity" />
+		<field name="NumNewWorkOrders" type="Quantity" />
+		<field name="NumInProgressWorkOrders" type="Quantity" />
+		<field name="NumNewPurchaseOrders" type="Quantity" />
+		<field name="NumInProgressPurchaseOrders" type="Quantity" />
+		<extension name="query">
+		select [User].ID, [User].ID,	coalesce(sum(RAS.NumNew),0), coalesce(sum(RAS.NumInProgress),0),
+								coalesce(sum(WAS.NumNew),0), coalesce(sum(WAS.NumInProgress),0),
+								coalesce(sum(PAS.NumNew),0), coalesce(sum(PAS.NumInProgress),0) 
+		from Contact as C
+			  left join RequestAssignee as RA on RA.ContactID = C.ID
+			  left join RequestAssigneeStatistics as RAS on RAS.RequestAssigneeID = RA.ID
+			  left join WorkOrderAssignee as WA on WA.ContactID = C.ID
+			  left join WorkOrderAssigneeStatistics as WAS on WAS.WorkOrderAssigneeID = WA.ID
+			  left join PurchaseOrderAssignee as PA on PA.ContactID = C.ID
+			  left join PurchaseOrderAssigneeStatistics as PAS on PAS.PurchaseOrderAssigneeID = PA.ID
+				join [User] on [User].ContactID = C.ID
+		group by [User].ID
+	</extension>
+		<extension name="dependson">User</extension>
+		<extension name="dependson">Contact</extension>
+		<extension name="dependson">RequestAssignee</extension>
+		<extension name="dependson">RequestAssigneeStatistics</extension>
+		<extension name="dependson">WorkOrderAssignee</extension>
+		<extension name="dependson">WorkOrderAssigneeStatistics</extension>
+		<extension name="dependson">PurchaseOrderAssignee</extension>
+		<extension name="dependson">PurchaseOrderAssigneeStatistics</extension>
+	</table>
+	<table name="User"/>
+	<table name="Contact"/>
+	<table name="RequestAssignee"/>
+	<table name="RequestAssigneeStatistics"/>
+	<table name="WorkOrderAssignee"/>
+	<table name="WorkOrderAssigneeStatistics"/>
+	<table name="PurchaseOrderAssignee"/>
+	<table name="PurchaseOrderAssigneeStatistics"/>
+</database>

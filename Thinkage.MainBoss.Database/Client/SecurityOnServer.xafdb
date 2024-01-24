@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database labelcontext="dsSecurityOnServerLabel" name="http://thinkage.ca/MB3/dsCultureInfo.xsd:dsSecurityOnServer" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <table name="SecurityOnServer" defaults="false" log="false" id="Id" xid="DBUserName" labelkey="Authentication Credential">
+	<field name="Id" read="id(nonnull)" />
+	<field name="CredentialAuthenticationMethod" type="integer(nonnull, min 0, max 3)" labelkey="Authentication">
+	  <!-- DBILibrary.AuthenticationMethod -->
+	  <extension name="controlprovider">Thinkage.Libraries.DBILibrary.AuthenticationCredentials.AuthenticationMethodProvider,Thinkage.Libraries.DBILibrary</extension>
+	</field>
+	<!-- DBUserName, LoginName and Password are flagged as nullable because depending on the AuthenticationMethod of the record, the field may be null (or not). Editors
+		 need to enforce required fields depending on the AuthenticationMethod-->
+	<field name="DBUserName" type="string(minlength 1, 128, lines 0, trim both, null)" labelkey="User name" >
+	  <doc>Username SQL Credentials</doc>
+	</field>
+	<field name="LoginName" type="string(minlength 1, 128, lines 0, trim both, null)" labelkey="Login name" >
+	  <doc>SQLLogin name associated with CredentialName</doc>
+	</field>
+	<field name="Password" type="string(minlength 1, 128, lines 0, trim both, null)" labelkey="Password">
+	  <doc>
+		SQL Password (for creation only) of DB User.
+	  </doc>
+	</field>
+	<field name="InMainBossRole" type="bool">
+	  <doc>
+		True if this credential is a member of the MainBoss role in the database
+	</doc>
+	</field>
+	<field name="IsSysAdmin" type="bool">
+	  <doc>
+		True if this credential is in the SysAdmin server role
+	</doc>
+	</field>
+	<field name="IsDBO" type="bool">
+	  <doc>
+		True if this credential is the database owner (DBO)
+	</doc>
+	</field>
+	<field name="IsLoginManager" type="bool">
+	  <doc>
+		True if this credential as ability to create/drop database logins
+	</doc>
+	</field>
+	<field name="Enabled" type="bool">
+	  <doc>
+		True if this credential is enabled
+	</doc>
+	</field>
+	<field name="Generation" type="integer(32,nonnull)">
+	  <doc>
+		A unique value each time the row is fetched to ensure CacheManager sees 'new' data each time
+	</doc>
+	</field>
+	<extension name="deletemethod">delete</extension>
+  </table>
+</database>

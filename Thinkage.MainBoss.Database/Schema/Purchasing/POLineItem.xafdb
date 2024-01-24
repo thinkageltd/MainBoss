@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="POLineItem" defaults="true" log="false" id="Id" xid="POLineID" labelkey="Purchase Item">
+	<doc>
+	  This record represents a derived form of POLine where the thing being ordered is a tangible item for inventory or
+	  for use in a work order.
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="POLineID" read="RequiredGUIDREF"  base="POLine"/>
+	<field name="ItemLocationID" type="RequiredGUIDREF"  link="ItemLocation">
+	  <doc>The Item to purchase, and a suggested location to store it in</doc>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.AllActualItemLocationPickerTblCreator,Thinkage.MainBoss.Controls</extension>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Quantity" type="integer(min 1, max 2147483647, nonnull)">
+	  <doc>The number of items to be ordered</doc>
+	</field>
+	<field name="ReceiveQuantity" read="RequiredQuantity">
+	  <doc>The total quantity of all the associated receives</doc>
+	  <result hosting="cached">
+		  cast(42 as RequiredQuantity)
+	  </result>
+	  <extension name="dependson">mbfn_POLineItem_ReceiveQuantity()</extension>
+	</field>
+	<extension name="deletemethod">delete</extension>
+	<extension name="costrights">PurchaseOrderItem</extension>
+  </table>
+  <table name="ItemLocation"/>
+  <table name="ActualItemLocation"/>
+  <table name="POLine"/>
+  <table name="ReceiveItemPO"/>
+  <object class="function" name="mbfn_POLineItem_ReceiveQuantity">
+	<doc>
+	  Calculate the accumulated receives against a designated POLineItem
+	</doc>
+	<extension name="body">
+	  (
+		@POLIID uniqueidentifier	-- POLineItemID
+	  )
+	  RETURNS integer
+	  as
+	  begin
+		  return (
+			 select sum(Quantity)
+				from ReceiveItemPO
+				where ReceiveItemPO.POLineItemID = @POLIID
+		  )
+	  end
+	</extension>
+	<extension name="dependson">POLineItem.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ReceiveItemPO</extension>
+  </object>
+  <object class="trigger" name="mbtg_POLineItem_Updates_ActualItemLocation">
+	<doc>
+	  Maintain the OnOrder amount in ActualItemLocation based on changes to POLineItem
+	</doc>
+	<extension name="body">
+	  on POLineItem
+	  after insert, update, delete
+	  as
+	  begin
+		update ActualItemLocation
+			set OnOrder = dbo.mbfn_ActualItemLocation_OnOrder(ActualItemLocation.ID)
+			where ActualItemLocation.ID in (
+					 select distinct ActualItemLocation.ID from ActualItemLocation
+							join inserted on ActualItemLocation.ItemLocationID = inserted.ItemLocationID
+			   union select distinct ActualItemLocation.ID from ActualItemLocation
+							join deleted on ActualItemLocation.ItemLocationID = deleted.ItemLocationID
+			  )
+	  end
+	</extension>
+	<extension name="references">mbfn_ActualItemLocation_OnOrder()</extension>
+	<extension name="references">ActualItemLocation</extension>
+  </object>
+</database>

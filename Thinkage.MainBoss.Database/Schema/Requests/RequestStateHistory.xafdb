@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="RequestStateHistory" defaults="true" log="false" id="Id" xid="RequestID EffectiveDate" labelkey="Request State History">
+	<doc>
+		 Records all RequestState transitions for a Request.
+		 Each new record here will be reported back to he originator of the request if submitted through @Requests.
+		</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="Comment" type="Comment">
+	  <doc>Comment intended for internal use as to why this particular history record exists</doc>
+	</field>
+	<field name="EntryDate" type="RequiredDateTime">
+	  <doc>The actual date/time the record was created</doc>
+	  <extension name="serversetsDateTime"/>
+	</field>
+	<field name="EffectiveDate" type="RequiredDateTime">
+	  <doc>The effective date this record applies to the Request.</doc>
+	  <extension name="servergetsDateTime"/>
+	</field>
+	<field name="UserID" type="GUIDREF" link="User">
+	  <doc>Link to the originator of this record; may be null because generation of request state may be done by non mainboss user processes</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="EffectiveDateReadonly" type="Requiredbool">
+	  <doc>True if this particular state requires that the EffectiveDate not be changeable.</doc>
+	</field>
+	<field name="RequestID" type="RequiredGUIDREF" link="Request">
+	  <doc>The Request record to which this history record applies.</doc>
+	  <extension name="linkage">owner</extension>
+	</field>
+	<unique>
+	  <field name="EffectiveDate"/>
+	  <field name="RequestID"/>
+	</unique>
+	<field labelkey="State" name="RequestStateID" type="RequiredGUIDREF" link="RequestState">
+	  <doc>The actual state for this entry.</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field labelkey="Status" name="RequestStateHistoryStatusID" type="GUIDREF" link="RequestStateHistoryStatus">
+	  <doc>The state history status associated with this instance</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="CommentToRequestor" type="Comment" labelkey="Comment To Requestor">
+	  <doc>Comments intended to be communicated to the Requestor of the Request as to the current disposition of the Request</doc>
+	</field>
+	<field name="PredictedCloseDate" type="DateTime">
+	  <doc>
+			Optional value intended to be communicated to the Requestor of when the Request is expected to be completed/closed.
+			Can also be used to analyze requests that may be overdue, etc.
+			</doc>
+	</field>
+	<!-- We only want to limit the Requests that refer to us, not our records themselves so we specify a null lastupdate designation to avoid the default EffectiveDate from being used -->
+	<extension name="costrights">UnitValue</extension>
+	<extension name="lastupdate"></extension>
+  </table>
+  <table name="Request"/>
+  <table name="User"/>
+  <table name="RequestState"/>
+  <table name="RequestStateHistoryStatus"/>
+  <object class="trigger" name="mbtg_RequestStateHistory_Updates_Request">
+	<doc></doc>
+	<extension name="body">
+	  on RequestStateHistory
+	  after insert
+	  as
+	  begin
+		  -- Theoretically we should do this after updates and before deletes too
+		  -- but those operations are not allowed by the app (at least, not in any
+		  -- manner that alters the result of the calculation). The "before delete" would
+		  -- have to exclude the to-be-deleted records from the subquery and also be
+		  -- prepared to find no records, thus setting the field to null. Because some
+		  -- of the triggers are before and some after, two triggers would be needed.
+		  update Request
+			  set CurrentRequestStateHistoryID = dbo.mbfn_Request_CurrentRequestStateHistory(Request.ID)
+			  where Request.ID in (select RequestID from inserted)
+	  end
+	</extension>
+	<extension name="references">Request</extension>
+	<extension name="references">mbfn_Request_CurrentRequestStateHistory()</extension>
+  </object>
+  <object class="trigger" name="mbtg_EnforceRequestStateHistoryOrdering">
+	<doc>This enforces the fact that updates to history records cannot alter their existing EffectiveDate ordering for any particular Request</doc>
+	<extension name="body">
+	  on RequestStateHistory
+	  for update
+	  as
+		declare @count int;	<!-- Because we can't use a WITH inside EXISTS(query) we need to query the count into a variable. -->
+		<!-- The following query yields the columns from the history table as they were before the update operation -->
+		with OriginalHistory as (
+			select RequestStateHistory.Id, RequestStateHistory.RequestID, RequestStateHistory.EffectiveDate
+			  from RequestStateHistory
+			  left join inserted on RequestStateHistory.id = inserted.id
+			  where inserted.id is null
+		  union
+			select Id, RequestID, EffectiveDate
+			  from deleted
+		)
+		<!-- Count the number of records for which the update causes the predecessor or successor records (same Request) to change -->
+		select @count = count(*)
+		  from
+			(select
+			  Id,
+			  (select top 1 Id from RequestStateHistory
+				where RequestID = inserted.RequestID and EffectiveDate &gt; inserted.EffectiveDate
+				order by EffectiveDate asc),
+			  (select top 1 Id from RequestStateHistory
+				where RequestID = inserted.RequestID and EffectiveDate &lt; inserted.EffectiveDate
+				order by EffectiveDate desc)
+			from inserted) as newNeighbours(id, nextid, previd)
+		  inner join
+			(select
+			  Id,
+			  (select top 1 Id from OriginalHistory
+				where RequestID = deleted.RequestID and EffectiveDate &gt; deleted.EffectiveDate
+				order by EffectiveDate asc),
+			  (select top 1 Id from OriginalHistory
+				where RequestID = deleted.RequestID and EffectiveDate &lt; deleted.EffectiveDate
+				order by EffectiveDate desc)
+			from deleted) as oldNeighbours(id, nextid, previd)
+		  on newNeighbours.id = oldneighbours.id
+		  where oldNeighbours.nextId != newNeighbours.nextId
+			or (oldNeighbours.nextId is null and newNeighbours.nextId is not null)
+			or (oldNeighbours.nextId is not null and newNeighbours.nextId is null)
+			or oldNeighbours.previd != newNeighbours.previd
+			or (oldNeighbours.previd is null and newNeighbours.previd is not null)
+			or (oldNeighbours.previd is not null and newNeighbours.previd is null)
+		if @count &gt; 0 begin
+		  raiserror('EffectiveDate-order of records in table ''%s'' cannot be altered', 16, 1, 'RequestStateHistory')
+		  rollback transaction
+		end
+	</extension>
+	<extension name="references">RequestStateHistory</extension>
+  </object>
+  <object class="trigger" name="mbtg_EnforceNewRequestStateHistoryOrdering">
+	<doc>This enforces the rule that new state history records cannot predate (in EffectiveDate order) existing ones for the same Request</doc>
+	<extension name="body">
+	  on RequestStateHistory
+	  for insert
+	  as
+		declare @count int;	<!-- Because we can't use a WITH inside EXISTS(query) we need to query the count into a variable. -->
+		<!-- The following query yields the columns from the history table as they were before the insert operation -->
+		with OriginalHistory as (
+		  select RequestStateHistory.Id, RequestStateHistory.RequestID, RequestStateHistory.EffectiveDate
+			from RequestStateHistory
+			left join inserted on RequestStateHistory.id = inserted.id
+			where inserted.id is null
+		)
+		<!-- Count the number of History records that post-date any newly inserted ones on the same work orders -->
+		select @count = count(*)
+		  from OriginalHistory
+		  inner join inserted on OriginalHistory.RequestID = inserted.RequestID
+		  where OriginalHistory.EffectiveDate &gt; inserted.EffectiveDate
+		if @count &gt; 0 begin
+		  raiserror('EffectiveDate-order of new records in table ''%s'' must be later than those of existing records for the same %s', 16, 1, 'RequestStateHistory', 'Request')
+		  rollback transaction
+		end
+	</extension>
+	<extension name="references">RequestStateHistory</extension>
+  </object>
+</database>

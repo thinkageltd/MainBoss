@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="Unit" defaults="true" log="false" id="Id" xid="RelativeLocationID"  xunique="true" labelkey="Unit">
+	<doc>
+	  This record represents a Unit, which is Location that can be the target of Work Orders and/or Requests, or for which
+	  extra properties such as lifetime, servicing, or ownership issues should be recorded.
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="RelativeLocationID" read="RequiredGUIDREF" base="RelativeLocation"/>
+	<field name="UnitCategoryID" type="GUIDREF"  link="UnitCategory">
+	  <doc>Category this unit belongs to.</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="Make" type="Desc">
+	  <doc>The brand or manufacturer for the unit</doc>
+	</field>
+	<field name="Model" type="Desc">
+	  <doc>the model number or product name for the unit</doc>
+	</field>
+	<field name="Serial" type="Desc">
+	  <doc>the serial number for the unit</doc>
+	</field>
+	<field name="PurchaseDate" type="Date">
+	  <doc>This unit's original date of purchase</doc>
+	</field>
+	<field name="Drawing" type="Desc">
+	  <doc>An identifier that specifies where workers can find a drawing for the unit, if the drawing is not available on your computer</doc>
+	</field>
+	<field name="PurchaseVendorID" type="GUIDREF"  link="Vendor">
+	  <doc>The vendor from which this unit was purchased</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="OwnershipID" type="GUIDREF"  link="Ownership">
+	  <doc>The ownership code for this unit, typically indicating who actually owns it (but can be used in other ways instead)</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="AssetCodeID" type="GUIDREF"  link="AssetCode">
+	  <doc>The asset code for this unit, typically indicating the accounting for its capital value (but can be used in other ways instead)</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="SystemCodeID" type="GUIDREF"  link="SystemCode">
+	  <doc>The System code for the unit, typically used to group related units together (but can be used in other ways instead)</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="UnitUsageID" type="GUIDREF"  link="UnitUsage">
+	  <doc>The Unit Usage code for the unit, typically indicating in what manner it is used (but can be used in other ways instead)</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="OriginalCost" type="Currency">
+	  <doc>The purchase cost on the PurchaseDate</doc>
+	</field>
+	<field name="ReplacementCost" type="Currency">
+	  <doc>The cost to replace this unit, if the unit were to be replaced on the date given by ReplacementCostLastDate</doc>
+	</field>
+	<field name="ReplacementCostLastDate" type="Date">
+	  <doc>The date for which the replacement cost was estimated.</doc>
+	</field>
+	<field name="TypicalLife" type="integer(unsigned 16)">
+	  <doc>Number of years this unit is expected to be useable, counting from the PurchaseDate</doc>
+	</field>
+	<field name="ScrapDate" type="Date">
+	  <doc>The date anticipated this unit will be taken out of service or the date it was taken out of service</doc>
+	</field>
+	<field name="ScrapValue" type="Currency">
+	  <doc>The estimated or actual value of this unit on ScrapDate</doc>
+	</field>
+	<field name="WorkOrderExpenseModelID" type="GUIDREF"  link="WorkOrderExpenseModel">
+	  <doc>Initial setting for a new workorder when this unit is picked</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="AccessCodeID" type="GUIDREF"  link="AccessCode">
+	  <doc>Initial setting for a new workorder when this unit is picked</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<extension name="deletemethod">hide</extension>
+	<extension name="costrights">UnitValue</extension>
+	<extension name="lastupdate">ScrapDate</extension>
+  </table>
+  <table name="RelativeLocation"/>
+  <table name="UnitCategory"/>
+  <table name="Vendor"/>
+  <table name="Ownership"/>
+  <table name="AssetCode"/>
+  <table name="SystemCode"/>
+  <table name="UnitUsage"/>
+  <table name="Contact"/>
+  <table name="WorkOrderExpenseModel"/>
+  <table name="AccessCode"/>
+</database>

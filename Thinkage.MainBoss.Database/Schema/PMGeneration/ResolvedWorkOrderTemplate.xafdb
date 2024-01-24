@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ResolvedWorkOrderTemplate" log="false" id="Id"  labelkey="Prototype Work Order">
+	<field name="Id" read="RequiredGUID" />
+	<!-- This field ties back to the WorkOrderTemplate record we are resolving -->
+	<field name="WorkOrderTemplateID" type="RequiredGUIDREF" link="WorkOrderTemplate" unique="true"/>
+	<!-- This field provides a self-pointer to use in paths to add a level to the key, since the .L. from the WOT does not and creates confusing keys -->
+	<field name="ResolvedWorkOrderTemplateID" type="RequiredGUIDREF" link="ResolvedWorkOrderTemplate" unique="true"/>
+	<!-- The WorkOrder has no Duration, but this value is used to calculate the Work End Date from the proposed Work Start Date -->
+	<field name="Duration" type="RequiredWorkOrderDuration"/>
+	<!-- The remaining fields have the same names as the WorkOrder fields they initialize -->
+	<field name="Subject" type="Subject"/>
+	<field name="Description" type="MultiLineUnlimited"/>
+	<field name="ClosingComment" type="Comment" labelkey="Comment"/>
+	<field name="WorkOrderExpenseModelID" type="GUIDREF"  link="WorkOrderExpenseModel" labelkey="Expense Model"/>
+	<field name="WorkCategoryID" type="GUIDREF"  link="WorkCategory"/>
+	<field name="AccessCodeID" type="GUIDREF"  link="AccessCode"/>
+	<field name="ProjectID" type="GUIDREF"  link="Project"/>
+	<field name="WorkOrderPriorityID" type="GUIDREF"  link="WorkOrderPriority" labelkey="Priority"/>
+	<field name="CloseCodeID" type="GUIDREF"  link="CloseCode"/>
+	<field name="Downtime" type="Downtime"/>
+	<field name="SelectPrintFlag" type="bool" labelkey="Select for Printing"/>
+	<field name="GenerateLeadTime" type="RequiredWorkOrderDuration"/>
+	<extension name="query">
+	  with ResolvedTasks
+		as (
+		  select
+			ID,
+			Duration,
+			"Subject",
+			"Description",
+			ClosingComment,
+			WorkOrderExpenseModelID,
+			WorkCategoryID,
+			AccessCodeID,
+			ProjectID,
+			WorkOrderPriorityID,
+			CloseCodeID,
+			Downtime,
+			SelectPrintFlag,
+			GenerateLeadTime
+		  from WorkOrderTemplate
+		  where ContainingWorkOrderTemplateID is null
+		union all
+		  select
+			WOT.ID,
+			WOT.Duration+BASIS.Duration,
+			coalesce(WOT."Subject", BASIS."Subject"),
+			case
+			  when WOT."Description" is null then BASIS."Description"
+			  when BASIS."Description" is null then WOT."Description"
+			  else BASIS."Description"+char(13)+char(10)+WOT."Description"
+			end,
+			case
+			  when WOT.ClosingComment is null then BASIS.ClosingComment
+			  when BASIS.ClosingComment is null then WOT.ClosingComment
+			  else BASIS.ClosingComment+char(13)+char(10)+WOT.ClosingComment
+			end,
+			coalesce(WOT.WorkOrderExpenseModelID, BASIS.WorkOrderExpenseModelID),
+			coalesce(WOT.WorkCategoryID, BASIS.WorkCategoryID),
+			coalesce(WOT.AccessCodeID, BASIS.AccessCodeID),
+			coalesce(WOT.ProjectID, BASIS.ProjectID),
+			coalesce(WOT.WorkOrderPriorityID, BASIS.WorkOrderPriorityID),
+			coalesce(WOT.CloseCodeID, BASIS.CloseCodeID),
+			case
+			  when WOT.Downtime is null then BASIS.Downtime
+			  when BASIS.Downtime is null then WOT.Downtime
+			  else dbo._ISum(BASIS.Downtime, WOT.Downtime)
+			end,
+			coalesce(WOT.SelectPrintFlag, BASIS.SelectPrintFlag),
+			case when BASIS.GenerateLeadTime > WOT.GenerateLeadTime then BASIS.GenerateLeadTime else WOT.GenerateLeadTime end
+		  from WorkOrderTemplate as WOT
+		  join ResolvedTasks as BASIS on BASIS.Id = WOT.ContainingWorkOrderTemplateID
+		)
+	  select ID, ID, * from ResolvedTasks <!-- * starts with a third ID -->
+	</extension>
+	<extension name="dependson">WorkOrderTemplate</extension>
+  </table>
+  <table name="WorkOrderTemplate"/>
+  <table name="WorkOrderExpenseModel"/>
+  <table name="WorkCategory"/>
+  <table name="AccessCode"/>
+  <table name="Project"/>
+  <table name="WorkOrderPriority"/>
+  <table name="CloseCode"/>
+</database>

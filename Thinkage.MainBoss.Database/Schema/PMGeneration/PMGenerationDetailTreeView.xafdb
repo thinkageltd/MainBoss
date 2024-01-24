@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="PMGenerationDetailAndScheduledWorkOrderAndLocation" defaults="false" log="false" id="Id" labelkey="">
+	<doc>
+	  This view unifies Locations (with type obtained from LocationDerivations), ScheduledWorkOrders, and PMGenerationDetail records.
+	  It also supplies a unified TableEnum (record type), ParentID and Code	for the browser to use.
+	</doc>
+	<!--
+	  TODO: Note that a unified Code is generally no longer needed by the browsers since they now support per-view list column content,
+	  but in this case we synthesize a code for the PMGenerationDetail records which textually sorts in the desired order.
+	  This could nevertheless still be done now in the per-view list-column definition by using a custom wrapper for the column source.
+	  The unified code we supply is also "harmful" in the SWO record type because we assume the querier want the code of the Task
+	  (WorkOrderTemplate) rather than the code of the Schedule or the Unit. It would be far better for the browser to fetch whatever Code
+	  it really wants and drop the Code field we have here.
+	  -->
+	<field name="Id" read="RequiredGUID">
+	  <doc>ID of the record</doc>
+	</field>
+	<field name="TableEnum" type="integer(min 0, max 16, nonnull)">	<!-- ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.MakeSharedWorkOrder -->
+	  <doc>Record type identification. See DatabaseLayout.ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation for values.</doc>
+	</field>
+	<field name="ParentID" type="GUIDREF" link="PMGenerationDetailAndScheduledWorkOrderAndLocation" labelkey="">
+	  <doc>The ID of the parent record for the tree structure</doc>
+	</field>
+	<field name="LocationID" type="GUIDREF" link="Location">
+	  <doc>The base-record ID of the record if is is a Location record</doc>
+	</field>
+	<field name="ScheduledWorkOrderID" type="GUIDREF" link="ScheduledWorkOrder">
+	  <doc>The ID of the record if is is a ScheduledWorkOrder record</doc>
+	</field>
+	<field name="PMGenerationDetailID" type="GUIDREF" link="PMGenerationDetail">
+	  <doc>The ID of the record if is is a PMGenerationDetail record</doc>
+	</field>
+		<!-- Location variants in the following query that cannot contain a Unit have been pruned out -->
+	<extension name="query">
+			<!-- DatabaseEnums.LocationDerivations.PostalAddress -->
+			select LocationID, 0, NULL, LocationID, null, null
+				from PostalAddress as PA
+	  union all
+			<!-- DatabaseEnums.LocationDerivations.Unit -->
+			select RL.LocationID, 2, RL.ContainingLocationID, RL.LocationID, null, null
+				from Unit
+				  left join RelativeLocation as RL on Unit.RelativeLocationID = RL.ID
+	  union all
+			<!-- DatabaseEnums.LocationDerivations.PermanentStorage -->
+			select RL.LocationID, 3, RL.ContainingLocationID, RL.LocationID, null, null
+				from PermanentStorage as PS
+				  left join RelativeLocation as RL on PS.RelativeLocationID = RL.ID
+	  union all
+			<!-- DatabaseEnums.LocationDerivations.PlainRelativeLocation -->
+			select RL.LocationID, 4, RL.ContainingLocationID, RL.LocationID, null, null
+				from PlainRelativeLocation as PRL
+				  left join RelativeLocation as RL on PRL.RelativeLocationID = RL.ID
+	  union all
+		  <!-- ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder -->
+			select SWO.ID, 6, SWO.UnitLocationID, NULL, SWO.ID, NULL
+				from ScheduledWorkOrder as SWO
+	  union all
+		  <!-- ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.DetailBaseIndex -->
+			select PMGD.ID, 7+PMGD.DetailType, PMGD.ScheduledWorkOrderID, NULL, NULL, PMGD.ID
+				from PMGenerationDetail as PMGD
+	  </extension>
+		<extension name="dependson">Location</extension>
+		<extension name="dependson">PermanentStorage</extension>
+		<extension name="dependson">PlainRelativeLocation</extension>
+		<extension name="dependson">PostalAddress</extension>
+		<extension name="dependson">RelativeLocation</extension>
+		<extension name="dependson">TemplateTemporaryStorage</extension>
+		<extension name="dependson">TemporaryStorage</extension>
+		<extension name="dependson">Unit</extension>
+		<extension name="dependson">ScheduledWorkOrder</extension>
+		<extension name="dependson">PMGenerationDetail</extension>
+		<extension name="dependson">WorkOrderTemplate</extension>
+		<extension name="dependson">WorkOrder</extension>
+	</table>
+  <table name="PMGenerationDetailAndContainers" defaults="false" log="false" id="Id" labelkey="">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="FilterID" type="RequiredGUIDREF" link="PMGenerationDetailAndScheduledWorkOrderAndLocation"/>
+	<field name="DisplayID" type="RequiredGUIDREF" link="PMGenerationDetailAndScheduledWorkOrderAndLocation"/>
+	<extension name="query">
+		-- Select the self-records
+		select ID, ID, ID
+		  from PMGenerationDetail
+	  union all
+		-- Select the Detail records within the SWO
+		select ScheduledWorkOrderID, ID, ScheduledWorkOrderID
+		  from PMGenerationDetail
+	  union all
+		-- Select the Detail records within the unit and all its containers
+		select LC.ContainingLocationID, PMGD.ID, LC.ContainingLocationID
+		  from PMGenerationDetail as PMGD
+			join ScheduledWorkOrder as SWO on PMGD.ScheduledWorkOrderID = SWO.ID
+			join LocationContainment as LC on LC.ContainedLocationID = SWO.UnitLocationID
+	  union all
+		-- Select the SWO within the unit and all its containers
+		select LC.ContainingLocationID, SWO.ID, LC.ContainingLocationID
+		  from ScheduledWorkOrder as SWO
+			join LocationContainment as LC on LC.ContainedLocationID = SWO.UnitLocationID
+	</extension>
+	<extension name="dependson">PMGenerationDetail</extension>
+	<extension name="dependson">ScheduledWorkOrder</extension>
+	<extension name="dependson">LocationContainment</extension>
+  </table>
+  <table name="CommittedPMGenerationDetailAndPMGenerationBatch" defaults="false" log="false" id="Id" labelkey="">
+	<doc>
+	  This view unifies PMGenerationBatch, and PMGenerationDetail records.
+	  It also supplies a unified TableEnum (record type) and ParentID for the browser to use.
+	</doc>
+	<field name="Id" read="RequiredGUID">
+	  <doc>ID of the record</doc>
+	</field>
+	<field name="TableEnum" type="integer(min 0, max 10, nonnull)">	<!-- 10 is ViewRecordTypes.CommittedPMGenerationDetailAndPMGenerationBatch.MakeSharedWorkOrder -->
+	  <doc>Record type identification. See DatabaseLayout.ViewRecordTypes.CommittedPMGenerationDetailAndPMGenerationBatch for values.</doc>
+	</field>
+	<field name="ParentID" type="GUIDREF" link="CommittedPMGenerationDetailAndPMGenerationBatch" labelkey="">
+	  <doc>The ID of the parent record for the tree structure</doc>
+	</field>
+	<field name="PMGenerationBatchID" type="GUIDREF" link="PMGenerationBatch">
+	  <doc>The ID of the record if is is a PMGenerationBatch record</doc>
+	</field>
+	<field name="PMGenerationDetailID" type="GUIDREF" link="PMGenerationDetail">
+	  <doc>The ID of the record if is is a PMGenerationDetail record</doc>
+	</field>
+	<extension name="query">
+			select PMGB.ID, 0, NULL,										<!-- ViewRecordTypes.CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch -->
+				  PMGB.ID, NULL
+				from PMGenerationBatch as PMGB
+				where PMGB.SessionID is null
+		  union all
+			select PMGD.ID, 1+PMGD.DetailType, PMGD.PMGenerationBatchID,	<!-- ViewRecordTypes.CommittedPMGenerationDetailAndPMGenerationBatch.DetailBaseIndex -->
+				  NULL, PMGD.ID
+				from PMGenerationDetail as PMGD
+				join PMGenerationBatch as PMGB on PMGB.ID = PMGD.PMGenerationBatchID
+				where PMGB.SessionID is null
+	  </extension>
+	<extension name="dependson">PMGenerationBatch</extension>
+	<extension name="dependson">PMGenerationDetail</extension>
+  </table>
+  <table name="CommittedPMGenerationDetailAndBatches" defaults="false" log="false" id="Id" labelkey="">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="FilterID" type="RequiredGUIDREF" link="CommittedPMGenerationDetailAndPMGenerationBatch"/>
+	<field name="DisplayID" type="RequiredGUIDREF" link="CommittedPMGenerationDetailAndPMGenerationBatch"/>
+	<extension name="query">
+		-- Select the self-records for the Detail records
+		select ID, ID, ID
+		  from PMGenerationDetail
+	  union
+		-- Select the self-records for the Batch records
+		select ID, ID, ID
+		  from PMGenerationBatch
+	  union
+		-- Select the containment of the details within the batch
+		select PMGenerationBatchID, ID, PMGenerationBatchID
+		  from PMGenerationDetail
+	</extension>
+	<extension name="dependson">PMGenerationDetail</extension>
+	<extension name="dependson">PMGenerationBatch</extension>
+  </table>
+  <table name="Location"/>
+  <table name="ScheduledWorkOrder"/>
+  <table name="PMGenerationDetail"/>
+  <table name="PMGenerationBatch"/>
+  <table name="LocationContainment"/>
+	<table name="PermanentStorage"/>
+	<table name="PlainRelativeLocation"/>
+	<table name="PostalAddress"/>
+	<table name="RelativeLocation"/>
+	<table name="TemplateTemporaryStorage"/>
+	<table name="TemporaryStorage"/>
+	<table name="Unit"/>
+	<table name="WorkOrder"/>
+	<table name="WorkOrderTemplate"/>
+</database>

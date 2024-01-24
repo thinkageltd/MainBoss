@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database name="http://thinkage.ca/MB3/dsMB.xsd:dsMainBossService_1_0_0_1_To_1_0_8_28" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+	<!-- Two variables that existed up to 1.0.8.28 that identified where the mainboss service was installed -->
+	<variable name="ATRServiceMachineName" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+	<variable name="ATRServiceName" type="string(minlength 1, 1073741823, lines 0, trim both)" />
+	<merge uri="Extensions.xafdb"/>
+</database>

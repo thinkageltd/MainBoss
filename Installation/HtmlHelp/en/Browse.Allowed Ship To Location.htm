@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Viewing Locations</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Viewing Locations</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Locations.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Non-Temporary Location.htm">Next section &gt;</a></p>
+
+<p>You view the locations with <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Locations</span> or <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Locations</span> | <span class="CPanel">Organize</span>. Both control panel entries show the same information, but the <span class="CPanel">Organize</span> version is designed to help you reorganize your locations and sublocations.</p>
+
+<p><span class="CInset">Reorganizing:</span> <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Locations</span> | <span class="CPanel">Organize</span> is similar to the ordinary table viewer, but contains an extra "<span class="CField">Destination</span>" field and a <span class="CButton">Move to Destination</span> button. You can use these to take a selected group of locations and turn them into sublocations of another existing location.</p>
+
+<p>Begin by setting "<span class="CField">Destination</span>" to the location where the selected locations will go. Then select the locations; typically, you would hold down the <span class="CKey">&lt;Ctrl&gt;</span> key, then click on each location that you want to move. Finally, click the <span class="CButton">Move to Destination</span> button; this will change the selected locations into sublocations of "<span class="CField">Destination</span>".</p>
+
+<p>The <span class="CPanel">Locations</span> table viewer contains the following:</p>
+
+<p class="wi"><span class="CButton">View</span> section: Shows current locations using a location map. The main entries are postal addresses. Each postal address may contain sublocations which can contain more sublocations, to any level necessary.</p>
+<p class="wi2"><span class="CField">Code</span>: Click this heading to sort the list by code (i.e. the names associated with postal addresses). Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Description</span>: Click this heading to sort the list by description. Click again to reverse the order.</p>
+<p class="wi2"><span class="CButton">Apply Filter</span>: Lets you set up a <span class="NewTerm">filter</span> to select which records should be shown in the table. For more information, see <a href="Filter.htm">Table Filters</a>.</p>
+<p class="wi2"><span class="CButton">Details</span> section: Shows information from the selected record.</p>
+<p class="wi2"><span class="CButton">Contacts</span> section: Shows contact people at the selected location. For more, see <a href="Contacts.htm">Contacts</a>.</p>
+<p class="wi2"><span class="CButton">Units</span> section: Shows units at the selected location. For more, see <a href="Units.htm">Units</a>.</p>
+<p class="wi2"><span class="CButton">Storerooms</span> section: Shows storerooms at the selected location. For more, see <a href="Storerooms.htm">Storerooms</a>.</p>
+<p class="wi2"><span class="CButton">Temporary Storage and Items</span> section: Shows temporary storage and temporary storage assignments at the selected location. For more, see <a href="Edit.Temporary Storage.htm">Temporary Storage Locations</a> and <a href="Edit.Temporary Storage Assignment.htm">Temporary Storage Assignments</a>.</p>
+<p class="wi2"><span class="CButton">New Postal Address</span>: Opens a window to create a new postal address record. Fields in the new record will either be blank or assigned default values (as specified in the <span class="CButton">Defaults for Postal Addresses</span> section).</p>
+<p class="wi2"><span class="CButton">New Sub Location</span>: Opens a window to create a new sublocation under the currently selected location. Fields in the new record will either be blank or assigned default values (as specified in the <span class="CButton">Defaults for Sub Locations</span> section).</p>
+<p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
+<p class="wi3"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
+<p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi3"><span class="CButton">Restore</span>: Restores a deleted record. This button is only active if the viewer is in <span class="CU">All</span> mode and if you've selected a deleted record. When you click <span class="CButton">Restore</span>, MainBoss will open a window that lets you examine the contents of the deleted record. If you save the record and close the window, the record will be restored to the <span class="CU">Active</span> list.</p>
+<p class="wi2"><span class="CButton">Show on Map</span>: If the currently selected location record has a "<span class="CField">GIS Location</span>" value, MainBoss attempts to open Google Maps to a map showing the location's geographic position. If the current location record doesn't have a GIS location, MainBoss checks the location record that contains the current location, then the container of the container, and so on, until MainBoss either finds a record that has a GIS location or else reaches a record with no container.
+
+<br /><br />If MainBoss finds no record with a GIS location, but does find a postal address record containing postal information, MainBoss passes the postal information to Google Maps.
+
+<br /><br />In order to see the geographic position in Google Maps, you must have an active Internet connection and a suitable web browser.</p>
+<p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the record that's currently selected.</p>
+<p class="wi2"><span class="CButton"><img src="PrintHS.png" alt="Print" /></span>: Opens a window to let you print your locations. For more information, see <a href="Report.Location.htm">Printing Location Information</a>.</p>
+<p class="wi2"><span class="CField">Destination</span>: [Only present in <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Locations</span> | <span class="CPanel">Organize</span>] Specifies a location to which you wish to move one or more sublocations.</p>
+<p class="wi2"><span class="CButton">Move to Destination</span>: [Only present in <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Locations</span> | <span class="CPanel">Organize</span>] Changes all the locations selected in the location list so that they become sublocations of "<span class="CField">Destination</span>".</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Lets you search through the list of records for a particular record. For more information, see <a href="Search.htm">Searching for a Particular Record</a>. The <span class="CButton"><img src="Find_VS.png" alt="Search" /></span> button has an accompanying drop-down list containing the following:</p>
+<p class="wi3"><span class="CButton">Find Next</span>: Uses the same search condition(s) as your most recent search and finds the next record in the table that matches the condition(s). If the search reaches the end of the table without finding a matching record, it goes to the start of the table and continues the search.</p>
+<p class="wi3"><span class="CButton">Find Previous</span>: Same as <span class="CButton">Find Next</span> except that it goes backward in the table. If the search reaches the start of the table without finding a matching record, it goes to the end of the table and continues the search.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p class="wi"><span class="CButton">Defaults for Postal Addresses</span> section: Shows any defaults to be used when creating new postal addresses.</p>
+<p class="wi2"><span class="CButton">Edit Defaults</span>: Opens a window to let you change the displayed default values.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p class="wi"><span class="CButton">Defaults for Sub Locations</span> section: Shows any defaults to be used when creating new sublocation records.</p>
+<p class="wi2"><span class="CButton">Edit Defaults</span>: Opens a window to let you change the displayed default values.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p>For more on locations, see <a href="Locations.htm">Locations</a>. For more on creating or editing postal address records, see <a href="Edit.Postal Address.htm">Editing Postal Addresses</a>. For more on creating or editing sublocation records, see <a href="Edit.Sub Location.htm">Editing Sublocations</a>. For general information on table viewers, see <a href="UsingTableViewers.htm">Using Table Viewers</a>.</p>
+
+
+<p><a href="Locations.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Non-Temporary Location.htm">Next section &gt;</a></p>
+</body>
+</html>
+

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Command Line Options</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Command Line Options</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.SQL Database.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="InternationalLanguageSupport.htm">Next section &gt;</a></p>
+
+<p>Command line options let you control how MainBoss begins execution. For example, if you want to start MainBoss in Requests mode without having to go through the Maintenance Organization List, you can specify the mode as an option on the command line. Typically, you would create a desktop shortcut whose command line contains appropriate options, so that you don't have to type them in each time you start the program.</p>
+
+<p class="box">If your site uses ClickOnce deployment, you cannot specify command line options when you invoke MainBoss. For further information on ClickOnce, see the <a href=" " >Installation and Administration Guide</a>.</p>
+
+<p>The general format of the command line is</p>
+
+<pre>mainboss option option option...</pre>
+
+<p>Options begin with a slash (<span class="CU">/</span>) character. If an option specifies a value, the format is</p>
+
+<pre>/option:value</pre>
+
+<p>as in</p>
+
+<pre>/DataBaseName:MyDatabase</pre>
+
+<p>Values that contain space characters should be quoted as in</p>
+
+<pre>/OrganizationName:"Our Organization"</pre>
+
+<p><span class="CInset">Abbreviations</span><span class="CInset">:</span> Most keywords on the MainBoss command line may be abbreviated. In MainBoss documentation, the letters that <span class="NewTerm">must</span> be included are shown in upper case; any or all other letters may be omitted. For example, the following are all valid abbreviations for the option <span class="CU">/DataBaseName</p></span>
+
+<pre>/databasename
+/databasen
+/dbname
+/dbn</pre>
+
+<p>Although the documentation shows some letters in upper case and some in lower, you can type letters in any case you want. For example, <span class="CU">/DBN</span> is exactly the same as <span class="CU">/dbn</span> or <span class="CU">/Dbn</span> on the MainBoss command line.</p>
+
+<p><span class="CInset">Options</span>: The following options are recognized:</p>
+
+<p class="wi"><span class="CU">/CultureInfo:</span> The Windows "culture" setting to be used. (A <span class="NewTerm">culture</span> is a collection of information about language and other locale-based information, e.g. what monetary symbols are used in a particular place.) By default, MainBoss normally takes its culture information from the "<span class="BL">Format</span>" field in the <span class="BL">Format</span> section of your Windows Regional Settings. It then attempts to operate in the language given by those settings (e.g. MainBoss attempts to run in French if that's what your settings dictate). However, if you specify a <span class="CU">/CultureInfo</span> argument on the command line, the argument overrides the Regional Settings. This is particularly useful if you're creating a batch command file or shell script that you want to have work in a specific language, no matter what the user's Regional Settings might be.
+
+<br /><br />The argument of <span class="CU">/CultureInfo</span> is the official Windows "CultureInfo" string name for the desired culture. For example, if you want generic Spanish, you'd specify <span class="CU">/CultureInfo:es-ES</span>; for U.S. English, you'd use <span class="CU">/CultureInfo:en-US</span>. See your Windows documentation for recognized "CultureInfo" string identifiers.
+
+<br /><br />Options on the command line are not affected by <span class="CU">/CultureInfo</span>. For example, the option <span class="CU">/Mode:Requests</span> does <span class="Emphasis">not</span> change if you switch to a language where "requests" is translated to a different word.</p>
+<p class="box"><span class="CInset">Note:</span> If you change the culture information with <span class="CU">/CultureInfo</span>, MainBoss makes the change <span class="Emphasis">after</span> the command line arguments have been parsed. This means that if your command line has syntax errors, you may see error messages in the user's original preferred language, not in the language specified by <span class="CU">/CultureInfo</span>.</p>
+
+<p class="wi"><span class="CU">/OrganizationName</span>: The name of the maintenance organization. If you specify an organization name, MainBoss looks up that name in your organization table and attempts to open the corresponding database with the start mode specified in the organization list. (See below for more on start modes.)</p>
+<p class="wi"><span class="CU">/DataBaseServer</span>: The database server where the MainBoss database is hosted.</p>
+<p class="wi"><span class="CU">/DataBaseName</span>: The name of the database containing the MainBoss data on the database server.</p>
+<p class="box">If you specify <span class="CU">/OrganizationName</span>, you don't have to specify either <span class="CU">/DataBaseServer</span> or <span class="CU">/DataBaseName</span>. If you don't specify <span class="CU">/OrganizationName</span>, you must specify both <span class="CU">/DataBaseServer</span> and <span class="CU">/DataBaseName</span>.</p>
+
+<p class="wi"><span class="CU">/Mode</span>: Mode for starting the software. Possible start modes are described in <a href="Browse.Organization.htm">Your Maintenance Organization List</a>.</p>
+<p class="wi2"><span class="CU">/Mode:MainBoss</span></p>
+<p class="wi2"><span class="CU">/Mode:"MainBoss Requests"</span></p>
+<p class="wi2"><span class="CU">/Mode:Administration</span></p>
+<p class="wi2"><span class="CU">/Mode:"View Sessions"</span></p>
+<p class="wi2"><span class="CU">/Mode:"Pick Organization"</span>; with this mode, MainBoss starts by displaying your organization list so you can pick which one you want to open</p>
+<p class="wi"><span class="CU">/HelpManualPath</span>: The URL location for MainBoss's documentation.</p>
+<p class="wi"><span class="CU">+CompactBrowsers</span>: Invokes MainBoss in a mode that initially hides the details panel for records selected in table viewers. For more, see <a href="HidingtheDetailsforaSelectedRecord.htm">Hiding the Details for a Selected Record</a>.</p>
+<p class="wi"><span class="CU">-CompactBrowsers</span>: Tells MainBoss not to hide details panels.</p>
+<p class="box">The MBUtility command is another way of performing certain MainBoss operations using a command line interface. For more on MBUtility, see the MainBoss <a href=" " >Installation and Administration Guide</a>.</p>
+
+
+<p><a href="Browse.SQL Database.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="InternationalLanguageSupport.htm">Next section &gt;</a></p>
+</body>
+</html>
+

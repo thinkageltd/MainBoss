@@ -1,0 +1,20 @@
+@model HomeModel
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.Libraries.Translation
+@using Thinkage.Web.Mvc.Html
+@using Thinkage.MainBoss.WebAccess.Models;
+
+@{ 
+    ViewBag.Title = T.Text("Requestor Remarks Not Complete");
+}
+@section MainContent { 
+    @(Html.ResultMessage(ViewData["ResultMessage"]))
+
+	@(T.Text("The request comment history has been changed, possibly by someone else adding comments. Your remarks were not saved."))
+	<br />
+    @* 
+        The following does not work any longer as some browsers do not honor self.close on windows that were not opened with window.open(); some browser (like chome) just silently ignore it; others warn you that they are ignoring it
+        In any event, we should not offer Close, but Try Again and put the user back to the input form (WITH THEIR Input DATA INTACT) with a refreshed state history context
+    *@
+	@(Html.Button("Close", T.Text("Close"), String.Format("javascript:self.close();"))) 
+}

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ActiveTemporaryStorageWithItemAssignments" defaults="false" log="false" id="Id" labelkey="Active Temporary Storage With Item Assignments">
+	<doc>
+		  This view provides active temporary storage locations along with their assigned items in a two-level tree structure, with a unified containing-location field.
+	</doc>
+	<field name="Id" read="RequiredGUID">
+	  <doc>ID of the Location or ItemLocation record</doc>
+	</field>
+	<field name="TableEnum" type="integer(min 0, max 1, nonnull)">
+	  <doc>Record type identification. See DatabaseLayout.ViewRecordTypes.ActiveTemporaryStorageWithItemAssignments for values.</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIItem.ActiveTemporaryStorageWithItemAssignmentsProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="LocationID" type="RequiredGUIDREF" link="Location">
+	  <doc>ID of the base LocationID record for temp storage records</doc>
+	</field>
+	<field name="ItemLocationID" type="RequiredGUIDREF" link="ItemLocation">
+	  <doc>ID of the base ItemLocationID record for temp storage assignment records</doc>
+	</field>
+	<field name="ContainingLocationID" type="GUIDREF" link="Location">
+	  <doc>The ID of the base Location record of the location that contains the temp storage</doc>
+	</field>
+	<field name="ParentID" type="GUIDREF" link="ActiveTemporaryStorageWithItemAssignments" labelkey="Active Temporary Storage With Item Assignments">
+	  <doc>The tree parent (null for temp storage, and the temp storage for temp storage assignments)</doc>
+	</field>
+	<extension name="query">
+			select TS.LocationID, 0, TS.LocationID, NULL, TS.ContainingLocationID, NULL						<!-- DatabaseLayout.ViewRecordTypes.ActiveTemporaryStorageWithItemAssignments.TemporaryStorage -->
+				from TemporaryStorage as TS
+				join WorkOrder as WO on WO.ID = TS.WorkOrderID
+				join WorkOrderStateHistory as WOSH on WOSH.ID = WO.CurrentWorkOrderStateHistoryID
+				join WorkOrderState as WOS on WOS.ID = WOSH.WorkOrderStateID
+				where WOS.TemporaryStorageActive != 0
+		  union all
+			select IL.ID, 1, NULL, IL.ID, TS.ContainingLocationID, IL.LocationID	<!-- DatabaseLayout.ViewRecordTypes.ActiveTemporaryStorageWithItemAssignments.TemporaryItemLocation -->
+				from TemporaryItemLocation as TIL
+				join ActualItemLocation as AIL on AIL.ID = TIL.ActualItemLocationID
+				join ItemLocation as IL on IL.ID = AIL.ItemLocationID
+				join TemporaryStorage as TS on TS.LocationID = IL.LocationID
+				join WorkOrder as WO on WO.ID = TS.WorkOrderID
+				join WorkOrderStateHistory as WOSH on WOSH.ID = WO.CurrentWorkOrderStateHistoryID
+				join WorkOrderState as WOS on WOS.ID = WOSH.WorkOrderStateID
+				where WOS.TemporaryStorageActive != 0
+	</extension>
+	<extension name="dependson">Location</extension>
+	<extension name="dependson">WorkOrder</extension>
+	<extension name="dependson">WorkOrderStateHistory</extension>
+	<extension name="dependson">WorkOrderState</extension>
+	<extension name="dependson">ItemLocation</extension>
+	<extension name="dependson">TemporaryItemLocation</extension>
+	<extension name="dependson">TemporaryStorage</extension>
+  </table>
+  <table name="Location"/>
+  <table name="WorkOrder"/>
+  <table name="WorkOrderStateHistory"/>
+  <table name="WorkOrderState"/>
+  <table name="ItemLocation"/>
+  <table name="TemporaryItemLocation"/>
+  <table name="TemporaryStorage"/>
+</database>

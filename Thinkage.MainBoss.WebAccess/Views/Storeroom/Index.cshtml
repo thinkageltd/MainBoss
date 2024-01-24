@@ -1,0 +1,38 @@
+﻿@model IEnumerable<ItemCountValueEntities.PermanentStorage>
+
+@{
+	ViewBag.Title = "Storerooms";
+	Layout = "~/Views/Shared/_LayoutBrowse.cshtml";
+}
+@section BrowseContent {
+	<thead>
+		<tr>
+			<th>
+				@Html.DisplayNameFor(model => model.BaseRelativeLocation.BaseLocation.Code)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Rank)
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model) {
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.BaseRelativeLocation.BaseLocation.Code)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Rank)
+				</td>
+				<td>
+					@Html.ActionLink("Items", "ItemAssignments", new {
+						locationId = item.BaseRelativeLocation.LocationID,
+						resultMessage = ""
+					}) |
+				</td>
+			</tr>
+		}
+		</tbody>
+	}
+		

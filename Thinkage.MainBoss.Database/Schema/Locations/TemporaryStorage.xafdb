@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="TemporaryStorage" defaults="true" log="false" id="Id" xid="ContainingLocationID WorkOrderID" xunique="true" labelkey="Temporary Storage">
+	<doc>
+	  A location that exists for the duration of a WorkOrder to which items may be temporarily stored or destined to receive
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="LocationID" read="RequiredGUIDREF" base="Location"/>
+	<field name="ContainingLocationID" type="RequiredGUIDREF" link="Location">
+	  <doc>The physical place where this storage is located</doc>
+	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.PermanentLocationPickerTblCreator,Thinkage.MainBoss.Controls</extension>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="WorkOrderID" type="RequiredGUIDREF" link="WorkOrder">
+	  <doc>Workorder to which this temporary storage belongs</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<extension name="deletemethod">delete</extension>
+	<extension name="costrights">UnitValue</extension>
+  </table>
+  <object class="trigger" name="mbtg_SetNewTemporaryStorageContainment">
+	<doc>This trigger creates the containment and sets the codes for all new TemporaryStorage records</doc>
+	<extension name="body">
+	  on TemporaryStorage
+	  for insert
+	  as
+	  begin
+		  -- This is simpler that the RelativeLocation handling because we cannot be a container for any other location.
+		  -- This has loop prevention to avoid the infinite recursion as described in the UPDATE trigger.
+		  with newContainment (ContainedLocationID, ContainingLocationID, Depth) as (
+			  select inserted.LocationID, ing.ContainingLocationID, ing.Depth+1
+				  from inserted
+				  join LocationContainment as ing on ing.ContainedLocationID = inserted.ContainingLocationID
+		  union all
+			  select inserted.LocationID, ing.ContainingLocationID, ing.Depth+1
+				  from inserted
+				  join newContainment as ing on ing.ContainedLocationID = inserted.ContainingLocationID
+				  where ing.ContainedLocationID != ing.ContainingLocationID
+		  )
+		  insert into LocationContainment select newid(), * from newContainment
+	  end
+	  -- Set the compound Location.Code for all our new records
+	  update Location set Code = WO.Number + ' @ ' + CGL.Code
+		  from Location
+			  join inserted on inserted.LocationID = Location.ID
+			  join WorkOrder as WO on inserted.WorkOrderID = WO.ID
+			  join Location as CGL on inserted.ContainingLocationID = CGL.ID
+	</extension>
+	<extension name="references">LocationContainment</extension>
+	<extension name="references">TemporaryStorage</extension>
+	<extension name="references">WorkOrder</extension>
+	<extension name="references">Location</extension>
+  </object>
+  <object class="trigger" name="mbtg_SetUpdatedTemporaryStorageContainment">
+	<doc>This trigger updates the containment and codes for all updated TemporaryStorage records</doc>
+	<extension name="body">
+	  on TemporaryStorage
+	  for update
+	  as
+	  if update(ContainingLocationID) begin
+		  -- This is simpler that the RelativeLocation handling because we cannot be a container for any other location.
+		  -- First delete all the old containment.
+		  -- The UPDATE(column) test only tells us if the UPDATE statement has the named column in its SET list. Because of the nature of
+		  -- the DataSet.Update processing, this column is *always* in the SET list. So we use a join operation to find only rows where
+		  -- the ContainingLocationID has truly changed from a non-null value.
+		  delete from LocationContainment
+			  from LocationContainment as LC
+				  join deleted on deleted.LocationID = LC.ContainedLocationID
+				  join inserted on inserted.id = deleted.id
+				  where inserted.ContainingLocationID != deleted.ContainingLocationID and LC.ContainedLocationID != LC.ContainingLocationID
+
+		  -- Now add the new containment.
+		  -- In theory, temporary storage should never be a non-trivial container for anything (although it will be its *own* container because of
+		  -- self-containment)
+		  -- Looped structure technically would produce an infinite number of records, each set representing once more through the loop.
+		  -- The simplest of these would be non-trivial self-containment records for each row in the loop wherein the depth is the loop length.
+		  -- Such records, if inserted into the table, would cause uniqueness violations.
+		  -- I tried using a recursive WITH declaration to generate all the new containment at once, but could not prevent it from recurring forever
+		  -- when given looped structure. Instead we iterate once for each changed record, adding the containment one changed TemporaryStorage at a time.
+		  -- Since the program rarely posts more than one update at a time anyway (in fact it hardly *ever* changes existing containment),
+		  -- this loop usually only executes once.
+		  -- The actual detection occurs because the self-containment records generated will conflict with the natural zero-depth
+		  -- self-containment record already in the table.
+		  declare @ed uniqueidentifier
+		  declare @ing uniqueidentifier
+		  declare c cursor local fast_forward for
+			  select inserted.LocationID, inserted.ContainingLocationID from
+				  inserted
+				  join deleted on inserted.id = deleted.id
+				  where inserted.ContainingLocationID != deleted.ContainingLocationID
+		  open c
+		  fetch next from c into @ed, @ing
+		  while @@fetch_status = 0 begin
+			insert into LocationContainment select newid(), ed.ContainedLocationID, ing.ContainingLocationID, ed.Depth+ing.Depth+1
+				from LocationContainment as ed, LocationContainment as ing
+				  where ed.ContainingLocationID = @ed and ing.ContainedLocationID = @ing
+			  fetch next from c into @ed, @ing
+		  end
+	  end
+	  -- Set the compound Location.Code for all our records with changed containment or WO
+	  if update(ContainingLocationID) or update(WorkOrderID) begin
+		update Location set Code = WO.Number + ' @ ' + CGL.Code
+			from Location
+				join inserted on inserted.LocationID = Location.ID
+				join deleted on inserted.ID = deleted.ID
+				join WorkOrder as WO on inserted.WorkOrderID = WO.ID
+				join Location as CGL on inserted.ContainingLocationID = CGL.ID
+			where inserted.ContainingLocationID != deleted.ContainingLocationID or inserted.WorkOrderID != deleted.WorkOrderID
+	  end
+	</extension>
+	<extension name="references">LocationContainment</extension>
+	<extension name="references">TemporaryStorage</extension>
+	<extension name="references">WorkOrder</extension>
+	<extension name="references">Location</extension>
+  </object>
+  <table name="Location"/>
+  <table name="WorkOrder"/>
+  <table name="LocationContainment"/>
+</database>

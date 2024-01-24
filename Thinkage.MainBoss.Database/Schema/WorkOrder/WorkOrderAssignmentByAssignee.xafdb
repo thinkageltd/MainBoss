@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderAssignmentByAssignee" defaults="false" log="false" id="Id"  labelkey="">
+	<doc>
+	  This view provides records to determine WO assignments and unassigned WOs, grouped by ContactID, for open/draft WOs
+	</doc>
+	<field name="Id" read="RequiredGUID">
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIGeneralMB3.UnassignedNameProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="WorkOrderAssignmentID" type="GUIDREF" link="WorkOrderAssignment" labelkey="Assignment">
+	  <doc>The WorkOrderAssignee assigned to WorkOrders.</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="WorkOrderID" type="GUIDREF" link="WorkOrder">
+	  <doc>The WorkOrder the Assignee is assigned to</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="ContactID" type="GUIDREF" link="Contact">
+	  <doc>The WorkOrder the Assignee is assigned to as defined by the WorkOrderAssign.ContactID</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<extension name="query">
+		select 'A0000000-0000-0000-0000-00000000000A', NULL, NULL, NULL			-- The Unassigned 'ContactID' <!--KnownIds.UnassignedID-->
+	union all
+		select WA.ContactID, NULL, NULL, WA.ContactID												-- The possible WorkOrderAssignee Contacts
+			from WorkOrderAssignee as WA					
+	union all
+		select W.ID, NULL, W.ID, 'A0000000-0000-0000-0000-00000000000A'		-- The Unassigned WorkOrders
+			from WorkOrder as W 
+			join WorkOrderStateHistory as WSH on WSH.ID = W.CurrentWorkOrderStateHistoryID
+			join WorkOrderState as WS on WS.ID = WSH.WorkOrderStateID
+			where W.ID NOT IN (select WorkOrderID from WorkOrderAssignmentAll as A
+				 join WorkOrderAssignee as WA on WA.ID = A.WorkOrderAssigneeID
+				 join Contact as C on C.ID = WA.ContactID
+				 where C.Hidden IS NULL)
+				and (WS.FilterAsDraft = 1 or WS.FilterAsOpen = 1)
+	union all
+		select A.ID, A.WorkOrderAssignmentID, A.WorkOrderID, WA.ContactID			-- The WorkOrderAssignments
+				from WorkOrderAssignmentAll as A
+				join WorkOrderAssignee as WA on A.WorkOrderAssigneeID = WA.ID
+				join WorkOrder as W on W.ID = A.WorkOrderID
+				join WorkOrderStateHistory as WSH on WSH.ID = W.CurrentWorkOrderStateHistoryID
+				join WorkOrderState as WS on WS.ID = WSH.WorkOrderStateID
+				where (WS.FilterAsDraft = 1 or WS.FilterAsOpen = 1)		
+		</extension>
+	<extension name="dependson">WorkOrder</extension>
+	<extension name="dependson">WorkOrderAssignmentAll</extension>
+	<extension name="dependson">WorkOrderAssignee</extension>
+	<extension name="dependson">WorkOrderAssignment</extension>
+	<extension name="dependson">WorkOrderStateHistory</extension>
+	<extension name="dependson">WorkOrderState</extension>
+	<extension name="dependson">Contact</extension>
+	<extension name="costrights">UnitValue</extension>
+  </table>
+  <table name="WorkOrder" />
+  <table name="WorkOrderAssignee"/>
+  <table name="WorkOrderAssignment"/>
+  <table name="WorkOrderAssignmentAll"/>
+  <table name="WorkOrderStateHistory" />
+  <table name="WorkOrderState" />
+  <table name="Contact"/>
+</database>

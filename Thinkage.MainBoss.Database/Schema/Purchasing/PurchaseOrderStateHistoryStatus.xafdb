@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="PurchaseOrderStateHistoryStatus" defaults="true" log="false" id="Id" xid="Code Hidden" xunique="true" labelkey="Purchase Order State History Status">
+	<field name="Id" read="RequiredGUID"/>
+	<field name="Code" type="RequiredCode">
+	  <doc>The identification for this purchase order state history status.</doc>
+	</field>
+	<field name="Hidden" type="GenerationValue">
+	  <doc>This particular status is no longer valid for picking. The GenerationValue indicates the date/time it was hidden.</doc>
+	</field>
+	<field name="Desc" type="Desc"/>
+	<field name="Comment" type="Comment">
+	  <doc>A user comment describing the intent of this particular purchase order state history status.</doc>
+	</field>
+	<extension name="deletemethod">hide</extension>
+  </table>
+</database>

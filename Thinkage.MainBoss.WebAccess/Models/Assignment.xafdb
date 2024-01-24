@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database labelcontext="dsMBLabel" name="http://thinkage.ca/MB3/dsMB.xsd:Assignment" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="../../Thinkage.MainBoss.Database/Schema/Types.xafdb"/>
+  <variable name="DBVersion" type="RequiredVersionInfo">
+	<doc>The version of the database intended to prevent newer versions of the applications from accessing older databases.</doc>
+  </variable>
+  <table name="WorkOrder" labelkey="Work Order"/>
+  <table name="WorkOrderState" labelkey="Work Order State"/>
+  <table name="WorkOrderStateHistory" labelkey="Work Order State History"/>
+  <table name="PurchaseOrder" labelkey="Purchase Order"/>
+  <table name="PurchaseOrderState" labelkey="Purchase Order State"/>
+  <table name="PurchaseOrderStateHistory" labelkey="Purchase Order State History"/>
+  <table name="RequestState" labelkey="Request State"/>
+  <table name="RequestStateHistory" labelkey="Request State History"/>
+  <table name="WorkOrderAssignee" labelkey="Work Order Assignee"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/AttentionStatus.xafdb"/>
+  <merge uri="../../Thinkage.MainBoss.Database/Schema/DatabaseStatus.xafdb"/>
+</database>

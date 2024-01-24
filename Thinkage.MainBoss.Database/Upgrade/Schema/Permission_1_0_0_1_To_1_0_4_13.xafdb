@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+<!-- Permission definition for DBHanderVersion1_0_0_1 -->
+  <table name="Permission" defaults="true" log="false" id="Id" labelkey="Permission">
+	<field name="Id" read="id(nonnull)"/>
+	<field name="UserID" type="link(nonnull)" link="User">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="PermissionPathPattern" type="string(minlength 1, 100, lines 0, trim both, nonnull)"/>
+	<field name="Grant" type="bool(nonnull)"/>
+	<extension name="dependson">User</extension>
+  </table>
+  <table name="User"/>
+  </database>

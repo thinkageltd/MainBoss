@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="WorkOrderItems" defaults="false" log="false" id="Id" labelkey="Work Order Items">
+	<doc>This is the row data for the simplified WO Items browsette</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="TableEnum" type="integer(min 0, max 1, nonnull)">
+	  <!-- DatabaseEnums.WorkOrderItems -->
+	  <doc>The type of resource record</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderItemsProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<!-- the base linkages of the unified records -->
+	<field name="ItemID" type="GUIDREF" link="Item">
+	  <doc>the Item record linkage</doc>
+	</field>
+	<field name="DemandID" type="GUIDREF" link="Demand">
+	  <doc>the base Demand record linkage for resources derived from this (demands)</doc>
+	</field>
+	<!-- Other fields required by restrictions in Tbl etc representations -->
+	<field name="WorkOrderExpenseModelEntryID" type="GUIDREF" link="WorkOrderExpenseModelEntry">
+	  <!-- This has to be here because the double-field join operation is not followable in XAF -->
+	  <doc>the Id of the WorkOrderExpenseModelEntry associated with a Demand record based on the WorkOrder's expense model which determines the C/C to actualize to.
+	  This will be null if there is no model entry (preventing actualization) and for all non-Demand and non-Actual record types.</doc>
+	</field>
+	<!-- Other fields required for filtering/parentage: None. Since only one variant has a non-null filter or parent the value can be represented
+	by just a path in the tbl.-->
+	<extension name="query">
+				select I.ID, 0, I.ID, NULL, NULL  <!-- DatabaseEnums.WorkOrderItems.Item -->
+					from Item as I
+			union all
+				select D.ID, 1, NULL, D.ID, WOXME.ID  <!-- DatabaseEnums.WorkOrderItems.DemandItem -->
+					from
+						Demand as D
+					join
+						DemandItem as DI on DI.DemandID = D.Id
+					join
+						WorkOrder as WO on WO.ID = D.WorkOrderID
+					left join
+						WorkOrderExpenseModelEntry as WOXME
+							on WOXME.WorkOrderExpenseModelID = WO.WorkOrderExpenseModelID
+							and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
+		</extension>
+	<extension name="dependson">Item</extension>
+	<extension name="dependson">Demand</extension>
+	<extension name="dependson">WorkOrderExpenseModelEntry</extension>
+	<extension name="costrights">WorkOrderItem</extension>
+  </table>
+  <table name="WorkOrderItemsTreeView" defaults="false" log="false" id="Id" labelkey="Work Order Items">
+	<doc>This is the filter/display driver for the WorkOrderItems view required for the tree-structured display</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="FilterID" type="GUIDREF" link="WorkOrderItems">
+	</field>
+	<field name="DisplayID" type="GUIDREF" link="WorkOrderItems">
+	</field>
+	<field name="IsPrimary" type="RequiredBool">
+	</field>
+	<extension name="query">
+			<!-- We don't need self-containment for the Item records since they are never primary -->
+				select DI.DemandID, DI.DemandID, DI.DemandID, 1
+					from DemandItem as DI
+			union all
+				select IL.ItemId, DI.DemandID, IL.ItemId, 0
+					from
+						DemandItem as DI
+					join
+						ItemLocation as IL on IL.ID = DI.ItemLocationID
+		</extension>
+	<extension name="dependson">Item</extension>
+	<extension name="dependson">DemandItem</extension>
+	<extension name="costrights">WorkOrderItem</extension>
+  </table>
+  <table name="WorkOrderTemporaryStorage" defaults="false" log="false" id="Id" labelkey="Temporary Storage">
+	<doc>
+	  This view supplies the TemporaryLocation and TemporaryItemLocation records for a WO along with all the possible containing locations
+	</doc>
+	<field name="Id" read="RequiredGUID">
+	</field>
+	<field name="TableEnum" type="integer(min 0, max 6, nonnull)">
+	  <!-- DatabaseEnums.WorkOrderTemporaryStorage -->
+	  <doc>The type of record</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderTemporaryStorageProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="LocationID" type="GUIDREF" link="Location">
+	  <doc>ID of the base Location record if the TableEnum indicates this is a Location derivation</doc>
+	</field>
+	<field name="ItemLocationID" type="GUIDREF" link="ItemLocation">
+	  <doc>ID of the base ItemLocation record if the TableEnum indicates this is an ItemLocation derivation</doc>
+	</field>
+	<field name="WorkOrderID" type="GUIDREF" link="WorkOrder">
+	  <doc>The ID of the work order for TemporaryStorage and TemporaryItemLocation records</doc>
+	</field>
+	<field name="ParentID" type="GUIDREF" link="WorkOrderTemporaryStorage" labelkey="Temporary Storage">
+	  <doc>The ID of the base Location record of the parent record for the tree structure</doc>
+	</field>
+	<!-- Location variants in the following query that cannot contain a TemporaryItemLocation have been pruned out -->
+	<extension name="query">
+				<!-- DatabaseEnums.LocationDerivations.PostalAddress -->
+				select LocationID, 0, LocationID, null, null, NULL
+					from PostalAddress as PA
+			union all
+				<!-- DatabaseEnums.LocationDerivations.TemporaryStorage -->
+				select LocationID, 1, LocationID, null, TS.WOrkOrderID, ContainingLocationID
+					from TemporaryStorage as TS
+			union all
+				<!-- DatabaseEnums.LocationDerivations.Unit -->
+				select RL.LocationID, 2, RL.LocationID, null, null, RL.ContainingLocationID
+					from Unit
+						left join RelativeLocation as RL on Unit.RelativeLocationID = RL.ID
+			union all
+				<!-- DatabaseEnums.LocationDerivations.PermanentStorage -->
+				select RL.LocationID, 3, RL.LocationID, null, null, RL.ContainingLocationID
+					from PermanentStorage as PS
+						left join RelativeLocation as RL on PS.RelativeLocationID = RL.ID
+			union all
+				<!-- DatabaseEnums.LocationDerivations.PlainRelativeLocation -->
+				select RL.LocationID, 4, RL.LocationID, null, null, RL.ContainingLocationID
+					from PlainRelativeLocation as PRL
+						left join RelativeLocation as RL on PRL.RelativeLocationID = RL.ID
+			union all
+				<!-- DatabaseEnums.WorkOrderTemporaryStorage.TemporaryItemLocation -->
+				select IL.ID, 6, NULL, IL.ID, TS.WorkOrderID, IL.LocationID
+					from TemporaryItemLocation as TIL
+						join ActualItemLocation as AIL on AIL.ID = TIL.ActualItemLocationID
+						join ItemLocation as IL on IL.ID = AIL.ItemLocationID
+						join TemporaryStorage as TS on TS.LocationID = IL.LocationID
+		</extension>
+	<extension name="dependson">Location</extension>
+	<extension name="dependson">PermanentStorage</extension>
+	<extension name="dependson">PlainRelativeLocation</extension>
+	<extension name="dependson">PostalAddress</extension>
+	<extension name="dependson">RelativeLocation</extension>
+	<extension name="dependson">TemporaryStorage</extension>
+	<extension name="dependson">Unit</extension>
+	<extension name="dependson">TemporaryItemLocation</extension>
+	<extension name="dependson">ItemLocation</extension>
+  </table>
+  <table name="WorkOrderTemporaryStorageTreeView" defaults="false" log="false" id="Id" labelkey="Temporary Storage">
+	<doc>This is the filter/display driver for the WorkOrderTemporaryStorage view required for the tree-structured display</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="FilterID" type="GUIDREF" link="WorkOrderTemporaryStorage">
+	</field>
+	<field name="DisplayID" type="GUIDREF" link="WorkOrderTemporaryStorage">
+	</field>
+	<field name="IsPrimary" type="RequiredBool">
+	</field>
+	<extension name="query">
+				<!-- Containment (including self-containment) for all Locations -->
+				select LC.ContainingLocationID, LC.ContainedLocationID, LC.ContainingLocationID, case when LC.Depth = 0 then 1 else 0 end
+					from LocationContainment as LC
+			union all
+				<!-- Self-containment for TemporaryItemLocation records -->
+				select AIL.ItemLocationID, AIL.ItemLocationID, AIL.ItemLocationID, 1
+					from
+						TemporaryItemLocation as TIL
+					inner join
+						ActualItemLocation as AIL on AIL.ID = TIL.ActualItemLocationID
+			union all
+				<!-- Containment of all TemporaryItemLocation records within all the containing Locations -->
+				select LC.ContainingLocationID, AIL.ItemLocationID, LC.ContainingLocationID, 0
+					from
+						TemporaryItemLocation as TIL
+					inner join
+						ActualItemLocation as AIL on AIL.ID = TIL.ActualItemLocationID
+					inner join
+						ItemLocation as IL on IL.ID = AIL.ItemLocationID
+					inner join
+						LocationContainment as LC on LC.ContainedLocationID = IL.LocationID
+		</extension>
+	<extension name="dependson">LocationContainment</extension>
+	<extension name="dependson">TemporaryItemLocation</extension>
+	<extension name="dependson">ActualItemLocation</extension>
+	<extension name="dependson">ItemLocation</extension>
+  </table>
+  <table name="Demand"/>
+  <table name="DemandItem"/>
+  <table name="ItemLocation"/>
+  <table name="ActualItemLocation"/>
+  <table name="TemporaryItemLocation"/>
+  <table name="LocationContainment"/>
+  <table name="TemporaryStorage"/>
+  <table name="WorkOrder"/>
+  <table name="WorkOrderExpenseModelEntry"/>
+  <table name="Item"/>
+  <table name="Location"/>
+  <table name="PermanentStorage"/>
+  <table name="PlainRelativeLocation"/>
+  <table name="PostalAddress"/>
+  <table name="RelativeLocation"/>
+  <table name="Unit"/>
+</database>

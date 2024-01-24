@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database name="http://thinkage.ca/MB3/dsMB.xsd:dsUpgrade_1_1_4_2" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="Types.xafdb"/>
+
+	<merge uri="dsDBVersion_1_0_8_2.xafdb"/>
+	<merge uri="dsPermission_1_1_4_2.xafdb"/>
+	<merge uri="dsLicense_1_1_4_2.xafdb"/>
+	<merge uri="dsDatabaseHistory_1_0_0_337.xafdb"/>
+	<merge uri="dsBackupFileName_1_0_10_24.xafdb"/>
+</database>

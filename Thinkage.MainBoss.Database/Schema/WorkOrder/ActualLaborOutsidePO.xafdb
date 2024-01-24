@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ActualLaborOutsidePO" defaults="true" log="false" id="Id" xid="POLineLaborID" labelkey="Actual Hourly Outside (PO)">
+	<field name="Id" read="RequiredGUID" />
+	<field name="AccountingTransactionID" read="RequiredGUIDREF"  base="AccountingTransaction"/>
+	<field name="POLineLaborID" type="RequiredGUIDREF" link="POLineLabor">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="ReceiptID" type="RequiredGUIDREF"  link="Receipt">
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Quantity" type="LaborDurationCorrection">
+	  <doc>Labor time used (possibly a correction)</doc>
+	</field>
+	<field name="CorrectionID" type="RequiredGUIDREF" link="ActualLaborOutsidePO" labelkey="Actual Hourly Outside (PO) Correction">
+	  <doc>The ID of the original ActualLaborOutsidePO record for a family of original record and its corrections</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="CorrectedQuantity" read="LaborDuration">
+	  <doc>
+		  The corrected quantity of this ActualLaborOutsidePO and all corrections (all those with a CorrectionID linking
+		  to this record).  Note this is only stored in the main ActualLaborOutsidePO record (with CorrectionID==ID),
+		  not in the correction records.
+	  </doc>
+	  <result hosting="cached">
+		cast(42 as LaborDuration)
+	  </result>
+	  <extension name="dependson">mbfn_ActualLaborOutsidePO_CorrectedQuantity()</extension>
+	</field>
+	<field name="CorrectedCost" read="Currency">
+	  <doc>
+		  The corrected cost of this ActualLaborOutsidePO and all corrections (all those with a CorrectionID linking
+		  to this record).  Note this is only stored in the main ActualLaborOutsidePO record (with CorrectionID==ID),
+		  not in the correction records.
+	  </doc>
+	  <result hosting="cached">
+		cast(42 as Currency)
+	  </result>
+	  <extension name="dependson">mbfn_ActualLaborOutsidePO_CorrectedCost()</extension>
+	</field>
+	<extension name="equate">POLineLaborID.POLineID.PurchaseOrderID=ReceiptID.PurchaseOrderID</extension>
+	<!-- PO linkage integrity -->
+	<extension name="costrights">WorkOrderOutside,PurchaseOrderLabor</extension>
+  </table>
+  <object class="function" name="mbfn_ActualLaborOutsidePO_CorrectedQuantity">
+	<doc>
+	</doc>
+	<extension name="body">
+	(
+	  @ALOPOID uniqueidentifier -- ActualLaborOutsidePO
+	)
+	RETURNS XAFInterval
+	as
+	begin
+	  return(
+		select dbo._ISumToI(sum(dbo._IIToSum(Quantity)))
+			  from ActualLaborOutsidePO
+			  where ActualLaborOutsidePO.CorrectionID = @ALOPOID
+	  )
+	end
+	</extension>
+	<extension name="dependson">ActualLaborOutsidePO.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualLaborOutsidePO</extension>
+  </object>
+  <object class="function" name="mbfn_ActualLaborOutsidePO_CorrectedCost">
+	<doc>
+	</doc>
+	<extension name="body">
+	(
+	  @ALOPOID uniqueidentifier -- ActualLaborOutsidePO
+	)
+	RETURNS money
+	as
+	begin
+	  return (
+		select sum(Cost)
+		  from ActualLaborOutsidePO
+		  join AccountingTransaction on AccountingTransaction.ID = ActualLaborOutsidePO.AccountingTransactionID
+		  where ActualLaborOutsidePO.CorrectionID = @ALOPOID
+	  )
+	end
+	</extension>
+	<extension name="dependson">ActualLaborOutsidePO.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<extension name="dependson">ActualLaborOutsidePO</extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualLaborOutsidePO_Updates_Corrected">
+	<doc></doc>
+	<!-- This is all done in 1 trigger because HasReceiving depends on CorrectedXxx fields -->
+	<extension name="body">
+	  on ActualLaborOutsidePO
+	  after insert, update, delete
+	  as
+	  begin
+		  update ActualLaborOutsidePO
+			  set CorrectedQuantity = dbo.mbfn_ActualLaborOutsidePO_CorrectedQuantity(ActualLaborOutsidePO.ID),
+				  CorrectedCost = dbo.mbfn_ActualLaborOutsidePO_CorrectedCost(ActualLaborOutsidePO.ID)
+			  where ActualLaborOutsidePO.ID in (
+					 select distinct CorrectionID from inserted
+			   union select distinct CorrectionID from deleted 
+			  )
+		  update PurchaseOrder
+			  set HasReceiving = dbo.mbfn_PurchaseOrder_HasReceiving(PurchaseOrder.ID)
+				from PurchaseOrder
+				  join Receipt on Receipt.PurchaseOrderID = PurchaseOrder.ID
+			  where Receipt.ID in (
+					  select distinct ReceiptID from inserted
+				union select distinct ReceiptID from deleted
+				)
+		  update Receipt
+			  set TotalReceive = dbo.mbfn_Receipt_TotalReceive(Receipt.ID)
+			  where Receipt.ID in (
+					  select distinct ReceiptID from inserted
+				union select distinct ReceiptID from deleted
+			  )
+	  end
+	</extension>
+	<extension name="references">mbfn_ActualLaborOutsidePO_CorrectedQuantity()</extension>
+	<extension name="references">mbfn_ActualLaborOutsidePO_CorrectedCost()</extension>
+	<extension name="references">mbfn_PurchaseOrder_HasReceiving()</extension>
+	<extension name="references">ActualLaborOutsidePO</extension>
+	<extension name="references">mbfn_Receipt_TotalReceive()</extension>
+	<extension name="references">Receipt</extension>
+	<extension name="references">PurchaseOrder</extension>
+  </object>
+  <object class="trigger" name="mbtg_ActualLaborOutsidePO_Updates_DemandLaborOutsideEtAl">
+	<doc></doc>
+	<extension name="body">
+	  on ActualLaborOutsidePO
+	  after insert, update, delete
+	  as
+	  begin
+		  update DemandLaborOutside
+			  set ActualQuantity = dbo.mbfn_DemandLaborOutside_ActualQuantity(DemandLaborOutside.ID)
+			  from DemandLaborOutside join POLineLabor on POLineLabor.DemandLaborOutsideID = DemandLaborOutside.ID
+			  where DemandLaborOutside.ID in (
+						select distinct DemandLaborOutsideID from POLineLabor
+										join inserted on inserted.POLineLaborID = POLineLabor.ID
+				  union select distinct DemandLaborOutsideID from POLineLabor
+										join deleted on deleted.POLineLaborID = POLineLabor.ID
+				)
+
+		  update POLineLabor
+			  set ReceiveQuantity = dbo.mbfn_POLineLabor_ReceiveQuantity(POLineLabor.ID)
+			  where POLineLabor.ID in (
+						select distinct POLineLaborID from inserted
+				  union select distinct POLineLaborID from deleted
+				)
+
+		  update Demand
+			  set ActualCost = dbo.mbfn_DemandLaborOutside_ActualCost(DemandLaborOutside.ID)
+			  from Demand join DemandLaborOutside on Demand.ID = DemandLaborOutside.DemandID
+						  join POLineLabor on POLineLabor.DemandLaborOutsideID = DemandLaborOutside.ID
+			  where Demand.ID in (
+						select distinct DemandID
+										from DemandLaborOutside
+										join POLineLabor on POLineLabor.DemandLaborOutsideID = DemandLaborOutside.ID
+										join inserted on inserted.POLineLaborID = POLineLabor.ID
+				  union select distinct DemandID
+										from DemandLaborOutside
+										join POLineLabor on POLineLabor.DemandLaborOutsideID = DemandLaborOutside.ID
+										join deleted on deleted.POLineLaborID = POLineLabor.ID
+				)
+		  update POLine
+			  set ReceiveCost = dbo.mbfn_POLine_ReceiveCost(POLine.ID)
+			  from POLine
+			  join POLineLabor on POLine.ID = POLineLabor.POLineID
+			  where POLineLabor.ID in (
+					  select distinct POLineLaborID from inserted
+				union select distinct POLineLaborID from deleted
+			  )
+	  end
+	</extension>
+	<extension name="references">mbfn_DemandLaborOutside_ActualQuantity()</extension>
+	<extension name="references">mbfn_DemandLaborOutside_ActualCost()</extension>
+	<extension name="references">mbfn_POLineLabor_ReceiveQuantity()</extension>
+	<extension name="references">mbfn_POLine_ReceiveCost()</extension>
+	<extension name="references">POLine</extension>
+	<extension name="references">DemandLaborOutside</extension>
+	<extension name="references">Demand</extension>
+	<extension name="references">POLineLabor</extension>
+  </object>
+  <table name="POLineLabor"/>
+  <table name="AccountingTransaction"/>
+  <table name="Receipt"/>
+  <table name="DemandLaborOutside"/>
+  <table name="Demand"/>
+  <table name="POLine"/>
+  <table name="PurchaseOrder"/>
+</database>

@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<appSettings>
+  <!-- This file provides the equivalent to command-line options, in this case specifying the database server and server name. -->
+  <add key="dbserver" value="tetron"/>
+  <add key="dbname" value="columbia"/>
+</appSettings>

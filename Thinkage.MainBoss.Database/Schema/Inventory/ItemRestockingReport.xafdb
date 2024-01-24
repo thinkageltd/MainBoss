@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="ItemRestockingReport" defaults="false" log="false" id="Id" labelkey="Item Restocking">
+	<field name="Id" read="blob(minlength 32, maxlength 32, nonnull)">
+	  <doc>The Id of this row</doc>
+	</field>
+	<field name="ShortStockedItemLocationID" type="RequiredGUIDREF" link="ItemLocation" labelkey="Shortage Storage">
+	  <doc>
+	  	The ItemLocationID of the IL that is short-stocked (below minimum). This is set on all records.
+	  </doc>
+	</field>
+	<field name="SupplyingItemLocationID" type="GUIDREF" link="ItemLocation" labelkey="Supplying Storage">
+	  <doc>
+	  	The ItemLocationID of an IL that is above minimum and can thus help satisfy the short-stock condition of the ShortStockedItemLocationID
+	  </doc>
+	</field>
+	<field name="ItemPriceID" type="GUIDREF" link="ItemPrice">
+	  <doc>an ItemPrice record which indicates a vendor who can supply items to help satisfy the short-stock condition of the ShortStockedItemLocationID</doc>
+	</field>
+	<field name="AccountingTransactionID" type="GUIDREF" link="AccountingTransaction">
+	  <doc>The base AccountingTransaction ID of a previous Receive (PO or non) which previously supplied goods to the ShortStockedItemLocationID</doc>
+	</field>
+	<field name="SupplyHidden" type="GenerationValue">
+	  <doc>The Hidden date (if applicable) of the supplying record (ILs only)</doc>
+	</field>
+	<field name="SupplyLastUpdate" type="DateTime">
+	  <doc>The LastUpdate date of the supplying record (previous purchases only)</doc>
+	</field>
+	<extension name="query">
+		select cast(IL.ID as binary(32)), IL.ID, null, null, null, null, null
+			from ActualItemLocation as AIL
+			  join ItemLocation as IL on IL.ID = AIL.ItemLocationID
+			where AIL.EffectiveMinimum > AIL.Available
+	  union
+		select cast(IL.ID as binary(16))+cast(SIL.ID as binary(16)), IL.ID, SIL.Id, null, null, SIL.Hidden, null
+			from ActualItemLocation as AIL
+			  join ItemLocation as IL on IL.ID = AIL.ItemLocationID
+			  join ItemLocation as SIL on SIL.ItemID = IL.ItemID
+			  join ActualItemLocation as SAIL on SAIL.ItemLocationID = SIL.ID
+			where AIL.EffectiveMinimum > AIL.Available
+			  and SAIL.Available > SAIL.EffectiveMinimum
+			  and SAIL.OnHand > 0
+	  union
+		select cast(IL.ID as binary(16))+cast(IP.ID as binary(16)), IL.ID, null, IP.Id, null, null, null
+			from ActualItemLocation as AIL
+			  join ItemLocation as IL on IL.ID = AIL.ItemLocationID
+			  join ItemPrice as IP on IP.ItemID = IL.ItemID
+			where AIL.EffectiveMinimum > AIL.Available
+			  and IP.Quantity > 0
+	  union
+		select cast(IL.ID as binary(16))+cast(RI.AccountingTransactionID as binary(16)), IL.ID, null, null, RI.AccountingTransactionID, null, TX.EffectiveDate
+			from ReceiveItemNonPO as RI
+			  join AccountingTransaction as TX on TX.Id = RI.AccountingTransactionID
+			  join ActualItemLocation as AIL on AIL.ItemLocationID = RI.ItemLocationID
+			  join ItemLocation as IL on IL.ID = AIL.ItemLocationID
+			where AIL.EffectiveMinimum > AIL.Available
+			  and RI.CorrectedQuantity > 0
+			  and RI.CorrectionID = RI.Id
+	  union
+		select cast(IL.ID as binary(16))+cast(RI.AccountingTransactionID as binary(16)), IL.ID, null, null, RI.AccountingTransactionID, null, TX.EffectiveDate
+			from ReceiveItemPO as RI
+			  join AccountingTransaction as TX on TX.Id = RI.AccountingTransactionID
+			  join ActualItemLocation as AIL on AIL.ItemLocationID = RI.ItemLocationID
+			  join ItemLocation as IL on IL.ID = AIL.ItemLocationID
+			where AIL.EffectiveMinimum > AIL.Available
+			  and RI.CorrectedQuantity > 0
+			  and RI.CorrectionID = RI.Id
+	</extension>
+	<extension name="dependson">ItemLocation</extension>
+	<extension name="dependson">ActualItemLocation</extension>
+	<extension name="dependson">ItemPrice</extension>
+	<extension name="dependson">AccountingTransaction</extension>
+	<extension name="dependson">ReceiveItemNonPO</extension>
+	<extension name="dependson">ReceiveItemPO</extension>
+	<extension name="costrights">InventoryActivity</extension>
+  </table>
+  <table name="ItemLocation"/>
+  <table name="ActualItemLocation"/>
+  <table name="ItemPrice"/>
+  <table name="AccountingTransaction"/>
+  <table name="ReceiveItemNonPO"/>
+  <table name="ReceiveItemPO"/>
+</database>

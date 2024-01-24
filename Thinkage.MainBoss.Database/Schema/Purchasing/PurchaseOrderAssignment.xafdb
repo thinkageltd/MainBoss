@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="PurchaseOrderAssignment" defaults="true" log="false" id="Id" xid="PurchaseOrderID PurchaseOrderAssigneeID" xunique="true" labelkey="Purchase Order Assignment">
+		<doc>
+	  Records in this table represent association of a PurchaseOrderAssignee to a PurchaseOrder. 
+	  Reassignment is done via deletion and creation of a new record
+	</doc>
+		<field name="Id" read="RequiredGUID" />
+		<field name="PurchaseOrderAssigneeID" type="RequiredGUIDREF" link="PurchaseOrderAssignee" cascade="true" labelkey="Assignee">
+			<doc>The PurchaseOrderAssignee assigned to PurchaseOrders.</doc>
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="PurchaseOrderID" type="RequiredGUIDREF" link="PurchaseOrder" cascade="true">
+			<doc>The PurchaseOrder the Assignee is assigned to</doc>
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="LastNotificationDate" type="DateTime">
+			<doc>
+		The date/time that RequestStateHistory records for this particular request were last reported back to the RequestAssignee
+		This is compared with the EntryDate of RequestStateHistory records to determine if the history record is "new" (unreported).
+		A null value indicates no history records have ever been reported.
+		Only 'Issued' POs are considered for notification; TODO: Consider if Receiving should be part of notification ?
+	  </doc>
+		</field>
+		<extension name="deletemethod">delete</extension>
+		<extension name="lastupdate">PurchaseOrderID</extension>
+	</table>
+	<table name="PurchaseOrderAssignee"/>
+	<table name="PurchaseOrder"/>
+</database>

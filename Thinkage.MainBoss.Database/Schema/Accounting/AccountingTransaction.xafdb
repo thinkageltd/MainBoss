@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="http://thinkage.ca/MB3/dsMB.xsd:dsAccountingTransaction" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="AccountingTransaction" defaults="false" log="false" id="Id" xid="EffectiveDate FromCostCenterID ToCostCenterID Cost" labelkey="Accounting Transaction">
+	<doc>
+	  This is (intended to be) a base table for various specific derived forms of transaction, depending on why the transaction occurred.
+	  Each of these records represents a transfer of monetary value from one cost center to another.
+	  Once created they are immutable (entirely readonly) and corrections can only be made through new
+	  transactions. The connection between the original and the correction(s) is the responsibility of
+	  the specific derived record type.
+	  Normally the Cost is positive, but nothing forbids a negative Cost which would then represent the negative
+	  of value flowing from the "to" c/c to the "from" c/c.
+	</doc>
+    <field name="Id" read="RequiredGUID" />
+	<field name="EntryDate" type="RequiredDateTime">
+	  <doc>The date and time this record was entered into the database</doc>
+		<extension name="serversetsDateTime"/>
+	</field>
+	<field name="EffectiveDate" type="RequiredDateTime">
+	  <doc>The date and time this transaction is deemeds to take effect</doc>
+	  <extension name="servergetsDateTime"/>
+	</field>
+	<field name="UserID" type="RequiredGUIDREF" link="User">
+	  <doc>The identify of the creator of this record relative to the User table</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="Cost" type="RequiredCurrency">
+	  <doc>The value that this transaction is transferring between cost centres</doc>
+	</field>
+	<field name="FromCostCenterID" type="RequiredGUIDREF" link="CostCenter">
+	  <doc>The cost center that the value is being transferred from</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="ToCostCenterID" type="RequiredGUIDREF" link="CostCenter">
+	  <doc>The cost center that the value is being transferred to</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="AccountingSystemTransactionID" type="VariableLengthString" labelkey="Accounting System Reference">
+	  <doc>
+		A linkage to a corresponding transaction record in an external accounting system. This field is filled in when
+		MB accounting updates are merged into the other accounting system.
+	  </doc>
+	</field>
+	<extension name="costrights">WorkOrderItem,WorkOrderInside,WorkOrderOutside,WorkOrderMiscellaneous,InventoryActivity,PurchaseOrderItem,PurchaseOrderLabor,PurchaseOrderMiscellaneous</extension>
+  </table>
+  <table name="CostCenter"/>
+  <table name="User"/>
+</database>

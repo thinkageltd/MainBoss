@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing Storeroom Assignments</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Editing Storeroom Assignments</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.Storeroom Assignment.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Item Transfer.htm">Next section &gt;</a></p>
+
+<p>You create or modify storeroom assignments using the storeroom assignment editor. The usual way to open the editor is to click <span class="CButton">New Storeroom Assignment</span> or <span class="CButton">Edit</span> in the <span class="CButton">View</span> section of <span class="CPanel">Items</span> | <span class="CPanel">Storeroom Assignments</span> or <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Items</span> | <span class="CPanel">Storeroom Assignments</span>.</p>
+
+<p>The storeroom assignment editor window contains the following:</p>
+
+<p class="wi"><span class="CButton">Details</span> section: Shows basic information for the record.</p>
+<p class="wi2"><span class="CField">Item</span>: The inventory item whose location you're recording. For more on inventory items, see <a href="InventoryItemRecords.htm">Inventory Item Records</a>.</p>
+<p class="wi2"><span class="CField">Item UOM</span>: A read-only field giving the unit of measure associated with this item. For more information, see <a href="UnitsofMeasure.htm">Units of Measure</a>.</p>
+<p class="wi2"><span class="CField">External Tag</span>: A short string of characters which can be turned into a bar code associated with this storeroom assignment. For more information, see <a href="BarCodeSupport.htm">Bar Code Support</a>.</p>
+<p class="wi2"><span class="CField">Location</span>: One or more storerooms where the item may be stored. For more on storerooms, see <a href="Storerooms.htm">Storerooms</a>.</p>
+<p class="wi2"><span class="CField">Item Price</span>: A price or price quote on the item. Typically, this is used to indicate the vendor from whom you prefer to purchase the item. For more on item pricing, see <a href="Edit.Item Pricing.htm">Item Pricing</a>.</p>
+<p class="wi2"><span class="CField">Minimum</span>: The minimum quantity of this item that you want to keep on hand in this location.</p>
+<p class="wi2"><span class="CField">Maximum</span>: The maximum quantity of this item that you want to keep on hand in this location.</p>
+<p class="wi2">Read-only fields: Show current information on the items actually stored in the given storeroom, including quantities on hand, on order, on reserve, and pricing information.</p>
+<p class="wi2"><span class="CField">Cost Center</span>: The cost center to be used for holding costs associated with this item and storeroom. For more on cost centers, see <a href="CostCenters.htm">Cost Centers</a>.
+
+<br /><br />You can only change the cost center of a storeroom assignment if the value of the storeroom assignment is zero.</p>
+<p class="wi"><span class="CButton">Item Activity</span> section: Shows any changes to items in the given location (e.g. items issued for use in work orders, or received from incoming shipments). This section also lets you record various activities for the items.</p>
+<p class="wi2"><span class="CButton">New Physical Count</span>: Opens a window where you can record the quantity of the item that is actually present in the storeroom. For more on recording physical counts, see <a href="Edit.Physical Count.htm">Recording Physical Counts</a>. The button also has the following on its drop-down arrow:</p>
+<p class="wi3"><span class="CButton">New Item Adjustment</span>: Opens a window where you can record an adjustment to the quantity that is present in the storeroom. For example, if you accidentally break an item, you can use this to record the breakage. For more on item adjustments, see <a href="Edit.Item Adjustment.htm">Making Item Adjustments</a>.</p>
+<p class="wi2"><span class="CButton">Correct</span>: Opens a window where you can make a correction to an existing activity record.</p>
+<p class="wi2"><span class="CButton">New Item Issue</span>: Opens a window where you can record the issue of an item, i.e. using an item for some purpose that <span class="Emphasis">isn't</span> on a work order. For more on item issues, see <a href="Edit.Item Issue.htm">Issuing Items</a>. The button also has the following on its drop-down arrow:</p>
+<p class="wi3"><span class="CButton">New Item Transfer To</span>: Transfers a quantity of this item from the current storeroom to another storeroom. For more information, see <a href="Edit.Item Transfer.htm">Transferring Items from One Storeroom to Another</a>.</p>
+<p class="wi3"><span class="CButton">New Item Transfer From</span>: Transfers a quantity of this item from another storeroom to this one.</p>
+<p class="wi3"><span class="CButton">New Receive Item (with PO)</span>: Records the receipt of an item that appears on a purchase order. For more information, see <a href="Edit.Receive Item (with PO).htm">Receiving Purchase Order Items</a>.</p>
+<p class="wi3"><span class="CButton">New Receive Item</span>: Records the receipt of an item without a purchase order. For more information, see <a href="Edit.Receive Item (no PO).htm">Receiving Items</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
+<p class="wi3"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
+<p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Lets you search through the list of records for a particular record. For more information, see <a href="Search.htm">Searching for a Particular Record</a>. The <span class="CButton"><img src="Find_VS.png" alt="Search" /></span> button has an accompanying drop-down list containing the following:</p>
+<p class="wi3"><span class="CButton">Find Next</span>: Uses the same search condition(s) as your most recent search and finds the next record in the table that matches the condition(s). If the search reaches the end of the table without finding a matching record, it goes to the start of the table and continues the search.</p>
+<p class="wi3"><span class="CButton">Find Previous</span>: Same as <span class="CButton">Find Next</span> except that it goes backward in the table. If the search reaches the start of the table without finding a matching record, it goes to the end of the table and continues the search.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on storeroom assignments, see <a href="StoreroomAssignments.htm">Storeroom Assignments</a>. For more on viewing storeroom assignments, see <a href="Browse.Storeroom Assignment.htm">Viewing Storeroom Assignments</a>. For more on printing storeroom assignments, see <a href="Report.Storeroom Assignment.htm">Printing Storeroom Assignments</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Browse.Storeroom Assignment.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Item Transfer.htm">Next section &gt;</a></p>
+</body>
+</html>
+

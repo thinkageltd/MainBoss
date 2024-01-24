@@ -1,0 +1,227 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<schema id="SecuritySchema"
+	targetNamespace="http://www.thinkage.ca/XmlNamespaces/XAF"
+	elementFormDefault="qualified"
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://www.thinkage.ca/XmlNamespaces/XAF"
+	xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+	<simpleType name="rightName_type">
+		<!-- a simple string name without .or - (all caseless) -->
+		<restriction base="NCName">
+			<pattern value="[A-Za-z][^.-]*"/>
+			<!-- Alphanumerics and _, initially alphabetic -->
+		</restriction>
+	</simpleType>
+
+	<simpleType name="id_type">
+		<!-- will be used to generate the KnownID -->
+		<restriction base="positiveInteger"/>
+	</simpleType>
+
+
+	<simpleType name="rank_type">
+		<!-- will be used to generate sorting and grouping  -->
+		<restriction base="positiveInteger"/>
+	</simpleType>
+
+
+	<simpleType name="tablerightName_type">
+		<restriction base="token">
+			<!-- Could be more restricted, it should be a table name or a '*'  -->
+			<pattern value="[A-Za-z*][^. :-]*"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="reflectionFunction_type">
+		<!-- a namespace reflection function followed by , and DLL reference -->
+		<restriction base="NCName"/>
+	</simpleType>
+
+	<simpleType name="description_type">
+		<restriction base="string">
+			<pattern value="^[^\t\n\r]+( [^\t\n\r]*)+$"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="comment_type">
+		<restriction base="string">
+			<pattern value="^[^\t\n\r]+( [^\t\n\r]*)+$"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="rightNameList_type">
+		<list itemType="this:rightName_type"/>
+	</simpleType>
+
+	<simpleType name="tableright_value">
+		<restriction base="string">
+			<enumeration value="*"/>
+			<enumeration value="All"/>
+			<enumeration value="View"/>
+			<enumeration value="Edit"/>
+			<enumeration value="Browse"/>
+			<enumeration value="Create"/>
+			<enumeration value="Delete"/>
+			<enumeration value="EditDefault"/>
+			<enumeration value="VB"/>
+			<enumeration value="VEBCD"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="tablerightList_type">
+		<list itemType="this:tableright_value"/>
+	</simpleType>
+	
+	<complexType name="tableright_type">
+		<simpleContent>
+			<extension base="this:tablerightList_type">
+				<attribute name="name" type="this:tablerightName_type" use="required"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	
+	<simpleType name="costright_type">
+		<!-- These correspond to the Right members of MB3RootRights.ViewCostGroupClass -->
+		<restriction base="string">
+			<enumeration value="WorkOrderItem"/>
+			<enumeration value="WorkOrderInside"/>
+			<enumeration value="WorkOrderOutside"/>
+			<enumeration value="WorkOrderMiscellaneous"/>
+			<enumeration value="UnitValue"/>
+			<enumeration value="LaborInside"/>
+			<enumeration value="LaborOutside"/>
+			<enumeration value="InventoryActivity"/>
+			<enumeration value="Chargeback"/>
+			<enumeration value="UnitSparePart"/>
+			<enumeration value="PurchaseOrderItem"/>
+			<enumeration value="PurchaseOrderLabor"/>
+			<enumeration value="PurchaseOrderMiscellaneous"/>
+			<enumeration value="ServiceContract"/>
+		</restriction>
+	</simpleType>
+	
+	<simpleType name="actionright_type">
+		<!-- These correspond to the Right members of MB3RootRights.ActionGroupClass -->
+		<restriction base="string">
+			<enumeration value="UpgradeDatabase"/>
+			<enumeration value="EditAccounting"/>
+			<enumeration value="ViewAccounting"/>
+			<enumeration value="Customize"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="costrightList_type">
+		<list itemType="this:costright_type"/>
+	</simpleType>
+
+	<simpleType name="actionrightList_type">
+		<list itemType="this:actionright_type"/>
+	</simpleType>
+
+	<simpleType name="workordertransition_value">
+		<restriction base="string">
+			<enumeration value="Open"/>
+			<enumeration value="Close"/>
+			<enumeration value="Draft"/>
+			<enumeration value="Reopen"/>
+			<enumeration value="Void"/>
+			<enumeration value="Suspend"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="requesttransition_value">
+		<restriction base="string">
+			<enumeration value="InProgress"/>
+			<enumeration value="Close"/>
+			<enumeration value="Reopen"/>
+			<enumeration value="Void"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="purchaseordertransition_value">
+		<restriction base="string">
+			<enumeration value="Issue"/>
+			<enumeration value="Close"/>
+			<enumeration value="Draft"/>
+			<enumeration value="ReActivate"/>
+			<enumeration value="Void"/>
+			<enumeration value="Withdraw"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="workordertransitionList_type">
+		<list itemType="this:workordertransition_value"/>
+	</simpleType>
+
+	<simpleType name="requesttransitionList_type">
+		<list itemType="this:requesttransition_value"/>
+	</simpleType>
+
+	<simpleType name="purchaseordertransitionList_type">
+		<list itemType="this:purchaseordertransition_value"/>
+	</simpleType>
+
+	<complexType name="include_type">
+		<simpleContent>
+			<extension base="this:rightNameList_type">
+				<attribute name="mask" type="this:tablerightList_type" use="optional"/>
+				<attribute name="demote" type="boolean" use="optional"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="role_type">
+		<simpleContent>
+			<extension base="this:rightNameList_type"/>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="rightObject_type">
+		<sequence>
+			<element name="description" minOccurs="0" maxOccurs="1" type="this:description_type"/>
+			<element name="comment" minOccurs="0" maxOccurs="1" type="this:comment_type"/>
+			<choice minOccurs="0" maxOccurs="unbounded">
+				<element name="include" minOccurs="0" maxOccurs="1" type="this:include_type"/>
+				<element name="tableright" minOccurs="0" maxOccurs="1" type="this:tableright_type"/>
+				<element name="costrights" minOccurs="0" maxOccurs="1" type="this:costrightList_type"/>
+				<element name="workorder" minOccurs="0" maxOccurs="1" type="this:workordertransitionList_type"/>
+				<element name="purchaseorder" minOccurs="0" maxOccurs="1" type="this:purchaseordertransitionList_type"/>
+				<element name="request" minOccurs="0" maxOccurs="1" type="this:requesttransitionList_type"/>
+			<element name="action" minOccurs="0" maxOccurs="1" type="this:actionrightList_type"/>
+<!--			<element name="condition" minOccurs="0" maxOccurs="1" type="this:reflectionFunction_type"/> -->
+			</choice>
+		</sequence>
+		<attribute name="name" type="this:rightName_type" use="required"/>
+		<attribute name="id" type="this:id_type"/>
+	</complexType>
+
+	<complexType name="roleObject_type">
+		<sequence>
+			<element name="description" minOccurs="0" maxOccurs="1" type="this:description_type"/>
+			<element name="comment" minOccurs="0" maxOccurs="1" type="this:comment_type"/>
+			<choice minOccurs="0" maxOccurs="unbounded">
+				<element name="include" minOccurs="0" maxOccurs="unbounded" type="this:role_type"/>
+				<element name="extend" minOccurs="0" maxOccurs="unbounded" type="this:role_type"/>
+			</choice>
+		</sequence>
+		<attribute name="name" type="this:rightName_type" use="required"/>
+		<attribute name="id" type="this:id_type" use="required"/>
+		<attribute name="rank" type="this:rank_type" use="required"/>
+
+	</complexType>
+
+	<complexType name="security_contents">
+		<sequence>
+			<choice minOccurs="0" maxOccurs="unbounded">
+				<element name="internal" type="this:rightObject_type"/>
+				<element name="right" type="this:rightObject_type"/>
+			</choice>
+			<choice minOccurs="1" maxOccurs="unbounded">
+				<element name="role" type="this:roleObject_type"/>
+			</choice>
+		</sequence>
+	</complexType>
+
+	<element name="rightset" type="this:security_contents"/>
+</schema>

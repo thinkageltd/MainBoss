@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="Types.xafdb"/>
+  <table name="ExternalTag" defaults="false" log="false" id="Id" labelkey="External Tag">
+	<doc>
+	  This view provides all the records in the database that have an ExternalTag associated with them
+	  The ID will be the ID of the record where the TAG was found.
+	</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="ExternalTag" type="RequiredCode" labelkey="External Tag"/>
+	<field name="RequestID" type="GUIDREF" link="Request"/>
+	<field name="WorkOrderID" type="GUIDREF" link="WorkOrder"/>
+	<field name="PurchaseOrderID" type="GUIDREF" link="PurchaseOrder"/>
+	<field name="ItemLocationID" type="GUIDREF" link="ItemLocation"/>
+	<field name="LocationID" type="GUIDREF" link="Location"/>
+	<extension name="query">
+	  select Request.ID, Request.Number, Request.ID, null, null, null, null
+		from Request
+	union
+	  select WorkOrder.ID, WorkOrder.Number, null, WorkOrder.ID, null, null, null
+		from WorkOrder
+	union
+	  select PurchaseOrder.ID, PurchaseOrder.Number, null, null, PurchaseOrder.ID, null, null
+		from PurchaseOrder
+	union
+	  select AIL.ItemLocationID, PermanentItemLocation.ExternalTag, null, null, null, AIL.ItemLocationID, null
+		from PermanentItemLocation
+		  join ActualItemLocation as AIL on AIL.ID = PermanentItemLocation.ActualItemLocationID
+		where ExternalTag IS NOT NULL
+	union
+	  select RL.LocationID, RL.ExternalTag, null, null, null, null, RL.LocationID
+		from RelativeLocation as RL
+		  where RL.ExternalTag IS NOT NULL
+	</extension>
+	<extension name="dependson">Request</extension>
+	<extension name="dependson">WorkOrder</extension>
+	<extension name="dependson">PurchaseOrder</extension>
+	<extension name="dependson">PermanentItemLocation</extension>
+	<extension name="dependson">RelativeLocation</extension>
+	<extension name="dependson">ItemLocation</extension>
+	<extension name="dependson">ActualItemLocation</extension>
+	<extension name="dependson">Location</extension>
+  </table>
+  <table name="Request"/>
+  <table name="WorkOrder"/>
+  <table name="PurchaseOrder"/>
+  <table name="PermanentItemLocation"/>
+  <table name="ItemLocation"/>
+  <table name="ActualItemLocation"/>
+  <table name="Location"/>
+  <table name="RelativeLocation"/>
+</database>

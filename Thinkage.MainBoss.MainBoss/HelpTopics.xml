@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:t="http://www.thinkage.ca/XmlNamespaces/TranslatableStrings" xmlns:strings="strings">
+  <xsd:schema id="root" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:element name="root">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="helptopic" type="xsd:string" />
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <helptopic>TableOfContents</helptopic>
+  <helptopic>Index</helptopic>
+  <helptopic>GetSupport</helptopic>
+  <helptopic>TableOfContents</helptopic>
+  <helptopic>Index</helptopic>
+  <helptopic>GetSupport</helptopic>
+  <helptopic>MainMenuCustomizationForm</helptopic>
+  <helptopic>Main.Upgrade</helptopic>
+  <helptopic>BrowseFormCustomizationForm</helptopic>
+  <helptopic>ConcurrencyError</helptopic>
+  <helptopic>EditFormCustomizationForm</helptopic>
+  <helptopic>MissingReportViewer</helptopic>
+  <helptopic>Search</helptopic>
+  <helptopic>Filter</helptopic>
+  <helptopic>MainBossSolo.Setup</helptopic>
+  <helptopic>TableOfContents</helptopic>
+  <helptopic>Index</helptopic>
+  <helptopic>GetSupport</helptopic>
+  <helptopic>MainBossSolo.NewEmpty</helptopic>
+  <helptopic>MainBossSolo.NewRestore</helptopic>
+  <helptopic>MainBossSolo.CreateFromBackup</helptopic>
+</root>

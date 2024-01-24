@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <types uri="..\Types.xafdb"/>
+  <table name="PMGenerationDetail" defaults="false" log="false" id="Id" labelkey="PMGeneration Detail">
+	<doc>Historical information on PM Generation</doc>
+	<field name="Id" read="RequiredGUID" />
+	<field name="DetailType" type="integer(min 0, max 9, nonnull)" labelkey="Disposition">	<!-- 9 is DatabaseEnums.PMType.MakeSharedWorkOrder -->
+	  <doc>The type providing the disposition of this record. See DatabaseEnums.PMType enum</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TISchedule.PMTypesProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
+	<field name="PMGenerationBatchID" type="RequiredGUIDREF" link="PMGenerationBatch" cascade="true">
+	  <doc>The batch this detail record belongs to.</doc>
+	  <extension name="linkage">owner</extension>
+	</field>
+	<field name="ScheduledWorkOrderID" type="RequiredGUIDREF" link="ScheduledWorkOrder" cascade="true">
+	  <doc>The ID of the ScheduledWorkOrder that this detail record affects</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="ScheduleDate" type="RequiredDate">
+	  <doc>The Scheduled (trigger) date for this record. This is the date that produced by the schedule
+	  by advancing from the last occurrence by the interval. In the case of meter-triggered detail records,
+	  this date is estimated from the ScheduleReading but logically has the same meaning.</doc>
+	</field>
+	<field name="ScheduleReading" type="MeterReadingValue">
+	  <doc>The Scheduled (trigger) meter reading for this record. This is the reading that produced by the schedule
+	  by advancing from the last occurrence by the interval. This is only valid if the TriggeringMeterID is
+	  set, and refers to a reading on that particular meter.</doc>
+	</field>
+	<field name="TriggeringMeterID" type="GUIDREF" link="Meter">
+	  <doc>For detail records triggered by a meter reading, this is the triggering meter. We do not just link to
+	  the Meter Class because the user could remove a unit's meter and create a new one of the same class, but the
+	  ScheduleReading in our record would have nothing to do with the readings of the new meter.</doc>
+	  <extension name="linkage">property</extension>
+	</field>
+	<field name="WorkOrderID" type="GUIDREF" link="WorkOrder">
+	  <doc>Link to the WorkOrder instance for detail records used to generate a Work Order</doc>
+	  <extension name="linkage">captive</extension>
+	</field>
+	<field name="WorkStartDate" type="RequiredDate">
+	  <doc>The date work would actually start if this detail were to generate a work order. This is the ScheduleDate adjusted
+	  by seasonal and/or weekday deferrals.
+	  If the batch is committed the actual work order's EstimatedWorkStart should be used instead, in case this value has been altered.
+	  If the record is not a WO-generating record this will be the same as the ScheduleDate</doc>
+	</field>
+	<field name="NextAvailableDate" type="RequiredDate">
+	  <doc>The first date after the date when work would end. This is the WorkStartDate plus the task's total work duration.
+	  If the batch is committed the actual work order's EstimatedWorkEnd + 1day should be used instead, in case this value has been altered.
+	  If the record is not a WO-generating record this will be the same as the ScheduleDate.</doc>
+	</field>
+	<field name="DetailContext" type="Comment" labelkey="Disposition details">
+	  <doc>This explains the disposition of the record's DetailType by giving details (such as error messages or availability identifiers)</doc>
+		<extension name="lines">3</extension>
+	</field>
+	<field name="FirmScheduleData" type="RequiredBool">
+	  <doc>True if the ScheduleDate for this record is known to be firm rather than a tentative schedule date or estimated date from a meter reading.</doc>
+	</field>
+	<field name="BasisDetails" type="Comment" labelkey="Date quality details">
+	  <doc>This explains why the schedule data is not firm</doc>
+		<extension name="lines">3</extension>
+	</field>
+	<field name="Sequence" type="integer(32,nonnull)">
+	  <doc>The sequence counter of this detail record within the batch. Overall committed detail records can be properly sorted by the batch's
+	  EntryDate and the detail record's Sequence.</doc>
+	</field>
+  </table>
+  <table name="WorkOrder"/>
+  <table name="PMGenerationBatch"/>
+  <table name="ScheduledWorkOrder"/>
+  <table name="Meter"/>
+</database>

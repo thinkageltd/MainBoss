@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="POLineLabor" defaults="true" log="false" id="Id" xid="POLineID"  labelkey="Purchase Hourly Outside">
+		<field name="Id" read="RequiredGUID" />
+		<field name="POLineID" read="RequiredGUIDREF"  base="POLine"/>
+		<field name="DemandLaborOutsideID" type="RequiredGUIDREF"  link="DemandLaborOutside">
+			<doc>Hourly Outside reference</doc>
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="Quantity" type="interval(min 00:01:00, max 36500.00:00:00, by 00:01:00, nonnull)">
+			<doc>Labor time required</doc>
+		</field>
+		<field name="ReceiveQuantity" read="RequiredLaborDuration">
+			<doc>The total labor time of all the associated receives</doc>
+			<result hosting="cached">
+		  cast(42 as RequiredLaborDuration)
+	  </result>
+			<extension name="dependson">mbfn_POLineLabor_ReceiveQuantity()</extension>
+		</field>
+		<extension name="deletemethod">delete</extension>
+		<extension name="costrights">PurchaseOrderLabor</extension>
+		<extension name="equate">DemandLaborOutsideID.LaborOutsideID.VendorID=POLineID.PurchaseOrderID.VendorID</extension>
+	</table>
+	<table name="DemandLaborOutside"/>
+	<table name="POLine"/>
+	<table name="ActualLaborOutsidePO"/>
+	<object class="function" name="mbfn_POLineLabor_ReceiveQuantity">
+	  <doc>
+		Calculate the accumulated receives against a designated POLineLabor
+	  </doc>
+	  <extension name="body">
+		(
+		  @POLIID uniqueidentifier	-- POLineLaborID
+		)
+		RETURNS XAFInterval
+		as
+		begin
+			return (
+			  select dbo._ISumToI(sum(dbo._IIToSum(Quantity)))
+	  			from ActualLaborOutsidePO
+				where ActualLaborOutsidePO.POLineLaborID = @POLIID
+			)
+		end
+	  </extension>
+	  <extension name="dependson">POLineLabor.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	  <extension name="dependson">ActualLaborOutsidePO</extension>
+	</object>
+	<object class="trigger" name="mbtg_POLineLabor_Updates_DemandLaborOutside">
+		<doc>Maintain the total ordered quantity on the related Demand record</doc>
+		<extension name="body">
+		  on POLineLabor
+		  after insert, update, delete
+		  as
+		  begin
+			  update DemandLaborOutside
+				  set OrderQuantity = dbo.mbfn_DemandLaborOutside_OrderQuantity(DemandLaborOutside.ID)
+				  where DemandLaborOutside.ID in (
+						   select distinct DemandLaborOutsideID from inserted
+					 union select distinct DemandLaborOutsideID from deleted
+				  )
+		  end
+		</extension>
+		<extension name="references">mbfn_DemandLaborOutside_OrderQuantity()</extension>
+		<extension name="references">DemandLaborOutside</extension>
+	</object>
+</database>

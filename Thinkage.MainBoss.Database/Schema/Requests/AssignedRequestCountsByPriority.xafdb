@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="AssignedRequestCountsByPriority" defaults="false" log="false" id="Id" labelkey="">
+		<field name="Id" read="RequiredGUID"/>
+		<field name="RequestAssigneeID" type="RequiredGUIDREF" link="RequestAssignee"  labelkey="Assignee"/>
+		<field name="RequestPriorityID" type="RequiredGUIDREF" link="RequestPriority"  />
+		<field name="RequestCount" type="RequiredQuantity"  />
+		<extension name="query">
+		select  X.RequestPriorityID, X.RequestAssigneeID, X.RequestPriorityID, count(*)
+			from (select R.Id, RA.RequestAssigneeID, R.RequestPriorityID
+				from Request as R
+					join RequestStateHistory as ROSH on ROSH.Id = R.CurrentRequestStateHistoryID
+					join RequestState as RS on RS.Id = ROSH.RequestStateID
+					join RequestAssignment as RA on RA.RequestID = R.Id
+					where RS.FilterAsInProgress != 0 and R.RequestPriorityID is not null
+				) as X(RequestID, RequestAssigneeID, RequestPriorityID)
+				group by RequestPriorityId, X.RequestAssigneeID
+		</extension>
+		<extension name="dependson">Request</extension>
+		<extension name="dependson">RequestStateHistory</extension>
+		<extension name="dependson">RequestState</extension>
+		<extension name="dependson">RequestAssignment</extension>
+		<extension name="dependson">RequestAssignee</extension>
+		<extension name="dependson">RequestPriority</extension>
+	</table>
+	<table name="Request"/>
+	<table name="RequestState"/>
+	<table name="RequestStateHistory"/>
+	<table name="RequestAssignment"/>
+	<table name="RequestAssignee"/>
+	<table name="RequestPriority"/>
+</database>
