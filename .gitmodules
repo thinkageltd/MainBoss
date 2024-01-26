@@ -1,0 +1,3 @@
+[submodule "Thinkage.Core"]
+	path = Thinkage.Core
+	url = https://github.com/thinkageltd/Thinkage.Core
