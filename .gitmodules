@@ -4,3 +4,48 @@
 [submodule "Thinkage.Libraries"]
 	path = Thinkage.Libraries
 	url = https://github.com/thinkageltd/Thinkage.Libraries
+[submodule "Thinkage.Libraries.DBAccess"]
+	path = Thinkage.Libraries.DBAccess
+	url = https://github.com/thinkageltd/Thinkage.Libraries.DBAccess
+[submodule "Thinkage.Libraries.DBILibrary"]
+	path = Thinkage.Libraries.DBILibrary
+	url = https://github.com/thinkageltd/Thinkage.Libraries.DBILibrary
+[submodule "Thinkage.Libraries.DBILibrary.MSSql"]
+	path = Thinkage.Libraries.DBILibrary.MSSql
+	url = https://github.com/thinkageltd/Thinkage.Libraries.DBILibrary.MSSql
+[submodule "Thinkage.Libraries.MVC"]
+	path = Thinkage.Libraries.MVC
+	url = https://github.com/thinkageltd/Thinkage.Libraries.MVC
+[submodule "Thinkage.Libraries.Presentation"]
+	path = Thinkage.Libraries.Presentation
+	url = https://github.com/thinkageltd/Thinkage.Libraries.Presentation
+[submodule "Thinkage.Libraries.Presentation.ASPNet"]
+	path = Thinkage.Libraries.Presentation.ASPNet
+	url = https://github.com/thinkageltd/Thinkage.Libraries.Presentation.ASPNet
+[submodule "Thinkage.Libraries.Presentation.MSWindows"]
+	path = Thinkage.Libraries.Presentation.MSWindows
+	url = https://github.com/thinkageltd/Thinkage.Libraries.Presentation.MSWindows
+[submodule "Thinkage.Libraries.RDLReports"]
+	path = Thinkage.Libraries.RDLReports
+	url = https://github.com/thinkageltd/Thinkage.Libraries.RDLReports
+[submodule "Thinkage.Libraries.Sql"]
+	path = Thinkage.Libraries.Sql
+	url = https://github.com/thinkageltd/Thinkage.Libraries.Sql
+[submodule "Thinkage.Libraries.XAF.Database.Layout"]
+	path = Thinkage.Libraries.XAF.Database.Layout
+	url = https://github.com/thinkageltd/Thinkage.Libraries.XAF.Database.Layout
+[submodule "Thinkage.Libraries.XAF.Database.Service"]
+	path = Thinkage.Libraries.XAF.Database.Service
+	url = https://github.com/thinkageltd/Thinkage.Libraries.XAF.Database.Service
+[submodule "Thinkage.Libraries.XAF.Database.Service.MSSql"]
+	path = Thinkage.Libraries.XAF.Database.Service.MSSql
+	url = https://github.com/thinkageltd/Thinkage.Libraries.XAF.Database.Service.MSSql
+[submodule "Thinkage.Libraries.XAF.UI"]
+	path = Thinkage.Libraries.XAF.UI
+	url = https://github.com/thinkageltd/Thinkage.Libraries.XAF.UI
+[submodule "Thinkage.Libraries.XAF.UI.MSWindows"]
+	path = Thinkage.Libraries.XAF.UI.MSWindows
+	url = https://github.com/thinkageltd/Thinkage.Libraries.XAF.UI.MSWindows
+[submodule "Thinkage.Libraries.SQL"]
+	path = Thinkage.Libraries.SQL
+	url = https://github.com/thinkageltd/Thinkage.Libraries.SQL
