@@ -1,0 +1,540 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Thinkage.MainBoss.Service§, but normally should not be used as the service defaults to 'Network Service'" xml:space="preserve">
+    <value>, pero normalmente no se debe utilizar como el servicio por defecto a'Network Service'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§'{0:20}' Error:{1}" xml:space="preserve">
+    <value>'{0:20}' Error:{1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§{0} and {1} are required with all authentication methods other than {0}=&quot;{1}&quot;" xml:space="preserve">
+    <value>{0} y {1} son necesarios con todos los métodos de autenticación distintos de {0} = "{1}"</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§{0} and {1} should not be supplied without specifying a {2}" xml:space="preserve">
+    <value>{0} y {1} no se deben suministrar sin especificar {2}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§{0} can not be used on a remote computer" xml:space="preserve">
+    <value>{0} no se puede utilizar en una computadora remota</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§{0} can not be used with {1}" xml:space="preserve">
+    <value>{0} no se puede utilizar con {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§{0} can only be used with {1}" xml:space="preserve">
+    <value>{0} sólo se puede utilizar con {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§{0} cannot be used with any other arguments" xml:space="preserve">
+    <value>{0} no se puede utilizar con cualquier otro argumento</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§'{0}' does not have a Windows Service for MainBoss '{1}' configured" xml:space="preserve">
+    <value>'{0}' no tiene un servicio de Windows para MainBoss '{1}' configurado</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§{0} has not been set. Notification messages will not contain a link to the Web Access or Web Request web page." xml:space="preserve">
+    <value>{0} no se ha establecido. Los mensajes de notificación no contener un enlace a la página web de Acceso web o Solicitud Web.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§'{0}' is configured with its Windows Service for MainBoss on computer '{1}' not computer '{2}'" xml:space="preserve">
+    <value>'{0}' está configurada con su servicio de Windows para MainBoss en la computador '{1}' no computadora '{2}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§'{0}' is configured with Windows Service for MainBoss '{1}' not '{2}'" xml:space="preserve">
+    <value>'{0}' está configurado con servicios de Windows para MainBoss '{1}' no '{2}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§'{0}' is not a valid formatted SQL Server connection string" xml:space="preserve">
+    <value>'{0}' no es una cadena de conexión de SQL Server formateada válida</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§'{0}' is not a valid value for '{1}'" xml:space="preserve">
+    <value>'{0}' no es un valor válido para '{1}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§{0} must be used with no other options" xml:space="preserve">
+    <value>{0} debe utilizarse con ninguna otra opción</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§{0} option can not be used in user interactive mode" xml:space="preserve">
+    <value>{0} opción no se puede utilizar en modo interactivo usuario</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§{0} option can not be used when running as a service" xml:space="preserve">
+    <value>La opción {0} no se puede utilizar cuando se ejecuta como un servicio</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§{0} option can only be used in user interactive mode" xml:space="preserve">
+    <value>{0} opción sólo se puede utilizar en modo interactivo usuario</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§{0} option is required when running as a service" xml:space="preserve">
+    <value>{0} se requiere opción cuando se ejecuta como un servicio</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§{0} options all require the program to be run as an Administrator" xml:space="preserve">
+    <value>{0} todas las opciones requieren el programa a ejecutar como administrador</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§{0} options can only be used in user interactive mode" xml:space="preserve">
+    <value>{0} opciones sólo se pueden utilizar en modo interactivo de usuario</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§A {0} is needed with {1} or {2}" xml:space="preserve">
+    <value>Se necesita {0} con {1} o {2}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§A {0} is needed with {1} or {2} or {3}" xml:space="preserve">
+    <value>Se necesita {0} con {1} o {2} o {3}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§A Windows Service for MainBoss '{0}' already exists on this computer" xml:space="preserve">
+    <value>Un servicio de Windows para MainBoss '{0}' ya existe en esta computadora</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§A Windows Service for MainBoss '{0}' exists on computer '{1}', but needs to be updated" xml:space="preserve">
+    <value>Un servicio de Windows para MainBoss '{0}' existe en la computador '{1}', pero necesita ser actualizado</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Access" xml:space="preserve">
+    <value>Accesso</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Administrative option to create a Windows Service for MainBoss on this computer" xml:space="preserve">
+    <value>Opción administrativa para crear un Servicio de MainBoss en esta computadora</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Administrative option to delete a Windows Service for MainBoss on this computer" xml:space="preserve">
+    <value>Opción administrativa para eliminar un servicio MainBoss en esta computadora</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§An {0} of the Windows Service for MainBoss must be done on computer '{1}'." xml:space="preserve">
+    <value>Un {0} del servicio de Windows para MainBoss se debe hacer en la computadora '{1}'.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Attempting to restart Windows Service for MainBoss after a logging failure" xml:space="preserve">
+    <value>Intentando reiniciar el servicio de Windows para MainBoss después de un error de registro</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§by supplying '{0}' with '{1}' and '{2}'" xml:space="preserve">
+    <value>mediante el suministro de '{0}' con '{1}' y '{2}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Can Access" xml:space="preserve">
+    <value>Se puede tener Acceso</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Cannot access MainBoss database {0}" xml:space="preserve">
+    <value>No se ha podido acceder a la base de datos de MainBoss {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Cannot install Windows Service for MainBoss" xml:space="preserve">
+    <value>No se puede instalar servicios de Windows para MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Checked for changes in MainBoss Service Configuration" xml:space="preserve">
+    <value>Se verificó la configuración de servicios de los cambios en MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Could not check Service Configuration for changes" xml:space="preserve">
+    <value>No se ha podido comprobar los cambios de configuración de servicios</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Could not construct a valid SQL Server Connection string" xml:space="preserve">
+    <value>No se pudo construir una cadena de conexión de SQL Server válida</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Currently there is no Windows Service for MainBoss installed for {0}" xml:space="preserve">
+    <value>Actualmente no hay ningún servicio de Windows para MainBoss instalado para {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Database connection information was not supplied" xml:space="preserve">
+    <value>La información de conexión a la base de datos no se suministró</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Database Name" xml:space="preserve">
+    <value>Base de datos Nombre</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Database Server" xml:space="preserve">
+    <value>Base de datos Servidor</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Detailed Help on the options" xml:space="preserve">
+    <value>Ayuda detallada sobre las opciones</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Exception: {0}" xml:space="preserve">
+    <value>Excepción: {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Force an action to take place; should not normally be used. Will be required when a computer is no longer available." xml:space="preserve">
+    <value>Forzar una acción que tiene lugar; normalmente no deberían utilizarse. Será requerido cuando una computador ya no está disponible.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Found one Windows Service for MainBoss named '{0}' on computer '{1}'" xml:space="preserve">
+    <value>Encontrado un servicio de Windows para MainBoss llamado '{0}' en la computadora '{1}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§However, this program can also be run from a CMD console for diagnostic purposes." xml:space="preserve">
+    <value>Sin embargo, este programa también se puede ejecutar desde una consola de CMD con fines de diagnóstico.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§If the command is run as an Administrator, and there is exactly one MainBoss Service," xml:space="preserve">
+    <value>Si el comando se ejecuta como un administrador y hay exactamente un servicio de MainBoss,</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§If the Windows Service for MainBoss is running, then running this program using the '{0}' or '{1}' options may result in duplicate notifications or duplicate requests made from incoming email." xml:space="preserve">
+    <value>Si el servicio de Windows para MainBoss está en ejecución, la ejecución de este programa con los '{0}' o '{1}' opciones pueden resultar en notificaciones duplicadas o duplicadas peticiones realizadas desde el correo electrónico entrante.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§If there is more that one Windows Service for MainBoss on the computer then '{0}' can be use to pick the desired service," xml:space="preserve">
+    <value>Si hay más de un servicio de Windows para MainBoss en la computadora, entonces se puede usar '{0}' para elegir el servicio deseado,</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§In other cases '{0}' or '{1}' '{2}' can be used to select the correct database" xml:space="preserve">
+    <value>En otros casos, se puede usar '{0}' o '{1}' '{2}' para seleccionar la base de datos correcta</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§It should not normally be used. The option will allow overriding of various error messages." xml:space="preserve">
+    <value>No debe utilizarse normalmente. La opción permitirá primordial de varios mensajes de error.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§List all the Windows Services for MainBoss installed on this computer" xml:space="preserve">
+    <value>Listar todos los Servicios de MainBoss instalados en esta computadora</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§List of Windows Services for MainBoss on computer '{0}' follows:" xml:space="preserve">
+    <value>Lista de Servicios de Windows para MainBoss en la computadora '{0}' sigue:</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Log truncation request processing completed, removed all entries older than {0}" xml:space="preserve">
+    <value>Entrar procesamiento de solicitudes de truncamiento completado, eliminado todas las entradas mayores de {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§MainBoss Service '{0}' starting on computer '{1}' using {2} running as user '{3}'" xml:space="preserve">
+    <value>Servicio MainBoss '{0}' a partir del ordenador '{1}' con {2} por el usuario '{3}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§MainBoss Service Configuration has changed, refreshing" xml:space="preserve">
+    <value>Configuración de servicio MainBoss ha cambiado y refrescante</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§MainBoss Service End of Debugging Session" xml:space="preserve">
+    <value>MainBoss Servicio Fin de depuración de la sesión</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§MainBoss Service expects to be run as a Windows Service." xml:space="preserve">
+    <value>Servicio MainBoss espera que se ejecute como un servicio de Windows.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§MainBoss Service Logging set to show: {0}" xml:space="preserve">
+    <value>Servicio MainBoss Logging configurado para mostrar: {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§MainBoss Service Paused" xml:space="preserve">
+    <value>MainBoss Servicio Pausado</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§MainBoss Service refresh complete with current configuration" xml:space="preserve">
+    <value>Servicio MainBoss refrescar completa con configuración actual</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§MainBoss Service refresh starting" xml:space="preserve">
+    <value>Servicio MainBoss refrescar partida</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§MainBoss Service Resumed " xml:space="preserve">
+    <value>Servicio MainBoss Continuación</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§MainBoss Service Shutdown" xml:space="preserve">
+    <value>Parada de servicio MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§MainBoss Service started in manual mode on {0} by user '{1}'" xml:space="preserve">
+    <value>Servicio MainBoss inició en modo manual en {0} por el usuario '{1}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§MainBoss Service: Basic diagnostics completed on {0} accessing the SQL Server with SQL User {1}" xml:space="preserve">
+    <value>MainBoss Service: Diagnósticos básicos completados en {0} accediendo al SQL Server con SQL User {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Manually run the MainBoss Service. May cause duplicate messages if Windows Service for MainBoss is running" xml:space="preserve">
+    <value>Ejecutar manualmente el servicio MainBoss. Puede causar mensaje duplicado si el servicio está funcionando</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Multiple Windows Services for MainBoss exist; Choose one with the '{0}' option" xml:space="preserve">
+    <value>Existen varios servicios de Windows para MainBoss; Elija uno con la opción '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Name of the Database." xml:space="preserve">
+    <value>Nombre de la base de datos.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Name of the SQL Server that the database is on." xml:space="preserve">
+    <value>Nombre del servidor SQL que la base de datos esté activado.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Need options {0} or {1} and {2} option to continue;" xml:space="preserve">
+    <value>Necesita opciones {0} o {1} y {2} para continuar;</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§No Windows Service for MainBoss found on computer '{0}'" xml:space="preserve">
+    <value>Sin servicio de Windows para MainBoss encontró en la computadora '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Options '{0}', '{1}' and '{2}' require this program to be run as an Administrator" xml:space="preserve">
+    <value>Las opciones '{0}', '{1}' y '{2}' requieren que este programa se ejecute como administrador</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Password for the service User name; normally not supplied, not needed for 'Network Service'." xml:space="preserve">
+    <value>Contraseña para el nombre de servicio del usuario; normalmente no suministrado, no necesita de 'Servicio de red'.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Password for the SQL User Name; normally not used with 'Windows Authentication'." xml:space="preserve">
+    <value>Contraseña para el nombre de usuario SQL; Normalmente no se utiliza con la "autenticación de Windows".</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Press any key to end program" xml:space="preserve">
+    <value>Pulse cualquier tecla para finalizar el programa</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§'Process All' command received" xml:space="preserve">
+    <value>Comando 'Proceso All' recibió</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§'Process Assignment Notifications' command received" xml:space="preserve">
+    <value>Comando 'Proceso de Asignación Notificaciones' recibió</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§'Process Email Requests' command received" xml:space="preserve">
+    <value>Comando 'Proceso Email Solicitudes 'recibido</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§'Process Requestor Notifications' command received" xml:space="preserve">
+    <value>Comando 'Proceso Solicitante Notificaciones' recibió</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§'Refresh' command received" xml:space="preserve">
+    <value>Comando 'Refrescar' recibió</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Running this program as an Administrator may enable the configuration checks" xml:space="preserve">
+    <value>La ejecución de este programa como Administrador puede permitir la comprobación de la configuración</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Security Identification to the SQL Server. For internal use only." xml:space="preserve">
+    <value>Identificación de seguridad para SQL Server. Sólo para uso interno.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Service {0} running as user {1}" xml:space="preserve">
+    <value>Servicio de {0} en marcha bajo el usuario {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Service Name" xml:space="preserve">
+    <value>Nombre del servicio</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Service Name must be alphanumeric with no spaces" xml:space="preserve">
+    <value>Nombre del servicio debe ser alfanumérico sin espacios</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Service User Name" xml:space="preserve">
+    <value>Servicio de Nombre de Usuario</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Service Worker '{0}' appears to be not responding" xml:space="preserve">
+    <value>Trabajador del servicio '{0}' parece ser que no responde</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Special considerations are required when running the Windows Service for MainBoss under user '{0}' and the database server is on a different computer.  The user '{0}' will access resources on the computer '{1}' as '{2}' which by default has no privileges and belongs to group 'Domain Computers'." xml:space="preserve">
+    <value>Se requieren consideraciones especiales cuando se ejecuta el servicio de Windows para MainBoss bajo el usuario '{0}' y el servidor de base de datos se encuentra en un equipo diferente. El usuario '{0}' accederá a los recursos de la computadora '{1}' como '{2}' que por defecto no tiene privilegios y pertenece al grupo 'Domain Computers'.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§SQL access added to {0} for user {0}." xml:space="preserve">
+    <value>Se agregó el acceso SQL a {0} para el usuario {0}.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§SQL login added user {0}. Used by the Windows Service for MainBoss '{1}' on '{2}'" xml:space="preserve">
+    <value>Acceso de SQL usuario añadido {0}. Utilizado por el servicio de Windows para MainBoss '{1}' en '{2}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§SQL login to server {0} and access to {0} added for user {0}." xml:space="preserve">
+    <value>El inicio de sesión de SQL en el servidor {0} y el acceso a {0} se agregaron para el usuario {0}.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§SQL Server Administrative option to grant access to the MainBoss database by the Service User Name" xml:space="preserve">
+    <value>SQL Server opción administrativa para conceder acceso a la base de datos de MainBoss por el Servicio de Nombre de Usuario</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§SQL Server authentication; not needed needed, default to 'Windows Authentication'." xml:space="preserve">
+    <value>Autenticación de SQL Server; No es necesario necesario, por defecto a 'Autenticación de Windows'.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§SQL Server Connection string." xml:space="preserve">
+    <value>Cadena de conexión de SQL Server.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Test the MainBoss Service configuration. May cause duplicate messages if Windows Service for MainBoss is running" xml:space="preserve">
+    <value>Pruebe de la configuración del servicio MainBoss. Puede causar mensaje duplicado si el servicio está funcionando</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The '{0}' and '{1}' options can be used to set the user and password for the Windows Service for MainBoss" xml:space="preserve">
+    <value>Las opciones '{0}' y '{1}' se pueden usar para configurar el usuario y la contraseña para el servicio de Windows para MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The '{0}' option carries out the standard MainBoss Service processing of incoming and outgoing email." xml:space="preserve">
+    <value>La opción '{0}' lleva a cabo el procesamiento de servicio MainBoss estándar de correo electrónico entrante y saliente.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The '{0}' option deletes the Windows Service for MainBoss from this computer and from the MainBoss database." xml:space="preserve">
+    <value>La opción '{0}' elimina el servicio de Windows para MainBoss desde esta computadora y de la base de datos de MainBoss.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The '{0}' option gives more detailed diagnostic information." xml:space="preserve">
+    <value>El '{0}' opción proporciona información de diagnóstico más detallado.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The '{0}' option installs the Windows Service for MainBoss." xml:space="preserve">
+    <value>La opción '{0}' instala el servicio de Windows para MainBoss.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The '{0}' option may be used with {1} {2} or {3} options." xml:space="preserve">
+    <value>El '{0}' opción se puede utilizar con {1} {2} {3} o opciones.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The '{0}' option updates and refreshes the Windows Service for MainBoss as necessary." xml:space="preserve">
+    <value>Los '{0}' actualizaciones opcionales y refresca el servicio de Windows para MainBoss como sea necesario.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The '{0}' option will give the user that the service runs under permissions on the database." xml:space="preserve">
+    <value>La opción '{0}' le dará al usuario de que el servicio se ejecuta bajo permisos en la base de datos.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The command has the service code as '{0}', but the service record has the code '{1}'" xml:space="preserve">
+    <value>El comando tiene el código de servicio como '{0}', pero el registro de servicio tiene el código '{1}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The command must be able to find the location of the MainBoss Database" xml:space="preserve">
+    <value>El comando debe ser capaz de encontrar la ubicación de la base de datos MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The computer where the Windows Service for MainBoss is installed." xml:space="preserve">
+    <value>la computadora del servicio está encendido.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The default is to use Windows Authentication, but other forms of Authentication can be used," xml:space="preserve">
+    <value>El valor predeterminado es utilizar la autenticación de Windows, pero se pueden utilizar otras formas de autenticación,</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§the information from that service will be used to find the MainBoss Database." xml:space="preserve">
+    <value>la información de ese servicio se utilizará para encontrar la base de datos de MainBoss.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The Service Name '{0}' on the command line does not match the Service Name '{1}' in the database" xml:space="preserve">
+    <value>El Servicio de nombres '{0}' en la línea de comandos no coincide con el nombre de servicio '{1}' en la base de datos</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The service name identifier." xml:space="preserve">
+    <value>El identificador de nombre de servicio.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The SQL user name for the service {0} does not have the expected permissions to access the database {1}" xml:space="preserve">
+    <value>El nombre de usuario SQL para el servicio {0} no tiene los permisos esperados para acceder a la base de datos {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The version of MainBoss used to install the Windows Service for MainBoss." xml:space="preserve">
+    <value>La versión de MainBoss que se instaló el servicio para.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The Windows Service for MainBoss '{0}' does not exist on computer '{1}'." xml:space="preserve">
+    <value>El servicio de Windows para MainBoss '{0}' no existe en la computadora '{1}'.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The Windows Service for MainBoss '{0}' registry entries have been damaged; Delete the Windows Service for MainBoss '{0}' and then reconfigure the service" xml:space="preserve">
+    <value>El servicio de Windows para MainBoss '{0}' entradas de registro han dañado; Elimine el servicio de Windows para MainBoss '{0}' y luego volver a configurar el servicio</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The Windows Service for MainBoss is being configured to run as user '{0}' which is not a valid user" xml:space="preserve">
+    <value>El servicio de Windows para MainBoss se está configurando para ejecutarse como usuario '{0}' que no es un usuario válido</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The Windows Service for MainBoss is configured access the SQL Server using user {0}.  For the service to run, that SQL User must have access to {1}  The '{2}' option can be used to give the user the expected permissions" xml:space="preserve">
+    <value>El servicio de Windows para MainBoss está configurado para acceder a SQL Server utilizando el usuario {0}. Para que el servicio funcione, ese usuario de SQL debe tener acceso a {1} La opción '{2}' puede ser usada para dar al usuario los permisos esperados</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§The Windows Service for MainBoss registry entries have been damaged; Delete the Windows Service for MainBoss and reconfigure the service" xml:space="preserve">
+    <value>Los servicios de Windows para MainBoss entradas de registro han dañado; Elimine el servicio de Windows para MainBoss y volver a configurar el servicio</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§There are no MainBoss Services installed on this computer" xml:space="preserve">
+    <value>No hay servicios de MainBoss instalados en esta computadora</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§This option requires SQL Server Administrator privileges" xml:space="preserve">
+    <value>Esta opción requiere privilegios de administrador de SQL Server</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§This option requires the command to be run as an Administrator." xml:space="preserve">
+    <value>Esta opción requiere la orden a ejecutar como administrador.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§This option will be needed after any updated version of MainBoss is installed." xml:space="preserve">
+    <value>Será necesaria esta opción después de instalar cualquier versión actualizada de MainBoss.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§This program is running as user '{0}'. The Windows Service for MainBoss is configured to be running as {1}" xml:space="preserve">
+    <value>Este programa se ejecuta como usuario '{0}'. El servicio de Windows para MainBoss está configurado para ejecutarse como {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Unable to determine if a Windows Service for MainBoss is installed for {0}" xml:space="preserve">
+    <value>No se puede determinar si un servicio de Windows para MainBoss está instalado para {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Unknown" xml:space="preserve">
+    <value>Ignoto</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Update and refresh the Windows Service for MainBoss; needed after every new release of MainBoss is installed" xml:space="preserve">
+    <value>Actualizar y refrescar el Servicio MainBoss; necesitaba después de instalar cada nueva versión de MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Usage: &quot;{0}&quot;" xml:space="preserve">
+    <value>Uso: '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§User name for the service to run as; normally not supplied, defaults to 'Network Service'." xml:space="preserve">
+    <value>Nombre de usuario para el servicio se ejecute bajo; normalmente no se proporciona, por defecto es 'Servicio de red'.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§User name used to access the SQL Server; not used with 'Windows Authentication'." xml:space="preserve">
+    <value>Nombre de usuario utilizado para acceder a SQL Server; No se utiliza con "Autenticación de Windows".</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Windows Service for MainBoss '{0}' cannot access '{1}' probably because the user that the service has been configured to run as (probably 'NT AUTHORITY\Network Service') does not have the required SQL permissions on the database." xml:space="preserve">
+    <value>Servicio Windows para MainBoss '{0}' no puede acceder a '{1}' accesible. Probablemente porque el usuario que el servicio se ha configurado para ejecutarse bajo (probablemente 'NT AUTHORITY\Network Service') no tiene los permisos SQL necesarias en la base de datos.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Windows Service for MainBoss '{0}' cannot access '{1}' probably because user '{2}' does not have the required SQL permissions on the database." xml:space="preserve">
+    <value>Servicio Windows para MainBoss '{0}' no puede acceder a '{1}' accesible. Probablemente porque el usuario '{2}' no tiene el permisos SQL necesarias en la base de datos.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Windows Service for MainBoss '{0}' delete request sent to Windows. There may be a arbitrary delay before Windows acts on the request." xml:space="preserve">
+    <value>Servicio Windows para MainBoss '{0}' delete solicitud enviada a Windows. Puede haber una demora arbitraria antes de que Windows actúa sobre la solicitud.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Windows Service for MainBoss '{0}' deleted." xml:space="preserve">
+    <value>Servicio Windows para MainBoss '{0}' eliminado</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Windows Service for MainBoss '{0}' exists but there are insufficient permissions to access the Windows Service details" xml:space="preserve">
+    <value>Servicio Windows para MainBoss '{0}' existe pero hay permisos suficientes para acceder a los detalles de servicios de Windows</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Windows Service for MainBoss '{0}' exists but there are insufficient permissions to check the service configuration" xml:space="preserve">
+    <value>El servicio de Windows para MainBoss '{0}' existe pero no hay suficientes permisos para comprobar la configuración del servicio</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Windows Service for MainBoss '{0}' has been updated on computer '{1}'" xml:space="preserve">
+    <value>El servicio de Windows para MainBoss '{0}' se ha actualizado en {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Windows Service for MainBoss '{0}' is not installed on '{1}'." xml:space="preserve">
+    <value>Servicio Windows para MainBoss '{0}' no está instalado en '{1}'.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Windows Service for MainBoss '{0}' was deleted from '{1}'." xml:space="preserve">
+    <value>El servicio de Windows para MainBoss '{0}' se eliminó de '{1}'.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Windows Service for MainBoss installed" xml:space="preserve">
+    <value>Servicio de Windows para MainBoss instalado</value>
+  </data>
+  <data name="Thinkage.MainBoss.Service§Windows Service for MainBoss should not run as user {0}. Use 'NT AUTHORITY\Network Service' instead" xml:space="preserve">
+    <value>Servicio Windows para MainBoss no debe correr con el usuario {0}. Use 'NT AUTHORITY\Network Service' en vez</value>
+  </data>
+</root>
