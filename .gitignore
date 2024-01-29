@@ -396,3 +396,14 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/Thinkage.MainBoss.Application/SolutionSettings.cs
+/Thinkage.MainBoss.Controls/SolutionSettings.cs
+/Thinkage.MainBoss.CustomConversion/SolutionSettings.cs
+/Thinkage.MainBoss.Database/SolutionSettings.cs
+/Thinkage.MainBoss.MainBossServiceConfiguration/SolutionSettings.cs
+/Thinkage.MainBoss.MB29Conversion/SolutionSettings.cs
+/Thinkage.MainBoss.MBUtility/SolutionSettings.cs
+/Thinkage.MainBoss.Service/SolutionSettings.cs
+/Thinkage.MainBoss.WebCommon/SolutionSettings.cs
+/Thinkage.MainBoss.MainBoss/SolutionSettings.cs
+/Thinkage.MainBoss.MainBoss/SolutionSettings.targets
