@@ -1,6 +1,3 @@
-[submodule "Thinkage.Core"]
-	path = Thinkage.Core
-	url = https://github.com/thinkageltd/Thinkage.Core
 [submodule "Thinkage.Libraries"]
 	path = Thinkage.Libraries
 	url = https://github.com/thinkageltd/Thinkage.Libraries
@@ -19,9 +16,6 @@
 [submodule "Thinkage.Libraries.Presentation"]
 	path = Thinkage.Libraries.Presentation
 	url = https://github.com/thinkageltd/Thinkage.Libraries.Presentation
-[submodule "Thinkage.Libraries.Presentation.ASPNet"]
-	path = Thinkage.Libraries.Presentation.ASPNet
-	url = https://github.com/thinkageltd/Thinkage.Libraries.Presentation.ASPNet
 [submodule "Thinkage.Libraries.Presentation.MSWindows"]
 	path = Thinkage.Libraries.Presentation.MSWindows
 	url = https://github.com/thinkageltd/Thinkage.Libraries.Presentation.MSWindows
