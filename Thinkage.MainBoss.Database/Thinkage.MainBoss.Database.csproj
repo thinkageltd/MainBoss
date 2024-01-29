@@ -5,10 +5,14 @@
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{1302BBDA-FB21-415F-9ECF-678BE8F5F79E}</ProjectGuid>
-    <SccProjectName>Thinkage.MainBoss.Database</SccProjectName>
-    <SccLocalPath>1~cf73bb72-5e59-49d7-bf5d-1423e6537726</SccLocalPath>
-    <SccAuxPath>http://vault.thinkage.ca/VaultService</SccAuxPath>
-    <SccProvider>SourceGear Vault Visual Studio 2005 Client:{1EA47954-8515-402d-82D9-B5C332120A8D}</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ApplicationIcon>

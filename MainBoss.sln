@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installation", "Installation", "{9E964703-0677-46DC-B2CF-7445B98ECC62}"
 	ProjectSection(SolutionItems) = preProject
@@ -1175,55 +1175,6 @@ Global
 		SolutionGuid = {5B32EC15-87AB-4748-A6C7-797F3590DFB3}
 	EndGlobalSection
 	GlobalSection(VaultVsipSolution-v2) = preSolution
-		VaultHost = http://vault.thinkage.ca/VaultService
-		VaultRepositoryID = 1
-		VaultRepositoryGUID = cf73bb72-5e59-49d7-bf5d-1423e6537726
-		ProjectCount = 45
-		ProjectRelativeDiskPath1 = MainBoss.sln
-		ProjectRelativeDiskPath2 = MainBoss.sln
-		ProjectRelativeDiskPath3 = MainBoss.sln
-		ProjectRelativeDiskPath4 = MainBoss.sln
-		ProjectRelativeDiskPath5 = MainBoss.sln
-		ProjectRelativeDiskPath6 = MainBoss.sln
-		ProjectRelativeDiskPath7 = MainBoss.sln
-		ProjectRelativeDiskPath8 = MainBoss.sln
-		ProjectRelativeDiskPath9 = MainBoss.sln
-		ProjectRelativeDiskPath10 = MainBoss.sln
-		ProjectRelativeDiskPath11 = MainBoss.sln
-		ProjectRelativeDiskPath12 = Thinkage.Libraries\Thinkage.Libraries.csproj
-		ProjectRelativeDiskPath13 = Thinkage.Libraries.Sql\Thinkage.Libraries.Sql.csproj
-		ProjectRelativeDiskPath14 = Thinkage.Libraries.XAF.UI\Thinkage.Libraries.XAF.UI.csproj
-		ProjectRelativeDiskPath15 = Thinkage.Libraries.XAF.UI.MSWindows\Thinkage.Libraries.XAF.UI.MSWindows.csproj
-		ProjectRelativeDiskPath16 = Thinkage.Libraries.XAF.Database.Layout\Thinkage.Libraries.XAF.Database.Layout.csproj
-		ProjectRelativeDiskPath17 = Thinkage.Libraries.XAF.Database.Service\Thinkage.Libraries.XAF.Database.Service.csproj
-		ProjectRelativeDiskPath18 = Thinkage.Libraries.DBAccess\Thinkage.Libraries.DBAccess.csproj
-		ProjectRelativeDiskPath19 = Thinkage.MainBoss.Database\Thinkage.MainBoss.Database.csproj
-		ProjectRelativeDiskPath20 = Thinkage.MainBoss.MB29Conversion\Thinkage.MainBoss.MB29Conversion.csproj
-		ProjectRelativeDiskPath21 = Thinkage.Libraries.RDLReports\Thinkage.Libraries.RDLReports.csproj
-		ProjectRelativeDiskPath22 = Thinkage.MainBoss.MainBoss\Thinkage.MainBoss.MainBoss.csproj
-		ProjectRelativeDiskPath23 = Thinkage.MainBoss.MBUtility\Thinkage.MainBoss.MBUtility.csproj
-		ProjectRelativeDiskPath24 = Thinkage.MainBoss.Controls\Thinkage.MainBoss.Controls.csproj
-		ProjectRelativeDiskPath25 = Thinkage.Libraries.DBILibrary\Thinkage.Libraries.DBILibrary.csproj
-		ProjectRelativeDiskPath26 = Thinkage.Libraries.Presentation\Thinkage.Libraries.Presentation.csproj
-		ProjectRelativeDiskPath27 = Thinkage.Libraries.XAF.Database.Service.MSSql\Thinkage.Libraries.XAF.Database.Service.MSSql.csproj
-		ProjectRelativeDiskPath28 = Thinkage.Libraries.Presentation.MSWindows\Thinkage.Libraries.Presentation.MSWindows.csproj
-		ProjectRelativeDiskPath29 = Thinkage.Libraries.DBILibrary.MSSql\Thinkage.Libraries.DBILibrary.MSSql.csproj
-		ProjectRelativeDiskPath30 = Thinkage.MainBoss.Service\Thinkage.MainBoss.Service.csproj
-		ProjectRelativeDiskPath31 = Thinkage.Libraries.MVC\Thinkage.Libraries.MVC.csproj
-		ProjectRelativeDiskPath32 = Thinkage.MainBoss.MainBossServiceConfiguration\Thinkage.MainBoss.MainBossServiceConfiguration.csproj
-		ProjectRelativeDiskPath33 = Thinkage.MainBoss.Application\Thinkage.MainBoss.Application.csproj
-		ProjectRelativeDiskPath34 = Installation\Install.MainBoss\Install.MainBoss.wixproj
-		ProjectRelativeDiskPath35 = Thinkage.MainBoss.WebAccess\Thinkage.MainBoss.WebAccess.csproj
-		ProjectRelativeDiskPath36 = Thinkage.MainBoss.WebCommon\Thinkage.MainBoss.WebCommon.csproj
-		ProjectRelativeDiskPath37 = JQueryUIHelpers\JQueryUIHelpers.csproj
-		ProjectRelativeDiskPath38 = MainBoss.sln
-		ProjectRelativeDiskPath39 = Thinkage.MainBoss.CustomConversion\Thinkage.MainBoss.CustomConversion.csproj
-		ProjectRelativeDiskPath40 = MainBoss.sln
-		ProjectRelativeDiskPath41 = MainBoss.sln
-		ProjectRelativeDiskPath42 = MainBoss.sln
-		ProjectRelativeDiskPath43 = MainBoss.sln
-		ProjectRelativeDiskPath44 = MainBoss.sln
-		ProjectRelativeDiskPath45 = MainBoss.sln
 		ExcludedFileCount = 35
 		ExcludedFile0 = Thinkage.MainBoss.Controls\SolutionSettings.cs
 		ExcludedFile1 = Thinkage.MainBoss.Database\SolutionSettings.cs
