@@ -35,10 +35,10 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <SignManifests>true</SignManifests>
-    <ManifestCertificateThumbprint>0072E09A760BFAC04E5CD4F5A26ABC34A1C0072B</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>6BCBEF3F5A78F2A2648C61ABC82700F0DF2BEAB3</ManifestCertificateThumbprint>
     <ManifestKeyFile>
     </ManifestKeyFile>
-    <ManifestTimestampUrl>http://tsa.starfieldtech.com</ManifestTimestampUrl>
+    <ManifestTimestampUrl>http://sha256timestamp.ws.symantec.com/sha256/timestamp</ManifestTimestampUrl>
     <Win32Resource>
     </Win32Resource>
     <OldToolsVersion>3.5</OldToolsVersion>
