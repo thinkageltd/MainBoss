@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Corrections of Actual Per Job Inside</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Corrections of Actual Per Job Inside</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Actual Per Job Inside.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Actual Hourly Outside (no PO).htm">Next section &gt;</a></p>
+
+<p>To correct an Actual Per Job Inside record, you start in the <span class="CButton">Inside</span> subsection of the <span class="CButton">Resources</span> section of the work order. Select the demand corresponding to the Actual Per Job Inside you want to correct. Click <span class="CButton">Edit</span> to open the Demand Per Job Inside record. Go to the <span class="CButton">Actuals</span> section of that record, click on the Actual Per Job Inside entry you want to correct, then click <span class="CButton">Correct</span>. This opens a window where you can correct the record:</p>
+
+<p class="wi"><span class="CField">Entry Date</span>: A read-only field giving the date that this record was created.</p>
+<p class="wi"><span class="CField">Effective Date</span>: The date/time when the work was done.</p>
+<p class="wi"><span class="CField">User Contact</span>: A read-only field giving your name. This will appear in MainBoss's accounting history to show who made the correction.</p>
+<p class="wi">Read-only fields: Provide information relevant to the job. This includes the work order number, the estimated "per job" units required and the units already actualized.</p>
+<p class="wi"><span class="CButton">Use all remaining demand</span>: If you checkmark this box, MainBoss completes the record to indicate that you did the work listed under "<span class="CField">Remaining Demand</span>". If you leave the box blank, you will have to fill in this information yourself.</p>
+<p class="wi"><span class="CField">Quantity</span>: Corrects the quantity of work actually done. Typically, you fill in the "<span class="CField">As Corrected</span>" field with the work quantity&#8212;the correct quantity, as opposed to what you originally recorded. The alternative is to fill in "<span class="CField">This Entry</span>" with the difference between the quantity you originally entered and the true quantity.
+
+<br /><br />For example, suppose the worker really did 3 units of work but you accidentally typed 1 in the original record. You could fill in "<span class="CField">As Corrected</span>" with 3 (the correct number) or fill in "<span class="CField">This Entry</span>" with 2 (the difference between what you originally typed and the true quantity). "<span class="CField">This Entry</span>" may be a negative number if you originally typed in too much.
+
+<br /><br />If you fill in "<span class="CField">As Corrected</span>", MainBoss automatically sets "<span class="CField">This Entry</span>" and vice versa.</p>
+<p class="wi"><span class="CField">Calculated Job Cost</span>: Read-only fields giving the expected cost of the corrected quantity. The "<span class="CField">Unit Cost</span>" column gives the cost per job and the "<span class="CField">Total Cost</span>" column gives the total cost.</p>
+<p class="wi"><span class="CField">Demanded</span>, <span class="CField">Demanded Cost</span>: The estimated quantity and cost stated in the original demand.</p>
+<p class="wi"><span class="CButton">Manually Enter Cost</span>: If you select this option, you must enter the actual cost of the labor in "<span class="CField">This Entry</span>" or "<span class="CField">As Corrected</span>".</p>
+<p class="wi"><span class="CButton">Use calculated job cost</span>: If you select this option, the costs in "<span class="CField">This Entry</span>" and "<span class="CField">As Corrected</span>" will be set using the labor cost given in the original per job inside record.</p>
+<p class="wi"><span class="CButton">Use demanded cost</span>: If you select this option, the costs in "<span class="CField">This Entry</span>" and "<span class="CField">As Corrected</span>" will be set using the labor cost given in the original estimated demand.</p>
+<p class="wi"><span class="CField">This Entry</span>, <span class="CField">As Corrected</span>: Corrects the actual cost (if necessary). Typically, you fill in "<span class="CField">As Corrected</span>" with the correct cost of the correct work quantity. The alternative is to fill in "<span class="CField">This Entry</span>" with the difference between the cost you originally entered and the true cost.
+
+<br /><br />If you fill in "<span class="CField">As Corrected</span>", MainBoss automatically sets "<span class="CField">This Entry</span>" and vice versa.</p>
+<p class="wi"><span class="CField">From Cost Center</span>, <span class="CField">To Cost Center</span>: Read-only fields telling the cost centers involved in this operation. MainBoss creates accounting records indicating the transfer of money from the first cost center to the second. These fields are only visible if your database has an <span class="BL">Accounting</span> license key. For more, see <a href="AccountingFacilities.htm">Accounting Facilities</a>.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on actual per job inside records, see <a href="Edit.Actual Per Job Inside.htm">Actual Per Job Inside</a>. For more on resources, see <a href="Resources.htm">Resources</a>. For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Actual Per Job Inside.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Actual Hourly Outside (no PO).htm">Next section &gt;</a></p>
+</body>
+</html>
+

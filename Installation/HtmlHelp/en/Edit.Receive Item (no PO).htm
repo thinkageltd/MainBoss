@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Receiving Items</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Receiving Items</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Correction of Actual Miscellaneous Cost.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Correction of Receive Item (no PO).htm">Next section &gt;</a></p>
+
+<p>You can receive items from a storeroom assignment record by going to the <span class="CButton">Item Activity</span> section, clicking the drop-down arrow associated with <span class="CButton">New Item Issue</span>, and clicking <span class="CButton">New Receive Item</span>. This process does <span class="Emphasis">not</span> require a purchase order; it's typically used when you buy materials with petty cash, especially in connection with a work order.</p>
+
+<p class="box">For more on storage assignment records, see <a href="Edit.Storeroom Assignment.htm">Editing Storeroom Assignments</a>.</p>
+
+<p>For example, suppose a room's wall gets damaged and you have to repair it. Once you've patched the wall, you want to paint the patched area the same color as the rest of the wall, but you don't have paint of the right color. You therefore go to a paint store and buy a small can of appropriate paint out of petty cash. You can then use <span class="CButton">New Receive Item</span> to record the cost of the paint and other information about the purchase.</p>
+
+<p>Before you can receive an item on a work order, you have to create a temporary storage location for the work order, and then a temporary storage assignment for the item in the temporary storage location. (You do this in the work order's <span class="CButton">Temporary Storage</span> section.)</p>
+
+<p>Once you've created the temporary storage assignment, there are several ways to receive items into it:</p>
+
+<ul class="b1"><li>You can click on the temporary storage assignment record you just created in the work order's <span class="CButton">Temporary Storage</span> section, then click <span class="CButton">Edit</span>. This opens the temporary storage assignment record. In the record's <span class="CButton">Item Activity</span> section, click the drop-down arrow associated with <span class="CButton">New Item Issue</span>, then click <span class="CButton">New Receive Item</span>.</li>
+<li>You can also start from the demand in the work order's <span class="CButton">Resources</span> section (<span class="CButton">Items</span> subsection). Click on the demand, then click <span class="CButton">View Storage Assignment</span>. In the <span class="CButton">Item Activity</span> section of the storage assignment record, click the drop-down arrow associated with <span class="CButton">New Item Issue</span>, then click <span class="CButton">New Receive Item</span>. This receives the new materials into the location associated with the storage assignment. You can then use the storage assignment's <span class="CButton">New Item Transfer To</span> button to transfer the received item into the temporary storage location.
+</li></ul><p>Whatever approach you use, MainBoss opens a window containing the following:</p>
+
+<p class="wi"><span class="CField">Entry Date</span>: A read-only field giving the date that this record was created.</p>
+<p class="wi"><span class="CField">Effective Date</span>: The effective date/time when the item was received. By default, this is set to the current date/time.</p>
+<p class="wi"><span class="CField">User Contact</span>: A read-only field giving your name. This will appear in MainBoss's accounting history to show who recorded the receipt.</p>
+<p class="wi"><span class="CField">Storage Assignment</span>: A storeroom assignment record that tells what item was purchased and where you stored it. This also records the price you paid. For more, see <a href="StoreroomAssignments.htm">Storeroom Assignments</a>.</p>
+<p class="wi"><span class="CField">Vendor</span>: The vendor from whom you purchased the item. For more, see <a href="Vendors.htm">Vendors</a>.</p>
+<p class="wi"><span class="CField">Payment Term</span>: The payment terms for the item. For more, see <a href="PaymentTerms.htm">Payment Terms</a>.</p>
+<p class="wi"><span class="CField">Quantity</span>: The quantity actually received.</p>
+<p class="wi"><span class="CField">Item Pricing and Purchasing History</span>: This area lets you specify a pricing record for the item you want to purchase. Pricing records may be price quotes or actual prices paid in the past. (For more on price quotes, see <a href="Edit.Item Pricing.htm">Item Pricing</a>.)
+
+<br /><br />At the bottom of this area is a drop-down list which will display storage assignments based on the options specified in the "<span class="CField">Storage Assignment</span>" area. By choosing appropriate options, you can reduce the entries that are shown in the drop-down list, making it quicker and easier to choose the one you want. The possible options are:</p>
+<p class="wi2"><span class="CButton">Use Item Pricing or Purchase History only for this vendor</span>: If you checkmark this box, the drop-down list will only contain price records for this item purchased from the specific "<span class="CField">Vendor</span>". If you leave the checkbox blank, the drop-down list will also contain price records for other vendors.</p>
+<p class="wi2"><span class="CButton">Do not include Purchasing History</span>: If you checkmark this box, the drop-down list will only contain price quotes. If you leave the checkbox blank, the drop-down list will also contain actual prices paid to vendors in the past.</p>
+<p class="wi2">Drop-down list: The drop-down list at the end of the "<span class="CField">Item Pricing and Purchasing History</span>" area shows pricing records that satisfy the options you have specified.</p>
+<p class="wi">Read-only fields: A sequence of read-only fields give information on the price and quantity of the storeroom's current supply of the item.</p>
+<p class="wi"><span class="CField">Calculated Item Price Cost</span>: A read-only field giving the cost of the received quantity, as calculated from MainBoss's current price information.</p>
+<p class="wi"><span class="CButton">Use calculated item price cost</span>: If you checkmark this box, MainBoss fills in "<span class="CField">This Entry</span>" with information from "<span class="CField">Calculated Item Price Cost</span>".</p>
+<p class="wi"><span class="CField">This Entry</span>: The actual cost of what you received. If you fill in the "<span class="CField">Total Cost</span>" column, MainBoss automatically fills in "<span class="CField">Unit Cost</span>" and vice versa.</p>
+<p class="wi"><span class="CField">As Corrected</span>: If there has been a correction for this record, this line will have read-only fields giving the corrected values.</p>
+<p class="wi"><span class="CField">From Cost Center</span>, <span class="CField">To Cost Center</span>: Read-only fields telling the cost centers involved in this operation. MainBoss creates accounting records indicating the transfer of money from the first cost center to the second. These fields are only visible if your database has an <span class="BL">Accounting</span> license key. For more, see <a href="AccountingFacilities.htm">Accounting Facilities</a>.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on resources, see <a href="Resources.htm">Resources</a>. For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Correction of Actual Miscellaneous Cost.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Correction of Receive Item (no PO).htm">Next section &gt;</a></p>
+</body>
+</html>
+

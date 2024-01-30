@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Actual Item</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Actual Item</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Demand Miscellaneous Cost.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Correction of Actual Item.htm">Next section &gt;</a></p>
+
+<p>To record the use of materials in connection with a work order, you use the <span class="CButton">Items</span> subsection of the <span class="CButton">Resources</span> section of the work order. First, you create a demand for each item you expect to use (for more, see <a href="Edit.Demand Item.htm">Demand Item</a>). Then when you actually use an item, select the corresponding Demand Item from the list of resources and click <span class="CButton">Actualize</span>. This opens a window where you can record the item use:</p>
+
+<p class="wi"><span class="CField">Entry Date</span>: A read-only field giving the date that this record was created.</p>
+<p class="wi"><span class="CField">Effective Date</span>: The date/time when you want to say the item was used. By default, this is set to the current date/time.</p>
+<p class="wi"><span class="CField">User Contact</span>: A read-only field giving your name. This will appear in MainBoss's accounting history to show who did the actualization.</p>
+<p class="wi">Read-only fields: Provide information from the original demand and from storeroom assignment records.</p>
+<p class="wi"><span class="CButton">Use all remaining demand</span>: If you checkmark this box, MainBoss completes the record to indicate that you used the quantity listed under "<span class="CField">Remaining Demand</span>". If you leave the box blank, you will have to fill in "<span class="CField">Quantity</span>" yourself.</p>
+<p class="wi"><span class="CField">Quantity</span>: The quantity of the item that you actually used.</p>
+<p class="wi"><span class="CField">On Hand</span>, <span class="CField">Calculated On Hand Cost</span>: The quantity of the item present in the specified location and the costs associated with that quantity.</p>
+<p class="wi"><span class="CField">Demanded</span>, <span class="CField">Demanded Cost</span>: The estimated quantity and cost stated in the original demand.</p>
+<p class="wi"><span class="CButton">Manually Enter Cost</span>: If you select this option, you must enter the actual cost of the item(s) used in "<span class="CField">This Entry</span>".</p>
+<p class="wi"><span class="CButton">Use calculated On Hand cost</span>: If you select this option, "<span class="CField">This Entry</span>" will be set to the cost of the item(s) as taken from inventory records.</p>
+<p class="wi"><span class="CButton">Use demanded cost</span>: If you select this option, "<span class="CField">This Entry</span>" will be set to the cost of the item(s) as given in the original estimated demand.</p>
+<p class="wi"><span class="CField">This Entry</span>: The actual cost of the quantity used. This will be read-only unless you selected <span class="CButton">Manually Enter Cost</span>.</p>
+<p class="wi"><span class="CField">As Corrected</span>: Will be the same as "<span class="CField">This Entry</span>" unless you have made a correction to this record after it was originally created.</p>
+<p class="wi"><span class="CField">From Cost Center</span>, <span class="CField">To Cost Center</span>: Read-only fields telling the cost centers involved in this operation. MainBoss creates accounting records indicating the transfer of money from the first cost center to the second. These fields are only visible if your database has an <span class="BL">Accounting</span> license key. For more, see <a href="AccountingFacilities.htm">Accounting Facilities</a>.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p><span class="CInset">When you don't have permissions to see item costs:</span> Your security roles may permit you to record actual item usage but not to view the costs of items. In this case, MainBoss automatically assigns costs to the items used.</p>
+
+<ul class="b1"><li>If MainBoss intends to use the cost given in the original demand, MainBoss marks the <span class="CButton">Use demanded cost</span> option.</li>
+<li>If MainBoss intends to use the cost specified in the item record, MainBoss marks the <span class="CButton">Use calculated On Hand cost</span> option.
+</li></ul><p>For more on security roles, see <a href="SecurityRoles.htm">Security Roles</a>. For more on resources, see <a href="Resources.htm">Resources</a>. For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Demand Miscellaneous Cost.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Correction of Actual Item.htm">Next section &gt;</a></p>
+</body>
+</html>
+

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Work Order Status Codes</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Work Order Status Codes</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Work Order Priority.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Work Order Status.htm">Next section &gt;</a></p>
+
+<p>Work order status codes give you a way to indicate when a work order needs someone's attention. For example, you might create a status <span class="CU">Waiting for approval</span> to mark a work order which has been written up but not approved by management. Other possible status codes might include:</p>
+
+<pre>Waiting for parts
+Waiting for tenant sign-off
+Waiting for government inspection
+Temporarily suspended by customer request</pre>
+
+<p class="box">While it is possible to use status codes for any purpose, we recommend that you only use them for work orders that are notable in some way. "Normal" work orders should have their "<span class="CField">Status</span>" field blank.</p>
+
+<p>Note that status codes can be a useful form of communication between users. For example, suppose that a worker has the <span class="CU">WorkOrderFulfillment</span> security role (meaning that the worker can record actual labor and material usage) but does not have the <span class="CU">WorkOrderClose</span> security role (which is needed to close a work order). The worker could give the work order a status like <span class="CU">Ready to Close</span>, indicating that all appropriate information has been recorded. A supervisor with <span class="CU">WorkOrderClose</span> permission could regularly check all open work orders to see if any are <span class="CU">Ready to Close</span>; if so, the supervisor can review those work orders and close them as appropriate (removing the status code in the process).</p>
+
+<p class="box">Remember that a status code is intended to bring a work order to someone's attention. You can therefore use status codes as signals for other users.</p>
+
+<p>You assign status codes to work orders by clicking the <span class="CButton">Add Work Order Comment</span> button, or some other button that lets you create a work order history record. The work order state history window lets you set or change the status of a work order.</p>
+
+<p>The status codes for work orders may be different from the status codes used for work orders and requests.</p>
+
+<p>For information on viewing work order status codes, see <a href="Browse.Work Order Status.htm">Viewing Work Order Status Codes</a>. For information on creating and editing work order status codes, see <a href="Edit.Work Order Status.htm">Editing Work Order Status Codes</a>. For information on printing work order status codes, see <a href="Report.Work Order Status.htm">Printing Work Order Status Codes</a>. For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Browse.Work Order Status.htm">Viewing Work Order Status Codes</a></li>
+
+<li><a href="Edit.Work Order Status.htm">Editing Work Order Status Codes</a></li>
+
+<li><a href="Report.Work Order Status.htm">Printing Work Order Status Codes</a></li>
+</ul>
+<p><a href="Report.Work Order Priority.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Work Order Status.htm">Next section &gt;</a></p>
+</body>
+</html>
+

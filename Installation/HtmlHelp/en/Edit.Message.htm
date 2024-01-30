@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing MainBoss Service Messages</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Editing MainBoss Service Messages</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.MainBoss Service Configuration.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Message Translation.htm">Next section &gt;</a></p>
+
+<p>MainBoss Service generates email messages to acknowledge the receipt of requests and for various other purposes. These messages are created by putting together various strings of text. For example, the subject line of a request acknowledgement is created from a string called <span class="CU">RequestorNotificationSubjectPrefix</span>, followed by the request's subject line.</p>
+
+<p>MainBoss lets you customize these message strings. For example, you might add your organization's name to the subject line, or add a standardized comment that invites your clients to fill out a user satisfaction form. You can also create customized strings in other languages. For example, if you have a significant number of users who speak French, you can create a set of French strings; these will be used if the recipient's <span class="CPanel">Contact</span> record specifies a "<span class="CField">Preferred Language</span>" of French. (For more information, see <a href="Edit.Contact.htm">Editing Contacts</a>.)</p>
+
+<p>To specify a message string, go to <span class="CPanel">Administration</span> | <span class="CPanel">MainBoss Service</span> | <span class="CPanel">Configuration</span>, and click <span class="CButton">Edit</span> to edit your configuration. Go to the <span class="CButton">Messages</span> section of the record. This shows a list of the message strings you can edit. Each string has an identifier name that suggests how the string is used; for example, the <span class="CU">RequestDeniedPreamble</span> is used to begin a message to a requestor whose request has been denied (i.e. voided by someone with appropriate permissions).</p>
+
+<p>To change an existing string or to supply a translation in some desired language, click on the string, then click <span class="CButton">View</span>. This opens a window that shows you information about the string:</p>
+
+<p class="wi"><span class="CField">Key</span>: A read-only field giving the identifier name of the string you wish to edit.</p>
+<p class="wi"><span class="CField">Current Translation</span>: A read-only field giving the current string associated with "<span class="CField">Key</span>".</p>
+<p class="wi"><span class="CField">Message Translations</span>: A list of any existing message strings. Each line in the list gives a language and the associated translation in that language.</p>
+<p class="wi"><span class="CButton">Apply Filter</span>: Lets you set up a <span class="NewTerm">filter</span> to select which records should be shown in the table. For more information, see <a href="Filter.htm">Table Filters</a>.</p>
+<p class="wi"><span class="CButton">New Message Translation</span>: Opens a window to create a new translation for this message string. For more information, see <a href="Edit.Message Translation.htm">Message String Translations</a>.</p>
+<p class="wi"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
+<p class="wi2"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
+<p class="wi2"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the record that's currently selected.</p>
+<p class="wi"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Lets you search through the list of records for a particular record. For more information, see <a href="Search.htm">Searching for a Particular Record</a>. The <span class="CButton"><img src="Find_VS.png" alt="Search" /></span> button has an accompanying drop-down list containing the following:</p>
+<p class="wi2"><span class="CButton">Find Next</span>: Uses the same search condition(s) as your most recent search and finds the next record in the table that matches the condition(s). If the search reaches the end of the table without finding a matching record, it goes to the start of the table and continues the search.</p>
+<p class="wi2"><span class="CButton">Find Previous</span>: Same as <span class="CButton">Find Next</span> except that it goes backward in the table. If the search reaches the start of the table without finding a matching record, it goes to the end of the table and continues the search.</p>
+<p class="wi"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window.</p>
+
+
+<p><a href="Edit.MainBoss Service Configuration.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Message Translation.htm">Next section &gt;</a></p>
+</body>
+</html>
+

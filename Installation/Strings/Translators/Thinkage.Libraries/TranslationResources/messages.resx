@@ -1,0 +1,1008 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Thinkage.Libraries§ [&lt;option&gt;]*" type="" mimetype="">
+    <value> [&lt;option&gt;]*</value>
+  </data>
+  <data name="Thinkage.Libraries§ [&lt;verb&gt;]" type="" mimetype="">
+    <value> [&lt;verb&gt;]</value>
+  </data>
+  <data name="Thinkage.Libraries§ &lt;verb&gt;" type="" mimetype="">
+    <value> &lt;verb&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries§&quot;{0}&quot; is not a bool value&quot;" type="" mimetype="">
+    <value>"{0}" is not a bool value"</value>
+  </data>
+  <data name="Thinkage.Libraries§&quot;{0}&quot; is not a double value&quot;" type="" mimetype="">
+    <value>"{0}" is not a double value"</value>
+  </data>
+  <data name="Thinkage.Libraries§&quot;{0}&quot; is not a numerical value&quot;" type="" mimetype="">
+    <value>"{0}" is not a numerical value"</value>
+  </data>
+  <data name="Thinkage.Libraries§&quot;{0}&quot; is not allowed in a RDL Expression" type="" mimetype="">
+    <value>"{0}" is not allowed in a RDL Expression</value>
+  </data>
+  <data name="Thinkage.Libraries§&quot;Expression.Concat&quot; incorrect argument &quot;{0}&quot;" type="" mimetype="">
+    <value>"Expression.Concat" incorrect argument "{0}"</value>
+  </data>
+  <data name="Thinkage.Libraries§: no options" type="" mimetype="">
+    <value>: no options</value>
+  </data>
+  <data name="Thinkage.Libraries§[A]bort, [R]etry, or [I]gnore?" type="" mimetype="">
+    <value>[A]bort, [R]etry, or [I]gnore?</value>
+  </data>
+  <data name="Thinkage.Libraries§[Error: the body was not properly encoded; {0}]" type="" mimetype="">
+    <value>[Error: the body was not properly encoded; {0}]</value>
+  </data>
+  <data name="Thinkage.Libraries§[Error: the field was not properly encoded; {0}]" type="" mimetype="">
+    <value>[Error: the field was not properly encoded; {0}]</value>
+  </data>
+  <data name="Thinkage.Libraries§[Y]es or [N]o?" type="" mimetype="">
+    <value>[Y]es or [N]o?</value>
+  </data>
+  <data name="Thinkage.Libraries§[Y]es, [N]o, or [C]ancel?" type="" mimetype="">
+    <value>[Y]es, [N]o, or [C]ancel?</value>
+  </data>
+  <data name="Thinkage.Libraries§{0} Error" type="" mimetype="">
+    <value>{0} Error</value>
+  </data>
+  <data name="Thinkage.Libraries§'{0}' is not a recognized verb" type="" mimetype="">
+    <value>'{0}' is not a recognized verb</value>
+  </data>
+  <data name="Thinkage.Libraries§'{0}' not allowed with '{1}' verb" type="" mimetype="">
+    <value>'{0}' not allowed with '{1}' verb</value>
+  </data>
+  <data name="Thinkage.Libraries§{0} Question" type="" mimetype="">
+    <value>{0} Question</value>
+  </data>
+  <data name="Thinkage.Libraries§A response to the question is required." type="" mimetype="">
+    <value>A response to the question is required.</value>
+  </data>
+  <data name="Thinkage.Libraries§A single value is expected." type="" mimetype="">
+    <value>A single value is expected.</value>
+  </data>
+  <data name="Thinkage.Libraries§A Value is required" type="" mimetype="">
+    <value>A Value is required</value>
+  </data>
+  <data name="Thinkage.Libraries§A Value is required with at least {0} characters" type="" mimetype="">
+    <value>A Value is required with at least {0} characters</value>
+  </data>
+  <data name="Thinkage.Libraries§Abort Result" type="" mimetype="">
+    <value>Abort Result</value>
+  </data>
+  <data name="Thinkage.Libraries§Application license '{0}'" type="" mimetype="">
+    <value>Application license '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Arguments must begin with a valid verb" type="" mimetype="">
+    <value>Arguments must begin with a valid verb</value>
+  </data>
+  <data name="Thinkage.Libraries§Backslash at end of format" type="" mimetype="">
+    <value>Backslash at end of format</value>
+  </data>
+  <data name="Thinkage.Libraries§Builtin type must be a specific enumerated type, not {0}" type="" mimetype="">
+    <value>Builtin type must be a specific enumerated type, not {0}</value>
+  </data>
+  <data name="Thinkage.Libraries§Calendar Expiry" type="" mimetype="">
+    <value>Calendar Expiry</value>
+  </data>
+  <data name="Thinkage.Libraries§Cancel Result" type="" mimetype="">
+    <value>Cancel Result</value>
+  </data>
+  <data name="Thinkage.Libraries§Cannot combine licenses with mismatched Appliction IDs" type="" mimetype="">
+    <value>Cannot combine licenses with mismatched Appliction IDs</value>
+  </data>
+  <data name="Thinkage.Libraries§Cannot combine licenses with mismatched License IDs" type="" mimetype="">
+    <value>Cannot combine licenses with mismatched License IDs</value>
+  </data>
+  <data name="Thinkage.Libraries§Cannot combine licenses with mismatched licensing models" type="" mimetype="">
+    <value>Cannot combine licenses with mismatched licensing models</value>
+  </data>
+  <data name="Thinkage.Libraries§Cannot determine enumerated element identifier in '{0}'" type="" mimetype="">
+    <value>Cannot determine enumerated element identifier in '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Cannot determine the number of messages in the mailbox" type="" mimetype="">
+    <value>Cannot determine the number of messages in the mailbox</value>
+  </data>
+  <data name="Thinkage.Libraries§Cannot get entity associated with uri '{0}'" type="" mimetype="">
+    <value>Cannot get entity associated with uri '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Cannot load manifest resources from remote (non-local) Urls" type="" mimetype="">
+    <value>Cannot load manifest resources from remote (non-local) Urls</value>
+  </data>
+  <data name="Thinkage.Libraries§Cannot locate builtin type" type="" mimetype="">
+    <value>Cannot locate builtin type</value>
+  </data>
+  <data name="Thinkage.Libraries§Cannot log into account" type="" mimetype="">
+    <value>Cannot log into account</value>
+  </data>
+  <data name="Thinkage.Libraries§Cannot represent integral enumerated values greater than 2^64-1" type="" mimetype="">
+    <value>Cannot represent integral enumerated values greater than 2^64-1</value>
+  </data>
+  <data name="Thinkage.Libraries§Cannot specify a builtin enumerated type with element names" type="" mimetype="">
+    <value>Cannot specify a builtin enumerated type with element names</value>
+  </data>
+  <data name="Thinkage.Libraries§Cannot specify a value type once elements are defined" type="" mimetype="">
+    <value>Cannot specify a value type once elements are defined</value>
+  </data>
+  <data name="Thinkage.Libraries§Cannot specify both a builtin enumerated type and a value type" type="" mimetype="">
+    <value>Cannot specify both a builtin enumerated type and a value type</value>
+  </data>
+  <data name="Thinkage.Libraries§Client and server could not agree with an acceptable authentication mechanism" type="" mimetype="">
+    <value>Client and server could not agree with an acceptable authentication mechanism</value>
+  </data>
+  <data name="Thinkage.Libraries§Client Model" type="" mimetype="">
+    <value>Client Model</value>
+  </data>
+  <data name="Thinkage.Libraries§Command usage: command" type="" mimetype="">
+    <value>Command usage: command</value>
+  </data>
+  <data name="Thinkage.Libraries§Control characters are not allowed in value" type="" mimetype="">
+    <value>Control characters are not allowed in value</value>
+  </data>
+  <data name="Thinkage.Libraries§Could not retrieve capability list" type="" mimetype="">
+    <value>Could not retrieve capability list</value>
+  </data>
+  <data name="Thinkage.Libraries§Could not retrieve capability list after the STARTTLS command" type="" mimetype="">
+    <value>Could not retrieve capability list after the STARTTLS command</value>
+  </data>
+  <data name="Thinkage.Libraries§Current number of {0} is {1} which exceeds the licensed limit of {2}" type="" mimetype="">
+    <value>Current number of {0} is {1} which exceeds the licensed limit of {2}</value>
+  </data>
+  <data name="Thinkage.Libraries§DateParser.LexRule: minimum length must be positive" type="" mimetype="">
+    <value>DateParser.LexRule: minimum length must be positive</value>
+  </data>
+  <data name="Thinkage.Libraries§Degree" type="" mimetype="">
+    <value>Degree</value>
+  </data>
+  <data name="Thinkage.Libraries§Demonstration Expiry" type="" mimetype="">
+    <value>Demonstration Expiry</value>
+  </data>
+  <data name="Thinkage.Libraries§Demonstration licenses do not have expiry dates" type="" mimetype="">
+    <value>Demonstration licenses do not have expiry dates</value>
+  </data>
+  <data name="Thinkage.Libraries§Did not receive connect-greeting message" type="" mimetype="">
+    <value>Did not receive connect-greeting message</value>
+  </data>
+  <data name="Thinkage.Libraries§Did not receive type 2 NTLM message from the server" type="" mimetype="">
+    <value>Did not receive type 2 NTLM message from the server</value>
+  </data>
+  <data name="Thinkage.Libraries§Did not see greeting messages" type="" mimetype="">
+    <value>Did not see greeting messages</value>
+  </data>
+  <data name="Thinkage.Libraries§Don't know how to store value '{0}' in parameter {1}" type="" mimetype="">
+    <value>Don't know how to store value '{0}' in parameter {1}</value>
+  </data>
+  <data name="Thinkage.Libraries§East" type="" mimetype="">
+    <value>East</value>
+  </data>
+  <data name="Thinkage.Libraries§Element already in the Set" type="" mimetype="">
+    <value>Element already in the Set</value>
+  </data>
+  <data name="Thinkage.Libraries§Empty type specification" type="" mimetype="">
+    <value>Empty type specification</value>
+  </data>
+  <data name="Thinkage.Libraries§Entry '{0}' in Rights Group '{1}' is a Right, so sub-entry '{2}' cannot exist" type="" mimetype="">
+    <value>Entry '{0}' in Rights Group '{1}' is a Right, so sub-entry '{2}' cannot exist</value>
+  </data>
+  <data name="Thinkage.Libraries§Entry '{0}' in Rights Group '{1}' is a Rights Group, but a Right was expected" type="" mimetype="">
+    <value>Entry '{0}' in Rights Group '{1}' is a Rights Group, but a Right was expected</value>
+  </data>
+  <data name="Thinkage.Libraries§Entry '{0}' not found in Rights Group '{1}'" type="" mimetype="">
+    <value>Entry '{0}' not found in Rights Group '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Epsilon argument to {0} constructor had invalid type {1}" type="" mimetype="">
+    <value>Epsilon argument to {0} constructor had invalid type {1}</value>
+  </data>
+  <data name="Thinkage.Libraries§Epsilon argument to {0} constructor had invalid value {1}" type="" mimetype="">
+    <value>Epsilon argument to {0} constructor had invalid value {1}</value>
+  </data>
+  <data name="Thinkage.Libraries§Epsilon argument to {0} constructor had out-of-range value {1}" type="" mimetype="">
+    <value>Epsilon argument to {0} constructor had out-of-range value {1}</value>
+  </data>
+  <data name="Thinkage.Libraries§Error attempting to initiate TLS session" type="" mimetype="">
+    <value>Error attempting to initiate TLS session</value>
+  </data>
+  <data name="Thinkage.Libraries§Error closing mailbox" type="" mimetype="">
+    <value>Error closing mailbox</value>
+  </data>
+  <data name="Thinkage.Libraries§Error connecting" type="" mimetype="">
+    <value>Error connecting</value>
+  </data>
+  <data name="Thinkage.Libraries§Error deleting message #{0}" type="" mimetype="">
+    <value>Error deleting message #{0}</value>
+  </data>
+  <data name="Thinkage.Libraries§Error deleting message {0}" type="" mimetype="">
+    <value>Error deleting message {0}</value>
+  </data>
+  <data name="Thinkage.Libraries§Error disconnecting" type="" mimetype="">
+    <value>Error disconnecting</value>
+  </data>
+  <data name="Thinkage.Libraries§Error examining mailbox" type="" mimetype="">
+    <value>Error examining mailbox</value>
+  </data>
+  <data name="Thinkage.Libraries§Error in XML Document" type="" mimetype="">
+    <value>Error in XML Document</value>
+  </data>
+  <data name="Thinkage.Libraries§Error in XML Schema" type="" mimetype="">
+    <value>Error in XML Schema</value>
+  </data>
+  <data name="Thinkage.Libraries§Error logging in" type="" mimetype="">
+    <value>Error logging in</value>
+  </data>
+  <data name="Thinkage.Libraries§Error logging in with APOP command" type="" mimetype="">
+    <value>Error logging in with APOP command</value>
+  </data>
+  <data name="Thinkage.Libraries§Error logging out" type="" mimetype="">
+    <value>Error logging out</value>
+  </data>
+  <data name="Thinkage.Libraries§Error on get mailbox status" type="" mimetype="">
+    <value>Error on get mailbox status</value>
+  </data>
+  <data name="Thinkage.Libraries§Error on logout" type="" mimetype="">
+    <value>Error on logout</value>
+  </data>
+  <data name="Thinkage.Libraries§Error on Logout from mail server" type="" mimetype="">
+    <value>Error on Logout from mail server</value>
+  </data>
+  <data name="Thinkage.Libraries§Error on retrieving message {0}" type="" mimetype="">
+    <value>Error on retrieving message {0}</value>
+  </data>
+  <data name="Thinkage.Libraries§Error processing option '{0}'" type="" mimetype="">
+    <value>Error processing option '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Error retrieving message #{0}" type="" mimetype="">
+    <value>Error retrieving message #{0}</value>
+  </data>
+  <data name="Thinkage.Libraries§Error selecting mailbox" type="" mimetype="">
+    <value>Error selecting mailbox</value>
+  </data>
+  <data name="Thinkage.Libraries§expecting '('" type="" mimetype="">
+    <value>expecting '('</value>
+  </data>
+  <data name="Thinkage.Libraries§expecting ')'" type="" mimetype="">
+    <value>expecting ')'</value>
+  </data>
+  <data name="Thinkage.Libraries§expecting '{0}'" type="" mimetype="">
+    <value>expecting '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§expecting coordinates or 'Empty'" type="" mimetype="">
+    <value>expecting coordinates or 'Empty'</value>
+  </data>
+  <data name="Thinkage.Libraries§expecting geometry tag 'z', 'm', 'zm' or 'Empty'" type="" mimetype="">
+    <value>expecting geometry tag 'z', 'm', 'zm' or 'Empty'</value>
+  </data>
+  <data name="Thinkage.Libraries§Failed to delete message #{0} on server" type="" mimetype="">
+    <value>Failed to delete message #{0} on server</value>
+  </data>
+  <data name="Thinkage.Libraries§Failed to log into account using {0} authentication" type="" mimetype="">
+    <value>Failed to log into account using {0} authentication</value>
+  </data>
+  <data name="Thinkage.Libraries§Failed to log into account using NTLM authentication" type="" mimetype="">
+    <value>Failed to log into account using NTLM authentication</value>
+  </data>
+  <data name="Thinkage.Libraries§Failed to retrieve message #{0} from server" type="" mimetype="">
+    <value>Failed to retrieve message #{0} from server</value>
+  </data>
+  <data name="Thinkage.Libraries§Failed to retrieve message #{0} on server" type="" mimetype="">
+    <value>Failed to retrieve message #{0} on server</value>
+  </data>
+  <data name="Thinkage.Libraries§Feet" type="" mimetype="">
+    <value>Feet</value>
+  </data>
+  <data name="Thinkage.Libraries§Found a Latitude, but also need a Longitude" type="" mimetype="">
+    <value>Found a Latitude, but also need a Longitude</value>
+  </data>
+  <data name="Thinkage.Libraries§Found a Longitude, but also need a Latitude" type="" mimetype="">
+    <value>Found a Longitude, but also need a Latitude</value>
+  </data>
+  <data name="Thinkage.Libraries§fractional divisor '{0}' must be greater that zero and less than or equal to {1}" type="" mimetype="">
+    <value>fractional divisor '{0}' must be greater that zero and less than or equal to {1}</value>
+  </data>
+  <data name="Thinkage.Libraries§Ignore Result" type="" mimetype="">
+    <value>Ignore Result</value>
+  </data>
+  <data name="Thinkage.Libraries§Illegal integral value '{0}'" type="" mimetype="">
+    <value>Illegal integral value '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Illegal null integral value" type="" mimetype="">
+    <value>Illegal null integral value</value>
+  </data>
+  <data name="Thinkage.Libraries§In in pattern encodedings at offset {0}, length {1}" type="" mimetype="">
+    <value>In in pattern encodedings at offset {0}, length {1}</value>
+  </data>
+  <data name="Thinkage.Libraries§Inches" type="" mimetype="">
+    <value>Inches</value>
+  </data>
+  <data name="Thinkage.Libraries§Incompatible epsilon types for type union operation" type="" mimetype="">
+    <value>Incompatible epsilon types for type union operation</value>
+  </data>
+  <data name="Thinkage.Libraries§Incorrect NTLM message type; expected Type 2 message" type="" mimetype="">
+    <value>Incorrect NTLM message type; expected Type 2 message</value>
+  </data>
+  <data name="Thinkage.Libraries§Incorrect NTLM signature" type="" mimetype="">
+    <value>Incorrect NTLM signature</value>
+  </data>
+  <data name="Thinkage.Libraries§Integral value out of range '{0}'" type="" mimetype="">
+    <value>Integral value out of range '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Invalid absolute epsilon value" type="" mimetype="">
+    <value>Invalid absolute epsilon value</value>
+  </data>
+  <data name="Thinkage.Libraries§Invalid bit count" type="" mimetype="">
+    <value>Invalid bit count</value>
+  </data>
+  <data name="Thinkage.Libraries§Invalid date parsing rule near '{0}'" type="" mimetype="">
+    <value>Invalid date parsing rule near '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Invalid date parsing token type near '{0}'" type="" mimetype="">
+    <value>Invalid date parsing token type near '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Invalid Keyword value '{0}'" type="" mimetype="">
+    <value>Invalid Keyword value '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Invalid null Keyword value." type="" mimetype="">
+    <value>Invalid null Keyword value.</value>
+  </data>
+  <data name="Thinkage.Libraries§Invalid operands for TypeInfo.IntersectCompatible" type="" mimetype="">
+    <value>Invalid operands for TypeInfo.IntersectCompatible</value>
+  </data>
+  <data name="Thinkage.Libraries§Invalid operands for TypeInfo.UnionCompatible" type="" mimetype="">
+    <value>Invalid operands for TypeInfo.UnionCompatible</value>
+  </data>
+  <data name="Thinkage.Libraries§Invalid parameter '{0}'" type="" mimetype="">
+    <value>Invalid parameter '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Invalid pattern : {0}" type="" mimetype="">
+    <value>Invalid pattern : {0}</value>
+  </data>
+  <data name="Thinkage.Libraries§Invalid 'trim' keyword: '{0}'" type="" mimetype="">
+    <value>Invalid 'trim' keyword: '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Invalid type specification '{0}'" type="" mimetype="">
+    <value>Invalid type specification '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Latitude exceeds 90 degrees" type="" mimetype="">
+    <value>Latitude exceeds 90 degrees</value>
+  </data>
+  <data name="Thinkage.Libraries§Length of value is {0} which is less than the minimum length {1}" type="" mimetype="">
+    <value>Length of value is {0} which is less than the minimum length {1}</value>
+  </data>
+  <data name="Thinkage.Libraries§License {0} key is for demonstrations but has an expiry date" type="" mimetype="">
+    <value>License {0} key is for demonstrations but has an expiry date</value>
+  </data>
+  <data name="Thinkage.Libraries§License {0} key is not for demonstrations but has no expiry date" type="" mimetype="">
+    <value>License {0} key is not for demonstrations but has no expiry date</value>
+  </data>
+  <data name="Thinkage.Libraries§License Application IDs do not match" type="" mimetype="">
+    <value>License Application IDs do not match</value>
+  </data>
+  <data name="Thinkage.Libraries§License Counts do not match" type="" mimetype="">
+    <value>License Counts do not match</value>
+  </data>
+  <data name="Thinkage.Libraries§License expired {0} days ago" type="" mimetype="">
+    <value>License expired {0} days ago</value>
+  </data>
+  <data name="Thinkage.Libraries§License expired yesterday" type="" mimetype="">
+    <value>License expired yesterday</value>
+  </data>
+  <data name="Thinkage.Libraries§License Expiry dates do not match" type="" mimetype="">
+    <value>License Expiry dates do not match</value>
+  </data>
+  <data name="Thinkage.Libraries§License Expiry Models do not match" type="" mimetype="">
+    <value>License Expiry Models do not match</value>
+  </data>
+  <data name="Thinkage.Libraries§License IDs do not match" type="" mimetype="">
+    <value>License IDs do not match</value>
+  </data>
+  <data name="Thinkage.Libraries§License key {0} has an unknown expiry model {1}" type="" mimetype="">
+    <value>License key {0} has an unknown expiry model {1}</value>
+  </data>
+  <data name="Thinkage.Libraries§License key {0} has an unknown format version {1}" type="" mimetype="">
+    <value>License key {0} has an unknown format version {1}</value>
+  </data>
+  <data name="Thinkage.Libraries§License key {0} has an unknown seed {1}" type="" mimetype="">
+    <value>License key {0} has an unknown seed {1}</value>
+  </data>
+  <data name="Thinkage.Libraries§License key {0} is not in a valid format" type="" mimetype="">
+    <value>License key {0} is not in a valid format</value>
+  </data>
+  <data name="Thinkage.Libraries§License Licensing Models do not match" type="" mimetype="">
+    <value>License Licensing Models do not match</value>
+  </data>
+  <data name="Thinkage.Libraries§License not valid for products released after {0}" type="" mimetype="">
+    <value>License not valid for products released after {0}</value>
+  </data>
+  <data name="Thinkage.Libraries§License will expire in {0} days" type="" mimetype="">
+    <value>License will expire in {0} days</value>
+  </data>
+  <data name="Thinkage.Libraries§License will expire tomorrow" type="" mimetype="">
+    <value>License will expire tomorrow</value>
+  </data>
+  <data name="Thinkage.Libraries§Logging level set to maximum" type="" mimetype="">
+    <value>Logging level set to maximum</value>
+  </data>
+  <data name="Thinkage.Libraries§Logging level set to medium" type="" mimetype="">
+    <value>Logging level set to medium</value>
+  </data>
+  <data name="Thinkage.Libraries§Logging level set to minimum" type="" mimetype="">
+    <value>Logging level set to minimum</value>
+  </data>
+  <data name="Thinkage.Libraries§Logging level set to none" type="" mimetype="">
+    <value>Logging level set to none</value>
+  </data>
+  <data name="Thinkage.Libraries§Longitude exceeds 180 degrees" type="" mimetype="">
+    <value>Longitude exceeds 180 degrees</value>
+  </data>
+  <data name="Thinkage.Libraries§Mailbox '{0}'" type="" mimetype="">
+    <value>Mailbox '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Maximum line count must be greater than or equal to zero" type="" mimetype="">
+    <value>Maximum line count must be greater than or equal to zero</value>
+  </data>
+  <data name="Thinkage.Libraries§Message index {0} is out of range" type="" mimetype="">
+    <value>Message index {0} is out of range</value>
+  </data>
+  <data name="Thinkage.Libraries§Meters" type="" mimetype="">
+    <value>Meters</value>
+  </data>
+  <data name="Thinkage.Libraries§Minute" type="" mimetype="">
+    <value>Minute</value>
+  </data>
+  <data name="Thinkage.Libraries§Mismatched quote in date parsing rule" type="" mimetype="">
+    <value>Mismatched quote in date parsing rule</value>
+  </data>
+  <data name="Thinkage.Libraries§Missing value" type="" mimetype="">
+    <value>Missing value</value>
+  </data>
+  <data name="Thinkage.Libraries§Month value cannot exceed 11" type="" mimetype="">
+    <value>Month value cannot exceed 11</value>
+  </data>
+  <data name="Thinkage.Libraries§MonthSpan value not in proper format" type="" mimetype="">
+    <value>MonthSpan value not in proper format</value>
+  </data>
+  <data name="Thinkage.Libraries§Multiple abbreviated lengths indicated by '.' or '|' in date parsing rule" type="" mimetype="">
+    <value>Multiple abbreviated lengths indicated by '.' or '|' in date parsing rule</value>
+  </data>
+  <data name="Thinkage.Libraries§Need a Latitude and a Longitude" type="" mimetype="">
+    <value>Need a Latitude and a Longitude</value>
+  </data>
+  <data name="Thinkage.Libraries§No element type has been supplied" type="" mimetype="">
+    <value>No element type has been supplied</value>
+  </data>
+  <data name="Thinkage.Libraries§No element values have been defined" type="" mimetype="">
+    <value>No element values have been defined</value>
+  </data>
+  <data name="Thinkage.Libraries§no options" type="" mimetype="">
+    <value>no options</value>
+  </data>
+  <data name="Thinkage.Libraries§No Result" type="" mimetype="">
+    <value>No Result</value>
+  </data>
+  <data name="Thinkage.Libraries§No valid license keys found for '{0}'" type="" mimetype="">
+    <value>No valid license keys found for '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Non-Demonstration licenses require expiry dates" type="" mimetype="">
+    <value>Non-Demonstration licenses require expiry dates</value>
+  </data>
+  <data name="Thinkage.Libraries§non-positional options:" type="" mimetype="">
+    <value>non-positional options:</value>
+  </data>
+  <data name="Thinkage.Libraries§North" type="" mimetype="">
+    <value>North</value>
+  </data>
+  <data name="Thinkage.Libraries§Null reference passed to MonthSpan.Parse" type="" mimetype="">
+    <value>Null reference passed to MonthSpan.Parse</value>
+  </data>
+  <data name="Thinkage.Libraries§Null type has no values" type="" mimetype="">
+    <value>Null type has no values</value>
+  </data>
+  <data name="Thinkage.Libraries§Option respecified" type="" mimetype="">
+    <value>Option respecified</value>
+  </data>
+  <data name="Thinkage.Libraries§Overall epsilon cannot be represented as a native type" type="" mimetype="">
+    <value>Overall epsilon cannot be represented as a native type</value>
+  </data>
+  <data name="Thinkage.Libraries§Percent sign at end of format" type="" mimetype="">
+    <value>Percent sign at end of format</value>
+  </data>
+  <data name="Thinkage.Libraries§permission path {0} begins with a Permission rather than a Group" type="" mimetype="">
+    <value>permission path {0} begins with a Permission rather than a Group</value>
+  </data>
+  <data name="Thinkage.Libraries§permission path {0} ends with a Group rather than a Permission" type="" mimetype="">
+    <value>permission path {0} ends with a Group rather than a Permission</value>
+  </data>
+  <data name="Thinkage.Libraries§positional options:" type="" mimetype="">
+    <value>positional options:</value>
+  </data>
+  <data name="Thinkage.Libraries§Problem examining the mailbox" type="" mimetype="">
+    <value>Problem examining the mailbox</value>
+  </data>
+  <data name="Thinkage.Libraries§Problem logging into account using {0} authentication" type="" mimetype="">
+    <value>Problem logging into account using {0} authentication</value>
+  </data>
+  <data name="Thinkage.Libraries§Problem logging into account using NTLM authentication" type="" mimetype="">
+    <value>Problem logging into account using NTLM authentication</value>
+  </data>
+  <data name="Thinkage.Libraries§Problem selecting the mailbox" type="" mimetype="">
+    <value>Problem selecting the mailbox</value>
+  </data>
+  <data name="Thinkage.Libraries§Problem while closing the mailbox" type="" mimetype="">
+    <value>Problem while closing the mailbox</value>
+  </data>
+  <data name="Thinkage.Libraries§Problems while logging out" type="" mimetype="">
+    <value>Problems while logging out</value>
+  </data>
+  <data name="Thinkage.Libraries§Property {0} already set" type="" mimetype="">
+    <value>Property {0} already set</value>
+  </data>
+  <data name="Thinkage.Libraries§Range limits must be comparable and in (low, high) order" type="" mimetype="">
+    <value>Range limits must be comparable and in (low, high) order</value>
+  </data>
+  <data name="Thinkage.Libraries§Required option '{0}' was not specified." type="" mimetype="">
+    <value>Required option '{0}' was not specified.</value>
+  </data>
+  <data name="Thinkage.Libraries§Response {0}" type="" mimetype="">
+    <value>Response {0}</value>
+  </data>
+  <data name="Thinkage.Libraries§Retry Result" type="" mimetype="">
+    <value>Retry Result</value>
+  </data>
+  <data name="Thinkage.Libraries§Seat Model" type="" mimetype="">
+    <value>Seat Model</value>
+  </data>
+  <data name="Thinkage.Libraries§Second" type="" mimetype="">
+    <value>Second</value>
+  </data>
+  <data name="Thinkage.Libraries§Server Response '{0}'" type="" mimetype="">
+    <value>Server Response '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Service {0} running with user identification {1}" type="" mimetype="">
+    <value>Service {0} running with user identification {1}</value>
+  </data>
+  <data name="Thinkage.Libraries§Service has been paused by a user." type="" mimetype="">
+    <value>Service has been paused by a user.</value>
+  </data>
+  <data name="Thinkage.Libraries§Service has been resumed by a user." type="" mimetype="">
+    <value>Service has been resumed by a user.</value>
+  </data>
+  <data name="Thinkage.Libraries§Session Model" type="" mimetype="">
+    <value>Session Model</value>
+  </data>
+  <data name="Thinkage.Libraries§Set element '{0}' is not of an appropriate type" type="" mimetype="">
+    <value>Set element '{0}' is not of an appropriate type</value>
+  </data>
+  <data name="Thinkage.Libraries§Some help may be available at the link" type="" mimetype="">
+    <value>Some help may be available at the link</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries§South" type="" mimetype="">
+    <value>South</value>
+  </data>
+  <data name="Thinkage.Libraries§Spatial Reference ID (SRID) must be a value &gt;= 0 and &lt;= 999999" type="" mimetype="">
+    <value>Spatial Reference ID (SRID) must be a value &gt;= 0 and &lt;= 999999</value>
+  </data>
+  <data name="Thinkage.Libraries§STAT returned '{0}'" type="" mimetype="">
+    <value>STAT returned '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Table Limit Model" type="" mimetype="">
+    <value>Table Limit Model</value>
+  </data>
+  <data name="Thinkage.Libraries§Text contains more than one currency symbol" type="" mimetype="">
+    <value>Text contains more than one currency symbol</value>
+  </data>
+  <data name="Thinkage.Libraries§Text contains more than one percentage symbol" type="" mimetype="">
+    <value>Text contains more than one percentage symbol</value>
+  </data>
+  <data name="Thinkage.Libraries§Text contains more than one sign" type="" mimetype="">
+    <value>Text contains more than one sign</value>
+  </data>
+  <data name="Thinkage.Libraries§The date is missing a year" type="" mimetype="">
+    <value>The date is missing a year</value>
+  </data>
+  <data name="Thinkage.Libraries§The date is missing a year or century number" type="" mimetype="">
+    <value>The date is missing a year or century number</value>
+  </data>
+  <data name="Thinkage.Libraries§The date is not in a recognized format" type="" mimetype="">
+    <value>The date is not in a recognized format</value>
+  </data>
+  <data name="Thinkage.Libraries§The day field is missing" type="" mimetype="">
+    <value>The day field is missing</value>
+  </data>
+  <data name="Thinkage.Libraries§The day is ambiguous" type="" mimetype="">
+    <value>The day is ambiguous</value>
+  </data>
+  <data name="Thinkage.Libraries§The fractional seconds field is ambiguous" type="" mimetype="">
+    <value>The fractional seconds field is ambiguous</value>
+  </data>
+  <data name="Thinkage.Libraries§The hour is ambiguous" type="" mimetype="">
+    <value>The hour is ambiguous</value>
+  </data>
+  <data name="Thinkage.Libraries§The hour or am/pm is missing" type="" mimetype="">
+    <value>The hour or am/pm is missing</value>
+  </data>
+  <data name="Thinkage.Libraries§The hours field is missing" type="" mimetype="">
+    <value>The hours field is missing</value>
+  </data>
+  <data name="Thinkage.Libraries§The mail server is rejecting the E-mail Account name or Password" type="" mimetype="">
+    <value>The mail server is rejecting the E-mail Account name or Password</value>
+  </data>
+  <data name="Thinkage.Libraries§The mail server is rejecting the E-mail Account name or Password." type="" mimetype="">
+    <value>The mail server is rejecting the E-mail Account name or Password.</value>
+  </data>
+  <data name="Thinkage.Libraries§The mail server is rejecting the E-mail Account name." type="" mimetype="">
+    <value>The mail server is rejecting the E-mail Account name.</value>
+  </data>
+  <data name="Thinkage.Libraries§The minutes field is ambiguous" type="" mimetype="">
+    <value>The minutes field is ambiguous</value>
+  </data>
+  <data name="Thinkage.Libraries§The minutes field is missing" type="" mimetype="">
+    <value>The minutes field is missing</value>
+  </data>
+  <data name="Thinkage.Libraries§The month field is missing" type="" mimetype="">
+    <value>The month field is missing</value>
+  </data>
+  <data name="Thinkage.Libraries§The month is ambiguous" type="" mimetype="">
+    <value>The month is ambiguous</value>
+  </data>
+  <data name="Thinkage.Libraries§The NTLM2 client-challege has not be set" type="" mimetype="">
+    <value>The NTLM2 client-challege has not be set</value>
+  </data>
+  <data name="Thinkage.Libraries§The seconds field is ambiguous" type="" mimetype="">
+    <value>The seconds field is ambiguous</value>
+  </data>
+  <data name="Thinkage.Libraries§The seconds field is missing" type="" mimetype="">
+    <value>The seconds field is missing</value>
+  </data>
+  <data name="Thinkage.Libraries§The server does not support IMAP4rev1 features" type="" mimetype="">
+    <value>The server does not support IMAP4rev1 features</value>
+  </data>
+  <data name="Thinkage.Libraries§The server does not support the STARTTLS command" type="" mimetype="">
+    <value>The server does not support the STARTTLS command</value>
+  </data>
+  <data name="Thinkage.Libraries§The server does not support the STLS command" type="" mimetype="">
+    <value>The server does not support the STLS command</value>
+  </data>
+  <data name="Thinkage.Libraries§The service name identifier." type="" mimetype="">
+    <value>The service name identifier.</value>
+  </data>
+  <data name="Thinkage.Libraries§The service name must be assigned to the parameter '{0}': /{0}=&lt;service name&gt;" type="" mimetype="">
+    <value>The service name must be assigned to the parameter '{0}': /{0}=&lt;service name&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries§The value {0} is not a member of the enumerated type" type="" mimetype="">
+    <value>The value {0} is not a member of the enumerated type</value>
+  </data>
+  <data name="Thinkage.Libraries§There is no help topic defined for this context" type="" mimetype="">
+    <value>There is no help topic defined for this context</value>
+  </data>
+  <data name="Thinkage.Libraries§Too may Transform Patterns {0}" type="" mimetype="">
+    <value>Too may Transform Patterns {0}</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' cannot be returned by BlobTypeInfo.AsNativeType" type="" mimetype="">
+    <value>Type '{0}' cannot be returned by BlobTypeInfo.AsNativeType</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' cannot be returned by BoolTypeInfo.AsNativeType" type="" mimetype="">
+    <value>Type '{0}' cannot be returned by BoolTypeInfo.AsNativeType</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' cannot be returned by CurrencyTypeInfo.AsNativeType" type="" mimetype="">
+    <value>Type '{0}' cannot be returned by CurrencyTypeInfo.AsNativeType</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' cannot be returned by DateTimeTypeInfo.AsNativeType" type="" mimetype="">
+    <value>Type '{0}' cannot be returned by DateTimeTypeInfo.AsNativeType</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' cannot be returned by EnumTypeInfo.AsNativeType" type="" mimetype="">
+    <value>Type '{0}' cannot be returned by EnumTypeInfo.AsNativeType</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' cannot be returned by GeographyTypeInfo.AsNativeType" type="" mimetype="">
+    <value>Type '{0}' cannot be returned by GeographyTypeInfo.AsNativeType</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' cannot be returned by IdTypeInfo.AsNativeType" type="" mimetype="">
+    <value>Type '{0}' cannot be returned by IdTypeInfo.AsNativeType</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' cannot be returned by IntegralTypeInfo.AsNativeType" type="" mimetype="">
+    <value>Type '{0}' cannot be returned by IntegralTypeInfo.AsNativeType</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' cannot be returned by IntervalTypeInfo.AsNativeType" type="" mimetype="">
+    <value>Type '{0}' cannot be returned by IntervalTypeInfo.AsNativeType</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' cannot be returned by MonthIntervalTypeInfo.AsNativeType" type="" mimetype="">
+    <value>Type '{0}' cannot be returned by MonthIntervalTypeInfo.AsNativeType</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' cannot be returned by ObjectTypeInfo.AsNativeType" type="" mimetype="">
+    <value>Type '{0}' cannot be returned by ObjectTypeInfo.AsNativeType</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' cannot be returned by PercentTypeInfo.AsNativeType" type="" mimetype="">
+    <value>Type '{0}' cannot be returned by PercentTypeInfo.AsNativeType</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' cannot be returned by PointTypeInfo.AsNativeType" type="" mimetype="">
+    <value>Type '{0}' cannot be returned by PointTypeInfo.AsNativeType</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' cannot be returned by StringTypeInfo.AsNativeType" type="" mimetype="">
+    <value>Type '{0}' cannot be returned by StringTypeInfo.AsNativeType</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' is not acceptable to BlobTypeInfo methods" type="" mimetype="">
+    <value>Type '{0}' is not acceptable to BlobTypeInfo methods</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' is not acceptable to BoolTypeInfo methods" type="" mimetype="">
+    <value>Type '{0}' is not acceptable to BoolTypeInfo methods</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' is not acceptable to EnumTypeInfo methods" type="" mimetype="">
+    <value>Type '{0}' is not acceptable to EnumTypeInfo methods</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' is not acceptable to GeometryTypeInfo methods" type="" mimetype="">
+    <value>Type '{0}' is not acceptable to GeometryTypeInfo methods</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' is not acceptable to IdTypeInfo methods" type="" mimetype="">
+    <value>Type '{0}' is not acceptable to IdTypeInfo methods</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' is not acceptable to IntegralTypeInfo methods" type="" mimetype="">
+    <value>Type '{0}' is not acceptable to IntegralTypeInfo methods</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' is not acceptable to NullTypeInfo methods" type="" mimetype="">
+    <value>Type '{0}' is not acceptable to NullTypeInfo methods</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' is not acceptable to SetTypeInfo methods" type="" mimetype="">
+    <value>Type '{0}' is not acceptable to SetTypeInfo methods</value>
+  </data>
+  <data name="Thinkage.Libraries§Type '{0}' is not acceptable to StringTypeInfo methods" type="" mimetype="">
+    <value>Type '{0}' is not acceptable to StringTypeInfo methods</value>
+  </data>
+  <data name="Thinkage.Libraries§Type intersection allows no values" type="" mimetype="">
+    <value>Type intersection allows no values</value>
+  </data>
+  <data name="Thinkage.Libraries§Type of object:{0}" type="" mimetype="">
+    <value>Type of object:{0}</value>
+  </data>
+  <data name="Thinkage.Libraries§Unable to distinguish next type parameter in '{0}'" type="" mimetype="">
+    <value>Unable to distinguish next type parameter in '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Unable to enterpret '{0}' in '{1}'" type="" mimetype="">
+    <value>Unable to enterpret '{0}' in '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Unable to format values of enumerated type" type="" mimetype="">
+    <value>Unable to format values of enumerated type</value>
+  </data>
+  <data name="Thinkage.Libraries§Unable to open either help file: '{0}' or '{1}'" type="" mimetype="">
+    <value>Unable to open either help file: '{0}' or '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Unable to open either help file:&#xA; '{0}': {1}&#xA;'{2}': {3}" type="" mimetype="">
+    <value>Unable to open either help file:
+ '{0}': {1}
+'{2}': {3}</value>
+  </data>
+  <data name="Thinkage.Libraries§Unable to open help file '{0}'" type="" mimetype="">
+    <value>Unable to open help file '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Unable to parse enumerated element value '{0}'" type="" mimetype="">
+    <value>Unable to parse enumerated element value '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Unexpected response from STAT command" type="" mimetype="">
+    <value>Unexpected response from STAT command</value>
+  </data>
+  <data name="Thinkage.Libraries§Unexpected text '{0}' in '{1}'" type="" mimetype="">
+    <value>Unexpected text '{0}' in '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Unknown basic type '{0}' in type specification '{1}'" type="" mimetype="">
+    <value>Unknown basic type '{0}' in type specification '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Unknown license key expiry model {0}" type="" mimetype="">
+    <value>Unknown license key expiry model {0}</value>
+  </data>
+  <data name="Thinkage.Libraries§Unknown option: '{0}'" type="" mimetype="">
+    <value>Unknown option: '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Unknown standard DateTime format specifier" type="" mimetype="">
+    <value>Unknown standard DateTime format specifier</value>
+  </data>
+  <data name="Thinkage.Libraries§Unmatched quoted literals" type="" mimetype="">
+    <value>Unmatched quoted literals</value>
+  </data>
+  <data name="Thinkage.Libraries§Unrecognized parameter '{0}'" type="" mimetype="">
+    <value>Unrecognized parameter '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Usage for verb '{0}'" type="" mimetype="">
+    <value>Usage for verb '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Username {0}" type="" mimetype="">
+    <value>Username {0}</value>
+  </data>
+  <data name="Thinkage.Libraries§Valid values are:" type="" mimetype="">
+    <value>Valid values are:</value>
+  </data>
+  <data name="Thinkage.Libraries§Value '{0}' for enumerated element is not a member of the specified value type" type="" mimetype="">
+    <value>Value '{0}' for enumerated element is not a member of the specified value type</value>
+  </data>
+  <data name="Thinkage.Libraries§Value cannot be null" type="" mimetype="">
+    <value>Value cannot be null</value>
+  </data>
+  <data name="Thinkage.Libraries§Value cannot begin with white space" type="" mimetype="">
+    <value>Value cannot begin with white space</value>
+  </data>
+  <data name="Thinkage.Libraries§Value cannot end with white space" type="" mimetype="">
+    <value>Value cannot end with white space</value>
+  </data>
+  <data name="Thinkage.Libraries§Value cannot have more than {0} lines" type="" mimetype="">
+    <value>Value cannot have more than {0} lines</value>
+  </data>
+  <data name="Thinkage.Libraries§Value cannot have zero length" type="" mimetype="">
+    <value>Value cannot have zero length</value>
+  </data>
+  <data name="Thinkage.Libraries§Value cannot have zero length, minimum length is {0}" type="" mimetype="">
+    <value>Value cannot have zero length, minimum length is {0}</value>
+  </data>
+  <data name="Thinkage.Libraries§Value has excess precision" type="" mimetype="">
+    <value>Value has excess precision</value>
+  </data>
+  <data name="Thinkage.Libraries§Value is too long, maximum length is {0}" type="" mimetype="">
+    <value>Value is too long, maximum length is {0}</value>
+  </data>
+  <data name="Thinkage.Libraries§Value is too short, minimum length is {0}" type="" mimetype="">
+    <value>Value is too short, minimum length is {0}</value>
+  </data>
+  <data name="Thinkage.Libraries§Value may not be valid" type="" mimetype="">
+    <value>Value may not be valid</value>
+  </data>
+  <data name="Thinkage.Libraries§Value must be either '{0}', '{1}' or null." type="" mimetype="">
+    <value>Value must be either '{0}', '{1}' or null.</value>
+  </data>
+  <data name="Thinkage.Libraries§Value must not be greater than {0}" type="" mimetype="">
+    <value>Value must not be greater than {0}</value>
+  </data>
+  <data name="Thinkage.Libraries§Value must not be less than {0}" type="" mimetype="">
+    <value>Value must not be less than {0}</value>
+  </data>
+  <data name="Thinkage.Libraries§Value required for custom enumerated element '{0}'" type="" mimetype="">
+    <value>Value required for custom enumerated element '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Value type constants cannot be read from textual input" type="" mimetype="">
+    <value>Value type constants cannot be read from textual input</value>
+  </data>
+  <data name="Thinkage.Libraries§Values of type '{0}' are not acceptable to {1} methods." type="" mimetype="">
+    <value>Values of type '{0}' are not acceptable to {1} methods.</value>
+  </data>
+  <data name="Thinkage.Libraries§Verb '{0}'" type="" mimetype="">
+    <value>Verb '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Version Expiry" type="" mimetype="">
+    <value>Version Expiry</value>
+  </data>
+  <data name="Thinkage.Libraries§West" type="" mimetype="">
+    <value>West</value>
+  </data>
+  <data name="Thinkage.Libraries§Windows Service" type="" mimetype="">
+    <value>Windows Service</value>
+  </data>
+  <data name="Thinkage.Libraries§Wrong type for option value, was {0}, should be {1}" type="" mimetype="">
+    <value>Wrong type for option value, was {0}, should be {1}</value>
+  </data>
+  <data name="Thinkage.Libraries§XML document root node must be &lt;{0}&gt; element" type="" mimetype="">
+    <value>XML document root node must be &lt;{0}&gt; element</value>
+  </data>
+  <data name="Thinkage.Libraries§XML document root node must be &lt;{0}&gt; element in namespace '{1}" type="" mimetype="">
+    <value>XML document root node must be &lt;{0}&gt; element in namespace '{1}</value>
+  </data>
+  <data name="Thinkage.Libraries§XML document root node must be an element in namespace '{0}'" type="" mimetype="">
+    <value>XML document root node must be an element in namespace '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries§Year should not be specified" type="" mimetype="">
+    <value>Year should not be specified</value>
+  </data>
+  <data name="Thinkage.Libraries§Yes Result" type="" mimetype="">
+    <value>Yes Result</value>
+  </data>
+</root>

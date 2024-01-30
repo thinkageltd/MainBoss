@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Cost-Related Security Roles</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Cost-Related Security Roles</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="SecurityRolesandPermissions.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="TestingSecurityRoles.htm">Next section &gt;</a></p>
+
+<p>Only a few security roles allow users to see monetary values. For example, the <span class="CU">AccountingWorkOrder</span> role lets a user see the actual costs of materials (but not labor) on a work order.</p>
+
+<p>Someone with the <span class="CU">WorkOrder</span> security role but not <span class="CU">AccountingWorkOrder</span> will be able to create work orders but will not be able to see or specify material costs on the work order. For example, you'll be able to record that you used a particular spare part on a job but you won't know how much the part cost. You'll only be able to see material costs if you have the <span class="CU">AccountingWorkOrder</span> role (or some other accounting-related role). Furthermore, <span class="CU">AccountingWorkOrder</span> isn't sufficient to see labor costs; for that, you need <span class="CU">Accounting</span> or <span class="CU">AccountingView</span>.</p>
+
+<p>If you don't have an appropriate accounting security role, you can't directly enter monetary values. However, MainBoss can enter monetary values for you. Loosely speaking, if you record that Joe Smith worked five hours, MainBoss can calculate the cost of that work based on Joe's salary, even if MainBoss doesn't tell you what that cost is.</p>
+
+<p>More specifically, when someone creates a demand for labor or materials on a work order, the person creating the demand has a choice of three options related to the actual cost of the labor or materials:</p>
+
+<p class="wi"><span class="CButton">Current value calculation</span>: If you choose this option, you tell MainBoss to calculate costs based on the current value of labor and materials.
+
+<br /><br />For materials, MainBoss checks its inventory records and determines the historic cost of the materials used; it uses this cost as the actual cost of the materials. For example, if you specify that a particular job uses a quart of oil, MainBoss determines the cost of a quart of oil from its inventory records. That cost is then used as the actual cost of the oil used.
+
+<br /><br />For labor, MainBoss checks its labor cost records (hourly inside, per job inside, hourly outside, per job outside) and uses the costs specified in those records. For example, if you specify that employee Joe Smith worked five hours, MainBoss checks its hourly inside records to determine Joe's hourly wage. MainBoss then uses that hourly wage to determine the actual cost of five hours of Joe's time.</p>
+<p class="wi"><span class="CButton">Demanded</span>: This is similar to <span class="CButton">Current value calculation</span> except that it uses costs as they were at the time of the original demand rather than the time the actual materials and labor were recorded. This makes a difference, for example, if a worker's hourly wage changes between the time of the demand and the time that actual hours are recorded.</p>
+<p class="box"><span class="CButton">Current value calculation</span> and <span class="CButton">Demanded</span> are useful in situations where costs can be specified by the person who creates the original demand, but not by the person who eventually records actual labor and material usage. This might happen when work orders are created by a dispatcher who has the roles <span class="CU">WorkOrder</span> and <span class="CU">AccountingWorkOrder</span>, but then the work orders are closed off by workers who only have the <span class="CU">WorkOrderFulfillment</span> role.</p>
+
+<p class="wi"><span class="CButton">Manual entry</span>: When this option is specified, the person who records actual costs must have <span class="CU">AccountingWorkOrder</span> or some other accounting role that allows costs to be entered directly. In this case, the "actualizer" may either choose the same calculations as <span class="CButton">Current value calculation</span> or <span class="CButton">Demanded</span>, or may manually enter some different cost.</p>
+<p>Note that these options specify <span class="Emphasis">defaults</span> to be used in situations where the person who records actual labor and material usage doesn't have permission to specify costs. If the person recording actual usage has cost permissions, that person can override the defaults if and when desired.</p>
+
+<p class="box"><span class="CInset">Costs on Reports:</span> In every report window, the <span class="CButton">Advanced</span> section has a <span class="CButton">Suppress Costs</span> option. This tells MainBoss not to print any costs that would normally appear in the report. This option is always in effect if you don't have an appropriate accounting-related security role.</p>
+
+
+<p><a href="SecurityRolesandPermissions.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="TestingSecurityRoles.htm">Next section &gt;</a></p>
+</body>
+</html>
+

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Correcting Receive Miscellaneous Entries</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Correcting Receive Miscellaneous Entries</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Receive Miscellaneous.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="PurchaseOrderReports.htm">Next section &gt;</a></p>
+
+<p>In order to correct a miscellaneous line item on a receipt, you must select the item you want to correct (in the <span class="CButton">Receipt Activity</span> section of the receipt or in the <span class="CButton">Receiving</span> section of a purchase order), then click the <span class="CButton">Correct</span> button. This opens a window where you can record the correction. The window contains the following:</p>
+
+<p class="wi"><span class="CField">Entry Date</span>: A read-only field giving the actual date and time when this entry was made.</p>
+<p class="wi"><span class="CField">Effective Date</span>: The date/time that you want to assign to the correction. The default is the current date and time.</p>
+<p class="wi"><span class="CField">User Contact</span>: A read-only field giving your name. This will appear in MainBoss's accounting history to show who made the correction.</p>
+<p class="wi">Read-only fields: A series of read-only fields giving information from the purchase order and receipt where this line item originally appeared. For specifics about this information, see <a href="Edit.Receive Item (with PO).htm">Receiving Purchase Order Items</a>.</p>
+<p class="wi"><span class="CButton">Use order remaining quantity</span>: If you checkmark this box, MainBoss will use "<span class="CField">Order Remaining</span>" as the actual quantity you received. If you leave the box blank, you must fill in "<span class="CField">Quantity</span>" yourself.</p>
+<p class="wi"><span class="CField">Quantity</span>: Corrects the quantity actually received. Typically, you fill in the "<span class="CField">As Corrected</span>" field with the actual quantity received&#8212;the correct quantity, as opposed to the quantity you originally recorded. The alternative is to fill in "<span class="CField">This Entry</span>" with the difference between the quantity you originally entered and the true quantity.
+
+<br /><br />For example, suppose you really received 3 but you accidentally typed 1 in the original record. You could fill in "<span class="CField">As Corrected</span>" with 3 (the correct number) or fill in "<span class="CField">This Entry</span>" with 2 (the difference between what you originally typed and the true quantity). "<span class="CField">This Entry</span>" may be a negative number if you originally typed in too much.
+
+<br /><br />If you fill in "<span class="CField">As Corrected</span>", MainBoss automatically sets "<span class="CField">This Entry</span>" and vice versa.</p>
+<p class="wi"><span class="CField">Calculated Remaining Order Cost</span>: Read-only fields giving the expected cost of the corrected quantity.</p>
+<p class="wi"><span class="CButton">Use calculated remaining order cost</span>: If you checkmark this box, MainBoss will fill in "<span class="CField">This Entry</span>" and "<span class="CField">As Corrected</span>" with the values obtained from "<span class="CField">Calculated Cost</span>". If you don't want to use these calculations, leave the checkbox blank and fill in "<span class="CField">This Entry</span>" or "<span class="CField">As Corrected</span>".</p>
+<p class="wi"><span class="CField">This Entry</span>, <span class="CField">As Corrected</span>: Corrects the actual cost (if necessary). Typically, you fill in "<span class="CField">As Corrected</span>" with the correct cost of the correct quantity. The alternative is to fill in "<span class="CField">This Entry</span>" with the difference between the cost you originally entered and the true cost.
+
+<br /><br />If you fill in "<span class="CField">As Corrected</span>", MainBoss automatically sets "<span class="CField">This Entry</span>" and vice versa.</p>
+<p class="wi"><span class="CField">From Cost Center</span>, <span class="CField">To Cost Center</span>: Read-only fields telling the cost centers involved in this operation. MainBoss creates accounting records indicating the transfer of money from the first cost center to the second. These fields are only visible if your database has an <span class="BL">Accounting</span> license key. For more, see <a href="AccountingFacilities.htm">Accounting Facilities</a>.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on miscellaneous items, see <a href="PurchaseOrderMiscellaneousItems.htm">Purchase Order Miscellaneous Items</a>. For more on purchase orders, see <a href="PurchaseOrders.htm">Purchase Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Receive Miscellaneous.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="PurchaseOrderReports.htm">Next section &gt;</a></p>
+</body>
+</html>
+

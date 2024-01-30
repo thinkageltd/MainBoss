@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Email Requests Contents</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Email Requests Contents</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.Email Request.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Email Request.htm">Next section &gt;</a></p>
+
+<p>You can examine the contents of an email request (and can add comments to the message) by going to <span class="CPanel">Administration</span> | <span class="CPanel">MainBoss Service</span> | <span class="CPanel">Email Requests</span> and clicking <span class="CButton">Edit</span>. This opens a window that contains the following:</p>
+
+<p class="wi"><span class="CButton">Details</span> section: Basic information about the request.</p>
+<p class="wi2"><span class="CField">Request</span>: The number assigned to the request when it was created.</p>
+<p class="wi2"><span class="CField">Receive Date</span>: The date-time the message was received.</p>
+<p class="wi2"><span class="CField">Sender Name</span>: The name of the person who submitted the request.</p>
+<p class="wi2"><span class="CField">Sender Email Address</span>: The email address of the person who sent the message.</p>
+<p class="wi2"><span class="CField">Subject</span>: The subject line from the email.</p>
+<p class="wi2"><span class="CField">Processing State</span>: The current state of the request.</p>
+<p class="wi2"><span class="CField">Mail Message</span>: The body of the original email message.</p>
+<p class="wi2"><span class="CField">Mail Header</span>: The header information associated with the email message. This includes such information as the <span class="CU">To:</span> and <span class="CU">From:</span> lines.</p>
+<p class="wi2"><span class="CField">Comments</span>: An area where you can record comments about the message and/or request.</p>
+<p class="wi"><span class="CButton">Email Parts</span> section: Some email messages have multiple parts, a part in plain text and a part in HTML. Messages may also contain attachments; attachments may also have multiple parts, and attachments may have additional attachments.
+
+<br /><br />The <span class="CButton">Email Parts</span> section consists of a list that has a line for each part of the email. If you click on any line, the right-hand part of the window will show you the contents of the part you selected.</p>
+<p class="wi2"><span class="CButton"><img src="View.png" alt="View" /></span>: Opens a MainBoss window that displays the currently selected email part.</p>
+<p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the selected email part. Unlike many delete operations in MainBoss, this doesn't just hide the email part; it actually deletes the email part from the MainBoss database. For example, you can use this operation to delete a lengthy attachment from the database, thereby freeing up disk space for other data.
+
+<br /><br />If you delete part of an email message, then try to display the entire message later on, MainBoss does its best to display the message in some kind of readable form. This may mean that MainBoss tries to reconstruct parts you've deleted. The results may not look very good.</p>
+<p class="wi2"><span class="CButton">View Email Part</span>: Opens a Windows application to display the selected email part. MainBoss chooses the application based on your standard file-type associations. For example, if you select a PDF attachment in the list of email parts, MainBoss will open whatever program you normally use to read PDFs.
+
+<br /><br />This button has a drop-down list containing the following:</p>
+<p class="wi3"><span class="CButton">Save Email Part</span>: Saves the selected email part to a file. MainBoss will open a standard file selection dialog box to let you specify a file name.</p>
+<p class="wi3"><span class="CButton">Convert to Email Request</span>: Attempts to convert the selected email part into a MainBoss work request. This option is disabled if the selected part is of a type that can't be converted into a request (e.g. if the part is a JPG). The option is also disabled if a request has already been created from this email.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Lets you search through the list of records for a particular record. For more information, see <a href="Search.htm">Searching for a Particular Record</a>. The <span class="CButton"><img src="Find_VS.png" alt="Search" /></span> button has an accompanying drop-down list containing the following:</p>
+<p class="wi3"><span class="CButton">Find Next</span>: Uses the same search condition(s) as your most recent search and finds the next record in the table that matches the condition(s). If the search reaches the end of the table without finding a matching record, it goes to the start of the table and continues the search.</p>
+<p class="wi3"><span class="CButton">Find Previous</span>: Same as <span class="CButton">Find Next</span> except that it goes backward in the table. If the search reaches the start of the table without finding a matching record, it goes to the end of the table and continues the search.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p>For more on MainBoss Service, see <a href="TheMainBossServiceModule.htm">The MainBoss Service Module</a>.</p>
+
+
+<p><a href="Browse.Email Request.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Email Request.htm">Next section &gt;</a></p>
+</body>
+</html>
+

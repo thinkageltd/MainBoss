@@ -1,0 +1,191 @@
+/* ************************************************** */
+/* CSS Styles for MainBoss Advanced online help files */
+/*          Copyright 2009 Thinkage Ltd.              */
+/* ************************************************** */
+
+body {
+	border-width: 0px;
+	margin: 5px;
+	border-style: none;
+	padding: 5px;
+	font-family: Arial,sans-serif;
+	font-size: 12pt;
+	background-color: white ;
+}
+
+dt {
+	padding-top: 4px;
+}
+
+dd {
+	padding-bottom: 4px;
+}
+
+li {
+	padding-top: 3px;
+	padding-bottom: 2px;
+}
+
+p.wi {
+	text-indent: -2em;
+	padding-left: 4em;
+}
+
+p.wi2 {
+	text-indent: -2em;
+	padding-left: 6em;
+}
+
+p.wi3 {
+	text-indent: -2em;
+	padding-left: 8em;
+}
+
+ul.b1 {
+	padding-left: 4em;
+}
+
+ul.b2 {
+	padding-left: 8em;
+}
+
+table.logohead {
+	border: 3px;
+	border-style: solid;
+	border-color: rgb(56,88,21);
+	width: 100%;
+	background-color: rgb(255,235,160);
+}
+
+p.box {
+	border: 3px;
+	border-style: ridge;
+	padding: 3px;
+	border-color: rgb(56,88,21);
+	margin: 10px;	
+}
+
+td.logo {
+	width: 200px;
+	border: 0px;
+}
+
+td.pagehead {
+	padding: 3px;
+}
+
+h1.pagehead {
+	vertical-align: middle;
+}
+
+img {
+	border: 0px;
+}
+
+ul {
+	font-family: Arial,sans-serif;
+}
+
+kbd {
+	font-family: Courier,monospace;
+}
+
+a:visited {
+	color: rgb(153,170,134);
+}
+
+a:link {
+	color: rgb(56,88,21);
+}
+
+h2 {
+	font-family: Arial;
+	font-size: 14pt;
+	color: rgb(56,88,21);
+}
+
+h3 {
+	font-family: Arial;
+	font-size: 12pt;
+	color: rgb(56,88,21);
+}
+
+span.CButton {
+	font-family: Arial;
+	font-size: 12pt;
+	color: green;
+	font-weight: bold;
+}
+
+span.CField {
+	font-family: Arial;
+	font-size: 12pt;
+	color: blue;
+	font-weight: bold;
+}
+
+span.CKey {
+	font-family: Arial;
+	font-size: 12pt;
+	color: #FF00FF;
+	font-weight: bold;
+}
+
+span.CMenu {
+	font-family: Arial;
+	font-size: 12pt;
+	color: red;
+	font-weight: bold;
+}
+
+span.CPanel {
+	font-family: Arial;
+	font-size: 12pt;
+	color: #993300;
+	font-weight: bold;
+}
+
+span.CInset, span.CAtrserv, span.ProgName {
+	font-family: Arial;
+	font-size: 12pt;
+	color: black;
+	font-weight: bold;
+}
+
+span.CU {
+	font-family: Courier New;
+	font-size: 12pt;
+}
+
+span.CMessage {
+	font-family: Courier New;
+	font-size: 12pt;
+	color: green;
+}
+
+span.CReport {
+	font-family: Courier New;
+	font-size: 12pt;
+	color: #008080;
+}
+
+span.Emphasis {
+	font-style: italic;
+}
+
+span.NewTerm {
+	font-style: italic;
+	color: darkorange;
+}
+
+span.BL {
+	font-weight: bold;
+}
+
+span.TranslateMe {
+	display: none;
+}
+
+span.StrikeOut {
+	text-decoration: line-through;
+}

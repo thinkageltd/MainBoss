@@ -1,0 +1,564 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="1" xml:space="preserve">
+    <value>first 1 Day Week NonOff &gt; WeekDay Lunar</value>
+  </data>
+  <data name="10" xml:space="preserve">
+    <value>last 0 &lt; Day Week NonOff Negative &gt; WeekDay</value>
+  </data>
+  <data name="100" xml:space="preserve">
+    <value>three* 3 number0to9 Add Multiply</value>
+  </data>
+  <data name="101" xml:space="preserve">
+    <value>four* 4 number0to9 Add Multiply</value>
+  </data>
+  <data name="102" xml:space="preserve">
+    <value>five* 5 number0to9 Add Multiply</value>
+  </data>
+  <data name="103" xml:space="preserve">
+    <value>six* 6 number0to9 Add Multiply</value>
+  </data>
+  <data name="104" xml:space="preserve">
+    <value>seven* 7 number0to9 Add Multiply</value>
+  </data>
+  <data name="105" xml:space="preserve">
+    <value>eight* 8 number0to9 Add Multiply</value>
+  </data>
+  <data name="106" xml:space="preserve">
+    <value>nine* 9 number0to9 Add Multiply</value>
+  </data>
+  <data name="107" xml:space="preserve">
+    <value>ten* 10 number10to99 Add Multiply</value>
+  </data>
+  <data name="108" xml:space="preserve">
+    <value>eleven* 11 number10to99 Add Multiply</value>
+  </data>
+  <data name="109" xml:space="preserve">
+    <value>twelve* 12 number10to99 Add Multiply</value>
+  </data>
+  <data name="11" xml:space="preserve">
+    <value>'the last' 1 Day Week NonOff Negative &gt; WeekDay</value>
+  </data>
+  <data name="110" xml:space="preserve">
+    <value>thirteen* 13 number10to99 Add Multiply</value>
+  </data>
+  <data name="111" xml:space="preserve">
+    <value>fourteen* 14 number10to99 Add Multiply</value>
+  </data>
+  <data name="112" xml:space="preserve">
+    <value>fifteen* 15 number10to99 Add Multiply</value>
+  </data>
+  <data name="113" xml:space="preserve">
+    <value>sixteen* 16 number10to99 Add Multiply</value>
+  </data>
+  <data name="114" xml:space="preserve">
+    <value>seventeen*17 number10to99 Add Multiply</value>
+  </data>
+  <data name="115" xml:space="preserve">
+    <value>eighteen* 18 number10to99 Add Multiply</value>
+  </data>
+  <data name="116" xml:space="preserve">
+    <value>nineteen* 19 number10to99 Add Multiply</value>
+  </data>
+  <data name="117" xml:space="preserve">
+    <value>twenty* 20 number10to99 Add Multiply &gt; number0to9 Add priority Optional</value>
+  </data>
+  <data name="118" xml:space="preserve">
+    <value>thirty* 30 number10to99 Add Multiply &gt; number0to9 Add priority Optional</value>
+  </data>
+  <data name="119" xml:space="preserve">
+    <value>forty* 40 number10to99 Add Multiply &gt; number0to9 Add priority Optional</value>
+  </data>
+  <data name="12" xml:space="preserve">
+    <value>today 0 NamedDay</value>
+  </data>
+  <data name="120" xml:space="preserve">
+    <value>fifty* 50 number10to99 Add Multiply &gt; number0to9 Add priority Optional</value>
+  </data>
+  <data name="121" xml:space="preserve">
+    <value>sixty* 60 number10to99 Add Multiply &gt; number0to9 Add priority Optional</value>
+  </data>
+  <data name="122" xml:space="preserve">
+    <value>seventy* 70 number10to99 Add Multiply &gt; number0to9 Add priority Optional</value>
+  </data>
+  <data name="123" xml:space="preserve">
+    <value>eighty* 80 number10to99 Add Multiply &gt; number0to9 Add priority Optional</value>
+  </data>
+  <data name="124" xml:space="preserve">
+    <value>ninety* 90 number10to99 Add Multiply &gt; number0to9 Add priority Optional</value>
+  </data>
+  <data name="125" xml:space="preserve">
+    <value>hundred* 100 Number Add Multiply &lt; Number Multiply Optional &gt; Number Add Optional</value>
+  </data>
+  <data name="126" xml:space="preserve">
+    <value>thousand* 1000 Number Add Multiply &lt; Number Multiply Optional &gt; Number Add Optional</value>
+  </data>
+  <data name="127" xml:space="preserve">
+    <value>first 1 Day NonOff Number Add Multiply</value>
+  </data>
+  <data name="128" xml:space="preserve">
+    <value>second 2 Day NonOff Number Add Multiply</value>
+  </data>
+  <data name="129" xml:space="preserve">
+    <value>third 3 Day NonOff Number Add Multiply</value>
+  </data>
+  <data name="13" xml:space="preserve">
+    <value>tomorrow 1 NamedDay</value>
+  </data>
+  <data name="130" xml:space="preserve">
+    <value>fourth 4 Day NonOff Number Add Multiply</value>
+  </data>
+  <data name="131" xml:space="preserve">
+    <value>fifth 5 Day NonOff Number Add Multiply</value>
+  </data>
+  <data name="132" xml:space="preserve">
+    <value>eighth 8 Day NonOff Number Add Multiply</value>
+  </data>
+  <data name="133" xml:space="preserve">
+    <value>ninth 9 Day NonOff Number Add Multiply</value>
+  </data>
+  <data name="134" xml:space="preserve">
+    <value>twelfth 12 Day NonOff Number Add Multiply</value>
+  </data>
+  <data name="135" xml:space="preserve">
+    <value>twentieth 20 Number Add Multiply</value>
+  </data>
+  <data name="136" xml:space="preserve">
+    <value>thirtieth 30 Number Add Multiply</value>
+  </data>
+  <data name="137" xml:space="preserve">
+    <value>thirtieth 30 Number Add Multiply</value>
+  </data>
+  <data name="138" xml:space="preserve">
+    <value>fortieth 40 Number Add Multiply</value>
+  </data>
+  <data name="139" xml:space="preserve">
+    <value>fiftieth 50 Number Add Multiply</value>
+  </data>
+  <data name="14" xml:space="preserve">
+    <value>yesterday -1 NamedDay</value>
+  </data>
+  <data name="140" xml:space="preserve">
+    <value>sixtieth 60 Number Add Multiply</value>
+  </data>
+  <data name="141" xml:space="preserve">
+    <value>seventieth 70 Number Add Multiply</value>
+  </data>
+  <data name="142" xml:space="preserve">
+    <value>eightieth 80 Number Add Multiply</value>
+  </data>
+  <data name="143" xml:space="preserve">
+    <value>ninetieth 90 Number Add Multiply</value>
+  </data>
+  <data name="144" xml:space="preserve">
+    <value>morning 9 Hour AMPM Ambiguous</value>
+  </data>
+  <data name="145" xml:space="preserve">
+    <value>afternoon 15 Hour AMPM Ambiguous</value>
+  </data>
+  <data name="146" xml:space="preserve">
+    <value>evening 18 Hour AMPM Ambiguous</value>
+  </data>
+  <data name="147" xml:space="preserve">
+    <value>night 21 Hour AMPM Ambiguous</value>
+  </data>
+  <data name="148" xml:space="preserve">
+    <value>=AD 0 Ignorable &lt; Year</value>
+  </data>
+  <data name="15" xml:space="preserve">
+    <value>next 1 FrameChange &gt; WeekDay Year Month Day Lunar</value>
+  </data>
+  <data name="16" xml:space="preserve">
+    <value>last -1 FrameChange &gt; WeekDay Year Month Day Lunar</value>
+  </data>
+  <data name="17" xml:space="preserve">
+    <value>this 0 FrameChange &gt; WeekDay Year Month Day Lunar</value>
+  </data>
+  <data name="18" xml:space="preserve">
+    <value>next 1 FrameChange &lt; WeekDay Month Day</value>
+  </data>
+  <data name="19" xml:space="preserve">
+    <value>last -1 FrameChange &lt; WeekDay Month Day</value>
+  </data>
+  <data name="2" xml:space="preserve">
+    <value>second 2 Day Week NonOff &gt; WeekDay Lunar</value>
+  </data>
+  <data name="20" xml:space="preserve">
+    <value>last 1 Day Week NonOff Negative &gt; WeekDay Lunar</value>
+  </data>
+  <data name="21" xml:space="preserve">
+    <value>this 0 NamedDay &gt; Hour AMPM</value>
+  </data>
+  <data name="22" xml:space="preserve">
+    <value>last -1 NamedDay &gt; Hour AMPM</value>
+  </data>
+  <data name="23" xml:space="preserve">
+    <value>morning 0 AMPM &lt; Hour Minute Second Optional</value>
+  </data>
+  <data name="24" xml:space="preserve">
+    <value>afternoon 12 AMPM &lt; Hour Minute Second Optional</value>
+  </data>
+  <data name="25" xml:space="preserve">
+    <value>evening 12 AMPM &lt; Hour Minute Second Optional</value>
+  </data>
+  <data name="26" xml:space="preserve">
+    <value>to* 0 NamedDay &gt; AMPM NoSpace</value>
+  </data>
+  <data name="27" xml:space="preserve">
+    <value>night 12 AMPM &lt; Hour Minute Second Optional</value>
+  </data>
+  <data name="28" xml:space="preserve">
+    <value>="_" 0 &lt; NoSpace &gt; NoSpace</value>
+  </data>
+  <data name="29" xml:space="preserve">
+    <value>st 0 &lt; Day NonOff</value>
+  </data>
+  <data name="3" xml:space="preserve">
+    <value>third 3 Day Week NonOff &gt; WeekDay Lunar</value>
+  </data>
+  <data name="30" xml:space="preserve">
+    <value>nd 0 &lt; Day NonOff</value>
+  </data>
+  <data name="31" xml:space="preserve">
+    <value>rd 0 &lt; Day NonOff</value>
+  </data>
+  <data name="32" xml:space="preserve">
+    <value>th 0 &lt; Day NonOff</value>
+  </data>
+  <data name="33" xml:space="preserve">
+    <value>oclock 0 &lt; Hour</value>
+  </data>
+  <data name="34" xml:space="preserve">
+    <value>o"'"clock 0 &lt; Hour</value>
+  </data>
+  <data name="35" xml:space="preserve">
+    <value>of 0 Ignorable &lt; WeekDay &gt; Month Year</value>
+  </data>
+  <data name="36" xml:space="preserve">
+    <value>of 0 &lt; Day</value>
+  </data>
+  <data name="37" xml:space="preserve">
+    <value>of 1 Ignorable &lt; Minute Off Negative</value>
+  </data>
+  <data name="38" xml:space="preserve">
+    <value>half 30 Minute Second</value>
+  </data>
+  <data name="39" xml:space="preserve">
+    <value>quarter 15 Minute Second</value>
+  </data>
+  <data name="4" xml:space="preserve">
+    <value>fourth 4 Day Week NonOff &gt; WeekDay Lunar</value>
+  </data>
+  <data name="40" xml:space="preserve">
+    <value>the 0 Ignorable</value>
+  </data>
+  <data name="41" xml:space="preserve">
+    <value>'in the' 0 Ignorable</value>
+  </data>
+  <data name="42" xml:space="preserve">
+    <value>and* 0 Ignorable Number &lt; Number &gt; Number</value>
+  </data>
+  <data name="43" xml:space="preserve">
+    <value>and 0 Ignorable</value>
+  </data>
+  <data name="44" xml:space="preserve">
+    <value>a|n 0 Ignorable</value>
+  </data>
+  <data name="45" xml:space="preserve">
+    <value>at 0 Ignorable &gt; Hour Minute Second HHMM</value>
+  </data>
+  <data name="46" xml:space="preserve">
+    <value>on 0 Ignorable &gt; Year Month Day WeekDay</value>
+  </data>
+  <data name="47" xml:space="preserve">
+    <value>in 1 Ignorable &gt; Year Month</value>
+  </data>
+  <data name="48" xml:space="preserve">
+    <value>in 1 Ignorable &gt; Year Month Day Hour Minute Second Off</value>
+  </data>
+  <data name="49" xml:space="preserve">
+    <value>from 1 &lt; Year Month Day Hour Minute Second Off</value>
+  </data>
+  <data name="5" xml:space="preserve">
+    <value>fifth 5 Day Week NonOff &gt; WeekDay Lunar</value>
+  </data>
+  <data name="50" xml:space="preserve">
+    <value>="'" 0 Ignorable &gt; NoSpace Year</value>
+  </data>
+  <data name="51" xml:space="preserve">
+    <value>to 1 Ignorable &lt; Minute Off Negative</value>
+  </data>
+  <data name="52" xml:space="preserve">
+    <value>'minutes to' 1 Ignorable &lt; Minute Off Negative</value>
+  </data>
+  <data name="53" xml:space="preserve">
+    <value>'seconds to' 1 Ignorable &lt; Second Off Negative</value>
+  </data>
+  <data name="54" xml:space="preserve">
+    <value>'hours to' 1 Ignorable &lt; Hour Off Negative</value>
+  </data>
+  <data name="55" xml:space="preserve">
+    <value>past 1 Ignorable &lt; Minute Off</value>
+  </data>
+  <data name="56" xml:space="preserve">
+    <value>noon 12 Hour AMPM</value>
+  </data>
+  <data name="57" xml:space="preserve">
+    <value>midnight 24 Hour AMPM</value>
+  </data>
+  <data name="58" xml:space="preserve">
+    <value>'the year' 0 Year Now</value>
+  </data>
+  <data name="59" xml:space="preserve">
+    <value>'the month' 0 Month Now</value>
+  </data>
+  <data name="6" xml:space="preserve">
+    <value>st 0 &lt; Day Week NonOff &gt; WeekDay Lunar</value>
+  </data>
+  <data name="60" xml:space="preserve">
+    <value>'this year' 0 Year Now</value>
+  </data>
+  <data name="61" xml:space="preserve">
+    <value>'this month' 0 Month Now</value>
+  </data>
+  <data name="62" xml:space="preserve">
+    <value>year|s 1 &lt; Off Year</value>
+  </data>
+  <data name="63" xml:space="preserve">
+    <value>year 1 Year Off &lt; FrameChange</value>
+  </data>
+  <data name="64" xml:space="preserve">
+    <value>year 1 Off Year</value>
+  </data>
+  <data name="65" xml:space="preserve">
+    <value>month|s 1 &lt; Off Month</value>
+  </data>
+  <data name="66" xml:space="preserve">
+    <value>month 1 Month Off &lt; FrameChange</value>
+  </data>
+  <data name="67" xml:space="preserve">
+    <value>month 1 Off Month</value>
+  </data>
+  <data name="68" xml:space="preserve">
+    <value>fortnight|s 14 &lt; Off Day</value>
+  </data>
+  <data name="69" xml:space="preserve">
+    <value>fortnight 14 Off Day</value>
+  </data>
+  <data name="7" xml:space="preserve">
+    <value>nd 0 &lt; Day Week NonOff &gt; WeekDay Lunar</value>
+  </data>
+  <data name="70" xml:space="preserve">
+    <value>week|s 7 &lt; Off Day</value>
+  </data>
+  <data name="71" xml:space="preserve">
+    <value>week 7 Day Off &lt; FrameChange</value>
+  </data>
+  <data name="72" xml:space="preserve">
+    <value>week 7 Off Day</value>
+  </data>
+  <data name="73" xml:space="preserve">
+    <value>day|s 1 &lt; Off Day</value>
+  </data>
+  <data name="74" xml:space="preserve">
+    <value>day 1 Off Day</value>
+  </data>
+  <data name="75" xml:space="preserve">
+    <value>hour|s 1 &lt; Off Hour Time</value>
+  </data>
+  <data name="76" xml:space="preserve">
+    <value>hour 1 Off Hour Time</value>
+  </data>
+  <data name="77" xml:space="preserve">
+    <value>minute|s 1 &lt; Off Minute Time</value>
+  </data>
+  <data name="78" xml:space="preserve">
+    <value>minute 1 Off Minute Time</value>
+  </data>
+  <data name="79" xml:space="preserve">
+    <value>second|s 1 &lt; Off Second Time</value>
+  </data>
+  <data name="8" xml:space="preserve">
+    <value>rd 0 &lt; Day Week NonOff &gt; WeekDay Lunar</value>
+  </data>
+  <data name="80" xml:space="preserve">
+    <value>second 1 Off Second Time</value>
+  </data>
+  <data name="81" xml:space="preserve">
+    <value>ago 1 &lt; Off Negative Hour Minute Second Year Month Day</value>
+  </data>
+  <data name="82" xml:space="preserve">
+    <value>before 1 &lt; Off Negative Minute &gt; Hour</value>
+  </data>
+  <data name="83" xml:space="preserve">
+    <value>before 1 NoLinking Ignorable &lt; Off Linked Negative Optional</value>
+  </data>
+  <data name="84" xml:space="preserve">
+    <value>after 1 &lt; Off Minute &gt; Hour</value>
+  </data>
+  <data name="85" xml:space="preserve">
+    <value>after 1 NoLinking Ignorable &lt; Off Linked Optional</value>
+  </data>
+  <data name="86" xml:space="preserve">
+    <value>now 0 NamedDay Time</value>
+  </data>
+  <data name="87" xml:space="preserve">
+    <value>h 0 Ignorable &lt; NoSpace Hour &gt; NoSpace Minute Optional</value>
+  </data>
+  <data name="88" xml:space="preserve">
+    <value>m 0 Ignorable &lt; NoSpace Minute &gt; NoSpace Second Optional</value>
+  </data>
+  <data name="89" xml:space="preserve">
+    <value>single 1 Hour Minute Second Year Month Day</value>
+  </data>
+  <data name="9" xml:space="preserve">
+    <value>th 0 &lt; Day Week NonOff &gt; WeekDay Lunar</value>
+  </data>
+  <data name="90" xml:space="preserve">
+    <value>couple 2 Hour Minute Second Year Month Day Ambiguous</value>
+  </data>
+  <data name="91" xml:space="preserve">
+    <value>few 3 Hour Minute Second Year Month Day Ambiguous</value>
+  </data>
+  <data name="92" xml:space="preserve">
+    <value>fifteen* 1500 Number &gt; number10to99 Add</value>
+  </data>
+  <data name="93" xml:space="preserve">
+    <value>sixteen* 1600 Number &gt; number10to99 Add</value>
+  </data>
+  <data name="94" xml:space="preserve">
+    <value>seventeen*1700 Number &gt; number10to99 Add</value>
+  </data>
+  <data name="95" xml:space="preserve">
+    <value>eighteen* 1800 Number &gt; number10to99 Add</value>
+  </data>
+  <data name="96" xml:space="preserve">
+    <value>nineteen* 1900 Number &gt; number10to99 Add</value>
+  </data>
+  <data name="97" xml:space="preserve">
+    <value>twenty* 2000 Number &gt; number10to99 Add</value>
+  </data>
+  <data name="98" xml:space="preserve">
+    <value>one* 1 number0to9 Add Multiply</value>
+  </data>
+  <data name="99" xml:space="preserve">
+    <value>two* 2 number0to9 Add Multiply</value>
+  </data>
+</root>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Demand Hourly Outside</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Demand Hourly Outside</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Demand Per Job Inside.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Demand Per Job Outside.htm">Next section &gt;</a></p>
+
+<p>An hourly outside demand assigns one of your workers to do some or all of the work associated with a work order. You specify the worker using an hourly outside record; this gives the worker's name and the hourly rate paid for that worker's services. (For more on hourly outside records, see <a href="HourlyOutside.htm">Hourly Outside</a>.)</p>
+
+<p class="box"><span class="CInset">Note:</span> MainBoss has two ways of handling labor expenses: with an hourly rate (where the cost depends on how long the worker takes to do the job) or with a per job rate (where all jobs of a particular type cost the same, no matter how long they take). This section covers hourly payments. For more on per job payments, see <a href="Edit.Demand Per Job Outside.htm">Demand Per Job Outside</a>.</p>
+
+<p>To see the Demand Hourly Outside editor, click <span class="CButton">New Demand Hourly Outside</span> in the <span class="CButton">Outside</span> subsection of the <span class="CButton">Resources</span> section of a work order. For more on resources, see <a href="Resources.htm">Resources</a>.</p>
+
+<p>The Demand Hourly Outside editor contains the following:</p>
+
+<p class="wi"><span class="CButton">Details</span> area: Provides information about the demand.</p>
+<p class="wi2"><span class="CField">Work Order</span>: A read-only field identifying the work order.</p>
+<p class="wi2"><span class="CField">Hourly Outside</span>: An hourly outside record specifying a worker and the worker's hourly rate.</p>
+<p class="wi2"><span class="CField">Hourly Rate</span>: The worker's cost per hour, as given by the hourly outside record.</p>
+<p class="wi2"><span class="CField">Demanded</span>: The total length of time that the worker is expected to spend on this job.</p>
+<p class="wi2"><span class="CField">Already used</span>: A read-only field giving the amount of the demanded time that has already been used on this work order. This amount is set by recording that a certain amount of time has already been used. For example, suppose you expect a job to take three days and have created a demand for a particular worker to spend 20 hours on this job over those three days. At the end of each day, you can actualize some of the demanded time to indicate how much was actually used during the day. In this case, "<span class="CField">Already used</span>" will show how much time has already been used on previous days.</p>
+<p class="wi2"><span class="CField">Remaining</span>: A read-only field giving the amount of demanded time that has not yet been used. This is equal to "<span class="CField">Demanded</span>" minus "<span class="CField">Already used</span>".</p>
+<p class="wi2"><span class="CField">Calculated Cost</span>: Read-only fields giving the expected cost of the demanded work, based on the worker's hourly rate. The "<span class="CField">Hourly Rate</span>" column gives the cost per hour and the "<span class="CField">Cost</span>" column gives the total cost.</p>
+<p class="wi2"><span class="CButton">Use calculated cost</span>: If you checkmark this box, MainBoss will fill in "<span class="CField">Demanded Cost</span>" with the values given in "<span class="CField">Calculated Cost</span>". If you don't want to use the calculated cost, leave the checkbox blank and enter an appropriate cost in "<span class="CField">Demanded Cost</span>".</p>
+<p class="wi2"><span class="CField">Demanded Cost</span>: Can be filled in if you expect the cost to be different than "<span class="CField">Calculated Cost</span>" (e.g. if you have to pay the worker a higher hourly rate because of overtime). You can enter an hourly rate under "<span class="CField">Hourly Rate</span>" or the total cost under "<span class="CField">Cost</span>".</p>
+<p class="wi2"><span class="CField">Actual Cost Default</span>: Specifies the default method for calculating costs when someone creates an "actual hourly outside" in response to this demand. If the person who records the actual cost has sufficient security permissions, he or she can specify the cost in a different way. However, if the person who records the actual cost does not have permission to specify costs, what you specify on this demand determines the cost that MainBoss will use. Possible options are:</p>
+<p class="wi3"><span class="CButton">Manual entry</span>: If you choose this option, you expect the person who actualizes this demand to have appropriate security permissions to specify the actual cost of the work.</p>
+<p class="wi3"><span class="CButton">Current value calculation</span>: If you choose this option, the default is to calculate actual costs from the original hourly outside record.</p>
+<p class="wi3"><span class="CButton">Demanded</span>: If you choose this option, the default is to use the "<span class="CField">Demanded Cost</span>" in this window as a basis for the actual cost.</p>
+<p class="wi2"><span class="CField">Expense Category</span>: The expense category to which this expense belongs. For more on expense categories, see <a href="ExpenseCategories.htm">Expense Categories</a>.</p>
+<p class="wi"><span class="CButton">Actuals</span> section: Records what the work order actually used (as opposed to the preliminary estimates given in the <span class="CButton">Details</span> section). The <span class="CButton">Actuals</span> section also lets you correct any mistakes made in previous "actual" entries.</p>
+<p class="wi2">List: The central part of the window is a list of "actual" entries, specifying actual hourly outside labor expenses on this work order.</p>
+<p class="wi2"><span class="CButton">New Actual Hourly Outside</span>: Lets you record an actual labor expense for this work order. For more information, see <a href="Edit.Actual Hourly Outside (no PO).htm">Actual Hourly Outside</a>.</p>
+<p class="wi2"><span class="CButton">New Actual Hourly Outside (with PO)</span>: Lets you record an actual labor expense that appears on an associated purchase order. For more information, see <a href="Edit.Actual Hourly Outside (with PO).htm">Actual Hourly Outside (with PO)</a>.</p>
+<p class="wi2"><span class="CButton">Correct</span>: Lets you correct an existing actual entry. For more, see <a href="Edit.Correction of Actual Hourly Outside (no PO).htm">Corrections of Actual Hourly Outside</a> and <a href="Edit.Correction of Actual Hourly Outside (with PO).htm">Corrections of Actual Hourly Outside (with PO)</a>.</p>
+<p class="wi2"><span class="CButton">New Purchase Hourly Outside</span>: Opens a window where you can add this demand to a purchase order. For more, see <a href="Edit.Purchase Hourly Outside.htm">Purchase Hourly Outside</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: Lets you edit an existing actual entry. You will <span class="Emphasis">not</span> be able to change the cost or quantity specified in the entry; for that, you must use <span class="CButton">Correct</span>.</p>
+<p class="wi2"><span class="CButton">View</span>: Lets you view an existing entry in read-only mode.</p>
+<p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the record that's currently selected.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Opens a window to search for a particular record.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on resources, see <a href="Resources.htm">Resources</a>. For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Demand Per Job Inside.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Demand Per Job Outside.htm">Next section &gt;</a></p>
+</body>
+</html>
+

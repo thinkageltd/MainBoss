@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Unit Maintenance Plans</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Unit Maintenance Plans</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Requestor.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Unit Maintenance Plan.htm">Next section &gt;</a></p>
+
+<p>In order to use MainBoss's facility for generating planned maintenance work orders, you must connect three things:</p>
+
+<ul class="b1"><li>Tasks: what work should be done (see <a href="Tasks.htm">Tasks</a>)</li>
+<li>Timing: when the work should be done (see <a href="MaintenanceTimings.htm">Maintenance Timings</a>)</li>
+<li>Units: where the work should be done (see <a href="Units.htm">Units</a>)
+</li></ul><p>Unit maintenance plans put it all together. Once you've created a unit maintenance plan, MainBoss can create planned maintenance work orders for all the appropriate units. The work orders are created using information from the task record, and according to the schedule given by the timing record.</p>
+
+<p><span class="CInset">Timing Basis</span><span class="CInset">:</span> The <span class="NewTerm">timing basis</span> for a unit maintenance plan helps to determine when PM jobs should be scheduled. For example, suppose you do a particular job several days later than it was actually scheduled. The next time you do the same job, should it be scheduled relative to when the job was <span class="Emphasis">supposed</span> to be done or when it was <span class="Emphasis">actually</span> done?</p>
+
+<p>As an example, suppose a particular job takes several days. If the job is supposed to be done every 90 days, does that mean 90 days after the job starts or 90 days after the job ends?</p>
+
+<p>To answer such questions, a unit maintenance plan offers you several options for how you reschedule the next job. These options are called the <span class="NewTerm">timing basis</span>. Possibilities are:</p>
+
+<p class="wi"><span class="CButton">Work Start</span>: The next job is scheduled relative to the "<span class="CField">Work Start Date</span>" of the previously scheduled job. (This is the "<span class="CField">Work Start Date</span>" as stated in the job's work order; MainBoss assumes that this date reflects when the job was actually started.)</p>
+<p class="wi"><span class="CButton">Work End</span>: The next job is scheduled relative to the "<span class="CField">Work End Date</span>" of the previously scheduled job. (This is the "<span class="CField">Work End Date</span>" as stated in the job's work order.)</p>
+<p class="wi"><span class="CButton">Scheduled Date</span>: The next job is scheduled relative to when the previous job was <span class="Emphasis">supposed</span> to take place, whether or not the job was actually done on that date. Note that the other two possibilities (<span class="CButton">Work Start</span> and <span class="CButton">Work End)</span> use the actual start and end dates, which may not be the same as the dates originally scheduled.</p>
+<p><span class="CInset">Specifying the Schedule Basis:</span> When you first set up a unit maintenance plan, you must select the schedule basis. This tells MainBoss when to start the clock ticking for future tasks.</p>
+
+<p>For example, suppose you're setting up MainBoss and you specify that a particular vehicle needs an oil change every three months. During set-up, you have to tell MainBoss the last time the vehicle had an oil change; then MainBoss can correctly schedule oil changes in future.</p>
+
+<p>Similarly, when you buy new equipment that needs planned maintenance, you must specify when to start the clock for future maintenance. Usually, you start the clock on the day you start using the equipment.</p>
+
+<p>For tasks that are scheduled by meter readings rather than date, the schedule basis is the meter reading on which to base future planned maintenance. For example, if a vehicle gets an oil change every 3000 miles, the default schedule basis is the odometer reading for the most recent time the oil was changed.</p>
+
+<p>You may choose to change the schedule basis after your maintenance plan has begun. For example, suppose you're repairing a vehicle and you decide to do an oil change at the same time, even though the oil change isn't due yet. You would specify the schedule basis as the current date, so that the next oil change will take place at the proper time.</p>
+
+<p><span class="CInset">Scheduling Examples</span><span class="CInset">:</span> Suppose you want a particular job to be scheduled on the second Tuesday of every month. You can do this using a month schedule (see <a href="Edit.Monthly Period.htm">Editing Monthly Periods</a>) with the following settings:</p>
+
+<ul class="b1"><li>Create a maintenance timing record with a period of one month (i.e., one month between jobs).</li>
+<li>In the <span class="CButton">Exceptions</span> section of the timing record, turn off every day of the week except <span class="CButton">Tuesday</span>.</li>
+<li>In the unit maintenance plan record, set "<span class="CField">Timing Basis</span>" to <span class="CButton">Scheduled Date</span>. This ensures that the next job is based on when the previous job was supposed to be done, as opposed to when it was actually done.</li>
+<li>Lastly, click <span class="CButton">Change Schedule Basis</span>. This opens a window where you can set the schedule basis to the second Tuesday of the past month. (For example, if it's now October 1, set the schedule basis to the second Tuesday in September.) This starts the clock ticking on the second Tuesday in September, so the next job will be scheduled for the second Tuesday in October.
+</li></ul><p>You can use a similar procedure for schedules like "the first Friday of the month" or "the fourth Monday of the month". Unfortunately, there's no good way to do "the last Monday of the month" since some months have four Mondays while others have five Mondays. For most organizations, however, "the fourth Monday of the month" is probably an acceptable compromise for "the last Monday of the month".</p>
+
+<p>As another example, suppose you want a job to be done on the 15th of every month. The process is similar:</p>
+
+<ul class="b1"><li>Use a maintenance timing record with a period of one month.</li>
+<li>In the unit maintenance plan record, set "<span class="CField">Timing Basis</span>" to <span class="CButton">Scheduled Date</span>.</li>
+<li>Click <span class="CButton">Change Schedule Basis</span> and set the basis to the 15th of the previous month. For example, if it's now May, set the basis to April 15. This ensures that the next job will be scheduled for May 15.
+</li></ul>
+<p><span class="CInset">Deferrals and Inhibits:</span> If there are days that a particular job can't be done, what do you do if the job comes due on such a day? For example, what if a job can only be done on weekends but it comes due in the middle of the week? MainBoss offers you two choices:</p>
+
+<ul class="b1"><li>You can <span class="NewTerm">defer</span> the job. This means delaying the job until the first day it can actually be done. For example, if a job can only be done on weekends but it comes due on Wednesday, you can <span class="NewTerm">defer</span> the job until Saturday.</li>
+<li>Alternatively, you can <span class="NewTerm">inhibit</span> the job. This means skipping the job entirely. You don't do the job until the next time it comes due.
+</li></ul><p>In most cases, you'll defer jobs rather than inhibit them. However, consider a job like "Sweep all sidewalks." You might do this job every day you're open for business; however, on days when you're not open, you can safely skip the job.</p>
+
+<p class="box">For more on deferrals and inhibits, see <a href="MaintenanceTimings.htm">Maintenance Timings</a>.</p>
+
+<p><span class="CInset">Unscheduled Maintenance Plans:</span> You can use unit maintenance plans to create immediate work orders. For example, suppose a car isn't due for an oil change but for some reason you want to do an oil change anyway. The <span class="CButton">New Unplanned Maintenance Work Order</span> button (found in <span class="CPanel">Unit Maintenance Plans</span>) can create a corresponding work order immediately, without going through the usual scheduling process.</p>
+
+<p>This same facility can be used to create standardized work orders for jobs which aren't typically done on any schedule. For example, consider the job of changing a car's muffler. While this is a common sort of job, it's done as needed rather than following a schedule.</p>
+
+<p>You can still create a unit maintenance plan for this sort of job. As usual, this unit maintenance plan will have a task (describing what should be done in the muffler change) and a unit (specifying which car should have its muffler changed). However, for the maintenance timing record, you can specify one that has no associated periods. Such a timing record indicates that the job never comes due on its own; the job will only be done when you explicitly click <span class="CButton">New Unplanned Maintenance Work Order</span>.</p>
+
+<p>Using this approach, you can associate any number of standardized unscheduled jobs with a unit. For example, you can write up standardized task descriptions for all standard maintenance jobs on cars and create unit maintenance plans for those jobs on every car you maintain. In each case, the unit maintenance plan will have a maintenance timing record that has no periods, so the job will never come due on its own. Instead, you can just use <span class="CButton">New Unplanned Maintenance Work Order</span> whenever you want to do the job on the car. You only have to write up the job description once (when you create the task record); from that point on, you can create immediate work orders from the unit maintenance plan.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Browse.Unit Maintenance Plan.htm">Viewing Unit Maintenance Plans</a></li>
+
+<li><a href="Edit.Unit Maintenance Plan.htm">Editing Unit Maintenance Plans</a></li>
+
+<li><a href="Report.Unit Maintenance Plan.htm">Printing Unit Maintenance Plans</a></li>
+
+<li><a href="Edit.Scheduling Basis.htm">Specifying a Schedule Basis</a></li>
+
+<li><a href="Edit.Unplanned Maintenance Work Order.htm">Creating an Unplanned Maintenance Work Order</a></li>
+</ul>
+<p><a href="Report.Requestor.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Unit Maintenance Plan.htm">Next section &gt;</a></p>
+</body>
+</html>
+

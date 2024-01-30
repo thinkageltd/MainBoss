@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<?include SolutionSettings.wxi?>
+	<Fragment>
+		<DirectoryRef Id="ShortcutsDir">
+			<Component Id="ProgramShortcuts" Guid="D29D9008-53CC-40AD-A637-9D0C07372503">
+				<Shortcut Id="MainBossShortcut"
+					Name="$(var.PRODUCTNAME) $(var.VERSION)"
+					Description="MainBoss Advanced"
+					Target="[INSTALLDIR]MainBoss.exe"/>
+
+				<RemoveFolder Id="RemoveShortcutsDir" On="uninstall"/>
+
+				<RegistryValue Root="HKCU"
+								Key="Software\Microsoft\$(var.PRODUCTNAME) $(var.VERSION)"
+								Name="installed"
+								Type="integer"
+								Value="1"
+								KeyPath="yes"/>
+			</Component>
+		</DirectoryRef>
+	</Fragment>
+</Wix>

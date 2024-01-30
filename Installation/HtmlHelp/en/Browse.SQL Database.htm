@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: The Database Name List</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">The Database Name List</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.SQL Server.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="CommandLineOptions.htm">Next section &gt;</a></p>
+
+<p>If you click the "..." associated with "<span class="CField">Database Name</span>" in windows for specifying databases, MainBoss displays a list of known MainBoss databases. If you have specified a "<span class="CField">Database Server</span>", the list shows databases on the given server; if "<span class="CField">Database Server</span>" is blank, MainBoss lists all known databases on all known servers.</p>
+
+<p>Each line in the list provides information about a single database. The window has several columns:</p>
+
+<p class="wi"><span class="CButton">Server Name</span>: The instance of SQL Server that manages the database.</p>
+<p class="wi"><span class="CButton">DataBase Name</span>: The actual name of the database, as used by SQL Server.</p>
+<p class="wi"><span class="CButton">Version</span>: The version of the database. Usually, each different version of the MainBoss software uses a different version of the database; however, this may not always be the case. If the version of a database is older than the version expected by your current MainBoss software, you will have to upgrade the database before you can use it.</p>
+<p class="wi"><span class="CButton">Organization Name</span>: Your own personal name for the database. You can change this at any time, as described in <a href="ChangingOrganizationInformation.htm">Changing Organization Information</a>.</p>
+<p class="wi"><span class="CButton">User Record Exists</span>: Whether or not the database's Users table has an entry for your login name.</p>
+<p class="wi"><span class="CButton">Access Error</span>: If MainBoss encounters an error when trying to access the database, the error message will appear in this column.</p>
+<p>If you want to create a new database, you should choose some name that is <span class="Emphasis">not</span> shown in the list. (Note that the window only shows MainBoss databases. If there are any non-MainBoss databases maintained by the same SQL Server, those databases do not appear in the list.)</p>
+
+<p class="box"><span class="CInset">Note:</span> The list only shows MainBoss databases for which you have SQL Server permissions. You can have SQL Server permissions on a database but still not appear in the database's Users table; in this case, you will not be able to access the database with MainBoss, even though SQL Server would normally allow access.</p>
+
+<p>If you want to add an existing database to your list of known databases, you can click on the appropriate name in the list. Adding a name to your list of known databases doesn't necessarily give you access to that database&#8212;you still have to be on the database's list of authorized users (<span class="CPanel">Administration</span> | <span class="CPanel">Users</span>).</p>
+
+
+<p><a href="Browse.SQL Server.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="CommandLineOptions.htm">Next section &gt;</a></p>
+</body>
+</html>
+

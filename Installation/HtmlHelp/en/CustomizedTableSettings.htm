@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Customized Table Settings</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Customized Table Settings</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Filter.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="FormCustomization.htm">Next section &gt;</a></p>
+
+<p>Table viewers can be <span class="NewTerm">customized</span>. The customization area is above the table, consisting of a drop-down list and a drop-down button:</p>
+
+<p><img src="image013.png" alt="MainBoss" /></p>
+
+<p>A customized setting is name that stands for a particular set of table display options, especially filters (see <a href="Filter.htm">Table Filters</a>). For example, suppose your organization manages a lot of properties, but you yourself only work in Building A or Building B. You might create three customized settings for the <span class="CPanel">Units</span> table, named <span class="CU">A</span>, <span class="CU">B</span>, and <span class="CU">A&amp;B</span>. If you choose the <span class="CU">A</span> setting, the <span class="CPanel">Units</span> table will only show you the units in Building A; similarly for the <span class="CU">B</span> and <span class="CU">A&amp;B</span> settings. In this way, you only see the units that matter to you, not any units in other buildings.</p>
+
+<p class="box"><span class="CInset">Note:</span> Settings that can be saved are indicated with blue lettering rather than black. For example, "<span class="CField">Apply Filter</span>" is shown in blue in table viewers, indicating that filter settings can be saved as a customized setting for the associated table. The color of the label's lettering always tells whether the associated setting can be saved when customizing a form.</p>
+
+<p>To create a customized setting, you first set a filter that chooses only the records you want to see. For example, if you only want to see units in Building A, you could set a filter like</p>
+
+<p><img src="image014.png" alt="MainBoss" /></p>
+
+<p>You then click <span class="CButton">Apply Filter</span> and then <span class="CButton">Close</span>. You'll see that the table only shows the units whose containing location starts with the string <span class="CU">Building A</span>.</p>
+
+<p>To give this table setting a name, click the drop-down arrow associated with the drop-down button in the customized setting area. In the resulting menu, click <span class="CMenu">Save As</span>. A window will appear letting you specify a name for the filter you've just set up:</p>
+
+<p><img src="image015.png" alt="MainBoss" /></p>
+
+<p>In "<span class="CField">Settings Name</span>", enter a name for this setting (e.g. <span class="CU">A</span> to stand for Building A).</p>
+
+<p>The scope of your settings may be <span class="CButton">Personal</span> or <span class="CButton">Global</span>. (To use <span class="CButton">Global</span>, you must have the MainBoss <span class="CU">Administration</span> security role.) If you choose <span class="CButton">Global</span>, then all people using your MainBoss database will see the name of this customization in the drop-down list of possible customizations. If you choose <span class="CButton">Personal</span>, this name will appear in your own list of possible customizations, but not in anyone else's.</p>
+
+<p class="box"><span class="CInset">Note:</span> You may wish to create a number of standard global customizations that can be used by anyone in your organization. This is particularly helpful if some of your users aren't knowledgeable enough about MainBoss to create customizations of their own.</p>
+
+<p>Click <span class="CButton">Save &amp; Close</span> to save your setting and close the window. Once you've done this, you'll see the name of the customization appear in the accompanying drop-down list. Anytime you come to this table, you can quickly apply the setting by selecting the name from the list. Once you've chosen a customization, MainBoss uses it every time you come back to this window until either you quit MainBoss or you choose a different customization or filter.</p>
+
+<p>The drop-down button for customizations contains the following choices:</p>
+
+<p class="wi"><span class="CButton">Save</span>: Saves the current filter settings under an existing name. This is how you change the definition of an existing customization.</p>
+<p class="wi"><span class="CButton">Save as</span>: Saves the current filter settings under a new name.</p>
+<p class="wi"><span class="CButton">Delete</span>: Deletes the name that's currently selected in the customization drop-down list.</p>
+<p class="wi"><span class="CButton">Set as Default</span>: Specifies that the selected customization should be treated as the default for this table. In this case, you don't have to select the customization&#8212;whenever you start MainBoss, the customization is automatically applied. For example, if the default customization for your <span class="CPanel">Units</span> table only shows units in Building A, then the table is automatically filtered that way whenever you start MainBoss. You will never see units that are in other locations, unless you change the filter or choose a different customization.</p>
+
+
+<p><a href="Filter.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="FormCustomization.htm">Next section &gt;</a></p>
+</body>
+</html>
+

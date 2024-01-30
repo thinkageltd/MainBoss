@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="fr-fr" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+	<String Id="NEWERPRODUCTFOUND">Une nouvelle version de ce produit est déjà installée.</String>
+	<String Id="MUSTREMOVEPRODUCT">Une version antérieure de cette version du produit doit être retiré d'abord installer.</String>
+	<String Id="DOTNET45REQUIRED">Cette application nécessite. NET Framework 4.5. Installez le nécessaire. NET Framework puis relancez l'installation.</String>
+	<String Id="PACKAGEDESCRIPTION">MainBoss Système informatisé de gestion de maintenance (GMAO)</String>
+	<String Id="LicenseRtf">..\License\license-fr-fr.rtf</String>
+</WixLocalization>

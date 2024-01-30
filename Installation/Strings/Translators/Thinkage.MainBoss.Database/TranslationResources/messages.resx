@@ -1,0 +1,1048 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Thinkage.MainBoss.Database§@Re:" type="" mimetype="">
+    <value>@Re:</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Accounting" type="" mimetype="">
+    <value>Accounting</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§AccountingView" type="" mimetype="">
+    <value>AccountingView</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§AccountingWorkOrder" type="" mimetype="">
+    <value>AccountingWorkOrder</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Actual costs must be zero" type="" mimetype="">
+    <value>Actual costs must be zero</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Actualize information on an existing work order" type="" mimetype="">
+    <value>Actualize information on an existing work order</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Add comment to request" type="" mimetype="">
+    <value>Add comment to request</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Administration" type="" mimetype="">
+    <value>Administration</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§AdministrationView" type="" mimetype="">
+    <value>AdministrationView</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§All" type="" mimetype="">
+    <value>All</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§All temporary storage must be empty" type="" mimetype="">
+    <value>All temporary storage must be empty</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§AllView" type="" mimetype="">
+    <value>AllView</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Application to run" type="" mimetype="">
+    <value>Application to run</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Authorized by ___________________________________" type="" mimetype="">
+    <value>Authorized by ___________________________________</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Backup failed to '{0}'" type="" mimetype="">
+    <value>Backup failed to '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Backup to '{0}'" type="" mimetype="">
+    <value>Backup to '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Base service for all licensed MainBoss service workers." type="" mimetype="">
+    <value>Base service for all licensed MainBoss service workers.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Based on previous tentative schedule date" type="" mimetype="">
+    <value>Based on previous tentative schedule date</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Basis reading was extrapolated from the meter data" type="" mimetype="">
+    <value>Basis reading was extrapolated from the meter data</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Built-in security roles cannot be modified or deleted" type="" mimetype="">
+    <value>Built-in security roles cannot be modified or deleted</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Cannot calculate Demand cost because Quantity is null" type="" mimetype="">
+    <value>Cannot calculate Demand cost because Quantity is null</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Cannot find organization '{0}'" type="" mimetype="">
+    <value>Cannot find organization '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Cannot re-generate PMs for a pre-existing committed batch" type="" mimetype="">
+    <value>Cannot re-generate PMs for a pre-existing committed batch</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Cannot use '/{0}' with '/Mode:PickOrganization'" type="" mimetype="">
+    <value>Cannot use '/{0}' with '/Mode:PickOrganization'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Change a Closed Purchase Order to Issued" type="" mimetype="">
+    <value>Change a Closed Purchase Order to Issued</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Change a Closed request to the In Progress state." type="" mimetype="">
+    <value>Change a Closed request to the In Progress state.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Change a Closed Work Order to Open" type="" mimetype="">
+    <value>Change a Closed Work Order to Open</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Change a Draft Work Order to Open" type="" mimetype="">
+    <value>Change a Draft Work Order to Open</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Change a Draft Work Order to Open and allow a comment" type="" mimetype="">
+    <value>Change a Draft Work Order to Open and allow a comment</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Change a request directly to Closed." type="" mimetype="">
+    <value>Change a request directly to Closed.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Change a request to the In Progress state and allow a comment." type="" mimetype="">
+    <value>Change a request to the In Progress state and allow a comment.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Change a request to the In Progress state." type="" mimetype="">
+    <value>Change a request to the In Progress state.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Change a Voided Purchase Order back to Draft status" type="" mimetype="">
+    <value>Change a Voided Purchase Order back to Draft status</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Change a Voided Work Order back to Draft status" type="" mimetype="">
+    <value>Change a Voided Work Order back to Draft status</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Change an In Progress request to the Closed state and allow a comment." type="" mimetype="">
+    <value>Change an In Progress request to the Closed state and allow a comment.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Change an In Progress request to the Closed state." type="" mimetype="">
+    <value>Change an In Progress request to the Closed state.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Change an Open Work Order back to Draft status" type="" mimetype="">
+    <value>Change an Open Work Order back to Draft status</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Close a Purchase Order" type="" mimetype="">
+    <value>Close a Purchase Order</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Close a Purchase Order and allow a comment" type="" mimetype="">
+    <value>Close a Purchase Order and allow a comment</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Close a Work Order" type="" mimetype="">
+    <value>Close a Work Order</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Close a Work Order and allow a comment" type="" mimetype="">
+    <value>Close a Work Order and allow a comment</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Close PO" type="" mimetype="">
+    <value>&amp;Close Purchase Order</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Close PO (With Comment)" type="" mimetype="">
+    <value>Close Purchase Order (With Comment)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Close purchase orders" type="" mimetype="">
+    <value>Close purchase orders</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Close requests" type="" mimetype="">
+    <value>Close requests</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Close WO" type="" mimetype="">
+    <value>&amp;Close Work Order</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Close WO (With Comment)" type="" mimetype="">
+    <value>Close Work Order (With Comment)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Close work orders" type="" mimetype="">
+    <value>Close work orders</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Close WR" type="" mimetype="">
+    <value>&amp;Close Request</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Close WR (With Comment)" type="" mimetype="">
+    <value>Close Request (With Comment)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Closed" type="" mimetype="">
+    <value>Closed</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§CodingDefinitions" type="" mimetype="">
+    <value>CodingDefinitions</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§CodingDefinitionsView" type="" mimetype="">
+    <value>CodingDefinitionsView</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Committal initialization" type="" mimetype="">
+    <value>Committal initialization</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Complete access to all appropriate records in the Administration section of the MainBoss control panel. This also allows access to certain other types of records including the tables for authorized assignees and requestors. (Note that records in Administration | Database History can never be edited, in order to preserve an accurate history.)" type="" mimetype="">
+    <value>Complete access to all appropriate records in the Administration section of the MainBoss control panel. This also allows access to certain other types of records including the tables for authorized assignees and requestors. (Note that records in Administration | Database History can never be edited, in order to preserve an accurate history.)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Complete access to Contact records. Since new Contact records typically require new Locations, this security role includes the ability to view, create, edit and delete Location records." type="" mimetype="">
+    <value>Complete access to Contact records. Since new Contact records typically require new Locations, this security role includes the ability to view, create, edit and delete Location records.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Complete access to every available feature of MainBoss (subject to your license keys). This security role should be equivalent to Accounting, AccountingView, Administration, CodingDefinitions, Contact, Item, PurchaseOrder, PurchaseOrderReceive, Request, Unit, UnitMaintenancePlans and WorkOrder." type="" mimetype="">
+    <value>Complete access to every available feature of MainBoss (subject to your license keys). This security role should be equivalent to Accounting, AccountingView, Administration, CodingDefinitions, Contact, Item, PurchaseOrder, PurchaseOrderReceive, Request, Unit, UnitMaintenancePlans and WorkOrder.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Complete access to everything in the Purchase Orders section of the MainBoss control panel." type="" mimetype="">
+    <value>Complete access to everything in the Purchase Orders section of the MainBoss control panel.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Complete access to Item records and reports in the Items section of the MainBoss control panel. This includes the ability to browse the tables needed to create an Item record." type="" mimetype="">
+    <value>Complete access to Item records and reports in the Items section of the MainBoss control panel. This includes the ability to browse the tables needed to create an Item record.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Complete access to Unit records and reports in the Units section of the MainBoss control panel. This includes the ability to browse the tables needed to create a Unit record (e.g. Unit Categories and Locations)." type="" mimetype="">
+    <value>Complete access to Unit records and reports in the Units section of the MainBoss control panel. This includes the ability to browse the tables needed to create a Unit record (e.g. Unit Categories and Locations).</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Complete permissions" type="" mimetype="">
+    <value>Complete permissions</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Complete read access to data" type="" mimetype="">
+    <value>Complete read access to data</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Completing committal" type="" mimetype="">
+    <value>Completing committal</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Completing generation" type="" mimetype="">
+    <value>Completing generation</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Contact" type="" mimetype="">
+    <value>Contact</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Create, edit money-related information" type="" mimetype="">
+    <value>Create, edit money-related information</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Creating Work Order {0} of {1}" type="" mimetype="">
+    <value>Creating Work Order {0} of {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§current date" type="" mimetype="">
+    <value>current date</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§current date is always available" type="" mimetype="">
+    <value>current date is always available</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Current status of your work request" type="" mimetype="">
+    <value>Current status of your work request</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Database version {0} created" type="" mimetype="">
+    <value>Database version {0} created</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Date/Time     __________________________ Repair Code __________________________&#xD;&#xA;Meter Reading __________________________ Down Time   __________________________&#xD;&#xA;Comments&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;Signature     __________________________&#xD;&#xA;&#xD;&#xA;=============================== For Office Use Only ===========================&#xD;&#xA;Charge Back   __________________________ Charge To   __________________________&#xD;&#xA;Labor         __________________________ Material    __________________________" type="" mimetype="">
+    <value>Date/Time     __________________________ Repair Code __________________________
+Meter Reading __________________________ Down Time   __________________________
+Comments
+
+
+
+Signature     __________________________
+
+=============================== For Office Use Only ===========================
+Charge Back   __________________________ Charge To   __________________________
+Labor         __________________________ Material    __________________________</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§DBVersionHandler_1_0_0_0_To_1_0_0_0 cannot handle variable {0} of type {1} stored as {2}" type="" mimetype="">
+    <value>DBVersionHandler_1_0_0_0_To_1_0_0_0 cannot handle variable {0} of type {1} stored as {2}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Default Accounts Payable Costs" type="" mimetype="">
+    <value>Default Accounts Payable Costs</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Default Accounts Receivable Costs" type="" mimetype="">
+    <value>Default Accounts Receivable Costs</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Default Adjustment Costs" type="" mimetype="">
+    <value>Default Adjustment Costs</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Default Chargeback Costs" type="" mimetype="">
+    <value>Default Chargeback Costs</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Default Expense Category" type="" mimetype="">
+    <value>Default Expense Category</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Default Expense Model" type="" mimetype="">
+    <value>Default Expense Model</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Default Hourly Inside Costs" type="" mimetype="">
+    <value>Default Hourly Inside Costs</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Default Issue Costs" type="" mimetype="">
+    <value>Default Issue Costs</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Default Item Costs" type="" mimetype="">
+    <value>Default Item Costs</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Default Miscellaneous Costs" type="" mimetype="">
+    <value>Default Miscellaneous Costs</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Default Miscellaneous Work Order Costs" type="" mimetype="">
+    <value>Default Miscellaneous Work Order Costs</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Default Non Stock Item Holding Costs" type="" mimetype="">
+    <value>Default Non Stock Item Holding Costs</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Default Per Job Inside Costs" type="" mimetype="">
+    <value>Default Per Job Inside Costs</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Default Work Order Costs" type="" mimetype="">
+    <value>Default Work Order Costs</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Deferral error on availability '{0}'" type="" mimetype="">
+    <value>Deferral error on availability '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Draft" type="" mimetype="">
+    <value>Draft</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Draft PO" type="" mimetype="">
+    <value>Draft Purchase Order</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Draft WO" type="" mimetype="">
+    <value>Draft Work Order</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Expense Model {0} does not permit Expense Category {1}" type="" mimetype="">
+    <value>Expense Model '{0}' does not permit Expense Category '{1}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Full access to records related to Planned Maintenance. This includes the ability to create/edit tasks and unit maintenance plans. It also includes permission to generate Planned Maintenance work orders." type="" mimetype="">
+    <value>Full access to records related to Planned Maintenance. This includes the ability to create/edit tasks and unit maintenance plans. It also includes permission to generate Planned Maintenance work orders.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§General Notifier" type="" mimetype="">
+    <value>General Notifier</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Generate planned maintenance work orders" type="" mimetype="">
+    <value>Generate planned maintenance work orders</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§In Progress" type="" mimetype="">
+    <value>&amp;In Progress</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§In Progress (With Comment)" type="" mimetype="">
+    <value>In Progress (With Comment)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Indefinite work start date" type="" mimetype="">
+    <value>Indefinite work start date</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Issue" type="" mimetype="">
+    <value>&amp;Issue</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Issue (With Comment)" type="" mimetype="">
+    <value>Issue (With Comment)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Issue a Purchase Order" type="" mimetype="">
+    <value>Issue a Purchase Order</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Issue a Purchase Order and allow a comment" type="" mimetype="">
+    <value>Issue a Purchase Order and allow a comment</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Issued" type="" mimetype="">
+    <value>Issued</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Item" type="" mimetype="">
+    <value>Item</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Item Storage Assignment '{0}' has no preferred Item Pricing" type="" mimetype="">
+    <value>Item Storage Assignment '{0}' has no preferred Item Pricing</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§ItemFulfillment" type="" mimetype="">
+    <value>ItemFulfillment</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§ItemSummary" type="" mimetype="">
+    <value>ItemSummary</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§ItemView" type="" mimetype="">
+    <value>ItemView</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§License key {0} record for application {1} contains inconsistent data" type="" mimetype="">
+    <value>License key {0} record for application {1} contains inconsistent data</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§MainBoss" type="" mimetype="">
+    <value>MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§MainBoss Assignments" type="" mimetype="">
+    <value>MainBoss Assignments</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§MainBoss Remote" type="" mimetype="">
+    <value>MainBoss Remote</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§MainBoss Requests" type="" mimetype="">
+    <value>MainBoss Requests</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§MainBoss Service" type="" mimetype="">
+    <value>MainBoss Service</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§MainBoss Service Administration" type="" mimetype="">
+    <value>MainBoss Service Administration</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§MainBoss Utility Tool" type="" mimetype="">
+    <value>MainBoss Utility Tool</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§MainBoss Web" type="" mimetype="">
+    <value>MainBoss Web</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§MainBoss Web Server" type="" mimetype="">
+    <value>MainBoss Web Server</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Maintenance Period for Maintenance Timing '{0}' contains both a Meter Class and a Calendar Unit" type="" mimetype="">
+    <value>Maintenance Period for Maintenance Timing '{0}' contains both a Meter Class and a Calendar Unit</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Maintenance Timing interval is not sufficient to advance scheduled date by at least a day" type="" mimetype="">
+    <value>Maintenance Timing interval is not sufficient to advance scheduled date by at least a day</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Make the browser screens more compact by not showing details of the selected record" type="" mimetype="">
+    <value>Make the browser screens more compact by not showing details of the selected record</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Manifest resource {0}" type="" mimetype="">
+    <value>Manifest resource {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Meter data is defective for Maintenance Timing '{0}'" type="" mimetype="">
+    <value>Meter data is defective for Maintenance Timing '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§missing Maintenance Timing information referenced from Unit Maintenance Plan" type="" mimetype="">
+    <value>missing Maintenance Timing information referenced from Unit Maintenance Plan</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§missing Task referenced from Unit Maintenance Plan" type="" mimetype="">
+    <value>missing Task referenced from Unit Maintenance Plan</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Missing Unit Maintenance Plan data row" type="" mimetype="">
+    <value>Missing Unit Maintenance Plan data row</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Neither the Demand Template nor the WorkOrderExpenseCategory {0} specify an Expense Category" type="" mimetype="">
+    <value>Neither the Demand Template nor the WorkOrderExpenseCategory '{0}' specify an Expense Category</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§New" type="" mimetype="">
+    <value>New</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§New Request" type="" mimetype="">
+    <value>New Request</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§No cost available" type="" mimetype="">
+    <value>No cost available</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§No database name was specified" type="" mimetype="">
+    <value>No database name was specified</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§No database server was specified" type="" mimetype="">
+    <value>No database server was specified</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§No intervals are defined for the Maintenance Timing '{0}'" type="" mimetype="">
+    <value>No intervals are defined for the Maintenance Timing '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§No meter data exists for Maintenance Timing '{0}'" type="" mimetype="">
+    <value>No meter data exists for Maintenance Timing '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§No meter exists of appropriate meter class in period for Maintenance Timing '{0}'" type="" mimetype="">
+    <value>No meter exists of appropriate meter class in period for Maintenance Timing '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§No organization name or database server was specified and you have no default organization" type="" mimetype="">
+    <value>No organization name or database server was specified and you have no default organization</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§No permissions for ({0}); no security role information: {1}" type="" mimetype="">
+    <value>No permissions for ({0}); no security role information: {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§No Right has permissions for &quot;{0}&quot;" type="" mimetype="">
+    <value>No Right has permissions for "{0}"</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§No Right type for &quot;{0}&quot;" type="" mimetype="">
+    <value>No Right type for "{0}"</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§No value is supplied for required field {0}" type="" mimetype="">
+    <value>No value is supplied for required field {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Open" type="" mimetype="">
+    <value>Open</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Open WO" type="" mimetype="">
+    <value>&amp;Open</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Open WO (With Comment)" type="" mimetype="">
+    <value>Open Work Order (With Comment)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§P u r c h a s e  O r d e r" type="" mimetype="">
+    <value>P u r c h a s e  O r d e r</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Perform inventory operations" type="" mimetype="">
+    <value>Perform inventory operations</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to close purchase orders with &quot;Close Purchase Order&quot; or &quot;Close Purchase Order (With Comment)&quot;. This includes the ability to view most information on the purchase order. PurchaseOrderClose is not sufficient to show you the cost of any line item on a purchase order; for that, you need PurchaseOrderView. Unless you have another purchase order security role, PurchaseOrderClose only lets you deal with purchase orders to which you have been assigned. (PurchaseOrderClose is not needed if a user already has the PurchaseOrder security role.)" type="" mimetype="">
+    <value>Permission to close purchase orders with "Close Purchase Order" or "Close Purchase Order (With Comment)". This includes the ability to view most information on the purchase order. PurchaseOrderClose is not sufficient to show you the cost of any line item on a purchase order; for that, you need PurchaseOrderView. Unless you have another purchase order security role, PurchaseOrderClose only lets you deal with purchase orders to which you have been assigned. (PurchaseOrderClose is not needed if a user already has the PurchaseOrder security role.)</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to close requests with &quot;Close Request&quot; or &quot;Close Request (With Comment)&quot;; also to add comments with &quot;New Requestor Comment&quot;. If you have no other permissions, RequestClose only lets you deal with requests which have been assigned to you. (RequestClose is not needed if a user already has the Request security role.)" type="" mimetype="">
+    <value>Permission to close requests with "Close Request" or "Close Request (With Comment)"; also to add comments with "New Requestor Comment". If you have no other permissions, RequestClose only lets you deal with requests which have been assigned to you. (RequestClose is not needed if a user already has the Request security role.)</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to close work orders with &quot;Close Work Order&quot; and &quot;Close Work Order (With Comment)&quot;; also to add comments with &quot;Add Work Order Comment&quot;. Also allows user to view much of the information on work orders. Viewing money amounts (e.g. labor costs) requires additional security roles (e.g. AccountingWorkOrder).  WorkOrderClose only lets you deal with your assigned work orders. If WorkOrderClose is combined with WorkOrderView, the user can close any work order, not just assigned ones. (WorkOrderClose is not needed if a user already has the WorkOrder security role.)" type="" mimetype="">
+    <value>Permission to close work orders with "Close Work Order" and "Close Work Order (With Comment)"; also to add comments with "Add Work Order Comment". Also allows user to view much of the information on work orders. Viewing money amounts (e.g. labor costs) requires additional security roles (e.g. AccountingWorkOrder).  WorkOrderClose only lets you deal with your assigned work orders. If WorkOrderClose is combined with WorkOrderView, the user can close any work order, not just assigned ones. (WorkOrderClose is not needed if a user already has the WorkOrder security role.)</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to create and modify basic requests. In order to fill out more complete requests, users should also have at least UnitSummary. In order to check on the progress of jobs, users should also have at least WorkOrderSummary." type="" mimetype="">
+    <value>Permission to create and modify basic requests. In order to fill out more complete requests, users should also have at least UnitSummary. In order to check on the progress of jobs, users should also have at least WorkOrderSummary.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to create and modify work orders. This automatically gives you limited access to other information in MainBoss. For example, you can browse the Items table, but not view the contents of Items records (unless you have additional roles). Similarly, you can browse Inside and Outside Labor records, but cannot see the actual money amounts associated with them (unless you have additional security roles). To deal with item costs on work orders, a user needs the AccountingWorkOrder security role; to deal with labor costs, a user needs AccountingView." type="" mimetype="">
+    <value>Permission to create and modify work orders. This automatically gives you limited access to other information in MainBoss. For example, you can browse the Items table, but not view the contents of Items records (unless you have additional roles). Similarly, you can browse Inside and Outside Labor records, but cannot see the actual money amounts associated with them (unless you have additional security roles). To deal with item costs on work orders, a user needs the AccountingWorkOrder security role; to deal with labor costs, a user needs AccountingView.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to create, modify and delete the codes and categories defined in the Coding Definitions section of the MainBoss control panel. This security role also gives you permission to change the Defaults used when creating new records (e.g. to make changes in all the &quot;Defaults for...&quot; sections of table viewers)." type="" mimetype="">
+    <value>Permission to create, modify and delete the codes and categories defined in the Coding Definitions section of the MainBoss control panel. This security role also gives you permission to change the Defaults used when creating new records (e.g. to make changes in all the "Defaults for..." sections of table viewers).</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to deal with all costs of materials on work orders. To deal with labor costs on work orders, you also need AccountingView. Other permissions may let you specify the quantity of items and/or labor used in a work order, but not their cost." type="" mimetype="">
+    <value>Permission to deal with all costs of materials on work orders. To deal with labor costs on work orders, you also need AccountingView. Other permissions may let you specify the quantity of items and/or labor used in a work order, but not their cost.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to generate and commit Planned Maintenance work orders. (UnitMaintenancePlansFulfillment is not needed if a user already has the UnitMaintenancePlans security role.)" type="" mimetype="">
+    <value>Permission to generate and commit Planned Maintenance work orders. (UnitMaintenancePlansFulfillment is not needed if a user already has the UnitMaintenancePlans security role.)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to perform operations on Items, such as entering physical counts, making issues, and transferring from one storeroom to another. This does not allow you to create Items records, but does let you read such records and generate reports from the Items section of the control panel. (ItemFulfillment is not needed if a user already has the Item security role.) ItemFulfillment is not sufficient to show you the cost of items; for that you need ItemView." type="" mimetype="">
+    <value>Permission to perform operations on Items, such as entering physical counts, making issues, and transferring from one storeroom to another. This does not allow you to create Items records, but does let you read such records and generate reports from the Items section of the control panel. (ItemFulfillment is not needed if a user already has the Item security role.) ItemFulfillment is not sufficient to show you the cost of items; for that you need ItemView.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to read a small subset of information from Unit records. For example, this allows you to see the Unit Category of units but not any work orders associated with the unit or any money information associated with the unit (e.g. replacement cost). The amount of information available is partly determined by what other security roles you have. Often, UnitSummary is useful for people whose primary interest is some other part of MainBoss (e.g. work orders or requests). (UnitSummary is not needed if a user already has the Unit or UnitView security role.)" type="" mimetype="">
+    <value>Permission to read a small subset of information from Unit records. For example, this allows you to see the Unit Category of units but not any work orders associated with the unit or any money information associated with the unit (e.g. replacement cost). The amount of information available is partly determined by what other security roles you have. Often, UnitSummary is useful for people whose primary interest is some other part of MainBoss (e.g. work orders or requests). (UnitSummary is not needed if a user already has the Unit or UnitView security role.)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to read all code and category definitions in the Coding Definitions section of the MainBoss control panel. You cannot make any kind of change to the data unless you have additional security roles. (CodingDefinitionsView is not needed if a user already has the CodingDefinitions security role.)" type="" mimetype="">
+    <value>Permission to read all code and category definitions in the Coding Definitions section of the MainBoss control panel. You cannot make any kind of change to the data unless you have additional security roles. (CodingDefinitionsView is not needed if a user already has the CodingDefinitions security role.)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to read all data in the Administration section of the MainBoss control panel. This also permits viewing certain other types of records, including the tables for authorized assignees and requestors. You cannot make any kind of change to the data unless you have additional security roles. (AdministrationView is not needed if a user already has the Administration security role.)" type="" mimetype="">
+    <value>Permission to read all data in the Administration section of the MainBoss control panel. This also permits viewing certain other types of records, including the tables for authorized assignees and requestors. You cannot make any kind of change to the data unless you have additional security roles. (AdministrationView is not needed if a user already has the Administration security role.)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to read all data in the Generate Planned Maintenance section of the MainBoss control panel, as well as task records and unit maintenance plans. You cannot make any kind of change to the data unless you have additional security roles. (UnitMaintenancePlansView is not needed if a user already has the UnitMaintenancePlans security role.)" type="" mimetype="">
+    <value>Permission to read all data in the Generate Planned Maintenance section of the MainBoss control panel, as well as task records and unit maintenance plans. You cannot make any kind of change to the data unless you have additional security roles. (UnitMaintenancePlansView is not needed if a user already has the UnitMaintenancePlans security role.)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to read all information in the Items section of the MainBoss control panel. You cannot change any of this information unless you have additional security roles. (ItemView is not needed if a user already has the Item security role.)" type="" mimetype="">
+    <value>Permission to read all information in the Items section of the MainBoss control panel. You cannot change any of this information unless you have additional security roles. (ItemView is not needed if a user already has the Item security role.)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to read all information in the Units section of the MainBoss control panel. You cannot change any of this information unless you have additional security roles. (UnitView is not needed if a user already has the Unit security role.)" type="" mimetype="">
+    <value>Permission to read all information in the Units section of the MainBoss control panel. You cannot change any of this information unless you have additional security roles. (UnitView is not needed if a user already has the Unit security role.)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to read all the data in your MainBoss database (subject to your license keys). You cannot change the data in any way unless you have additional security roles. This security role should be equivalent to AccountingView, AdministrationView, CodingDefinitionsView, ItemView, PurchaseOrderView, RequestView, UnitView, UnitMaintenancePlansView and WorkOrderView." type="" mimetype="">
+    <value>Permission to read all the data in your MainBoss database (subject to your license keys). You cannot change the data in any way unless you have additional security roles. This security role should be equivalent to AccountingView, AdministrationView, CodingDefinitionsView, ItemView, PurchaseOrderView, RequestView, UnitView, UnitMaintenancePlansView and WorkOrderView.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to read money-related information, including cost centers, chargebacks, work order expenses, and purchase order costs. You cannot change any of this information unless you have additional security roles. (For example, if you have this role and also the WorkOrder security role, you can change resource costs associated with a specific work order.)" type="" mimetype="">
+    <value>Permission to read money-related information, including cost centers, chargebacks, work order expenses, and purchase order costs. You cannot change any of this information unless you have additional security roles. (For example, if you have this role and also the WorkOrder security role, you can change resource costs associated with a specific work order.)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to record receipt of goods in response to purchase orders. This includes the ability to view related information (e.g. storerooms and storeroom assignments). PurchaseOrderReceive is not sufficient to show you the cost of any line item on a purchase order; for that, you need PurchaseOrderView. (PurchaseOrderReceive is not needed if a user already has the PurchaseOrder security role.)" type="" mimetype="">
+    <value>Permission to record receipt of goods in response to purchase orders. This includes the ability to view related information (e.g. storerooms and storeroom assignments). PurchaseOrderReceive is not sufficient to show you the cost of any line item on a purchase order; for that, you need PurchaseOrderView. (PurchaseOrderReceive is not needed if a user already has the PurchaseOrder security role.)</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to see a small subset of the information in a work order. This does not include information about labor or materials (unless you have additional security roles). Often, this security role is useful for people whose primary interest is tracking requests.  (WorkOrderSummary is not needed if a user already has WorkOrderView or WorkOrder.)" type="" mimetype="">
+    <value>Permission to see a small subset of the information in a work order. This does not include information about labor or materials (unless you have additional security roles). Often, this security role is useful for people whose primary interest is tracking requests.  (WorkOrderSummary is not needed if a user already has WorkOrderView or WorkOrder.)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to turn existing item demands into actuals, and to enter other information related to finishing a job (e.g. downtime and closing code). If you have no other permissions, WorkOrderFulfillment only lets you deal with your assigned work orders. You may want to combine WorkOrderFulfillment with AccountingWorkOrder to allow a user to specify and edit the cost of work order materials and outside labor.  If WorkOrderFulfillment is combined with WorkOrderView, it allows the user to specify finishing information for any work order. (WorkOrderFulfillment is not needed if a user already has the WorkOrder security role.)" type="" mimetype="">
+    <value>Permission to turn existing item demands into actuals, and to enter other information related to finishing a job (e.g. downtime and closing code). If you have no other permissions, WorkOrderFulfillment only lets you deal with your assigned work orders. You may want to combine WorkOrderFulfillment with AccountingWorkOrder to allow a user to specify and edit the cost of work order materials and outside labor.  If WorkOrderFulfillment is combined with WorkOrderView, it allows the user to specify finishing information for any work order. (WorkOrderFulfillment is not needed if a user already has the WorkOrder security role.)</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to use &quot;New Requestor Comment&quot; to add a comment to an existing request (either an internal comment, a comment to the requestor, or both). If you have no other permissions, RequestFulfillment only lets you add comments to requests which have been assigned to you. (RequestFulfillment is not needed if a user already has the Request security role.)" type="" mimetype="">
+    <value>Permission to use "New Requestor Comment" to add a comment to an existing request (either an internal comment, a comment to the requestor, or both). If you have no other permissions, RequestFulfillment only lets you add comments to requests which have been assigned to you. (RequestFulfillment is not needed if a user already has the Request security role.)</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to view a small subset of information from Item records. The amount of information available is partly determined by what other security roles you have. Often, ItemSummary is useful for people whose primary interest is some other part of MainBoss (e.g. work orders or units). (ItemSummary is not needed if a user already has the Item or ItemView security role. ItemSummary is not sufficient to show you the cost of items; for that you need ItemView.)" type="" mimetype="">
+    <value>Permission to view a small subset of information from Item records. The amount of information available is partly determined by what other security roles you have. Often, ItemSummary is useful for people whose primary interest is some other part of MainBoss (e.g. work orders or units). (ItemSummary is not needed if a user already has the Item or ItemView security role. ItemSummary is not sufficient to show you the cost of items; for that you need ItemView.)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to view all information in the Requests section of the MainBoss control panel. You cannot change any of this information unless you have additional security roles. (RequestView is not needed if a user already has the Request security role.)" type="" mimetype="">
+    <value>Permission to view all information in the Requests section of the MainBoss control panel. You cannot change any of this information unless you have additional security roles. (RequestView is not needed if a user already has the Request security role.)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to view and edit money-related information, including cost centers, chargebacks, work order expenses, and purchase order costs. If you only have this role, you only have access to relevant entries in the Coding Definitions section of the MainBoss control panel; therefore you usually combine this role with other roles. For example, if you have both the WorkOrder and AccountingView security roles, you will be able to specify and edit cost information in work orders." type="" mimetype="">
+    <value>Permission to view and edit money-related information, including cost centers, chargebacks, work order expenses, and purchase order costs. If you only have this role, you only have access to relevant entries in the Coding Definitions section of the MainBoss control panel; therefore you usually combine this role with other roles. For example, if you have both the WorkOrder and AccountingView security roles, you will be able to specify and edit cost information in work orders.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to view much of the information on work orders. Viewing money amounts (e.g. labor costs) requires additional security roles (e.g. AccountingWorkOrder). (WorkOrderView is not needed if a user already has the WorkOrder security role.)" type="" mimetype="">
+    <value>Permission to view much of the information on work orders. Viewing money amounts (e.g. labor costs) requires additional security roles (e.g. AccountingWorkOrder). (WorkOrderView is not needed if a user already has the WorkOrder security role.)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to view the contents of existing purchase orders, including the cost of each line item. You cannot change the purchase orders in any way unless you have additional security roles. (PurchaseOrderView is not needed if a user already has the PurchaseOrder security role.)" type="" mimetype="">
+    <value>Permission to view the contents of existing purchase orders, including the cost of each line item. You cannot change the purchase orders in any way unless you have additional security roles. (PurchaseOrderView is not needed if a user already has the PurchaseOrder security role.)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Permission to view the contents of existing purchase orders. However, descriptions of line items will not include costs. You cannot change the purchase orders in any way unless you have additional security roles. (PurchaseOrderSummary is not needed if a user already has PurchaseOrder, PurchaseOrderView, or PurchaseOrderReceive.)" type="" mimetype="">
+    <value>Permission to view the contents of existing purchase orders. However, descriptions of line items will not include costs. You cannot change the purchase orders in any way unless you have additional security roles. (PurchaseOrderSummary is not needed if a user already has PurchaseOrder, PurchaseOrderView, or PurchaseOrderReceive.)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Pick Organization" type="" mimetype="">
+    <value>Pick Organization</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Purchase Order being drafted" type="" mimetype="">
+    <value>Purchase Order being drafted</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Purchase Order completed" type="" mimetype="">
+    <value>Purchase Order completed</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Purchase Order issued to vendor" type="" mimetype="">
+    <value>Purchase Order issued to vendor</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Purchase Order voided" type="" mimetype="">
+    <value>Purchase Order voided</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§PurchaseOrder" type="" mimetype="">
+    <value>PurchaseOrder</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§PurchaseOrderClose" type="" mimetype="">
+    <value>PurchaseOrderClose</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§PurchaseOrderReceive" type="" mimetype="">
+    <value>PurchaseOrderReceive</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§PurchaseOrderSummary" type="" mimetype="">
+    <value>PurchaseOrderSummary</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§PurchaseOrderView" type="" mimetype="">
+    <value>PurchaseOrderView</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§ReActivate PO" type="" mimetype="">
+    <value>Re&amp;Activate Purchase Order</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Read access to Administration section" type="" mimetype="">
+    <value>Read access to Administration section</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Read accounting information" type="" mimetype="">
+    <value>Read accounting information</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Read basic information about items" type="" mimetype="">
+    <value>Read basic information about items</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Read basic information about purchase orders" type="" mimetype="">
+    <value>Read basic information about purchase orders</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Read basic information about units" type="" mimetype="">
+    <value>Read basic information about units</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Read basic information about work orders" type="" mimetype="">
+    <value>Read basic information about work orders</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Read Coding Definitions section" type="" mimetype="">
+    <value>Read Coding Definitions section</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Read Items section" type="" mimetype="">
+    <value>Read Items section</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Read purchase orders" type="" mimetype="">
+    <value>Read purchase orders</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Read Units section" type="" mimetype="">
+    <value>Read Units section</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Read work orders" type="" mimetype="">
+    <value>Read work orders</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Record purchase order receipts" type="" mimetype="">
+    <value>Record purchase order receipts</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Reopen" type="" mimetype="">
+    <value>Re&amp;open</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Request" type="" mimetype="">
+    <value>Request</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Request has been completed" type="" mimetype="">
+    <value>Request has been completed</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Request work in progress" type="" mimetype="">
+    <value>Request work in progress</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§RequestClose" type="" mimetype="">
+    <value>RequestClose</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§RequestFulfillment" type="" mimetype="">
+    <value>RequestFulfillment</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Requestor" type="" mimetype="">
+    <value>Requestor</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Requestors" type="" mimetype="">
+    <value>Requestors</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§RequestView" type="" mimetype="">
+    <value>RequestView</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Schedule date was extrapolated from the meter data" type="" mimetype="">
+    <value>Schedule date was extrapolated from the meter data</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§season" type="" mimetype="">
+    <value>season</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§season is always available" type="" mimetype="">
+    <value>season is always available</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Selecting Unit Maintenance Plans with user criteria" type="" mimetype="">
+    <value>Selecting Unit Maintenance Plans with user criteria</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Some purchased items have already been received" type="" mimetype="">
+    <value>Some purchased items have already been received</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Specification Form Fields cannot be changed if a Specification already uses their associated Specification Form" type="" mimetype="">
+    <value>Specification Form Fields cannot be changed if a Specification already uses their associated Specification Form</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Suspend WO" type="" mimetype="">
+    <value>S&amp;uspend</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The Cost Center of a Storage Assignment cannot be changed because the Total Cost is not zero" type="" mimetype="">
+    <value>The Cost Center of a Storage Assignment cannot be changed because the Total Cost is not zero</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The current Purchase Order State does not permit changes to receiving" type="" mimetype="">
+    <value>The current Purchase Order State does not permit changes to receiving</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The current Purchase Order State does not permit changes to the Purchase Order" type="" mimetype="">
+    <value>The current Purchase Order State does not permit changes to the Purchase Order</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The current Purchase Order State does not permit changes to the Purchase Order lines" type="" mimetype="">
+    <value>The current Purchase Order State does not permit changes to the Purchase Order lines</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The current user &quot;{0}&quot; is not a registered user in this MainBoss organization" type="" mimetype="">
+    <value>The current user "{0}" is not a registered user in this MainBoss organization</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The current user &quot;{0}&quot; is not a registered user of this MainBoss organization" type="" mimetype="">
+    <value>The current user "{0}" is not a registered user of this MainBoss organization</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The current user &quot;{0}&quot; is not permitted to access this MainBoss organization" type="" mimetype="">
+    <value>The current user "{0}" is not permitted to access this MainBoss organization</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The current Work Order State does not permit changes to Chargeback detail lines" type="" mimetype="">
+    <value>The current Work Order State does not permit changes to Chargeback detail lines</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The current Work Order State does not permit changes to Chargebacks" type="" mimetype="">
+    <value>The current Work Order State does not permit changes to Chargebacks</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The current Work Order State does not permit changes to operational information" type="" mimetype="">
+    <value>The current Work Order State does not permit changes to operational information</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The current Work Order State does not permit changes to resource demands" type="" mimetype="">
+    <value>The current Work Order State does not permit changes to resource demands</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The current Work Order State does not permit changes to temporary storage" type="" mimetype="">
+    <value>The current Work Order State does not permit changes to temporary storage</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The current Work Order State does not permit changes to the Work Order" type="" mimetype="">
+    <value>The current Work Order State does not permit changes to the Work Order</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The current Work Order State does not permit purchasing of outside labor" type="" mimetype="">
+    <value>The current Work Order State does not permit purchasing of outside labor</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The current Work Order State does not permit resource actualization" type="" mimetype="">
+    <value>The current Work Order State does not permit resource actualization</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The database server where the MainBoss database is hosted" type="" mimetype="">
+    <value>The database server where the MainBoss database is hosted</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The name of the current user &quot;{0}&quot; is not in the expected form &quot;SCOPE\USER&quot;" type="" mimetype="">
+    <value>The name of the current user "{0}" is not in the expected form "SCOPE\USER"</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The name of the database containing the MainBoss data on the database server." type="" mimetype="">
+    <value>The name of the database containing the MainBoss data on the database server.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§The name of the maintenance organization." type="" mimetype="">
+    <value>The name of the maintenance organization.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§There is no timing basis for this Unit Maintenance Plan" type="" mimetype="">
+    <value>There is no timing basis for this Unit Maintenance Plan</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§This account is for the user who created this organization" type="" mimetype="">
+    <value>This account is for the user who created this organization</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§This contact is for the user who created this organization" type="" mimetype="">
+    <value>This contact is for the user who created this organization</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§This location cannot contain itself either directly or indirectly" type="" mimetype="">
+    <value>This location cannot contain itself either directly or indirectly</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§This Unit Maintenance Plan record is Inhibited" type="" mimetype="">
+    <value>This Unit Maintenance Plan record is Inhibited</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§To upgrade you must have 'Action.Administration' permission on this database" type="" mimetype="">
+    <value>To upgrade you must have 'Action.Administration' permission on this database</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§To upgrade you must have 'Action.UpgradeDatabase' permission on the database" type="" mimetype="">
+    <value>To upgrade you must have 'Action.UpgradeDatabase' permission on the database</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§To upgrade you must have 'Action.UpgradeDatabase' permission on this database" type="" mimetype="">
+    <value>To upgrade you must have 'Action.UpgradeDatabase' permission on this database</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Unable to calculate a cost estimate" type="" mimetype="">
+    <value>Unable to calculate a cost estimate</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Unit" type="" mimetype="">
+    <value>Unit</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§UnitMaintenancePlans" type="" mimetype="">
+    <value>UnitMaintenancePlans</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§UnitMaintenancePlansFulfillment" type="" mimetype="">
+    <value>UnitMaintenancePlansFulfillment</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§UnitMaintenancePlansView" type="" mimetype="">
+    <value>UnitMaintenancePlansView</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§UnitSummary" type="" mimetype="">
+    <value>UnitSummary</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§UnitView" type="" mimetype="">
+    <value>UnitView</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Unknown timing basis algorithm {0}" type="" mimetype="">
+    <value>Unknown timing basis algorithm {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Unknown unit for period in Maintenance Timing '{0}'" type="" mimetype="">
+    <value>Unknown unit for period in Maintenance Timing '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§User" type="" mimetype="">
+    <value>User</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§User with ID '{0}' belonged to role ID '{1}' which no longer exists" type="" mimetype="">
+    <value>User with ID '{0}' belonged to role ID '{1}' which no longer exists</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Users" type="" mimetype="">
+    <value>Users</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§using Purchase Template Hourly Outside referencing Hourly Outside {0}" type="" mimetype="">
+    <value>using Purchase Template Hourly Outside referencing Hourly Outside '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§using Purchase Template Item referencing Storage Assignment {0}" type="" mimetype="">
+    <value>using Purchase Template Item referencing Storage Assignment '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§using Purchase Template Miscellaneous Item referencing Miscellaneous Item {0}" type="" mimetype="">
+    <value>using Purchase Template Miscellaneous Item referencing Miscellaneous Item '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§using Purchase Template Per Job Outside referencing Per Job Outside {0}" type="" mimetype="">
+    <value>using Purchase Template Per Job Outside referencing Per Job Outside '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§using Task Demand Hourly Inside referencing Hourly Inside {0}" type="" mimetype="">
+    <value>using Task Demand Hourly Inside referencing Hourly Inside '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§using Task Demand Hourly Outside referencing Hourly Outside {0}" type="" mimetype="">
+    <value>using Task Demand Hourly Outside referencing Hourly Outside '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§using Task Demand Item referencing Storage Assignment {0}" type="" mimetype="">
+    <value>using Task Demand Item referencing Storage Assignment '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§using Task Demand Miscellaneous Cost referencing Miscellaneous Cost {0}" type="" mimetype="">
+    <value>using Task Demand Miscellaneous Cost referencing Miscellaneous Cost '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§using Task Demand Per Job Inside referencing Per Job Inside {0}" type="" mimetype="">
+    <value>using Task Demand Per Job Inside referencing Per Job Inside '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§using Task Demand Per Job Outside referencing Per Job Outside {0}" type="" mimetype="">
+    <value>using Task Demand Per Job Outside referencing Per Job Outside '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§View permission on requests" type="" mimetype="">
+    <value>View permission on requests</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§View records related to Planned Maintenance" type="" mimetype="">
+    <value>View records related to Planned Maintenance</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§View Sessions" type="" mimetype="">
+    <value>View Sessions</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§View, create, edit and delete Administration data" type="" mimetype="">
+    <value>View, create, edit and delete Administration data</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§View, create, edit and delete records related to Planned Maintenance" type="" mimetype="">
+    <value>View, create, edit and delete records related to Planned Maintenance</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§View, create, edit purchase orders" type="" mimetype="">
+    <value>View, create, edit purchase orders</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§View, create, edit requests" type="" mimetype="">
+    <value>View, create, edit requests</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§View, create, edit work orders" type="" mimetype="">
+    <value>View, create, edit work orders</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§View, create, edit, delete codes and categories in Coding Definitions" type="" mimetype="">
+    <value>View, create, edit, delete codes and categories in Coding Definitions</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§View, create, edit, delete Contact records" type="" mimetype="">
+    <value>View, create, edit, delete Contact records</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§View, edit, create, delete Item records" type="" mimetype="">
+    <value>View, edit, create, delete Item records</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§View, edit, create, delete Unit records" type="" mimetype="">
+    <value>View, edit, create, delete Unit records</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§View, override costs of labor and materials on work orders" type="" mimetype="">
+    <value>View, override costs of labor and materials on work orders</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Void" type="" mimetype="">
+    <value>&amp;Void</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Void a Purchase Order" type="" mimetype="">
+    <value>Void a Purchase Order</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Void a Work Order" type="" mimetype="">
+    <value>Void a Work Order</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Voided" type="" mimetype="">
+    <value>Voided</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§week day" type="" mimetype="">
+    <value>week day</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§week day is always available" type="" mimetype="">
+    <value>week day is always available</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§week day is never available" type="" mimetype="">
+    <value>week day is never available</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§while processing Task {0}" type="" mimetype="">
+    <value>while processing Task '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Withdraw Issued Purchase Order back to Draft status" type="" mimetype="">
+    <value>Withdraw Issued Purchase Order back to Draft status</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Withdraw PO" type="" mimetype="">
+    <value>&amp;Withdraw Purchase Order</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Work order {0} start/end date subject to change" type="" mimetype="">
+    <value>Work order '{0}' start/end date subject to change</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Work Order being drafted" type="" mimetype="">
+    <value>Work Order being drafted</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Work Order completed" type="" mimetype="">
+    <value>Work Order completed</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Work order has not been generated yet so start/end date subject to change" type="" mimetype="">
+    <value>Work order has not been generated yet so start/end date subject to change</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Work Order voided" type="" mimetype="">
+    <value>Work Order voided</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Work Order waiting" type="" mimetype="">
+    <value>Work Order waiting</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§WorkOrder" type="" mimetype="">
+    <value>WorkOrder</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§WorkOrderClose" type="" mimetype="">
+    <value>WorkOrderClose</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§WorkOrderFulfillment" type="" mimetype="">
+    <value>WorkOrderFulfillment</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§WorkOrderSummary" type="" mimetype="">
+    <value>WorkOrderSummary</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§WorkOrderView" type="" mimetype="">
+    <value>WorkOrderView</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§You are only licensed for {0} {0.IsOne ? {1} : {2} }, but there are currently {3}" type="" mimetype="">
+    <value>You are only licensed for {0} {0.IsOne ? {1} : {2} }, but there are currently {3}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§You are only licensed for {0} {0.IsOne ? {1} : {2} }, but there is currently 1" type="" mimetype="">
+    <value>You are only licensed for {0} {0.IsOne ? {1} : {2} }, but there is currently 1</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§You do not have the required permission. You must be a member of one of the following security roles&#xA;" type="" mimetype="">
+    <value>You do not have the required permission. You must be a member of one of the following security roles
+</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§You do not have the required permission. You must be a member of security role {0}" type="" mimetype="">
+    <value>You do not have the required permission. You must be a member of security role {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Your MainBoss license limits you to {0} Users but this operation would make {1}" type="" mimetype="">
+    <value>Your MainBoss license limits you to {0} Users but this operation would make {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Your MainBoss Requests license limits you to {0} Requestors but this operation would make {1}" type="" mimetype="">
+    <value>Your MainBoss Requests license limits you to {0} Requestors but this operation would make {1}</value>
+  </data>
+</root>

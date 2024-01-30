@@ -1,0 +1,609 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Thinkage.Libraries.Presentation.BrowsePhrases§Defaults for Active Filter" type="" mimetype="">
+    <value>Defaults for Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.BrowsePhrases§Edit Active Filter Defaults" type="" mimetype="">
+    <value>Edit Active Filter Defaults</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.BrowsePhrases§Edit Active Filter Filter" type="" mimetype="">
+    <value>Edit Active Filter Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.BrowsePhrases§OK to delete Active Filter?" type="" mimetype="">
+    <value>OK to delete Active Filter?</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.BrowsePhrases§Print Active Filter listing" type="" mimetype="">
+    <value>Print Active Filter listing</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.BrowsePhrases§Search Active Filter" type="" mimetype="">
+    <value>Search Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.BrowsePhrases§Select Active Filter" type="" mimetype="">
+    <value>Select Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.BrowsePhrases§View Active Filter" type="" mimetype="">
+    <value>View Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.BrowsePhrases§View Active Filter Defaults" type="" mimetype="">
+    <value>View Active Filter Defaults</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.EditCaptions§Edit Active Filter" type="" mimetype="">
+    <value>Edit Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.EditCaptions§Edit defaults for Active Filter" type="" mimetype="">
+    <value>Edit defaults for Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.EditCaptions§New Active Filter" type="" mimetype="">
+    <value>New Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.EditCaptions§Restore Active Filter" type="" mimetype="">
+    <value>Restore Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.EditCaptions§View Active Filter" type="" mimetype="">
+    <value>View Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.EditCaptions§View Active Filter Defaults" type="" mimetype="">
+    <value>View Active Filter Defaults</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.EditCaptions§View defaults for Active Filter" type="" mimetype="">
+    <value>View defaults for Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.EditCaptions§View deleted Active Filter" type="" mimetype="">
+    <value>View deleted Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.NewPhrases§Create a new Active Filter" type="" mimetype="">
+    <value>Create a new Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.NewPhrases§New Active Filter" type="" mimetype="">
+    <value>New Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.RecordTypes§Active Filter" type="" mimetype="">
+    <value>Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.ReportPhrases§Active Filter" type="" mimetype="">
+    <value>Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.ReportPhrases§Active Filter Report" type="" mimetype="">
+    <value>Active Filter Report</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.ReportPhrases§Active Filter Report Tip" type="" mimetype="">
+    <value>Active Filter Report Tip</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.ReportPhrases§Print Active Filter" type="" mimetype="">
+    <value>Print Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§'{0}' is not a mainboss database" type="" mimetype="">
+    <value>'{0}' No es una base de datos de mainboss</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§2.9 Export Data" type="" mimetype="">
+    <value>2.9 Exportar Datos</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§About..." type="" mimetype="">
+    <value>Acerca de ...</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Actions" type="" mimetype="">
+    <value>Acciones</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Add an existing maintenance organization to the list" type="" mimetype="">
+    <value>Adicionar una organización de mantenimiento de la lista</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Add an existing maintenance organization to your list" type="" mimetype="">
+    <value>Adicionar una orgenización de mantenimiento a su lista</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Add Existing Organization" type="" mimetype="">
+    <value>Adicionar organización existente</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§An entry in the list must be selected" type="" mimetype="">
+    <value>Una entrada en la lista puede ser seleccionada</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Application mode {0} is unknown" type="" mimetype="">
+    <value>Modo de aplicación {0} es desconocido</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Change Active Filter" type="" mimetype="">
+    <value>Change Active Filter</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Change Maintenance Organization" type="" mimetype="">
+    <value>Cambiar la orgenizacion de mantenimiento</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Change the number of days back that records are displayed" type="" mimetype="">
+    <value>Change the number of days back that records are displayed</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Checking the organization." type="" mimetype="">
+    <value>Comprobación de la organización.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Clear Start Default" type="" mimetype="">
+    <value>Limpiar parametros inciales</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Close" type="" mimetype="">
+    <value>Cerrar</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Close this form and return to the Pick Organization form" type="" mimetype="">
+    <value>Cerrar esta fomra y regresar a la forma de escoger Organización</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Close this organization and switch to a different organization" type="" mimetype="">
+    <value>Cerrar esta Organización y cambiar a otra Organización</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Close this window" type="" mimetype="">
+    <value>Cerrar esta ventana</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Completing security assignments for organization." type="" mimetype="">
+    <value>Completar las tareas de seguridad para la organización.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Contents" type="" mimetype="">
+    <value>Contennidos</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Could not open Database '{0}' on server {1}'" type="" mimetype="">
+    <value>No puede abrir la base de datos '{0}' en el servidor {1}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create a demonstration maintenance organization and add it to your list" type="" mimetype="">
+    <value>Crear un a Organización de Mantenimiento de demostración y adicionarla a su lista</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create a maintenance organization from a MainBoss 2.9 database and add it to your list" type="" mimetype="">
+    <value>Crear una organizacion de mantenimiento desde una base de datos MainBoss 2.9 y adiconarla a su lista</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create a new maintenance organization and add it to your list" type="" mimetype="">
+    <value>Crear una nueva organización de mantenimiento y adicionarla a su lista</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create a new maintenance organization from a database backup file and add it to your list" type="" mimetype="">
+    <value>Crear una nueva organización para el mantenimiento de un archivo de copia de seguridad de base de datos y agregar a su lista</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create a New Organization" type="" mimetype="">
+    <value>Crear una nueva organización</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create a new organization using data from a backup file and add the maintenance organization to the list" type="" mimetype="">
+    <value>Crear una nueva organizacion usando datos de una copia de archivos de mantenimiento </value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create and add a maintenance organization to the list" type="" mimetype="">
+    <value>Crear y adicionar una orgenización de mantenimiento a la lista</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create and add a maintenance organization to the list from imported data" type="" mimetype="">
+    <value>Crear y adicionar una nueva organización de mantenimiento importada de la lista de datos</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create Demonstration Organization" type="" mimetype="">
+    <value>Crear Organización de demostración</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create from Backup" type="" mimetype="">
+    <value>Creacion de copia de seguridad</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create New Organization" type="" mimetype="">
+    <value>Crear nueva organización</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Create New Organization from a Backup" type="" mimetype="">
+    <value>Crear una organizacion de una copia de seguridad</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Creating database {0} on database server {1}" type="" mimetype="">
+    <value>Creando base de datos {0} en el servidor de bases de datos {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Creating new demonstration MainBoss maintenance organization" type="" mimetype="">
+    <value>Creando nueva organización de mantenimiento de MainBoss de demostración</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Creating new MainBoss maintenance organization" type="" mimetype="">
+    <value>Creando una nueva organización de mantenimiento</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Creating the organization." type="" mimetype="">
+    <value>Creando la organización.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§DataBase Name" type="" mimetype="">
+    <value>Nombre de la base de datos</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Database restored from backup '{0}'" type="" mimetype="">
+    <value>Base de datos restaurada de la copia '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§DataBase Server" type="" mimetype="">
+    <value>Servidor de base de datos</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Default" type="" mimetype="">
+    <value>Predeterminado</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Do not try a default maintenance organization when starting the application" type="" mimetype="">
+    <value>No intente una organización de mantenimiento por defecto cuando se esta iniciando la aplicación</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Edit organization" type="" mimetype="">
+    <value>Editar Organización</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Exit" type="" mimetype="">
+    <value>Salir</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Exit from this application" type="" mimetype="">
+    <value>Salir de esta aplicación</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§File path for the backup file from MainBoss Advanced" type="" mimetype="">
+    <value>Ruta de acceso del archivo para el archivo de copia de seguridad de MainBoss Avanzada</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§File path for the XML data exported from MainBoss 2.9" type="" mimetype="">
+    <value>Ruta para datos XML exportados desde MainBoss Basic (2.9)</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Go to Help Index" type="" mimetype="">
+    <value>Ir al indice de la ayuda</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Go to Help Table of Contents" type="" mimetype="">
+    <value>Ir a la tabla de contenido de la ayuda</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Help" type="" mimetype="">
+    <value>Ayuda</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Help Index" type="" mimetype="">
+    <value>Indice de la ayuda</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Import a New Organization" type="" mimetype="">
+    <value>Importar una nueva organización</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Import conversion has possible errors. Do you wish to keep the database and review the Administration Database History" type="" mimetype="">
+    <value>Conversión al importar tiene posibles errores. Desea mantener la base de datos y revisar el historio de administración de la base de datos?</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Import Conversion Step {0} Errors{1}" type="" mimetype="">
+    <value>Impartar conversión paso {0} Errores{1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Import Conversion Step {0}{1}" type="" mimetype="">
+    <value>Impartar conversión paso {0}{1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Import MainBoss 2.9 Organization" type="" mimetype="">
+    <value>Importar MainBoss 2.9 Organización</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Importing new MainBoss maintenance organization from 2.9 data" type="" mimetype="">
+    <value>Importadonto nueva organización de mantenimiento MainBoss desde 2.9 data</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Invalid CultureInfo '{0}'" type="" mimetype="">
+    <value>Válido CultureInfo '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Line {0}, Position {1}{2}" type="" mimetype="">
+    <value>Linea {0}, Posición {1}{2}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Loading MainBoss 2.9 import data" type="" mimetype="">
+    <value>Subiendo MainBoss 2.9 importar datos</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§MainBoss {0}" type="" mimetype="">
+    <value>MainBoss {0}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§MainBoss 2.9 data imported" type="" mimetype="">
+    <value>MainBoss 2.9 datos importados</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§MainBoss 2.9 data imported with errors" type="" mimetype="">
+    <value>MainBoss 2.9 datos importados con errores</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Maintenance Organization" type="" mimetype="">
+    <value>Organización de mantenimiento</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Modify the definition of an existing organization" type="" mimetype="">
+    <value>Modificar la definición de una organización existente</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Modify this organization definition" type="" mimetype="">
+    <value>Modificar la definición de esta Organización</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Open a new main window showing the same data" type="" mimetype="">
+    <value>Abrir una ueva ventana principal mostrando los mismos datos</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Open in New Window" type="" mimetype="">
+    <value>Abrir en una nueva ventana</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Open Organization" type="" mimetype="">
+    <value>Abrir organización</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Open the selected maintenance organization" type="" mimetype="">
+    <value>Abril la orgenización de mantenimiento seleccionada</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Remove from list" type="" mimetype="">
+    <value>Remover de la lista</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Remove the maintenance organization from your list" type="" mimetype="">
+    <value>Remover la organización de mantenimiento de sum lista</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Reset to user {0} security" type="" mimetype="">
+    <value>Perdí a usuario {0} de seguridad</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Restore an Organization" type="" mimetype="">
+    <value>Restaurar una Organización</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Restore an organization from a backup file" type="" mimetype="">
+    <value>Restaurar una organizacion de una copia de archivos</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Restore an organization from a database backup file" type="" mimetype="">
+    <value>Restaurar una organizacion de una copia de seguridad de base de datos</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Restore Data" type="" mimetype="">
+    <value>Restaurar datos</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Restore MainBoss Database" type="" mimetype="">
+    <value>Restore MainBoss Database</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Restore Organization" type="" mimetype="">
+    <value>Restaurar la Organización</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Restoring a MainBoss maintenance organization" type="" mimetype="">
+    <value>Restauración de una organización de mantenimiento de MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Restoring database {0} on database server {1}" type="" mimetype="">
+    <value>Restaurar la base de datos {0} en el servidor de base de datos {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Security roles will be set back to the logged in user name" type="" mimetype="">
+    <value>Las funciones de seguridad se establecerán de nuevo al iniciar sesión nombre de usuario</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Select MainBoss Organization" type="" mimetype="">
+    <value>Seleccionar organización MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Session" type="" mimetype="">
+    <value>Sesión</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Set an existing maintenance organization as the default one to try when starting the application" type="" mimetype="">
+    <value>establezca una organización de mantenimiento existente como predeterminada para tratar de arrancar la aplicación</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Set Start Default" type="" mimetype="">
+    <value>Parametors iniciales</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Setting built-in MainBoss security." type="" mimetype="">
+    <value>Configuración de seguridad integrada MainBoss.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Setting up demonstration organization information." type="" mimetype="">
+    <value>Colocando información de organización de demostración.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Setting up initial organization information." type="" mimetype="">
+    <value>Colocando inofrmación inicial de la organización.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Show compact browsers" type="" mimetype="">
+    <value>Show compact browsers</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Show information about this application" type="" mimetype="">
+    <value>Mostrar información acerca de esta aplicación</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Show only records less than this many days old" type="" mimetype="">
+    <value>Show only records less than this many days old</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Show only records since" type="" mimetype="">
+    <value>Show only records since</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Some of the License Keys that were valid for earlier versions of MainBoss&#xD;&#xA;will not be valid for this version" type="" mimetype="">
+    <value>Algunas de las claves de licencia que eran válidos para las versiones anteriores de MainBoss
+no será válida para esta versión</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§SQL backup from MainBoss Advanced (*.bak)|*.bak|All Files (*.*)|*.*" type="" mimetype="">
+    <value>Copia SQL de MainBoss Avanzado (*.bak)|*.bak|Todos los archivos (*.*)|*.*</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Start MainBoss showing only user's assignments." type="" mimetype="">
+    <value>MainBoss empezar a mostrar las asignaciones de usuario sólo.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Start MainBoss with all permitted licenses." type="" mimetype="">
+    <value>Iniciar MainBoss con todas las licencias permitidas.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Start Mode" type="" mimetype="">
+    <value>Iniciar Modo</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Start only MainBoss Requests" type="" mimetype="">
+    <value>Inciar unicamente MainBoss Requests</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Start the MainBoss Administration program." type="" mimetype="">
+    <value>Inicar el programa de administración de MainBoss.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§The culture info to use" type="" mimetype="">
+    <value>La información de la cultura para el uso</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§The database is already the latest version" type="" mimetype="">
+    <value>La base de datos es la ultima versión</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§The database requires upgrading for the application '{0}'. Use the 'Upgrade' operation to upgrade the database." type="" mimetype="">
+    <value>La base de datos requiere actualizar la aplicacion '{0}'. Use la opcion de actualizar la base de datos.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§The latest database version is {0}" type="" mimetype="">
+    <value>La ultima version de la base de datos es {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§The URL location for the documentation" type="" mimetype="">
+    <value>La URL desitino para la documentación</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§There are no licenses for the application '{0}'. Use the 'Administration' application to add the required licenses." type="" mimetype="">
+    <value>No hay licencias para la aplicación '{0}'. Utilice la aplicación "Administración" para añadir las licencias necesarias.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§There was a problem validating access to {0}" type="" mimetype="">
+    <value>There was a problem validating access to {0}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§This database's current version is {0}" type="" mimetype="">
+    <value>La versión de la base de datos actual es {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Unable to create organization in database {0} on server {1}" type="" mimetype="">
+    <value>Imposible crear la organización en la base de datos {0} en el servidor {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Unable to create the new maintenance organization" type="" mimetype="">
+    <value>Imposible crear una nueva organización de mantenimiento</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Unable to delete partially-created organization with error '{0}' after failure during creation" type="" mimetype="">
+    <value>Imposible borrar organización parcilamente creada con error '{0}' falló durante la creación</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Unable to import organization into database {0} on server {1}" type="" mimetype="">
+    <value>Imposible importa la organización en la base de datos {0} en el servidor {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Unable to load MB2.9 data from {0}" type="" mimetype="">
+    <value>Imposible subir MB2.9 datos desde {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Unable to restore database" type="" mimetype="">
+    <value>Habiliar restaurar la base de datos</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Upgrade" type="" mimetype="">
+    <value>Actualizar</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Upgrade the organization to the current database version" type="" mimetype="">
+    <value>Actualizar la organización para la versión de la base de datos actual</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Upgrade this database to the latest version" type="" mimetype="">
+    <value>Actualizar la base de datos a la ultima versión</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Upgrading MainBoss maintenance organization to current version" type="" mimetype="">
+    <value>Actualizando la organización de mantenimiento MainBoss a la versión actual</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Upgrading this database may prevent older MainBoss services&#xD;&#xA;and users of older MainBoss applications from accessing this database" type="" mimetype="">
+    <value>Actualización de esta base de datos puede impedir mayores servicios MainBoss
+y los usuarios de las aplicaciones más antiguas MainBoss del acceso a esta base de datos</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§User {0} {1}" type="" mimetype="">
+    <value>User {0} {1}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§User {0} Organization {1} ({2})" type="" mimetype="">
+    <value>User {0} Organization {1} ({2})</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§View" type="" mimetype="">
+    <value>Ver</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§View the MainBoss sessions currently in use." type="" mimetype="">
+    <value>Vista de las sesiones en uso de MainBoss.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§While this form is open other MainBoss users and services will be unable to access this database" type="" mimetype="">
+    <value>Mientras esta forma esta abierta otros usuarios y servicios de MainBoss no estarán disponibles para accesar esta base de datos</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Xml export data from MB2.9 (*.XML)|*.XML|Xml export data from MB2.9 (*.*)|*.*" type="" mimetype="">
+    <value>Xml exportar datos desde MB2.9 (*.XML)|*.XML|Xml esportar datos desde MB2.9 (*.*)|*.*</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§You must close all other MainBoss windows first." type="" mimetype="">
+    <value>Usted debe cerrar todas las ventas MainBoss primero.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Zoom in on View" type="" mimetype="">
+    <value>Cambio en la vista</value>
+  </data>
+</root>

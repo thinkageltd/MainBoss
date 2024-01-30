@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Task Resources Report</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Task Resources Report</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Maintenance Forecast.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Task Demand Item.htm">Next section &gt;</a></p>
+
+<p>The Task Resources report displays information about all resources used in tasks. For example, you can obtain a report on all the tasks that used a particular worker for either hourly inside or per job inside labor.</p>
+
+<p>Note that there are also reports for each type of resource that can be used in a task. For example, there's a report that's specifically about items used in a task. The specific reports have provide more selective options than the "all resources" report. For example, you can group the Task Items report by item category; you can't group the "All Resources" report by item category, since that doesn't make sense for other types of resources (e.g. hourly inside).</p>
+
+<p>The specific resources reports are:</p>
+
+<ul class="b1"><li>The Task Items report (<a href="Report.Task Demand Item.htm">Task Items Report</a>)</li>
+<li>The Task Hourly Inside report (<a href="Report.Task Demand Hourly Inside.htm">Task Hourly Inside Report</a>)</li>
+<li>The Task Per Job Inside report (<a href="Report.Task Demand Per Job Inside.htm">Task Per Job Inside Report</a>)</li>
+<li>The Task Hourly Outside report (<a href="Report.Task Demand Hourly Outside.htm">Task Hourly Outside Report</a>)</li>
+<li>The Task Per Job Outside report (<a href="Report.Task Demand Per Job Outside.htm">Task Per Job Outside Report</a>)</li>
+<li>The Task Miscellaneous Expense Report (<a href="Report.Task Miscellaneous Expense.htm">Task Miscellaneous Costs Report</a>)
+</li></ul>
+<p>You obtain the report with <span class="CPanel">Unit Maintenance Plans</span> | <span class="CPanel">Reports</span> | <span class="CPanel">Task Resources</span>. The resulting window contains the following:</p>
+
+<p class="wi"><span class="CButton">Grouping</span> section: Options controlling how the report is broken into sections and sub-sections.</p>
+<p class="wi2"><span class="CButton">Show summary footer for the overall report</span>: If this box is checkmarked, the report will include a final line summarizing information from the entire report. If the box is blank, no such line will be included.</p>
+<p class="wi"><span class="CButton">Sorting</span> section: Options controlling how records are sorted within each section and sub-section.</p>
+<p class="box">For more on how to use <span class="CButton">Grouping</span> and <span class="CButton">Sorting</span>, see <a href="ReportSections.htm">Report Sections</a>.</p>
+
+<p class="wi"><span class="CButton">Filters</span> section: Options controlling what kind of tasks will be included in the report. For more information, see <a href="ReportFilter.htm">Report Filters</a>.</p>
+<p class="wi"><span class="CButton">Field Selection</span> section: Options controlling which information fields will be included in the report.</p>
+<p class="wi2"><span class="CButton">Suppress Costs</span>: Omits any money information that might otherwise be displayed in the report.</p>
+<p class="wi"><span class="CButton">Advanced</span> section: Miscellaneous options.</p>
+<p class="wi2"><span class="CButton">Format Report in Columns</span>: If this checkbox is checkmarked, the report will have information formatted in columns; this has the advantage of compressing a lot of information into a small amount of space, but may be difficult to read, especially if you ask for many pieces of information to be displayed. If the checkbox is blank, information will be laid out in a less rigid format.</p>
+<p class="wi2"><span class="CField">Report width in pages</span>: Makes it possible to have lines that are wider than a single page. This is particularly useful when you are previewing reports on a monitor screen. For further information, see <a href="ReportSections.htm">Report Sections</a>.</p>
+<p class="wi2"><span class="CField">Title</span>: The title to be printed at the beginning of the report.</p>
+<p class="wi2"><span class="CField">Main Font</span>: The font that will be used for most of the characters in the report. This should be a font that is supported by both your Windows system and your printer.</p>
+<p class="wi2"><span class="CField">Fixed-width Font</span>: The font that will be used for information that is printed with fixed-width characters (mostly unit specifications). This should be a font that is supported by both your Windows system and your printer.</p>
+<p class="wi"><span class="CButton">Preview</span> section: Displays a visual preview of the report. If you click the <span class="CButton"><img src="Refresh.png" alt="Refresh" /></span> button, you automatically go to this section.
+
+<br /><br />The <span class="CButton">Preview</span> section contains buttons for looking through the report preview and for actually printing the information. For more on using the <span class="CButton">Preview</span> section, see <a href="ReportButtons.htm">Report Buttons</a>.</p>
+<p class="wi"><span class="CButton"><img src="PrintHS.png" alt="Print" /></span>: Immediately prints the report.</p>
+<p class="wi"><span class="CButton">Export Data</span>: Exports the report's data in XML format.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Cancels the preparation and printing of a report. This button is enabled only when MainBoss is preparing a report, i.e. gathering the data and formatting it. For more information, see <a href="ReportButtons.htm">Report Buttons</a>.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window.</p>
+<p class="wi"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Clicking this button generates a preview of the report, displayed in the <span class="CButton">Preview</span> section of the window.</p>
+<p>For more on tasks, see <a href="Tasks.htm">Tasks</a>. For more on resources, see <a href="Resources.htm">Resources</a>. For more on reports in general, see <a href="Reports.htm">Reports</a>.</p>
+
+
+<p><a href="Report.Maintenance Forecast.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Task Demand Item.htm">Next section &gt;</a></p>
+</body>
+</html>
+

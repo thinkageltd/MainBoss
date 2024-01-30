@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Corrections of Item Transfers</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Corrections of Item Transfers</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Item Transfer.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Storeroom Assignment.htm">Next section &gt;</a></p>
+
+<p>To correct an Item Transfer, you select the transfer record where it appears, e.g. in the storeroom assignments section of the item record. (For more, see <a href="Edit.Item.htm">Editing Item Records</a>.) Then click <span class="CButton">Correct</span>. This opens a window where you can correct the record:</p>
+
+<p class="wi"><span class="CField">Entry Date</span>: A read-only field giving the date that this record was created.</p>
+<p class="wi"><span class="CField">Effective Date</span>: The date/time when the item was transferred.</p>
+<p class="wi"><span class="CField">User Contact</span>: A read-only field giving your user name. This will appear in MainBoss's accounting history to show who made the correction.</p>
+<p class="wi"><span class="CField">Source Storage Assignment</span>: A read-only field giving the original location of the items transferred.</p>
+<p class="wi"><span class="CField">Destination Storage Assignment</span>: A read-only field giving the destination of the items transferred.</p>
+<p class="wi"><span class="CField">Quantity</span>: Corrects the quantity actually transferred. Typically, you fill in the "<span class="CField">As Corrected</span>" field with the actual quantity transferred&#8212;the correct quantity, as opposed to the quantity you originally recorded. The alternative is to fill in "<span class="CField">This Entry</span>" with the difference between the quantity you originally entered and the true quantity.
+
+<br /><br />For example, suppose you really transferred 3 but you accidentally typed 1 in the original record. You could fill in "<span class="CField">As Corrected</span>" with 3 (the correct number) or fill in "<span class="CField">This Entry</span>" with 2 (the difference between what you originally typed and the true quantity). "<span class="CField">This Entry</span>" may be a negative number if you originally typed in too much.
+
+<br /><br />If you fill in "<span class="CField">As Corrected</span>", MainBoss automatically sets "<span class="CField">This Entry</span>" and vice versa.</p>
+<p class="wi">Read-only fields: Give the current quantity of cost of the item in the "from" and "to" storerooms.</p>
+<p class="wi"><span class="CButton">Manually Enter Cost</span>: If you select this option, you must enter the cost of the transferred items in "<span class="CField">This Entry</span>".</p>
+<p class="wi"><span class="CButton">Use calculated source Assignment On Hand cost</span>: If you select this option, the cost of the transferred items will be calculated from the unit cost in "<span class="CField">Calculated source Assignment On Hand Cost</span>".</p>
+<p class="wi"><span class="CButton">Use calculated destination Assignment On Hand cost</span>: If you select this option, the cost of the transferred items will be calculated from the unit cost in "<span class="CField">Calculated destination Assignment On Hand Cost</span>".</p>
+<p class="wi"><span class="CField">This Entry</span>, <span class="CField">As Corrected</span>: Corrects the actual cost (if necessary). You only need to fill in these fields if you selected the <span class="CButton">Manually Enter Cost</span> option.
+
+<br /><br />Typically, you fill in "<span class="CField">As Corrected</span>" with the correct cost of the correct quantity. The alternative is to fill in "<span class="CField">This Entry</span>" with the difference between the cost you originally entered and the true cost.
+
+<br /><br />If you fill in "<span class="CField">As Corrected</span>", MainBoss automatically sets "<span class="CField">This Entry</span>" and vice versa.</p>
+<p class="wi"><span class="CField">From Cost Center</span>, <span class="CField">To Cost Center</span>: Read-only fields telling the cost centers involved in this operation. MainBoss creates accounting records indicating the transfer of money from the first cost center to the second. These fields are only visible if your database has an <span class="BL">Accounting</span> license key. For more, see <a href="AccountingFacilities.htm">Accounting Facilities</a>.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on items, see <a href="InventoryItemRecords.htm">Inventory Item Records</a>. For more on item transfers, see <a href="Edit.Item Transfer.htm">Transferring Items from One Storeroom to Another</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Item Transfer.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Storeroom Assignment.htm">Next section &gt;</a></p>
+</body>
+</html>
+

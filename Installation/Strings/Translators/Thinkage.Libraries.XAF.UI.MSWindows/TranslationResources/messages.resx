@@ -1,0 +1,384 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§A value is required here." type="" mimetype="">
+    <value>A value is required here.</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Add this list item to the selected items" type="" mimetype="">
+    <value>Add this list item to the selected items</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Add to selection" type="" mimetype="">
+    <value>Add to selection</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§All files (*.*)|*.*" type="" mimetype="">
+    <value>All files (*.*)|*.*</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Cancel" type="" mimetype="">
+    <value>Cancel</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Cancel popup" type="" mimetype="">
+    <value>Cancel popup</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Check" type="" mimetype="">
+    <value>Check</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Check all" type="" mimetype="">
+    <value>Check all</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Check all items" type="" mimetype="">
+    <value>Check all items</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Check all selected" type="" mimetype="">
+    <value>Check all selected</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Check all selected items" type="" mimetype="">
+    <value>Check all selected items</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Check this item" type="" mimetype="">
+    <value>Check this item</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Clear" type="" mimetype="">
+    <value>Clear</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Clear all text" type="" mimetype="">
+    <value>Clear all text</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Clear date and time" type="" mimetype="">
+    <value>Clear date and time</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Clear selection" type="" mimetype="">
+    <value>Clear selection</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Clear the list selection" type="" mimetype="">
+    <value>Clear the list selection</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Clear the value for this control" type="" mimetype="">
+    <value>Clear the value for this control</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Close popup" type="" mimetype="">
+    <value>Close popup</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Close popup and leave original value" type="" mimetype="">
+    <value>Close popup and leave original value</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Collapse" type="" mimetype="">
+    <value>Collapse</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Collapse Level" type="" mimetype="">
+    <value>Collapse Level</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Copy" type="" mimetype="">
+    <value>Copy</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Copy selected text to clipboard" type="" mimetype="">
+    <value>Copy selected text to clipboard</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Current value is not valid" type="" mimetype="">
+    <value>Current value is not valid</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Cut" type="" mimetype="">
+    <value>Cut</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Cut selected text to clipboard" type="" mimetype="">
+    <value>Cut selected text to clipboard</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Delete" type="" mimetype="">
+    <value>Delete</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Delete selected text" type="" mimetype="">
+    <value>Delete selected text</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Deselect" type="" mimetype="">
+    <value>Deselect</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Do not try to set ItemHeight" type="" mimetype="">
+    <value>Do not try to set ItemHeight</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§EmptyControlCollection cannot have children." type="" mimetype="">
+    <value>EmptyControlCollection cannot have children.</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Expand" type="" mimetype="">
+    <value>Expand</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Expand Level" type="" mimetype="">
+    <value>Expand Level</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Hide the children of all the items at this level" type="" mimetype="">
+    <value>Hide the children of all the items at this level</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Hide the children of this item" type="" mimetype="">
+    <value>Hide the children of this item</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Hour" type="" mimetype="">
+    <value>Hour</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Invalid date selection" type="" mimetype="">
+    <value>Invalid date selection</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Invalid hour selection" type="" mimetype="">
+    <value>Invalid hour selection</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Invalid minutes selection" type="" mimetype="">
+    <value>Invalid minutes selection</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Invalid minutes/seconds selection" type="" mimetype="">
+    <value>Invalid minutes/seconds selection</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Invert all" type="" mimetype="">
+    <value>Invert all</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Invert all selected" type="" mimetype="">
+    <value>Invert all selected</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Invert selection" type="" mimetype="">
+    <value>Invert selection</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Invert the check-marks on all items" type="" mimetype="">
+    <value>Invert the check-marks on all items</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Invert the check-marks on all selected items" type="" mimetype="">
+    <value>Invert the check-marks on all selected items</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Minutes" type="" mimetype="">
+    <value>Minutes</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Minutes and Seconds" type="" mimetype="">
+    <value>Minutes and Seconds</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Missing date selection" type="" mimetype="">
+    <value>Missing date selection</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Missing hour selection" type="" mimetype="">
+    <value>Missing hour selection</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Missing minutes selection" type="" mimetype="">
+    <value>Missing minutes selection</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Missing minutes/seconds selection" type="" mimetype="">
+    <value>Missing minutes/seconds selection</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§MonthCalendar control can only represent exact-day values" type="" mimetype="">
+    <value>MonthCalendar control can only represent exact-day values</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§No text is selected" type="" mimetype="">
+    <value>No text is selected</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§OK" type="" mimetype="">
+    <value>OK</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Paste" type="" mimetype="">
+    <value>Paste</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Paste text from clipboard" type="" mimetype="">
+    <value>Paste text from clipboard</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Remove the check from all items" type="" mimetype="">
+    <value>Remove the check from all items</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Remove the check from all selected items" type="" mimetype="">
+    <value>Remove the check from all selected items</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Remove the check from this item" type="" mimetype="">
+    <value>Remove the check from this item</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Remove this list item from the selected items" type="" mimetype="">
+    <value>Remove this list item from the selected items</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Select" type="" mimetype="">
+    <value>Select</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Select a new value" type="" mimetype="">
+    <value>Select a new value</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Select all" type="" mimetype="">
+    <value>Select all</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Select all list items" type="" mimetype="">
+    <value>Select all list items</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Select all of the text" type="" mimetype="">
+    <value>Select all of the text</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Select only the list items not currently selected" type="" mimetype="">
+    <value>Select only the list items not currently selected</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Select only this list item" type="" mimetype="">
+    <value>Select only this list item</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Select this list item" type="" mimetype="">
+    <value>Select this list item</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Set the date and time to null" type="" mimetype="">
+    <value>Set the date and time to null</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Set to now" type="" mimetype="">
+    <value>Set to now</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Set to the current date and time" type="" mimetype="">
+    <value>Set to the current date and time</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Show popup" type="" mimetype="">
+    <value>Show popup</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Show the children of all the items at this level" type="" mimetype="">
+    <value>Show the children of all the items at this level</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Show the children of this item" type="" mimetype="">
+    <value>Show the children of this item</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§SingletonControlCollection only allows one child." type="" mimetype="">
+    <value>SingletonControlCollection only allows one child.</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Text is already all selected" type="" mimetype="">
+    <value>Text is already all selected</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§There is no text" type="" mimetype="">
+    <value>There is no text</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§There is nothing to undo" type="" mimetype="">
+    <value>There is nothing to undo</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§This form is waiting for form '{0}' to be closed" type="" mimetype="">
+    <value>This form is waiting for form '{0}' to be closed</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§This is not a valid list selection" type="" mimetype="">
+    <value>This is not a valid list selection</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Uncheck" type="" mimetype="">
+    <value>Uncheck</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Uncheck all" type="" mimetype="">
+    <value>Uncheck all</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Uncheck all selected" type="" mimetype="">
+    <value>Uncheck all selected</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Undo" type="" mimetype="">
+    <value>Undo</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Undo last change" type="" mimetype="">
+    <value>Undo last change</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Use current value and close popup" type="" mimetype="">
+    <value>Use current value and close popup</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.UI.MSWindows§Value is already null" type="" mimetype="">
+    <value>Value is already null</value>
+  </data>
+</root>

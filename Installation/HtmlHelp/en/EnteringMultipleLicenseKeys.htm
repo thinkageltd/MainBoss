@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Entering Multiple License Keys</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Entering Multiple License Keys</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.License.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.License.htm">Next section &gt;</a></p>
+
+<p>Thinkage gives you the option of receiving new license keys by email. This makes it possible to enter all the keys you receive by copying them from the email message and "pasting" them into MainBoss.</p>
+
+<p class="box">If you receive your license keys on paper, you must enter the keys manually. For more information, see <a href="Edit.License.htm">Entering License Keys Manually</a>.</p>
+
+<p>To enter license keys that you received by email, follow these steps:</p>
+
+<ol><li>Open the e-mail message's PDF attachment that contains the new license keys.</li>
+<li>Select the <span class="Emphasis">entire</span> content of the attachment. You do not have to select individual keys.</li>
+<li>Copy the selected content. In most email programs, you can do this by pressing <span class="CKey">&lt;Ctrl+C&gt;</span>.</li>
+<li>In MainBoss, go to <span class="CPanel">Administration</span> | <span class="CPanel">Licenses</span>.</li>
+<li>Click <span class="CButton">Update Licenses</span>. MainBoss opens a window where you can perform the update operation.</li>
+<li>Click <span class="CButton">Refresh from Clipboard</span>. MainBoss scans through the email message that you copied above, and extracts all the license keys. MainBoss displays these keys in the upper part of the window.</li>
+<li>Click <span class="CButton">Update Licenses</span>. This uses all the new license keys shown to replace the corresponding old ones, subject to the conditions stated below. (You cannot select just a few keys to update&#8212;MainBoss uses all the license keys shown in the window, whether or not they're selected.)</li>
+<li>Click <span class="CButton">Close</span> to close the window.
+</li></ol><p>MainBoss will not replace an old key with a new key unless the new key is "better" than the old one. This means that the new key must have a later expiry date or version number than the old key. Also, all your license keys must have the same License ID as the <span class="BL">MainBoss</span> key. (If you do not have a <span class="BL">MainBoss</span> key, the other keys must have the same License ID as the <span class="BL">MainBoss Requests</span> key.) If your new keys have a different License ID than the old ones, you must first replace the <span class="BL">MainBoss</span> key (or the <span class="BL">MainBoss Requests</span> key if you don't have a <span class="BL">MainBoss</span> key). Then you will be allowed to change the other keys.</p>
+
+<p class="box"><span class="CInset">Note:</span> After changing keys, you must close and open the database in order for the change to take effect. This means that you must go to MainBoss's <span class="CMenu">Session</span> menu and select <span class="CMenu">Change Maintenance Organization</span>. In the resulting window, select the same organization and then click <span class="CButton">Start</span>. Until you do this, MainBoss will behave as if you're still using the old license keys.</p>
+
+<p>The window for updating multiple license keys contains the following:</p>
+
+<p class="wi">List of new license keys: Your new license keys, followed by information associated with the currently selected key. If this list is empty, click <span class="CButton">Refresh from Clipboard</span>.</p>
+<p class="wi"><span class="CButton">Refresh from Clipboard</span>: Clicking this button fills the list in the upper part of the window with any keys currently in the Windows clipboard. If you have copied license keys from an email message, the copied keys will be displayed.
+
+<br /><br />Before you attempt to replace your current keys, you must select all the keys listed in the upper part of the window.</p>
+<p class="wi"><span class="CButton">Update Licenses</span>: Clicking this button will replace your current keys with the new ones, provided that they meet the conditions previously discussed.</p>
+<p class="wi"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Lets you search through the list of records for a particular record. For more information, see <a href="Search.htm">Searching for a Particular Record</a>. The <span class="CButton"><img src="Find_VS.png" alt="Search" /></span> button has an accompanying drop-down list containing the following:</p>
+<p class="wi2"><span class="CButton">Find Next</span>: Uses the same search condition(s) as your most recent search and finds the next record in the table that matches the condition(s). If the search reaches the end of the table without finding a matching record, it goes to the start of the table and continues the search.</p>
+<p class="wi2"><span class="CButton">Find Previous</span>: Same as <span class="CButton">Find Next</span> except that it goes backward in the table. If the search reaches the start of the table without finding a matching record, it goes to the end of the table and continues the search.</p>
+<p class="wi"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window.</p>
+<p>For more information on license keys, see <a href="LicenseKeys.htm">License Keys</a>. For more information on creating or editing license key records, see <a href="Edit.License.htm">Entering License Keys Manually</a>.</p>
+
+
+<p><a href="Edit.License.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.License.htm">Next section &gt;</a></p>
+</body>
+</html>
+

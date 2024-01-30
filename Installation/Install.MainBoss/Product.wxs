@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+	xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+	xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+	<!-- Copyright (c) 2014 by Thinkage Ltd. -->
+	<?include SolutionSettings.wxi?>
+	<?include ../Wix/Common.wxi?>
+	<?define Property_UpgradeCode = "12727DC6-91B9-4DAE-8054-784509027B65" ?>
+
+	<!-- CHANGE Id in Product each major release; Add previous Id to ProductGuidNotes.txt 
+		for reference with corresponding version. For interim builds on same version, use
+		"*" to generate new GUID every build and always replace same version with new version
+		without changing the version number
+	-->
+	<Product Id="03D685BB-C1ED-49AF-98C9-3A6DFC91AD45"
+			 Name="$(var.PRODUCTNAME) $(var.VERSION).$(var.UPDATE)"
+			 Language="1033"
+			 Version="$(var.VERSION).$(var.UPDATE).$(var.BUILD)"
+			 Manufacturer="$(var.COMPANY)"
+			 UpgradeCode="$(var.Property_UpgradeCode)">
+		<Package InstallerVersion="300"
+					Compressed="yes"
+					Description="!(loc.PACKAGEDESCRIPTION)"
+					Keywords="CMMS MainBoss"
+					Comments="(c) 2017 by $(var.COMPANY)"
+					InstallPrivileges="elevated"
+					Manufacturer="$(var.COMPANY)"
+					InstallScope="perMachine"/>
+
+		<Icon Id="icon.ico" SourceFile="..\Bitmaps\MainBossInstall.ico"/>
+		<Property Id="ARPPRODUCTICON" Value="icon.ico" />
+		<Property Id="ARPHELPLINK" Value="http://www.mainboss.com/info/support.shtml?version=$(var.VERSION)"/>
+		<Property Id="ARPHELPTELEPHONE" Value="(519) 895 1860"/>
+		<Property Id="ARPCOMMENTS" Value="!(loc.PACKAGEDESCRIPTION)"/>
+		<Property Id="ARPURLINFOABOUT" Value="http://www.thinkage.ca"/>
+		<SetProperty Id="ARPINSTALLLOCATION" Value="[INSTALLDIR]" After="CostFinalize"/>
+
+		<PropertyRef Id="NETFRAMEWORK45"/>
+		<Condition Message="!(loc.DOTNET45REQUIRED)">
+			<![CDATA[Installed OR NETFRAMEWORK45]]>
+		</Condition>
+		<!-- GUID should match one in Product UpgradeCode -->
+		<Upgrade Id="$(var.Property_UpgradeCode)">
+			<!-- Previous versions of MainBoss didn't use Wix, so make sure we have an UpgradeVersion property that causes removal of earlier versions -->
+			<UpgradeVersion OnlyDetect="no" Property="PRODUCTUPGRADE" Minimum="1.0.0" Maximum="$(var.VERSION).$(var.UPDATE)" IncludeMaximum="no"/>
+			<!--Detect changes in Build number for internal warning -->
+			<UpgradeVersion Property="ANOTHERBUILDINSTALLED" Maximum="$(var.VERSION).$(var.UPDATE)" Minimum="$(var.VERSION).$(var.UPDATE)"
+				IncludeMinimum="yes" IncludeMaximum="yes" OnlyDetect="yes"/>
+		</Upgrade>
+		<MajorUpgrade AllowDowngrades="no" DowngradeErrorMessage="!(loc.NEWERPRODUCTFOUND)" AllowSameVersionUpgrades="no" Schedule="afterInstallValidate"/>
+		<CustomAction Id="CA_BlockAnotherBuildInstall" Error="!(loc.MUSTREMOVEPRODUCT) $(var.VERSION).$(var.UPDATE).$(var.BUILD)"/>
+		<InstallExecuteSequence>
+			<Custom Action="CA_BlockAnotherBuildInstall" After="FindRelatedProducts"><![CDATA[ANOTHERBUILDINSTALLED]]></Custom>
+			<RemoveShortcuts>Installed AND NOT UPGRADINGPRODUCTCODE</RemoveShortcuts>
+		</InstallExecuteSequence>
+		<InstallUISequence>
+			<Custom Action="CA_BlockAnotherBuildInstall" After="FindRelatedProducts"><![CDATA[ANOTHERBUILDINSTALLED]]></Custom>
+		</InstallUISequence>
+		<PropertyRef Id="ResourcesProperty"/>
+		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR"/>
+		<UIRef Id="WixUI_InstallDir"/>
+		<UI>
+			<Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementKludge">1</Publish>
+			<Publish Dialog="LicenseAgreementKludge" Control="Back" Event="NewDialog" Value="WelcomeDlg">1</Publish>
+			<Publish Dialog="LicenseAgreementKludge" Control="Next" Event="NewDialog" Value="InstallDirDlg">LicenseAcceptedKludge = "1"</Publish>
+			<Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="LicenseAgreementKludge">1</Publish>
+		</UI>		
+		<UIRef Id="WixUI_ErrorProgressText" />
+
+		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="CompanyProgramDirectory" Name="$(var.COMPANY)">
+					<Directory Id="INSTALLLOCATION" Name="MainBoss">
+						<Directory Id="INSTALLDIR" Name="$(var.VERSION)">
+							<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+							<!-- <Component Id="ProductComponent" Guid="c9e438ba-bbf4-4f61-a234-72062aec9180"> -->
+							<!-- TODO: Insert files, registry keys, and other resources here. -->
+							<!-- </Component> -->
+						</Directory>
+					</Directory>
+					<Directory Id="ProgramMenuFolder">
+						<Directory Id="ShortcutsDir" Name="$(var.COMPANY)"/>
+					</Directory>
+				</Directory>
+			</Directory>
+		</Directory>
+
+		<Feature Id="ProductFeature"
+				 Title="$(var.PRODUCTNAME) $(var.VERSION) $(var.BUILD)"
+				 Level="1">
+			<ComponentGroupRef Id="Executables"/>
+			<ComponentRef Id="ProgramShortcuts"/>
+			<!-- TODO: Remove the comments around this ComponentRef element and the Component above in order to add resources to this installer. -->
+			<!-- <ComponentRef Id="ProductComponent" /> -->
+
+			<!-- Note: The following ComponentGroupRef is required to pull in generated authoring from project references. -->
+			<!--	<ComponentGroupRef Id="Product.Generated" /> -->
+		</Feature>
+	</Product>
+	<?include Executables.wxs?>
+</Wix>

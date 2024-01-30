@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: How Inventory Works</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">How Inventory Works</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="InventoryItems.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="InventoryItemRecords.htm">Next section &gt;</a></p>
+
+<p>MainBoss uses a number of terms to describe inventory actions. This section discusses those terms and explains the details of how MainBoss handles inventory.</p>
+
+<p class="box"><span class="CInset">Note:</span> To avoid surprises, we strongly recommend that you familiarize yourself with the following material.</p>
+
+<p><span class="CInset">Storeroom Assignment:</span> A <span class="NewTerm">storeroom assignment</span> specifies that a particular item should be stored in a particular storeroom. In addition, it specifies the maximum quantity that should ever be in the storeroom, and the minimum quantity allowed before you have to reorder. For more, see <a href="StoreroomAssignments.htm">Storeroom Assignments</a>.</p>
+
+<p><span class="CInset">On Hand:</span> When MainBoss tells you the quantity of an item that is currently <span class="NewTerm">on hand</span>, that is the quantity that is expected to be present in a particular storeroom or in all storerooms combined.</p>
+
+<p><span class="CInset">On Order:</span> As soon as you add an item to a purchase order, the given quantity is considered <span class="NewTerm">on order</span>. Note that the purchase order does <span class="Emphasis">not</span> have to be issued; items are on order even if the purchase order is only in the draft state. For more on purchase orders, see <a href="PurchaseOrders.htm">Purchase Orders</a>.</p>
+
+<p class="box"><span class="CInset">Note:</span> Inventory items are considered to be <span class="NewTerm">on order</span> as soon as they appear on a draft purchase order. MainBoss does this to avoid over-ordering stock&#8212;once an item has been put on one purchase order, the corresponding "stock available" quantities are all updated to show the quantity of stock that will eventually arrive.
+
+<br /><br />The drawback of this approach is that the items are considered on order before the purchase order is actually issued. If the purchase order isn't issued for a long time, you may be misled into thinking that the stock is soon going to show up, when in fact, the purchase order hasn't even been sent to the vendor. For this reason, you should try not to leave any purchase order in the draft stage for an extended period of time.</p>
+
+<p><span class="CInset">On Reserve:</span> When you create a work order, you can reserve inventory materials for use in the work order. These materials are said to be <span class="NewTerm">on reserve</span>. You put materials on reserve when you use <span class="CButton">New Demand Item</span> in the <span class="CButton">Resources</span> section of a work order. More precisely, the materials are put on reserve when you <span class="CButton">Save</span> the demand.</p>
+
+<p>Materials can be removed from reserve in several ways:</p>
+
+<ul class="b1"><li>You can <span class="CButton">Void</span> the work order. In this case, all materials that were on reserve become available for use again.</li>
+<li>You can use <span class="CButton"><img src="Delete.png" alt="Delete" /></span> in the <span class="CButton">Resources</span> section of the work order to delete demands from the list. Deleting a demand makes reserved materials available once more.</li>
+<li>You can use <span class="CButton">Actualize</span> to state that reserved materials have actually been used. For example, suppose you use <span class="CButton">New Demand Item</span> to reserve 10 quarts of oil for a job, then use <span class="CButton">Actualize</span> to say that the job actually used 8 quarts. MainBoss will update its records to say that you now have only 2 quarts on reserve, since you used 8 of the original 10 quarts. (MainBoss will also update its records to say that you have 8 quarts less on hand.)</li>
+<li>When you close a work order, MainBoss removes all outstanding reservations for materials on that work order. For example, suppose you reserved 10 quarts of oil but only used 8 quarts. This leaves 2 quarts still on reserve. However, when you close the work order, MainBoss removes those 2 quarts from the reserve. Since the work order has been closed, the job is finished and the extra 2 quarts obviously weren't needed.
+</li></ul><p>The total quantity of an item on reserve is the sum of all <span class="NewTerm">on reserve</span> quantities from <span class="NewTerm">open</span> work orders. For example, if one work order calls for 10 quarts of oil and another calls for 20, you have a total of 30 quarts on reserve.</p>
+
+<p><span class="CInset">Stock Available:</span> When MainBoss tells you the total quantity of an item <span class="NewTerm">available</span> (either in a single storeroom or in all storerooms combined), the quantity is calculated as</p>
+
+<pre>    Stock Available = OnHand + OnOrder - OnReserve</pre>
+
+<p>When MainBoss needs to determine whether stock should be restocked, it looks at the <span class="NewTerm">available</span> quantity, not at the quantity on hand.</p>
+
+
+<p><a href="InventoryItems.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="InventoryItemRecords.htm">Next section &gt;</a></p>
+</body>
+</html>
+

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Receiving Purchase Order Items</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Receiving Purchase Order Items</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Receipt.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Correction of Receive Item (with PO).htm">Next section &gt;</a></p>
+
+<p>A "receive" line in a purchase order or receipt indicates that you have received some or all of an item that was ordered.</p>
+
+<p>To see the Receive editor, go to the <span class="CButton">Line Items</span> section of a purchase order or the <span class="CButton">Receipt Activity</span> section of a receipt, select a "purchase item" line, and click <span class="CButton">Receive</span>. The editor contains the following:</p>
+
+<p class="wi"><span class="CField">Entry Date</span>: A read-only field giving the actual date and time when this entry was made.</p>
+<p class="wi"><span class="CField">Effective Date</span>: The date/time that you want to say the item was received. The default is the current date and time.</p>
+<p class="wi"><span class="CField">User Contact</span>: A read-only field giving your name. This will appear in MainBoss's accounting history to show who recorded the receipt.</p>
+<p class="wi">Read-only fields: A series of read-only fields giving information from the purchase order and the item.</p>
+<p class="wi"><span class="CField">Receipt</span>: The receipt where this item was received. (This may be a read-only field if you started from a receipt record.)</p>
+<p class="wi"><span class="CField">Storage Assignment</span>: Specifies the item that was received and the storeroom where it should be stored. MainBoss fills this in with information from the original purchase item record, but the information can be changed if desired. (For more on storeroom assignments, see <a href="StoreroomAssignments.htm">Storeroom Assignments</a>.)</p>
+<p class="wi">Read-only fields: The editor window contains a number of read-only fields giving information about supplies of the item you've specified. This information is taken from various tables in MainBoss.</p>
+<p class="wi3"><span class="CField">Ordered</span>: The quantity and cost of the item as originally ordered.</p>
+<p class="wi3"><span class="CField">Already Received</span>: The quantity that has already been received in previous shipments.</p>
+<p class="wi3"><span class="CField">Order Remaining</span>: Equals "<span class="CField">Ordered</span>" minus "<span class="CField">Already Received</span>".</p>
+<p class="wi"><span class="CButton">Use order remaining quantity</span>: If you checkmark this box, MainBoss will use "<span class="CField">Order Remaining</span>" as the actual quantity you received. If you leave the box blank, you must fill in "<span class="CField">Quantity</span>" yourself.</p>
+<p class="wi"><span class="CField">Quantity</span>: The actual quantity of the line item that you received.</p>
+<p class="wi"><span class="CField">Calculated Remaining Order Cost</span>: Read-only fields giving the cost of the given "<span class="CField">Quantity</span>" based on existing price information.</p>
+<p class="wi"><span class="CButton">Use calculated remaining order cost</span>: If you checkmark this box, MainBoss will use "<span class="CField">Calculated Cost</span>" as the actual cost of what you received. If you leave the box blank, you must fill the cost into "<span class="CField">This Entry</span>" yourself.</p>
+<p class="wi"><span class="CField">This Entry</span>: The actual cost of the quantity received.</p>
+<p class="wi"><span class="CField">As Corrected</span>: If there has been a correction for this record, this line will have read-only fields giving the corrected values.</p>
+<p class="wi"><span class="CField">From Cost Center</span>, <span class="CField">To Cost Center</span>: Read-only fields telling the cost centers involved in this operation. MainBoss creates accounting records indicating the transfer of money from the first cost center to the second. These fields are only visible if your database has an <span class="BL">Accounting</span> license key. For more, see <a href="AccountingFacilities.htm">Accounting Facilities</a>.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on items, see <a href="InventoryItemRecords.htm">Inventory Item Records</a>. For more on purchase orders, see <a href="PurchaseOrders.htm">Purchase Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Report.Receipt.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Correction of Receive Item (with PO).htm">Next section &gt;</a></p>
+</body>
+</html>
+

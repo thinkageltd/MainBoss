@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Report Buttons</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Report Buttons</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="ReportSections.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="ReportFilter.htm">Next section &gt;</a></p>
+
+<p>Every window for printing a report contains a number of buttons at the bottom:</p>
+
+<p class="wi"><span class="CButton"><img src="PrintHS.png" alt="Print" /></span>: Immediately prints the report, using whatever sorting and filtering options you have specified. You can use this button if you don't want to preview it first. You can cancel printing with the <span class="CButton">Cancel</span> button.</p>
+<p class="wi"><span class="CButton">Export Data</span>: Exports the report's data in XML format. The result is primarily intended to serve as input for user-written programs which process the data in some way. This contrasts with the <span class="CButton">Preview</span> export facilities (discussed below), which are most useful for embedding in Microsoft Word documents and other "unprocessed" contexts.</p>
+<p class="wi"><span class="CButton">Clear Select for Printing</span>: If you click this button, MainBoss removes the checkmark from all <span class="CButton">Select for Printing</span> boxes on whatever you're printing (e.g. work orders). Typically, you do this after printing records where <span class="CButton">Select for Printing</span> has been checkmarked. For more, see <a href="SelectPrintFlags.htm">Select Print Flags</a>.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Cancels the preparation and printing of a report. This button is enabled only when MainBoss is preparing a report, i.e. gathering the data and formatting it. Once the report is ready to print, MainBoss hands off the result to the Microsoft Windows printing facilities; after the report has been handed off to Windows, MainBoss has no more control over the print-out and the <span class="CButton">Cancel</span> button won't work. (If you want to cancel the print-out after that, you must use the standard Windows printer control facilities.)
+
+<br /><br />Depending on the configuration of Windows and the Microsoft Report Viewer, canceling a report may result in a diagnostic message. Typically, you can just ignore this message.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. (This button is only present if you opened a separate window to print the report.)</p>
+<p class="wi"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Goes to the <span class="CButton">Preview</span> section of the window and creates a preview of the report based on current option selections. Preparing such a preview may take some time.</p>
+<p>The <span class="CButton">Preview</span> section of a print window contains a control bar:</p>
+
+<p><img src="image028.png" alt="MainBoss" /></p>
+
+<p>This bar contains the following (from left to right):</p>
+
+<p class="box">If you click an entry in the left-hand panel of the preview, the preview changes to show you that entry.</p>
+
+<p class="wi"><img src="image029.png" alt="MainBoss" />First Page button: Goes to the start of the document.</p>
+<p class="wi"><img src="image030.png" alt="MainBoss" />Previous Page button: Goes to the previous page of the document.</p>
+<p class="wi"><img src="image031.png" alt="MainBoss" /> Gives the page number that is currently being displayed and the total number of pages in the report. You can go to a specific page by typing the appropriate page number into the box. (The number of the last page is not finalized until the entire report has been generated. This means that the number may not appear when a preview begins, and the number may also change as report generation continues.)</p>
+<p class="wi"><img src="image032.png" alt="MainBoss" />Next Page button: Goes to the next page of the document.</p>
+<p class="wi"><img src="image033.png" alt="MainBoss" />Last Page button: Goes to the last page of the document.</p>
+<p class="wi"><img src="image034.png" alt="MainBoss" />Parent Report button: Only applies when a report contains sub-reports, and this feature is not currently used.</p>
+<p class="wi"><img src="image035.png" alt="MainBoss" /> Stop button: Stops MainBoss processing the report. You might click this if MainBoss is preparing a lengthy report and you decide you don't want to see the report after all.</p>
+<p class="wi"><img src="image036.png" alt="MainBoss" /> Print button: This is the button that actually prints the report.</p>
+<p class="wi"><img src="image037.png" alt="MainBoss" /> Print Layout button: Switches the format of the preview display.
+
+<br /><br />By default, the left side of the display contains an index of the information in the report. Clicking an entry in the index will move to the corresponding information. The mouse wheel can move forward or backward through the report but it doesn't necessarily move backward or forward by a whole number of pages.
+
+<br /><br />If you switch to the alternate format, you see a scaled-down version of the page as it will actually print. The mouse wheel will move from one page to the next.</p>
+<p class="wi"><img src="image038.png" alt="MainBoss" /> Page Setup button: Opens a window where you can specify paper size, margin size, and other printing information.
+
+<br /><br />Page Setup information specified within MainBoss always <span class="Emphasis">overrides any default options associated with your printer, even if you specify printer options at the time you print the report. For example, suppose you specify a page setup of Landscape orientation, but when you go to print the report, you specify Portrait. The Landscape overrides Portrait because the "page setup" in MainBoss overrides anything you specify directly with the printer.
+</span>
+<br /><br /><span class="Emphasis">Page Setup options specified for one MainBoss report do not affect options for different MainBoss reports. For example, if you set options when printing work orders, those options will not affect the Page Setup for printing any other MainBoss report. The options will also be forgotten when you quit MainBoss.</span></p>
+<p class="wi"><img src="image039.png" alt="MainBoss" /> Export button: Exports information from the report into a file. If you click the down-arrow associated with this button, you'll see a list of available export formats. The formats currently supported include Microsoft Excel, Microsoft Word, and Acrobat PDF.
+
+<br /><br />Once you specify what type of output you want, MainBoss will open a window asking you to specify a file where the exported data should be stored. Loosely speaking, MainBoss exports the data in a format similar to what's displayed in the preview. For example, if you export data in Excel format, the result can be read into Excel (or embedded in a Microsoft Word document) to produce something that looks very much like the original report. If, on the other hand, you want to export data for processing by some user-written program, it's probably better to use the <span class="CButton">Export Data</span> button (discussed previously).</p>
+<p class="box"><span class="CInset">Note:</span> When you export data in PDF format, MainBoss uses the margin sizes and paper size as specified in the report's current <span class="BL">Page Setup</span> settings.</p>
+<p class="wi"><img src="image040.png" alt="MainBoss" /> Scale: Controls the scale of information displayed in the preview window. For example, if you set the scale to 200%, you'll see the information at twice its normal size. If you set the scale to 50%, you'll see it at half its normal size.</p>
+<p class="wi"><img src="image041.png" alt="MainBoss" /> Searching: To search for information in the report, type the text you want to find in the box, then click "Find". For example, if you're looking at a full Units report and want information on a particular unit, type the unit name in the box and click "Find". Clicking the associated "Next" button goes to the next occurrence of the same text.</p>
+
+
+<p><a href="ReportSections.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="ReportFilter.htm">Next section &gt;</a></p>
+</body>
+</html>
+

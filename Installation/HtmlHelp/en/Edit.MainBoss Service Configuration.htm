@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Configuring MainBoss Service</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Configuring MainBoss Service</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.MainBoss Service Configuration.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Message.htm">Next section &gt;</a></p>
+
+<p>The first time you configure MainBoss Service, you create a configuration record by clicking <span class="CButton">New MainBoss Service Configuration</span> in <span class="CPanel">Administration</span> | <span class="CPanel">MainBoss Service</span> | <span class="CPanel">Configuration</span>. Once you have created an initial configuration, you can edit the configuration by clicking <span class="CButton">Edit</span> in the same window.</p>
+
+<p>Some configuration fields cannot be changed while the service is running. In particular, you cannot change the name of the service while it is running&#8212;you must first stop or pause the service using <span class="CButton">Stop Service</span> or <span class="CButton">Pause Service</span> in <span class="CPanel">Administration</span> | <span class="CPanel">MainBoss Service</span>. <span class="CButton">Pause Service</span> requires the MainBoss <span class="CU">Administration</span> security role; <span class="CButton">Stop Service</span> requires Windows Administration privileges. Once you have changed your configuration, go to <span class="CPanel">Administration</span> | <span class="CPanel">MainBoss Service</span>. Click <span class="CButton">Resume Service</span> (if the service is paused) or <span class="CButton">Start Service</span> (if the service is stopped).</p>
+
+<p>Some configuration fields <span class="Emphasis">can</span> be changed while the service is running. In this case, the changes will take effect when you save the configuration record.</p>
+
+<p>When MainBoss Service begins running again, it will automatically use your new configuration.</p>
+
+<p class="box">See <a href="TheMainBossServiceModule.htm">The MainBoss Service Module</a> for suggestions on how to test your configuration and diagnose problems.</p>
+
+<p><span class="CInset">MainBoss Service MailBox:</span> When you configure MainBoss Service you may specify a mailbox where people can send problem reports. You may also specify how MainBoss Service can send and receive messages from that mailbox.</p>
+
+<p>MainBoss can receive email messages using a variety of techniques; these are variations of the POP3 or IMAP4 protocols.</p>
+
+<p class="box">For more information on SMTP, POP3 and IMAP, see the documentation for your email software.</p>
+
+<p>MainBoss can automatically determine which protocol(s) your email software supports. We recommend that you mark the <span class="CButton">Automatically Determine</span> option (discussed below). If you do, MainBoss tests for secure (encrypted) techniques first and only chooses plain POP3 or IMAP4 if no other technique works. If you specify a name in "<span class="CField">Mailbox Name</span>", MainBoss doesn't try POP3 or any of the related variants, since "<span class="CField">Mailbox Name</span>" only applies to IMAP4. (If required, you can force MainBoss to use one of the POP3 variants by clicking the appropriate option button.)</p>
+
+<p>When MainBoss automatically determines which technique(s) your mail software supports, it only checks the default port numbers. If your mail server uses a different port than the default, you must mark a specific connection technique (e.g. POP3S) and you must enter the port number in "<span class="CField">Override Default Port</span>".</p>
+
+<p>The window for configuring MainBoss Service contains the following:</p>
+
+<p class="wi"><span class="CButton">Details</span> section: Specifies basic information about MainBoss Service for this organization.</p>
+<p class="wi2"><span class="CField">Service Name</span>: Will be the name of the Windows service. This must be different from the names of all other Windows services running on this computer. The name should only consist of alphanumeric characters, with no blanks or punctuation charcters.
+
+<br /><br />By default, "<span class="CField">Service Name</span>" is <span class="CU">MainBossService</span>. If you have multiple MainBoss databases, each one should have its own MainBoss Service and each should have a unique service name. Once you set the name of a service, it cannot be changed.</p>
+<p class="wi2"><span class="CField">Description</span>: Additional information about the configuration record.</p>
+<p class="wi2"><span class="CButton">Automatically Create Requestors</span>, <span class="CButton">Automatically Create Requestors From Active Directory</span>, <span class="CButton">Automatically Create Requestors From Email</span>: When MainBoss Service receives an email message, it checks the address of the message's sender against the list of authorized requestors (<span class="CPanel">Coding Definitions</span> | <span class="CPanel">Requests</span> | <span class="CPanel">Requestors</span>). For each authorized requestor, MainBoss Service checks whether the sender's email address matches the "<span class="CField">Email</span>" or "<span class="CField">Alternate Email</span>" address in the requestor's contact record (<span class="CPanel">Coding Definitions</span> | <span class="CPanel">Contacts</span>). If the sender's email address matches either recorded address, the sender is accepted as an authorized requestor and the request is accepted.
+
+<br /><br />If the sender's email address does <span class="Emphasis">not</span> match any known requestor, you can configure MainBoss Service to attempt to create a new requestor record for the sender. This process is controlled by the three <span class="CButton">Automatically Create</span> checkboxes. You may checkmark any or all these boxes, or leave them blank; each choice leads to different results.
+
+<br /><br />If you do not checkmark any of the <span class="CButton">Automatically Create</span> checkboxes, MainBoss Service never creates requestor records. If a request comes in from a non-requestor, it will be rejected. (However, the rejection may not happen immediately&#8212;see the description of "<span class="CField">Manual Processing Time Allowance</span>" below.) The only way to authorize someone to be a requestor is for a person with appropriate MainBoss security roles to create a requestor record manually.
+
+<br /><br />If you checkmark any or all of the checkboxes, MainBoss Service begins by determining if there is a deleted requestor record for the message's sender. If there is such a record, it will be restored (undeleted) and MainBoss Service will process the email request as if it was sent in from that requestor. Note that this happens no matter which <span class="CButton">Automatically Create</span> checkbox was checkmarked.
+
+<br /><br />If there are <span class="Emphasis">multiple</span> deleted requestor records corresponding to the sender's email address, MainBoss Service cannot decide between them. The email message will be marked with the error message <span class="CU">Senders email address matches multiple Requestors</span> and the message will be marked for rejection. (However, it will not be rejected immediately&#8212;see below.)</p>
+<p class="box">Remember that your <span class="BL">MainBoss Requests</span> license may place limits on the total number of requestors allowed in the <span class="CPanel">Requestors</span> table.</p>
+
+<p class="wi3"><span class="CButton">Automatically Create Requestors</span>: If you checkmark <span class="CButton">Automatically Create Requestors</span>, MainBoss Service attempts to create requestors based on existing records in the <span class="CPanel">Contacts</span> table. It checks the contacts records to see if any have an "<span class="CField">Email</span>" field matching the email address of the person who sent the request. If so, MainBoss Service creates a requestor record referring to that contact record and the email request is accepted. Otherwise, MainBoss Service checks to see if any contact record has an "<span class="CField">Alternate Email</span>" field matching the email addess of the person who sent the request. Again, if MainBoss Service finds a match, the service creates a requestor record referring to the contact record.
+
+<br /><br />There may be multiple contact records whose "<span class="CField">Email</span>" or "<span class="CField">Alternate Email</span>" fields match the sender's email address. In this case, MainBoss Service can't decide between them. The email will be marked with the error <span class="CU">Senders email address matches multiple Contacts</span> and the message will be marked for rejection.</p>
+<p class="wi3"><span class="CButton">Automatically Create Requestors from Active Directory</span>: If you checkmark <span class="CButton">Automatically Create Requestors from Active Directory</span>, MainBoss Service begins by checking existing records in the <span class="CPanel">Contacts</span> table, going through the same process as <span class="CButton">Automatically Create Requestors</span>. If a matching contact record is found, MainBoss Service will create a corresponding requestor record as described for <span class="CButton">Automatically Create Requestors</span>. If no matching contact record is found, MainBoss Service then checks through any <span class="Emphasis">deleted</span> contact records. If any deleted record has an "<span class="CField">Email</span>" or "<span class="CField">Alternate Email</span>" field matching the sender's email address, MainBoss Service will restore the deleted record (undelete it) and use it to create a requestor record. MainBoss will also restore a contact record if its "<span class="CField">AD Reference</span>" matches the requestor's Active Directory entry.
+
+<br /><br />If there are no deleted contact records with the sender's email address, <span class="CButton">Automatically Create Requestors From Active Directory</span> tells MainBoss Service to create a new contact record for the sender. MainBoss Service will check the Active Directory of your Windows network, and will look for any person whose primary email address matches the sender's email address. If there is a single matching address, MainBoss Service creates a new contact record using information from the Active Directory entry; if there are multiple matching addresses, MainBoss Service issues an error message (since there is no way to choose which person is correct).
+
+<br /><br />If there are no matching email addresses, MainBoss Service checks the secondary email addresses in Active Directory. Again, if there is a single record with a matching email address, MainBoss Service creates a MainBoss contact record using information from the Active Directory. If there are multiple records with maching addresses, MainBoss Service issues an error message.
+
+<br /><br />If MainBoss Service attempts to create a contact record, the process will fail if there's already a contact record with the same name. In this case, MainBoss Service will mark the request for rejection.
+
+<br /><br />If MainBoss Service has been successful in finding or creating a contact record, the service creates a requestor record referring to that contact record. It then creates a request based on the sender's email message.</p>
+<p class="wi3"><span class="CButton">Automatically Create Requestors From Email</span>: If you checkmark <span class="CButton">Automatically Create Requestors From Email</span>, MainBoss Service begins in the same manner as <span class="CButton">Automatically Create Requestors From Active Directory</span>&#8212;it first determines if there are any contact records with email addresses matching the sender's address. If not, MainBoss Service checks for deleted contact records; if any matches are found, MainBoss Service restores the record and proceeds just as with <span class="CButton">Automatically Create Requestors From Active Directory</span>.
+
+<br /><br />If there are no matching contact records (active or deleted), then MainBoss Service attempts to create one. In order to do so, it begins in the same way as <span class="CButton">Automatically Create Requestors From Active Directory</span>: it searches the Active Directory for an entry whose primary email address matches the sender's email address. The Active Directory information is used to create a contact record if there is one and only one Active Directory entry whose primary email address matches the sender's. If MainBoss Service can't find an Active Directory entry with a matching primary email address, it checks secondary email addresses. Again, if there is one and only one matching address, MainBoss Service creates a contact record using the Active Directory information; however, the "<span class="CField">Email</span>" address of this contact record will be set to the sender's email address, not to the primary email address given in Active Directory.
+
+<br /><br />If no matches are found in the Active Directory, MainBoss Service will attempt to create a contact record using information in the email message itself. The contact record's "<span class="CField">Code</span>" field will be set to the message's "Display Name" and the contact record's "<span class="CField">Email</span>" field will be set to the message's sender.
+
+<br /><br />When MainBoss Service attempts to create such a contact record, the process may fail (typically because there's already a contact record with the same name). In this case, the original email message is marked for rejection. If MainBoss Service succeeds in creating the contact record, it creates a corresponding requestor record and accepts the email message as a request.</p>
+<p class="box">In general, we do not recommend checkmarking <span class="CButton">Automatically Create Requestors From Email</span>&#8212;for example, if you receive spam in your mailbox, MainBoss Service will attempt to create a requestor record for whoever sent the spam. However, the option may be acceptable if your mailbox is well protected from spam, or if you only activate the option for a limited time, e.g. when you first start using MainBoss Advanced and you want MainBoss to "learn" about your usual requestors.</p>
+
+<p class="wi2"><span class="CField">Accept Auto Create Email Pattern</span>: Is a string specifying a pattern (also called a <span class="NewTerm">regular expression</span>). Every time MainBoss Service processes an incoming email request, the email address of the sender will be checked against this pattern. If the address matches the pattern, the incoming email message will automatically be accepted; in addition, the message's sender will be added to the list of acceptable requestors (if the sender isn't on the list already).
+
+<br /><br />One common type of pattern will be something like "<span class="CU">@ourcompany.com</span>". This tells MainBoss Service to accept all requests from anyone whose email address includes the string <span class="CU">@ourcompany.com</span>. In other words, you'll automatically accept requests from people inside your company.
+
+<br /><br />The rules governing the pattern are the standard regular expression rules for Windows. For an introduction to these rules, see
+
+<br /><br /><a href="http://www.codeproject.com/KB/dotnet/regextutorial.aspx">http://www.codeproject.com/KB/dotnet/regextutorial.aspx</a></p>
+<p class="wi2"><span class="CField">Reject Auto Create Email Pattern</span>: Is the opposite of "<span class="CField">Accept Auto Create Email Pattern</span>"&#8212;MainBoss Service automatically rejects all email requests sent by people whose email address matches "<span class="CField">Reject Auto Create Email Pattern</span>".
+
+<br /><br />For example, suppose that you have been receiving nuisance complaints from <span class="CU">joe@xyz.com</span>. You could add this address to your reject pattern so that MainBoss Service would automatically reject messages from the given address. If you have multiple addresses that you want to reject, you can just separate them with "<span class="CU">|</span>" characters as in
+
+<br /><br /><span class="CU">joe@xyz.com|pat@hij.net|chris@lmn.org</span>
+
+<br /><br />There is no limit on the length of the string you can specify.
+
+<br /><br />"<span class="CField">Reject Auto Create Email Pattern</span>" overrides the <span class="CButton">Automatically Create</span> checkboxes described earlier and also overrides "<span class="CField">Accept Auto Create Email Pattern</span>". If an email sender matches the "reject" pattern, the message is immediately rejected (without being tested against the "accept" pattern) and MainBoss does not try to create a requestor record for the sender.</p>
+<p class="wi2"><span class="CField">Comments</span>: Any comments you wish to record.</p>
+<p class="wi"><span class="CButton">Incoming Mail</span> section: Controls how MainBoss Service processes requests sent in by email.</p>
+<p class="wi2"><span class="CButton">Process Requestor Incoming Email</span>: If this box is checkmarked, MainBoss Service will operate normally. If the box is blanked out, MainBoss Service will not process incoming requests. In general, this box should be checkmarked; however, if you're changing your configuration, you may wish to turn off request processing until you've completed reconfiguration. You may also want to blank out the box if you want MainBoss to stop receiving email requests.</p>
+<p class="wi2"><span class="CField">Mail Server Type</span>: Choose one of the options listed. If you choose <span class="CButton">Automatically Determine</span>, MainBoss will test each possibility in the following order: POP3 with encryption, IMAP4 with encryption, POP3S, IMAP4S, plain POP3 (no encryption), and plain IMAP4 (no encryption). In doing these tests, MainBoss only looks at the default port for each server type; if your mail server uses a different port than the default, you must mark a specific server type (e.g. IMAP4S) and specify the port number in "<span class="CField">Override Default Port</span>".</p>
+<p class="wi2"><span class="CField">Encryption</span>: Choose one of the options listed:</p>
+<p class="wi3"><span class="CButton">Require a Valid Certificate</span>: MainBoss will only deal with your mail server if it has a valid security certificate. This automatically implies that encryption will be used. You'll receive an error message if the server has an invalid certificate.</p>
+<p class="wi3"><span class="CButton">Require Encryption</span>: MailBoss will only deal with your mail server using one of the encrypted techniques. You'll receive an error message if none of the techniques work. Note that this option requires that your mail server has a security certificate, but it accepts self-signed certificates; it also accepts certificates that are not technically valid.</p>
+<p class="wi3"><span class="CButton">When Available</span>: If you select this option, MainBoss still tries to use encryption when dealing with your mail server. However, if the server doesn't accept encryption, MainBoss will not issue an error message; it will simply communicate with the mail server using unencrypted data.</p>
+<p class="wi2"><span class="CField">Mail Server</span>: The name of the computer that receives your incoming mail. For example, if you're running Microsoft Exchange, this is usually the name of your Exchange server. This machine must allow mail access through POP3 or IMAP4.</p>
+<p class="wi2"><span class="CField">Override Default Port</span>: Should only be filled in if your mail server uses a non-standard port. MainBoss considers the following to be the standard ports:</p>
+<ul class="b2"><li>For POP3 and TLS within POP3: 110</li>
+<li>For POP3S: 995</li>
+<li>For IMAP4 and TLS within IMAP4: 143</li>
+<li>For IMAP4S: 993
+</li></ul>
+<p class="box">Do not specify a port number if you have marked the <span class="CButton">Automatically Determine</span> option under "<span class="CField">Mail Server Type</span>".</p>
+
+<p class="wi2"><span class="CField">Mail User Name</span>: The name of the email account to which requests will be sent. For example, if users send mail to <span class="CU">workreqs@yourcompany.com</span>, the <span class="CField">Mail User Name</span> would usually be <span class="CU">workreqs</span>.
+
+<br /><br /><span class="CInset">Important Note:</span> Different sites will have different mail packages handling POP3 and IMAP4 processing. Some packages issue an authentication error if "<span class="CField">Mail User Name</span>" includes the <span class="CU">@sitename</span> part of an email address&#8212;you must only give the user name, e.g <span class="CU">workreqs</span>. Other packages <span class="Emphasis">require</span> the <span class="CU">@sitename</span> part&#8212;you must specify the whole email address, e.g. <span class="CU">workreqs@yourcompany.com</span>. If you are getting authentication errors with a given user name, try changing the name to the other format to see if this corrects the problem.</p>
+<p class="wi2"><span class="CField">Mail Password</span>: The password (if any) for the specified <span class="CField">Mail User Name</span>. As a protection measure, MainBoss encrypts this password before storing it in MainBoss's database; therefore, when you type in the password, you'll only see "<span class="CU">*</span>" characters, the same as with most Windows passwords.</p>
+<p class="wi2"><span class="CField">Mailbox Name</span>: The name of the mailbox, if you're using any version of IMAP4. The default is <span class="CU">inbox</span>.
+
+<br /><br />Although the IMAP4 standard calls this the mailbox, most people would likely call this value a folder name. In general, the only time a value should be entered here is if incoming request emails somehow end up stored in a different folder from the default. (This can happen if you're using server-side rules to sort incoming mail into folders.)
+
+<br /><br />Since "<span class="CField">Mailbox Name</span>" is only used with IMAP4, MainBoss will not try to use POP3 or any variant of POP3 if you enter a name in the "<span class="CField">Mailbox Name</span>" field.</p>
+<p class="wi2"><span class="CField">Maximum Mail Size</span>: The maximum size allowed for any part of an incoming mail message (specified as a number of characters). For example, this limits the size of attachments that you'll accept. If you leave this blank, MainBoss chooses a default equal to the largest number that can be stored in a 32-bit integer. (This comes out to about 4 GB.)</p>
+<p class="wi2"><span class="CField">Manual Processing Time Allowance</span>: If MainBoss Service marks an email message for rejection, the service doesn't send a rejection to the sender right away. Instead, MainBoss Service delays, allowing time for human users to deal with the problem. For example, if there's some reason that MainBoss Service can't create a requestor record for the sender, MainBoss waits a certain length of time; this gives you a chance to resolve the problem, e.g. by manually creating a requestor record for the sender.
+
+<br /><br />The length of time that MainBoss waits is dictated by the value of "<span class="CField">Manual Processing Time Allowance</span>". For example, if you fill in this field with <span class="CU">12:00:00</span>, MainBoss will wait 12 hours after an email request is marked for rejection. This gives you time to do something about the request, if you choose to do so.
+
+<br /><br />If the time allowance expires and nothing has changed, MainBoss will reject the request.
+
+<br /><br />If the error message changes on a received request, MainBoss starts on a new delay. For example, suppose you see that there's a problem with a request and you make some change that you think will fix the problem. However, when MainBoss tries to process the request, a different problem arises. In this case, MainBoss will wait the full delay time again before rejecting the request; this gives you a chance to do something about the new problem.</p>
+<p class="wi"><span class="CButton">Outgoing Mail</span> section: Controls how MainBoss Service sends out email (acknowledgements to requestors and notifications to assignees).</p>
+<p class="wi2"><span class="CField">Process Notification Email</span>: If this box is checkmarked, MainBoss Service will send out notifications as normal. If the box is blanked out, MainBoss Service will not send out notifications. In general, this box should be checkmarked.</p>
+<p class="wi2"><span class="CField">Return Email Address</span>: The return email address to be placed on acknowledgements and notifications (i.e. the address that will be used if the recipient wants to reply). This should be the email address of a person in the maintenance department who can personally handle responses from clients.</p>
+<p class="box"><span class="CInset">Important:</span> The "<span class="CField">Return Email Address</span>" should <span class="Emphasis">not</span> be the same as the mailbox to which users submit requests. If it is, you'll run into trouble if a requestor has an auto-reply set up, such as "Hi, I've gone on vacation and won't be answering my email." What happens is this: if MainBoss Service sends an acknowledgement to the user, the auto-reply replies to the MainBoss Service mailbox; MainBoss Service thinks this is a new request, so sends an acknowledgement to the requestor; the requestor's auto-reply sends another reply to MainBoss Service; MainBoss Service sends another acknowledgement; and so on, until someone runs out of disk space. The way to avoid this is to set "<span class="CField">Return Email Address</span>" to refer to a human being (who can be smart about dealing with auto-replies).</p>
+
+<p class="wi2"><span class="CField">Return Email Display Name</span>: The name to be associated with "<span class="CField">Return Email Address</span>".</p>
+<p class="wi2"><span class="CButton">HTML Email Notification</span>: If this is checkmarked, MainBoss Service sends notifications in HTML format. Otherwise, notifications are sent as plain text.</p>
+<p class="wi2"><span class="CField">MainBoss Web Access URL</span>: If you have a <span class="BL">Web Access</span> license, MainBoss Service can add HTML links to notifications that will let users jump from the notification email directly to a web page displaying an associated request or work order. In order to do this, you have to specify the URL of the web site that you use for MainBoss's <span class="BL">Web Access</span>. For example, you might set "<span class="CField">MainBoss Web Access URL</span>" to
+
+<br /><br /><span class="CU">http://ourcompany.com/MainBossWeb</p>
+<p class="wi2"></span><span class="CField">Notification Interval</span>: Dictates how often MainBoss Service will check to see if notifications should be sent. By default, this is <span class="CU">0:10</span> (every 10 minutes).</p>
+<p class="wi2"><span class="CField">SMTP Server</span>: The name of the computer that will handle MainBoss Service's outgoing mail. Normally, this is the same as "<span class="CField">Mail Server</span>" in the <span class="CButton">Incoming Mail</span> section of the configuration record; however, it doesn't have to be.</p>
+<p class="wi2"><span class="CField">SMTP Port</span>: The port used by the SMTP mail server. This is usually port 25.</p>
+<p class="wi2"><span class="CButton">SMTP Use SSL</span>: If this box is checkmarked, MainBoss Service will use SSL encryption when sending out mail (to requestors).</p>
+<p class="wi2"><span class="CField">SMTP Credential Type</span>: The options in this area determine what kind of authentication (if any) MainBoss Service will use when sending out mail.</p>
+<p class="wi3"><span class="CButton">Anonymous</span>: If this option is selected, MainBoss Service will not use authentication (mail is sent without going through any identification process).</p>
+<p class="wi3"><span class="CButton">Use the default network credential</span>: If this option is selected, MainBoss Service uses whatever authentication is provided by the network as the default.</p>
+<p class="wi3"><span class="CButton">Using the specified SMTP domain, username and password</span>: Choosing this option indicates that your SMTP server requires a domain, username, and password in order to send out mail. The fields below specify the required information:</p>
+<p class="wi3"><span class="CField">SMTP User Domain</span>: The domain that MainBoss Service should specify when sending out mail.</p>
+<p class="wi3"><span class="CField">SMTP User Name</span>: The username that MainBoss Service should specify when sending out mail.</p>
+<p class="wi3"><span class="CField">SMTP Encrypted Password</span>: As a protection measure, MainBoss encrypts this password before storing it in MainBoss's database.</p>
+<p class="wi"><span class="CButton">Messages</span> section: Controls the text strings used by MainBoss Service when sending email to users.
+
+<br /><br />The main list in this section shows the strings whose text can be changed. For example, the string with identifier <span class="CU">EstimatedCompletionDate</span> is used as a label when MainBoss Service puts an estimated completion date into an email message. If you change the value of this string to <span class="CU">"We think the job will be done by:"</span>, MainBoss will use the given phrase instead of the default <span class="CU">"Estimated Completion Date:"</span>.
+
+<br /><br />You can set up different strings for different languages. For example, if some of your users and/or requestors prefer to use English and others prefer to use French, you can create a set of English strings and a separate set of French strings. (Note: you specify people's preferred language in their Contacts record. For more information, see <a href="Edit.Contact.htm">Editing Contacts</a>.)</p>
+<p class="wi2"><span class="CButton">View</span>: Clicking this button lets you see any existing translations of the corresponding string and lets you specify new ones. <span class="BL">This is how you change what MainBoss displays in its email messages.</span> For more information, see <a href="Edit.Message.htm">Editing MainBoss Service Messages</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Searches through the list to find an entry.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the display to show any recent changes.</p>
+<p class="box"><span class="CInset">Note:</span> Before MainBoss 4.0, a different system was used to customize the contents of email messages. If you update from an old version of MainBoss to a version that uses the system described here, the updating process will automatically attempt to incorporate any existing customizations you have made.</p>
+
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current information and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on MainBoss Service, see <a href="TheMainBossServiceModule.htm">The MainBoss Service Module</a>.</p>
+
+
+<p><a href="Browse.MainBoss Service Configuration.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Message.htm">Next section &gt;</a></p>
+</body>
+</html>
+

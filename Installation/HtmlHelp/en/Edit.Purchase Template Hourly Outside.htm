@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Purchase Template Hourly Outside</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Purchase Template Hourly Outside</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Purchase Template Item.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Purchase Template Per Job Outside.htm">Next section &gt;</a></p>
+
+<p>If you select an hourly outside demand in the <span class="CButton">Task Resources</span> section of task record and then click <span class="CButton">New Purchase Template Hourly Outside</span>, MainBoss opens a window where you can add an appropriate item to a purchase template. When a purchase order is generated from the template, the resulting purchase order will contain the hourly outside expenditure as a line item.</p>
+
+<p>The editor window contains the following:</p>
+
+<p class="wi"><span class="CField">Line Number Rank</span>: A number indicating where this labor expense should be placed on generated purchase orders. This is useful when a task has multiple purchase templates associated with it, and line items from the different templates must be merged to make a single purchase order.
+
+<br /><br />Line items on the generated purchase order will be sorted from lowest rank number to highest (so an item numbered 1 will come before one numbered 2). Ranks do not have to be completely sequential (so that you might have ranks, 1, 4, 5, 10, with gaps between the numbers). If multiple items have the same rank, MainBoss will randomly choose which one goes first.</p>
+<p class="wi"><span class="CField">Purchase Order Template</span>: A read-only field identifying the purchase order template where this labor expense will appear.</p>
+<p class="wi"><span class="CField">Task Demand Hourly Outside</span> area: This area ends with a drop-down list where you can specify an hourly outside demand record. The options preceding this list dictate what you see when you drop down the list. By choosing appropriate options, you can reduce the entries that are shown in the drop-down list, making it quicker and easier to choose the one you want. The possible options are:</p>
+<p class="wi2"><span class="CButton">Only include Demand Templates for work specifically from this Purchase Order Template's Vendor</span>: If you select this option, the drop-down list only shows hourly outside demand records that specifically mention the specified "<span class="CField">Vendor</span>".</p>
+<p class="wi2"><span class="CButton">Only include Demand Templates for work that this Purchase Order Template's Vendor could perform</span>: If you select this option, the drop-down list shows hourly outside demand records that have the specified "<span class="CField">Vendor</span>" or whose "<span class="CField">Vendor</span>" field is blank.</p>
+<p class="wi2"><span class="CButton">Do not filter Demand Templates based on the Vendor associated with the work</span>: If you select this option, the drop-down list will not be restricted by vendor or trade.</p>
+<p class="wi2"><span class="CButton">Only include demands for work previously performed by this vendor</span>: If you checkmark this box, the drop-down list only shows hourly outside demands that have been used in previous purchase orders to this vendor.</p>
+<p class="wi2"><span class="CButton">Only include demands where quantity demanded exceeds quantity currently ordered</span>: If you checkmark this box, the drop-down list will only show hourly outside demands where the demand is greater than the quantity of hourly outside work currently on order.</p>
+<p class="wi2">Drop-down list: The drop-down list at the end of the "<span class="CField">Task Demand Hourly Outside</span>" area shows hourly outside demand records that satisfy the options you have specified.</p>
+<p class="wi"><span class="CField">Hours</span>: Read-only fields giving information about the work you've specified. This information is taken from the hourly outside demand record and from other tables in MainBoss.</p>
+<p class="wi2"><span class="CField">Demanded</span>: The total amount of time contained in the labor demand.</p>
+<p class="wi2"><span class="CField">Already Ordered</span>: The amount of time (if any) that has already been "received" on this purchase order. For example, suppose a job is expected to take several days. At the end of each day, you might use the purchase order to record how much labor you received on that day.</p>
+<p class="wi2"><span class="CField">Remaining Demand</span>: Equals "<span class="CField">Demanded</span>" minus "<span class="CField">Already Ordered</span>".</p>
+<p class="wi2"><span class="CField">Task Demand Hourly Outside Hourly Outside Cost</span>: The hourly rate paid to the contractor.</p>
+<p class="wi"><span class="CField">Task Demand Hourly Outside Hourly Outside Order Line Text</span>: Read-only field giving the text for this item as given in "<span class="CField">Task Demand Hourly Outside</span>" (if any).</p>
+<p class="wi"><span class="CButton">Use remaining demand as quantity to order</span>: If you checkmark this box, MainBoss will set "<span class="CField">Quantity</span>" to the "<span class="CField">Remaining Demand</span>" value. If you leave the box blank, you must fill in "<span class="CField">Quantity</span>" yourself.</p>
+<p class="wi"><span class="CField">Quantity</span>: The amount of the contractor's time that you want covered by this entry. This may not be the full time expected. For example, if a job takes several days, you may decide to record each day's time separately.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on purchase order templates, see <a href="PurchaseOrderTemplates.htm">Purchase Order Templates</a>. For more on purchase orders, see <a href="PurchaseOrders.htm">Purchase Orders</a>. For more on tasks, see <a href="Tasks.htm">Tasks</a>.</p>
+
+
+<p><a href="Edit.Purchase Template Item.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Purchase Template Per Job Outside.htm">Next section &gt;</a></p>
+</body>
+</html>
+

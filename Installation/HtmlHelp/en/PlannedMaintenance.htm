@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Planned Maintenance</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Planned Maintenance</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Labor Time by Grouping.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Planned Maintenance Batch.htm">Next section &gt;</a></p>
+
+
+<p><a href="SchedulingPlannedMaintenance.htm">Scheduling Planned Maintenance</a> gives a step-by-step overview of how to schedule planned maintenance operations. It shows the typical pattern of how you use MainBoss to create a task description, how you assign units to that task, and how you use MainBoss to generate planned work orders automatically. You will find it useful to read the overview before reading the details contained in this chapter.</p>
+
+<p>As a quick review, here are the elements of MainBoss's planned maintenance facilities:</p>
+
+<ul class="b1"><li><span class="CInset">Tasks</span>: A task record describes what should be done in a planned maintenance job. It might provide step-by-step instructions or a checklist of actions to take. For example, a task record might describe what should be done in a car oil change. For more, see <a href="Tasks.htm">Tasks</a>.</li>
+<li><span class="CInset">Maintenance Timing</span>: A maintenance timing record tells when a job should be done, either in terms of the calendar (e.g. "every three months") or in terms of a meter (e.g. "every 3000 miles"). For more, see <a href="MaintenanceTimings.htm">Maintenance Timings</a>.</li>
+<li><span class="CInset">Unit Maintenance Plans</span>: A unit maintenance plan combines a task, a maintenance timing record, and a unit. For example, the task might be an oil change, the timing might be "every 3000 miles" and the unit might be a particular car; the unit maintenance plan indicates that the car needs an oil change every 3000 miles. Note that you can specify the same task and timing record for a lot of different units; for example, you might specify an oil change every 3000 miles for each car you maintain. For more about unit maintenance plans, see <a href="UnitMaintenancePlans.htm">Unit Maintenance Plans</a>.</li>
+<li><span class="CInset">Generating Work Orders</span>: On a regular schedule (e.g. once a week), you ask MainBoss to create new planned maintenance work orders. You do this through <span class="CPanel">Unit Maintenance Plans</span> | <span class="CPanel">Generate Planned Maintenance</span> in the control panel, which gives you the planned maintenance generation table viewer. This table contains a record for each previous time you generated planned maintenance work orders. Each record lists the time that you generated the work orders and lists the work orders that were created. This means that you have a history of all the PM work orders you've previously created. For more about the planned maintenance generation table viewer, see <a href="Browse.Planned Maintenance Batch.htm">Viewing Planned Maintenance Generation Records</a>.
+</li></ul><p class="box"><span class="CInset">Important:</span> MainBoss does not generate planned maintenance work orders until you tell it to do so! For example, you might tell MainBoss to generate planned maintenance work orders for the next week; MainBoss will then figure out what jobs need to be done in that week and will generate the necessary work orders. However, the work orders are <span class="NewTerm">not</span> created until you explicitly tell MainBoss to generate them.</p>
+
+<p><span class="CInset">PM Work Orders:</span> You create planned maintenance work orders like this:</p>
+
+<ol><li>In the control panel, go to <span class="CPanel">Unit Maintenance Plans</span> | <span class="CPanel">Generate Planned Maintenance</span>.</li>
+<li>Click <span class="CButton">New Planned Maintenance Batch</span> to begin generating new work orders. This opens a window for the generation process.</li>
+<li>In "<span class="CField">End Date</span>" fill in a date up to which work orders should be generated. For example, if you want to deal with all planned maintenance that should be done by next Monday, put in next Monday's date.</li>
+<li>In "<span class="CField">Maintenance Plans</span>" select the set of unit maintenance plans for which you wish to generate work orders. By default, all plans are selected; however, you can choose a subset of the plans if you wish.</li>
+<li>Click <span class="CButton">Generate</span>. The <span class="CButton">Generation Details</span> section will display any work that ought to be done in the given period.</li>
+<li>Examine the information in the <span class="CButton">Generation Details</span> section. By clicking on a line, you can see information such as the unit, the date on which the PM job should start, and other useful data.</li>
+<li>At this point, the work orders haven't actually been created&#8212;MainBoss has only determined which work orders should be created if you choose to go ahead. If you see any surprises in the list, you still have a chance to make corrections. This is particularly useful when you're first setting up your PM schedules&#8212;you can set up a schedule, test how it works, and correct any problems...all without actually creating any real work orders.
+
+<br /><br />If you decide something needs to be corrected (for example, a timing record needs to be fixed), click <span class="CButton">Change Scheduling Parameters</span>. This clears the <span class="CButton">Generation Details</span> section; you can then change maintenance timing record or anything else related to planned maintenance. Click <span class="CButton">Generate</span> again to regenerate a new list of tentative planned maintenance jobs.</li>
+<li>When you're satisfied with the <span class="CButton">Generation Details</span> list, click <span class="CButton">Commit</span> to create the actual work orders. The creation process may take a considerable amount of time, especially if there are a lot of work orders to make.
+</li></ol><p><span class="CInset">Generation Interval</span><span class="CInset">:</span> Planned maintenance works best if you generate PM work orders on a regular basis. For example, each Friday, you might generate work orders for the following week (from Monday to Sunday). By generating the work orders ahead of time, you have advance warning of what work you'll have to do. You can even generate work orders farther in advance; each Monday, you might generate work orders for the week beginning the following Monday, giving every a week's notice of what PM jobs are necessary.</p>
+
+<p>To make it easier for you to generate PM work orders on a regular basis, MainBoss lets you set a value called the "<span class="CField">Generation Interval</span>". This indicates how often you intend to generate new PM work orders. The time is measured in days; for example, if you set "<span class="CField">Generation Interval</span>" to 7, it means you intend to generate PM work orders once a week. If you set "<span class="CField">Generation Interval</span>" to 14, it means you intend to generate PM work orders every two weeks.</p>
+
+<p>MainBoss uses your "<span class="CField">Generation Interval</span>" value when setting a default for "<span class="CField">End Date</span>". The new end date will be calculated by adding "<span class="CField">Generation Interval</span>" to the previous end date&#8212;the last time you generated PM work orders. For example, suppose "<span class="CField">Generation Interval</span>" is 7 and the last time you generated work orders, you did so up to January 1. Then the next time you generate work orders, the default will be to generate them up to January 8. The time after that, the default will be to generate them up to January 15, and so on.</p>
+
+<p>You can always change "<span class="CField">End Date</span>" from its default value to something else. For example, before you go on vacation, you might generate two or three weeks of work orders rather than only one. Setting "<span class="CField">Generation Interval</span>" simply tells MainBoss how to set the end date automatically rather than requiring you to set it by hand.</p>
+
+<p>You set "<span class="CField">Generation Interval</span>" like this:</p>
+
+<ol><li>Select <span class="CPanel">Unit Maintenance Plans</span> | <span class="CPanel">Generate Planned Maintenance</span> from the control panel.</li>
+<li>In the <span class="CButton">Defaults for Planned Maintenance Batches</span> section, click <span class="CButton">Edit Defaults</span>.</li>
+<li>MainBoss opens a window where you can set "<span class="CField">Generation Interval</span>".</li>
+<li>Once you've set "<span class="CField">Generation Interval</span>" to your preferred value, click <span class="CButton">Save &amp; Close</span>.</li>
+<li>When you return to the previous window, you may have to click <span class="CButton"><img src="Refresh.png" alt="Refresh" /></span> in order to see the value you just set.
+</li></ol><p><span class="CInset">Corrective vs. Preventive Maintenance in Reports:</span> Several reports let you distinguish information on preventive (planned) maintenance work orders from information on corrective work orders. This is done using the <span class="CButton">Is Preventive</span> option in report printing windows.</p>
+
+<ul class="b1"><li>If you select <span class="CButton">Is Preventive</span> under <span class="CField">Group by</span> in the <span class="CButton">Grouping</span> section of a report window, MainBoss groups preventive work orders in one part of the report and all other work orders (i.e. corrective ones) in the other part of the report.</li>
+<li>If you select <span class="CButton">Is Preventive</span> in the <span class="CButton">Filters</span> section of a report window, you can specify that you only want to see information on preventive work orders (<span class="CButton">Is Preventive</span> is <span class="CU">True</span>) or only on corrective work orders (<span class="CButton">Is Preventive</span> is <span class="CU">False</span>).
+</li></ul><p class="box">A work order is preventive if it was created by <span class="CPanel">Unit Maintenance Plans</span> | <span class="CPanel">Generate Planned Maintenance</span>. A work order is corrective if it was generated in some other way.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Browse.Planned Maintenance Batch.htm">Viewing Planned Maintenance Generation Records</a></li>
+
+<li><a href="Edit.Planned Maintenance Batch.htm">Editing Planned Maintenance Generation Records</a></li>
+
+<li><a href="Report.Unit Maintenance Plan Summary.htm">Unit Maintenance Plan Summary</a></li>
+
+<li><a href="Report.Task Summary.htm">Task Summary Report</a></li>
+
+<li><a href="Report.Labor Forecast.htm">Labor Forecast Report</a></li>
+
+<li><a href="Report.Material Forecast.htm">Material Forecast Report</a></li>
+
+<li><a href="Report.Maintenance Forecast.htm">Maintenance Forecast Report</a></li>
+
+<li><a href="Report.Task Resource.htm">Task Resources Report</a></li>
+
+<li><a href="Report.Task Demand Item.htm">Task Items Report</a></li>
+
+<li><a href="Report.Task Demand Hourly Inside.htm">Task Hourly Inside Report</a></li>
+
+<li><a href="Report.Task Demand Per Job Inside.htm">Task Per Job Inside Report</a></li>
+
+<li><a href="Report.Task Demand Hourly Outside.htm">Task Hourly Outside Report</a></li>
+
+<li><a href="Report.Task Demand Per Job Outside.htm">Task Per Job Outside Report</a></li>
+
+<li><a href="Report.Task Miscellaneous Expense.htm">Task Miscellaneous Costs Report</a></li>
+</ul>
+<p><a href="Report.Labor Time by Grouping.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Planned Maintenance Batch.htm">Next section &gt;</a></p>
+</body>
+</html>
+

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Cost Centers</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Cost Centers</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Contact.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Cost Center.htm">Next section &gt;</a></p>
+
+<p>MainBoss lets you track maintenance costs by cost center. A cost center could be a Department or a General Ledger Account Number.</p>
+
+<p class="box">Cost Centers are only visible if your database has an <span class="BL">Accounting</span> license key.</p>
+
+<p>Cost centers are related to <span class="NewTerm">expense models</span>. An expense model is a set of related cost centers, used as a shortcut when creating a work order or purchase order. For example, consider a property management company that has a set of General Ledge Accounts for each tenant. When you do work for Tenant X, you specify that the work order should use the expense model associated with Tenant X. MainBoss will charge materials to the ledger account associated with Tenant X materials, it will charge labor to the account associated with Tenant X labor, it will charge outside contractor costs to the account associated with Tenant X outside labor, and so on. In other words, you can specify a single expense model, and MainBoss will distribute costs appropriately to the various cost centers of that model. (For more about MainBoss accounting, see <a href="AccountingFacilities.htm">Accounting Facilities</a>.)</p>
+
+<p><span class="CInset">Cost Centers and Inventory:</span> Every storeroom assignment has an associated cost center. (For more about storage assignments, see <a href="StoreroomAssignments.htm">Storeroom Assignments</a>.) The storeroom assignment's cost center is used whenever a quantity of the associated item is added or subtracted from the storeroom:</p>
+
+<ul class="b1"><li>When an item is received from a vendor and placed into a storeroom, two accounting records are created: one for accounts payable to the vendor, and one increasing the value of the storeroom assignment by the same amount. (Note that the accounting records are written when an item is received, not when it is ordered.)</li>
+<li>When an item used in a work order, two accounting records are created: one that decreases the value of the storeroom assignment by the cost of the item, and one that charges the cost of the item to the work order (in accordance with the work order's expense model).
+
+<br /><br />The same principle applies when you issue an item for some other purpose. In this case, the issue code specifies the cost center that gets charged. (See <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Items</span> | <span class="CPanel">Item Issue Codes</span>.)</li>
+<li>When an item is transferred from one storeroom to another, two accounting records are created: one that decreases the value of the storeroom assignment in the first storeroom, and one that increases the value of the storeroom assignment in the second storeroom.
+</li></ul><p>For information on viewing cost centers, see <a href="Browse.Cost Center.htm">Viewing Cost Centers</a>. For information on creating and editing cost centers, see <a href="Edit.Cost Center.htm">Editing Cost Centers</a>. For information on printing cost centers, see <a href="Report.Cost Center.htm">Printing Cost Centers</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Browse.Cost Center.htm">Viewing Cost Centers</a></li>
+
+<li><a href="Edit.Cost Center.htm">Editing Cost Centers</a></li>
+
+<li><a href="Report.Cost Center.htm">Printing Cost Centers</a></li>
+</ul>
+<p><a href="Report.Contact.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Cost Center.htm">Next section &gt;</a></p>
+</body>
+</html>
+

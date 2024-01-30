@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Report Sections</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Report Sections</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Reports.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="ReportButtons.htm">Next section &gt;</a></p>
+
+<p>The window associated with a report organizes options into sections.</p>
+
+<p class="wi"><span class="CButton">Grouping</span> and <span class="CButton">Sorting</span>: Let you control how the report is organized. For example, suppose you're printing information on work orders. The <span class="CButton">Grouping</span> options will divide the report into sections. For example, you might group your work orders by the location where the work will take place. Inside each group, you can specify subgroups if you wish.
+
+<br /><br />The <span class="CButton">Sorting</span> options tell how to sort records each each group and subgroup. For example, if you are grouping work orders by location, you might sort each group section by the date the work orders are supposed to begin. You can specify additional sorting options as well. For example, if you are sorting group sections by starting date, within each such date, you might choose to sort by expected duration; in this way, shorter jobs would be listed before longer ones.
+
+<br /><br />For both <span class="CButton">Grouping</span> and <span class="CButton">Sorting</span>, you can specify either ascending or descending order. For example, if you sort records by date, you can go from earliest to latest or vice versa. Often, specifying <span class="CButton">Grouping</span> options means that you don't have to specify <span class="CButton">Sorting</span> options.
+
+<br /><br />Some reports do not have a <span class="CButton">Grouping</span> section. This is because these particular reports have a built-in grouping, or something that serves a similar purpose to grouping.
+
+<br /><br />Each grouping/sorting option is followed by three buttons:
+
+<br /><br />  <img src="image027.png" alt="MainBoss" />
+
+<br /><br />These let you change the position of the option within the list of options or delete the option entirely.</p>
+<p class="box"><span class="NewTerm">Grouping</span> options break a report into sections. Each section has headings to indicate the start of the section, and may have footers as well. If a section has more than five entries, the total number of entries will be shown in parentheses after the group heading. <span class="NewTerm">Sorting</span> options sort information within each section; they do not result in headings.
+
+<br /><br />If a particular group has no elements, the group will not appear in the report. For example, suppose you're printing information about inventory items, grouped by item category. If a particular category has no items in it, that category will be omitted from the report.
+
+<br /><br />If you group by some information field that has exactly the same value in all records, the column for the field will be omitted from the report.</p>
+
+<p class="wi"><span class="CButton">Filters</span>: A <span class="NewTerm">report filter</span> lets you select which records you do and don't want in the report. For example, you might want to restrict a report about units to units in a particular category or range of unit IDs. Filter sections let you specify such restrictions.</p>
+<p class="wi"><span class="CButton">Field Selection</span>: Lets you specify what information should be included in the report. The section lists all the pieces of information that <span class="Emphasis">may</span> be included in the report. Each possibility has a checkbox beside it; if you checkmark the checkbox, the information will appear in the report. Otherwise, it won't.
+
+<br /><br />The first time you go to a print window during a MainBoss session, a default set of checkboxes will be checkmarked. If you change any of these, MainBoss will remember your changes throughout the rest of the session. However, when you quit MainBoss, everything gets set back to the defaults. You can save settings from one session to another; for more information, see <a href="CustomizedTableSettings.htm">Customized Table Settings</a>.
+
+<br /><br />For some reports, the <span class="CButton">Field Selection</span> window may have special checkboxes. For example, some reports have a <span class="CButton">Suppress Costs</span> checkbox; if you checkmark this checkbox, any money amounts that would otherwise be printed will be omitted from the report.
+
+<br /><br />If an information field contains no data for any records in the report, the column will be omitted even if you checkmark the associated checkbox.
+
+<br /><br />Some print windows will have a number of checkboxes at the bottom of the page under the heading <span class="CButton">Show Child Records</span>. These checkboxes let you choose extra optional information that may be included in the report.</p>
+<p class="box">The columns in a report are made wider or narrower, depending on how many pieces of information you've asked for. Asking for many different data fields will shrink the width of each column and may make the report difficult to read. Printing a report in landscape format rather than portrait may improve readability. Another option is to export the report to Microsoft Excel; if you do that, you can avoid the problems that arise from trying to cram a lot of information onto a limited piece of paper. One other solution is to use the "<span class="CField">Report width in pages</span>" option discussed below.</p>
+
+<p class="wi"><span class="CButton">Advanced</span>: Lets you specify a title for the report when it is printed, the fonts to be used, and additional information.
+
+<br /><br />In some reports, <span class="CButton">Advanced</span> options let you obtain <span class="NewTerm">summaries</span>. A summary typically gives totals and sub-totals of monetary amounts for the groups and sub-groups of the report. In some cases, the summary may also give you averages (e.g. the average lifespan of a particular kind of equipment). If you do not specify <span class="CButton">Grouping</span> section options, summaries may not give you much information.</p>
+<p class="wi2"><span class="CField">Report width in pages</span>: By default, reports are one page wide (where the page width is dictated by your current printer settings). If a report contains many fields, you can set the value of this field to a number higher than 1; for example, if you set the field to 2, each line in the report will be two pages wide. This allows more space for the information you want to see.
+
+<br /><br />When a report is more than one page wide, the effects vary depending on whether you look at the report on your monitor screen or whether you actually print it out. In a screen preview, you can simply use the usual scroll bars to look at lines that are too wide to fit on the screen. In a printed report, each line of the report will be the given number of pages wide. For example, if the report width is 2 pages, each line will be two printed pages wide. You could then tape pages together to get a more readable report.
+
+<br /><br />In general, "<span class="CField">Report width in pages</span>" should be set to 1, unless you actually need wider lines. If you specify a large page-width when you don't need it, the report will look worse than if you use the default width. In addition, a large page-width is likely inappropriate when you're printing single work orders for workers or purchase orders for vendors&#8212;the results will probably be harder to read than the default format.</p>
+<p class="wi"><span class="CButton">Preview</span>: Displays a preview of the report&#8212;a version of what you'd see if you actually printed the report on paper. Preparing such a preview may take some time, since MainBoss may have to process a lot of data; therefore, you might have to wait while MainBoss creates the preview.
+
+<br /><br />The <span class="CButton">Preview</span> section has buttons that let you specify which printer you want to use, the size of page margins, and other printing details. Another button lets you export data from the report (e.g. to Microsoft Excel). Finally, the <span class="CButton">Preview</span> section has a button that will actually print the report.</p>
+<p class="box">Depending on the contents of your database, certain combinations of options in <span class="CButton">Grouping</span>, <span class="CButton">Sorting</span>, <span class="CButton">Filters</span>, <span class="CButton">Field Selection</span> and <span class="CButton">Advanced</span> may result in a report with little or no useful information. You are encouraged to experiment with the options to find combinations that are particularly helpful to your work.</p>
+
+<p>For more details on any of the standard buttons in a print window, see <a href="ReportButtons.htm">Report Buttons</a>.</p>
+
+
+<p><a href="Reports.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="ReportButtons.htm">Next section &gt;</a></p>
+</body>
+</html>
+

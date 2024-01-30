@@ -1,0 +1,202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Thinkage.Libraries.DBAccess§{0} has version {1} but '{2}' requires at least version {3}" type="" mimetype="">
+    <value>{0} has version {1} but '{2}' requires at least version {3}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§¯Event log '{0}' on computer '{1}'" type="" mimetype="">
+    <value>Event log '{0}' on computer '{1}'</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§An attempt was made to obtain the schema for a database version before the first defined version" type="" mimetype="">
+    <value>Une tentative pour obtenir un schéma d'une version de la base de données a été faite avant la première version définie</value>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§An attempt was made to update a database to the first defined version" type="" mimetype="">
+    <value>Une tentative de mise à jour d'une base de données à la première version définie a été faite</value>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§Database schema reversal from database version {0}" type="" mimetype="">
+    <value>Repositionnement de schéma de base de données de la version {0} de la base de données</value>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§Database upgraded from version {0} to {1}" type="" mimetype="">
+    <value>Base de données mise à jour de la version {0} à la version {1}</value>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§Database version is beyond version supported by this Upgrade. Database version is {0} but upgrade only goes to version {1}." type="" mimetype="">
+    <value>La version de la base de données excède celle acceptée par cette mise à niveau. La version de la base de données est {0}; or, la mise à niveau ne dépasse pas la version {1}.</value>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§Error" type="" mimetype="">
+    <value>Error</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§event log '{0}' on computer '{1}'" type="" mimetype="">
+    <value>event log '{0}' on computer '{1}'</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§Failure Audit" type="" mimetype="">
+    <value>Failure Audit</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§in upgrade substep {0} of {1}" type="" mimetype="">
+    <value>à la sous-étape de mise à jour {0} de {1}</value>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§Inconsistent version information for database version number {0}" type="" mimetype="">
+    <value>Renseignement incohérent sur la version pour le numéro de la base de données {0}</value>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§Information" type="" mimetype="">
+    <value>Information</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§NormativeHash of current schema {0:x} does not match the NormativeHash of the final upgrade step {1:x} in DBUpgrade; have you forgotten to write an upgrade step?" type="" mimetype="">
+    <value>NormativeHash du schéma {0:x} courant ne correspond pas à NormativeHash de la dernière étape de la mise à jour {1:x} dans DBUpgrade; avez-vous oublié d'écrire une étape de la mise à jour?</value>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§Success Audit" type="" mimetype="">
+    <value>Success Audit</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§The Application is too old for {0}. Application version is {1} but database requires at least version {2}. You must install an up-to-date version of '{3}'" type="" mimetype="">
+    <value>The Application is too old for {0}. Application version is {1} but database requires at least version {2}. You must install an up-to-date version of '{3}'</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§Unable to generate database schema for version {0}" type="" mimetype="">
+    <value>Incapable de produire un schéma de base de données pour la version {0}</value>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§Unable to open event log '{0}' on '{1}'" type="" mimetype="">
+    <value>Unable to open event log '{0}' on '{1}'</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§Unable to read any database version number" type="" mimetype="">
+    <value>Incapable de lire l'un ou l'autre numéro de version de base de données</value>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§Unable to upgrade from unrecognized version {0}; the next-oldest oldest recognized version is {1}" type="" mimetype="">
+    <value>Mise à jour impossible à partir de la version {0} non reconnue; la version reconnue suivante la plus ancienne est {1}</value>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§Updating to database version {0}" type="" mimetype="">
+    <value>Mise à jour de la version de la base de données {0}</value>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§Warning" type="" mimetype="">
+    <value>Warning</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§while updating the database stored version number to {0}" type="" mimetype="">
+    <value>durant la mise à jour du numéro de version de la base de données enregistrée à {0}.</value>
+  </data>
+  <data name="Thinkage.Libraries.DBAccess§while upgrading the database to version {0}" type="" mimetype="">
+    <value>durant la mise à jour de la base de données à la version {0} </value>
+  </data>
+</root>

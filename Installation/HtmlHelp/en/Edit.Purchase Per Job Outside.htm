@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Purchase Per Job Outside</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Purchase Per Job Outside</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Purchase Hourly Outside.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Purchase Miscellaneous Item.htm">Next section &gt;</a></p>
+
+<p>A "purchase per job outside" line in a purchase order requests that an outside contractor should be hired to do work that is paid by the job. When you specify this kind of entry, you also specify the per job rate. To specify the contractor, the rate and the expected quantity of work, you use a per job outside demand. For more, see <a href="Edit.Demand Per Job Outside.htm">Demand Per Job Outside</a>.</p>
+
+<p>To see the Purchase Per Job Outside editor, go to the <span class="CButton">Line Items</span> section of a purchase order, drop down the arrow of <span class="CButton">New Purchase Item</span> and click <span class="CButton">New Purchase Per Job Outside</span>. Alternatively, you can begin with a per job outside demand on a work order and click <span class="CButton">New Purchase Outside</span>. The editor contains the following:</p>
+
+<p class="wi"><span class="CField">Line Number</span>: A number that can be used to specify the location of this line item in the purchase order. If you don't use line numbers, line items on the purchase order will be sorted in the order they were recorded when you filled out the purchase order. If you do use line numbers, line items on the purchase order will be sorted from lowest "<span class="CField">Line Number</span>" to highest.</p>
+<p class="wi"><span class="CField">Purchase Order</span> area: The purchase order that will cover this purchase. If you began from a purchase order, you'll see a read-only field identifying the purchase order.
+
+<br /><br />Otherwise, the area ends with a drop-down list where you can specify the purchase order. The options preceding this list dictate what you see when you drop down the list. By choosing appropriate options, you can reduce the entries that are shown in the drop-down list, making it quicker and easier to choose the one you want. The possible options are:</p>
+<p class="wi2"><span class="CButton">Only include Purchase Orders for Vendors who can perform this work</span>: If you select this option, the contents of the drop-down list will be affected by the demand specified in "<span class="CField">Demand Per Job Outside</span>". If the demand states a specific vendor, the drop-down list will only show purchase orders addressed to that vendor. If the demand doesn't state a specific vendor, the drop-down list will show purchase orders addressed to any vendor.</p>
+<p class="wi2"><span class="CButton">Only include Purchase Orders for Vendors who have previously performed this work</span>: If you select this option, the drop-down list will only include purchase orders for vendors who have been previously associated with the given per job outside record.</p>
+<p class="wi2">Drop-down list: The drop-down list at the end of the "<span class="CField">Purchase Order</span>" area shows draft purchase orders that satisfy the options you have specified.</p>
+<p class="wi"><span class="CField">Demand Per Job Outside</span> area: The per job outside demand for the labor that will be purchased. If you began from a per job outside demand on a work order, you'll see a read-only field identifying the demand.
+
+<br /><br />Otherwise, this area ends with a drop-down list where you can specify a per job outside demand record. The options preceding this list dictate what you see when you drop down the list. By choosing appropriate options, you can reduce the entries that are shown in the drop-down list, making it quicker and easier to choose the one you want. The possible options are:</p>
+<p class="wi2"><span class="CButton">Only include Demands for work specifically from this Purchase Order's Vendor</span>: If you select this option, the drop-down list only shows per job outside demand records that specifically mention the specified "<span class="CField">Vendor</span>".</p>
+<p class="wi2"><span class="CButton">Only include Demands for work that this Purchase Order's Vendor could perform</span>: If you select this option, the drop-down list shows per job outside demand records that have the specified "<span class="CField">Vendor</span>" or whose "<span class="CField">Vendor</span>" field is blank.</p>
+<p class="wi2"><span class="CButton">Do not filter demands based on the Vendor associated with the work</span>: If you select this option, the drop-down list will not be restricted by vendor or trade.</p>
+<p class="wi2"><span class="CButton">Only include demands for work previously performed by this vendor</span>: If you checkmark this box, the drop-down list only shows per job outside demands that have been used in previous purchase orders to this vendor.</p>
+<p class="wi2"><span class="CButton">Only include demands where quantity demanded exceeds quantity currently ordered</span>: If you checkmark this box, the drop-down list will only show per job outside demands where the demand is greater than the quantity of per job outside work currently on order.</p>
+<p class="wi2">Drop-down list: The drop-down list at the end of the "<span class="CField">Demand Per Job Outside</span>" area shows per job outside demand records that satisfy the options you have specified.</p>
+<p class="wi"><span class="CField">Quantity</span>: Read-only fields giving information about the work you've specified. This information is taken from the per job outside demand record and from other tables in MainBoss.</p>
+<p class="wi2"><span class="CField">Demanded</span>: The total quantity of labor contained in the labor demand.</p>
+<p class="wi2"><span class="CField">Already Ordered</span>: The quantity of labor (if any) that has already been "received" on this purchase order. For example, suppose the work consists of painting a number of rooms, with a fixed cost per room. At the end of each day, you might use the purchase order to record how many rooms were painted on that day and therefore the quantity of "per job" labor.</p>
+<p class="wi2"><span class="CField">Remaining Demand</span>: Equals "<span class="CField">Demanded</span>" minus "<span class="CField">Already Ordered</span>".</p>
+<p class="wi"><span class="CField">Demand Per Job Outside Per Job Outside Cost</span>: The per job rate paid to the contractor.</p>
+<p class="wi"><span class="CField">Demand Per Job Outside Per Job Outside Order Line Text</span>: A suggestion for what should appear on the purchase order in order to describe this work. This text is taken from the per job outside demand record.</p>
+<p class="wi"><span class="CButton">Use suggested text</span>: If you checkmark this box, MainBoss will fill in "<span class="CField">Order Line Text</span>" with what appears in "<span class="CField">Demand Per Job Outside Per Job Outside Order Line Text</span>". If you leave the box blank, you should fill in "<span class="CField">Order Line Text</span>" yourself.</p>
+<p class="wi"><span class="CField">Order Line Text</span>: The text that will actually appear on the purchase order as a description for this work.</p>
+<p class="wi"><span class="CButton">Use remaining demand as quantity to order</span>: If you checkmark this box, MainBoss will set "<span class="CField">Quantity</span>" to the "<span class="CField">Remaining Demand</span>" value. If you leave the box blank, you must fill in "<span class="CField">Quantity</span>" yourself.</p>
+<p class="wi"><span class="CField">Quantity</span>: The amount of work that you want covered by this entry. This may not be the full quantity expected. For example, if a job takes several days, you may decide to record each day's work separately.</p>
+<p class="wi"><span class="CField">Calculated Cost</span>: Read-only fields giving the expected cost of "<span class="CField">Quantity</span>" if you use "<span class="CField">Demand Per Job Outside Per Job Outside Cost</span>".</p>
+<p class="wi"><span class="CButton">Use calculated cost</span>: If you checkmark this box, MainBoss fills in "<span class="CField">Cost</span>" with the values in "<span class="CField">Calculated Cost</span>". Otherwise, you must fill in "<span class="CField">Cost</span>" yourself.</p>
+<p class="wi"><span class="CField">Cost</span>: The cost of the given amount of work. If you fill in the "<span class="CField">Unit Cost</span>" box, MainBoss automatically fills in "<span class="CField">Total Cost</span>" and vice versa.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on per job outside records, see <a href="PerJobOutside.htm">Per Job Outside</a>. For more on purchase orders, see <a href="PurchaseOrders.htm">Purchase Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Purchase Hourly Outside.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Purchase Miscellaneous Item.htm">Next section &gt;</a></p>
+</body>
+</html>
+

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Bar Code Support</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Bar Code Support</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Charts.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="CodingDefinitions.htm">Next section &gt;</a></p>
+
+<p>MainBoss Advanced can add bar codes to various printed reports including requests, work orders, purchase orders, unit records, and storeroom assignment records. This provides a level of support for the use of bar codes in your operations.</p>
+
+<p>To print bar codes on a report, go to the <span class="CButton">Advanced</span> section of the report. On the line labeled <span class="CButton">Bar Code Symbology</span>, choose the type of bar coding you wish to use. (There are numerous systems for representing data as bar codes, so you have to tell MainBoss which one you use.) Once you have specified a format, MainBoss will include a suitable bar code for each record in the print-out.</p>
+
+<p>The bar code represents different information depending on the type of records being printed:</p>
+
+<ul class="b1"><li>For requests, the bar code represents the request's number (e.g. <span class="CU">WR 00000001</span>)</li>
+<li>For work orders, the bar code represents the work order's number (e.g. <span class="CU">WO 00000001</span>)</li>
+<li>For purchase orders, the bar code represents the purchase order's number (e.g. <span class="CU">PO 00000001</span>)</li>
+<li>For unit, the bar code represents the value of the record's "<span class="CField">Unit Tag</span>" field; this field appears in the <span class="CButton">Details</span> section of the associated record</li>
+<li>For storeroom and storeroom assignment records, the bar code represents the value of the record's "<span class="CField">External Tag</span>" field; this field appears in the <span class="CButton">Details</span> section of the associated record
+</li></ul><p>When you read a bar code into MainBoss, MainBoss will open an editor for the entity associated with that bar code. For example, suppose you want information about a unit. If you read the bar code on the unit, MainBoss will immediately open the appropriate unit record in an editor window; this lets you obtain all the usual information from the unit record.</p>
+
+<p class="box"><span class="CInset">Important:</span> Make sure that a window containing MainBoss's control panel is the active window at the time you read the bar code. If any other type of window is active (e.g. a window for editing a record or for printing a report), reading the bar code will not have an effect.</p>
+
+<p>In order to use a bar code reader, you must have appropriate Windows software to deliver bar code information from the reader to Windows programs.</p>
+
+<p><span class="CInset">Default Bar Code Encoding:</span> You can set your organization's default bar coding by going to <span class="CPanel">Administration</span> | <span class="CPanel">Company Information</span> and clicking <span class="CButton">Edit</span>. This opens a window where you can specify which type of bar coding is most often used by your organization. From this point on, that type of bar coding will always be set as the default in any report that can print out bar codes.</p>
+
+<p>As with all default values, you can specify a different value in any specific situation. For example, if you don't want a particular report to include bar codes, you can set <span class="CButton">Bar Code Symbology</span> to <span class="CU">None</span> when you print that particular report.</p>
+
+<p><span class="CInset">Drawbacks to Bar Codes:</span> Many would-be bar code users think they can simply use the standard "universal" UPC bar codes that appear on most products (such as the codes that appear on grocery items in the supermarket). However, these usually aren't satisfactory.</p>
+
+<p>For example, consider standard D cell batteries. To most maintenance departments, these are all the same. However, each brand of battery comes with a different UPC code; also different packages from the same manufacturer have different codes, so a two-battery package is different from a four-battery package. You might like a single "D cell" code for all such batteries, but you can't use the standard UPC code for that purpose.</p>
+
+<p>A second problem is that manufacturers recycle UPC codes. Rubbermaid is well-known for this practice. When they discontinue a product, they re-use the old code for something new. They also use the same code for products with minor differences, e.g. similar products with different colors. This may or may not make a difference to your operations.</p>
+
+<p>Similar problems apply if you use anyone else's bar codes, e.g. bar codes linked to a particular supplier's catalog numbers. If you use bar codes that come from anyone else, you may be caught by surprise changes or inconsistencies. For reasons like this, you will probably have to create your own bar codes for anything you want to identify. This can take a great deal of work, and must be planned carefully.</p>
+
+<p><span class="CInset">Note:</span> MainBoss Advanced includes Barcode software developed by Neodynamic SRL (<a href=" HYPERLINK "http://www.neodynamic.com/" ">http://www.neodynamic.com/</a>). All rights reserved.</p>
+
+
+<p><a href="Charts.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="CodingDefinitions.htm">Next section &gt;</a></p>
+</body>
+</html>
+

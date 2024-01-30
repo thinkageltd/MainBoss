@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing Vendor Records</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Editing Vendor Records</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.Vendor.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Vendor.htm">Next section &gt;</a></p>
+
+<p>You create or modify vendor records using the vendor editor. The usual way to open the editor is to click <span class="CButton">New Vendor</span> or <span class="CButton">Edit</span> in the <span class="CButton">View</span> section of <span class="CPanel">Purchase Orders</span> | <span class="CPanel">Vendors</span> or <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Vendors</span>.</p>
+
+<p>The vendor editor window contains the following:</p>
+
+<p class="wi"><span class="CButton">Details</span> section: Provides general information about the vendor. This section contains the following:</p>
+<p class="wi2"><span class="CField">Code</span>: A brief code to identify this record. No two records may have the same code</p>
+<p class="wi2"><span class="CField">Description</span>: A longer description (usually the full name of the vendor).</p>
+<p class="wi2"><span class="CField">Vendor Category</span>: A vendor category for this vendor. (For more on vendor categories, see <a href="VendorCategories.htm">Vendor Categories</a>.)</p>
+<p class="wi2"><span class="CField">Sales Contact</span>: The person to contact for matters relating to sales. This should refer to an entry in your <span class="CPanel">Contacts</span> table. For more about contacts, see <a href="Contacts.htm">Contacts</a>.
+
+<br /><br />Once you choose a "<span class="CField">Sales Contact</span>", the person's phone number and email address are displayed in read-only fields. This information is taken from the <span class="CPanel">Contacts</span> table.</p>
+<p class="wi2"><span class="CField">Service Contact</span>: The person to contact for matters relating to service. This should refer to an entry in your Contacts table. Once you choose a "<span class="CField">Service Contact</span>", the person's phone number and email address are displayed in read-only fields.</p>
+<p class="wi2"><span class="CField">Payables Contact</span>: The person to contact for matters relating to accounts payable. This should refer to an entry in your Contacts table. Once you choose an "<span class="CField">Payable Contact</span>", the person's phone number and email address are displayed in read-only fields.</p>
+<p class="wi2"><span class="CField">Accounts Payable Cost Center</span>: The cost center to be associated with bills paid to this vendor. For more on cost centers, see <a href="CostCenters.htm">Cost Centers</a>.</p>
+<p class="wi2"><span class="CField">Account Number</span>: Your account number with this vendor.</p>
+<p class="wi2"><span class="CField">Payment Term</span>: Default payment terms on anything bought from this vendor. When creating a purchase order addressed to this vendor, you can accept the default or set different payment terms. For more on payment terms, see <a href="PaymentTerms.htm">Payment Terms</a>.</p>
+<p class="wi2"><span class="CField">Comments</span>: Any comments you want to record.</p>
+<p class="wi"><span class="CButton">Item Pricing</span> section: Displays information about price quotes from this vendor. Before you can use this section to record information, you must <span class="CButton">Save</span> the record first. Then you can add records to the item list.</p>
+<p class="wi2"><span class="CField">Item</span>: Click this heading to sort the list by item code. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Order Line Text</span>: Click this heading to sort by the text that should be placed on any purchase order for this item from this vendor. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Quantity</span>: Click this heading to sort by quantity. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Item UOM</span>: Click this heading to sort by the item's unit of measure. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Unit Cost</span>: Click this heading to sort by unit cost. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Cost</span>: Click this heading to sort by total cost. Click again to reverse the order.</p>
+<p class="wi2"><span class="CButton">New Item Pricing</span>: Adds a new item pricing record to the list. For more on item pricing, see <a href="Edit.Item Pricing.htm">Item Pricing</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
+<p class="wi3"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
+<p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the record that's currently selected.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Searches for an item pricing record.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p class="wi"><span class="CButton">Hourly Outside</span> section: Lists hourly outside rates associated with the selected vendor. Before you can use this section to record information, you must <span class="CButton">Save</span> the record first. Then you can add records to the list. (For more on hourly outside records, see <a href="HourlyOutside.htm">Hourly Outside</a>.)</p>
+<p class="wi2"><span class="CField">Code</span>: Click this heading to sort the list by code. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Description</span>: Click this heading to sort by description. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Trade</span>: Click this heading to sort by vendor trade. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Cost</span>: Click this heading to sort by total cost of each hourly outside labor entry. Click again to reverse the order.</p>
+<p class="wi2"><span class="CButton">New Hourly Outside</span>: Adds a new hourly outside record to the list.</p>
+<p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
+<p class="wi3"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
+<p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi3"><span class="CButton">Restore</span>: Restores a deleted record. This button is only active if the viewer is in <span class="CU">All</span> mode and if you've selected a deleted record. When you click <span class="CButton">Restore</span>, MainBoss will open a window that lets you examine the contents of the deleted record. If you save the record and close the window, the record will be restored to the <span class="CU">Active</span> list.</p>
+<p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the record that's currently selected.</p>
+<p class="wi2"><span class="CButton"><img src="PrintHS.png" alt="Print" /></span>: Prints your hourly outside records. For more, see <a href="Report.Hourly Outside.htm">Printing Hourly Outside Records</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Searches for an hourly outside record.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p class="wi"><span class="CButton">Per Job Outside</span> section: Similar to the <span class="CButton">Hourly Outside</span> section but deals with Per Job Outside records. For more, see <a href="PerJobOutside.htm">Per Job Outside</a>.</p>
+<p class="wi"><span class="CButton">Service Contracts</span> section: Displays information about any service contracts you have with from this vendor. Before you can use this section to record information, you must <span class="CButton">Save</span> the record first. Then you can add records to the list.</p>
+<p class="wi2"><span class="CField">Code</span>: Click this heading to sort the list by code. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Description</span>: Click this heading to sort by description. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Contract Number</span>: Click this heading to sort by contract number. Click again to reverse the order.</p>
+<p class="wi2"><span class="CButton">New Service Contract</span>: Adds a new service contract record to the list. For more on service contracts, see <a href="ServiceContracts.htm">Service Contracts</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
+<p class="wi3"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
+<p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi3"><span class="CButton">Restore</span>: Restores a deleted record. This button is only active if the viewer is in <span class="CU">All</span> mode and if you've selected a deleted record. When you click <span class="CButton">Restore</span>, MainBoss will open a window that lets you examine the contents of the deleted record. If you save the record and close the window, the record will be restored to the <span class="CU">Active</span> list.</p>
+<p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the record that's currently selected.</p>
+<p class="wi2"><span class="CButton"><img src="PrintHS.png" alt="Print" /></span>: Prints information about your service contracts. For more, see <a href="Report.Service Contract.htm">Printing Service Contracts</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Searches for a service contract record.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p class="wi"><span class="CButton">Purchase Orders</span> section: Lists purchase orders created to purchase goods and services from this vendor. For more on purchase orders, see <a href="PurchaseOrders.htm">Purchase Orders</a>.</p>
+<p class="wi2"><span class="CField">Number</span>: Click this heading to sort the list by purchase order number. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Summary</span>: Click this heading to sort by summary. Click again to reverse the order.</p>
+<p class="wi2"><span class="CButton">New Purchase Order</span>: Creates a new purchase order and adds it to the list.</p>
+<p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
+<p class="wi3"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
+<p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi2"><span class="CButton">Issue</span>: Issues the selected purchase order.</p>
+<p class="wi2"><span class="CButton">Issue (With Comment)</span>: Issues the selected purchase order. When you click the button, MainBoss opens a window where you can record a comment and other information.</p>
+<p class="wi2"><span class="CButton">Close Purchase Order</span>: Closes the selected purchase order. When you click the button, MainBoss opens a window where you can record a comment and other information.</p>
+<p class="wi2"><span class="CButton">Close Purchase Order (No Comment)</span>: Same as <span class="CButton">Close Purchase Order</span>, except that MainBoss doesn't open a window for you to record additional information.</p>
+<p class="wi2"><span class="CButton">Withdraw Purchase Order</span>: Withdraws a purchase order that has already been issued. This puts the purchase order back into the Open (unissued) state.</p>
+<p class="wi2"><span class="CButton">ReActivate Purchase Order</span>: Reopens a closed purchase order.</p>
+<p class="wi2"><span class="CButton">Void</span>: Cancels the selected purchase order.</p>
+<p class="wi2"><span class="CButton">Re-Draft</span>: Turns a voided purchase order back into an open one.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Searches for a particular purchase order.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p class="wi"><span class="CButton">Purchase Order Templates</span> section: List purchase order templates created to purchase goods and services from this vendor, in connection with preventive maintenance jobs. For more on purchase order templates, see <a href="PurchaseOrderTemplates.htm">Purchase Order Templates</a>.</p>
+<p class="wi2"><span class="CField">Code</span>: Click this heading to sort the list by code. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Description</span>: Click this heading to sort by description. Click again to reverse the order.</p>
+<p class="wi2"><span class="CButton">New Purchase Order Template</span>: Creates a new purchase order template and adds it to the list.</p>
+<p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
+<p class="wi3"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
+<p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi3"><span class="CButton">Restore</span>: Restores a deleted record. This button is only active if the viewer is in <span class="CU">All</span> mode and if you've selected a deleted record. When you click <span class="CButton">Restore</span>, MainBoss will open a window that lets you examine the contents of the deleted record. If you save the record and close the window, the record will be restored to the <span class="CU">Active</span> list.</p>
+<p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the record that's currently selected.</p>
+<p class="wi2"><span class="CButton"><img src="PrintHS.png" alt="Print" /></span>: Prints purchase order templates. For more, see <a href="Report.Purchase Order Template.htm">Printing Purchase Order Templates</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Searches for a purchase order template.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p class="wi"><span class="CButton">Units</span> section: Displays units purchased from this vendor. Before you can use this section to record information, you must <span class="CButton">Save</span> the record first. Then you can add records to the list.</p>
+<p class="wi2"><span class="CField">Code</span>: Click this heading to sort the list by code. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Description</span>: Click this heading to sort the list by description. Click again to reverse the order.</p>
+<p class="wi2"><span class="CButton">New Unit</span>: Adds a new unit record to the list. For more on units, see <a href="Units.htm">Units</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
+<p class="wi3"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
+<p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi3"><span class="CButton">Show on Map</span>: If the currently selected unit record has a "<span class="CField">GIS Location</span>" value, MainBoss attempts to open Google Maps to a map showing the unit's geographic location. If the current unit record doesn't have a GIS location, MainBoss checks the unit and/or location record that contains the current unit, then the container of the container, and so on, until MainBoss either finds a record that has a GIS location or else reaches a record with no container.
+
+<br /><br />If MainBoss finds no record with a GIS location, but does find a postal address record containing postal information, MainBoss passes the postal information to Google Maps.
+
+<br /><br />In order to see the geographic location in Google Maps, you must have an active Internet connection and a suitable web browser.</p>
+<p class="wi3"><span class="CButton">Restore</span>: Restores a deleted record. This button is only active if the viewer is in <span class="CU">All</span> mode and if you've selected a deleted record. When you click <span class="CButton">Restore</span>, MainBoss will open a window that lets you examine the contents of the deleted record. If you save the record and close the window, the record will be restored to the <span class="CU">Active</span> list.</p>
+<p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the record that's currently selected.</p>
+<p class="wi2"><span class="CButton"><img src="Export.png" alt="Export" /></span>: Lets you export data from this table or import data from a file (provided that the file is in an acceptable format). For more information, see <a href="ImportingandExportingDatainTables.htm">Importing and Exporting Data in Tables</a>.
+
+<br /><br />The button has an accompanying drop-down list containing the following:</p>
+<p class="wi3"><span class="CButton">Export</span>: Exports data in XML format.</p>
+<p class="wi3"><span class="CButton">Import</span>: Imports data from a properly formatted file.</p>
+<p class="wi3"><span class="CButton">Save XML Schema</span>: Writes an XML schema for this table into a specified file.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Searches for a unit record.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list of unit records to reflect any recent changes.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on vendors, see <a href="Vendors.htm">Vendors</a>. For more on viewing vendor records, see <a href="Browse.Vendor.htm">Viewing Vendor Records</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Browse.Vendor.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Vendor.htm">Next section &gt;</a></p>
+</body>
+</html>
+

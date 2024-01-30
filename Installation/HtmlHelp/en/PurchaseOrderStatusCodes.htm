@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Purchase Order Status Codes</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Purchase Order Status Codes</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Purchase Order Assignee.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Purchase Order Status.htm">Next section &gt;</a></p>
+
+<p>Purchase order status codes give you a way to indicate when a purchase order needs someone's attention. For example, you might create a status <span class="CU">Waiting for approval</span> to mark a purchase order which has been written up but not approved by management.</p>
+
+<p>As another example, you might create a status <span class="CU">Items broken during shipment</span>. A receiving clerk could use this status to mark a purchase order with breakage problems. The status would alert other people in the maintenance department that someone should contact the vendor and deal with the situation.</p>
+
+<p class="box">While it is possible to use status codes for any purpose, we recommend that you only use them for purchase orders that are notable in some way. "Normal" purchase orders should have their "<span class="CField">Status</span>" field blank.</p>
+
+<p>Note that status codes can be a useful form of communication between users. For example, suppose that a worker has the <span class="CU">PurchaseOrderReceive</span> security role (meaning that the worker can record the receipt of purchase order line items) but does not have the <span class="CU">PurchaseOrderClose</span> security role (which is needed to close a purchase order). The worker could give the purchase order a status like <span class="CU">Ready to Close</span>, indicating that all appropriate information has been recorded. A supervisor with <span class="CU">PurchaseOrderClose</span> permission could regularly check all open purchase orders to see if any are <span class="CU">Ready to Close</span>; if so, the supervisor can review those purchase orders and close them as appropriate (removing the status code in the process).</p>
+
+<p class="box">Remember that a status code is intended to bring a purchase order to someone's attention. You can therefore use status codes as signals for other users.</p>
+
+<p>The status codes for purchase orders may be different from the status codes used for work orders and requests.</p>
+
+<p>For information on viewing purchase order status codes, see <a href="Browse.Purchase Order Status.htm">Viewing Purchase Order Status Codes</a>. For information on creating and editing purchase order status codes, see <a href="Edit.Purchase Order Status.htm">Editing Purchase Order Status Codes</a>. For information on printing purchase order status codes, see <a href="Report.Purchase Order Status.htm">Printing Purchase Order Status Codes</a>. For more on purchase orders, see <a href="PurchaseOrders.htm">Purchase Orders</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Browse.Purchase Order Status.htm">Viewing Purchase Order Status Codes</a></li>
+
+<li><a href="Edit.Purchase Order Status.htm">Editing Purchase Order Status Codes</a></li>
+
+<li><a href="Report.Purchase Order Status.htm">Printing Purchase Order Status Codes</a></li>
+</ul>
+<p><a href="Report.Purchase Order Assignee.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Purchase Order Status.htm">Next section &gt;</a></p>
+</body>
+</html>
+

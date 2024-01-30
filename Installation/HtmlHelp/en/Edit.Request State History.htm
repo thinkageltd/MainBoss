@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing Request State History Records</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Editing Request State History Records</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Request.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="RequestReports.htm">Next section &gt;</a></p>
+
+<p>Each time a work request changes its state&#8212;for example, when the request is marked as "In Progress"&#8212;MainBoss creates a request state history record. The state history records associated with a request tell the history of that request.</p>
+
+<p>You can change the effective date/time that's recorded in a request state history record; if so, this will be the date/time that appears on the request (although MainBoss also records the actual date/time of the state change). You can also record comments for the requestor and comments for maintenance personnel.</p>
+
+<p>On the operations <span class="CButton">In Progress (With Comment)</span>, <span class="CButton">Close Request (With Comment)</span>, <span class="CButton">Reopen</span> and <span class="CButton">Void</span>, MainBoss opens a window where you can record comments and other information. The window contains the following:</p>
+
+<p class="wi"><span class="CField">Number</span>: A read-only field identifying the request.</p>
+<p class="wi"><span class="CField">Current State History State</span>: A read-only field giving the current state of the request.</p>
+<p class="wi"><span class="CField">Current Status History Status</span>: A read-only field giving the current status of the request. For more on request statuses, see <a href="RequestStatusCodes.htm">Request Status Codes</a>.</p>
+<p class="wi"><span class="CField">Requestor</span>: Read-only fields giving the name and other information about the requestor.</p>
+<p class="wi"><span class="CField">Effective Date</span>: The effective date/time on which the request will enter the new state. Typically, this is the current date/time. However, you may wish to backdate some state changes; for example, if you're closing a request, you might wish to backdate the state change to the date/time when you actually finished work on the request.</p>
+<p class="wi"><span class="CField">User Contact</span>: A read-only field identifying the person who created this history record.</p>
+<p class="wi"><span class="CField">State</span>: A read-only field giving the state that the request will enter once you save this record.</p>
+<p class="wi"><span class="CField">Status</span>: A new status code that you want to assign to this request. Typically, a status code should only be assigned to a request when the request needs attention from someone; otherwise, the status should be blank.</p>
+<p class="wi"><span class="CField">Estimated Completion Date</span>: The date when you expect this request will be completed. If you fill in this field, the information will be displayed in several other records; if this request was created by the MainBoss Service module, the information will also be sent to the requestor.</p>
+<p class="wi"><span class="CField">Comment To Requestor</span>: A comment that should be passed on to the requestor. If you have the MainBoss Service module, this comment will be included in an acknowledgement to the requestor.</p>
+<p class="wi"><span class="CField">Comments</span>: Comments for maintenance personnel only. Presumably, these will explain why the history record needed to be changed.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window. This changes the state of the request.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window <span class="Emphasis">without</span> changing the state of the request.</p>
+<p>You can edit some of the information in an existing state history record; for example, you can add comments. To edit a request's state history records, you start from the <span class="CButton">State History</span> section of the request record. Select the state history record you want to edit, then click <span class="CButton">Edit</span>.</p>
+
+<p>For more on requests, see <a href="Requests.htm">Requests</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Report.Request.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="RequestReports.htm">Next section &gt;</a></p>
+</body>
+</html>
+

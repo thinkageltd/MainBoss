@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Task Demand Per Job Outside</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Task Demand Per Job Outside</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Task Demand Hourly Outside.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Task Demand Miscellaneous Cost.htm">Next section &gt;</a></p>
+
+<p>In the <span class="CButton">Task Outside</span> subsection of the <span class="CButton">Task Resources</span> section of a task record, <span class="CButton">New Task Demand Per Job Outside</span> lets you assign outside contractors to the associated task, paid on a per job basis. Whenever a work order is generated from the task, the work order will contain a <span class="CButton">Demand Per Job Outside</span> record for the specified contractor. (For more on demand per job outside records, see <a href="Edit.Demand Per Job Outside.htm">Demand Per Job Outside</a>.)</p>
+
+<p>When you click <span class="CButton">New Task Demand Per Job Outside</span> in a task record, MainBoss opens a window that contains the following:</p>
+
+<p class="wi"><span class="CButton">Details</span> section: Shows basic information for the record.</p>
+<p class="wi2"><span class="CField">Task</span>: The task that contains this demand.</p>
+<p class="wi2"><span class="CField">Per Job Outside</span>: A per job outside record specifying the contractor you want to assign to the job and the price paid for the contractor's services. For more on per job outside records, see <a href="PerJobOutside.htm">Per Job Outside</a>.</p>
+<p class="wi2"><span class="CButton">Leave total demanded cost blank when work order is created</span>: If you choose this option, generated work orders will not include cost estimates for this entry. You can supply an estimate after a work order is generated, or simply enter the actual cost once the job is finished.</p>
+<p class="wi2"><span class="CButton">Estimate total demanded cost when work order is created</span>: If you choose this option, generated work orders will have cost estimates for this entry.</p>
+<p class="wi2"><span class="CField">Demanded</span>: The quantity of work expected. This is usually 1 (i.e. you expect the job to be done as described in the per job outside record.)</p>
+<p class="wi2"><span class="CField">Actual Cost Default</span>: Specifies the default method for calculating costs when someone creates an "actual per job outside" in response to this demand. If the person who records the actual cost has sufficient security permissions, he or she can specify the cost in a different way. However, if the person who records the actual cost does not have permission to specify costs, what you specify on this demand determines the cost that MainBoss will use. Possible options are:</p>
+<p class="wi3"><span class="CButton">Manual entry</span>: If you choose this option, you expect the person who actualizes this demand to have appropriate security permissions to specify the actual cost of the work.</p>
+<p class="wi3"><span class="CButton">Current value calculation</span>: If you choose this option, the default is to calculate actual costs from the original per job outside record.</p>
+<p class="wi3"><span class="CButton">Demanded</span>: If you choose this option, the default is to use the estimated cost in the demand as a basis for the actual cost.</p>
+<p class="wi2"><span class="CField">Expense Category</span>: The expense category to which this expense belongs. For more on expense categories, see <a href="ExpenseCategories.htm">Expense Categories</a>.</p>
+<p class="wi"><span class="CButton">Purchase Per Job Outside Template</span>: Shows information on any corresponding hourly outside expenses found on any purchase order templates associated with this task.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on tasks, see <a href="Tasks.htm">Tasks</a>. For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>.</p>
+
+
+<p><a href="Edit.Task Demand Hourly Outside.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Task Demand Miscellaneous Cost.htm">Next section &gt;</a></p>
+</body>
+</html>
+

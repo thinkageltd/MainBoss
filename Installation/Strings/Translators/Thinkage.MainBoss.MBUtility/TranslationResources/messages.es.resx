@@ -1,0 +1,348 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Thinkage.MainBoss.MBUtility§&#xA;Deleted the user record for User '{0}', Scope '{1}'" type="" mimetype="">
+    <value>
+Borrado del registro por el usuario '{0}', Scope '{1}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§{0} {0.IsOne ? error was : errors were } encountered during import." type="" mimetype="">
+    <value>{0} {0.IsOne ? error was : errors were } encontrados durante la importacion.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§A User record and associated Contact record must be created but the /ContactCode command-line option has not been specified" type="" mimetype="">
+    <value>Un registro de usuario y registro de contacto asociados deben ser creados, pero el comando /ContactCode opción de la línea no se ha especificado</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Access failed: {0}" type="" mimetype="">
+    <value>Access failed: {0}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Access OK" type="" mimetype="">
+    <value>Access OK</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§All elements of lookup value must be provided" type="" mimetype="">
+    <value>Todos los elementos de valor de búsqueda debe ser siempre</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Always create a user record" type="" mimetype="">
+    <value>Todos los registros creados por el usuario</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Application" type="" mimetype="">
+    <value>Application</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Combination of 'not provided' and 'empty' lookup values not supported" type="" mimetype="">
+    <value>Combinación de "no previstos" y "búsqueda de vacío" valores no es compatible</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Created a user record for User '{0}', Scope '{1}'" type="" mimetype="">
+    <value>Creado un registro de usuario para el usuario '{0}', Scope '{1}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Created a user record for User '{0}', Scope '{1}', Contact Code '{2}'" type="" mimetype="">
+    <value>Creado un registro para el usuario '{0}', Scope '{1}', codigo contacto '{2}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Database Name" type="" mimetype="">
+    <value>Database Name</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Defaults" type="" mimetype="">
+    <value>Defaults</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Error {0}: {1}" type="" mimetype="">
+    <value>Error {0}: {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Error in XML Document" type="" mimetype="">
+    <value>Error en un documento XML</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Error in XML Schema" type="" mimetype="">
+    <value>Error en el esquema XML</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Export failed for table contents {0}" type="" mimetype="">
+    <value>Fallo de Exportación para el contenido de la tabla {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§First {0} error details" type="" mimetype="">
+    <value>Primero {0} detalles de error</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§For help, type 'mbutility help'" type="" mimetype="">
+    <value>Para obtener ayuda, tipo 'mbutility help'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Full error details can be found in {0}" type="" mimetype="">
+    <value>Detalles de error completo puede encontrarse en {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§import source '{0}' with value '{1}'" type="" mimetype="">
+    <value>importar fuente '{0}' con valor '{1}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Line {0}, Position {1}:{2}" type="" mimetype="">
+    <value>Línea {0}, Posición {1}:{2}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Linked reference for {0} picker is not visible." type="" mimetype="">
+    <value>De referencia vinculados para la {0} selector no es visible.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Lookup value not found" type="" mimetype="">
+    <value>Valor de búsqueda no se encuentra</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§MBUtility BreakIn command attempt by {0}" type="" mimetype="">
+    <value>MBUtility BreakIn comando atendido por {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§MBUtility BreakIn command completed by {0}" type="" mimetype="">
+    <value>MBUtility BreakIn comando completado por {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Modified permissions on existing user record for User '{0}', Scope '{1}'" type="" mimetype="">
+    <value>Se modificaron los permisos existentes al usuario '{0}', Scope '{1}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§No certificate issued to Thinkage Ltd. was found in the script &lt;Signature&gt; element" type="" mimetype="">
+    <value>No dispone del certificado expedido a Thinkage Ltd. se encuentra en la secuencia de comandos &lt;Signature&gt; element</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Order the list by the Database Name" type="" mimetype="">
+    <value>Order the list by the Database Name</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Order the list by the Database Server Name" type="" mimetype="">
+    <value>Order the list by the Database Server Name</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Organization" type="" mimetype="">
+    <value>Organization</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Organization {0} already exists; use the /+Replace option if you want to replace it" type="" mimetype="">
+    <value>Organización {0} ya existe; use el /+Replace la opcion</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Overwrite any existing organization of the same name" type="" mimetype="">
+    <value>Sobrescribir cualquier organización existente del mismo nombre</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Probe Status" type="" mimetype="">
+    <value>Probe Status</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Registry Key" type="" mimetype="">
+    <value>Registry Key</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Script '{0}' contains multiple &lt;Signature&gt; elements" type="" mimetype="">
+    <value>Secuencia '{0}' contiene multiples &lt;Signature&gt; elementos</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Selected" type="" mimetype="">
+    <value>Selected</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Server" type="" mimetype="">
+    <value>Server</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Show the real (registry) organization names as well as their display names" type="" mimetype="">
+    <value>Mostrar lo real (registro) los nombres de organización, así como sus nombres para mostrar</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Show the Start Default if any (and Last Selected Organization if different)" type="" mimetype="">
+    <value>Show the Start Default if any (and Last Selected Organization if different)</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Show the verion of the MainBoss Database, if the Database is accessable" type="" mimetype="">
+    <value>Show the verion of the MainBoss Database, if the Database is accessable</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify the /ErrorOutput: option to record all error details" type="" mimetype="">
+    <value>Especifique el / salida de error: opción para registrar todos los detalles del error</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify the name of the file containing the security definitions to be loaded" type="" mimetype="">
+    <value>Especifique el nombre del archivo que contiene las definiciones de seguridad que se cargan</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify the name of the file to backup the database " type="" mimetype="">
+    <value>Especifique el nombre del archivo de copia de seguridad de la base de datos</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify the name of the MainBoss user" type="" mimetype="">
+    <value>Especificar el nombre de usuario MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify the name of the script file to be run" type="" mimetype="">
+    <value>Especifique el nombre del archivo de comandos que se ejecute</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify the name of the Windows domain or machine name for this MainBoss user" type="" mimetype="">
+    <value>Especifique el nombre del dominio de Windows o el nombre de la máquina para este usuario MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify the name of the Windows user account associated with the MainBoss user" type="" mimetype="">
+    <value>Especifique el nombre de la cuenta de usuario de Windows asociada con el usuario MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Start" type="" mimetype="">
+    <value>Start</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Test if it is possible to connect to the referenced database and show error message if it is not possible" type="" mimetype="">
+    <value>Test if it is possible to connect to the referenced database and show error message if it is not possible</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§The Code value to use if a Contact record must be created" type="" mimetype="">
+    <value>El valor de código a utilizar es un registro de contacto que se debe crear</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§The name of the current user &quot;{0}&quot; is not in the expected form &quot;SCOPE\USER&quot;" type="" mimetype="">
+    <value>El nombre del usuario actual "{0}" no está en la forma esperada "SCOPE\USER"</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§The root element in script '{0}' is missing or has no content" type="" mimetype="">
+    <value>El elemento raíz en la escritura '{0}' no se encuentra o no tiene contenido</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§The schema identification {0} cannot be found." type="" mimetype="">
+    <value>La identificación de esquema {0} no se puede encontrar.</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§The script signature does not verify against the Thinkage Ltd. certificate in the &lt;Signature&gt; element or this certificate is invalid" type="" mimetype="">
+    <value>La firma de secuencias no concuerda con el registro de Thinkage &lt;Signature&gt; El elemento del certificado no es valido</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§There are no saved organizations" type="" mimetype="">
+    <value>There are no saved organizations</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§There was a problem validating access to the database {0} on server {1}" type="" mimetype="">
+    <value>There was a problem validating access to the database {0} on server {1}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Unable to access database {0} on server {1}" type="" mimetype="">
+    <value>No tiene acceso a la base de datos {0} en el servidor {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Unable to export to {0}" type="" mimetype="">
+    <value>No se puede exportar a {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Unable to read import file {0}" type="" mimetype="">
+    <value>No se puede leer el archivo importado {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Unable to relate TblSchema of lookup table ({0}) to linked table ({1})" type="" mimetype="">
+    <value>Incapaz de relacionarse TblSchema de la tabla de búsqueda ({0}) en la tabla ({1})</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Undeleted a user record for User '{0}', null Scope" type="" mimetype="">
+    <value>Recuperando un registro para el usuario '{0}', null Scope</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Undeleted a user record for User '{0}', Scope '{1}'" type="" mimetype="">
+    <value>Recuperando un registro para el usuario '{0}', Scope '{1}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§User table change attempt using SQL CONTROL permission" type="" mimetype="">
+    <value>El cambio en la tabla no tiene permisos 'SQL CONTROL'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§User table change using SQL CONTROL permission completed" type="" mimetype="">
+    <value>Cambios de la tabla de permisos 'SQL CONTROL' completada</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Verify that the organization database is accessible" type="" mimetype="">
+    <value>Compruebe que la base de datos de la organización es accesible</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Version" type="" mimetype="">
+    <value>Version</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§You may only use this command if you have (somehow) been granted CONTROL rights in SQL on this database" type="" mimetype="">
+    <value>Usted sólo puede utilizar este comando si tiene (de alguna manera) ha concedido los derechos de CONTROL en esta base de datos en SQL</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§You must specify an Organization Name or both a Database Name and Server Name" type="" mimetype="">
+    <value>You must specify an Organization Name or both a Database Name and Server Name</value>
+    <comment>New!</comment>
+  </data>
+</root>

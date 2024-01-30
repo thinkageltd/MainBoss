@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Overwriting a Maintenance Organization with Data from a Backup File</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Overwriting a Maintenance Organization with Data from a Backup File</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="DemonstrationMaintenanceOrganizations.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Organization.CreateFromBackup.htm">Next section &gt;</a></p>
+
+<p>You should backup your maintenance organization database on a regular basis. For an explanation of how to do this, see <a href="Browse.Backup.htm">Backups</a>. The <a href=" " >Installation and Administration Guide</a> provides additional information about backups and restores, including how to use SQL Server facilities directly.</p>
+
+<p>To restore a backed-up database, you can use <span class="CButton">Restore Organization</span> in the Maintenance Organization window (see <a href="Browse.Organization.htm">Your Maintenance Organization List</a>). This restore operation uses SQL Server facilities to overwrite an existing database with the data contained in a backup file.</p>
+
+<p><span class="CInset">Important Notes about Restoring Databases: </span>There are two operations for restoring databases from backup:</p>
+
+<ul class="b1"><li><span class="CButton">Restore Organization</span> overwrites an existing database. First you select the database to be overwritten (by clicking on the entry for that database in your Maintenance Organization list), then you click on <span class="CButton">Restore Organization</span> to specify the backup file you want to use.
+
+<br /><br />Typically, you would use <span class="CButton">Restore Organization</span> if you made some sort of large-scale error that you wanted to undo (e.g. mistakenly generating and committing a large number of planned maintenance work orders). <span class="CButton">Restore Organization</span> is not intended for situations where your database is no longer usable (because it's been deleted or corrupted).</li>
+<li><span class="CButton">Create New Organization from a Backup</span> creates a new database using data from a backup file.
+
+<br /><br />Typically, you would use <span class="CButton">Create New Organization from a Backup</span> if your original database has been deleted or corrupted. You could also use this operation if you wanted to create a test database using data obtained from your production database.
+</li></ul><p>In both cases, MainBoss performs the operation by submitting requests to SQL Server. You must therefore have SQL Server Administrator privileges to perform either operation.</p>
+
+<p>When you use <span class="CButton">Restore Organization</span>, all MainBoss users will have the same MainBoss security roles that they did at the time the backup was created. In particular, the person who does the restore operation doesn't get any special permissions&#8212;just the ones that he or she already had at the time of the backup. On the other hand, <span class="CButton">Create New Organization from a Backup</span> gives the creator all security roles on the new database, no matter what roles were originally recorded in the backup file. This lets the creator use the new database for any purpose.</p>
+
+<p>Restore operations are run by SQL Server itself on the computer where SQL Server is running. Because SQL Server does the work, the backup file that will be used must be accessible to the login name under which SQL Server runs. Furthermore, the name of the backup file should be relative to the computer where SQL Server is running. Unless the file name explicitly begins with <span class="CU">\\computer</span> or a drive name (e.g. <span class="CU">C:\</span>), the file name will be assumed to be relative to SQL Server's home directory. (This is true even if the file name begins with a <span class="CU">\</span>.)</p>
+
+<p>For example, suppose SQL Server is running on Computer X and you submit a restore request while working on Computer Y. MainBoss will ask you to specify the name of the backup file containing the database you want to restore. Suppose you give the name</p>
+
+<pre>C:\MyBackups\Monday.bak</pre>
+
+<p>You may think this refers to a file on Computer Y's <span class="CU">C:</span> drive. However, the restore operation is performed by SQL Server on Computer X; therefore, SQL Server will try to find the file on Computer X's <span class="CU">C:</span> drive, not Computer Y. If the directory <span class="CU">C:\MyBackups</span> doesn't exist on Computer X (or if SQL Server's login name doesn't have permissions to read that folder), you'll get an error message and the restore operation won't work.</p>
+
+<p>For this reason, we recommend that you only submit restore requests while logged in to the computer where SQL Server is running. You should also be aware of what permissions SQL Server has and what files will actually be accessible to SQL Server's login name.</p>
+
+<p><span class="CInset">Backup Format:</span> There are several different ways to create a backup with Microsoft SQL Server. MainBoss assumes that you did the backup using the backup facilities inside MainBoss itself, or in some other way that uses the same backup format. However, it is possible to create database backup files in such a way that MainBoss cannot restore from the file. This happens when you do the backup with SQL Server Management Studio and specify options that create backup files whose format is different than the one MainBoss expects.</p>
+
+<p>In this case, you can still restore the database from the backup file. You just have to use SQK Server Management Studio directly, rather than using MainBoss.</p>
+
+<p><span class="CInset">Command Format:</span> When you click <span class="CButton">Restore Organization</span>, MainBoss displays a window that lists all known backups of this database. To restore your database from a particular backup, click the backup in the list, then click the <span class="CButton">Restore</span> button.</p>
+
+<p class="box"><span class="CInset">Note:</span> Instead of using <span class="CButton">Restore Organization</span>, you may prefer to use the standard restoration facilities within SQL Server Management Studio or Management Studio Express. For more information, see the <a href=" " >Installation and Administration Guide</a>.</p>
+
+
+<p><a href="DemonstrationMaintenanceOrganizations.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Organization.CreateFromBackup.htm">Next section &gt;</a></p>
+</body>
+</html>
+

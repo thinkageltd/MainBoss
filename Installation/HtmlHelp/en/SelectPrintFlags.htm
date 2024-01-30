@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Select Print Flags</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Select Print Flags</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="CustomizedReportSettings.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="PaperSizeandMargins.htm">Next section &gt;</a></p>
+
+<p>Work orders, requests, and purchase orders have a checkbox labeled <span class="CButton">Select for Printing</span>. The purpose of this is to simplify the task of printing a number of newly created records in a single print run.</p>
+
+<p>For example, suppose you create a number of new work orders (possibly through the use of <span class="CPanel">Unit Maintenance Plans</span> | <span class="CPanel">Generate Planned Maintenance</span>). By default, <span class="CButton">Select for Printing</span> is checkmarked in every new work order. To print all the work orders you just created, go to <span class="CPanel">Work Orders</span> | <span class="CPanel">Print</span>, go to the <span class="CButton">Filters</span> section, and checkmark <span class="CButton">Select for Printing</span> in the "<span class="CField">Work Order Filters</span>" options. (Click <span class="CButton">Apply Filter</span> in the resulting window.)</p>
+
+<p>This tells MainBoss that you want to print all work orders where <span class="CButton">Select for Printing</span> is checkmarked. Once you've printed all those work orders, you can click the <span class="CButton">Clear Select for Printing</span> button (in the window for printing work orders). This removes the checkmark from <span class="CButton">Select for Printing</span> in <span class="Emphasis">all</span> work orders. The next time you ask to print <span class="CButton">Select for Printing</span> work orders, you'll only print work orders created <span class="Emphasis">after</span> you clicked <span class="CButton">Clear Select for Printing</span>.</p>
+
+<p>A maintenance department might decide to print off work orders at the end of each day. During the day, work orders are created with <span class="CButton">Select for Printing</span> checkmarked. At the end of the day, you print all work orders with <span class="CButton">Select for Printing</span> checkmarked, then <span class="CButton">Clear Select for Printing</span> on all work orders. In this way, you only have to make one work order print-run per day.</p>
+
+<p>The same principle applies to requests and purchase orders. When a new one is created, <span class="CButton">Select for Printing</span> is checkmarked. Once you've printed requests or purchase orders, you can use <span class="CButton">Clear Select for Printing</span> to remove the checkmarks and start over again with no records waiting to be printed.</p>
+
+<p><span class="CInset">Note:</span> Suppose you use <span class="CPanel">Work Orders</span> | <span class="CPanel">Print</span> to prepare a report of all work orders that have <span class="CButton">Select for Printing</span> turned on. Then suppose that you spend some time previewing the report before you print it out. Finally, you click <span class="CButton">Clear Select for Printing</span>. This turns off <span class="CButton">Select for Printing</span> on <span class="Emphasis">all</span> work orders, including any that were created while you were previewing the report. The report won't include those new work orders (because they were created after the report was prepared), but you'll turn off <span class="CButton">Select for Printing</span> anyway.</p>
+
+<p>This demonstrates that you shouldn't leave a long gap between the time you create a "select print flag" report and the time you <span class="CButton">Clear Select for Printing</span>. The same principle applies for requests and purchase orders.</p>
+
+
+<p><a href="CustomizedReportSettings.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="PaperSizeandMargins.htm">Next section &gt;</a></p>
+</body>
+</html>
+

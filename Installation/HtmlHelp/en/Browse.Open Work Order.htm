@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Viewing Open Work Orders</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Viewing Open Work Orders</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.Draft Work Order.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Unassigned Work Order.htm">Next section &gt;</a></p>
+
+<p>An open work order contains all the information you need before starting a job. You view open work orders with <span class="CPanel">Work Orders</span> | <span class="CPanel">Open Work Orders</span>. The window contains the following:</p>
+
+<p class="wi"><span class="CButton">View</span> section: Shows all work orders that are currently open.</p>
+<p class="wi2"><span class="CField">Number</span>: Click this heading to sort the list by work order number. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Priority</span>: Click this heading to sort the list by priority. Click again to reverse the order.</p>
+<p class="box">Work orders with explicit priorities are considered more urgent than ones where the priority field is blank. Therefore, if you sort your work orders by priority, those with no explicit priority will come last.</p>
+
+<p class="wi2"><span class="CField">Current State History Status</span>: Click this heading to sort the list by work order status. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Subject</span>: Click this heading to sort the list by subject. Click again to reverse the order.</p>
+<p class="wi2"><span class="CButton">Apply Filter</span>: Lets you set up a <span class="NewTerm">filter</span> to select which records should be shown in the table. For more information, see <a href="Filter.htm">Table Filters</a>.</p>
+<p class="wi2"><span class="CButton">Details</span> section: Shows basic information from the selected record.</p>
+<p class="wi2"><span class="CButton">Assignments</span> section: Shows people assigned to the selected work order.</p>
+<p class="wi2"><span class="CButton">Service Contracts</span> section: Lists any service contracts associated with the unit in the selected work order. For more on service contracts, see <a href="ServiceContracts.htm">Service Contracts</a>. For more on units, see <a href="Units.htm">Units</a>.</p>
+<p class="wi2"><span class="CButton">Resources</span> section: Lists any resources associated with the selected work order. For more on resources, see <a href="Resources.htm">Resources</a>.</p>
+<p class="wi2"><span class="CButton">Temporary Storage</span> section: Lists any temporary storage locations associated with the selected work order, as well as the contents of those locations. For more on temporary storage, see <a href="Edit.Temporary Storage.htm">Temporary Storage Locations</a>.</p>
+<p class="wi2"><span class="CButton">Meters</span> section: Lists any meters in the unit of the selected work order. For more on meters, see <a href="Meters.htm">Meters</a>.</p>
+<p class="wi2"><span class="CButton">Purchase Orders</span> section: Lists any purchase orders associated with the selected work order. For more on purchase orders, see <a href="PurchaseOrders.htm">Purchase Orders</a>.</p>
+<p class="wi2"><span class="CButton">Chargebacks</span> section: Lists any chargebacks associated with the selected work order. For more on chargebacks, see <a href="Chargebacks.htm">Chargebacks</a>.</p>
+<p class="wi2"><span class="CButton">Requests</span> section: Lists any requests associated with the selected work order. For more on requests, see <a href="Requests.htm">Requests</a>.</p>
+<p class="wi2"><span class="CButton">State History</span> section: Lists records that show when the selected work order changed state. For more on work order state history, see <a href="Edit.Work Order State History.htm">Editing Work Order State History Records</a>.</p>
+<p class="wi2"><span class="CButton">New Task From Work order</span>: Opens a window where you can create a new task based on information from a selected work order. For example, the new task record will start off with the same subject line as the original work order, the same work description and so on. You then have the option of editing these fields before you make the final task record. For more, see <a href="Edit.Task From Work Order.htm">Tasks Created from Work Orders</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
+<p class="wi3"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
+<p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi2"><span class="CButton"><img src="PrintHS.png" alt="Print" /></span>: Opens a window where you can print some or all of your work orders. For more information, see <a href="Report.Work Order.htm">Printing Work Orders</a>.</p>
+<p class="wi2">State change actions: A drop-down button which offers a list of actions that can be used to change the state of the work order. The current state of the work order determines which actions are enabled; it also determines which action is displayed as the label for the button. In the open work order viewer, the only enabled state-change actions are:</p>
+<p class="wi3"><span class="CButton">Close Work Order</span>: Changes an open work order into a closed one. Closing a work order suggests that the job is finished and you have recorded all relevant information about the work.</p>
+<p class="wi3"><span class="CButton">Close Work Order (With Comment)</span>: Same as <span class="CButton">Close Work Order</span>, except that MainBoss will also open a window where you can record a comment about what you're doing.</p>
+<p class="box">If you have specified the appropriate request transition options, closing a work order automatically closes each linked request, provided that each request only has one linked work order. For more on this option, see <a href="Edit.Work Order Request Transition.htm">Specifying Request State Transitions</a>.</p>
+
+<p class="wi3"><span class="CButton">Suspend</span>: Changes an open work order into a draft one. You might do this if you find that you need to make significant changes to the work order. MainBoss opens a window where you may record a comment explaining why you're suspending the work order.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Lets you search through the list of records for a particular record. For more information, see <a href="Search.htm">Searching for a Particular Record</a>. The <span class="CButton"><img src="Find_VS.png" alt="Search" /></span> button has an accompanying drop-down list containing the following:</p>
+<p class="wi3"><span class="CButton">Find Next</span>: Uses the same search condition(s) as your most recent search and finds the next record in the table that matches the condition(s). If the search reaches the end of the table without finding a matching record, it goes to the start of the table and continues the search.</p>
+<p class="wi3"><span class="CButton">Find Previous</span>: Same as <span class="CButton">Find Next</span> except that it goes backward in the table. If the search reaches the start of the table without finding a matching record, it goes to the end of the table and continues the search.</p>
+<p class="wi2"><span class="CButton">Add Work Order Comment</span>: Adds a comment to the selected work order. The comment is recorded in a state history record. For more, see <a href="Edit.Work Order State History.htm">Editing Work Order State History Records</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p>For more information on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For more information on creating or editing work order records, see <a href="Edit.Work Order.htm">Editing Work Orders</a>. For general information on table viewers, see <a href="UsingTableViewers.htm">Using Table Viewers</a>.</p>
+
+
+<p><a href="Browse.Draft Work Order.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Unassigned Work Order.htm">Next section &gt;</a></p>
+</body>
+</html>
+

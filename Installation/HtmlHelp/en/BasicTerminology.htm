@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Basic Terminology</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Basic Terminology</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="MainBossConcepts.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="TheMainBossControlPanel.htm">Next section &gt;</a></p>
+
+<dl><dt><i>Table</i></dt>
+<dd>A table is a list of entries, each of which contains information about something. For example, the Contacts table lists contact information for people involved in your operations. Each entry in the Contacts table contains contact information for a single person.</dd></dl>
+
+<dl><dt><i>Identifier code</i></dt>
+<dd>Each entry in a table must be given an identifier code. No two entries in the same table should be given the same code.</dd></dl>
+
+<dl><dt><i>Location</i></dt>
+<dd><span class="NewTerm">Locations</span> refer to anywhere you perform maintenance. The simplest type of location is a <span class="NewTerm">postal address</span>: a building or a set of buildings that all have the same postal address.
+
+<br /><br />Locations may contain <span class="NewTerm">sublocations</span>. For example, you might consider the floors in a building to be separate sublocations of the building, and the rooms on a floor to be sublocations of the floor. You might even divide large rooms into more sublocations (e.g. "northeast corner", "southeast corner", etc.) so that workers can quickly find work sites.
+
+<br /><br />Almost everything you do with MainBoss has location information attached. For example, work orders specify the location(s) where work should be performed.</dd></dl>
+
+<dl><dt><i>Unit</i></dt>
+<dd>"Unit" is a general term for anything that might require maintenance. For example, this includes pieces of equipment and locations. It's up to you to decide what constitutes a separate unit. For example, you might consider a complete assembly line as a single unit, or you might choose to regard the line as a <span class="NewTerm">system</span> made up of many separate units.
+
+<br /><br />Units may contain <span class="NewTerm">subunits</span>. For example, you might think of a forklift truck as containing two subunits: the lift mechanism and the truck. This may be a useful distinction if your maintenance department has specialists that only deal with certain parts of a piece of equipment.
+
+<br /><br />Every unit has an associated location. In fact, units are considered locations&#8212;sublocations of larger locations. (Sometimes it's more useful to tell a worker, "Go to Drill Press #4," than to say, "Go to the northeast corner of the manufacturing floor.")</dd></dl>
+
+<dl><dt><i>Request</i></dt>
+<dd>A request (or work request) is typically based on a complaint from someone outside the maintenance department. It states preliminary information about the problem: the location, the name of the person reporting the problem, the date/time the report was received, and a brief description of the problem itself.</dd></dl>
+
+<dl><dt><i>Work order</i></dt>
+<dd>A work order is a detailed description of work to be done; typically, this can be printed off and handed to the personnel assigned to do the work.</dd></dl>
+
+A work order is more detailed than a work request. For example, a work order may specify the amount of time the job is expected to take, the materials to be used, and so on. Such details are not present in a work request. In general, work requests are designed so they can be filled out by non-maintenance personnel (for example, a department secretary) while work orders are usually filled out by maintenance management.
+
+When you create a new work order using the information from an existing work request, we say that the work request has been <span class="NewTerm">transferred</span> to the work order.
+
+<dl><dt><i>Corrective and planned work orders</i></dt>
+<dd>A <span class="NewTerm">corrective</span> work order specifies work to be done in order to solve a problem.</dd></dl>
+
+A <span class="NewTerm">planned</span> work order is prepared automatically by MainBoss's facilities for scheduling planned preventive maintenance. Planned work orders usually specify check-lists or step-by-step <span class="NewTerm">tasks</span> that need to be done in planned maintenance operations.
+
+<dl><dt><i>Report</i></dt>
+<dd>A report provides information extracted from MainBoss's files. MainBoss can create many different types of reports, including work histories, cost summaries, equipment lists, and so on. Reports can be run off on a printer or displayed on your monitor screen.</dd></dl>
+
+<dl><dt><i>Charts</i></dt>
+<dd>A chart is a type of report that displays information in a graphical format. Chart reports contain one or more bar charts with either vertical or horizontal bars. Some charts use different colors to show different types of information; for example, they may show preventive maintenance work orders in one color and unplanned corrective work orders in a different color.</dd></dl>
+
+<dl><dt><i>Items</i></dt>
+<dd>Items are materials used in the course of your maintenance work, such as spare parts, chemicals, and so on.</dd></dl>
+
+<dl><dt><i>Coding Definitions</i></dt>
+<dd>Your coding definitions are tables which contain information that isn't expected to change on a day-to-day basis. For example, this includes information on the vendors from whom you purchase materials. Most maintenance departments buy from the same set of vendors most of the time. Since information about vendors (e.g. phone numbers and addresses) won't change very often, it's separated from other maintenance activities where information changes frequently (e.g. your work orders and requests).
+
+<br /><br />In some sense, coding definitions reflect the underlying structure of your maintenance operations, as opposed to the day-to-day details. For this reason, many maintenance departments only allow administrators to change coding definitions.</dd></dl>
+
+<dl><dt><i>MainBoss Administration</i></dt>
+<dd>A collection of operations usually reserved for the person who is in charge of MainBoss in your organization. The administrative features of MainBoss can control who is and isn't allowed to use specific MainBoss functions.</dd></dl>
+
+<dl><dt><i>Security Roles:</i></dt>
+<dd>Security roles determine what you can and can't do within MainBoss. Your MainBoss administrator assigns security roles to you. These determine what MainBoss operations you can perform.
+
+<br /><br /><span class="CInset">Important:</span> Your security roles determine what you can and can't see in MainBoss. For example, if you aren't permitted to see a certain type of information, that information won't be displayed in MainBoss windows. Therefore, what you see on your screen may differ from the pictures displayed in this guide.</dd></dl>
+
+<p class="box">What you see on your screen is also affected by form customizations and settings. (For more information, see <a href="CustomizedTableSettings.htm">Customized Table Settings</a>.) This is another reason why the pictures in this manual may differ from what you actually see when using MainBoss.</p>
+
+
+<p><a href="MainBossConcepts.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="TheMainBossControlPanel.htm">Next section &gt;</a></p>
+</body>
+</html>
+

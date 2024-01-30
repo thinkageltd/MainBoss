@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+		<Property Id="ResourcesProperty" Value="0" Hidden="yes"/>
+		<WixVariable Id="WixUILicenseRtf" Value="..\License\license-en-us.rtf"/>
+		<WixVariable Id="WixUIBannerBmp" Value="..\WiX\WixUIBannerBmp.bmp"/>
+		<WixVariable Id="WixUIDialogBmp" Value="..\WiX\WixUIDialogBmp.bmp"/>
+	</Fragment>
+</Wix>

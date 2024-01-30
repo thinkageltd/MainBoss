@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Contacts</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Contacts</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Access Code.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Contact.htm">Next section &gt;</a></p>
+
+<p>The <span class="CPanel">Contacts</span> table lets you record information about people you may need to contact for your maintenance work. This includes vendors, employees, clients, and anyone else whose contact information may be useful.</p>
+
+<p>A contact record contains such information as phone numbers, email addresses, and web addresses. To specify a street address, you create a location record (for more information, see <a href="Locations.htm">Locations</a>). You can create the location record first and then the contact record, or vice versa.</p>
+
+<p><span class="CInset">Active Directory:</span> People inside your organization may have information about them in your network's Active Directory. Active Directory is a feature of Windows; for every login name, Active Directory records various types of information about a person, including name, email address(es), phone number(s), and more.</p>
+
+<p>When you create a contact record, MainBoss can check Active Directory to see if the person is in your network's Active Directory. If so, MainBoss can obtain information from the Active Directory record and fill that information into the contact record. This helps you avoid typing in the information directly. It may also help you obtain more complete, more up-to-date information about the person.</p>
+
+<p>To create a contact record using Active Directory information, click <span class="CButton">Create from Active Directory</span> in <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Contacts</span>. For more information, see <a href="Browse.Contact.htm">Viewing Contacts</a>. You can also use <span class="CButton">Initialize all from Active Directory</span> in the contact record editor; for more information, see <a href="Edit.Contact.htm">Editing Contacts</a>.</p>
+
+<p>When you create a contact record with information from Active Directory, the record's "<span class="CField">AD Reference</span>" field is filled in with an identification code from Active Directory. This code is unique; if, for example, you have two John Smiths in your organization, each will have a different ID code (technically called a GUID).</p>
+
+<p class="box">Information filled into the contact record is <span class="Emphasis">not</span> automatically saved&#8212;it will only get saved when you click the editor's <span class="CButton">Save</span> button. We strongly recommend that you check the filled-in information to make sure you got the right person before you <span class="CButton">Save</span>. If it's the wrong person, you can just click <span class="CButton">Cancel</span> to restore the original information.
+
+<br /><br />Once the "<span class="CField">AD Reference</span>" field is filled in and saved, its value is difficult to change; you can only do so with the MBUtility command. (For more on MBUtility, see the MainBoss <a href=" " >Installation and Administration Guide</a>.)</p>
+
+<p>MainBoss also lets you update existing contact records from Active Directory. For example, suppose a person's phone number changes. If your organization's Active Directory is kept up to date, you can get the new phone number by opening up the contact record in the contact record editor and clicking <span class="CButton">Update all from Active Directory</span>. This updates all the fields in the contact record with information from Active Directory (if any). Note that this only works if you've filled in enough fields for MainBoss to determine the correct Active Directory record (e.g. the person's name or email address).</p>
+
+<p>When you create or update contact information from Active Directory, MainBoss adds a message to the contact record's "<span class="CField">Comments</span>" field, indicating when the operation was done. This lets you see how recently you've checked the contact record against Active Directory.</p>
+
+<p class="box"><span class="CInset">Note:</span> Active Directory runs on Windows systems. However, there are network services on other systems (e.g. Linux) which claim to be compatible with Active Directory. If they truly are compatible, then MainBoss should work with those services too.</p>
+
+<p>For information on viewing contacts, see <a href="Browse.Contact.htm">Viewing Contacts</a>. For information on creating and editing contacts, see <a href="Edit.Contact.htm">Editing Contacts</a>. For information on printing contact information, see <a href="Report.Contact.htm">Printing Contacts</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Browse.Contact.htm">Viewing Contacts</a></li>
+
+<li><a href="Edit.Contact.htm">Editing Contacts</a></li>
+
+<li><a href="Browse.User Principal.htm">User Principals</a></li>
+
+<li><a href="Edit.Unit Related Contact.htm">Unit-to-Contact Relationships</a></li>
+
+<li><a href="Browse.Culture Information.htm">Viewing Culture Information</a></li>
+
+<li><a href="Report.Contact.htm">Printing Contacts</a></li>
+</ul>
+<p><a href="Report.Access Code.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Contact.htm">Next section &gt;</a></p>
+</body>
+</html>
+

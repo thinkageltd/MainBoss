@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Locations</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Locations</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Void Code.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Location.htm">Next section &gt;</a></p>
+
+<p>The <span class="CPanel">Locations</span> table stores information on all locations used in your work. This includes buildings, storerooms, addresses of vendors, and even the locations of the units you maintain.</p>
+
+<p>The simplest type of location is a <span class="NewTerm">postal address</span>. A record for a postal address stores all the usual address information&#8212;street address, city, country, etc.</p>
+
+<p>A <span class="NewTerm">sublocation</span> is a location inside another location. For example, suppose you have a postal address record representing an office building. You might create sublocation records for each floor inside that building. You might then create more sublocations for office suites on each floor; these records are <span class="NewTerm">inside</span> the individual floor records. You could also create records for each room inside each office suite, and so on.</p>
+
+<p>This set-up is similar to the way that folders under Windows can contain subfolders, which can contain other subfolders, which can contain individual files. When MainBoss displays the Locations table, you'll see a picture of what contains what in the same way that Windows Explorer shows the structure of your folders and files. This is called a <span class="NewTerm">location map</span>.</p>
+
+<p class="box">In practice, you set up one or more postal address records first, then define locations within each postal address.</p>
+
+<p>Location records are used extensively throughout MainBoss Advanced. Here are some examples:</p>
+
+<ul class="b1"><li>A contact record can have an associated location record giving that contact's address information. The same goes for personnel records.</li>
+<li>A unit record has a location record telling where the unit is.</li>
+<li>An item record can have multiple locations associated with it, indicating places where the item is stored (i.e. what MainBoss Basic called storerooms).
+</li></ul><p>In addition to the types of locations already discussed, MainBoss allows a number of other location types:</p>
+
+<ul class="b1"><li>Units may be considered locations. For example, you can talk about the location of a piece of equipment; for more, see <a href="Units.htm">Units</a>.</li>
+<li><span class="NewTerm">Temporary storage locations</span> are places where spare parts and other materials may be stored before and during a specific job. For more, see <a href="Edit.Temporary Storage.htm">Temporary Storage Locations</a>.</li>
+<li><span class="NewTerm">Temporary storage locations for tasks</span> are places where spare parts and other materials may be stored every time you do a planned maintenance task. For more, see <a href="Edit.Task Temporary Storage Assignment.htm">Editing Task Temporary Storage Assignments</a>.</li>
+<li><span class="NewTerm">Storerooms</span> are locations where spare parts and other materials may be stored in the long term (as opposed to just for a single job). For more, see <a href="Storerooms.htm">Storerooms</a>.
+</li></ul><p>For information on viewing locations, see <a href="Browse.Location.htm">Viewing Locations</a>. For information on creating and editing postal address records, see <a href="Edit.Postal Address.htm">Editing Postal Addresses</a>. For information on creating and editing sublocation records, see <a href="Edit.Sub Location.htm">Editing Sublocations</a>. For information on printing location records, see <a href="Report.Location.htm">Printing Location Information</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Browse.Location.htm">Viewing Locations</a></li>
+
+<li><a href="Browse.Non-Temporary Location.htm">Viewing Non-Temporary Locations</a></li>
+
+<li><a href="Edit.Postal Address.htm">Editing Postal Addresses</a></li>
+
+<li><a href="Edit.Sub Location.htm">Editing Sublocations</a></li>
+
+<li><a href="Report.Location.htm">Printing Location Information</a></li>
+</ul>
+<p><a href="Report.Void Code.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Location.htm">Next section &gt;</a></p>
+</body>
+</html>
+

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Table Filters</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Table Filters</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Search.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="CustomizedTableSettings.htm">Next section &gt;</a></p>
+
+<p>A <span class="NewTerm">table filter</span> tells MainBoss to display a subset of all the records that are in a particular table. In other words, it "filters out" records that you don't want to see.</p>
+
+<p>For example, suppose you want to see which jobs are scheduled to begin today. You could set up a filter on the <span class="CPanel">Work Orders</span> table saying that you only want to see work orders whose "<span class="CField">Work Start Date</span>" is today. MainBoss would then filter out any work orders that started on some other day, so that the table viewer only displays work orders starting today.</p>
+
+<p>As another example, suppose you only want to see information on units in your HVAC system. You could set up a filter on the <span class="CPanel">Units</span> table saying that you only want to see work orders whose "<span class="CField">System</span>" is <span class="CU">HVAC</span>. MainBoss would then filter out non-HVAC unit records, so that the table viewer only displays HVAC units.</p>
+
+<p>You can specify a filter in any table viewer. To do so, click the filter set-up button beneath the table's list of records:</p>
+
+<p> <img src="image011.png" alt="MainBoss" /></p>
+
+<p>This opens a window similar to the one used to search for individual records. Use this window to specify which records you want to see. For example, suppose you're in the <span class="CPanel">Items</span> window and you specify</p>
+
+<p><img src="image012.png" alt="MainBoss" /></p>
+
+<p>This indicates that you only want MainBoss to display item records whose "<span class="CField">Description</span>" field starts with the letter B. Once you enter this information, click the <span class="CButton">Apply Filter</span> button. You'll see that the table viewer changes so that it only shows records that match what you've specified. If you <span class="CButton">Close</span> the filter window, the table remains filtered. To return to the table's usual state, click the <span class="CButton"><img src="Delete.png" alt="Delete" /></span> button associated with the filter.</p>
+
+<p>When you specify one condition, MainBoss gives you a new line where you can specify an additional condition. Each time you specify a condition, MainBoss gives you a new line for more.</p>
+
+<p>If you specify multiple conditions, MainBoss only shows records that satisfy all the specified conditions. For example, suppose you're filtering the <span class="CPanel">Requests</span> table. One condition might specify that you only want to see requests on a particular unit. A second condition might specify that you only want to see requests with a particular priority code. MainBoss will then display all requests on that unit with the given priority code.</p>
+
+<p>The filter set-up window contains the following:</p>
+
+<p class="wi">Fields, filter conditions, values: Select the records to be displayed. You specify your selections in the same way that you specifying search conditions when searching for a particular record.</p>
+<p class="wi"><span class="CButton">Apply Filter</span>: If you click this button, MainBoss immediately filters the table using the given criteria. Note that the table does not get filtered until you click this button.</p>
+<p class="wi"><span class="CButton">Disable Filter</span>: If you click this button, MainBoss stops filtering the table&#8212;you see all the records you normally would.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window where you specify filters. If you have not clicked <span class="CButton">Apply Filter</span>, MainBoss will <span class="Emphasis">not</span> filter the table. Furthermore, MainBoss will not record any filter conditions you've specified&#8212;the next time you open the filter window, you'll start from scratch again.</p>
+<p>On every table viewer, there is a checkbox labeled <span class="CButton">Apply Filter</span>. If this box is blank, the table is unfiltered&#8212;you see everything you'd usually see. If you checkmark the box, the table will be filtered using the filter that is currently defined. By blanking or checkmarking the box, you can switch back and forth between filtered and unfiltered displays.</p>
+
+<p>Some filters let you specify patterns rather than specific character strings. For example,</p>
+
+<pre>Description    Matches Pattern   .*furnace.*</pre>
+
+<p>corresponds to any <span class="CU">Description</span> which contains the string "furnace" anywhere. (The <span class="CU">.*</span> pattern is a particularly useful one which stands for any string of zero or more characters.) Patterns are often called <span class="NewTerm">regular expressions</span>, and MainBoss supports any regular expression as defined in the Microsoft .NET environment. For more information, see</p>
+
+<pre><a href="http://www.codeproject.com/KB/dotnet/regextutorial.aspx">http://www.codeproject.com/KB/dotnet/regextutorial.aspx</a> </pre>
+
+<p class="box">Request, work order and purchase order tables are also affected by the <span class="NewTerm">active filter</span>. For more, see <a href="Edit.Active Filter.htm">The Active Filter</a>.</p>
+
+<p>For more on using table viewers, see <a href="UsingTableViewers.htm">Using Table Viewers</a>.</p>
+
+
+<p><a href="Search.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="CustomizedTableSettings.htm">Next section &gt;</a></p>
+</body>
+</html>
+

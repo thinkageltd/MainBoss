@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing Unit Maintenance Plans</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Editing Unit Maintenance Plans</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.Unit Maintenance Plan.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Unit Maintenance Plan.htm">Next section &gt;</a></p>
+
+<p>You create or modify unit maintenance plans using the unit maintenance plan editor. The usual way to open the editor is to click <span class="CButton">New Unit Maintenance Plan</span> or <span class="CButton">Edit</span> in the <span class="CButton">View</span> section of <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Unit Maintenance Plans</span>.</p>
+
+<p>The unit maintenance plan record includes the following information:</p>
+
+<ul class="b1"><li>What planned maintenance work should be done (the task)</li>
+<li>When the work should be done (the schedule)</li>
+<li>What location or piece of equipment should receive the work (the unit)
+</li></ul><p>The unit maintenance plan record also has to specify a <span class="NewTerm">timing basis</span>. Roughly speaking, this means when the clock starts ticking for rescheduling the same work again. For examples of how the timing basis works, see <a href="UnitMaintenancePlans.htm">Unit Maintenance Plans</a>. In particular, the examples include how to set up jobs for times like "the second Tuesday of every month" or "every month on the 15th".</p>
+
+<p class="box">Once you have created a unit maintenance plan, you cannot change which unit and timing record are associated with it. You can, however, change the task. If the unit and/or timing record are no longer appropriate, you have to delete the existing unit maintenance plan and create a new one.</p>
+
+<p>The unit maintenance plan editor contains the following:</p>
+
+<p class="wi"><span class="CButton">Details</span> section: Shows basic information for the record.</p>
+<p class="wi2"><span class="CField">Task</span>: The task to be scheduled. For more about tasks, see <a href="Tasks.htm">Tasks</a>.</p>
+<p class="wi2"><span class="CField">Unit</span>: The unit on which the task should be scheduled. For more on units, see <a href="Units.htm">Units</a>.</p>
+<p class="wi2"><span class="CButton">Inhibit</span>: If this box is checkmarked, this unit maintenance plan record will be ignored whenever MainBoss generates planned maintenance work orders. This is an easy way to suspend a particular plan indefinitely, without actually deleting the record. For example, suppose that a piece of equipment is temporarily taken out of service and you don't know when it will be reactivated. You can suspend planned maintenance on that equipment by checkmarking <span class="CButton">Inhibit</span>. When the equipment comes back into service, remove the checkmark and MainBoss will resume the usual schedule. In this way, you don't have to delete the unit maintenance plan records, then re-create them again later.</p>
+<p class="wi2"><span class="CField">Maintenance Timing</span>: A maintenance timing record telling when the task should be scheduled. For more about schedules, see <a href="MaintenanceTimings.htm">Maintenance Timings</a>.</p>
+<p class="wi2"><span class="CField">Timing Basis</span>: Options that control when the task will be rescheduled again. For the sake of clarity, we'll use Job X to refer to a job that has just been completed and Job Y to be the next time the same job should be performed on the same unit. Possible rescheduling options are:</p>
+<p class="wi3"><span class="CButton">Work Start</span>: Job Y should be rescheduled relative to when Job X actually began. For example, if the schedule says "every 30 days", Job Y will be scheduled to begin 30 days after Job X began.</p>
+<p class="wi3"><span class="CButton">Work End</span>: Job Y should be rescheduled relative to when Job X ended. For example, if the schedule says "every 3000 miles", Job Y will be scheduled for 3000 miles past the meter reading when Job X ended.</p>
+<p class="wi3"><span class="CButton">Scheduled Date</span>: Job Y should be rescheduled relative to when Job X was scheduled, whether or not Job X was actually done at that time. For example, if the schedule says "every 3 months", Job Y will be scheduled for 3 months after Job X was supposed to be done, even if Job X was delayed or not done at all.</p>
+<p class="wi2">Read-only fields: If this unit maintenance plan has been used to create a work order in the past, the read-only fields in the <span class="CButton">Details</span> section provide information about the most recent such work order.</p>
+<p class="wi2"><span class="CButton">View Work Order</span>: If you click on this, MainBoss opens an editor showing the most recent work order (if any) generated from this unit maintenance plan. You can use this to view or edit the work order, as described in <a href="Edit.Work Order.htm">Editing Work Orders</a>.</p>
+<p class="wi"><span class="CButton">Generation Details</span> section: Lists batch generation records that created work orders associated with this unit maintenance plan.</p>
+<p class="wi"><span class="CButton">Work Orders</span> section: Lists work orders generated from this unit maintenance plans.</p>
+<p class="wi2"><span class="CButton">View Work Order</span>: Displays the contents of a work order selected in the <span class="CButton">Work Orders</span> list. Note that the list often contains entries that do not correspond with work orders; the <span class="CButton">View Work Order</span> button will only be enabled when you select an entry that <span class="Emphasis">does</span> have an associated work order.</p>
+<p class="wi"><span class="CButton">Errors</span> section: Lists any errors that were encountered when generating work orders from this unit maintenance plan.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p class="wi"><span class="CButton">Change Schedule Basis</span>: Opens a window to set the schedule basis for this unit maintenance plan. The schedule basis is when the clock starts ticking for future planned maintenance jobs&#8212;typically the date or meter reading for the most recent such job done on the unit. For more, see <a href="Edit.Scheduling Basis.htm">Specifying a Schedule Basis</a>.</p>
+<p>For more on unit maintenance plans, see <a href="UnitMaintenancePlans.htm">Unit Maintenance Plans</a>. For more on viewing unit maintenance plans, see <a href="Browse.Unit Maintenance Plan.htm">Viewing Unit Maintenance Plans</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Browse.Unit Maintenance Plan.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Unit Maintenance Plan.htm">Next section &gt;</a></p>
+</body>
+</html>
+

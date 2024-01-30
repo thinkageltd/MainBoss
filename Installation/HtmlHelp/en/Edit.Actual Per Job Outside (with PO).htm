@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Actual Per Job Outside (with PO)</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Actual Per Job Outside (with PO)</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Correction of Actual Per Job Outside (no PO).htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Correction of Actual Per Job Outside (with PO).htm">Next section &gt;</a></p>
+
+<p>An Actual Per Job Outside (with PO) record specifies that an outside contractor worked on a particular job, with the work paid at a "per job" rate. You identify the contractor by specifying a per unit outside record; this record gives the contractor's name and "per job" rate. (For more on per job outside records, see <a href="PerJobOutside.htm">Per Job Outside</a>.)</p>
+
+<p>If a work order has an attached <span class="Emphasis">issued</span> purchase order for the contractor's services, you can go to the <span class="CButton">Outside</span> subsection of the <span class="CButton">Resources</span> section of a work order, click on a corresponding "purchase per job outside" record, and then click <span class="CButton">New Actual Per Job Outside (with PO)</span>. MainBoss opens a window to let you record what work actually took place. (The purchase order <span class="Emphasis">must</span> be in the issued state.)</p>
+
+<p>A single per job outside demand can produce multiple Actual Per Job Outside records. For example, suppose the original Demand Per Job Outside specifies painting four rooms, with a per job rate for painting each room. The contractor might paint two rooms one day and two rooms the next. In this case, you could create two Actual Per Job Outside records: one for the first two rooms, and one for the next. Each of these records would have "<span class="CField">Quantity</span>" set to <span class="CU">2</span> (for two rooms). In general, if a job takes place over several days, it's up to you whether to create a separate Actual Per Job Outside record for each day, or a single Actual Per Job Outside record covering the whole job.</p>
+
+<p>The Actual Per Job Outside (with PO) editor contains the following:</p>
+
+<p class="wi"><span class="CField">Entry Date</span>: A read-only field giving the date that this record was created.</p>
+<p class="wi"><span class="CField">Effective Date</span>: The date/time when the work was done. By default, this is set to the current date/time.</p>
+<p class="wi"><span class="CField">User Contact</span>: A read-only field giving your name. This will appear in MainBoss's accounting history to show who did the actualization.</p>
+<p class="wi">Read-only fields: Provide information relevant to the job. This includes the purchase order number and the vendor.</p>
+<p class="wi"><span class="CField">Receipt</span>: A receipt to be used for recording that the labor was actually received. For more, see <a href="Receipts.htm">Receipts</a></p>
+<p class="wi">Read-only fields: Provide more information relevant to the job. This includes the work order number and the quantity of work that was specified in the original demand/purchase entries.</p>
+<p class="wi"><span class="CButton">Use Order Remaining Quantity</span>: If you checkmark this box, MainBoss completes the record to indicate that you used the time listed under "<span class="CField">Order Remaining</span>". If you leave the box blank, you will have to fill in this information yourself.</p>
+<p class="wi"><span class="CField">Quantity</span>: If you have not checkmarked <span class="CButton">Use Order Remaining Quantity</span>, fill in "<span class="CField">Quantity</span>" with the time actually spent.</p>
+<p class="wi">Read-only fields: Provide cost information from the original per job outside record and the demand.</p>
+<p class="wi"><span class="CButton">Manually Enter Cost</span>: If you select this option, you must enter the actual cost of the work in "<span class="CField">This Entry</span>".</p>
+<p class="wi"><span class="CButton">Use calculated remaining order cost</span>: If you select this option, "<span class="CField">This Entry</span>" will be set to the cost of the work as taken from the original per job outside record.</p>
+<p class="wi"><span class="CButton">Use demanded cost</span>: If you select this option, "<span class="CField">This Entry</span>" will be set to the cost given in the original demand (stated in "<span class="CField">Demanded Cost</span>").</p>
+<p class="wi"><span class="CField">This Entry</span>: The actual cost of the quantity used. This will be read-only unless you selected <span class="CButton">Manually Enter Cost</span>.</p>
+<p class="wi"><span class="CField">As Corrected</span>: Will be the same as "<span class="CField">This Entry</span>" unless you have made a correction to this record after it was originally created.</p>
+<p class="wi"><span class="CField">From Cost Center</span>, <span class="CField">To Cost Center</span>: Read-only fields telling the cost centers involved in this operation. MainBoss creates accounting records indicating the transfer of money from the first cost center to the second. These fields are only visible if your database has an <span class="BL">Accounting</span> license key. For more, see <a href="AccountingFacilities.htm">Accounting Facilities</a>.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on resources, see <a href="Resources.htm">Resources</a>. For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Correction of Actual Per Job Outside (no PO).htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Correction of Actual Per Job Outside (with PO).htm">Next section &gt;</a></p>
+</body>
+</html>
+

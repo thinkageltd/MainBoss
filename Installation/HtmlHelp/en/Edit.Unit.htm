@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing Units</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Editing Units</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.Unit.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Unit Related Unit.htm">Next section &gt;</a></p>
+
+<p>You create or modify units using the unit editor. The usual way to open the editor is to click <span class="CButton">New Unit</span> or <span class="CButton">Edit</span> in the <span class="CButton">View</span> section of <span class="CPanel">Units</span>. (For more on units, see <a href="Units.htm">Units</a>.)</p>
+
+<p>The unit editor window contains the following:</p>
+
+<p class="wi"><span class="CButton">Details</span> section: Shows basic information for the record.</p>
+<p class="wi2"><span class="CField">Code</span>: A brief code to identify this record. No two units in the same location may have the same code (but units in different locations can have the same code).</p>
+<p class="wi2"><span class="CField">Description</span>: A longer description of the unit.</p>
+<p class="wi2"><span class="CField">External Tag</span>: A short string of characters which can be turned into a bar code associated with this unit. For more information, see <a href="BarCodeSupport.htm">Bar Code Support</a>.</p>
+<p class="wi2"><span class="CField">GIS Location</span>: The geographic location of this unit. Coordinates are specified in longitude and latitude.</p>
+<p class="box">As a special feature, MainBoss makes it easy for you to use Google Maps to specify "<span class="CField">GIS Location</span>". First, use Google Maps to find the location's geographic position. Then, right-click on the location in the Google Maps display and click <span class="BL">What's here</span> in the resulting menu. Google Maps will display the GIS coordinates as two numbers on the screen, typically in the upper left-hand corner. You can copy and paste these numbers into MainBoss. (Note that Google may change how Google Maps works at any time.)</p>
+
+<p class="wi2"><span class="CField">Containing Location</span>: The location that contains the unit. This may be another unit. For more on locations, see <a href="Locations.htm">Locations</a>.</p>
+<p class="wi2"><span class="CField">Make</span>, <span class="CField">Model</span>, <span class="CField">Serial</span>: Standard identification information for pieces of equipment.</p>
+<p class="box"><span class="CInset">Mobile Units and Serial Numbers:</span> If a unit can possibly be moved, it's useful to assign it a serial number, even if there isn't a serial number from the manufacturer. This makes it easier to keep track of which unit is which, especially when two units are moved into the same location.</p>
+
+<p class="wi2"><span class="CField">Unit Usage</span>: A usage code for this unit. For more on such codes, see <a href="UnitUsages.htm">Unit Usages</a>.</p>
+<p class="wi2"><span class="CField">Unit Category</span>: The kind of unit this is. For more, see <a href="UnitCategories.htm">Unit Categories</a>.</p>
+<p class="wi2"><span class="CField">System Code</span>: The system that this unit belongs to, if any. For more, see <a href="Systems.htm">Systems</a>.</p>
+<p class="wi2"><span class="CField">Drawing</span>: Information identifying any drawing(s) associated with this unit. Depending on your department's methods of organization, this can be anything from "Drawing 123-45J" to "Second drawer in filing cabinet beside the fax machine."</p>
+<p class="wi2"><span class="CField">Comments</span>: Any comments that should be associated with this unit. In particular, this is a good place to record useful information like, "Always carry 30 amp fuses, this machine blows them regularly."</p>
+<p class="wi"><span class="CButton">Service</span> section: Lists service contracts and other information related to performing service on the unit.</p>
+<p class="wi2"><span class="CField">Access Code</span>: Indicates any special conditions for gaining access to the unit. For more, see <a href="AccessCodes.htm">Access Codes</a>.</p>
+<p class="wi2"><span class="CField">Work Order Expense Model</span>: The default expense model to be used for any work done on this unit. For more on expense models, see <a href="ExpenseModels.htm">Expense Models</a>.</p>
+<p class="wi2"><span class="CField">Service Contracts</span> list: Lists any service contracts on this unit. For more, see <a href="ServiceContracts.htm">Service Contracts</a>.</p>
+<p class="wi2"><span class="CButton">New Unit Service Contract</span>: Associates a service contract with this unit. For more information, see <a href="Edit.Unit Service Contract.htm">Associating Units with Service Contracts</a>.</p>
+<p class="wi"><span class="CButton">Related</span> section: Lists any relationships this unit has with other units or contact people. For more on relationships, see <a href="Relationships.htm">Relationships</a>.</p>
+<p class="wi2"><span class="CButton">New Unit Related Unit</span>: Lets you specify a relationship between this unit and another unit. For more on unit-to-unit relationships, see <a href="Edit.Unit Related Unit.htm">Unit-to-Unit Relationships</a>.</p>
+<p class="wi2"><span class="CButton">New Unit Related Contact</span>: Lets you specify a relationship between this unit and a contact person. For more, see <a href="Edit.Unit Related Contact.htm">Unit-to-Contact Relationships</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Is only enabled if you select a relationship line in the list of relationships. If you do, clicking <span class="CButton"><img src="Delete.png" alt="Delete" /></span> deletes the chosen relationship.</p>
+<p class="wi"><span class="CButton">Parts</span> section: Lists spare parts associated with this unit. For more, see <a href="SpareParts.htm">Spare Parts</a>.</p>
+<p class="wi"><span class="CButton">Specifications</span> section: Lists any specifications associated with this unit. For more, see <a href="Edit.Specification.htm">Specifications</a>.
+
+<br /><br />To add a specification, use the drop-down field immediately below the list of existing specifications. Drop the arrow, select a specification form, then click the <span class="CButton">New</span> button that follows the drop-down field. MainBoss opens a form that you can fill in with specification data. When you click <span class="CButton">Save</span> in the form, you will see the specification added to the list of this unit's specifications.
+
+<br /><br />The other buttons that follow the drop-down field let you work with the specification that is selected in the list of existing specifications.</p>
+<p class="wi"><span class="CButton">Value</span> section: Lists information about the purchase value of the unit, as well as projected replacement costs.</p>
+<p class="wi2"><span class="CField">Purchase Date</span>: The date on which the unit was purchased. If you don't know the exact date, it's useful to put in a reasonable estimate. This will help in calculating the expected lifespan of the equipment.</p>
+<p class="wi2"><span class="CField">Purchase Vendor</span>: The vendor who sold you the unit. For more on vendors, see <a href="Vendors.htm">Vendors</a>.</p>
+<p class="wi2"><span class="CField">Original Cost</span>: The cost of the unit when purchased.</p>
+<p class="wi2"><span class="CField">Ownership</span>: Who owns this unit. For more, see <a href="Ownerships.htm">Ownerships</a>.</p>
+<p class="wi2"><span class="CField">Asset Code</span>: A code indicating the fixed asset balance sheet account number that is used to capitalize this equipment in your organization's general ledgers. For more, see <a href="AssetCodes.htm">Asset Codes</a>.</p>
+<p class="wi2"><span class="CField">Future Value</span>: Information in this section is used when creating a replacement value report. For more on this report, see <a href="Report.Unit Replacement Forecast.htm">Unit Replacement Forecast Report</a>.</p>
+<p class="wi3"><span class="CField">Replacement Cost Last Date</span> and <span class="CField">Replacement Cost</span>: These two fields let you record an estimate for replacing the unit as of a given date.
+
+<br /><br />For example, suppose that a given refrigeration unit is selling for $1000 at today's prices. You might fill in "<span class="CField">Replacement Cost Last Date</span>" as today's date and "<span class="CField">Replacement Cost</span>" as $1000. Notice that these two fields don't refer to the date when you think you'll <span class="Emphasis">actually</span> replace the unit; they're based on a date when you have a reasonable benchmark on the unit's price.
+
+<br /><br />The "<span class="CField">Replacement Cost Last Date</span>" can be in the past, present, or future. For example, you might say, "That unit was selling for $900 last year." In that case, you could set "<span class="CField">Replacement Cost</span>" as $900 and the date as sometime last year. Similarly, you might specify a "<span class="CField">Replacement Cost Last Date</span>" for some time in the future, if you think you can estimate what the unit's cost will be on that date.
+
+<br /><br />As previously noted, the purpose of these two fields is to provide a basis date and cost that MainBoss can use to predict the <span class="Emphasis">actual</span> replacement cost of the unit, based on the unit's typical lifespan and an expected rate of inflation.</p>
+<p class="wi3"><span class="CField">Typical Life</span>: The total number of years that this type of unit is expected to remain in service. Note that this is the <span class="Emphasis">total</span> lifespan, not the remaining lifespan.</p>
+<p class="wi3"><span class="CField">Scrap Date</span>: The expected date on which you'll take this equipment out of commission.</p>
+<p class="wi3"><span class="CField">Scrap Value</span>: The expected value for which you can sell the equipment when you decommission it.</p>
+<p class="wi"><span class="CButton">Meters</span> section: Lists any meters associated with this unit. You can create meter records directly from this section if you wish, and perform all the actions available from the <span class="CPanel">Meters</span> table viewer. For more on meters, see <a href="Meters.htm">Meters</a>.</p>
+<p class="wi"><span class="CButton">Attachments</span> section: Lists any attachments associated with this unit. An attachment is any file you wish to associate with the unit. For example, if you have files that contain schematic diagrams or specifications for a piece of equipment, you could list them in the <span class="CButton">Attachments</span> section; this makes it easy for workers to find information that might be useful on the job.
+
+<br /><br />Attachments may also be Internet URLs. For example, you might record the URL of the manufacturer's web site, or a web page containing information about the unit. For more about attachments, see <a href="Edit.Attachment.htm">Attachments</a>.</p>
+<p class="wi2"><span class="CField">Path</span>: When you select an entry in the attachment list, "<span class="CField">Path</span>" provides a link to the attachment. Clicking the link opens the file or URL. The program used for this is the default for such files on your computer. For example, HTML files will be opened with your default web browser, PDF files will be opened with your default PDF reader, and so on.</p>
+<p class="wi"><span class="CButton">Requests</span> section: Lists requests on this unit, both past and present. You can create requests directly from this section if you wish, and perform all the operations available through the Requests table viewer. For more on requests, see <a href="Requests.htm">Requests</a>.</p>
+<p class="wi"><span class="CButton">Maintenance Plans</span> section: Lists unit maintenance plans associated with this unit. You can create unit maintenance plans directly from this section if you wish, and perform all the operations available from the unit maintenance plan table viewer. For more on unit maintenance plans, see <a href="UnitMaintenancePlans.htm">Unit Maintenance Plans</a>.</p>
+<p class="wi"><span class="CButton">Work Orders</span> section: Lists work orders on this unit, both past and present. You can create work orders directly from this section if you wish, and perform all the operations available from the Work Order table viewer. For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>.</p>
+<p class="wi"><span class="CButton">Temporary Storage and Items</span> section: Shows any temporary storage locations and assignments associated with the unit. For more, see <a href="Edit.Temporary Storage.htm">Temporary Storage Locations</a> and <a href="Edit.Temporary Storage Assignment.htm">Temporary Storage Assignments</a>.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p class="wi"><span class="CButton">Show on Map</span>: If this unit record has a "<span class="CField">GIS Location</span>" value, MainBoss attempts to open Google Maps to a map showing the unit's geographic location. If the current unit record doesn't have a GIS location, MainBoss checks the unit and/or location record that contains the current unit, then the container of the container, and so on, until MainBoss either finds a record that has a GIS location or else reaches a record with no container.
+
+<br /><br />If MainBoss finds no record with a GIS location, but does find a postal address record containing postal information, MainBoss passes the postal information to Google Maps.
+
+<br /><br />In order to see the geographic location in Google Maps, you must have an active Internet connection and a suitable web browser.</p>
+<p>For more on units, see <a href="Units.htm">Units</a>. For more on viewing units, see <a href="Browse.Unit.htm">Viewing Units</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Browse.Unit.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Unit Related Unit.htm">Next section &gt;</a></p>
+</body>
+</html>
+

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing Meter Records</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Editing Meter Records</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.Meter.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Ownerships.htm">Next section &gt;</a></p>
+
+<p>You create or modify meters using the meter editor. The usual way to open the editor is to click <span class="CButton">New Meter</span> or <span class="CButton">Edit</span> in the <span class="CButton">View</span> section of <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Units</span> | <span class="CPanel">Meters </span>.</p>
+
+ 
+
+<p><span class="CInset">Important Notes When Creating a New Meter Record:</span> MainBoss will not let you enter a meter reading with an "<span class="CField">Effective Date</span>" that is older than the most recent reading on the meter. You must enter meter readings in chronological order.</p>
+
+<p>This is especially important to remember during configuration. If you want to enter old meter readings in order to create a meter history, you must enter the readings in the order they occurred. This means that you can't enter the most recent reading, then go back later to record older readings. If you want to enter an old reading but are prevented from doing so because there's a newer reading, you'll have to delete the new reading before entering the old one.</p>
+
+<p><span class="BL">When you create a new meter, MainBoss automatically creates a meter reading record for that meter.</span> By default, the effective date of the reading is the date on which you create the meter record; also by default, the value of the meter reading is zero. If this is not the case, go to the meter readings for the meter and delete the "zero" record. Then create a meter reading record that contains the actual value and date for the most recent reading on that meter.</p>
+
+ 
+
+<p>The meter editor window contains the following:</p>
+
+<p class="wi"><span class="CButton">Details</span> section: Shows basic information for the record.</p>
+<p class="wi2"><span class="CField">Meter Class</span>: Indicates what type of meter this is. For more information, see <a href="MeterClasses.htm">Meter Classes</a>.</p>
+<p class="wi2"><span class="CField">Unit</span>: The unit (e.g. piece of equipment) with which this meter is associated. For more on units, see <a href="Units.htm">Units</a>.</p>
+<p class="wi2"><span class="CField">Meter Class UOM</span>: A read-only field giving the units of measure used by this type of meter. This information is obtained from the chosen <span class="CField">Meter Class</span> record.</p>
+<p class="wi2"><span class="CField">Reading Offset</span>: The current meter offset. For more about meter offsets, see <a href="Meters.htm">Meters</a>.</p>
+<p class="wi2"><span class="CField">Current</span>: Read-only fields providing information about the most recent previous reading on this meter.</p>
+<p class="wi2"><span class="CField">Comments</span>: Any comments you want to associate with the meter.</p>
+<p class="wi"><span class="CButton">Meter Readings</span> section: Shows all readings recorded for this meter.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p class="wi"><span class="CButton">New Manual Meter Reading</span>: Opens a window where you can record a new reading for this meter. For more on recording meter readings, see <a href="Edit.Manual Meter Reading.htm">Editing Meter Readings</a>.</p>
+<p>For more on meters, see <a href="Meters.htm">Meters</a>. For more on viewing meter records, see <a href="Browse.Meter.htm">Viewing Meter Records</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Browse.Meter.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Ownerships.htm">Next section &gt;</a></p>
+</body>
+</html>
+

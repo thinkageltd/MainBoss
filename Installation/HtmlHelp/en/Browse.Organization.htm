@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Your Maintenance Organization List</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Your Maintenance Organization List</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="MainBossSessions.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Organization.htm">Next section &gt;</a></p>
+
+<p>MainBoss lets you create individual databases for separate <span class="NewTerm">maintenance organizations</span>. For example, consider a property management company that serves several different clients. The management company may choose to create a different database for each client; in this way, costs and information for each client are kept separate from all other clients.</p>
+
+<p class="box"><span class="CInset">Note:</span> When you have several separate MainBoss databases, each database must have its own MainBoss license (except when you are creating databases for testing purposes). For more information on MainBoss licenses, see your dealer or MainBoss representative.</p>
+
+<p>If you have access to multiple MainBoss databases, one of them may be designated as your <span class="NewTerm">default maintenance organization</span>. Whenever you start MainBoss, you begin looking at information for your default organization. You can easily switch to a different organization:</p>
+ 
+<h4>To specify which maintenance organization you want to work with:</h4>
+<ol><li>In the <span class="CMenu">Session</span> menu, click <span class="CMenu">Change Maintenance Organization</span>. This opens a window listing all databases that are available to you.</li>
+<li>In the list, click on the database you want.</li>
+<li>Click <span class="CButton">Start</span>.</li>
+<li>MainBoss will change to using the specified database.
+</li></ol> 
+
+<p class="box"><span class="CInset">Note:</span> You will not be able to open a database in any mode unless you have been granted permissions to access that database. For more information on database permissions, see <a href="Users.htm">Users</a>.</p>
+
+<p>The window for specifying databases contains the following buttons:</p>
+
+<p class="wi"><span class="CButton">Start</span>: Opens the database that's currently selected in the list. This button has the following additional options on its drop-down list:</p>
+<p class="wi2"><span class="CButton">MainBoss</span>: Full MainBoss mode with all available modules operational.</p>
+<p class="wi2"><span class="CButton">MainBoss Assignments</span>: Opens the selected organization in Assignments mode. The control panel will only display the <span class="CPanel">My Assignment Overview</span> entry, under which you can see requests, work orders and purchase orders that have been assigned to you. For more on assignments, see <a href="Assignments.htm">Assignments</a>.</p>
+<p class="wi2"><span class="CButton">MainBoss Requests</span>: Opens the selected organization in Requests mode. The control panel will only display entries relevant to dealing with requests. You can always open MainBoss in this mode, provided you have a <span class="BL">MainBoss Requests</span> license key and you have been granted permissions to access the database.</p>
+<p class="wi2"><span class="CButton">Administration</span>: Opens the selected organization in a mode that allows you to use functions in the <span class="CPanel">Administration</span> part of the control panel. You can always start MainBoss in this mode, even if you currently have no valid license keys. In fact, when you create a blank organization, you <span class="Emphasis">must</span> start MainBoss in this mode in order to enter your license keys. Once you've done so, you can quit and start MainBoss again in its normal mode.</p>
+<p class="box">Some <span class="CPanel">Administration</span> functions can only be used if you have been granted Administrator privileges. For more on these privileges, see <a href="Edit.User.htm">Editing User Records</a>.</p>
+
+<p class="wi2"><span class="CButton">View Sessions</span>: Opens the selected organization in a mode that shows who else is using MainBoss. This may be useful if you're trying to upgrade the database but can't because someone else is using it. For more, see <a href="Browse.Session.htm">Viewing MainBoss Sessions</a>.</p>
+<p class="wi"><span class="CButton">Add Existing Organization</span>: Adds a new database to your list of available databases. For more information, see <a href="ExistingMaintenanceOrganizations.htm">Existing Maintenance Organizations</a>. This button has the following additional options on its drop-down list:</p>
+<p class="wi2"><span class="CButton">Create New Organization</span>: Creates a new database and adds it to your list of available database. For more information, see <a href="NewMaintenanceOrganizations.htm">New Maintenance Organizations</a>.</p>
+<p class="wi2"><span class="CButton">Create New Organization from a Backup</span>: Creates a new database using data obtained from a backup file. For more information on this operation, see <a href="Organization.CreateFromBackup.htm">Creating a New Maintenance Organization from a Backup File</a>.</p>
+<p class="wi2"><span class="CButton">Create New Organization using MainBoss Basic 2.9 export file</span>: Imports data obtained from a MainBoss Basic database. For more information, see <a href="ImportedMaintenanceOrganizations.htm">Imported Maintenance Organizations</a>.</p>
+<p class="wi2"><span class="CButton">Create Demonstration Organization</span>: Creates a new database with <span class="NewTerm">demonstration mode</span> license keys. This database will let you test MainBoss operations, but puts limitations on the database contents (e.g. a limited number of work orders, locations, requests, etc.). For more information, see <a href="DemonstrationMaintenanceOrganizations.htm">Demonstration Maintenance Organizations</a>.</p>
+<p class="wi"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: Lets you change information about the organization (e.g. if you want to change the "<span class="CField">Organization Name</span>" which is displayed when you are using MainBoss). For more on this operation, see <a href="ChangingOrganizationInformation.htm">Changing Organization Information</a>.</p>
+<p class="wi"><span class="CButton">Remove from list</span>: Removes the selected database from your list. This does not delete the database; it simply says that you no longer want the database to appear on your personal list.</p>
+<p class="wi"><span class="CButton">Upgrade</span>: Upgrades a database made under an older version of MainBoss Advanced. This action requires the MainBoss <span class="CU">Administration</span> security role.
+
+<br /><br />Note that if you want to import old data from MainBoss Basic, you use <span class="CButton">Create New Organization using MainBoss Basic 2.9 export file</span> (described earlier). For more on upgrading, see <a href="Main.Upgrade.htm">Upgrading Maintenance Organizations</a>. This button has the following additional options on its drop-down list:</p>
+<p class="wi2"><span class="CButton">Restore Organization</span>: Restores the selected database from a backup file. This action requires the MainBoss <span class="CU">Administration</span> security role.
+
+<br /><br />Note that you must first select a database from the Maintenance Organization list. This database will be overwritten with the data from the backup file. For more information on this operation, see <a href="OverwritingaMaintenanceOrganizationwithDatafromaBackupFile.htm">Overwriting a Maintenance Organization with Data from a Backup File</a>.</p>
+<p class="wi2"><span class="CButton">Delete database and organization</span>: Removes the organization from your list and deletes the associated database. This means that you will no longer be able to use MainBoss for this organization/database. You can only perform this operation if you have the MainBoss <span class="CU">Administration</span> security role and if you have SQL Server Administrator privileges.</p>
+<p class="wi"><span class="CButton">Set Default</span>: Lets you specify which database is opened by default whenever you start using MainBoss. Clicking this button specifies the current database as your default. This button has the following additional options on its drop-down list:</p>
+<p class="wi2"><span class="CButton">Clear Default</span>: Specifies that you do not want a default database. If you do not have a default database, your list of available databases will be displayed every time you start using MainBoss. This lets you select which database you want to use.</p>
+<p class="wi"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Lets you search through the list of records for a particular record. For more information, see <a href="Search.htm">Searching for a Particular Record</a>. The <span class="CButton"><img src="Find_VS.png" alt="Search" /></span> button has an accompanying drop-down list containing the following:</p>
+<p class="wi2"><span class="CButton">Find Next</span>: Uses the same search condition(s) as your most recent search and finds the next record in the table that matches the condition(s). If the search reaches the end of the table without finding a matching record, it goes to the start of the table and continues the search.</p>
+<p class="wi2"><span class="CButton">Find Previous</span>: Same as <span class="CButton">Find Next</span> except that it goes backward in the table. If the search reaches the start of the table without finding a matching record, it goes to the end of the table and continues the search.</p>
+<p class="wi"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to show any recent changes.</p>
+<p class="wi"><span class="CButton">Exit</span>: Exits MainBoss.</p>
+
+<p><span class="CInset">Start-Up Modes:</span> As an example of the use of start-up modes, your help-desk personnel might set their starting mode so that they always access the database in requests-only mode unless they manually open it in some other mode. In this way, they only see control panel entries relevant to their usual work.</p>
+
+<p>If you sometimes want to open a database in full mode and sometimes in requests-only mode, you can give the same database multiple organization names. For example, suppose your database has the "<span class="CField">Database Name</span>" <span class="CU">MyMainBoss</span>. You could use <span class="CButton">Add Existing Organization</span> to create two different lines in the organization list:</p>
+
+<ul class="b1"><li>One line might have the "<span class="CField">Organization Name</span>" <span class="CU">MyMainBoss-Full</span>, with a start mode of <span class="BL">MainBoss</span>. To set the start mode, select it from the drop-down list labeled "<span class="CField">Preferred Mode</span>" (in the window for specifying organization details).</li>
+<li>A second line might have the "<span class="CField">Organization Name</span>" <span class="CU">MyMainBoss-Requests</span>, with a start mode of <span class="BL">MainBoss Requests</span>.
+</li></ul><p>If you click <span class="CButton">Start</span> on <span class="CU">MyMainBoss-Full</span>, MainBoss opens in full <span class="BL">MainBoss</span> mode. If you click <span class="CButton">Start</span> on <span class="CU">MyMainBoss-Requests</span>, MainBoss opens in requests-only mode.</p>
+
+<p>You can also use command line options to specify start mode and maintenance organization you wish to access. This makes it easy to create desktop icons that each open a different organization or open the same organization in different modes. For more information, see <a href="CommandLineOptions.htm">Command Line Options</a>.</p>
+
+<p><span class="CInset">The first time you run MainBoss:</span> The first time you run MainBoss on a database, the database will not contain any license keys. You must open MainBoss in <span class="CButton">Administration</span> mode by clicking the drop-down arrow on <span class="CButton">Start</span> and clicking <span class="CButton">Administration</span>. This mode will let you enter your license keys, as described in <a href="EnteringMultipleLicenseKeys.htm">Entering Multiple License Keys</a>. Once you have entered the license keys, you can return to the window for selecting the database and open the database normally.</p>
+
+
+<p><a href="MainBossSessions.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Organization.htm">Next section &gt;</a></p>
+</body>
+</html>
+

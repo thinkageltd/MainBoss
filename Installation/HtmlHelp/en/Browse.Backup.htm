@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Backups</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Backups</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Database Management.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Backup.htm">Next section &gt;</a></p>
+
+<p>To protect your data, you should make regular backups of your data. One way to do this is with automated <span class="NewTerm">maintenance plans</span> as described in the MainBoss <a href=" " >Installation and Administration Guide</a>. Since these facilities do backups automatically, there's no risk of losing data because someone forgot to do a backup manually.</p>
+
+<p>On the other hand, some sites may prefer to do manual backups. You can do this within MainBoss using <span class="CPanel">Administration</span> | <span class="CPanel">Backups</span>. The general procedure is:</p>
+
+<ol><li>Create one or more <span class="NewTerm">backup names</span>. A backup name is the name of a file into which MainBoss should write backup data. For example, you might create seven backup names: one for each day of the week.</li>
+<li>When you want to perform a backup, select a name from the list of available backup names. Then click <span class="CButton">Backup</span>. This submits a request to the SQL Server asking the server to create a backup. (In order to use this function, you must have SQL Server Administrator privileges.) When the backup occurs, it will overwrite any current contents of the specified backup file.</li>
+<li>The next time you want to do a backup, select a different name from the list and click <span class="CButton">Backup</span> again. MainBoss sorts the backup names so that the oldest backup file is at the top of the list. Therefore, if you have seven backup names, and you always select the top name whenever you make a backup, your backup will always overwrite the oldest file. This makes it easy to reuse the same set of files by cycling through them.</li>
+<li>When you initiate a backup operation, MainBoss makes an appropriate note in the database history (<span class="CPanel">Administration</span> | <span class="CPanel">Database Management</span>&#8212;see <a href="Browse.Database Management.htm">Database Management</a>). If the backup fails for some reason, MainBoss makes note of the failure in the database history; however, if the backup succeeds, MainBoss doesn't make a history note. In other words, if there's no note about the backup failing, you can assume that it succeeded.
+</li></ol><p>A number of important considerations apply to the backup name:</p>
+
+<ul class="b1"><li>Backup operations are run by SQL Server itself on the computer where SQL Server is running. Because SQL Server does the backup, backup names must refer to files that are accessible to the login name under which SQL Server runs. Furthermore, backup names are interpreted relative to the computer where SQL Server is running.
+
+<br /><br />For example, suppose SQL Server is running on Computer X, but you're working on Computer Y. When you specify the backup name,
+
+<br /><br /><span class="CU">  C:\MyBackups\Monday.bak
+</span>
+<br /><br />you may think that this refers to a file on Computer Y's <span class="CU">C:</span> drive. However, the backup is done by SQL Server on Computer X; therefore, SQL Server will try to save to Computer X's <span class="CU">C:</span> drive, not Computer Y's. If the directory <span class="CU">C:\MyBackups</span> doesn't exist on Computer X (or if SQL Server's login name doesn't have permissions to write to that folder), you'll get an error message and the backup won't work.</li>
+<li>If you specify a backup name that does not begin with "<span class="CU">\\</span>" and does not begin with a drive letter (e.g. "<span class="CU">C:\</span>"), SQL Server automatically assumes the name refers to a file under SQL Server's working folder. The location of this working folder depends on information specified when SQL Server was installed.</li>
+<li>SQL Server backup files typically have names ending in the extension "<span class="CU">.bak</span>", as in <span class="CU">MyBackup.bak</span>. Therefore, if you specify a simple name for a backup name&#8212;a name that doesn't have any slashes, backslashes or dots&#8212;MainBoss automatically adds "<span class="CU">.bak</span>" on the end of the name. Therefore, if you specify a simple name like "<span class="CU">abc</span>", MainBoss automatically turns this into "<span class="CU">abc.bak</span>".</li>
+<li>For safety's sake, backup names should refer to a disk drive that is <span class="Emphasis">different</span> from the one that contains the actual MainBoss database. Otherwise, if the disk drive malfunctions, you could lose both your original database and your backups. It's even better if the backup name refers to a completely different computer, as in <span class="CU">\\NotTheSameComputer\MyBackups\Backup1.bak</span>.
+
+<br /><br />It's also a good idea to make copies of backup files and to keep those copies somewhere off your premises. That way, if you have a fire or some other problem that affects your entire site, you'll have backups someplace else safe.
+
+<br /><br />(By default, SQL Server puts backup files on the same disk as the corresponding database. Therefore, you should make sure <span class="Emphasis">not</span> to use the default location.)
+</li></ul><p>When you specify a backup name, the "<span class="CField">Defaults</span>" line in <span class="CPanel">Administration</span> | <span class="CPanel">Backups</span> specifies the computer, the directory, and the file name extension. <span class="BL">We strongly recommend that you examine the</span> "<span class="CField">Defaults</span>" <span class="BL">line whenever you create a backup name and before you click</span> <span class="CButton">Backup</span>. This will avoid failed backups or accidentally creating a backup file somewhere you don't expect.</p>
+
+<p class="box">The information in "<span class="CField">Defaults</span>" is generated by MainBoss at the time the window is displayed. It's dependent on your SQL Server configuration. Therefore, suppose you specify a backup name of "<span class="CU">abc</span>". "<span class="CField">Defaults</span>" shows where the backup file would be written if you clicked <span class="CButton">Backup</span> right now. However, if your SQL Server configuration changes, future backups with the "<span class="CU">abc</span>" backup name might be written to a different folder.</p>
+
+<p>MainBoss also makes it possible to restore databases from backup files. For more information, see <a href="Browse.Organization.htm">Your Maintenance Organization List</a>.</p>
+
+<p>The window for viewing backup names contains the following:</p>
+
+<p class="wi">Name list: As noted above, the default is to put the oldest backup file at the top of the list.</p>
+<p class="wi"><span class="CButton">Apply Filter</span>: Lets you set up a <span class="NewTerm">filter</span> to select which records should be shown in the table. For more information, see <a href="Filter.htm">Table Filters</a>.</p>
+<p class="wi">Information area: The area below the list shows information about the selected backup name/file.</p>
+<p class="wi2"><span class="CField">File Name</span>: The name of the backup file.</p>
+<p class="wi2"><span class="CField">Last Backup Date</span>: The last date/time that backup information was stored in the selected file.</p>
+<p class="wi2"><span class="CField">Database Version</span>: The version number for the database in the last backup file. Typically, each new version of MainBoss has a new database version number; however, this isn't always the case.</p>
+<p class="wi2"><span class="CField">Message</span>: Any message generated when the backup was created (if any). It is important to read this message to make sure that the backup process worked.</p>
+<p class="wi"><span class="CButton">New Backup</span>: Opens a window where you can specify a new backup name. For more information, see <a href="Edit.Backup.htm">Specifying Backup Names</a>.</p>
+<p class="wi"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
+<p class="wi2"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
+<p class="wi2"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi"><span class="CButton">Backup</span>: Begins a backup on your database. See the notes at the start of this section for further information on the backup process.</p>
+<p class="wi"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the selected backup name. This does <span class="Emphasis">not</span> delete any existing backup files that have used this name&#8212;it only deletes the name from the list.</p>
+<p class="wi"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Lets you search through the list of records for a particular record. For more information, see <a href="Search.htm">Searching for a Particular Record</a>. The <span class="CButton"><img src="Find_VS.png" alt="Search" /></span> button has an accompanying drop-down list containing the following:</p>
+<p class="wi2"><span class="CButton">Find Next</span>: Uses the same search condition(s) as your most recent search and finds the next record in the table that matches the condition(s). If the search reaches the end of the table without finding a matching record, it goes to the start of the table and continues the search.</p>
+<p class="wi2"><span class="CButton">Find Previous</span>: Same as <span class="CButton">Find Next</span> except that it goes backward in the table. If the search reaches the start of the table without finding a matching record, it goes to the end of the table and continues the search.</p>
+<p class="wi"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p class="box"><span class="CInset">Note:</span> If you perform backups and restores entirely through SQL Server, MainBoss won't store information about such operations. You won't see corresponding entries in the <span class="CPanel">Backups</span> list or in the database history.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Edit.Backup.htm">Specifying Backup Names</a></li>
+
+<li><a href="Report.Backup.htm">Printing Information About Your Backups</a></li>
+</ul>
+<p><a href="Report.Database Management.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Backup.htm">Next section &gt;</a></p>
+</body>
+</html>
+

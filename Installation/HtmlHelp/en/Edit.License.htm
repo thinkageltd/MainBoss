@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Entering License Keys Manually</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Entering License Keys Manually</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.License.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="EnteringMultipleLicenseKeys.htm">Next section &gt;</a></p>
+
+<p>There are two ways to enter license keys:</p>
+
+<ul class="b1"><li>If you have received your keys electronically (for example, in an email message), you can copy and paste all the keys in a single operation. For more information, see <a href="EnteringMultipleLicenseKeys.htm">Entering Multiple License Keys</a>.</li>
+<li>If you have received your keys on paper, you must enter the keys manually as described below.
+</li></ul><p class="box">In order to enter or change license keys, you must have the MainBoss <span class="CU">Administration</span> security role.</p>
+
+<p>You enter license keys manually by clicking the <span class="CButton">New License</span> button in <span class="CPanel">Administration</span> | <span class="CPanel">Licenses</span>. This opens a window where you can enter the new key.</p>
+
+<p>In general, MainBoss will not replace an old key with a new key unless the new key is "better" than the old one. This means that the new key must have a later expiry date or version number than the old key. Also, all your license keys must have the same License ID as the <span class="BL">MainBoss</span> key. (If you do not have a <span class="BL">MainBoss</span> key, the other keys must have the same License ID as the <span class="BL">MainBoss Requests</span> key.)</p>
+
+<p class="box"><span class="CInset">Note:</span> If you change an existing license key or add a new one, you must close and open the database in order for the change to take effect. This means that you must go to MainBoss's <span class="CMenu">Session</span> menu and select <span class="CMenu">Change Maintenance Organization</span>. In the resulting window, select the same organization and then click <span class="CButton">Start</span>. Until you do this, MainBoss will behave as if you're still using the old license keys.</p>
+
+<p>The window for editing license keys contains the following:</p>
+
+<p class="wi"><span class="CField">Application Name</span>: A read-only field giving the name of the MainBoss module associated with the license key.</p>
+<p class="wi"><span class="CField">License</span>: The key you were given by Thinkage Ltd. or a certified MainBoss dealer.</p>
+<p class="box">All remaining information in the record is given by read-only fields. These fields are filled in once you enter a valid license key in "<span class="CField">License</span>". The information is decoded from the license key itself.</p>
+
+<p class="wi"><span class="CField">Application</span>: A read-only field containing a number. This number identifies the software module associated with the key.</p>
+<p class="wi"><span class="CField">License Count</span>: The number associated with license type. For example, if this license limits the number of MainBoss Service requestors, "<span class="CField">License Count</span>" gives the maximum number of requestors allowed.</p>
+<p class="wi"><span class="CField">License Count Status</span>: Explains the meaning of "<span class="CField">License Count</span>".</p>
+<p class="wi"><span class="CField">Expiry Model Name</span>: Every license key may expire under a given set of circumstances. "<span class="CField">Expiry Model Name</span>" indicates how the license will expire. Possibilities are:</p>
+<p class="wi2"><span class="CField">Demonstration Expiry</span>: The key only allows the software to be used in Demonstration Mode. Demonstration mode has different effects on different packages; for example, with MainBoss itself, Demonstration mode puts limits on the number of work requests, work orders, etc. that can be created. It also means that <span class="CU">MainBoss Demonstration</span> will be printed across all printed reports. With MainBoss Service, Demo mode means that the service only runs for an hour, then shuts down; this gives a potential customer time to test the software, but should discourage unlicensed use.</p>
+<p class="wi2"><span class="CField">Calendar Expiry</span>: The key expires on a certain date. After that date, the software will only continue to work in Demo mode.</p>
+<p class="wi2"><span class="CField">Version Expiry</span>: The key is good for all versions of the software produced up to a particular date. For example, if the date is "December 31, 2008" the license key would be good for all versions of the software produced up to the end of 2008. This is what we use for Annual Support Plan customers. For example, if someone's renewal period will end Dec. 31, 2008, we give that customer a license key that's good for all releases up to that date. That way, the customer can just download new releases without needing to get a new license key.
+
+<br /><br />Note the difference between <span class="CField">Calendar Expiry</span> and <span class="CField">Version Expiry</span>. With a calendar expiry, the software stops working after that date. With version expiry, existing software continues to work indefinitely; however, you can't install new releases that were created after the given date unless you get a new key.</p>
+<p class="wi"><span class="CField">Expiry</span>: Appears for <span class="CField">Calendar Expiry</span> and <span class="CField">Version Expiry</span> licenses. It gives the date the license expires. For <span class="CField">Demonstration Expiry</span>, the date is blank.</p>
+<p class="wi"><span class="CField">Expiry Status</span>: Explains how the expiry model works.</p>
+<p class="wi"><span class="CField">License ID</span>: A code number used to identify and check the license, so that several license keys with identical attributes can still be distinct.</p>
+<p class="wi"><span class="CField">License ID Status</span>: Can provide extra information about "<span class="CField">License ID</span>" if necessary.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on license keys, see <a href="LicenseKeys.htm">License Keys</a>. For more on viewing license keys, see <a href="Browse.License.htm">Viewing Your License Keys</a>. For information on entering multiple license keys, see <a href="EnteringMultipleLicenseKeys.htm">Entering Multiple License Keys</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Browse.License.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="EnteringMultipleLicenseKeys.htm">Next section &gt;</a></p>
+</body>
+</html>
+

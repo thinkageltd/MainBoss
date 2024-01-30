@@ -1,0 +1,680 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Thinkage.Libraries.Presentation.ErrorMessage§Record not saved because of invalid form values." type="" mimetype="">
+    <value>Record not saved because of invalid form values.</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.ErrorMessage§The combination of the values entered for '{0}' already exists. Only one instance of that combination is allowed." type="" mimetype="">
+    <value>The combination of the values entered for '{0}' already exists. Only one instance of that combination is allowed.</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.ErrorMessage§The value entered already exists. Only one instance of this value is allowed." type="" mimetype="">
+    <value>The value entered already exists. Only one instance of this value is allowed.</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.ErrorMessage§The value entered for '{0}' already exists. Only one instance of this value is allowed." type="" mimetype="">
+    <value>The value entered for '{0}' already exists. Only one instance of this value is allowed.</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§ of {0}" type="" mimetype="">
+    <value> of {0}</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§', '" type="" mimetype="">
+    <value>', '</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§{0} Error" type="" mimetype="">
+    <value>{0} Error</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§¯Is false" type="" mimetype="">
+    <value>Is false</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§¯Is not null" type="" mimetype="">
+    <value>Is not null</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§¯Is null" type="" mimetype="">
+    <value>Is null</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§¯Is true" type="" mimetype="">
+    <value>Is true</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§&lt; '{0}'" type="" mimetype="">
+    <value>&lt; '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§&lt;= '{0}'" type="" mimetype="">
+    <value>&lt;= '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§&lt;&gt; '{0}'" type="" mimetype="">
+    <value>&lt;&gt; '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§= '{0}'" type="" mimetype="">
+    <value>= '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§&gt; '{0}'" type="" mimetype="">
+    <value>&gt; '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§&gt;= '{0}'" type="" mimetype="">
+    <value>&gt;= '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§A parameter for the condition is not valid" type="" mimetype="">
+    <value>A parameter for the condition is not valid</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§A record must be selected" type="" mimetype="">
+    <value>A record must be selected</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§A search pattern is required" type="" mimetype="">
+    <value>A search pattern is required</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§A search string is required" type="" mimetype="">
+    <value>A search string is required</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§A valid condition must be selected" type="" mimetype="">
+    <value>A valid condition must be selected</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Acknowledge the error message" type="" mimetype="">
+    <value>Acknowledge the error message</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Active" type="" mimetype="">
+    <value>Active</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Add another search condition" type="" mimetype="">
+    <value>Add another search condition</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Add Filter Condition" type="" mimetype="">
+    <value>Add Filter Condition</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Add Search Condition" type="" mimetype="">
+    <value>Add</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Advanced" type="" mimetype="">
+    <value>Advanced</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Advanced report settings" type="" mimetype="">
+    <value>Advanced report settings</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§All" type="" mimetype="">
+    <value>All</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§All records are filtered out" type="" mimetype="">
+    <value>All records are filtered out</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§An Update error has occurred:" type="" mimetype="">
+    <value>An Update error has occurred:</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§and predicate" xml:space="preserve">
+    <value> and </value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§and term" xml:space="preserve">
+    <value>, and </value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Any value" type="" mimetype="">
+    <value>Any value</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Apply Filter" type="" mimetype="">
+    <value>Apply Filter</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Apply Filter: {0}" type="" mimetype="">
+    <value>Apply Filter: {0}</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Ascending" type="" mimetype="">
+    <value>Ascending</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§between '{0}' and '{1}'" type="" mimetype="">
+    <value>between '{0}' and '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Blank value" type="" mimetype="">
+    <value>Blank value</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Browse..." type="" mimetype="">
+    <value>Browse...</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Browser filtering is already disabled" type="" mimetype="">
+    <value>Browser filtering is already disabled</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Cancel" type="" mimetype="">
+    <value>Canc&amp;el</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Close" type="" mimetype="">
+    <value>Close</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Close this form" type="" mimetype="">
+    <value>Close this form</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Close this window" type="" mimetype="">
+    <value>Close this window</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Column" type="" mimetype="">
+    <value>Column</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Complete the process and accept all changes" type="" mimetype="">
+    <value>Complete the process and accept all changes</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Contains" type="" mimetype="">
+    <value>Contains</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§contains '{0}'" xml:space="preserve">
+    <value>contains '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Control does not have a value" type="" mimetype="">
+    <value>Control does not have a value</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Current Database Value" type="" mimetype="">
+    <value>Current Database Value</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Current table contents" type="" mimetype="">
+    <value>Current table contents</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Database update failed with a concurrency error" type="" mimetype="">
+    <value>Database update failed with a concurrency error</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Default settings" type="" mimetype="">
+    <value>Default settings</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Define a filter for selecting which records to show" type="" mimetype="">
+    <value>Define a filter for selecting which records to show</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Deleted on" type="" mimetype="">
+    <value>Deleted on</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Descending" type="" mimetype="">
+    <value>Descending</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Details" type="" mimetype="">
+    <value>Details</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Disable Filter" type="" mimetype="">
+    <value>Disable Filter</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Disable the filter and close this window" type="" mimetype="">
+    <value>Disable the filter and close this window</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Do you want to delete the record even though it has been changed?" type="" mimetype="">
+    <value>Do you want to delete the record even though it has been changed?</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Do you want to overwrite the current database record with the proposed changes?" type="" mimetype="">
+    <value>Do you want to overwrite the current database record with the proposed changes?</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Do you want to save your changes before closing?" type="" mimetype="">
+    <value>Do you want to save your changes before closing?</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Drop" type="" mimetype="">
+    <value>Drop</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Drop this search condition" type="" mimetype="">
+    <value>Drop this search condition</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Enable Filter" type="" mimetype="">
+    <value>Enable Filter</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Enable the filter and close this window" type="" mimetype="">
+    <value>Enable the filter and close this window</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Equals" type="" mimetype="">
+    <value>Equals</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§equals '{0}'" type="" mimetype="">
+    <value>equals '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Export Data" type="" mimetype="">
+    <value>Export Data</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Export the report data to an XML file" type="" mimetype="">
+    <value>Export the report data to an XML file</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§False" type="" mimetype="">
+    <value>False</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Filter By {0}" type="" mimetype="">
+    <value>Filter By {0}</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Find Next" type="" mimetype="">
+    <value>Find Next</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Find Previous" type="" mimetype="">
+    <value>Find Previous</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Find the next matching record" type="" mimetype="">
+    <value>Find the next matching record</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Find the previous matching record" type="" mimetype="">
+    <value>Find the previous matching record</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Finish" type="" mimetype="">
+    <value>Finish</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§From" type="" mimetype="">
+    <value>From</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§From {0} to {1}" type="" mimetype="">
+    <value>From {0} to {1}</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Generate a listing is not enabled" type="" mimetype="">
+    <value>Generate a listing is not enabled</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Generate a listing report" type="" mimetype="">
+    <value>Generate a listing report</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Go to the next page" type="" mimetype="">
+    <value>Go to the next page</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Go to the previous page" type="" mimetype="">
+    <value>Go to the previous page</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Group by" type="" mimetype="">
+    <value>Group by</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Grouping" type="" mimetype="">
+    <value>Grouping</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Grouping and Sorting" type="" mimetype="">
+    <value>Grouping and Sorting</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Help" type="" mimetype="">
+    <value>Help</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Hide the current record details" type="" mimetype="">
+    <value>Hide the current record details</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Is between" type="" mimetype="">
+    <value>Is between</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Is equal to" type="" mimetype="">
+    <value>Is equal to</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§is false" xml:space="preserve">
+    <value>is false</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Is greater or equal to" type="" mimetype="">
+    <value>Is greater or equal to</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Is greater than" type="" mimetype="">
+    <value>Is greater than</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Is in the range" type="" mimetype="">
+    <value>Is in the range</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Is less than" type="" mimetype="">
+    <value>Is less than</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Is less than or equal to" type="" mimetype="">
+    <value>Is less than or equal to</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Is not equal to" type="" mimetype="">
+    <value>Is not equal to</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§is not null" xml:space="preserve">
+    <value>is not null</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§is null" xml:space="preserve">
+    <value>is null</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Is on or after" type="" mimetype="">
+    <value>Is on or after</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Is on or before" type="" mimetype="">
+    <value>Is on or before</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§is true" xml:space="preserve">
+    <value>is true</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Last updated" type="" mimetype="">
+    <value>Last updated</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§matches '{0}'" xml:space="preserve">
+    <value>matches '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Matches pattern" type="" mimetype="">
+    <value>Matches pattern</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Maximum number of search conditions has been reached" type="" mimetype="">
+    <value>Maximum number of search conditions has been reached</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Mixed" type="" mimetype="">
+    <value>Mixed</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Next" type="" mimetype="">
+    <value>Next</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§No" type="" mimetype="">
+    <value>No</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§No Actions Available" type="" mimetype="">
+    <value>No Actions Available</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§No Search Condition has been defined" type="" mimetype="">
+    <value>No Search Condition has been defined</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Nothing to preview" type="" mimetype="">
+    <value>Nothing to preview</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§OK" type="" mimetype="">
+    <value>OK</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§One or more of the search terms is invalid" type="" mimetype="">
+    <value>One or more of the search terms is invalid</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Original Value" type="" mimetype="">
+    <value>Original Value</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Please correct the values in error identified on the form." type="" mimetype="">
+    <value>Please correct the values in error identified on the form.</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Preview" type="" mimetype="">
+    <value>Preview</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Preview the report" type="" mimetype="">
+    <value>Preview the report</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Preview the report with current settings" type="" mimetype="">
+    <value>Preview the report with current settings</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Previous" type="" mimetype="">
+    <value>Previous</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Print" type="" mimetype="">
+    <value>&amp;Print</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Proposed Change" type="" mimetype="">
+    <value>Proposed Change</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Provide all the details for this error" type="" mimetype="">
+    <value>Provide all the details for this error</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Range of values" type="" mimetype="">
+    <value>Range of values</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Record Type" type="" mimetype="">
+    <value>Record Type</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Refresh" type="" mimetype="">
+    <value>&amp;Refresh</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Refresh the view with current information." type="" mimetype="">
+    <value>Refresh the view with current information.</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Return to edit form leaving selection unchanged" type="" mimetype="">
+    <value>Return to edit form leaving selection unchanged</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Search" type="" mimetype="">
+    <value>&amp;Search</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Search the table for a record." type="" mimetype="">
+    <value>Search the table for a record.</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§See help for this error" type="" mimetype="">
+    <value>See help for this error</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Select" type="" mimetype="">
+    <value>Selec&amp;t</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Select Fixed-width Font" type="" mimetype="">
+    <value>Select Fixed-width Font</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Select how report is grouped" type="" mimetype="">
+    <value>Select how report is grouped</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Select how report is grouped and sorted" type="" mimetype="">
+    <value>Select how report is grouped and sorted</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Select how report is sorted" type="" mimetype="">
+    <value>Select how report is sorted</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Select Main Font" type="" mimetype="">
+    <value>Select Main Font</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Select the current record and return to edit form" type="" mimetype="">
+    <value>Select the current record and return to edit form</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Select to cancel changes to the database" type="" mimetype="">
+    <value>Select to cancel changes to the database</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Select to overwrite the database record with changes" type="" mimetype="">
+    <value>Select to overwrite the database record with changes</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Select using full browser" type="" mimetype="">
+    <value>Select using full browser</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Selected Record" type="" mimetype="">
+    <value>Selected Record</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Set the browser filter and enable filtering" type="" mimetype="">
+    <value>Set the browser filter and enable filtering</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Show deleted records" type="" mimetype="">
+    <value>Show deleted records</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Show the current record details" type="" mimetype="">
+    <value>Show the current record details</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Sort by" type="" mimetype="">
+    <value>Sort by</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Sort Direction" type="" mimetype="">
+    <value>Sort Direction</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Sorting" type="" mimetype="">
+    <value>Sorting</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Specific values" type="" mimetype="">
+    <value>Specific values</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Starts with" type="" mimetype="">
+    <value>Starts with</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§starts with '{0}'" xml:space="preserve">
+    <value>starts with '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Step {0}" type="" mimetype="">
+    <value>Step {0}</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Suppress Active Filter restrictions" type="" mimetype="">
+    <value>Suppress Active Filter restrictions</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Suppress Costs" type="" mimetype="">
+    <value>Suppress Costs</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§The current record type is not a valid selection" type="" mimetype="">
+    <value>The current record type is not a valid selection</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§The parameters for the condition are not valid" type="" mimetype="">
+    <value>The parameters for the condition are not valid</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§The report could not be generated because of invalid form values." type="" mimetype="">
+    <value>The report could not be generated because of invalid form values.</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§There are no filter conditions" type="" mimetype="">
+    <value>There are no filter conditions</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§There are no further details for this error" type="" mimetype="">
+    <value>There are no further details for this error</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§There is no help for this error" type="" mimetype="">
+    <value>There is no help for this error</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§There is no selected record" type="" mimetype="">
+    <value>There is no selected record</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§There must be at least one search condition" type="" mimetype="">
+    <value>There must be at least one search condition</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§This browser cannot select another record" type="" mimetype="">
+    <value>This browser cannot select another record</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§This operation is not allowed here on a record being edited in another form" type="" mimetype="">
+    <value>This operation is not allowed here on a record being edited in another form</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§This record cannot be modified or picked using this browser" type="" mimetype="">
+    <value>This record cannot be modified or picked using this browser</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§To" type="" mimetype="">
+    <value>To</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§True" type="" mimetype="">
+    <value>True</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Turn off browser filtering" type="" mimetype="">
+    <value>Turn off browser filtering</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Unable to display this Explorer pane" type="" mimetype="">
+    <value>Unable to display this Explorer pane</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Unable to prepare the report for printing" type="" mimetype="">
+    <value>Unable to prepare the report for printing</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Unable to refresh browser list contents; click the Refresh button to try again" type="" mimetype="">
+    <value>Unable to refresh browser list contents; click the Refresh button to try again</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Unable to set default for parameter {0}" type="" mimetype="">
+    <value>Unable to set default for parameter {0}</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Unable to start a report because the required Report Viewer support is not installed, or is misconfigured" type="" mimetype="">
+    <value>Unable to start a report because the required Report Viewer support is not installed, or is misconfigured</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Update Error" type="" mimetype="">
+    <value>Update Error</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Upper limit is less than lower limit" type="" mimetype="">
+    <value>Upper limit is less than lower limit</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Value '{0}' is not valid" type="" mimetype="">
+    <value>Value '{0}' is not valid</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§View" type="" mimetype="">
+    <value>&amp;View</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§View choices in full browser" type="" mimetype="">
+    <value>View choices in full browser</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§XML files (*.xml)|*.xml" type="" mimetype="">
+    <value>XML files (*.xml)|*.xml</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§Yes" type="" mimetype="">
+    <value>Yes</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation.MSWindows§You are not permitted to view the details of this record" type="" mimetype="">
+    <value>You are not permitted to view the details of this record</value>
+  </data>
+</root>

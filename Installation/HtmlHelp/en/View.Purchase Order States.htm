@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Purchase Order States</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Purchase Order States</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="MainBossasaPurchaseRequestSystem.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Purchase Order.htm">Next section &gt;</a></p>
+
+<p>To accommodate organizations that require approvals before making a purchase, the process of creating a purchase order can have many stages:</p>
+
+<ul class="b1"><li><span class="CInset">Draft:</span> This is the stage where you first enter the information about the purchase order. The purchase order remains in its draft state until you issue it (see below).
+
+<br /><br />Many organizations require a formal approval process for some or all purchase orders created by the maintenance department. Typically, a purchase order remains in the draft stage until it receives all the necessary approvals.
+</li></ul><p class="box"><span class="CInset">Note:</span> Inventory items are considered to be <span class="NewTerm">on order</span> as soon as they appear on a draft purchase order. MainBoss does this to avoid over-ordering stock&#8212;once an item has been put on one purchase order, the corresponding "stock available" quantities are all updated to show the quantity of stock that will eventually arrive.
+
+<br /><br />The drawback of this approach is that the items are considered on order before the purchase order is actually issued. If the purchase order isn't issued for a long time, you may be misled into thinking that the stock is soon going to show up, when in fact, the purchase order hasn't even been sent to the vendor. For this reason, you should try not to leave any purchase order in the draft stage for an extended period of time.</p>
+
+<ul class="b1"><li><span class="CInset">Issued:</span> Once the purchase order has been approved, it can be issued to the vendor who will supply the goods. An issued purchase order has actually been submitted to the vendor.
+
+<br /><br />Once a purchase order has been issued, you can't add more items to it. If you've issued a purchase order but find that you have to make changes before sending it to the vendor, MainBoss lets you <span class="NewTerm">withdraw</span> the purchase order.
+
+<br /><br />You cannot record the receipt of goods or services in connection with a purchase order until the purchase order is issued.</li>
+<li><span class="CInset">Closed:</span> Once you have received all the items specified in the purchase order, the purchase order may be closed. The purchase order may also be closed if some items have been received and orders for outstanding items have been cancelled.
+
+<br /><br />A closed purchase order can't be edited. If you really want to make changes, you have to <span class="NewTerm">reactivate</span> it first. If you want to add comments to the purchase order, you should do so before you close it.</li>
+<li><span class="CInset">Void:</span> A draft purchase order may be canceled by marking it as void.
+</li></ul>
+<p>MainBoss has various buttons for changing the state of purchase orders. These are summarized below:</p>
+
+<ul class="b1"><li><span class="CButton">Void</span>: Changes <span class="CPanel">Draft</span> to <span class="CPanel">Void</span>, and also opens a window where you may record a comment about why you decided to cancel the purchase order</li>
+<li><span class="CButton">Re-Draft</span>: Changes <span class="CPanel">Void</span> to <span class="CPanel">Draft</span>, and also opens a window where you may record a comment about why you decided to reopen the purchase order</li>
+<li><span class="CButton">Issue</span>: Changes <span class="CPanel">Draft</span> to <span class="CPanel">Issued</span></li>
+<li><span class="CButton">Issue (With Comment)</span>: Same as <span class="CButton">Issue</span>, but also opens a window where you may record a comment about what you're doing</li>
+<li><span class="CButton">Withdraw Purchase Order</span>: Changes <span class="CPanel">Issued</span> to <span class="CPanel">Draft</span>, and also opens a window where you may record a comment explaining why you're withdrawing the purchase order</li>
+<li><span class="CButton">Close Purchase Order</span>: Changes <span class="CPanel">Issued</span> to <span class="CPanel">Closed</span></li>
+<li><span class="CButton">Close Purchase Order (With Comment)</span>: Same as <span class="CButton">Close Purchase Order</span>, but also opens a window where you may record a comment about what you're doing</li>
+<li><span class="CButton">ReActivate Purchase Order</span>: Changes <span class="CPanel">Closed</span> to <span class="CPanel">Issued</span>, and also opens a window where you may record a comment explaining why you're reactivating the purchase order
+</li></ul><p>Purchase orders may be created in a number of different ways. The simplest is creating one directly from the purchase order viewer (<span class="CPanel">Purchase Orders</span> in the control panel). Purchase orders may also be created as part of the process of creating a work order. When a work order requires hiring outside contractors or the purchase of non-inventory materials, MainBoss lets you create a purchase order to cover those labor or material costs. For more on this way to create purchase orders, see <a href="Edit.Work Order.htm">Editing Work Orders</a>.</p>
+
+<p><span class="CInset">Purchase Order Status Codes:</span> In addition to the standard purchase order states, you can create your own custom <span class="NewTerm">status codes</span> to describe the condition of purchase orders. For example, you might have status codes like</p>
+
+<pre>Waiting for price quote
+Waiting for management approval
+Items on back-order</pre>
+
+<p>For more on purchase order status codes, see <a href="PurchaseOrderStatusCodes.htm">Purchase Order Status Codes</a>.</p>
+
+<p>For information on viewing purchase orders, see <a href="Browse.Purchase Order.htm">Viewing Purchase Orders</a>. For more on creating and editing purchase orders, see <a href="Edit.Purchase Order.htm">Editing Purchase Orders</a>. For more on printing purchase orders, see <a href="Report.Purchase Order.htm">Printing Purchase Orders</a>. For more on reports related to purchase orders, see <a href="PurchaseOrderReports.htm">Purchase Order Reports</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Browse.Purchase Order.htm">Viewing Purchase Orders</a></li>
+
+<li><a href="Browse.Draft Purchase Order.htm">Viewing Draft Purchase Orders</a></li>
+
+<li><a href="Browse.Issued Purchase Order.htm">Viewing Issued Purchase Orders</a></li>
+
+<li><a href="Browse.Unassigned Purchase Order.htm">Viewing Unassigned Purchase Orders</a></li>
+
+<li><a href="Browse.Closed Purchase Order.htm">Viewing Closed Purchase Orders</a></li>
+
+<li><a href="Browse.Void Purchase Order.htm">Viewing Void Purchase Orders</a></li>
+
+<li><a href="Edit.Purchase Order.htm">Editing Purchase Orders</a></li>
+
+<li><a href="Edit.Purchase Item.htm">Purchase Item</a></li>
+
+<li><a href="Edit.Purchase Hourly Outside.htm">Purchase Hourly Outside</a></li>
+
+<li><a href="Edit.Purchase Per Job Outside.htm">Purchase Per Job Outside</a></li>
+
+<li><a href="Edit.Purchase Miscellaneous Item.htm">Purchase Miscellaneous Item</a></li>
+
+<li><a href="Edit.Purchase Order Assignment.htm">Assigning Someone to a Purchase Order</a></li>
+
+<li><a href="Edit.Work Order Purchase Order.htm">Associating Work Orders with Purchase Orders</a></li>
+
+<li><a href="Edit.Purchase Order State History.htm">Purchase Order State History Records</a></li>
+
+<li><a href="Report.Purchase Order.htm">Printing Purchase Orders</a></li>
+
+<li><a href="Report.Purchase Order State.htm">Printing Purchase Order States</a></li>
+
+<li><a href="Browse.Purchase Order Assignment By Assignee.htm">Viewing Purchase Order Assignments</a></li>
+</ul>
+<p><a href="MainBossasaPurchaseRequestSystem.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Purchase Order.htm">Next section &gt;</a></p>
+</body>
+</html>
+

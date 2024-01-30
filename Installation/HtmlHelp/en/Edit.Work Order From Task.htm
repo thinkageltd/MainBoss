@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Work Orders Created from Tasks</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Work Orders Created from Tasks</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Task.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Task From Work Order.htm">Next section &gt;</a></p>
+
+<p>Tasks provide a description of work to be done in planned maintenance. However, you may also want to perform the work as an unscheduled job. For example, you may want to perform an oil change on a car even though the car isn't due for an oil change yet.</p>
+
+<p>In this case, you can create a one-off work order based on the information in a task record. This lets you create a work order very quickly&#8212;all you have to do is fill in the name of the unit, and a few other fields.</p>
+
+<p>To create a work order from a task, select the task in the <span class="CPanel">Tasks</span> viewer, then click <span class="CButton">New Work Order From Task</span>. This opens a window that contains the following:</p>
+
+<p class="wi"><span class="CField">Task</span>: Specifies the task record to use as the basis for the new work order.</p>
+<p class="wi"><span class="CField">For Access Code</span> options: Let you specify what to do when the access code for a task is different from the access code for the unit:</p>
+<p class="wi2"><span class="CButton">Prefer value from Task</span>: If both the task and the unit record specify an access code, MainBoss uses the access code from the task. However, if the task record doesn't have an access code, MainBoss uses the code from the unit.</p>
+<p class="wi2"><span class="CButton">Prefer value from Unit</span>: If both the task record and the unit record specify an access code, MainBoss uses the access code from the unit. However, if the unit record doesn't have an access code, MainBoss uses the code from the task.</p>
+<p class="wi2"><span class="CButton">Only use value from Task</span>: MainBoss always uses the access code from the task record. (If the task record doesn't have an access code, the generated work order won't have an access code either.)</p>
+<p class="wi2"><span class="CButton">Only use value from Unit</span>: MainBoss always uses the access code from the unit record. (If the unit record doesn't have an access code, the generated work order won't have an access code either.)</p>
+<p class="wi"><span class="CField">For Expense Model</span> options: Let you specify what to do when the expense model for a task is different from the one for the unit. The options work the same way as the options in <span class="CField">For Access Code</span>.</p>
+<p class="wi"><span class="CField">Purchase Order initial State override</span>: Lets you specify an initial state for any purchase orders generated in connection with this task.
+
+<br /><br />Purchase orders will be generated from any purchase order templates associated with the task. Each template may have a default initial state associated with it: Closed, Issued, Open, or Voided. By default, generated purchase orders are put into the specified state; however, you can override the default by specifying a different state in this field.</p>
+<p class="wi"><span class="CField">Work Order initial State override</span>: Similar to "<span class="CField">Purchase Order initial State override</span>". By default, each generated work order is created in the draft state. However, you may wish to put generated work orders into some other state instead&#8212;most likely the open state, indicating that the work order is ready to be printed. (Remember though that if a work order is open, some of its information is locked down and can't be changed unless you first <span class="CButton">Suspend</span> the work order.)</p>
+<p class="wi"><span class="CField">Number</span>: Identifies the new work order. MainBoss automatically generates a new work order number.</p>
+<p class="wi"><span class="CField">Unit</span>: The unit on which you want the work to be done.</p>
+<p class="wi"><span class="CField">Work Start Date</span>: The date you want the work to begin.</p>
+<p class="wi"><span class="CField">Subject</span>: A read-only field giving the subject line to be used for the work order.</p>
+<p class="wi"><span class="CField">Access Code</span>: A read-only field giving the access code to be used for the work order (determined by the "<span class="CField">For Access Code</span>" options).</p>
+<p class="wi"><span class="CField">Expense Model</span>: A read-only field giving the expense model to be used for the work order (determined by the "<span class="CField">For Expense Model</span>" options).</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Creates the desired work order and closes the window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Discards any changes that you've made. The button then changes to <span class="CButton">Close</span>, which will close the window without creating a work order.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window without creating a work order.</p>
+<p>For more on tasks, see <a href="Tasks.htm">Tasks</a>. For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>.</p>
+
+
+<p><a href="Report.Task.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Task From Work Order.htm">Next section &gt;</a></p>
+</body>
+</html>
+

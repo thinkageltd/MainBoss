@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing Maintenance Timing Records</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Editing Maintenance Timing Records</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.Maintenance Timing.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Daily Period.htm">Next section &gt;</a></p>
+
+<p>You create maintenance timing records using the timing editor. The usual way to open the editor is to click <span class="CButton">New Maintenance Timing</span> or <span class="CButton">Edit</span> in the <span class="CButton">View</span> section of <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Unit Maintenance Plans</span> | <span class="CPanel">Maintenance Timings</span>.</p>
+
+<p class="box">For examples of how to schedule jobs, see <a href="UnitMaintenancePlans.htm">Unit Maintenance Plans</a>. In particular, the examples include how to set up jobs for times like "the second Tuesday of every month" or "every month on the 15th".</p>
+
+<p>The timing editor window contains the following:</p>
+
+<p class="wi"><span class="CButton">Details</span> section: Shows basic information for the record.</p>
+<p class="wi2"><span class="CField">Code</span>: A brief code to identify this record. No two records may have the same code.</p>
+<p class="wi2"><span class="CField">Description</span>: A longer description of the timing record.</p>
+<p class="wi2"><span class="CField">Comments</span>: Any comments you want to associate with the timing.</p>
+<p class="wi"><span class="CButton">Periods</span> section: Lists conditions under which this timing record is fulfilled. For example, an oil change might have two periods: one for "every three months" and one for "every 3000 miles".</p>
+<p class="wi2"><span class="CButton">New Meter Period</span>: Opens a window to create a new period based on meter readings (e.g. "every 3000 miles"). For more, see <a href="Edit.Meter Period.htm">Editing Meter Periods</a>.</p>
+<p class="wi2"><span class="CButton">New Daily Period</span>: Opens a window to create a new period measured in days (e.g. "every 30 days"). For more, see <a href="Edit.Daily Period.htm">Editing Daily Periods</a>.</p>
+<p class="wi2"><span class="CButton">New Monthly Period</span>: Opens a window to create a new period measured in months (e.g. "every three months"). For more, see <a href="Edit.Monthly Period.htm">Editing Monthly Periods</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
+<p class="wi3"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
+<p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the period that's currently selected.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Lets you search through the list of records for a particular record. For more information, see <a href="Search.htm">Searching for a Particular Record</a>. The <span class="CButton"><img src="Find_VS.png" alt="Search" /></span> button has an accompanying drop-down list containing the following:</p>
+<p class="wi3"><span class="CButton">Find Next</span>: Uses the same search condition(s) as your most recent search and finds the next record in the table that matches the condition(s). If the search reaches the end of the table without finding a matching record, it goes to the start of the table and continues the search.</p>
+<p class="wi3"><span class="CButton">Find Previous</span>: Same as <span class="CButton">Find Next</span> except that it goes backward in the table. If the search reaches the start of the table without finding a matching record, it goes to the end of the table and continues the search.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect recent changes.</p>
+<p class="wi"><span class="CButton">Exceptions</span> section: Lets you adjust the timing to deal with any special conditions. For more information on any of these exceptions, see <a href="MaintenanceTimings.htm">Maintenance Timings</a>.</p>
+<p class="wi2"><span class="CButton">Defer overdue work orders to the date maintenance is generated</span>: Applies when work is already overdue on the date you generate work orders. For example, you might generate work orders on June 2 but a job came due on June 1. If you choose this option, MainBoss will schedule the job for the date you generate the work orders (in this example, June 2).</p>
+<p class="wi2"><span class="CButton">Inhibit generation of overdue work orders</span>: Is the alternative to the previous option: if a job is already overdue on the date you generate work orders, MainBoss simply skips the job. It won't be scheduled until the next time it comes due.</p>
+<p class="wi2"><span class="CField">Season</span>, <span class="CField">Start</span> and <span class="CField">End</span>: Used when timing only applies to part of the year. For example, if you set "<span class="CField">Start</span>" to May 1 and "<span class="CField">End</span>" to October 31, jobs will only be scheduled in the period from May 1 to October 31. On the other hand, if you set "<span class="CField">Start</span>" to October 31 and "<span class="CField">End</span>" to May 1, jobs will only be scheduled in the period from October 31 to May 1.</p>
+<p class="wi2"><span class="CField">Example for the fourth of May</span>: Shows the format that should be used when entering dates into "<span class="CField">Start</span>" and "<span class="CField">End</span>". If either "<span class="CField">Start</span>" or "<span class="CField">End</span>" has an incorrect format, both will have error markers displayed beside them.</p>
+<p class="box">Your Windows settings determine what format is required for dates in the "<span class="CField">Start</span>" and "<span class="CField">End</span>" fields&#8212;different people will have different formats. Therefore, you should check "<span class="CField">Example for the fourth of May</span>" to make sure you're using the right format.</p>
+
+<p class="wi2"><span class="CButton">Defer work orders triggered outside the season until the start of the season</span>: Applies when a job comes due outside the allowed season. For example, suppose the allowed season is from May 1 to October 31, but a job comes due in January. If you choose this option, MainBoss will schedule the job for the first date in the allowed season (in this example, May 1).</p>
+<p class="wi2"><span class="CButton">Inhibit generation of work orders outside the season</span>: Is the alternative to the previous option: if a job comes due in the off-season, MainBoss simply skips the job. It won't be scheduled again until it comes due in the allowed season.</p>
+<p class="wi2"><span class="CField">Weekday exceptions</span>: Used when a job can only be done on certain days of the week. In the list, you specify which days are allowed.</p>
+<p class="wi2"><span class="CButton">Defer work orders triggered on disabled weekdays until the next enabled weekday</span>: Applies when a job comes due on a weekday that is not allowed. For example, a job that can only be done on Saturdays comes due on a Thursday. If you choose this option, MainBoss will schedule the job for the next allowable weekday (in this example, the Saturday immediately following the Thursday when the job comes due).</p>
+<p class="wi2"><span class="CButton">Inhibit generation of work orders on disabled weekdays</span>: Is the alternative to the previous option: if a job comes due on a weekday that is not allowed, MainBoss simply skips the job. It won't be scheduled again until it comes due on a day that's allowed.</p>
+<p class="wi"><span class="CButton">Unit Maintenance Plans</span>: Lists unit maintenance plans that use this timing record.</p>
+<p class="wi2"><span class="CButton">New Unit Maintenance Plan</span>: Lets you create a unit maintenance plan using the current timing record. For more, see <a href="Edit.Unit Maintenance Plan.htm">Editing Unit Maintenance Plans</a>.</p>
+<p class="wi2"><span class="CButton">New Unplanned Maintenance Work Order</span>: Uses the selected unit maintenance plan to make a work order immediately. For example, suppose the plan specifies an oil change on a particular vehicle. Clicking this button immediately creates an oil change work order for the vehicle. For more information, see <a href="Edit.Unplanned Maintenance Work Order.htm">Creating an Unplanned Maintenance Work Order</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
+<p class="wi3"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
+<p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi3"><span class="CButton">Restore</span>: Restores a deleted record. This button is only active if the viewer is in <span class="CU">All</span> mode and if you've selected a deleted record. When you click <span class="CButton">Restore</span>, MainBoss will open a window that lets you examine the contents of the deleted record. If you save the record and close the window, the record will be restored to the <span class="CU">Active</span> list.</p>
+<p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the record that's currently selected.</p>
+<p class="wi2"><span class="CButton">Change Schedule Basis</span>: Lets you specify the starting point for a plan's schedule. For example, if a job is to be done every 30 days, the schedule basis should state the last time the job was done; using this information, MainBoss can then calculate when the job should be done next. Without a schedule basis to use as a starting point, MainBoss can't schedule maintenance jobs. For more on setting a schedule basis, see <a href="Edit.Scheduling Basis.htm">Specifying a Schedule Basis</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Lets you search through the list of records for a particular record. For more information, see <a href="Search.htm">Searching for a Particular Record</a>. The <span class="CButton"><img src="Find_VS.png" alt="Search" /></span> button has an accompanying drop-down list containing the following:</p>
+<p class="wi3"><span class="CButton">Find Next</span>: Uses the same search condition(s) as your most recent search and finds the next record in the table that matches the condition(s). If the search reaches the end of the table without finding a matching record, it goes to the start of the table and continues the search.</p>
+<p class="wi3"><span class="CButton">Find Previous</span>: Same as <span class="CButton">Find Next</span> except that it goes backward in the table. If the search reaches the start of the table without finding a matching record, it goes to the end of the table and continues the search.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect recent changes.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on timing records, see <a href="MaintenanceTimings.htm">Maintenance Timings</a>. For more on viewing timing records, see <a href="Browse.Maintenance Timing.htm">Viewing Maintenance Timing Records</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Browse.Maintenance Timing.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Daily Period.htm">Next section &gt;</a></p>
+</body>
+</html>
+

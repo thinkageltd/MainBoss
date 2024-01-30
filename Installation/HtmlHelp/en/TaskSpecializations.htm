@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Task Specializations</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Task Specializations</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Tasks.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Task.htm">Next section &gt;</a></p>
+
+<p> A <span class="NewTerm">task specialization</span> is a specialized version of another task. For example, suppose you have a standard <span class="CU">Oil Change</span> task which describes a standard oil change. However, the oil change for a particular vehicle might require a different type of oil, extra inspection operations, or other differences from the standard. In this case, you can create a task specialization based on the original <span class="CU">Oil Change</span> task. The specialization states ways in which the special job differs from the original. The following rules control what happens when a work order is generated from a task specialization:</p>
+
+<ul class="b1"><li>Information in the specialization is <span class="Emphasis">added</span> to the original whenever possible. For example, the task description in a generated work order will consist of the description in the original task <span class="Emphasis">plus</span> any description in the specialization. Similarly, the work order will contain all resources from the original <span class="Emphasis">plus</span> all resources from the specialization.</li>
+<li>Information in the specialization <span class="Emphasis">replaces</span> information from the original when the two can't coexist. For example, a work order can only have a single priority. Therefore, if the original task description has one priority and the specialization has a different one, the work order will take its priority setting from the specialization.
+</li></ul><p>A task specialization can be used wherever a task can. For example, you can schedule a specialized task in the same way that you schedule a basic task. Similarly, you can create a specialization of a specialization.</p>
+
+<p>In the <span class="CPanel">Tasks</span> viewer and other viewers, tasks and specializations are shown using a map similar to a location map. Specializations are shown under and indented from their base tasks.</p>
+
+<p>For information on creating and editing task specializations, see <a href="Edit.Task Specialization.htm">Editing Task Specializations</a>.</p>
+
+
+<p><a href="Tasks.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Task.htm">Next section &gt;</a></p>
+</body>
+</html>
+

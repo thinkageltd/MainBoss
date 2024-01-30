@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Company Information</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Company Information</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.Administration.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Company Information.htm">Next section &gt;</a></p>
+
+<p>MainBoss can record information about your company. For example, it can put your company logo on your work orders, provided that you have the logo in some standard graphic format (e.g. as a JPG or GIF file).</p>
+
+<p>To view your company information settings, use <span class="CPanel">Administration</span> | <span class="CPanel">Company Information</span>. The viewer shows the following. (Note that all are read-only fields; to change any value click <span class="CButton">Edit</span>.)</p>
+
+<p class="wi"><span class="CField">Company Logo</span>: A picture showing your organization's logo.</p>
+<p class="wi"><span class="CField">Purchasing Contact</span>: Specifies someone in your organization whose name should go on purchase orders as a contact person. For more on purchase orders, see <a href="PurchaseOrders.htm">Purchase Orders</a>.</p>
+<p class="wi"><span class="CField">Organization Name</span>: The name of your organization.</p>
+<p class="wi"><span class="CField">News URL</span>: The web address used to obtain information for the <span class="CPanel">MainBoss News</span> entry in the control panel. By default, this is the web page from <a href="mainboss.com">mainboss.com</a> that provides news about your version of MainBoss. You can change this to refer to any other web page, e.g. a news page maintained by your organization.</p>
+<p class="wi"><span class="CField">Company Location</span>: Can refer to an entry in the <span class="CPanel">Locations</span> table giving your company's postal address.</p>
+<p class="wi"><span class="CField">Reports</span> area: Various settings that affect how your reports are printed.</p>
+<p class="wi2"><span class="CField">Main Font</span>: The default font to be used for all information, except for fixed-width information.</p>
+<p class="wi2"><span class="CField">Fixed-width Font</span>: The default font to be used for printing information when the characters should all have the same width.</p>
+<p class="wi2"><span class="CButton">Bar Code Symbology</span>: Specifies a default format to be used for printing bar codes in any report where bar codes can appear. This will be used as the default setting for bar codes in all such reports; however, users can switch to a different setting for any specific report. For more information, see <a href="BarCodeSupport.htm">Bar Code Support</a>.</p>
+<p class="wi"><span class="CField">Filters</span> area: Settings to control the effects of the active filter. For more about this filter, see <a href="Edit.Active Filter.htm">The Active Filter</a>.</p>
+<p class="wi2"><span class="CField">Active filter shows only records less than this many days old</span>: If you assign a value to this field, the active filter for table viewers will only show requests, work orders, and purchase orders whose most recent history record is more recent than the given number of days ago. For example, if the value is 500, the table viewers for requests, work orders, and purchase orders will only show entries whose most recent history record is less than 500 days old.</p>
+<p class="wi2"><span class="CField">Active filter shows only records updated since this date</span>: If you assign a value to this field, the active filter for table viewers will only show requests, work orders, and purchase orders whose most recent history record was made after the given date. For example, if you set the date to December 31, 2009, the table viewers for requests, work orders, and purchase orders will only show entries whose most recent history record was made on January 1, 2010 or later.</p>
+<p class="box">By changing the active filter settings in this window, you change the default active filter for everyone at your site. Individual users can still change their own active filters whenever they choose.</p>
+
+<p class="wi"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
+<p class="wi2"><span class="CButton">Edit</span>: Opens an editor window to let you edit the values shown in the window.</p>
+<p class="wi2"><span class="CButton">View</span>: Opens an editor window where you can examine the values shown in the window.</p>
+<p class="wi"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the information to show any recent changes.</p>
+<p><span class="CInset">Company Name and Address:</span> By default, "<span class="CField">Organization Name</span>" is set to the organization name that was specified when this database was created. If this isn't the name that you want appearing on requests, work orders and purchase orders, you should change "<span class="CField">Organization Name</span>" to the name that you prefer. Similarly, you should create a postal address <span class="CPanel">Location</span> record for your organization and set "<span class="CField">Company Location</span>" to that postal address. In this way, the address will be printed on requests, work orders and purchase orders.</p>
+
+<p>For more about editing company information, see <a href="Edit.Company Information.htm">Editing Company Information</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Edit.Company Information.htm">Editing Company Information</a></li>
+</ul>
+<p><a href="Browse.Administration.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Company Information.htm">Next section &gt;</a></p>
+</body>
+</html>
+

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: MainBoss Service Email Log</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">MainBoss Service Email Log</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Message Translation.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Email Request.htm">Next section &gt;</a></p>
+
+<p>MainBoss Service handles incoming requests automatically. Usually, this means that there's no need for you to actually see the original email messages that lead to requests. However, if you do want to look at an email message sent to MainBoss Service, you can do so using <span class="CPanel">Administration</span> | <span class="CPanel">MainBoss Service</span> | <span class="CPanel">Email Requests</span>. This table viewer lists all email messages received by MainBoss Service.</p>
+
+<p>The window contains the following:</p>
+
+<p class="wi"><span class="CButton">View</span> section: Lists the email messages that have been received.</p>
+<p class="wi2"><span class="CField">Receive Date</span>: Click this heading to sort the list by the date that messages were received. Click again to reverse the order (from ascending to descending or vice versa).</p>
+<p class="wi2"><span class="CField">Sender Name</span>: Click this heading to sort the list by the email address of the sender. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Processing State</span>: Click this heading to sort the list by the state of the request. Click again to reverse the order.</p>
+<p class="wi2"><span class="CField">Request</span>: Click this heading to sort the list by the request identifier. Click again to reverse the order.</p>
+<p class="wi2"><span class="CButton">Apply Filter</span>: Lets you set up a <span class="NewTerm">filter</span> to select which records should be shown in the table. For more information, see <a href="Filter.htm">Table Filters</a>.</p>
+<p class="wi2"><span class="CButton">New Request</span>: Opens a window to let you create a new request. This button makes it easy for you to create a new request in response to any email messages in the list. For more on creating requests, see <a href="Edit.Request.htm">Editing Requests</a>.
+
+<br /><br />Note that you can copy and paste information from an email request into a new request that you're creating. However, the new request will not have an explicit link to the original email; the request's <span class="CButton">Email Request</span> section will be blank.</p>
+<p class="wi2"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the message that's currently selected. Unlike many delete operations in MainBoss, this doesn't just hide the message; the message is actually deleted. As a result, if there is a request associated with the message, the link in the request's <span class="CButton">Email Request</span> section will refer to a message that is no longer available.</p>
+<p class="wi2"><span class="CButton"><img src="PrintHS.png" alt="Print" /></span>: Opens a window to let you print your email requests. For more information, see <a href="Report.Email Request.htm">Printing the MainBoss Service Email Log</a>.</p>
+<p class="wi2"><span class="CButton">Reject Email Request</span>: Immediately rejects the email request that is currently selected in the table. The usual delay on rejection doesn't apply; a rejection message is immediately sent to the person who sent the email. (For more about the usual delay on rejection, see <a href="Edit.MainBoss Service Configuration.htm">Configuring MainBoss Service</a>.)
+
+<br /><br />This operation won't work if a request has already been created using the email message.</p>
+<p class="wi2"><span class="CButton">Process Email Request</span>: Attempts to process all email messages that haven't been processed yet, including any messages marked for rejection. This is intended for situations where a particular message had a problem (e.g. it wasn't sent by an authorized requestor) and you have corrected the problem (e.g. you created a requestor record for the sender).
+
+<br /><br /><span class="CButton">Process Email Request</span> works just like a normal processing action, except that it doesn't attempt to create requestor records and/or contact records for any senders who aren't already in the Requestors table.</p>
+<p class="wi2"><span class="CButton">Create Requestor</span>: Creates a requestor record for the person who sent the email that is currently selected. This happens even if options in your MainBoss Configuration wouldn't normally create a requestor record for this person.
+
+<br /><br />After the record is created, MainBoss Service processes all messages that haven't been processed yet, including any that are marked for rejection.
+
+<br /><br />For more information on creating requestor records, see <a href="Edit.Requestor.htm">Editing Requestor Records</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Lets you search through the list of records for a particular record. For more information, see <a href="Search.htm">Searching for a Particular Record</a>. The <span class="CButton"><img src="Find_VS.png" alt="Search" /></span> button has an accompanying drop-down list containing the following:</p>
+<p class="wi3"><span class="CButton">Find Next</span>: Uses the same search condition(s) as your most recent search and finds the next record in the table that matches the condition(s). If the search reaches the end of the table without finding a matching record, it goes to the start of the table and continues the search.</p>
+<p class="wi3"><span class="CButton">Find Previous</span>: Same as <span class="CButton">Find Next</span> except that it goes backward in the table. If the search reaches the start of the table without finding a matching record, it goes to the end of the table and continues the search.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p>For more on MainBoss Service, see <a href="TheMainBossServiceModule.htm">The MainBoss Service Module</a>.</p>
+
+
+<p><a href="Edit.Message Translation.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Email Request.htm">Next section &gt;</a></p>
+</body>
+</html>
+

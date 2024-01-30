@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Transferring Items from One Storeroom to Another</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Transferring Items from One Storeroom to Another</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Storeroom Assignment.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Correction of Item Transfer.htm">Next section &gt;</a></p>
+
+<p>You record the transfer of items from one storeroom to another with an item transfer record. To create such a record, you start with a storeroom assignment record (see <a href="Edit.Storeroom Assignment.htm">Editing Storeroom Assignments</a>). In the <span class="CButton">Item Activity</span> section, drop the arrow on <span class="CButton">New Item Issue</span> and click either <span class="CButton">New Item Transfer To</span> or <span class="CButton">New Item Transfer From</span>. MainBoss opens a window containing the following:</p>
+
+<p class="wi"><span class="CField">Entry Date</span>: A read-only field giving the date that this record was created.</p>
+<p class="wi"><span class="CField">Effective Date</span>: The date when the transfer took place. By default, this is set to the current date and time.</p>
+<p class="wi"><span class="CField">User Contact</span>: A read-only field giving your user name. This will appear in MainBoss's accounting history to show who made the transfer.</p>
+<p class="wi"><span class="CField">Source Storage Assignment</span>: A storeroom assignment record indicating where the item came from. (This is read-only if you opened this window using <span class="CButton">New Item Transfer To</span>.)</p>
+<p class="wi"><span class="CField">Destination Storage Assignment</span>: A storeroom assignment record indicating where the item is going. (This is read-only if you opened this window using <span class="CButton">New Item Transfer From</span>.)</p>
+<p class="wi"><span class="CField">Quantity</span>: The quantity being transferred.</p>
+<p class="wi">Read-only fields: Give the current quantity of cost of the item in the "from" and "to" storerooms.</p>
+<p class="wi"><span class="CButton">Manually Enter Cost</span>: If you select this option, you must enter the cost of the transferred items in "<span class="CField">This Entry</span>".</p>
+<p class="wi"><span class="CButton">Use calculated source Assignment On Hand cost</span>: If you select this option, the cost of the transferred items will be calculated from the unit cost in "<span class="CField">Calculated source Assignment On Hand Cost</span>".</p>
+<p class="wi"><span class="CButton">Use calculated destination Assignment On Hand cost</span>: If you select this option, the cost of the transferred items will be calculated from the unit cost in "<span class="CField">Calculated destination Assignment On Hand Cost</span>".</p>
+<p class="wi"><span class="CField">This Entry</span>: The cost of the given "<span class="CField">Quantity</span>". You can fill in the "<span class="CField">Unit Cost</span>" column (the cost of a single unit of the item) or the "<span class="CField">Total Cost</span>" (the total cost of the transfer). Whichever column you fill in, MainBoss automatically fills in the other column. If you checkmark <span class="CButton">Use calculated source Assignment On Hand cost</span> or <span class="CButton">Use calculated destination Assignment On Hand cost</span>, MainBoss automatically fills in both columns with the appropriate cost.</p>
+<p class="wi"><span class="CField">As Corrected</span>: If there has been a correction for this record, this line will have read-only fields giving the corrected values.</p>
+<p class="wi"><span class="CField">From Cost Center</span>, <span class="CField">To Cost Center</span>: Read-only fields telling the cost centers involved in this operation. MainBoss creates accounting records indicating the transfer of money from the first cost center to the second. These fields are only visible if your database has an <span class="BL">Accounting</span> license key. For more, see <a href="AccountingFacilities.htm">Accounting Facilities</a>.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on storeroom assignments, see <a href="StoreroomAssignments.htm">Storeroom Assignments</a>. For more on inventory items, see <a href="InventoryItemRecords.htm">Inventory Item Records</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Storeroom Assignment.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Correction of Item Transfer.htm">Next section &gt;</a></p>
+</body>
+</html>
+

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: XML</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">XML</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="ImportingandExportingDatainTables.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="ObtaininganXMLSchemafromMainBoss.htm">Next section &gt;</a></p>
+
+<p>For importing and exporting data, MainBoss uses a format called XML. This is a widely-used format that can be adapted for use with any kind of data.</p>
+
+<p>XML data has two components: the actual data itself, and a <span class="NewTerm">schema</span> that tells how to interpret the data. For example, the schema for an item price quote record would say that some fields are text strings (e.g. the name of the item), some fields are integers (e.g. the quantity of items covered by the quote), some fields are dates (e.g. the date that the quote was given), and some fields are numbers with decimal points (e.g. the unit price). The schema is used for error-checking&#8212;if a field is supposed to be a number but isn't, something has gone wrong.</p>
+
+<p>In order to be usable for either import or export, XML needs both the data and the schema. These can be in separate files, or both combined in a single file. When a single file contains both the data and the schema, the schema is said to be <span class="NewTerm">embedded</span> with the data.</p>
+
+<p>When should you embed the schema into the data, and when you should you make two separate files? The answer depends on the software that you'll use to read the exported data. Some software packages expect an embedded schema; other packages expect two separate files; and some packages accept either format. Check the documentation of the package in question to see which format is best.</p>
+
+<p><span class="CInset">Examining XML Data:</span> XML data can be read into Microsoft Excel and most other spreadsheet programs. This is usually the easiest way to see what XML data actually contains. For more information, see <a href="ViewingExportedDatainMicrosoftExcel.htm">Viewing Exported Data in Microsoft Excel</a>.</p>
+
+<p class="box"><span class="CInset">Note:</span> MainBoss can export data from a report as well as from a table. When you export data from a report, you get whatever data appeared in the report; this may include calculated values as well as data that is actually stored in the MainBoss database. For example, if you export data from the Unit Replacement Forecast, you will get any projected replacement costs that MainBoss calculates for the units. Furthermore, the exported data will be sorted and selected according to any criteria and filters you specify when preparing the report.
+
+<br /><br />On the other hand, when you export data from a table, you get the complete contents of the table in the order that records appear in the table.</p>
+
+
+<p><a href="ImportingandExportingDatainTables.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="ObtaininganXMLSchemafromMainBoss.htm">Next section &gt;</a></p>
+</body>
+</html>
+

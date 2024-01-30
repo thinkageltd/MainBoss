@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Purchase Miscellaneous Item</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Purchase Miscellaneous Item</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Purchase Per Job Outside.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Purchase Order Assignment.htm">Next section &gt;</a></p>
+
+<p>A "purchase miscellaneous item" line in a purchase order specifies some additional charge to add to the purchase order (e.g. a surcharge for rush service). To specify the charge, you use miscellaneous item record. For more, see <a href="PurchaseOrderMiscellaneousItems.htm">Purchase Order Miscellaneous Items</a>.</p>
+
+<p class="box"><span class="CInset">Note:</span> There is no connection between purchase order miscellaneous items and work order miscellaneous items. A purchase order miscellaneous item is typically an extra cost associated with the act of purchasing (e.g. sales tax). A work order miscellaneous item is typically an extra cost associated with doing a job (e.g. parking for a worker).</p>
+
+<p>To see the Purchase Miscellaneous Item editor, go to the <span class="CButton">Line Items</span> section of a purchase order, drop down the arrow of <span class="CButton">New Purchase Item</span> and click <span class="CButton">New Purchase Miscellaneous Item</span>. The editor contains the following:</p>
+
+<p class="wi"><span class="CField">Line Number</span>: A number that can be used to specify the location of this line item in the purchase order. If you don't use line numbers, line items on the purchase order will be sorted in the order they were recorded when you filled out the purchase order. If you do use line numbers, line items on the purchase order will be sorted from lowest "<span class="CField">Line Number</span>" to highest.</p>
+<p class="wi"><span class="CField">Purchase Order</span>: A read-only field giving the purchase order number.</p>
+<p class="wi"><span class="CField">Miscellaneous</span> area: This area ends with a drop-down list where you can specify a miscellaneous item.</p>
+<p class="wi2"><span class="CButton">Only include Miscellaneous items previously provided by this vendor</span>: If you checkmark this box, the drop-down list on the next line only shows miscellaneous items that have been used in previous purchase orders to this vendor.</p>
+<p class="wi2">Drop-down list: The drop-down list at the end of the "<span class="CField">Miscellaneous</span>" area shows miscellaneous items that satisfy any option you have specified.</p>
+<p class="wi"><span class="CField">Miscellaneous Cost</span>: A read-only field giving the cost of the item from the "<span class="CField">Miscellaneous</span>" record.</p>
+<p class="wi"><span class="CField">Miscellaneous Order Line Text</span>: A suggestion for what should appear on the purchase order in order to describe this item. This text is taken from the "<span class="CField">Miscellaneous</span>" record.</p>
+<p class="wi"><span class="CButton">Use suggested text</span>: If you checkmark this box, MainBoss will fill in "<span class="CField">Order Line Text</span>" with what appears in "<span class="CField">Miscellaneous Order Line Text</span>". If you leave the box blank, you should fill in "<span class="CField">Order Line Text</span>" yourself.</p>
+<p class="wi"><span class="CField">Order Line Text</span>: The text that will actually appear on the purchase order as a description for this item.</p>
+<p class="wi"><span class="CField">Quantity</span>: The quantity of the miscellaneous item that you want to order.</p>
+<p class="wi"><span class="CField">Calculated Cost</span>: Read-only fields giving the cost for the item, as based on the specified "<span class="CField">Miscellaneous</span>".</p>
+<p class="wi"><span class="CButton">Use calculated cost</span>: If you checkmark this box, MainBoss will fill in "<span class="CField">Cost</span>" with the values in the read-only "<span class="CField">Calculated Cost</span>". If you leave the box blank, you must fill in "<span class="CField">Cost</span>" yourself.</p>
+<p class="wi"><span class="CField">Cost</span>: The cost of the item(s) ordered. If you fill in "<span class="CField">Unit Cost</span>", MainBoss automatically fills in "<span class="CField">Total Cost</span>" or vice versa.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on purchase orders, see <a href="PurchaseOrders.htm">Purchase Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Purchase Per Job Outside.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Purchase Order Assignment.htm">Next section &gt;</a></p>
+</body>
+</html>
+

@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0032BCBC-BE62-486D-A78A-8890FDBBC790}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>Thinkage.Libraries.Presentation.MSWindows</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Thinkage.Libraries.Presentation.MSWindows</RootNamespace>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;DEBUG;DEBUG_BREAK_REFERENCES</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRules>-Microsoft.Design#CA1012;-Microsoft.Design#CA2210;-Microsoft.Design#CA1040;-Microsoft.Design#CA1005;-Microsoft.Design#CA1020;-Microsoft.Design#CA1021;-Microsoft.Design#CA1010;-Microsoft.Design#CA1011;-Microsoft.Design#CA1009;-Microsoft.Design#CA1050;-Microsoft.Design#CA1026;-Microsoft.Design#CA1019;-Microsoft.Design#CA1031;-Microsoft.Design#CA1047;-Microsoft.Design#CA1000;-Microsoft.Design#CA1048;-Microsoft.Design#CA1051;-Microsoft.Design#CA1002;-Microsoft.Design#CA1061;-Microsoft.Design#CA1006;-Microsoft.Design#CA1046;-Microsoft.Design#CA1045;-Microsoft.Design#CA1038;-Microsoft.Design#CA1008;-Microsoft.Design#CA1028;-Microsoft.Design#CA1004;-Microsoft.Design#CA1035;-Microsoft.Design#CA1063;-Microsoft.Design#CA1032;-Microsoft.Design#CA1023;-Microsoft.Design#CA1033;-Microsoft.Design#CA1039;-Microsoft.Design#CA1016;-Microsoft.Design#CA1014;-Microsoft.Design#CA1017;-Microsoft.Design#CA1018;-Microsoft.Design#CA1027;-Microsoft.Design#CA1059;-Microsoft.Design#CA1060;-Microsoft.Design#CA1034;-Microsoft.Design#CA1013;-Microsoft.Design#CA1036;-Microsoft.Design#CA1044;-Microsoft.Design#CA1041;-Microsoft.Design#CA1025;-Microsoft.Design#CA1052;-Microsoft.Design#CA1053;-Microsoft.Design#CA1057;-Microsoft.Design#CA1058;-Microsoft.Design#CA1001;-Microsoft.Design#CA1049;-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055;-Microsoft.Design#CA1030;-Microsoft.Design#CA1003;-Microsoft.Design#CA1007;-Microsoft.Design#CA1043;-Microsoft.Design#CA1024;-Microsoft.Design#CA1062;-Microsoft.Naming#CA1718;-Microsoft.Naming#CA1720;-Microsoft.Naming#CA1700;-Microsoft.Naming#CA1712;-Microsoft.Naming#CA1713;-Microsoft.Naming#CA1709;-Microsoft.Naming#CA1708;-Microsoft.Naming#CA1715;-Microsoft.Naming#CA1710;-Microsoft.Naming#CA1707;-Microsoft.Naming#CA1722;-Microsoft.Naming#CA1711;-Microsoft.Naming#CA1716;-Microsoft.Naming#CA1705;-Microsoft.Naming#CA1719;-Microsoft.Naming#CA1721;-Microsoft.Naming#CA1706;-Microsoft.Naming#CA1724;-Microsoft.Naming#CA1726;-Microsoft.Performance#CA1805</CodeAnalysisRules>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>pdbonly</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Installation|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Installation\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TranslationResources\messages.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TranslationResources\messages.es.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TranslationResources\messages.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TranslationResources\messages.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>set DevEnvDir=$(DevEnvDir)
+set TargetName=$(TargetName)
+set ProjectDir=$(ProjectDir)
+set TargetDir=$(TargetDir)
+set TargetFileName=$(TargetFileName)
+set ConfigurationName=$(ConfigurationName)
+call "$(ProjectDir)PostBuild.cmd" 
+</PostBuildEvent>
+  </PropertyGroup>
+</Project>

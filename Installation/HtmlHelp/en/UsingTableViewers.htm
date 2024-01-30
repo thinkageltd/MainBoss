@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Using Table Viewers</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Using Table Viewers</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="ActiveandAllinTableViewers.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="SpecialSelectionActions.htm">Next section &gt;</a></p>
+
+<p>The picture below shows a typical MainBoss table viewer:</p>
+
+<p><img src="image008.png" alt="MainBoss" /></p>
+
+<p>This window contains a lot of elements. The following list explains what those elements are and how you can use them:</p>
+
+<p class="wi">The record list: This list has several headings; in the above example, the headings are <span class="CButton">Code</span>, <span class="CButton">Business Phone</span>, and <span class="CButton">Mobile Phone</span>. Different table viewers may have different headings.
+
+<br /><br />Clicking on a heading sorts the list according to that heading. For example, if you click on <span class="CField">Code</span>, the list is sorted in alphabetical order according to the values in the <span class="CField">Code</span> column. If a list is already sorted according to the heading, clicking on the heading reverses the order from ascending to descending or vice versa. For example, if the list is already sorted in ascending order by <span class="CField">Code</span>, clicking <span class="CField">Code</span> again sorts the list in <span class="Emphasis">descending</span> order by <span class="CField">Code</span>. The heading that is currently being used for sorting has a small arrow at the top pointing upward if the list is sorted in ascending order, and downward for descending order.</p>
+<p class="box"><span class="CInset">Note:</span> Double-clicking any entry in a table list opens a window that lets you edit that entry. For more about editor windows, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+<p class="wi">Data displays: In addition to the list of records, a table viewer shows information on the record that's currently selected. This information is usually displayed below the main list. However, you can tell MainBoss not to show this information, if you want to have more room for the record list. For more information, see <a href="HidingtheDetailsforaSelectedRecord.htm">Hiding the Details for a Selected Record</a>.</p>
+<p class="wi">Defaults: The <span class="CButton">Defaults</span> section lets you set default values to be used when creating a new record. For example, you might use this section to set a default priority for every new work order you create. When using MainBoss, you can set a particular work order to a higher or lower priority, but by specifying a default priority, you can save yourself the trouble of filling in the priority field for work orders that have no special priority.</p>
+<p class="wi">Buttons: The bottom of a table viewer has a row of bottoms. Different table viewers have different buttons, but the following are found in most viewers.</p>
+<p class="wi2"><span class="CButton">New</span>: Lets you create a new record. Click <span class="CButton">New</span>, and MainBoss will open an editor window where you can enter information for the new entry.</p>
+<p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions. Some of these may not be allowed by your security permissions; if so, the action will be grayed out and disabled. For example, your security permissions may let you <span class="CButton">View</span> the contents of the record but not <span class="CButton">Edit</span> them. For more on security permissions, see <a href="SecurityRoles.htm">Security Roles</a>.
+
+<br /><br />The actions available through this drop-down button are:</p>
+<p class="wi3"><span class="CButton">Edit</span>: Lets you change the information in an existing record. In the table list, click the record you want to change, then click <span class="CButton">Edit</span>. MainBoss opens an editor window where you can change the existing information.</p>
+<p class="wi3"><span class="CButton">View</span>: Lets you examine the contents of an existing record. In the table list, click the record you want to examine, then click <span class="CButton">View</span>. MainBoss opens an editor window where you can examine the record. You will not be allowed to make changes in the record.</p>
+<p class="wi3"><span class="CButton">Restore</span>: Restores a deleted record. This button is only active if the viewer is in <span class="CU">All</span> mode and if you've selected a deleted record. When you click <span class="CButton">Restore</span>, MainBoss will open a window that lets you examine the contents of the deleted record. If you save the record and close the window, the record will be restored to the <span class="CU">Active</span> list.</p>
+<p class="box">For more on deleting and restoring records, see <a href="ActiveandAllinTableViewers.htm">Active and All in Table Viewers</a>.</p>
+
+<p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes a record from the list. Click the record you want to delete, then click <span class="CButton"><img src="Delete.png" alt="Delete" /></span>. MainBoss may ask if you really want to delete the record; if you say yes, the record is deleted.</p>
+<p class="wi2"><span class="CButton"><img src="PrintHS.png" alt="Print" /></span>: Opens a window that lets you print one or more records from the list. This print window lets you specify options for selecting and organizing what you want to print.</p>
+<p class="wi2"><span class="CButton"><img src="Export.png" alt="Export" /></span>: Lets you export data from this table or import data from a file (provided that the file is in an acceptable format). For more information, see <a href="ImportingandExportingDatainTables.htm">Importing and Exporting Data in Tables</a>.
+
+<br /><br />The button has an accompanying drop-down list containing the following:</p>
+<p class="wi3"><span class="CButton">Export</span>: Exports data in XML format.</p>
+<p class="wi3"><span class="CButton">Import</span>: Imports data from a properly formatted file.</p>
+<p class="wi3"><span class="CButton">Save XML Schema</span>: Writes an XML schema for this table into a specified file.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Lets you search through the list of records for a particular record. For more information, see <a href="Search.htm">Searching for a Particular Record</a>. The <span class="CButton"><img src="Find_VS.png" alt="Search" /></span> button has an accompanying drop-down list containing the following:</p>
+<p class="wi3"><span class="CButton">Find Next</span>: Uses the same search condition(s) as your most recent search and finds the next record in the table that matches the condition(s). If the search reaches the end of the table without finding a matching record, it goes to the start of the table and continues the search.</p>
+<p class="wi3"><span class="CButton">Find Previous</span>: Same as <span class="CButton">Find Next</span> except that it goes backward in the table. If the search reaches the start of the table without finding a matching record, it goes to the end of the table and continues the search.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to show any recent changes. For example, suppose you keep a copy of the <span class="CPanel">Requests</span> viewer open most of the time. When you start work in the morning, you can click <span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>. MainBoss will check the database to see if any new requests have come in overnight, and will show those new requests in the viewer list.
+
+<br /><br />Many operations automatically refresh what the viewer shows. In general, you only need to <span class="CButton"><img src="Refresh.png" alt="Refresh" /></span> the viewer display if the window has been inactive for a while.</p>
+<p class="wi">Drop-down buttons: Some windows (both table viewers and editor windows) have drop-down buttons. This is a button followed by a drop-down arrow:
+
+<br /><br /><img src="image009.png" alt="MainBoss" />
+The label on the button will be the first enabled option in the drop-down menu. This may change in different contexts. (MainBoss documentation always lists the drop-down options in the order they appear in the menu, which may or may not match the order you'll see them in a particular context.)</p>
+<p class="box">Buttons and drop-down buttons may be grayed out; this means that they're disabled. A button may be disabled because it is inappropriate in the current context; for example, the button for closing a work order is disabled if the work order is already closed. A button may also be disabled if you do not have appropriate security permissions to use it. To find out why a button is disabled, move the mouse cursor over the button&#8212;MainBoss will display a tooltip explaining what the problem is.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="SpecialSelectionActions.htm">Special Selection Actions</a></li>
+
+<li><a href="HidingtheDetailsforaSelectedRecord.htm">Hiding the Details for a Selected Record</a></li>
+
+<li><a href="Search.htm">Searching for a Particular Record</a></li>
+
+<li><a href="Filter.htm">Table Filters</a></li>
+
+<li><a href="CustomizedTableSettings.htm">Customized Table Settings</a></li>
+
+<li><a href="FormCustomization.htm">Form Customization</a></li>
+
+<li><a href="SelectingMultipleTableEntries.htm">Selecting Multiple Table Entries</a></li>
+</ul>
+<p><a href="ActiveandAllinTableViewers.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="SpecialSelectionActions.htm">Next section &gt;</a></p>
+</body>
+</html>
+

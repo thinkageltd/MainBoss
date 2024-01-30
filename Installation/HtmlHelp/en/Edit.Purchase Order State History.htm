@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Purchase Order State History Records</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Purchase Order State History Records</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Work Order Purchase Order.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Purchase Order.htm">Next section &gt;</a></p>
+
+<p>A purchase order may be in a number of states: draft, issued, closed, and void. Whenever a purchase order changes state, MainBoss opens a window where you can record comments and set the effective date of what happened. For example, when you close a purchase order, MainBoss opens a window where you can specify a date that the PO was closed and record any relevant comments. You can also create a state history record by clicking <span class="CButton">Add Purchase Order Comment</span> in any window where the button appears.</p>
+
+<p>The window that records state information contains the following:</p>
+
+<p class="wi"><span class="CField">Number</span>: A read-only field identifying the purchase order whose state is changing.</p>
+<p class="wi"><span class="CField">Current State History State</span>: A read-only field telling the current state of the purchase order (before the state changes).</p>
+<p class="wi"><span class="CField">Current State History Status</span>: A read-only field giving the current status of the purchase order. For more on purchase order statuses, see <a href="PurchaseOrderStatusCodes.htm">Purchase Order Status Codes</a>.</p>
+<p class="wi"><span class="CField">Effective Date</span>: The date/time when the state changed. By default, MainBoss fills this in with the current date/time. (Note that MainBoss also records the <span class="Emphasis">actual</span> date/time on which the state changed&#8212;i.e. the date when you're actually filling out this record.)</p>
+<p class="wi"><span class="CField">User Contact</span>: A read-only field identifying the person who created this record.</p>
+<p class="wi"><span class="CField">State</span>: A read-only field identifying the new state of the purchase order (the state the purchase order will enter once you <span class="CButton">Save &amp; Close</span> this record).</p>
+<p class="wi"><span class="CField">Status</span>: A new status code that you want to assign to this purchase order. Typically, a status code should only be assigned to a purchase order when the purchase order needs attention from someone; otherwise, the status should be blank.</p>
+<p class="wi"><span class="CField">Comments</span>: Any comments you want to record at this time.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window. This changes the state of the purchase order.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window <span class="Emphasis">without</span> changing the state of the purchase order.</p>
+<p>For more on purchase orders, see <a href="PurchaseOrders.htm">Purchase Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Work Order Purchase Order.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Purchase Order.htm">Next section &gt;</a></p>
+</body>
+</html>
+

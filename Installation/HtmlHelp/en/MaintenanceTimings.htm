@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Maintenance Timings</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Maintenance Timings</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Unplanned Maintenance Work Order.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Maintenance Timing.htm">Next section &gt;</a></p>
+
+<p>Maintenance timing records are used when scheduling planned maintenance jobs. A timing record represents information like "every three months" or "every second Tuesday" or "every 5000 kilometers".</p>
+
+<p>Most timing records are simple. However, some maintenance organizations have complicated scheduling needs ("every ten days, but weekends don't count and never schedule the job on Mondays because Joe doesn't work that day"). MainBoss can accommodate such complexities, but setting up such a schedule requires more work.</p>
+
+<p><span class="CInset">Periods:</span> A single timing record can contain several conditions under which a job be done. For example, vehicle oil changes are often required every three months or 3000 miles, whichever comes first. Therefore, MainBoss lets you create a single timing record with two conditions: one for "every three months" and another for "every 3000 miles". (These conditions are called <span class="NewTerm">periods</span>.) A job with such timing will be done when either condition comes true.</p>
+
+<p><span class="CInset">Enabled Days:</span> In many organizations, some or all of the personnel only work on weekdays. Therefore, planned maintenance jobs shouldn't be scheduled on weekends. In other situations, however, certain types of jobs should <span class="Emphasis">only</span> be scheduled on weekends, to avoid interfering with normal weekday operations.</p>
+
+<p>To accommodate such considerations, MainBoss lets you specify which days of the week are acceptable for a particular job. For example, suppose a timing record has checkmarks for Monday through Friday, but not for Saturday or Sunday. This says that any jobs using this timing should only be performed on weekdays, not on weekends. Therefore, MainBoss will never schedule such jobs for Saturday or Sunday.</p>
+
+<p>As another example, if you only checkmark Wednesday (with all other days blank), MainBoss will only schedule corresponding jobs on Wednesdays. You might do this if you want to schedule a job for the first Wednesday in every month.</p>
+
+<p>Seasons: MainBoss lets you specify timing based on seasons. For example, you might perform planned maintenance on air-conditioners in summer but not in winter; you might perform planned maintenance on heaters in winter but not in summer. Therefore, every timing record lets you set "<span class="CField">Season Start</span>" and "<span class="CField">Season End</span>" values if you wish. For example, if you set "<span class="CField">Season Start</span>" to May 1 and "<span class="CField">Season End</span>" to October 31, corresponding maintenance jobs will only be scheduled between those two dates.</p>
+
+<p>Seasons are often related to "cold weather/hot weather" distinctions, but they don't have to be. For example, the maintenance department in a shopping mall might try to avoid scheduling work during the busy Christmas shopping season. Similarly, the maintenance department for a school might try to schedule certain types of jobs for holiday periods when there will be no students around.</p>
+
+<p><span class="CInset">Deferrals and Inhibits:</span> If you tell MainBoss not to schedule jobs for certain days of the week or for certain times of year, what should MainBoss do if a job comes due on a date that's not allowed?</p>
+
+<p>For example, suppose you say that a job should be scheduled every 30 days. What happens if the next job should be scheduled for a Saturday, but Saturdays aren't permitted?</p>
+
+<p>Normally, you want MainBoss to schedule the job for the next permissible day. For example, if the job should be scheduled on Saturday but you've ruled out weekends, you probably want MainBoss to schedule the job for the first acceptable day (Monday). In some cases, however, it may be more appropriate to skip the job completely. This is particularly true of seasonal jobs; if you want to skip certain jobs in summer, you probably don't want them all to be scheduled for the first day after summer ends.</p>
+
+<p>Therefore, MainBoss gives you the option of saying, "Schedule as soon as possible after the date" or "Just skip the job and catch it the next time". This applies in three different situations:</p>
+
+<p class="wi">Overdue work orders: A work order is <span class="NewTerm">overdue</span> when the job comes due before the date when you generate planned maintenance work orders. For example, you generate new work orders on June 4, but there was a job you should have done on June 1. Your options are:</p>
+<p class="wi2"><span class="CButton">Defer overdue work orders to the date maintenance is generated</span>: In our example, this means scheduling the job for June 4, the day you generate the work orders.</p>
+<p class="wi2"><span class="CButton">Inhibit generation of overdue work orders</span>: This means skipping the work entirely&#8212;you missed the June 1 date, so you'll do the job the next time it comes around on the schedule.</p>
+<p class="wi">Seasonal exceptions: This applies when a particular job is seasonal (for example, you only inspect air-conditioners during summer months). You state the start and end dates of the season when the job can be scheduled, then you specify one of the following options:</p>
+<p class="wi2"><span class="CButton">Defer work orders triggered outside the season until the start of the season</span>: In our air-conditioner example, this means scheduling the next inspection for the starting day of the summer months.</p>
+<p class="wi2"><span class="CButton">Inhibit generation of work orders outside the season</span>: This means skipping the work entirely&#8212;if a job comes due outside the season, just ignore it. You only do jobs that come due within the season.</p>
+<p class="wi">Weekday exceptions: This applies when a particular job can only be done on certain days of the week. You specify which days are allowed, then you specify one of the following options:</p>
+<p class="wi2"><span class="CButton">Defer work orders triggered on disabled weekdays until the next enabled weekday</span>: For example, if a job can only be done on Saturdays and it comes due on a Thursday, you schedule the job for the Saturday as soon after the Thursday as possible.</p>
+<p class="wi2"><span class="CButton">Inhibit generation of work orders on disabled weekdays</span>: This means skipping the work entirely&#8212;if a Saturday job comes due on a Thursday, you just don't do it. You keep skipping the job until it actually comes due on a Saturday.</p>
+<p>These options are set on a record-by-record basis. You can specify which jobs should be skipped and which should be scheduled as soon as possible after they come due.</p>
+
+<p><span class="CInset">Scheduling Jobs:</span> The process of scheduling jobs goes like this:</p>
+
+<ol><li>Create a task record that describes the job. (For details, see <a href="Tasks.htm">Tasks</a>.)</li>
+<li>Create a maintenance timing record that describes the schedule, e.g. every 3 months.</li>
+<li>Create a unit maintenance plan record that assigns timing to a task, and specifies which units should be scheduled for such tasks. For details, see <a href="UnitMaintenancePlans.htm">Unit Maintenance Plans</a>. That section also contains a number of scheduling examples.
+</li></ol><p>For examples of how to schedule jobs, see <a href="UnitMaintenancePlans.htm">Unit Maintenance Plans</a>. In particular, the examples include how to set up jobs for times like "the second Tuesday of every month" or "every month on the 15th".</p>
+
+<p>For information on viewing timing records, see <a href="Browse.Maintenance Timing.htm">Viewing Maintenance Timing Records</a>. For information on creating and editing timing records, see <a href="Edit.Maintenance Timing.htm">Editing Maintenance Timing Records</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Browse.Maintenance Timing.htm">Viewing Maintenance Timing Records</a></li>
+
+<li><a href="Edit.Maintenance Timing.htm">Editing Maintenance Timing Records</a></li>
+
+<li><a href="Edit.Daily Period.htm">Editing Daily Periods</a></li>
+
+<li><a href="Edit.Monthly Period.htm">Editing Monthly Periods</a></li>
+
+<li><a href="Edit.Meter Period.htm">Editing Meter Periods</a></li>
+
+<li><a href="Report.Maintenance Timing.htm">Printing Maintenance Timing Records</a></li>
+</ul>
+<p><a href="Edit.Unplanned Maintenance Work Order.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Maintenance Timing.htm">Next section &gt;</a></p>
+</body>
+</html>
+

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Security Roles</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Security Roles</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.User.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Security Role.htm">Next section &gt;</a></p>
+
+<p>Security roles make it possible for your organization to restrict access to information. By assigning a role to a MainBoss user, you give that user permission to perform various operations within MainBoss.</p>
+
+<p>In many cases, a single user will be given multiple security roles. Each new role that a user receives will give additional permissions to that person. If a user has no assigned roles, the user cannot use any feature in MainBoss; therefore, when you add a new user to the MainBoss <span class="CPanel">Users</span> table, you should assign that person at least one role.</p>
+
+<p class="box"><span class="CInset">Important:</span> Each built-in security role has a brief description and a much longer "<span class="CField">Comments</span>" field describing how the role works. We strongly recommend that you read the "<span class="CField">Comments</span>" to understand the role in detail.</p>
+
+<p>There are several general types of security roles:</p>
+
+<ul class="b1"><li><span class="NewTerm">Summary</span> roles: Let you read a subset of the information that a record contains. For example, the <span class="CU">UnitSummary</span> role lets you read basic information about a unit but doesn't let you to read all the information in a unit record.
+
+<br /><br />Summary roles are intended for people whose primary concern is some other aspect of MainBoss but who may have need for a small amount of information on other subjects. For example, someone working on a help-desk is primarily concerned with requests, but might also be given <span class="CU">WorkOrderSummary</span> (in order to tell clients, "Yes, your job is on our schedule for next Thursday" and to link requests to existing work orders) and <span class="CU">UnitSummary</span> (in order to make sure that the unit specified in a request really is the unit that needs service).
+</li></ul><p class="box">We recommend that organizations be generous in assigning <span class="NewTerm">Summary</span> roles, but cautious in handing out roles that allow wider access to information.</p>
+
+<ul class="b1"><li><span class="NewTerm">View</span> roles: Let you read information but not change it. For example, the <span class="CU">UnitView</span> role lets you read all the information in a unit record, but doesn't let you change any of that information.
+
+<br /><br />A view role includes all the information available through the corresponding summary role. For example, <span class="CU">WorkOrderView</span> includes all the information of <span class="CU">WorkOrderSummary</span> (and more). Therefore, if you assign someone a view role, you don't need to assign the corresponding summary role.</li>
+<li><span class="NewTerm">Fulfillment</span> roles: Let you perform selected operations on a type of record. Loosely speaking, these operations are ones you'd do in day-to-day work <span class="Emphasis">except</span> for actually creating the record. For example, <span class="CU">WorkOrderFulfillment</span> doesn't let you create work orders, but lets you record information on work orders that already exist (e.g. how long a worker spent on a particular job). <span class="CU">RequestFulfillment</span> lets you add comments to requests and to send comments to requestors (if you have licensed the <span class="BL">MainBoss Service</span> module). <span class="CU">ItemFulfillment</span> doesn't let you create item records, but lets you record item information including physical counts, item issues, and item transfers.
+
+<br /><br />With <span class="CU">WorkOrderFulfillment</span>, you can only affect work orders that you can already see because of other permissions. In particular, if you don't have <span class="CU">WorkOrder</span> or <span class="CU">WorkOrderView</span>, you will only be allowed to deal with work orders to which you've been assigned. A similar principle applies to <span class="CU">RequestFulfillment</span>.</li>
+<li><span class="NewTerm">Close</span> roles: A role like <span class="CU">WorkOrderFulfillment</span> lets you enter all the information needed to finish off a work order, but it doesn't actually let you close the work order. To close the work order, you need <span class="CU">WorkOrderClose</span> or the overall <span class="CU">WorkOrder</span> role. An organization might give <span class="CU">WorkOrderFulfillment</span> to workers so that they can enter information like the number of hours worked and the actual part used; however, the organization might reserve <span class="CU">WorkOrderClose</span> for supervisors, so that work orders are only closed after a supervisor gives approval.</li>
+<li>Create/edit roles: Let you create and edit various types of records. For example, the <span class="CU">WorkOrder</span> role lets you create/edit work orders while the <span class="CU">Item</span> role lets you create/edit item records.
+
+<br /><br />A create/edit role includes all the information available through roles in the same "family". For example, if you assign someone <span class="CU">WorkOrder</span>, you don't have to assign that person <span class="CU">WorkOrderSummary</span>, <span class="CU">WorkOrderView</span> or <span class="CU">WorkOrderFulfillment</span>, since <span class="CU">WorkOrder</span> includes all the permissions of the other three roles (and more). Therefore, if you assign someone a create/edit role, you don't need to assign any other roles in the same "family".</li>
+<li><span class="NewTerm">Accounting</span> roles: Provide access to monetary information. If you do not have an appropriate accounting role, you may be prevented from seeing prices and costs; for example, if you have <span class="CU">WorkOrder</span> role but not <span class="CU">AccountingWorkOrder</span>, you will be able to record, say, the quantities of materials used on a job, but you will not see the actual cost of those materials.
+</li></ul><p class="box">In addition to the selective roles listed above, there is a role called <span class="CReport">All</span>. This grants a user permission to use every aspect of the program. We recommend that you avoid using <span class="CReport">All</span>; too often, we have seen organizations give <span class="CReport">All</span> permission to users without thinking about it. Instead of taking the shortcut of <span class="CReport">All</span>, decide which permissions a particular user really needs and only give the user those permissions.</p>
+
+<p>Security roles are listed in the Security Role table (<span class="CPanel">Administration</span> | <span class="CPanel">Security Role</span>). To give someone one or more security roles, you open that person's record from the Users table (<span class="CPanel">Administration</span> | <span class="CPanel">Users</span>) and go to the record's <span class="CButton">Security Roles</span> section. You then use <span class="CButton">Assign Role</span> to add role records to the user's list of roles. Each role record contains a "<span class="CField">Comments</span>" field explaining what permissions the role provides.</p>
+
+<p>Some security roles combine with each other to provide users with more information. For example, if you have both <span class="CU">ItemSummary</span> and <span class="CU">WorkOrderView</span>, you can see more information about the items on a work order than either <span class="CU">ItemSummary</span> or <span class="CU">WorkOrderView</span> would provide individually.</p>
+
+<p class="box">When you assign security roles to a user, it can be difficult to figure out the effect of those roles: what the user can and can't do with the roles you've assigned. To make it easier to see the effects of a person's security roles, you can use the <span class="CButton">Evaluate Security As</span> button in <span class="CPanel">Administration</span> | <span class="CPanel">Users</span>. For more information, see <a href="Browse.User.htm">Viewing Users</a>.</p>
+
+<p>For information on viewing security roles, see <a href="Browse.Security Role.htm">Viewing Security Roles</a>. For information on creating and editing user records, see <a href="Edit.Custom Security Role.htm">Editing Security Role Records</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Browse.Security Role.htm">Viewing Security Roles</a></li>
+
+<li><a href="Edit.Custom Security Role.htm">Editing Security Role Records</a></li>
+
+<li><a href="Edit.Permission.htm">Permissions</a></li>
+
+<li><a href="Report.Security Role.htm">Printing Security Role Records</a></li>
+</ul>
+<p><a href="Report.User.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Security Role.htm">Next section &gt;</a></p>
+</body>
+</html>
+

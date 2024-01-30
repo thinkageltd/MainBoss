@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Correcting Item Receipts</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Correcting Item Receipts</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Receive Item (no PO).htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Requested Work Order.htm">Next section &gt;</a></p>
+
+<p>To correct receive item records, you select the record and click <span class="CButton">Correct</span>. MainBoss opens a window containing the following:</p>
+
+<p class="wi"><span class="CField">Entry Date</span>: A read-only field giving the date that this record was created.</p>
+<p class="wi"><span class="CField">Effective Date</span>: The effective date/time when the item was received. By default, this is set to the current date/time.</p>
+<p class="wi"><span class="CField">User Contact</span>: A read-only field giving your name. This will appear in MainBoss's accounting history to show who recorded the receipt.</p>
+<p class="wi"><span class="CField">Storage Assignment</span>: A storeroom assignment record that tells what item was purchased and where you stored it. This also records the price you paid. For more, see <a href="StoreroomAssignments.htm">Storeroom Assignments</a>.</p>
+<p class="wi"><span class="CField">Vendor</span>: The vendor from whom you purchased the item. For more, see <a href="Vendors.htm">Vendors</a>.</p>
+<p class="wi"><span class="CField">Payment Term</span>: The payment terms for the item. For more, see <a href="PaymentTerms.htm">Payment Terms</a>.</p>
+<p class="wi"><span class="CField">Quantity</span>: The quantity under "<span class="CField">This Entry</span>" gives the difference by which the receive item should be corrected; the quantity under "<span class="CField">As Corrected</span>" gives the final amount that should be recorded in the receive item record. If you fill in one quantity, MainBoss automatically adjusts the other.
+
+<br /><br />For example, if you enter <span class="CU">-1</span> under "<span class="CField">This Entry</span>", you're saying you want to subtract 1 from the current receive item quantity. MainBoss adjusts the "<span class="CField">As Corrected</span>" column to show the new quantity with this correction.</p>
+<p class="wi"><span class="CField">Item Pricing and Purchasing History</span>: This area lets you specify a pricing record for the item you want to purchase. Pricing records may be price quotes or actual prices paid in the past. (For more on price quotes, see <a href="Edit.Item Pricing.htm">Item Pricing</a>.)
+
+<br /><br />At the bottom of this area is a drop-down list which will display storage assignments based on the options specified in the "<span class="CField">Storage Assignment</span>" area. By choosing appropriate options, you can reduce the entries that are shown in the drop-down list, making it quicker and easier to choose the one you want. The possible options are:</p>
+<p class="wi2"><span class="CButton">Use Item Pricing or Purchase History only for this vendor</span>: If you checkmark this box, the drop-down list will only contain price records for this item purchased from the specific "<span class="CField">Vendor</span>". If you leave the checkbox blank, the drop-down list will also contain price records for other vendors.</p>
+<p class="wi2"><span class="CButton">Do not include Purchasing History</span>: If you checkmark this box, the drop-down list will only contain price quotes. If you leave the checkbox blank, the drop-down list will also contain actual prices paid to vendors in the past.</p>
+<p class="wi2">Drop-down list: The drop-down list at the end of the "<span class="CField">Item Pricing and Purchasing History</span>" area shows pricing records that satisfy the options you have specified.</p>
+<p class="wi">Read-only fields: Give information about the quantity of the item in the selected storeroom and what the actual item record said before this correction.</p>
+<p class="wi"><span class="CField">Calculated Item Price Cost</span>: Read-only fields giving the expected cost of the corrected quantity. The "<span class="CField">Unit Cost</span>" column gives the cost per unit and the "<span class="CField">Total Cost</span>" column gives the total cost.</p>
+<p class="wi"><span class="CButton">Use calculated item price cost</span>: If you checkmark this box, MainBoss will fill in "<span class="CField">This Entry</span>" and "<span class="CField">As Corrected</span>" with the values obtained from "<span class="CField">Calculated Item Price Cost</span>". If you don't want to use these calculations, leave the checkbox blank and fill in "<span class="CField">This Entry</span>" or "<span class="CField">As Corrected</span>".</p>
+<p class="wi"><span class="CField">This Entry</span>: The cost of the correction. This is the cost of the quantity given in the "<span class="CField">Quantity</span>" line under "<span class="CField">This Entry</span>". The cost will be negative if the quantity is. If you fill in "<span class="CField">Cost</span>", MainBoss automatically fills in "<span class="CField">As Corrected Cost</span>".</p>
+<p class="wi"><span class="CField">As Corrected</span>: The cost of the item receipt after the correction is made. This is the cost of the quantity given in the "<span class="CField">Quantity</span>" line under "<span class="CField">As Corrected</span>". If you fill in "<span class="CField">As Corrected</span>", MainBoss automatically fills in "<span class="CField">This Entry</span>".</p>
+<p class="wi"><span class="CField">From Cost Center</span>, <span class="CField">To Cost Center</span>: Read-only fields telling the cost centers involved in this operation. MainBoss creates accounting records indicating the transfer of money from the first cost center to the second. These fields are only visible if your database has an <span class="BL">Accounting</span> license key. For more, see <a href="AccountingFacilities.htm">Accounting Facilities</a>.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on receiving items, see <a href="Edit.Receive Item (no PO).htm">Receiving Items</a>. For more on items, see <a href="InventoryItemRecords.htm">Inventory Item Records</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Receive Item (no PO).htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Requested Work Order.htm">Next section &gt;</a></p>
+</body>
+</html>
+

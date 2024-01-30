@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Searching for a Particular Record</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Searching for a Particular Record</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="HidingtheDetailsforaSelectedRecord.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Filter.htm">Next section &gt;</a></p>
+
+<p>When you click the <span class="CButton"><img src="Find_VS.png" alt="Search" /></span> button in a table viewer, MainBoss opens a window where you can specify information about the record you want to find. This window contains the following:</p>
+
+<p class="wi">Field: Specifies the field whose values you want to search. Different tables allow you to look at different fields. For any particular table, look at the drop-down list to see what fields can be searched.</p>
+<p class="wi">Search condition: Once you specify a field, MainBoss lets you choose conditions for the search. The available conditions depend on the type of value that the field contains. For example, if you select a field that contains a date, MainBoss displays conditions related to dates; if you select a field that contains text information, MainBoss displays conditions related to text strings. Possible conditions are:</p>
+<p class="wi2"><span class="CButton">Equals</span>: If you select this option, MainBoss will only find fields whose entire value is equal to the given value. For example, if you set the initial field to "<span class="CField">Code</span>" and the value to <span class="CU">abc</span>, MainBoss searches for records whose code is <span class="CU">abc</span>.</p>
+<p class="wi2"><span class="CButton">Starts with</span>: If you select this option, MainBoss will only find fields that start with the given value. For example, if you set the initial field to "<span class="CField">Code</span>" and the value to <span class="CU">abc</span>, MainBoss searches for records whose code begins with <span class="CU">abc</span>.</p>
+<p class="wi2"><span class="CButton">Contains</span>: If you select this option, MainBoss finds fields that contain the given value anywhere. For example, if you set the initial field to "<span class="CField">Code</span>" and the value to <span class="CU">abc</span>, MainBoss searches for records whose code contains <span class="CU">abc</span> anywhere in the code's text.</p>
+<p class="wi2"><span class="CButton">Matches pattern</span>: If you select this option, MainBoss treats the contents the given value as a <span class="NewTerm">regular expression</span> as defined in the Microsoft .NET environment. Regular expressions are primarily intended for technically sophisticated users; for an introduction, see
+
+<br /><br /><a href="http://www.codeproject.com/KB/dotnet/regextutorial.aspx">http://www.codeproject.com/KB/dotnet/regextutorial.aspx</a> </p>
+<p class="wi2"><span class="CButton">Is null</span>: If you select this option, MainBoss looks for records where the specified field is blank. For example, suppose you are searching through work orders; if you set the initial field to "<span class="CField">Closing Code</span>" and specify <span class="CButton">Is null</span>, MainBoss will only find work orders that don't have a closing code.</p>
+<p class="wi2"><span class="CButton">Is not null</span>: MainBoss will find the next record where the field's value is not blank.</p>
+<p class="wi2"><span class="CField">Is on or after</span>: Used when searching by dates. (You can specify a date but not a time.) MainBoss will find the next record where the field's value is on or after the given date.</p>
+<p class="wi2"><span class="CField">Is on or before</span>: Used when searching by dates. (You can specify a date but not a time.) MainBoss will find the next record where the field's value is on or after the given date.</p>
+<p class="wi2"><span class="CField">Is in the range</span>: Used when searching by dates. (You can specify a date but not a time.) MainBoss will find the next record where the field's value is between the given dates. The starting and ending dates are considered in the range. For example, if you specify "<span class="CField">Is in the range</span>" with June 1 and June 4, MainBoss will find the next record where the field's value is June 1, June 2, June 3, or June 4.</p>
+<p class="wi2"><span class="CButton">Is less than</span>: Used when searching for numeric values. MainBoss will find the next record where the field's value is less than the given number.</p>
+<p class="wi2"><span class="CButton">Is less than or equal to</span>: Used when searching for numeric values. MainBoss will find the next record where the field's value is less than or equal to the given number.</p>
+<p class="wi2"><span class="CButton">Is greater than</span>: Used when searching for numeric values. MainBoss will find the next record where the field's value is greater than the given number.</p>
+<p class="wi2"><span class="CButton">Is greater or equal to</span>: Used when searching for numeric values. MainBoss will find the next record where the field's value is greater than or equal to the given number.</p>
+<p class="wi2"><span class="CButton">Is not equal to</span>: Used when searching for numeric values. MainBoss will find the next record where the field's value is not equal to the given number.</p>
+<p class="wi2"><span class="CButton">Is between</span>: Used when searching for numeric values. MainBoss will find the next record where the field's value is between the given numbers.</p>
+<p class="wi">Multiple search conditions: If you specify multiple conditions, the search finds records that satisfy all the specified conditions. For example, suppose you're searching the <span class="CPanel">Items</span> table. You specify one condition to search <span class="CU">Item Category</span> for <span class="CU">Electrical Supplies</span>. You specify a second condition to search <span class="CU">On Order</span> for quantities greater than zero. Then MainBoss will find items whose category is <span class="CU">Electrical Supplies</span> <span class="Emphasis">and</span> whose on-order number is greater than zero. In other words, this search finds electrical supplies which are on order.</p>
+<p class="wi"><span class="CButton">Find Next</span>: Searches the list. The search starts immediately at the selected record and finds the matching next record. If the search reaches the bottom of the list, it will wrap around to the top of the list and continue searching.</p>
+<p class="wi"><span class="CButton">Find Previous</span>: Is similar to <span class="CButton">Find Next</span> except that the search goes backward instead of forward. If the search reaches the top of the list, it will wrap around to the bottom and continue searching.</p>
+<p class="box">If you try a search and MainBoss finds no matching records, the <span class="CButton">Find Next</span> and <span class="CButton">Find Previous</span> buttons are disabled&#8212;MainBoss can't find the next or previous matching record if there are no matching records at all.</p>
+
+<p class="wi"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Removes the search condition beside the button. For example, if you have three search conditions, clicking any of the <span class="CButton"><img src="Delete.png" alt="Delete" /></span> buttons removes the associated search condition, leaving only two conditions in the search.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. The table viewer will be positioned at the record found by the most recent successful search.</p>
+<p class="box"><span class="CInset">Note:</span> If the search window happens to be covering up the record that's just been found, you can use the mouse to drag the search window to a different place on the screen.</p>
+
+<p><span class="CInset">Notes:</span> In any table viewer, the shortcut sequence <span class="CKey">&lt;Ctrl+F&gt;</span> opens the search window. The search will be applied to whatever list of records you clicked most recently. For example, if you most recently clicked a list of unit records, <span class="CKey">&lt;Ctrl+F&gt;</span> will let you search through units; however, if you were looking at a unit record and your most recent click was on the unit's list of service contracts, then <span class="CKey">&lt;Ctrl+F&gt;</span> would search through service contracts. (<span class="CKey">&lt;Ctrl+F&gt;</span> will not work if your most recent click was on the MainBoss control panel&#8212;it only works if your most recent click was in some sort of table viewer.)</p>
+
+<p>If the search window is not open, the <span class="CKey">&lt;F3&gt;</span> function key has the effect of <span class="CButton">Find Next</span>, searching for whatever you searched for most recently. This means that pressing <span class="CKey">&lt;F3&gt;</span> repeatedly will perform the same search over and over. Note that your most recent search may not be valid for the current table; for example, if you search the <span class="CPanel">Items</span> table for an item category, then switch to the <span class="CPanel">Units</span> table, searching for item category doesn't make sense. In this case, <span class="CKey">&lt;F3&gt;</span> just opens the search window.</p>
+
+<p>For more on using table viewers, see <a href="UsingTableViewers.htm">Using Table Viewers</a>.</p>
+
+
+<p><a href="HidingtheDetailsforaSelectedRecord.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Filter.htm">Next section &gt;</a></p>
+</body>
+</html>
+

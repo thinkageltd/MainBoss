@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Specification Forms</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Specification Forms</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Service Contract.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Specification Form.htm">Next section &gt;</a></p>
+
+<p>It's useful to include specific information about units in your MainBoss records. For example, for a forklift truck, it's useful to record facts like engine type, lifting capacity, height, width, and so on. For a space like a hotel suite, you might want to record room layout, the number of chairs and beds, and special characteristics (e.g. smoking vs. non-smoking).</p>
+
+<p>Specification forms let you record any type of information. You create your own specification forms by stating what fields you want to appear in the form. For a hotel room, for example, you might create a form with blanks to fill in for number of beds, number of chairs, number of lamps, and any other information that you keep track of. You also might record room dimensions, the type of bulbs used in light fixtures, the location of fuse boxes and so on.</p>
+
+<p>Specification forms are made up of <span class="NewTerm">fields</span>. Each field contains the following:</p>
+
+<ul class="b1"><li>A <span class="NewTerm">label name</span> identifying what kind of information the field contains. A label name can contain any kind of character.</li>
+<li>A <span class="NewTerm">field name</span> standing for the actual value of the field. Field names are case-sensitive, so that <span class="CU">NAME</span>, <span class="CU">name</span>, <span class="CU">Name</span>, etc. are all different names. Field names must start with an alphabetic character and consist of only letters and digits.</li>
+<li>A <span class="NewTerm">field size</span> giving the maximum number of characters in the field.</li>
+<li>An optional <span class="NewTerm">field order</span>. This is a number used to determine the order in which fields should be listed. Fields are arranged from lowest to highest (e.g. from 1 up).
+</li></ul><p>Here is a typical list of fields describing a motor.</p>
+
+<pre>Label              Field name         Size         Order
+
+Manufacturer          Mfr              30            1
+Model #               Mod              20            2
+Horsepower            HP                5            3
+RPM                   RPM               7            4
+Voltage               V                 7            5</pre>
+
+<p>This specification definition leads to a form that looks like this:</p>
+
+<p><img src="image042.png" alt="MainBoss" /></p>
+
+<p>Note that when you use the form, MainBoss automatically adds fields for "<span class="CField">Code</span>", "<span class="CField">Description</span>" and "<span class="CField">Comments</span>" in addition to the fields that you specified.</p>
+
+<p>Once you have created a specification form, it can be used in a unit record. A form filled in with information about a particular unit is called a <span class="NewTerm">specification</span>. A unit may have multiple specifications; for example, a truck might have one specification for its engine and another about its carrying capacity. For more information, see <a href="Edit.Specification.htm">Specifications</a>.</p>
+
+<p>The information from a filled-out specification may be displayed in unit reports. You can control the format in which this information is displayed:</p>
+
+<ul class="b1"><li>Every specification has a default layout format, where each field is on a separate line and the field's label name is used to label the line.</li>
+<li>Alternatively, you can specify a customized layout. In this kind of layout, you use constructs of the form <span class="CU">&lt;FieldName/&gt;</span> to represent blank areas where values should be filled in.
+</li></ul><p>For example, you might define the following customized layout:</p>
+
+<pre>Manufacturer: &lt;Mfr/&gt;
+Model #: &lt;Mod/&gt;
+HP: &lt;HP/&gt; RPM: &lt;RPM/&gt; Volts: &lt;V/&gt;</pre>
+
+<p>This might lead to displays like</p>
+
+<pre>Manufacturer: XYZ Inc.
+Model #: AG1234
+HP: 300  RPM: 3000  Volts: 220</pre>
+
+<p class="box">Once a specification form is used in connection with a unit, the form cannot be changed (although the actual specification values can be changed).</p>
+
+<p>For information on viewing specification forms, see <a href="Browse.Specification Form.htm">Viewing Specification Forms</a>. For information on creating and editing specification forms, see <a href="Edit.Specification Form.htm">Editing Specification Forms</a>. For information on printing specification forms, see <a href="Report.Specification Form.htm">Printing Specification Forms</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Browse.Specification Form.htm">Viewing Specification Forms</a></li>
+
+<li><a href="Edit.Specification Form.htm">Editing Specification Forms</a></li>
+
+<li><a href="Report.Specification Form.htm">Printing Specification Forms</a></li>
+
+<li><a href="Edit.Specification Form Field.htm">Editing Specification Form Fields</a></li>
+</ul>
+<p><a href="Report.Service Contract.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Specification Form.htm">Next section &gt;</a></p>
+</body>
+</html>
+

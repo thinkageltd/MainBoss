@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing Specification Form Fields</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Editing Specification Form Fields</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Specification Form.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Systems.htm">Next section &gt;</a></p>
+
+<p>You create or modify the fields in a specification form using the specification field editor. The usual way to open the editor is to click <span class="CButton">New Specification Form Field</span> or <span class="CButton">Edit</span> in the <span class="CButton">Fields</span> section of a specification form record. (See <a href="Edit.Specification Form.htm">Editing Specification Forms</a>.)</p>
+
+<p class="box">If a specification form is being used by a unit record, MainBoss will not let you change the fields in the form.</p>
+
+<p>The specification field editor window contains the following:</p>
+
+<p class="wi"><span class="CField">Specification Form</span>: A read-only field specifying the form that contains this specification field.</p>
+<p class="wi"><span class="CField">Field Name</span>: A unique name identifying this field. In custom layouts, you can use this field name in a construct that represents the value of the field. For example, if the name of the field is <span class="CU">MyField</span>, then <span class="CU">&lt;MyField/&gt;</span> represents the value of the field in a custom layout.
+
+<br /><br />Field names are case-sensitive; for example, <span class="CU">NAME</span>, <span class="CU">name</span> and <span class="CU">Name</span> are all different names (although using such names could lead to confusion). Field names must start with an alphabetic character and can only contain letters and digits.</p>
+<p class="wi"><span class="CField">Edit Label</span>: The label that should appear when people are actually filling out the specification form. It's often useful (and less confusing) if "<span class="CField">Field Name</span>" and "<span class="CField">Edit Label</span>" are the same. However, see below for exceptions.</p>
+<p class="wi"><span class="CField">Field Size</span>: The maximum number of characters that can be used in the value of the field.</p>
+<p class="wi"><span class="CField">Field Order</span>: A number that is used when determining the order in which fields are displayed. Typically, set "<span class="CField">Field Order</span>" to 1 for the field you want to appear first on the form; set "<span class="CField">Field Order</span>" to 2 for the field you want to appear second; and so on. (In general, fields are arranged by "<span class="CField">Field Order</span>" from lowest value to highest.)</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p><span class="CInset">Field Names and Labels:</span> Field names must be unique; labels do not. As an example, consider a heat pump that can be used as either a heater or an air/conditioner. You might want a specification that looks like this:</p>
+
+<pre>Heating
+    Power consumption: ____
+    Volts: ____
+    BTU: ____
+Cooling
+    Power consumption: ____
+    Volts: ____
+    BTU: ____</pre>
+
+<p>Notice that several fields have the same labels: two fields labeled <span class="CU">Power consumption</span>, two labeled <span class="CU">Volts</span> and two labeled <span class="CU">BTU</span>. However, every field must have a unique field name. You might use field names like</p>
+
+<pre>Heating Power
+Heating Volts
+Heating BTU
+Cooling Power
+Cooling Volts
+Cooling BTU</pre>
+
+<p>For more on setting up specification forms, see <a href="SpecificationForms.htm">Specification Forms</a>. For more on using specification forms, see <a href="Edit.Specification.htm">Specifications</a>.</p>
+
+
+<p><a href="Report.Specification Form.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Systems.htm">Next section &gt;</a></p>
+</body>
+</html>
+

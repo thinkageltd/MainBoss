@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: The Database User Table</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">The Database User Table</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.User.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.SQL Database User.htm">Next section &gt;</a></p>
+
+<p>The Database User table lists MainBoss users from the point of view of SQL Server. It tells how each authorized MainBoss user accesses the MainBoss database.</p>
+
+<p>There are two access possibilities:</p>
+
+<ul class="b1"><li>Windows Authentication is based on a person's Windows login name and password</li>
+<li>SQL Server authentication is based on a special name and password registered with SQL Server itself
+</li></ul><p>The table viewer displays a line for each user and indicates how each user accesses the database. The table includes the following:</p>
+
+<p class="wi"><span class="CButton">User name</span>: The name that SQL Server uses for the person. This may be the person's Windows login name or a special name used by SQL Server. The person who created the database is identified by the special name <span class="CU">dbo</span>.</p>
+<p class="wi"><span class="CButton">Login name</span>: If someone accesses the database using Windows authentication, this column will list the person's full Windows login name (including any domain name).</p>
+<p class="wi"><span class="CButton">Authentication</span>: The type of authentication used. This will either be <span class="CU">Windows Authentication</span> or <span class="CU">SQL Password</span>.</p>
+<p class="wi">Authentication options: This lists options associated with the selected user. The list includes:</p>
+<p class="wi2"><span class="CButton">IsSysAdmin</span>: Checkmarked if the selected user has system administration privileges.</p>
+<p class="wi2"><span class="CButton">Enabled</span>: Checkmarked if the user has a SQL password enabled.</p>
+<p class="wi2"><span class="CButton">IsLoginManager</span>: Checkmarked if the user has permissions to manage logins.</p>
+<p class="wi2"><span class="CButton">InMainBossRole</span>: Checkmarked if the user has the SQL Server MainBoss security role. This will be true for normal MainBoss users.</p>
+<p class="wi2"><span class="CButton">IsDBO</span>: Checkmarked if the user is the database owner. By default, this will be the person who created the database.</p>
+<p class="wi"><span class="CButton">New SQL Database User</span>: Click this button to add a new user to the database. MainBoss will open a window where you can specify information about the user. For more, see <a href="Edit.SQL Database User.htm">Adding Database Users</a>.</p>
+<p class="wi"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the record that's currently selected.</p>
+<p class="wi"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Lets you search through the list of records for a particular record. For more information, see <a href="Search.htm">Searching for a Particular Record</a>. The <span class="CButton"><img src="Find_VS.png" alt="Search" /></span> button has an accompanying drop-down list containing the following:</p>
+<p class="wi2"><span class="CButton">Find Next</span>: Uses the same search condition(s) as your most recent search and finds the next record in the table that matches the condition(s). If the search reaches the end of the table without finding a matching record, it goes to the start of the table and continues the search.</p>
+<p class="wi2"><span class="CButton">Find Previous</span>: Same as <span class="CButton">Find Next</span> except that it goes backward in the table. If the search reaches the start of the table without finding a matching record, it goes to the end of the table and continues the search.</p>
+<p class="wi"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p class="wi"><span class="CButton">Select</span>: Selects the current user and returns to the previous window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without selecting a user.</p>
+<p>For more information on user records, see <a href="Users.htm">Users</a>. For more information on creating or editing user records, see <a href="Edit.User.htm">Editing User Records</a>. For general information on table viewers, see <a href="UsingTableViewers.htm">Using Table Viewers</a>.</p>
+
+
+<p><a href="Edit.User.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.SQL Database User.htm">Next section &gt;</a></p>
+</body>
+</html>
+

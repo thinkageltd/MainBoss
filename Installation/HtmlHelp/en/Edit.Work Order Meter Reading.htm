@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Work Order Meter Readings</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Work Order Meter Readings</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Manual Meter Reading.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="UnitRelatedReports.htm">Next section &gt;</a></p>
+
+<p>You can record a meter reading from a work order. Start in the work order's <span class="CButton">Meters</span> section, click on a meter, and click <span class="CButton">New Work Order Meter Reading</span>. The resulting window contains the following:</p>
+
+<p class="wi"><span class="CField">Meter Class</span>: A read-only field giving the class of the meter whose reading you are recording. For more, see <a href="MeterClasses.htm">Meter Classes</a>.</p>
+<p class="wi"><span class="CField">Unit</span>: A read-only field giving the unit with which the meter is associated. For more on units, see <a href="Units.htm">Units</a>.</p>
+<p class="wi"><span class="CField">Meter Class UOM</span>: A read-only field giving the units of measure associated with this meter. For more on units of measure, see <a href="UnitsofMeasure.htm">Units of Measure</a>.</p>
+<p class="wi"><span class="CField">Reading Offset</span>: A read-only field giving the offset associated with this meter. For more, see the section titled <span class="CInset">Effective vs. Actual Readings</span> in <a href="Meters.htm">Meters</a>.</p>
+<p class="wi"><span class="CField">Current</span>: A line of read-only fields giving the most recent reading on the meter. If no reading has ever been recorded for the meter, "<span class="CField">Entry Date</span>" and "<span class="CField">Effective Date</span>" will both show the current date, "<span class="CField">Reading</span>" will be zero, and "<span class="CField">Effective Reading</span>" will be equal to "<span class="CField">Reading Offset</span>".</p>
+<p class="wi"><span class="CField">Entry Date</span>: A read-only field giving today's date.</p>
+<p class="wi"><span class="CField">Effective Date</span>: The date/time when the reading was taken. As an initial default, this shows today's date and time; however, you should change this to reflect the actual date and time on which the reading was made.
+
+<br /><br /><span class="CInset">Important:</span> MainBoss will not let you enter a meter reading with an "<span class="CField">Effective Date</span>" that is older than the most recent reading on the meter. You must enter meter readings in chronological order. This is especially important during set-up: if you want to enter old meter readings (to create a meter history), you must enter the readings in the order they occurred. If you want to enter older meter readings, you have to delete any more recent readings first.</p>
+<p class="wi"><span class="CField">Reading</span>: The actual reading from the meter. When you type a number in this field, MainBoss automatically sets "<span class="CField">Effective Reading</span>" to "<span class="CField">Reading</span>" plus "<span class="CField">Reading Offset</span>".</p>
+<p class="wi"><span class="CField">Effective Reading</span>: The sum of "<span class="CField">Reading</span>" and "<span class="CField">Reading Offset</span>". This gives you the true value of the meter, after adjusting for roll-over, resetting, and other special conditions.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on meter readings, see <a href="MeterReadings.htm">Meter Readings</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Manual Meter Reading.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="UnitRelatedReports.htm">Next section &gt;</a></p>
+</body>
+</html>
+

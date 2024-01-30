@@ -1,0 +1,480 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Thinkage.MainBossRemote§(Details : {0})" type="" mimetype="">
+    <value>(Details : {0})</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBossRemote§Access Code" type="" mimetype="">
+    <value>Access Code</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Actual" type="" mimetype="">
+    <value>Actual</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Actual Quantity has been changed before your actualization submission" type="" mimetype="">
+    <value>Actual Quantity has been changed before your actualization submission</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Actualization was unsuccessful. Please correct the errors and try again." type="" mimetype="">
+    <value>Actualization was unsuccessful. Please correct the errors and try again.</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Actualize" type="" mimetype="">
+    <value>Actualize</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Actualize Resources" type="" mimetype="">
+    <value>Actualize Resources</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Add Comment" type="" mimetype="">
+    <value>Add Comment</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Add Comment to Request {0}" type="" mimetype="">
+    <value>Add Comment to Request {0}</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Add Comment to WorkOrder {0}" type="" mimetype="">
+    <value>Add Comment to WorkOrder {0}</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Add Comment was unsuccessful. Please correct the errors and try again." type="" mimetype="">
+    <value>Add Comment was unsuccessful. Please correct the errors and try again.</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Another comment has previously been added to the request history" type="" mimetype="">
+    <value>Another comment has previously been added to the request history</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Another comment has previously been added to the workorder history" type="" mimetype="">
+    <value>Another comment has previously been added to the workorder history</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Assigned Requests" type="" mimetype="">
+    <value>Assigned Requests</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Assigned WorkOrders" type="" mimetype="">
+    <value>Assigned WorkOrders</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Attachments" type="" mimetype="">
+    <value>Attachments</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Back to Assignment Status" type="" mimetype="">
+    <value>Back to Assignment Status</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Back to List" type="" mimetype="">
+    <value>Back to List</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Back to previous page" type="" mimetype="">
+    <value>Back to previous page</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Cancel" type="" mimetype="">
+    <value>Cancel</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Close" type="" mimetype="">
+    <value>Close</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Close Request" type="" mimetype="">
+    <value>Close Request</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Close Request {0}" type="" mimetype="">
+    <value>Close Request {0}</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Close Request was unsuccessful. Please correct the errors and try again." type="" mimetype="">
+    <value>Close Request was unsuccessful. Please correct the errors and try again.</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Close WorkOrder" type="" mimetype="">
+    <value>Close WorkOrder</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Close WorkOrder {0}" type="" mimetype="">
+    <value>Close WorkOrder {0}</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Close WorkOrder was unsuccessful. Please correct the errors and try again." type="" mimetype="">
+    <value>Close WorkOrder was unsuccessful. Please correct the errors and try again.</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Closing Code" type="" mimetype="">
+    <value>Closing Code</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Code" type="" mimetype="">
+    <value>Code</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Comments" type="" mimetype="">
+    <value>Comments</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Comments to Requestor" type="" mimetype="">
+    <value>Comments to Requestor</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Cost and quantity cannot both be zero" type="" mimetype="">
+    <value>Cost and quantity cannot both be zero</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Cost cannot be zero" type="" mimetype="">
+    <value>Cost cannot be zero</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Cost must not exceed value on hand" type="" mimetype="">
+    <value>Cost must not exceed value on hand</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Current State" type="" mimetype="">
+    <value>Current State</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Current Status" type="" mimetype="">
+    <value>Current Status</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Demanded" type="" mimetype="">
+    <value>Demanded</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Description" type="" mimetype="">
+    <value>Description</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Downtime" type="" mimetype="">
+    <value>Downtime</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Draft" type="" mimetype="">
+    <value>Draft</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Drawing" type="" mimetype="">
+    <value>Drawing</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Effective Date" type="" mimetype="">
+    <value>Effective Date</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Enter your email address to submit a MainBoss request" type="" mimetype="">
+    <value>Enter your email address to submit a MainBoss request</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Error calculating total cost" type="" mimetype="">
+    <value>Error calculating total cost</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Estimated Completion Date" type="" mimetype="">
+    <value>Estimated Completion Date</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§History" type="" mimetype="">
+    <value>History</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§HTTP state mode must be InProc" type="" mimetype="">
+    <value>HTTP state mode must be InProc</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§In Progress" type="" mimetype="">
+    <value>In Progress</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Issued" type="" mimetype="">
+    <value>Issued</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Location" type="" mimetype="">
+    <value>Location</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Login as MainBoss User to view your assignments" type="" mimetype="">
+    <value>Login as MainBoss User to view your assignments</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§MainBoss Remote Home" type="" mimetype="">
+    <value>MainBoss Remote Home</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Make" type="" mimetype="">
+    <value>Make</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Model" type="" mimetype="">
+    <value>Model</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§New" type="" mimetype="">
+    <value>New</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§New Request" type="" mimetype="">
+    <value>New Request</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§No Cost Basis for calculating total cost" type="" mimetype="">
+    <value>No Cost Basis for calculating total cost</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§No Permission" type="" mimetype="">
+    <value>No Permission</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Number" type="" mimetype="">
+    <value>Number</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Open" type="" mimetype="">
+    <value>Open</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Other Comments" type="" mimetype="">
+    <value>Other Comments</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Priority" type="" mimetype="">
+    <value>Priority</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Project" type="" mimetype="">
+    <value>Project</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Purchase Orders" type="" mimetype="">
+    <value>Purchase Orders</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Quantity has been changed before your actualization submission" type="" mimetype="">
+    <value>Quantity has been changed before your actualization submission</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Quantity must not exceed quantity on hand" type="" mimetype="">
+    <value>Quantity must not exceed quantity on hand</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Refresh" type="" mimetype="">
+    <value>Refresh</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Remaining" type="" mimetype="">
+    <value>Remaining</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Request current state history has been changed." type="" mimetype="">
+    <value>Request current state history has been changed.</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Request Priority" type="" mimetype="">
+    <value>Request Priority</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Request submission was unsuccessful. Please correct the errors and try again." type="" mimetype="">
+    <value>Request submission was unsuccessful. Please correct the errors and try again.</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Requestor" type="" mimetype="">
+    <value>Requestor</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Requests" type="" mimetype="">
+    <value>Requests</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Resource is no longer present for actualization" type="" mimetype="">
+    <value>Resource is no longer present for actualization</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Resource was never available for actualization" type="" mimetype="">
+    <value>Resource was never available for actualization</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Resources" type="" mimetype="">
+    <value>Resources</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Save Comment" type="" mimetype="">
+    <value>Save Comment</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBossRemote§Serial Number" type="" mimetype="">
+    <value>Serial Number</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Some other error occurred trying to validate the email address" type="" mimetype="">
+    <value>Some other error occurred trying to validate the email address</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBossRemote§Specifications" type="" mimetype="">
+    <value>Specifications</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Status" type="" mimetype="">
+    <value>Status</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Subject" type="" mimetype="">
+    <value>Subject</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§System" type="" mimetype="">
+    <value>System</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§The name of the current user &quot;{0}&quot; is not in the expected form &quot;SCOPE\USER&quot;" type="" mimetype="">
+    <value>The name of the current user "{0}" is not in the expected form "SCOPE\USER"</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§The request has already been closed" type="" mimetype="">
+    <value>The request has already been closed</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§The request with Id '{0}' was not found." type="" mimetype="">
+    <value>The request with Id '{0}' was not found.</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§The unit with Id '{0}' was not found." type="" mimetype="">
+    <value>The unit with Id '{0}' was not found.</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§The work order with Id '{0}' was not found." type="" mimetype="">
+    <value>The work order with Id '{0}' was not found.</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§The workorder has already been closed" type="" mimetype="">
+    <value>The workorder has already been closed</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§There are {0} MainBoss Requestors using this email address:" type="" mimetype="">
+    <value>There are {0} MainBoss Requestors using this email address:</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBossRemote§There is no MainBoss Requestor with this email address." type="" mimetype="">
+    <value>There is no MainBoss Requestor with this email address.</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBossRemote§There was a problem validating access to {0}" type="" mimetype="">
+    <value>There was a problem validating access to {0}</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§This operation is not allowed in the current state" type="" mimetype="">
+    <value>This operation is not allowed in the current state</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§This would set quantity on hand to zero but leave non-zero value" type="" mimetype="">
+    <value>This would set quantity on hand to zero but leave non-zero value</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Unit" type="" mimetype="">
+    <value>Unit</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Unit Category" type="" mimetype="">
+    <value>Unit Category</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Unit Contact" type="" mimetype="">
+    <value>Unit Contact</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Unspecified Employee" type="" mimetype="">
+    <value>Unspecified Employee</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Unspecified Trade" type="" mimetype="">
+    <value>Unspecified Trade</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Usage" type="" mimetype="">
+    <value>Usage</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§View Assignment Status" type="" mimetype="">
+    <value>View Assignment Status</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§View Request {0}" type="" mimetype="">
+    <value>View Request {0}</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§View Unit {0}" type="" mimetype="">
+    <value>View Unit {0}</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§View WorkOrder {0}" type="" mimetype="">
+    <value>View WorkOrder {0}</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§View your assignments" type="" mimetype="">
+    <value>View your assignments</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Welcome MainBoss user" type="" mimetype="">
+    <value>Welcome MainBoss user</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Where" type="" mimetype="">
+    <value>Where</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBossRemote§Work Category" type="" mimetype="">
+    <value>Work Category</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Work End Date" type="" mimetype="">
+    <value>Work End Date</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Work Order Priority" type="" mimetype="">
+    <value>Work Order Priority</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Work Orders" type="" mimetype="">
+    <value>Work Orders</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§Work Start Date" type="" mimetype="">
+    <value>Work Start Date</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§WorkOrder current state history has been changed." type="" mimetype="">
+    <value>WorkOrder current state history has been changed.</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§WorkOrder has previously been changed." type="" mimetype="">
+    <value>WorkOrder has previously been changed.</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§You cannot submit requests." type="" mimetype="">
+    <value>You cannot submit requests.</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§You must be a MainBoss User to view your Assignment status" type="" mimetype="">
+    <value>You must be a MainBoss User to view your Assignment status</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§You require a Web Access license to view your MainBoss assignments." type="" mimetype="">
+    <value>You require a Web Access license to view your MainBoss assignments.</value>
+  </data>
+  <data name="Thinkage.MainBossRemote§You require a Web Requests license to submit requests." type="" mimetype="">
+    <value>You require a Web Requests license to submit requests.</value>
+  </data>
+</root>

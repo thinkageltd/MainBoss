@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Creating a New Maintenance Organization from a Backup File</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Creating a New Maintenance Organization from a Backup File</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="OverwritingaMaintenanceOrganizationwithDatafromaBackupFile.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="ChangingOrganizationInformation.htm">Next section &gt;</a></p>
+
+<p>You should backup your maintenance organization database on a regular basis. For an explanation of how to do this, see <a href="Browse.Backup.htm">Backups</a> or the <a href=" " >Installation and Administration Guide</a>.</p>
+
+<p>To create a new database using data from a backup file, you can use <span class="CButton">Create New Organization from a Backup</span> in the Maintenance Organization window (see <a href="Browse.Organization.htm">Your Maintenance Organization List</a>).</p>
+
+<p><span class="CInset">Important Notes about Restoring Databases: </span>There are two operations for restoring databases from backup:</p>
+
+<ul class="b1"><li><span class="CButton">Restore Organization</span> overwrites an existing database. First you select the database to be overwritten (by clicking on the entry for that database in your Maintenance Organization list), then you click on <span class="CButton">Restore Organization</span> to specify the backup file you want to use.
+
+<br /><br />Typically, you would use <span class="CButton">Restore Organization</span> if you made some sort of large-scale error that you wanted to undo (e.g. mistakenly generating and committing a large number of planned maintenance work orders).</li>
+<li><span class="CButton">Create New Organization from a Backup</span> creates a new database using data from a backup file.
+
+<br /><br />Typically, you would use <span class="CButton">Create New Organization from a Backup</span> if your original database has been deleted or corrupted. You could also use this operation if you wanted to create a test database using data obtained from your production database.
+</li></ul><p>In both cases, MainBoss performs the operation by submitting requests to SQL Server. You must therefore have SQL Server Administrator privileges to perform either operation.</p>
+
+<p>When you use <span class="CButton">Restore Organization</span>, all MainBoss users will have the same MainBoss security roles that they did at the time the backup was created. In particular, the person who does the restore operation doesn't get any special permissions&#8212;just the ones that he or she already had at the time of the backup. On the other hand, <span class="CButton">Create New Organization from a Backup</span> gives the creator all security roles on the new database, no matter what roles were originally recorded in the backup file. This lets the creator use the new database for any purpose.</p>
+
+<p>Restore operations are run by SQL Server itself on the computer where SQL Server is running. Because SQL Server does the work, the backup file that will be used must be accessible to the login name under which SQL Server runs. Furthermore, the name of the backup file should be relative to the computer where SQL Server is running. Unless the file name explicitly begins with <span class="CU">\\computer</span> or a drive name (e.g. <span class="CU">C:\</span>), the file name will be assumed to be relative to SQL Server's home directory. (This is true even if the file name begins with a <span class="CU">\</span>.)</p>
+
+<p>For example, suppose SQL Server is running on Computer X and you submit a restore request while working on Computer Y. MainBoss will ask you to specify the name of the backup file containing the database you want to restore. Suppose you give the name</p>
+
+<pre>C:\MyBackups\Monday.bak</pre>
+
+<p>You may think this refers to a file on Computer Y's <span class="CU">C:</span> drive. However, the restore operation is performed by SQL Server on Computer X; therefore, SQL Server will try to find the file on Computer X's <span class="CU">C:</span> drive, not Computer Y. If the directory <span class="CU">C:\MyBackups</span> doesn't exist on Computer X (or if SQL Server's login name doesn't have permissions to read that folder), you'll get an error message and the restore operation won't work.</p>
+
+<p>For this reason, we recommend that you only submit restore requests while logged in to the computer where SQL Server is running. You should also be aware of what permissions SQL Server has and what files will actually be accessible to SQL Server's login name.</p>
+
+<p><span class="CInset">Backup Format:</span> There are several different ways to create a backup with Microsoft SQL Server. MainBoss assumes that you did the backup using the backup facilities inside MainBoss itself, or in some other way that uses the same backup format. However, it is possible to create database backup files in such a way that MainBoss cannot restore from the file. This happens when you do the backup with SQL Server Management Studio and specify options that create backup files whose format is different than the one MainBoss expects.</p>
+
+<p>In this case, you can still restore the database from the backup file. You just have to use Management Studio directly, rather than using MainBoss.</p>
+
+<p><span class="CInset">Command Format:</span> When you click <span class="CButton">Create New Organization from a Backup</span>, MainBoss displays a window that contains the following:</p>
+
+<p class="wi"><span class="CField">Database Server</span>: The network location of the SQL Server through which you will access the database. For more information, see the <a href=" " >Installation and Administration Guide</a>.
+
+<br /><br />If you click the accompanying "..." button, MainBoss displays a list of database servers that are known to your Windows system. There may be additional servers that you can use but that Windows doesn't currently know about. For more, see <a href="Browse.SQL Server.htm">The Database Server List</a>.</p>
+<p class="wi"><span class="CField">Database Name</span>: The name you want SQL Server to give to the new database. This name must be different from the names of any other databases on the server. For example, you can't name every database "MainBoss". If you want to see what MainBoss databases already exist, click the "..." button at the end of the "<span class="CField">Database Name</span>" line. (For more, see <a href="Browse.SQL Database.htm">The Database Name List</a>.)</p>
+<p class="wi"><span class="CField">Organization Name</span>: A name that you personally will use for this database. It is <span class="Emphasis">not</span> necessarily the name of the database itself (although it can be). Since this is just a label for your own convenience, it can contain blanks and other characters that aren't allowed in actual database names.</p>
+<p class="wi"><span class="CButton">Make browsers smaller by not showing details for selected record by default</span>: If you checkmark this box, MainBoss will automatically hide the details panel when displaying tables in this database. For more, see <a href="HidingtheDetailsforaSelectedRecord.htm">Hiding the Details for a Selected Record</a>. Note that you can still ask MainBoss to display the details panel for a particular table by pressing the button for displaying details.</p>
+<p class="wi"><span class="CField">Preferred Mode</span>: The default mode in which this database should be opened. If you do not specify a mode explicitly, the database will be opened in the given mode. For more on modes, see <a href="Browse.Organization.htm">Your Maintenance Organization List</a>.</p>
+<p class="wi"><span class="CField">Backup file</span>: Fill in the field with the name of a SQL Server backup file containing a backup of a MainBoss database.
+
+<br /><br />This field has an associated "..." button. If you are logged in to the same computer where SQL Server is running, clicking "..." opens a standard "file open" dialog to let you find the backup file you want.
+
+<br /><br />If you are logged in to any other computer, the "..." button does nothing and you must type in the backup file's name by hand. The name should start with <span class="CU">\\computer</span> or a drive name (e.g. <span class="CU">c:\</span>), or else it should be relative to the SQL Server's default folder on the computer where SQL Server is running. (See above for more details on specifying the file name.)</p>
+<p class="wi"><span class="CField">Backup Set number</span>: If the backup file contains multiple backup sets, use this field to specify which set you want to use.</p>
+<p class="wi"><span class="CButton">Create Database from Backup</span>: If you click this button, MainBoss submits a request to SQL Server asking to create the database you specified by restoring data from the backup file. You must have appropriate SQL Server permissions to create this database.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window without creating a new database.</p>
+<p class="box"><span class="CInset">Note:</span> Instead of using <span class="CButton">Create New Organization from a Backup</span>, you may prefer to use the standard restoration facilities within SQL Server Management Studio or Management Studio Express. For more information, see the <a href=" " >Installation and Administration Guide</a>.</p>
+
+<p><span class="CInset">The Backup File List:</span> When you create a new organization from a backup file, the new organization will have the same list of backup files (in <span class="CPanel">Administration</span> | <span class="CPanel">Backups</span>) as the original database. This can lead to serious confusion if you're still using the original database.</p>
+
+<p>For example, suppose you intend to use <span class="CButton">Create New Organization from a Backup</span> to create a test database using data from a backup of your production database. This is a valid (and sometimes useful) thing to do, but it means that your new test database will have the same list of backup files as your existing production database. If you try to use <span class="CPanel">Administration</span> | <span class="CPanel">Backups</span> to backup the test database, you may well overwrite one of your production backups. For this reason, when you create a test database, we strongly recommend that you edit the names in <span class="CPanel">Administration</span> | <span class="CPanel">Backups</span> to refer to new backup files that will <span class="Emphasis">not</span> be the same as your production backups.</p>
+
+
+<p><a href="OverwritingaMaintenanceOrganizationwithDatafromaBackupFile.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="ChangingOrganizationInformation.htm">Next section &gt;</a></p>
+</body>
+</html>
+

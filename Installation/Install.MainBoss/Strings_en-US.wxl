@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-us" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+	<String Id="NEWERPRODUCTFOUND">A newer version of this product is already installed.</String>
+	<String Id="MUSTREMOVEPRODUCT">An earlier build of this product version must be removed first to install.</String>
+	<String Id="DOTNET45REQUIRED">This application requires .NET Framework 4.5. Install the necessary .NET Framework then run this installation again.</String>
+	<String Id="PACKAGEDESCRIPTION">MainBoss Computerized Maintenance Management System (CMMS)</String>
+	<String Id="LicenseRtf">..\License\license-en-us.rtf</String>
+</WixLocalization>

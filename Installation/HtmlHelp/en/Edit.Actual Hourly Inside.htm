@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Actual Hourly Inside</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Actual Hourly Inside</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Correction of Actual Item.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Correction of Actual Hourly Inside.htm">Next section &gt;</a></p>
+
+<p>An Actual Hourly Inside record specifies that one of your personnel worked on a particular job, with the work paid at an hourly rate. You identify the worker by specifying an hourly inside record; this record gives the worker's name and hourly rate. (For more on hourly inside records, see <a href="HourlyInside.htm">Hourly Inside</a>.)</p>
+
+<p>The usual way to reach the Actual Hourly Inside editor is to select a Demand Hourly Inside in the <span class="CButton">Inside</span> subsection of the <span class="CButton">Resources</span> section of a work order, then click <span class="CButton">Actualize</span>. (For more on hourly inside demands, see <a href="Edit.Demand Hourly Inside.htm">Demand Hourly Inside</a>.)</p>
+
+<p>A single hourly inside demand can produce multiple Actual Hourly Inside records. For example, suppose the original Demand Hourly Inside estimates that a job will take eight hours. You might do four hours one day and four hours the next. In this case, you could create two Actual Hourly Inside records: one for the first four hours, and one for the next. Each of these records would have "<span class="CField">Hours</span>" set to <span class="CU">4:00</span>. In general, if a job takes place over several days, it's up to you whether to create a separate Actual Hourly Inside record for each day, or a single Actual Hourly Inside record covering the whole job.</p>
+
+<p>The Actual Hourly Inside editor contains the following:</p>
+
+<p class="wi"><span class="CField">Entry Date</span>: A read-only field giving the date that this record was created.</p>
+<p class="wi"><span class="CField">Effective Date</span>: The date/time when the work was done. By default, this is set to the current date/time.</p>
+<p class="wi"><span class="CField">User Contact</span>: A read-only field giving your name. This will appear in MainBoss's accounting history to show who did the actualization.</p>
+<p class="wi">Read-only fields: Provide information relevant to the job. This includes the work order number, the estimated time required and the time already actualized.</p>
+<p class="wi"><span class="CButton">Use all remaining demand</span>: If you checkmark this box, MainBoss completes the record to indicate that you used the time listed under "<span class="CField">Remaining Demand</span>". If you leave the box blank, you will have to fill in this information yourself.</p>
+<p class="wi"><span class="CField">Hours</span>: The time under "<span class="CField">This Entry</span>" gives the number of hours actually used.</p>
+<p class="wi"><span class="CField">Calculated Labor Cost</span>: Read-only fields giving the expected cost of the time worked.</p>
+<p class="wi"><span class="CField">Demanded</span>, <span class="CField">Demanded Cost</span>: The estimated hours and cost stated in the original demand.</p>
+<p class="wi"><span class="CButton">Manually Enter Cost</span>: If you select this option, you must enter the actual cost of the labor in "<span class="CField">This Entry</span>".</p>
+<p class="wi"><span class="CButton">Use calculated labor cost</span>: If you select this option, "<span class="CField">This Entry</span>" will be set to the cost of the labor as taken from the chosen hourly inside record.</p>
+<p class="wi"><span class="CButton">Use demanded cost</span>: If you select this option, "<span class="CField">This Entry</span>" will be set to the cost of the labor as given in the original estimated demand.</p>
+<p class="wi"><span class="CField">This Entry</span>: The actual cost of the labor used. This will be read-only unless you select <span class="CButton">Manually Enter Cost</span>.</p>
+<p class="wi"><span class="CField">As Corrected</span>: Will be the same as "<span class="CField">This Entry</span>" unless you have made a correction to this record after it was originally created.</p>
+<p class="wi"><span class="CField">From Cost Center</span>, <span class="CField">To Cost Center</span>: Read-only fields telling the cost centers involved in this operation. MainBoss creates accounting records indicating the transfer of money from the first cost center to the second. These fields are only visible if your database has an <span class="BL">Accounting</span> license key. For more, see <a href="AccountingFacilities.htm">Accounting Facilities</a>.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p><span class="CInset">When you don't have permissions to see labor costs:</span> Your security roles may permit you to record a worker's actual hours but not to view the costs of that person's work. In this case, MainBoss automatically assigns costs to the labor.</p>
+
+<ul class="b1"><li>If MainBoss intends to use the cost given in the original demand, MainBoss marks the <span class="CButton">Use demanded cost</span> option.</li>
+<li>If MainBoss intends to use the cost specified in the hourly inside record, MainBoss marks the <span class="CButton">Use calculated labor cost</span> option.
+</li></ul><p>For more on security roles, see <a href="SecurityRoles.htm">Security Roles</a>. For more on resources, see <a href="Resources.htm">Resources</a>. For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Correction of Actual Item.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Correction of Actual Hourly Inside.htm">Next section &gt;</a></p>
+</body>
+</html>
+

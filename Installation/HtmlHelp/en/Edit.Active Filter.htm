@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: The Active Filter</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">The Active Filter</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="ViewMenu.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="TheActionsMenu.htm">Next section &gt;</a></p>
+
+<p>The <span class="NewTerm">active filter</span> determines what counts as <span class="CU">Active</span> in the request, work order and purchase order tables. In other words, it determines what a table will display when the word <span class="CU">Active</span> appears in the table's bottom right-hand corner.</p>
+
+<p class="box">Requests, work orders, and purchase orders are always considered active until they are closed or voided. For example, if a work order is open, its age doesn't matter&#8212;it will be active until you close it.</p>
+
+<p>To set your active filter, go to the <span class="CMenu">View</span> menu and click <span class="CMenu">Change Active Filter</span>. This opens a window that contains the following:</p>
+
+<p class="wi"><span class="CField">Show only records less than this many days old</span>: You can set this field's value to a number. If you do, requests, work orders and purchase orders will only be considered <span class="CU">Active</span> if their most recent history record is less than the given number of days old. For example, if you set the value to 400, the only active requests, work orders and purchase orders will be ones whose histories have changed in the past 400 days. Typically, this means you won't see any requests, work orders and purchase orders that were closed more than 400 days ago.</p>
+<p class="wi"><span class="CField">Show only records since</span>: You can set this field's value to a date. If you do, requests, work orders and purchase orders will only be considered <span class="CU">Active</span> if their most recent history record was created after the specified date. For example, if you set the value to <span class="CU">January 1, 2009</span>, the only active requests, work orders and purchase orders will be ones which have had some activity since that date.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the given information. The window stays open in case you want to make more changes.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the information and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>The options you set through the <span class="CMenu">View</span> menu only affect your own MainBoss sessions. For example, if you only want to see very recent records, you might set "<span class="CField">Show only records less than this many days old</span>" to 30. MainBoss would only show you requests, work orders and purchase orders less than 30 days old. You can change this number at any time.</p>
+
+<p>The more information that your active filter excludes, the faster MainBoss can operate&#8212;it takes less time to obtain records from the database and to format that information. Furthermore, your windows will contain less old information and therefore less "clutter". On the other hand, you don't want to exclude too much or you might miss out on important requests/work orders/purchase orders that are older than you expect.</p>
+
+<p class="box">Your MainBoss administrator can use <span class="CPanel">Administration</span> | <span class="CPanel">Company Information</span> to set active filter defaults for everyone who uses the MainBoss database. For more, see <a href="Browse.Company Information.htm">Company Information</a>.</p>
+
+
+<p><a href="ViewMenu.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="TheActionsMenu.htm">Next section &gt;</a></p>
+</body>
+</html>
+

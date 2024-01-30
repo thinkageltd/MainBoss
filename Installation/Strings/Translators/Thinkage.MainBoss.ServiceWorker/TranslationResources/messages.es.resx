@@ -1,0 +1,352 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Thinkage.MainBoss.ServiceWorker§{0} rejection {0.IsOne ? message : messages } for {1}" type="" mimetype="">
+    <value>{0} {0.IsOne ? mensaje : mensajes } de rechazo para {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§{0} Server '{1}' on port {2}" type="" mimetype="">
+    <value>{0} Servidor '{1}' en el puerto {2}</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Creating a Requestor record for {0} with Contact Code {1}" type="" mimetype="">
+    <value>Creación de registro de solicitante {0} con código de contacto {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Description" type="" mimetype="">
+    <value>Description</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§E-mail request from {0} does not match the e-mail address of any Requestor" type="" mimetype="">
+    <value>Solicitud de correo electrónico de {0} no coincide con la dirección de correo electrónico de cualquier solicitante</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§E-mail request from {0} matches e-mail address of Contact '{1}', but that Contact is not a Requestor." type="" mimetype="">
+    <value>correo de solicitud desde {0}coincide con la dirección de correo electronico de contacto '{1}', pero este contacto no es el solicitante.</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Error during processing of E-mail requests" type="" mimetype="">
+    <value>Error solicitudes durante el procesamiento del correo</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Error during retrieval of E-mail requests" type="" mimetype="">
+    <value>Error solicitudes durante la recuperación del correo</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Error parsing XML Request" type="" mimetype="">
+    <value>Error al analizar solicitud XML</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Error processing Assignment Notifications" type="" mimetype="">
+    <value>Error processing Assignment Notifications</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Error processing Requestor Notifications" type="" mimetype="">
+    <value>Error processing Requestor Notifications</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Estimated Completion Date: {0}" type="" mimetype="">
+    <value>Estimated Completion Date: {0}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Failed to locate Email Request {0} for processing." type="" mimetype="">
+    <value>Falló localización por corre electrónico {0} para el proceso.</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Generated by @Requests" type="" mimetype="">
+    <value>Generado por @solicitud</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Here is the original request:" type="" mimetype="">
+    <value>Aqui está la solicitud original:</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Mail Server Type: {0}" type="" mimetype="">
+    <value>Tipo de servidor de correo: {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Message {0}" type="" mimetype="">
+    <value>Mensaje {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Missing From address in message" type="" mimetype="">
+    <value>Falta la dirección en el mensaje</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Notification failed for purchase order {0} to {1}" type="" mimetype="">
+    <value>Notification failed for purchase order {0} to {1}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Notification failed for request {0} to {1}" type="" mimetype="">
+    <value>Notification failed for request {0} to {1}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Notification failed for work order {0} to {1}" type="" mimetype="">
+    <value>Notification failed for work order {0} to {1}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Notification sent for purchase order {0} to {1}" type="" mimetype="">
+    <value>Notification sent for purchase order {0} to {1}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Notification sent for request {0} to {1}" type="" mimetype="">
+    <value>Notification sent for request {0} to {1}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Notification sent for work order {0} to {1}" type="" mimetype="">
+    <value>Notification sent for work order {0} to {1}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Notification skipped for purchase order {0} to {1}:&#xD;&#xA;{2}" type="" mimetype="">
+    <value>Notification skipped for purchase order {0} to {1}:
+{2}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Notification skipped for request {0} to {1}:&#xD;&#xA;{2}" type="" mimetype="">
+    <value>Notification skipped for request {0} to {1}:
+{2}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Notification skipped for request {0}:&#xD;&#xA;{1}" type="" mimetype="">
+    <value>Notification skipped for request {0}:
+{1}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Notification skipped for work order {0} to {1}:&#xD;&#xA;{2}" type="" mimetype="">
+    <value>Notification skipped for work order {0} to {1}:
+{2}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Number" type="" mimetype="">
+    <value>Number</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Processing {0} {0.IsOne ? Notifications : Notifications }" type="" mimetype="">
+    <value>Processing {0} {0.IsOne ? Notifications : Notifications }</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Processing {0} E-mail {0.IsOne ? message : messages }" type="" mimetype="">
+    <value>Procesando {0} Correo {0.IsOne ? mensaje : messages }</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Processing {0} Requestor {0.IsOne ? Notification : Notifications }" type="" mimetype="">
+    <value>Processing {0} Requestor {0.IsOne ? Notification : Notifications }</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Processing rejection notifications for {0} {0.IsOne ?  requestor : requestors }" type="" mimetype="">
+    <value>Processing rejection notifications for {0} {0.IsOne ?  requestor : requestors }</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Purchase Order Assignee does not have an E-mail address" type="" mimetype="">
+    <value>Purchase Order Assignee does not have an E-mail address</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Purchase Order Assignee does not want notifications" type="" mimetype="">
+    <value>Purchase Order Assignee does not want notifications</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Purchase Order Assignee E-mail address is not valid '{0}'.&#xD;&#xA;All future purchase order notifications have been disabled for contact {1}" type="" mimetype="">
+    <value>Purchase Order Assignee E-mail address is not valid '{0}'.
+All future purchase order notifications have been disabled for contact {1}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Reference: Work Request # {0}" type="" mimetype="">
+    <value>Referencia: Solicitud de trabajo # {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Request Acknowledgement and Rejection messages cannot be sent because the 'Return E-mail address' parameter is not set." type="" mimetype="">
+    <value>Request Acknowledgement and Rejection messages cannot be sent because the 'Return E-mail address' parameter is not set.</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Request Assignee does not have an E-mail address" type="" mimetype="">
+    <value>Request Assignee does not have an E-mail address</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Request Assignee does not want notifications" type="" mimetype="">
+    <value>Request Assignee does not want notifications</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Request Assignee E-mail address is not valid '{0}'.&#xD;&#xA;All future request notifications have been disabled for contact {1}" type="" mimetype="">
+    <value>Request Assignee E-mail address is not valid '{0}'.
+All future request notifications have been disabled for contact {1}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Request from {0} created as {1}" type="" mimetype="">
+    <value>Solicitud desde {0} createda como {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Request from {0} rejected: {1}" type="" mimetype="">
+    <value>Solicitud desde {0} rechazada: {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Request may be web accessible at" type="" mimetype="">
+    <value>Request may be web accessible at</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Requestor does not have an E-mail address" type="" mimetype="">
+    <value>El solicitante no tiene dirección de correo electrónico</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Requestor does not want notifications" type="" mimetype="">
+    <value>Requestor does not want notifications</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Requestor E-mail address is not valid '{0}'" type="" mimetype="">
+    <value>Requestor E-mail address is not valid '{0}'</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Retrieved message from '{0}'" type="" mimetype="">
+    <value>Mensaje recuperado desde '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Retrieving {0} E-mail {0.IsOne ? message : messages }" type="" mimetype="">
+    <value>Recuperando {0} Correo {0.IsOne ? mensaje : messages }</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§SMTP Server '{0}' on port {1}" type="" mimetype="">
+    <value>SMTP Server '{0}' on port {1}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Subject" type="" mimetype="">
+    <value>Subject</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§The email address '{0}' is being used by {1} MainBoss Requestors:" type="" mimetype="">
+    <value>The email address '{0}' is being used by {1} MainBoss Requestors:</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§The incoming mail server parameter is not set." type="" mimetype="">
+    <value>No esta definido el parametro en el servidor de correo entrante.</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§The incoming mail server type is not supported." type="" mimetype="">
+    <value>El tipo de servidor de correo no es compatible.</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§The requestor '{0}' will be used for the email address '{1}'" type="" mimetype="">
+    <value>The requestor '{0}' will be used for the email address '{1}'</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§The SMTP server parameter is not set." type="" mimetype="">
+    <value>Los parámetros del servidor SMTP no han sido establecidos.</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Work Order Assignee does not have an E-mail address" type="" mimetype="">
+    <value>Work Order Assignee does not have an E-mail address</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Work Order Assignee does not want notifications" type="" mimetype="">
+    <value>Work Order Assignee does not want notifications</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Work Order Assignee E-mail address is not valid '{0}'.&#xD;&#xA;All future work order notifications have been disabled for contact {1}" type="" mimetype="">
+    <value>Work Order Assignee E-mail address is not valid '{0}'.
+All future work order notifications have been disabled for contact {1}</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Work Order may be web accessible at" type="" mimetype="">
+    <value>Work Order may be web accessible at</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Your original request was:" type="" mimetype="">
+    <value>Su petición original era:</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Your request was denied for the reasons outlined below" type="" mimetype="">
+    <value>Su petición fue denegada por las razones expuestas a continuación</value>
+  </data>
+  <data name="Thinkage.MainBoss.ServiceWorker§Your work request has been received and will now be reviewed." type="" mimetype="">
+    <value>Su solicitud de trabajo se ha recibido y ahora será revisado.</value>
+  </data>
+</root>

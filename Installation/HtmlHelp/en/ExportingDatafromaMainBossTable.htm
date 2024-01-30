@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Exporting Data from a MainBoss Table</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Exporting Data from a MainBoss Table</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="ObtaininganXMLSchemafromMainBoss.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="ViewingExportedDatainMicrosoftExcel.htm">Next section &gt;</a></p>
+
+<p>If MainBoss can export data from a table, the table will have an <span class="CButton">Export</span> button. If you click this button, MainBoss opens a standard Windows "Save as" window. The "<span class="CField">Save as Type</span>" field gives you the choice of how you want to save the data. The following options are available:</p>
+
+<p class="wi"><span class="CField">Export for Excel (includes schema in other file) (*.xml)</span>: If you choose this format, MainBoss creates two output files: one containing XML data and another containing an XML schema describing that data. Both files are in a format especially tailored for use with Microsoft Excel. If you use the "<span class="CField">Save as</span>" window to specify a file name like <span class="CU">output</span>, the data is written into a file named <span class="CU">output.xml</span> and the schema is written into <span class="CU">output.xsd</span>. These file names fit the usual conventions for XML data and schema files.
+
+<br /><br />If you wish to copy the data to a different directory, you must copy <span class="Emphasis">both</span> files to the same directory.
+
+<br /><br />For more information on examining exported data using Excel, see <a href="ViewingExportedDatainMicrosoftExcel.htm">Viewing Exported Data in Microsoft Excel</a>.</p>
+<p class="box">For more about XML data and schema files, see <a href="XML.htm">XML</a>.</p>
+
+<p class="wi"><span class="CField">Export with embedded schema (*.xml)</span>: If you choose this format, MainBoss creates a single output file containing both XML data and an XML schema. You can use this file with any software package that accepts embedded schema. If you wish to copy the data to a different directory, you only have to copy the single file.</p>
+<p class="wi"><span class="CField">Export with no embedded schema (*.xml)</span>: If you choose this format, MainBoss creates a single output file containing XML data. Before this data can be used, you will also need a file containing an XML schema; this can be created as described in <a href="ObtaininganXMLSchemafromMainBoss.htm">Obtaining an XML Schema from MainBoss</a>.</p>
+<p>If you use "<span class="CField">Export with no embedded schema (*.xml)</span>", you must edit the second line of the data file so that it refers to your schema file. For example, suppose you output unit data to a file named <span class="CU">unit.xml</span>. You will find that the second line of this file contains:</p>
+
+<pre>&lt;dsUnit xmlns="http://thinkage.ca/MainBoss/dsUnit.xsd"&gt;</pre>
+
+<p>If your schema file is named <span class="CU">mbunit.xsd</span> in the same directory as <span class="CU">unit.xml</span>, you must change the second line of <span class="CU">unit.xml</span> into</p>
+
+<pre>&lt;dsUnit xsi:schemaLocation="http://thinkage.ca/MainBoss/dsUnit.xsd mbunit.xsd"
+        xmlns="http://thinkage.ca/MainBoss/dsUnit.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;</pre>
+
+<p>Note that the name of your schema file must be added as part of the <span class="CU">xsi:schemaLocation</span> construct.</p>
+
+
+<p><a href="ObtaininganXMLSchemafromMainBoss.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="ViewingExportedDatainMicrosoftExcel.htm">Next section &gt;</a></p>
+</body>
+</html>
+

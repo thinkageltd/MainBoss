@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Requested Work Orders</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Requested Work Orders</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Correction of Receive Item (no PO).htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Temporary Storage.htm">Next section &gt;</a></p>
+
+<p>Requests may be linked with work orders and vice versa. The most common way this happens is when a work order is created from a request (by clicking <span class="CButton">Create Work Order</span> in the request record). This automatically links the request and work order together.</p>
+
+<p>You can also create links in a <span class="CPanel">Requests</span> viewer or in a request itself, you can click <span class="CButton">Link Work Orders</span>. Similarly, you can create links from a work order, starting in the work order's <span class="CButton">Requests</span> section and clicking <span class="CButton">New Requested Work Order</span>.</p>
+
+<p>Here are some situations in which you might want to link a work order to a request:</p>
+
+<ul class="b1"><li>You get several requests reporting the same problem. You create a work order from one of the requests, then link the same work order to all the other requests. This makes it easier to keep track of the connections between the work order and the requests.</li>
+<li>A single request leads to multiple work orders. For example, suppose someone reports that a machine has broken down. The maintenance manager might decide to write up two work orders: one for a quick short-term fix, and one for a long-term solution that can be done when there's more time. Both of these work orders can be linked to the original request so that you have accurate records of how everything is connected.
+</li></ul><p>When a work order is linked to a request, the record associated with the linkage is called a <span class="NewTerm">requested work order</span>.</p>
+
+<p class="box">If you have turned on the <span class="CButton">Requests are automatically set In Progress when linked to a work order, and are closed when work order closes</span> option (for requests), closing a work order automatically closes each linked request, provided that the request only has one linked work order. For more on this option, see <a href="Edit.Request.htm">Editing Requests</a>.</p>
+
+<p>When you ask MainBoss to link a request and a work order, MainBoss opens a window that contains the following:</p>
+
+<p class="wi"><span class="CField">Request</span> area: Fields describing the request. These will be read-only if you are starting at a request and linking it to a work order.
+
+<br /><br />The first line in this area should give the number of the request. Once you have specified this choice, MainBoss adds additional information from the request to the same line.</p>
+<p class="wi2"><span class="CField">Request Requestor</span>: The person who made the request.</p>
+<p class="wi2"><span class="CField">Subject</span>: A read-only field giving the subject of the request. This is filled in when you specify a request.</p>
+<p class="wi2"><span class="CField">State</span>: A read-only field giving the current state of the request.</p>
+<p class="wi2"><span class="CField">Current State History Estimated Completion Date</span>: A read-only field giving when the request is expected to be finished.</p>
+<p class="wi2"><span class="CField">Count of Linked Work Orders</span>: A read-only field telling how many work orders are already linked to this request.</p>
+<p class="wi2"><span class="CField">Description</span>: The "<span class="CField">Description</span>" field from the request.</p>
+<p class="wi"><span class="CField">Work Order</span> area: Fields describing the work order. These will be read-only if you are starting at a work order and linking it to a request.
+
+<br /><br />The first line in this area should give the number of the work order. Once you have specified this choice, MainBoss adds additional information from the work order to the same line.</p>
+<p class="wi2"><span class="CField">Subject</span>: A read-only field giving the subject of the work order. This is filled in when you specify a work order.</p>
+<p class="wi2"><span class="CField">State</span>: A read-only field giving the current state of the work order.</p>
+<p class="wi2"><span class="CField">Description</span>: The "<span class="CField">Description</span>" field from the work order.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on requests, see <a href="Requests.htm">Requests</a>. For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Edit.Temporary Storage.htm">Temporary Storage Locations</a></li>
+
+<li><a href="Report.Temporary Storage.htm">Temporary Storage Report</a></li>
+
+<li><a href="Edit.Temporary Storage Assignment.htm">Temporary Storage Assignments</a></li>
+</ul>
+<p><a href="Edit.Correction of Receive Item (no PO).htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Temporary Storage.htm">Next section &gt;</a></p>
+</body>
+</html>
+

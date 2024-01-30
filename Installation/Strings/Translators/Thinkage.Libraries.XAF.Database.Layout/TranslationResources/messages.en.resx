@@ -1,0 +1,771 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§{0} already has a Foreign constraint" type="" mimetype="">
+    <value>{0} already has a Foreign constraint</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§{0} already has a Unique constraint" type="" mimetype="">
+    <value>{0} already has a Unique constraint</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§'{0}' is referenced but not defined" type="" mimetype="">
+    <value>'{0}' is referenced but not defined</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§&lt;complete&gt; directives are not allowed" type="" mimetype="">
+    <value>&lt;complete&gt; directives are not allowed</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§&lt;ExternalId&gt; test not supported yet" type="" mimetype="">
+    <value>&lt;ExternalId&gt; test not supported yet</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§&lt;merge&gt; directives are not allowed" type="" mimetype="">
+    <value>&lt;merge&gt; directives are not allowed</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§&lt;type&gt; annotation must have only a type= attribute" type="" mimetype="">
+    <value>&lt;type&gt; annotation must have only a type= attribute</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§&lt;Type&gt; predicate does not test any properties of the type" type="" mimetype="">
+    <value>&lt;Type&gt; predicate does not test any properties of the type</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§&lt;types&gt; directives are not allowed" type="" mimetype="">
+    <value>&lt;types&gt; directives are not allowed</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§A calculated value cannot be declared on a value which other agents will be writing" type="" mimetype="">
+    <value>A calculated value cannot be declared on a value which other agents will be writing</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§A write-type cannot be declared along with a calculated value" type="" mimetype="">
+    <value>A write-type cannot be declared along with a calculated value</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Annotation &lt;{0}:{1}&gt; cannot have content" type="" mimetype="">
+    <value>Annotation &lt;{0}:{1}&gt; cannot have content</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Annotation &lt;{0}:{1}&gt; is not recognized in this context" type="" mimetype="">
+    <value>Annotation &lt;{0}:{1}&gt; is not recognized in this context</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Annotation &lt;{0}:{1}&gt; is specified more than once" type="" mimetype="">
+    <value>Annotation &lt;{0}:{1}&gt; is specified more than once</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Anonymous link type was used on '{0}' but no foreign constraint implies a target for the link" type="" mimetype="">
+    <value>Anonymous link type was used on '{0}' but no foreign constraint implies a target for the link</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§'base' attribute can only be specified on fields within tables" type="" mimetype="">
+    <value>'base' attribute can only be specified on fields within tables</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§'base' attribute must be of the form 'tablename' or 'tablename.fieldname'" type="" mimetype="">
+    <value>'base' attribute must be of the form 'tablename' or 'tablename.fieldname'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Base- or derived-record link field '{0}' must link to the Id field of the referenced table" type="" mimetype="">
+    <value>Base- or derived-record link field '{0}' must link to the Id field of the referenced table</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Base- or derived-record link field '{0}' must only use a single-field foreign constraint" type="" mimetype="">
+    <value>Base- or derived-record link field '{0}' must only use a single-field foreign constraint</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot change name of object '{0}'" type="" mimetype="">
+    <value>Cannot change name of object '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot change NamedObject to a reference once it is in a container" type="" mimetype="">
+    <value>Cannot change NamedObject to a reference once it is in a container</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot complete the definition of '{0}'" type="" mimetype="">
+    <value>Cannot complete the definition of '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot create {0} since it already exists in full database definition" type="" mimetype="">
+    <value>Cannot create {0} since it already exists in full database definition</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot create table '{0}' since it already exists in full database definition" type="" mimetype="">
+    <value>Cannot create table '{0}' since it already exists in full database definition</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot determine type for field '{0}.{1}'" type="" mimetype="">
+    <value>Cannot determine type for field '{0}.{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot find included XAF definition document at uri '{0}'" type="" mimetype="">
+    <value>Cannot find included XAF definition document at uri '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot find table referenced by &lt;key&gt; &lt;selector&gt;" type="" mimetype="">
+    <value>Cannot find table referenced by &lt;key&gt; &lt;selector&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot find table referenced by &lt;keyref&gt; &lt;selector&gt;" type="" mimetype="">
+    <value>Cannot find table referenced by &lt;keyref&gt; &lt;selector&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot find XAF definition document at uri '{0}'" type="" mimetype="">
+    <value>Cannot find XAF definition document at uri '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot find XAF rendering template document at uri '{0}'" type="" mimetype="">
+    <value>Cannot find XAF rendering template document at uri '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot handle AcceptRejectRule '{0}' on &lt;keyref&gt;" type="" mimetype="">
+    <value>Cannot handle AcceptRejectRule '{0}' on &lt;keyref&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot handle ConstraintName different from '{0}' on &lt;key&gt; or &lt;unique&gt;" type="" mimetype="">
+    <value>Cannot handle ConstraintName different from '{0}' on &lt;key&gt; or &lt;unique&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot handle ConstraintName different from '{0}' on &lt;keyref&gt;" type="" mimetype="">
+    <value>Cannot handle ConstraintName different from '{0}' on &lt;keyref&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot handle ConstraintOnly '{0}' on &lt;keyref&gt;" type="" mimetype="">
+    <value>Cannot handle ConstraintOnly '{0}' on &lt;keyref&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot handle DeleteRule '{0}' on &lt;keyref&gt;" type="" mimetype="">
+    <value>Cannot handle DeleteRule '{0}' on &lt;keyref&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot handle UpdateRule '{0}' on &lt;keyref&gt;" type="" mimetype="">
+    <value>Cannot handle UpdateRule '{0}' on &lt;keyref&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot load any of the URIs given in XAF &lt;{0}&gt; element" type="" mimetype="">
+    <value>Cannot load any of the URIs given in XAF &lt;{0}&gt; element</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot merge {1} extension object '{0}'" type="" mimetype="">
+    <value>Cannot merge {1} extension object '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot merge database '{0}'" type="" mimetype="">
+    <value>Cannot merge database '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot merge foreign constraint because it refers to field '{0}' which is not in the target database" type="" mimetype="">
+    <value>Cannot merge foreign constraint because it refers to field '{0}' which is not in the target database</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot merge foreign constraint because it refers to field '{0}' whose table is not in the target database" type="" mimetype="">
+    <value>Cannot merge foreign constraint because it refers to field '{0}' whose table is not in the target database</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot merge mixed base- derived- or unrelated-record constraints" type="" mimetype="">
+    <value>Cannot merge mixed base- derived- or unrelated-record constraints</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot merge table '{0}'" type="" mimetype="">
+    <value>Cannot merge table '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot parse namespace prefix in XPath '{0}'" type="" mimetype="">
+    <value>Cannot parse namespace prefix in XPath '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot remove Unique constraint while it is referenced by ForeignConstraints" type="" mimetype="">
+    <value>Cannot remove Unique constraint while it is referenced by ForeignConstraints</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot specify both type= and read= attributes" type="" mimetype="">
+    <value>Cannot specify both type= and read= attributes</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot specify both type= and write= attributes" type="" mimetype="">
+    <value>Cannot specify both type= and write= attributes</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot test 'Cascade' setting of non-Foreign constraint" type="" mimetype="">
+    <value>Cannot test 'Cascade' setting of non-Foreign constraint</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot use attribute 'cascade' on &lt;field&gt; without using attribute 'link'" type="" mimetype="">
+    <value>Cannot use attribute 'cascade' on &lt;field&gt; without using attribute 'link'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot use attribute 'lname' on &lt;field&gt; without using attribute 'link'" type="" mimetype="">
+    <value>Cannot use attribute 'lname' on &lt;field&gt; without using attribute 'link'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Cannot use attribute 'uname' on &lt;field&gt; without using attribute 'unique'" type="" mimetype="">
+    <value>Cannot use attribute 'uname' on &lt;field&gt; without using attribute 'unique'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§'cascade' attribute cannot be specified with 'base' attribute" type="" mimetype="">
+    <value>'cascade' attribute cannot be specified with 'base' attribute</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§'cascade' attribute cannot be specified with 'derived' attribute" type="" mimetype="">
+    <value>'cascade' attribute cannot be specified with 'derived' attribute</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Client agent is not allowed to write the base- or derived-record link field '{0}'" type="" mimetype="">
+    <value>Client agent is not allowed to write the base- or derived-record link field '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Client agent is not allowed to write the Id field '{0}'" type="" mimetype="">
+    <value>Client agent is not allowed to write the Id field '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Client agent is not allowed to write the variable '{0}'" type="" mimetype="">
+    <value>Client agent is not allowed to write the variable '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Conflicting definitions for calculated value" type="" mimetype="">
+    <value>Conflicting definitions for calculated value</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Conflicting hosting attributes on calculated value" type="" mimetype="">
+    <value>Conflicting hosting attributes on calculated value</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Conflicting table scope settings" type="" mimetype="">
+    <value>Conflicting table scope settings</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Conflicting unique attribute on unique constraints" type="" mimetype="">
+    <value>Conflicting unique attribute on unique constraints</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Conflicting unique constraints" type="" mimetype="">
+    <value>Conflicting unique constraints</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Constraint '{0}' has unknown type '{1}'" type="" mimetype="">
+    <value>Constraint '{0}' has unknown type '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Constraint '{0}' refers to undefined constraint '{1}'" type="" mimetype="">
+    <value>Constraint '{0}' refers to undefined constraint '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Constraint '{0}': only single-field primary keys are supported" type="" mimetype="">
+    <value>Constraint '{0}': only single-field primary keys are supported</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Constraint '{0}': primary key is already defined as field '{1}'" type="" mimetype="">
+    <value>Constraint '{0}': primary key is already defined as field '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Constraint names do not match" type="" mimetype="">
+    <value>Constraint names do not match</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Constraint restricts type to values in {0} but effective type {1} allows other values" type="" mimetype="">
+    <value>Constraint restricts type to values in {0} but effective type {1} allows other values</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Constraint restricts type to values in {0} but effective type is restricted to values in {1}" type="" mimetype="">
+    <value>Constraint restricts type to values in {0} but effective type is restricted to values in {1}</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Context for XPath '{0}' is neither a choice nor a sequence" type="" mimetype="">
+    <value>Context for XPath '{0}' is neither a choice nor a sequence</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Database schema contains more than one top-level (dataset) element" type="" mimetype="">
+    <value>Database schema contains more than one top-level (dataset) element</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§DataSet element &lt;complex_type&gt; is not a &lt;choice&gt;" type="" mimetype="">
+    <value>DataSet element &lt;complex_type&gt; is not a &lt;choice&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§DataSet element is not a &lt;complex_type&gt;" type="" mimetype="">
+    <value>DataSet element is not a &lt;complex_type&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§'derived' and 'base' attributes cannot be used together" type="" mimetype="">
+    <value>'derived' and 'base' attributes cannot be used together</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§'derived' attribute can only be specified on fields within tables" type="" mimetype="">
+    <value>'derived' attribute can only be specified on fields within tables</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§'derived' attribute must be of the form 'tablename' or 'tablename.fieldname'" type="" mimetype="">
+    <value>'derived' attribute must be of the form 'tablename' or 'tablename.fieldname'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Differing target unique constraints" type="" mimetype="">
+    <value>Differing target unique constraints</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Duplicate declaration of Unique constraint" type="" mimetype="">
+    <value>Duplicate declaration of Unique constraint</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Duplicate extension object name '{0}'" type="" mimetype="">
+    <value>Duplicate extension object name '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Duplicate field name '{0}' in table '{1}'" type="" mimetype="">
+    <value>Duplicate field name '{0}' in table '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Duplicate table name '{0}'" type="" mimetype="">
+    <value>Duplicate table name '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Duplicate type name '{0}'" type="" mimetype="">
+    <value>Duplicate type name '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Duplicate variable name '{0}'" type="" mimetype="">
+    <value>Duplicate variable name '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Effective type {0} is not a subset of read-type {1}" type="" mimetype="">
+    <value>Effective type {0} is not a subset of read-type {1}</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Effective type is not a subset of the type the application expects to find" type="" mimetype="">
+    <value>Effective type is not a subset of the type the application expects to find</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Error defining named type '{0}'" type="" mimetype="">
+    <value>Error defining named type '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Error expanding macro '{0}'" type="" mimetype="">
+    <value>Error expanding macro '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Error in &lt;Include&gt;d template '{0}'" type="" mimetype="">
+    <value>Error in &lt;Include&gt;d template '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Error parsing &lt;result&gt; expression" type="" mimetype="">
+    <value>Error parsing &lt;result&gt; expression</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Error while adding base-table constraint on ({0}) in table '{1}'" type="" mimetype="">
+    <value>Error while adding base-table constraint on ({0}) in table '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Error while adding derived-table constraint on ({0}) in table '{1}'" type="" mimetype="">
+    <value>Error while adding derived-table constraint on ({0}) in table '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Error while adding foreign constraint on ({0}) in table '{1}'" type="" mimetype="">
+    <value>Error while adding foreign constraint on ({0}) in table '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Error while adding unique constraint on ({0}) in table '{1}'" type="" mimetype="">
+    <value>Error while adding unique constraint on ({0}) in table '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Error while defining field '{0}.{1}'" type="" mimetype="">
+    <value>Error while defining field '{0}.{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Error while merging from &lt;complete&gt; database" type="" mimetype="">
+    <value>Error while merging from &lt;complete&gt; database</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Error while merging from &lt;merge&gt; database" type="" mimetype="">
+    <value>Error while merging from &lt;merge&gt; database</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Error while merging types from &lt;types&gt; database" type="" mimetype="">
+    <value>Error while merging types from &lt;types&gt; database</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Error while processing XAF &lt;{0}&gt; of {1}" type="" mimetype="">
+    <value>Error while processing XAF &lt;{0}&gt; of {1}</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Error while reading target of &lt;complete&gt; directive" type="" mimetype="">
+    <value>Error while reading target of &lt;complete&gt; directive</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Error while reading target of &lt;merge&gt; directive" type="" mimetype="">
+    <value>Error while reading target of &lt;merge&gt; directive</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Error while reading target of &lt;types&gt; directive" type="" mimetype="">
+    <value>Error while reading target of &lt;types&gt; directive</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Expected predicate or boolean operator, found '{0}'" type="" mimetype="">
+    <value>Expected predicate or boolean operator, found '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Extra '{0}'" type="" mimetype="">
+    <value>Extra '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Extra calculated value on '{0}'" type="" mimetype="">
+    <value>Extra calculated value on '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Extra constraint on fields '{0}'" type="" mimetype="">
+    <value>Extra constraint on fields '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Extra table '{0}'" type="" mimetype="">
+    <value>Extra table '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Extra variable '{0}'" type="" mimetype="">
+    <value>Extra variable '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Field has an invalid MinOccurs of {0}" type="" mimetype="">
+    <value>Field has an invalid MinOccurs of {0}</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§First referenced object is not set for &lt;{0}&gt; directive" type="" mimetype="">
+    <value>First referenced object is not set for &lt;{0}&gt; directive</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§ForEachConstrainedField processing field {0} of constraint" type="" mimetype="">
+    <value>ForEachConstrainedField processing field {0} of constraint</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§ForEachConstraintReference processing foreign constraint on field '{0}'" type="" mimetype="">
+    <value>ForEachConstraintReference processing foreign constraint on field '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§ForEachFieldConstraint processing foreign constraint on '{0}'" type="" mimetype="">
+    <value>ForEachFieldConstraint processing foreign constraint on '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§ForEachFieldConstraint processing unique constraint on '{0}'" type="" mimetype="">
+    <value>ForEachFieldConstraint processing unique constraint on '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§ForEachTable processing table '{0}'" type="" mimetype="">
+    <value>ForEachTable processing table '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§ForEachTableConstraint processing foreign constraint on field '{0}'" type="" mimetype="">
+    <value>ForEachTableConstraint processing foreign constraint on field '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§ForEachTableConstraint processing unique constraint on field '{0}'" type="" mimetype="">
+    <value>ForEachTableConstraint processing unique constraint on field '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§ForEachTableField processing field '{0}'" type="" mimetype="">
+    <value>ForEachTableField processing field '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§ForEachVariable processing variable '{0}'" type="" mimetype="">
+    <value>ForEachVariable processing variable '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Foreign constraint cannot refer to table with less-global scope" type="" mimetype="">
+    <value>Foreign constraint cannot refer to table with less-global scope</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Foreign Constraints must use at least one field." type="" mimetype="">
+    <value>Foreign Constraints must use at least one field.</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§foreign link must contain the same number of fields as referenced unique key" type="" mimetype="">
+    <value>foreign link must contain the same number of fields as referenced unique key</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§foreign link must refer to unique key" type="" mimetype="">
+    <value>foreign link must refer to unique key</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Given field is not constrained by given constraint" type="" mimetype="">
+    <value>Given field is not constrained by given constraint</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§'hosting' or 'cached' attribute already specified" type="" mimetype="">
+    <value>'hosting' or 'cached' attribute already specified</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Illegal content type {0} for macro" type="" mimetype="">
+    <value>Illegal content type {0} for macro</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Incompatible 'cascade' settings on foreign constraint" type="" mimetype="">
+    <value>Incompatible 'cascade' settings on foreign constraint</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Invalid operands for TypeInfo.IntersectCompatible" type="" mimetype="">
+    <value>Invalid operands for TypeInfo.IntersectCompatible</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§'link' and 'base' attributes cannot be used together" type="" mimetype="">
+    <value>'link' and 'base' attributes cannot be used together</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§'link' and 'derived' attributes cannot be used together" type="" mimetype="">
+    <value>'link' and 'derived' attributes cannot be used together</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§'link' attribute must be of the form 'tablename' or 'tablename.fieldname'" type="" mimetype="">
+    <value>'link' attribute must be of the form 'tablename' or 'tablename.fieldname'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Linked and referencing field counts do not match" type="" mimetype="">
+    <value>Linked and referencing field counts do not match</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Loop found in Type antecedents" type="" mimetype="">
+    <value>Loop found in Type antecedents</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Loop found in Type dependencies" type="" mimetype="">
+    <value>Loop found in Type dependencies</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Loop found in Value antecedents" type="" mimetype="">
+    <value>Loop found in Value antecedents</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Loop found in Value dependencies" type="" mimetype="">
+    <value>Loop found in Value dependencies</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Macro '{0}' is undefined" type="" mimetype="">
+    <value>Macro '{0}' is undefined</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Macro definition cannot be a null reference" type="" mimetype="">
+    <value>Macro definition cannot be a null reference</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Macro definitions supplied to RenderText must contain an even number of strings" type="" mimetype="">
+    <value>Macro definitions supplied to RenderText must contain an even number of strings</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Macro name cannot be a null reference" type="" mimetype="">
+    <value>Macro name cannot be a null reference</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Mismatched parameter count" type="" mimetype="">
+    <value>Mismatched parameter count</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Missing field name in table.field syntax" type="" mimetype="">
+    <value>Missing field name in table.field syntax</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Missing table name in table.field syntax" type="" mimetype="">
+    <value>Missing table name in table.field syntax</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Named type '{0}' has different definitions in source and destination database" type="" mimetype="">
+    <value>Named type '{0}' has different definitions in source and destination database</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Need to re-implement some code" type="" mimetype="">
+    <value>Need to re-implement some code</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§No database is available for field '{0}'" type="" mimetype="">
+    <value>No database is available for field '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§No database is available for table '{0}'" type="" mimetype="">
+    <value>No database is available for table '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§No primary key defined for table '{0}'" type="" mimetype="">
+    <value>No primary key defined for table '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§No single C# type exists which can contain all the values of type '{0}'" type="" mimetype="">
+    <value>No single C# type exists which can contain all the values of type '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Object not contained in collection for &lt;{0}&gt;" type="" mimetype="">
+    <value>Object not contained in collection for &lt;{0}&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Object referenced by TableRef is not a Table" type="" mimetype="">
+    <value>Object referenced by TableRef is not a Table</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Occurrence attribute of &lt;Replace&gt; element not supported yet" type="" mimetype="">
+    <value>Occurrence attribute of &lt;Replace&gt; element not supported yet</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§on constraint on field '{0}' (and possibly other fields)" type="" mimetype="">
+    <value>on constraint on field '{0}' (and possibly other fields)</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§on field '{0}'" type="" mimetype="">
+    <value>on field '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Other server agent is not allowed to write the base- or derived-record link field '{0}'" type="" mimetype="">
+    <value>Other server agent is not allowed to write the base- or derived-record link field '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Other server agent is not allowed to write the Id field '{0}'" type="" mimetype="">
+    <value>Other server agent is not allowed to write the Id field '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Property 'Epsilon' is not applicable to type '{0}'" type="" mimetype="">
+    <value>Property 'Epsilon' is not applicable to type '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Property 'Lines' is not applicable to type '{0}'" type="" mimetype="">
+    <value>Property 'Lines' is not applicable to type '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Property 'MaxLength' is not applicable to type '{0}'" type="" mimetype="">
+    <value>Property 'MaxLength' is not applicable to type '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Property 'MaxValue' is not applicable to type '{0}'" type="" mimetype="">
+    <value>Property 'MaxValue' is not applicable to type '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Property 'MinValue' is not applicable to type '{0}'" type="" mimetype="">
+    <value>Property 'MinValue' is not applicable to type '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Referenced constraint is not a constraint for &lt;{0}&gt; directive" type="" mimetype="">
+    <value>Referenced constraint is not a constraint for &lt;{0}&gt; directive</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Referenced constraint is not set for &lt;{0}&gt; directive" type="" mimetype="">
+    <value>Referenced constraint is not set for &lt;{0}&gt; directive</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Referenced field is not a field for &lt;{0}&gt; directive" type="" mimetype="">
+    <value>Referenced field is not a field for &lt;{0}&gt; directive</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Referenced field is not set for &lt;{0}&gt; directive" type="" mimetype="">
+    <value>Referenced field is not set for &lt;{0}&gt; directive</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Referenced Field or Variable has no type defined" type="" mimetype="">
+    <value>Referenced Field or Variable has no type defined</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Referenced object is a Field, which is not valid for a &lt;{0}&gt; directive" type="" mimetype="">
+    <value>Referenced object is a Field, which is not valid for a &lt;{0}&gt; directive</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Referenced object is a Foreign Constraint, which is not valid for a &lt;{0}&gt; directive" type="" mimetype="">
+    <value>Referenced object is a Foreign Constraint, which is not valid for a &lt;{0}&gt; directive</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Referenced object is a Table, which is not valid for a &lt;{0}&gt; directive" type="" mimetype="">
+    <value>Referenced object is a Table, which is not valid for a &lt;{0}&gt; directive</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Referenced object is a Type, which is not valid for a &lt;{0}&gt; directive" type="" mimetype="">
+    <value>Referenced object is a Type, which is not valid for a &lt;{0}&gt; directive</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Referenced object is a Unique Constraint, which is not valid for a &lt;{0}&gt; directive" type="" mimetype="">
+    <value>Referenced object is a Unique Constraint, which is not valid for a &lt;{0}&gt; directive</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Referenced object is a Variable, which is not valid for a &lt;{0}&gt; directive" type="" mimetype="">
+    <value>Referenced object is a Variable, which is not valid for a &lt;{0}&gt; directive</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Referenced object is not set" type="" mimetype="">
+    <value>Referenced object is not set</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Referenced object is not set for &lt;{0}&gt; directive" type="" mimetype="">
+    <value>Referenced object is not set for &lt;{0}&gt; directive</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Second referenced object is not set for &lt;{0}&gt; directive" type="" mimetype="">
+    <value>Second referenced object is not set for &lt;{0}&gt; directive</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Self-dependent type found during effective type calculation" type="" mimetype="">
+    <value>Self-dependent type found during effective type calculation</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Self-dependent type found during linked type resolution" type="" mimetype="">
+    <value>Self-dependent type found during linked type resolution</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Server only supports 'id' type for table Id field '{0}', not {1}" type="" mimetype="">
+    <value>Server only supports 'id' type for table Id field '{0}', not {1}</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Table '{0}' element &lt;complex_type&gt; is not a &lt;sequence&gt;" type="" mimetype="">
+    <value>Table '{0}' element &lt;complex_type&gt; is not a &lt;sequence&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Table '{0}' element is not a &lt;complex_type&gt;" type="" mimetype="">
+    <value>Table '{0}' element is not a &lt;complex_type&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Table '{0}' has a (different) Id field defined" type="" mimetype="">
+    <value>Table '{0}' has a (different) Id field defined</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Table Id field '{0}' cannot have any foreign constraints" type="" mimetype="">
+    <value>Table Id field '{0}' cannot have any foreign constraints</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Table id field is already '{0}' and cannot be changed to '{1}'" type="" mimetype="">
+    <value>Table id field is already '{0}' and cannot be changed to '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§The type for variable '{0}' cannot be encoded into the type {1}" type="" mimetype="">
+    <value>The type for variable '{0}' cannot be encoded into the type {1}</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§This RenderingGenerator does not have the information required to resolve &lt;Include&gt; elements" type="" mimetype="">
+    <value>This RenderingGenerator does not have the information required to resolve &lt;Include&gt; elements</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Type is a &lt;simple_type&gt; not derived by &lt;restriction&gt;" type="" mimetype="">
+    <value>Type is a &lt;simple_type&gt; not derived by &lt;restriction&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of {0}:{1} but has unknown facet '{2}'" type="" mimetype="">
+    <value>Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of {0}:{1} but has unknown facet '{2}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of {0}:boolean but has unknown facets" type="" mimetype="">
+    <value>Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of {0}:boolean but has unknown facets</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of {0}:dateTime but has unknown facets" type="" mimetype="">
+    <value>Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of {0}:dateTime but has unknown facets</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of {0}:decimal but has unknown facets" type="" mimetype="">
+    <value>Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of {0}:decimal but has unknown facets</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of {0}:duration but has unknown facets" type="" mimetype="">
+    <value>Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of {0}:duration but has unknown facets</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of {0}:string but has invalid maxlength facet setting '{1}'" type="" mimetype="">
+    <value>Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of {0}:string but has invalid maxlength facet setting '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of {0}:string but has unknown facet '{1}'" type="" mimetype="">
+    <value>Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of {0}:string but has unknown facet '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of {0}:string but has unknown whitespace facet setting '{1}'" type="" mimetype="">
+    <value>Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of {0}:string but has unknown whitespace facet setting '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of a non-builtin XML schema type" type="" mimetype="">
+    <value>Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of a non-builtin XML schema type</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of a type in unknown namespace '{0}'" type="" mimetype="">
+    <value>Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of a type in unknown namespace '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of an unhandled builtin XML schema type {0}:{1}" type="" mimetype="">
+    <value>Type is a &lt;simple_type&gt; that is a &lt;restriction&gt; of an unhandled builtin XML schema type {0}:{1}</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Type is an unhandled builtin XML schema type {0}:{1}" type="" mimetype="">
+    <value>Type is an unhandled builtin XML schema type {0}:{1}</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Type is not a &lt;simple_type&gt; or a built-in XML Schema type" type="" mimetype="">
+    <value>Type is not a &lt;simple_type&gt; or a built-in XML Schema type</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Type is not an XML Schema Simple Type" type="" mimetype="">
+    <value>Type is not an XML Schema Simple Type</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Unable to &lt;Increment&gt; the value '{0}'" type="" mimetype="">
+    <value>Unable to &lt;Increment&gt; the value '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Unable to define type '{0}'" type="" mimetype="">
+    <value>Unable to define type '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§'uname' and 'derived' attributes cannot be used together" type="" mimetype="">
+    <value>'uname' and 'derived' attributes cannot be used together</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Unexpected expression operation &lt;{0}&gt; found" type="" mimetype="">
+    <value>Unexpected expression operation &lt;{0}&gt; found</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Unimplemented assignment operation: &lt;{0}&gt;" type="" mimetype="">
+    <value>Unimplemented assignment operation: &lt;{0}&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§'unique' attribute cannot be specified with 'base' attribute" type="" mimetype="">
+    <value>'unique' attribute cannot be specified with 'base' attribute</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§'unique' attribute cannot be specified with 'derived' attribute" type="" mimetype="">
+    <value>'unique' attribute cannot be specified with 'derived' attribute</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Unknown content '{0}' in &lt;{1}&gt; element" type="" mimetype="">
+    <value>Unknown content '{0}' in &lt;{1}&gt; element</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Unknown sub-element '{0}' in &lt;" type="" mimetype="">
+    <value>Unknown sub-element '{0}' in &lt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Unrecognized attribute '{0}' on &lt;key&gt; or &lt;unique&gt;" type="" mimetype="">
+    <value>Unrecognized attribute '{0}' on &lt;key&gt; or &lt;unique&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Unrecognized attribute '{0}' on &lt;keyref&gt;" type="" mimetype="">
+    <value>Unrecognized attribute '{0}' on &lt;keyref&gt;</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Unrecognized extension object class '{0}'" type="" mimetype="">
+    <value>Unrecognized extension object class '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Unrecognized value '{0}' on PrimaryKey attribute of constraint '{1}'" type="" mimetype="">
+    <value>Unrecognized value '{0}' on PrimaryKey attribute of constraint '{1}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Use of 'uname' attribute on &lt;table&gt; requires 'id' attribute" type="" mimetype="">
+    <value>Use of 'uname' attribute on &lt;table&gt; requires 'id' attribute</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Use of 'xname' attribute on &lt;table&gt; requires 'xid' attribute" type="" mimetype="">
+    <value>Use of 'xname' attribute on &lt;table&gt; requires 'xid' attribute</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§Use of 'xunique' attribute on &lt;table&gt; requires 'xid' attribute" type="" mimetype="">
+    <value>Use of 'xunique' attribute on &lt;table&gt; requires 'xid' attribute</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§VariabledService cannot be added to schema which already mentions table '{0}'" type="" mimetype="">
+    <value>VariabledService cannot be added to schema which already mentions table '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§XAF database included with &lt;include&gt; cannot contain &lt;merge&gt; or &lt;complete&gt; elements" type="" mimetype="">
+    <value>XAF database included with &lt;include&gt; cannot contain &lt;merge&gt; or &lt;complete&gt; elements</value>
+  </data>
+  <data name="Thinkage.Libraries.XAF.Database.Layout§'xid' attribute must name at least one field" type="" mimetype="">
+    <value>'xid' attribute must name at least one field</value>
+  </data>
+</root>

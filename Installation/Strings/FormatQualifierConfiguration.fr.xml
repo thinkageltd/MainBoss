@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FormatQualifierConfiguration>
+	<qualifier name="mplural" mandatory="true">
+		<context mandatory="true">TableObjects</context>
+		<context mandatory="true">TablePhraseRoots</context>
+	</qualifier>
+	<qualifier name="fplural" mandatory="true">
+		<context mandatory="true">TableObjects</context>
+		<context mandatory="true">TablePhraseRoots</context>
+	</qualifier>
+	<qualifier name="msingular" mandatory="true">
+		<context mandatory="true">TableObjects</context>
+		<context mandatory="true">TablePhraseRoots</context>
+	</qualifier>
+	<qualifier name="fsingular" mandatory="true">
+		<context mandatory="true">TableObjects</context>
+		<context mandatory="true">TablePhraseRoots</context>
+	</qualifier>
+</FormatQualifierConfiguration> 

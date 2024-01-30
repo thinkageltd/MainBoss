@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FormatQualifierConfiguration>
+	<qualifier name="plural" mandatory="false">
+		<context mandatory="false">TableObjects</context>
+		<context mandatory="true">TablePhraseRoots</context>
+	</qualifier>
+	<qualifier name="singular" mandatory="false">
+		<context mandatory="false">TableObjects</context>
+		<context mandatory="true">TablePhraseRoots</context>
+	</qualifier>
+	<qualifier name="MandatoryTestIgnoreThis" mandatory="true">
+	</qualifier>
+</FormatQualifierConfiguration> 

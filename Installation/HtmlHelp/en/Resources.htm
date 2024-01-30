@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Resources</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Resources</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Report.Single Work Order.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Demand Item.htm">Next section &gt;</a></p>
+
+<p>The <span class="CButton">Resources</span> section of a work order deals with materials and labor. More specifically, it deals with:</p>
+
+<ul class="b1"><li><span class="NewTerm">Items</span>: Spare parts and other materials needed in the job. For more, see <a href="InventoryItemRecords.htm">Inventory Item Records</a>.</li>
+<li><span class="NewTerm">Hourly inside</span>: Work done by your own employees and paid by the hour. For more, see <a href="HourlyInside.htm">Hourly Inside</a>.</li>
+<li><span class="NewTerm">Per job inside</span>: Work done by your own employees and paid on a per job basis. For more, see <a href="PerJobInside.htm">Per Job Inside</a>.</li>
+<li><span class="NewTerm">Hourly outside</span>: Work done by outside contractors and paid by the hour. For more, see <a href="HourlyOutside.htm">Hourly Outside</a>.</li>
+<li><span class="NewTerm">Per job outside</span>: Work done by outside contractors and paid on a per job basis. For more, see <a href="PerJobOutside.htm">Per Job Outside</a>.</li>
+<li><span class="NewTerm">Miscellaneous:</span> Miscellaneous expenses, such as service charges or equipment rentals. For more, see <a href="WorkOrderMiscellaneousCosts.htm">Work Order Miscellaneous Costs</a>.
+</li></ul><p>The actions you can perform on these resources are:</p>
+
+<ul class="b1"><li><span class="NewTerm">Demand</span>: For materials, this means reserving the materials for use in this particular job. For people, this means assigning workers to do the job. For miscellaneous costs, this simply means recording that the work order incurred a particular type of expense.
+
+<br /><br />Demands are typically made <span class="Emphasis">before</span> the job begins, but can be made afterward too.</li>
+<li><span class="NewTerm">Actual</span>: For materials, this means recording what was actually used on the job. For people, it means recording the actual time or cost of labor. These records indicate <span class="Emphasis">actual</span> figures for the job, as opposed to preliminary estimates. Actual records are usually written up as work is completed; if a job takes place over many days, it's typically better to record actual figures as you go along (e.g. at the end of every workday) rather than leaving everything till the end.
+</li></ul><p class="box"><span class="BL">There must be a demand for every actual use of labor and materials.</span></p>
+
+<p><span class="CInset">Sorting the Resource List:</span> In a work order, demands, receipts and actuals are sorted by item or labor record (hourly inside, hourly outside, etc.). When entries have the same item or labor record, they are sorted according to date. More specifically:</p>
+
+<ul class="b1"><li>Demands are sorted by entry date: the time/date the entry was first saved, according to the clock on the Server computer (the one where SQL Server is running).</li>
+<li>Actual and Receipt records are sorted according to effective date. The default effective date is the time/date when you first open the editor window to create the record; this is taken from the clock on the computer where you are <span class="Emphasis">using</span> MainBoss, as opposed to the computer that holds the database.
+</li></ul><p>Differences in the clocks on different computers can occasionally make it look as if an Actual or Receipt record was created before the Demand.</p>
+
+<p>For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Edit.Demand Item.htm">Demand Item</a></li>
+
+<li><a href="Edit.Demand Hourly Inside.htm">Demand Hourly Inside</a></li>
+
+<li><a href="Edit.Demand Per Job Inside.htm">Demand Per Job Inside</a></li>
+
+<li><a href="Edit.Demand Hourly Outside.htm">Demand Hourly Outside</a></li>
+
+<li><a href="Edit.Demand Per Job Outside.htm">Demand Per Job Outside</a></li>
+
+<li><a href="Edit.Demand Miscellaneous Cost.htm">Demand Miscellaneous</a></li>
+
+<li><a href="Edit.Actual Item.htm">Actual Item</a></li>
+
+<li><a href="Edit.Correction of Actual Item.htm">Corrections of Actual Items</a></li>
+
+<li><a href="Edit.Actual Hourly Inside.htm">Actual Hourly Inside</a></li>
+
+<li><a href="Edit.Correction of Actual Hourly Inside.htm">Corrections of Actual Hourly Inside</a></li>
+
+<li><a href="Edit.Actual Per Job Inside.htm">Actual Per Job Inside</a></li>
+
+<li><a href="Edit.Correction of Actual Per Job Inside.htm">Corrections of Actual Per Job Inside</a></li>
+
+<li><a href="Edit.Actual Hourly Outside (no PO).htm">Actual Hourly Outside</a></li>
+
+<li><a href="Edit.Correction of Actual Hourly Outside (no PO).htm">Corrections of Actual Hourly Outside</a></li>
+
+<li><a href="Edit.Actual Hourly Outside (with PO).htm">Actual Hourly Outside (with PO)</a></li>
+
+<li><a href="Edit.Correction of Actual Hourly Outside (with PO).htm">Corrections of Actual Hourly Outside (with PO)</a></li>
+
+<li><a href="Edit.Actual Per Job Outside (no PO).htm">Actual Per Job Outside</a></li>
+
+<li><a href="Edit.Correction of Actual Per Job Outside (no PO).htm">Corrections of Actual Per Job Outside</a></li>
+
+<li><a href="Edit.Actual Per Job Outside (with PO).htm">Actual Per Job Outside (with PO)</a></li>
+
+<li><a href="Edit.Correction of Actual Per Job Outside (with PO).htm">Corrections of Actual Per Job Outside (with PO)</a></li>
+
+<li><a href="Edit.Actual Miscellaneous Cost.htm">Actual Miscellaneous</a></li>
+
+<li><a href="Edit.Correction of Actual Miscellaneous Cost.htm">Corrections of Actual Miscellaneous</a></li>
+
+<li><a href="Edit.Receive Item (no PO).htm">Receiving Items</a></li>
+
+<li><a href="Edit.Correction of Receive Item (no PO).htm">Correcting Item Receipts</a></li>
+</ul>
+<p><a href="Report.Single Work Order.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Demand Item.htm">Next section &gt;</a></p>
+</body>
+</html>
+

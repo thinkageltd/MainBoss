@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Correcting Item Issues</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Correcting Item Issues</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Item Issue.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="StoreroomAssignments.htm">Next section &gt;</a></p>
+
+<p>To correct an Item Issue, you select the issue record where it appears, e.g. in the <span class="CButton">Item Activity</span> section of a storeroom assignment record. (For more, see <a href="StoreroomAssignments.htm">Storeroom Assignments</a>.) Then click <span class="CButton">Correct</span>. This opens a window where you can correct the record:</p>
+
+<p class="wi"><span class="CField">Entry Date</span>: A read-only field giving the date that this record was created.</p>
+<p class="wi"><span class="CField">Effective Date</span>: The date/time when the item was issued.</p>
+<p class="wi"><span class="CField">User Contact</span>: A read-only field giving your user name. This will appear in MainBoss's accounting history to show who made the correction.</p>
+<p class="wi"><span class="CField">Storage Assignment</span>: A read-only field giving information from the original item issue record.</p>
+<p class="wi"><span class="CField">Issue Code</span>: A read-only field giving the issue code from the original item issue record.</p>
+<p class="wi"><span class="CField">Employee</span>: A read-only field giving the person to whom the item was issued (in the original item issue record).</p>
+<p class="wi"><span class="CField">Quantity</span>: Corrects the quantity actually issued. Typically, you fill in the "<span class="CField">As Corrected</span>" field with the correct quantity issued, as opposed to the quantity you originally recorded. The alternative is to fill in "<span class="CField">This Entry</span>" with the difference between the quantity you originally entered and the true quantity issued.
+
+<br /><br />For example, suppose you really issued 3 but you accidentally typed 1 in the original record. You could fill in "<span class="CField">As Corrected</span>" with 3 (the correct number) or fill in "<span class="CField">This Entry</span>" with 2 (the difference between what you originally typed and the true quantity). "<span class="CField">This Entry</span>" may be a negative number if you originally typed in too much.
+
+<br /><br />If you fill in "<span class="CField">As Corrected</span>", MainBoss automatically sets "<span class="CField">This Entry</span>" and vice versa.</p>
+<p class="wi"><span class="CField">On Hand</span>: Read-only fields giving the quantity that will remain in the storeroom after the issue takes place, plus the cost of that quantity.</p>
+<p class="wi"><span class="CField">Calculated On Hand Cost</span>: Read-only fields giving the expected cost of "<span class="CField">Quantity</span>" as calculated from existing price information.</p>
+<p class="wi"><span class="CButton">Use calculated On Hand cost</span>: If you checkmark this box, MainBoss will fill in "<span class="CField">This Entry</span>" and "<span class="CField">As Corrected</span>" with the values obtained from "<span class="CField">Calculated On Hand Cost</span>". If you don't want to use these calculations, leave the checkbox blank and fill in "<span class="CField">This Entry</span>" or "<span class="CField">As Corrected</span>".</p>
+<p class="wi"><span class="CField">This Entry</span>, <span class="CField">As Corrected</span>: Corrects the actual cost (if necessary). Typically, you fill in "<span class="CField">As Corrected</span>" with the correct cost of the correct quantity. The alternative is to fill in "<span class="CField">This Entry</span>" with the difference between the cost you originally entered and the true cost.
+
+<br /><br />If you fill in "<span class="CField">As Corrected</span>", MainBoss automatically sets "<span class="CField">This Entry</span>" and vice versa.</p>
+<p class="wi"><span class="CField">From Cost Center</span>, <span class="CField">To Cost Center</span>: Read-only fields telling the cost centers involved in this operation. MainBoss creates accounting records indicating the transfer of money from the first cost center to the second. These fields are only visible if your database has an <span class="BL">Accounting</span> license key. For more, see <a href="AccountingFacilities.htm">Accounting Facilities</a>.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on items, see <a href="InventoryItemRecords.htm">Inventory Item Records</a>. For more on item issues, see <a href="Edit.Item Issue.htm">Issuing Items</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Item Issue.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="StoreroomAssignments.htm">Next section &gt;</a></p>
+</body>
+</html>
+

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing Work Order State History Records</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Editing Work Order State History Records</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Work Order.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Work Order.htm">Next section &gt;</a></p>
+
+<p>Various actions change the state of a work order. For example, <span class="CButton">Void</span> changes a work order from the <span class="CPanel">Draft</span> state to the <span class="CPanel">Void</span> state. When you change the state of a work order, MainBoss may open a window where you can record comments about what you're doing. This window also lets you specify the effective date of the change; for example, if you close a work order the day after the job actually finishes, you may want to backdate the state change record to indicate when the job was actually finished.</p>
+
+<p>The editor window normally contains the following:</p>
+
+<p class="wi"><span class="CField">Number</span>: A read-only field identifying the work order whose state is changing.</p>
+<p class="wi"><span class="CField">Current State History State</span>: A read-only field giving the current state of the work order (the state before the intended change).</p>
+<p class="wi"><span class="CField">Current State History Status</span>: A read-only field giving the current status of the work order. For more on work order statuses, see <a href="WorkOrderStatusCodes.htm">Work Order Status Codes</a>.</p>
+<p class="wi"><span class="CField">Effective Date</span>: The date that you want to associate with the change.</p>
+<p class="wi"><span class="CField">User Contact</span>: A read-only field identifying the person who created this record.</p>
+<p class="wi"><span class="CField">State</span>: A read-only field giving the state that the work order will enter once you <span class="CButton">Save &amp; Close</span> this record.</p>
+<p class="wi"><span class="CField">Status</span>: A new status code that you want to assign to this work order. Typically, a status code should only be assigned to a work order when the work order needs attention from someone; otherwise, the status should be blank.</p>
+<p class="wi"><span class="CField">Comments</span>: Any comments you want to record.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window. This changes the state of the work order.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window <span class="Emphasis">without</span> changing the state of the work order.</p>
+<p>For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For more on viewing work orders, see <a href="Browse.Work Order.htm">Viewing Work Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Work Order.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Work Order.htm">Next section &gt;</a></p>
+</body>
+</html>
+

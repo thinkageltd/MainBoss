@@ -1,0 +1,341 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Thinkage.Libraries.Presentation§Cancel" type="" mimetype="">
+    <value>Cancelar</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Cancel this record's unsaved changes" type="" mimetype="">
+    <value>Cancelar este registro sin guardar cambios</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Cannot delete because the record is currently being modified in another form. Do you want to switch to that form?" type="" mimetype="">
+    <value>Cannot delete because the record is currently being modified in another form. Do you want to switch to that form?</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Cannot delete the record because it is referenced by another record in the database." type="" mimetype="">
+    <value>No se puede borrar el registro porque es referenciado por otro registro en la base de datos.</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Change table's defaults" type="" mimetype="">
+    <value>Change table's defaults</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Clone" type="" mimetype="">
+    <value>Clone</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Close" type="" mimetype="">
+    <value>Close</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Close this editor" type="" mimetype="">
+    <value>Cerrar este editor</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Create a new record" type="" mimetype="">
+    <value>Crear un nuevo registro</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Delete" type="" mimetype="">
+    <value>&amp;Borrar</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Delete the current record" type="" mimetype="">
+    <value>Borrar el registro actual</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Edit" type="" mimetype="">
+    <value>&amp;Editar</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Edit Defaults" type="" mimetype="">
+    <value>Editar definiciones</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Edit the current record" type="" mimetype="">
+    <value>Editar el registro actual</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Edit these settings" type="" mimetype="">
+    <value>Edit these settings</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Edit this record" type="" mimetype="">
+    <value>Edit this record</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Edit this table's defaults" type="" mimetype="">
+    <value>Editar valores predeterminados de esta tabla</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Master record must be saved first" type="" mimetype="">
+    <value>El registro principal debe ser guardado primero</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Need a valid value for {0}" type="" mimetype="">
+    <value>Necesita un valor válido para {0}</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Need valid values for {0} and {1}" type="" mimetype="">
+    <value>Necesita valores válidos para {0} and {1}</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Need valid values for: {0}" type="" mimetype="">
+    <value>Necesita valores válidos para: {0}</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§New" type="" mimetype="">
+    <value>Nuevo</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§No authenticated user record is available" type="" mimetype="">
+    <value>XXXNo authenticated user record is available</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§No browser defined for '{0}'" type="" mimetype="">
+    <value>Visor no definido para '{0}'</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§No editor defined for '{0}'" type="" mimetype="">
+    <value>No editor defined for '{0}'</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Open the report form" type="" mimetype="">
+    <value>Abrir el reporte</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Print" type="" mimetype="">
+    <value>&amp;Imprimir</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Print &amp;&amp; Close" type="" mimetype="">
+    <value>Print &amp;&amp; Close</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Print the report and close this editor" type="" mimetype="">
+    <value>Print the report and close this editor</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Record cannot be deleted" type="" mimetype="">
+    <value>El registro no puede ser borrado</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Record contents have been altered" type="" mimetype="">
+    <value>El contenido del registro ha sido alterado</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Restore" type="" mimetype="">
+    <value>Restaurar</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Restore (undelete) the current record" type="" mimetype="">
+    <value>Restaurar el registro actual</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Restore this record to active use" type="" mimetype="">
+    <value>Restore this record to active use</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Save" type="" mimetype="">
+    <value>&amp;Guardar</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Save &amp;&amp; Clone" type="" mimetype="">
+    <value>Save &amp;&amp; Clone</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Save &amp;&amp; Close" type="" mimetype="">
+    <value>Guardar &amp;&amp; Cerrar</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Save &amp;&amp; New" type="" mimetype="">
+    <value>Guardar &amp;&amp; &amp;Nuevo</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Save &amp;&amp; Print" type="" mimetype="">
+    <value>Guardar &amp;&amp; &amp;Imprimir</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Save Defaults" type="" mimetype="">
+    <value>Guardar definiciones</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Save Defaults &amp;&amp; Close" type="" mimetype="">
+    <value>Save Defaults &amp;&amp; Close</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Save the current record" type="" mimetype="">
+    <value>Guardar el registro actual</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Save the current record and close this editor" type="" mimetype="">
+    <value>Guardar el registro actual y cerrar este editor</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Save the current record and create a new one" type="" mimetype="">
+    <value>Guardar el registro actual y crear uno nuevo</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Save the current record and open the report form" type="" mimetype="">
+    <value>Guardar el registro actual y abrir la forma del reporte</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Save the current table's defaults" type="" mimetype="">
+    <value>Guardar valores predeterminados de la tabla</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Save the current table's defaults and close this editor" type="" mimetype="">
+    <value>Save the current table's defaults and close this editor</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Save the settings" type="" mimetype="">
+    <value>Save the settings</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Save the settings and close this editor" type="" mimetype="">
+    <value>Save the settings and close this editor</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§The new record has not been saved" type="" mimetype="">
+    <value>El nuevo registro no ha sido guardado</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§The record has been deleted" type="" mimetype="">
+    <value>El registro ha sido borrado</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§The record has not been deleted" type="" mimetype="">
+    <value>El registro no ha sido borrado</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§The selected record is not the right type" type="" mimetype="">
+    <value>The selected record is not the right type</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§There is no record selected" type="" mimetype="">
+    <value>There is no record selected</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§There is nothing to save" type="" mimetype="">
+    <value>No hay nada para guardar</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§This is not allowed on the selected record" type="" mimetype="">
+    <value>Esto no es permitido en el registro seleccionado</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§This operation is not allowed in this Edit state" type="" mimetype="">
+    <value>This operation is not allowed in this Edit state</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§This value cannot be changed in this Edit mode" type="" mimetype="">
+    <value>Este valor no puede ser cambiado en este modo de edición</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§This value is not meaningful in this Edit mode" type="" mimetype="">
+    <value>This value is not meaningful in this Edit mode</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§Validation Failed" type="" mimetype="">
+    <value>Falló validación</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§View" type="" mimetype="">
+    <value>Ver</value>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§View Defaults" type="" mimetype="">
+    <value>View Defaults</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§View the current deleted record" type="" mimetype="">
+    <value>View the current deleted record</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§View the current record" type="" mimetype="">
+    <value>View the current record</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§View this table's defaults" type="" mimetype="">
+    <value>View this table's defaults</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.Libraries.Presentation§You have unsaved changes" type="" mimetype="">
+    <value>Tiene cambios sin guardar</value>
+  </data>
+</root>

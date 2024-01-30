@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Security Roles and Permissions</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Security Roles and Permissions</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="MainBossModules.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="CostRelatedSecurityRoles.htm">Next section &gt;</a></p>
+
+<p>In order to use MainBoss, users need to be assigned one or more security roles. The available roles are listed in <span class="CPanel">Administration</span> | <span class="CPanel">Security Role</span>. The comments provided in each role record indicate what permissions that role provides.</p>
+
+<p>Security roles affect what a user sees: if a user doesn't have permission to see a particular type of information, that information will be blanked out or missing entirely from MainBoss windows. Security roles also affect what a user can do; for example, if a user has permission to view work orders (<span class="CU">WorkOrderView</span>) but not to close them, the <span class="CButton">Close Work Order</span> button will be disabled for that user.</p>
+
+<p class="box"><span class="CInset">Important:</span> When information is blank because you don't have appropriate permissions, move the cursor to the blank; MainBoss will tell you what security roles will give you permission to see that information. Similarly, if a button is disabled, move the cursor to the button; MainBoss will tell you what security roles will allow you to use that button. Note, however, that in some cases, information will disappear entirely (e.g. sections of records just won't be displayed); in this case, you may not even know that something is missing.</p>
+
+<p>To assign security roles to a user, you use the <span class="CButton">Security Roles</span> section of a user record (<span class="CPanel">Administration</span> | <span class="CPanel">Users</span>). In order to decide what roles an individual user should be granted, you must consider what that user is expected to do in his/her job. For example, consider someone working on a help-desk and receiving problem reports from clients outside the maintenance department. What does that person need to do?</p>
+
+<ul class="b1"><li>He or she will need to create work requests describing problems; that requires <span class="CU">Request</span> permission.</li>
+<li>Help-desk personnel also need a small amount of information on work orders (so that they can tell a client, "Your work has been scheduled for Thursday"). This suggests the <span class="CU">WorkOrderSummary</span> security role.</li>
+<li>The <span class="CU">UnitSummary</span> role might also be useful. It gives help-desk personnel enough information about units to make sure they understand which unit the client is talking about.
+</li></ul><p>Other roles may also be appropriate, depending on what help-desk personnel are expected to do, and on your organization's policies.</p>
+
+<p><span class="CInset">Related Security Roles:</span> Security roles tend to come in related groupings; for example, <span class="CU">WorkOrder</span>, <span class="CU">WorkOrderView</span>, <span class="CU">WorkOrderFulfillment</span>, <span class="CU">WorkOrderClose</span>, <span class="CU">WorkOrderSelfAssign</span> and <span class="CU">WorkOrderSummary</span> are all roles related to work orders.</p>
+
+<p>In such a grouping, some roles automatically include others. For example:</p>
+
+<ul class="b1"><li><span class="CU">WorkOrder</span> automatically includes all the other roles in the grouping.</li>
+<li><span class="CU">WorkOrderView</span> automatically includes <span class="CU">WorkOrderSummary</span>.
+</li></ul><p>For this reason, there's no point in giving someone both <span class="CU">WorkOrder</span> and <span class="CU">WorkOrderView</span> (for example), because <span class="CU">WorkOrder</span> automatically includes all the permissions of <span class="CU">WorkOrderView</span>.</p>
+
+<p>In general, a <span class="CU">View</span> role automatically includes the related <span class="CU">Summary</span> role and a role with a simple name automatically includes roles of the same name with extra words (e.g. <span class="CU">PurchaseOrder</span> automatically includes <span class="CU">PurchaseOrderView</span>, <span class="CU">PurchaseOrderSummary</span>, and <span class="CU">PurchaseOrderReceive</span>).</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="CostRelatedSecurityRoles.htm">Cost-Related Security Roles</a></li>
+
+<li><a href="TestingSecurityRoles.htm">Testing Security Roles</a></li>
+</ul>
+<p><a href="MainBossModules.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="CostRelatedSecurityRoles.htm">Next section &gt;</a></p>
+</body>
+</html>
+

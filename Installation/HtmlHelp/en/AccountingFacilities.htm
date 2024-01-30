@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Accounting Facilities</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Accounting Facilities</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="PurchasingandReceiving.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Corrections.htm">Next section &gt;</a></p>
+
+<p>MainBoss lets you keep track of various types of costs: the amount you pay for equipment, materials, outside contractors, etc., and the amount you charge for your maintenance department's work.</p>
+
+<p class="box"><span class="CInset">Note:</span> MainBoss is not a full-fledged accounting package. However, it does keep track of the transactions needed by such a package. This information can be exported for use with an accounting package.</p>
+
+<p>MainBoss's accounting facilities are intended to simplify day-to-day operations, so that workers using MainBoss don't have to know which ledger account is used for which expenses. In order to make this possible, someone familiar with your organization's accounting practices must set up a number of definitions that workers can then use.</p>
+
+<p class="box">For advice on how to set up MainBoss's accounting facilities, see the <a href=" " >Configuration</a> guide. The description here is only an overview of the basic concepts.</p>
+
+<p>MainBoss's accounting facilities generate a reliable audit trail of accounting records based on your general ledger accounts. However, there is currently no direct method for using these records in conjunction with any accounting software package. You will have to export the information from MainBoss and process it into a format acceptable to your accounting package.</p>
+
+<p><span class="CInset">The Accounting Module:</span> If you have licensed the MainBoss <span class="BL">Accounting</span> module, you will have access to various special facilities for tracking accounting information:</p>
+
+<ul class="b1"><li><span class="NewTerm">Cost Centers</span>: The MainBoss <span class="BL">Accounting</span> module lets you define cost centers. Most organizations will set up a single cost center for each general ledger account used by the maintenance department. However, it is possible to set up multiple cost centers all corresponding to a single general ledger account. This makes it possible to have detailed cost breakdowns for your department's purposes, even if such detailed breakdowns aren't required by your organization as a whole.
+
+<br /><br />For example, suppose you only use a single ledger account for material expenses. You can create a single cost center named <span class="CU">Materials</span> for that ledger account. However, you might decide to create multiple cost centers like <span class="CU">Electrical Materials</span>,<span class="CU"> Plumbing Materials</span>, <span class="CU">Mechanical Materials</span>, and so on, all corresponding to the same single ledger account. This lets MainBoss give you a more detailed breakdown of your materials expenses, even though your actual accounting system doesn't subdivide expenses in this way.
+
+<br /><br />If you have not licensed the MainBoss <span class="BL">Accounting</span> module, MainBoss hides all references to cost centers. Therefore, you won't define any cost centers and you won't see them used anywhere in the software.</li>
+<li><span class="NewTerm">Expense Models:</span> An expense model is a type of MainBoss record that describes how you're going to "cost out" a particular work order. For example, on jobs that you do for Client X, you might be required to categorize expenses in one way; on jobs for Client Y, you may have to use a different system of classification. As another example, organizations that receive government grants may have to write up expenses in different ways on grant projects than on other types of work.
+
+<br /><br />When you create a work order, you choose the appropriate expense model for the job. You should have a separate expense model for all the different expense-reporting formats that you may have to use.</li>
+<li><span class="NewTerm">Expense Categories:</span> Each expense model has a set of associated expense categories. These are the categories that must be used to classify expenses in this particular situation. You might have categories like
+
+<br /><br /><span class="CU">     Spare parts
+     Work materials
+     Labor from outside contractors
+</span>
+<br /><br />When you prepare a work order, you look at each expense and ask, "What <span class="Emphasis">type</span> of expense is this?" You choose the expense category from the list of available categories associated with the expense model.
+
+<br /><br />Each expense category within an expense model has an associated cost center. This indicates the general ledger account that should be used for that expense category within that expense model. Linking an expense category to a cost center is called an <span class="NewTerm">expense mapping</span>.
+</li></ul><p>As an example, suppose that a property management company creates two separate general ledger accounts for each tenant: one for labor expenses and one for material expenses. This might lead you to set up the following cost centers:</p>
+
+<pre>   Cost Centers      Ledger Account
+TenantA Labor             00001
+TenantA Materials         00002
+TenantB Labor             00003
+TenantB Materials         00004
+TenantC Labor             00005
+TenantC Materials         00006</pre>
+
+<p>For each tenant, you create an expense model: <span class="CU">TenantA Model</span>, <span class="CU">TenantB Model</span>,<span class="CU"> TenantC Model</span>. The <span class="CU">TenantA Model</span> would contain the following expense categories:</p>
+
+<pre>Category         Associated Cost Center
+ Labor              TenantA Labor
+ Materials          TenantB Materials</pre>
+
+<p><span class="CU">TenantB Model</span> and <span class="CU">TenantC Model</span> would be similar.</p>
+
+<p>Whenever you create a work order, you have to assign it an expense model. Suppose you're doing a job for Tenant A. You look at your list of expense models and see that there is one especially associated with Tenant A; you therefore assign that expense model to the work order.</p>
+
+<p>Next you have to assign an expense category to each expense on the work order. When you look at the list of categories associated with <span class="CU">TenantA Model</span>, you see there are only two: <span class="CU">Labor</span> and <span class="CU">Materials</span>. Therefore, you just have to assign one of those two categories to each expense on the work order. This also associates a cost center with each expense, and therefore a general ledger account. Note, however, that when you fill out the work order, you only have to make two types of decisions:</p>
+
+<ul class="b1"><li>Which model do we use (what general approach will we use to "cost out" this job)?</li>
+<li>For each expense on the work order, which available expense category does it belong to?
+</li></ul><p><span class="CInset">Default Accounts:</span> The MainBoss accounting facilities let you separate out expenses in a sophisticated way (e.g. if you keep separate accounts for each tenant). If your needs are more simple, MainBoss has default expense models and expense categories that you can use, with or without modification.</p>
+
+<p>If you don't need accounting at all, just use the default expense model for all work orders. Choose the default expense categories for every item on the work order.</p>
+
+<p class="box">Whenever you create a work order, you <span class="Emphasis">must</span> specify an expense model. If you haven't set up your own expense models, use the default model.
+
+<br /><br />Similarly, whenever you add an item to a work order, you <span class="Emphasis">must</span> specify an expense category. If you haven't set up your own categories, use the default ones.</p>
+
+<p><span class="CInset">Displaying Accounting Records:</span> To display the accounting records that MainBoss creates, you use <span class="CPanel">Administration</span> | <span class="CPanel">Accounting</span>. For more information, see <a href="Browse.Accounting.htm">Accounting Records</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Corrections.htm">Corrections</a></li>
+</ul>
+<p><a href="PurchasingandReceiving.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Corrections.htm">Next section &gt;</a></p>
+</body>
+</html>
+

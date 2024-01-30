@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Demand Miscellaneous</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Demand Miscellaneous</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Edit.Demand Per Job Outside.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Actual Item.htm">Next section &gt;</a></p>
+
+<p>A miscellaneous demand specifies a cost that is neither for labor or for directly used materials. For example, it may deal with equipment rentals or with expenses paid out of the worker's pocket (e.g. parking). For more on miscellaneous costs, see <a href="WorkOrderMiscellaneousCosts.htm">Work Order Miscellaneous Costs</a>.</p>
+
+<p class="box"><span class="CInset">Note:</span> There is no connection between purchase order miscellaneous items and work order miscellaneous items. A purchase order miscellaneous item is typically an extra cost associated with the act of purchasing (e.g. sales tax). A work order miscellaneous item is typically an extra cost associated with doing a job (e.g. parking for a worker).</p>
+
+<p>To see the Demand Miscellaneous editor, click <span class="CButton">New Demand Miscellaneous Cost</span> in the <span class="CButton">Miscellaneous Expenses</span> subsection of the <span class="CButton">Resources</span> section of a work order. For more on resources, see <a href="Resources.htm">Resources</a>.</p>
+
+<p>The Demand Miscellaneous editor contains the following:</p>
+
+<p class="wi"><span class="CButton">Details</span> area: Provides information about the demand.</p>
+<p class="wi2"><span class="CField">Work Order</span>: A read-only field identifying the work order.</p>
+<p class="wi2"><span class="CField">Miscellaneous Work Order Cost</span>: A miscellaneous cost record specifying the nature of the expense, the cost center, and the expected cost.</p>
+<p class="wi2"><span class="CField">Suggested cost</span>: A read-only field giving the cost from the miscellaneous cost record.</p>
+<p class="wi2"><span class="CButton">Use suggested cost</span>: If you checkmark this box, MainBoss will fill in "<span class="CField">Demanded Cost</span>" with the value given in "<span class="CField">Suggested cost</span>". If you don't want to use the suggested cost, leave the checkbox blank and enter an appropriate cost in "<span class="CField">Demanded Cost</span>".</p>
+<p class="wi2"><span class="CField">Demanded Cost</span>: Can be filled in if you expect the cost to be different than "<span class="CField">Suggested cost</span>". (In many cases, the miscellaneous cost record won't specify a suggested cost, because miscellaneous costs tend to vary from job to job.)</p>
+<p class="wi2"><span class="CField">Actual Cost Default</span>: Specifies the default method for calculating costs when someone creates an "actual miscellaneous cost" record in response to this demand. If the person who records the actual cost has sufficient security permissions, he or she can specify the cost in a different way. However, if the person who records the actual cost does not have permission to specify costs, what you specify on this demand determines the cost that MainBoss will use. Possible options are:</p>
+<p class="wi3"><span class="CButton">Manual entry</span>: If you choose this option, you expect the person who actualizes this demand to have appropriate security permissions to specify the actual cost of the work.</p>
+<p class="wi3"><span class="CButton">Current value calculation</span>: If you choose this option, the default is to calculate actual costs from the original miscellaneous cost record.</p>
+<p class="wi3"><span class="CButton">Demanded</span>: If you choose this option, the default is to use the "<span class="CField">Demanded Cost</span>" in this window as a basis for the actual cost.</p>
+<p class="wi2"><span class="CField">Expense Category</span>: The expense category to which this expense belongs. For more on expense categories, see <a href="ExpenseCategories.htm">Expense Categories</a>.</p>
+<p class="wi"><span class="CButton">Actuals</span> section: Records what the work order actually used (as opposed to the preliminary estimates given in the <span class="CButton">Details</span> section). The <span class="CButton">Actuals</span> section also lets you correct any mistakes made in previous "actual" entries.</p>
+<p class="wi2">List: The central part of the window is a list of "actual" entries, specifying actual miscellaneous costs on this work order.</p>
+<p class="wi2"><span class="CButton">New Actual Miscellaneous Cost</span>: Lets you record an actual miscellaneous cost for this work order. For more information, see <a href="Edit.Actual Miscellaneous Cost.htm">Actual Miscellaneous</a>.</p>
+<p class="wi2"><span class="CButton">Correct</span>: Lets you correct an existing actual entry. For more, see <a href="Edit.Correction of Actual Miscellaneous Cost.htm">Corrections of Actual Miscellaneous</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: Lets you edit an existing actual entry. You will <span class="Emphasis">not</span> be able to change the cost or quantity specified in the entry; for that, you must use <span class="CButton">Correct</span>.</p>
+<p class="wi2"><span class="CButton">View</span>: Lets you view an existing entry in read-only mode.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Opens a window to search for a particular record.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<p>For more on resources, see <a href="Resources.htm">Resources</a>. For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Edit.Demand Per Job Outside.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Actual Item.htm">Next section &gt;</a></p>
+</body>
+</html>
+

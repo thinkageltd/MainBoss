@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
+<meta name="copyright" content="2016 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Work Order States</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Work Order States</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="WorkOrders.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Work Order State.htm">Next section &gt;</a></p>
+
+<p>A work order can be in one of the following states:</p>
+
+<p class="wi"><span class="CPanel">Draft</span>: The work order has been created and saved, but is still considered easy to change. You may be waiting for additional information or some sort of approval before the work order can be finalized.</p>
+<p class="wi"><span class="CPanel">Open</span>: The work order contains all the information you want and has received any approvals it might need. It's ready to be issued to workers. The work order will remain in the open state until the job is actually finished.</p>
+<p class="wi"><span class="CPanel">Closed</span>: The job is finished and all information about the work has been recorded. A work order can't be changed when it's closed. However, you can reopen a closed work order, make changes, then close it again.</p>
+<p class="wi"><span class="CPanel">Void</span>: The work order was created but it was canceled before it became <span class="CPanel">Open</span>.</p>
+<p>Each of these states has its own table viewer. For example, <span class="CPanel">Work Orders</span> | <span class="CPanel">Open Work Orders</span> lists open work orders. In addition, there is a combined <span class="CPanel">Work Orders</span> table that lists all work orders in all states. (Since this can be a lengthy list, it's usually easier to find work orders in one of the other work order lists.)</p>
+
+<p>MainBoss has various buttons for changing the state of work orders. These are summarized below:</p>
+
+<ul class="b1"><li><span class="CButton">Void</span>: Changes <span class="CPanel">Draft</span> to <span class="CPanel">Void</span>, and also opens a window where you may record a comment about why you decided to cancel the work order</li>
+<li><span class="CButton">Re-Draft</span>: Changes <span class="CPanel">Void</span> to <span class="CPanel">Draft</span>, and also opens a window where you may record a comment about why you decided to reactivate the canceled work</li>
+<li><span class="CButton">Open</span>: Changes <span class="CPanel">Draft</span> to <span class="CPanel">Open</span></li>
+<li><span class="CButton">Open Work Order (With Comment)</span>: Changes <span class="CPanel">Draft</span> to <span class="CPanel">Open</span>, and also opens a window where you may record a comment about what you're doing</li>
+<li><span class="CButton">Suspend</span>: Changes <span class="CPanel">Open</span> to <span class="CPanel">Draft</span>, and also opens a window where you may record a comment explaining why you suspended the work order</li>
+<li><span class="CButton">Close Work Order</span>: Changes <span class="CPanel">Open</span> to <span class="CPanel">Closed</li>
+<li></span><span class="CButton">Close Work Order (With Comment)</span>: Changes <span class="CPanel">Open</span> to <span class="CPanel">Closed</span>, and also opens a window where you can record a comment about what you're doing</li>
+<li><span class="CButton">Reopen</span>: Changes <span class="CPanel">Closed</span> to <span class="CPanel">Open</span>, and also opens a window where you can record a comment explaining why you're reopening the work order
+</li></ul>
+<p>An open work order can also be <span class="CPanel">Overdue</span>. When you create a work order, you can specify dates for when the work should start and end. A work order is considered overdue if it's still open past its specified end date. <span class="CPanel">Work Orders</span> | <span class="CPanel">Overdue Work Orders</span> lists any work orders that are overdue.</p>
+
+<p><span class="CInset">Work Order Status Codes:</span> In addition to the standard work order states, you can create your own custom <span class="NewTerm">status codes</span> to describe the condition of work orders. For example, you might have status codes like</p>
+
+<pre>Waiting for approval
+Waiting for parts
+Waiting for government inspection
+Waiting for customer sign-off</pre>
+
+<p>For more on work order status codes, see <a href="WorkOrderStatusCodes.htm">Work Order Status Codes</a>.</p>
+
+
+<p>See Also:</p><ul>
+<li><a href="Report.Work Order State.htm">Printing Work Order States</a></li>
+</ul>
+<p><a href="WorkOrders.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Work Order State.htm">Next section &gt;</a></p>
+</body>
+</html>
+
