@@ -407,3 +407,7 @@ FodyWeavers.xsd
 /Thinkage.MainBoss.WebCommon/SolutionSettings.cs
 /Thinkage.MainBoss.MainBoss/SolutionSettings.cs
 /Thinkage.MainBoss.MainBoss/SolutionSettings.targets
+/Installation/Install.MainBoss/BuildDir
+/Thinkage.MainBoss.WebAccess/SolutionSettings.cs
+/Installation/Install.MainBoss/Executables.wxs
+/Installation/Install.MainBoss/SolutionSettings.wxi
