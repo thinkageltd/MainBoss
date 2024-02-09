@@ -17,10 +17,6 @@
     </UpgradeBackupLocation>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <SccProjectName>Application.MB3TestDataGenerator</SccProjectName>
-    <SccLocalPath>1~cf73bb72-5e59-49d7-bf5d-1423e6537726</SccLocalPath>
-    <SccAuxPath>http://vault.thinkage.ca/VaultService</SccAuxPath>
-    <SccProvider>SourceGear Vault Visual Studio 2005 Client:{1EA47954-8515-402d-82D9-B5C332120A8D}</SccProvider>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
