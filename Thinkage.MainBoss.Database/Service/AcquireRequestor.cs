@@ -17,8 +17,8 @@ namespace Thinkage.MainBoss.Database.Service {
 		// Because there is a need for two classes of error. The error suitable for the MainBoss Administration giving information about how to fix the problem
 		// and a generic error for the user. Exceptions can not be used to report errors.
 		// Instead a successful run had the variable RequestID set
-		// Any exception will be in variable Exception and contains the message for the MainBoss Administator further more the variable  UserText will contain the error message for the end user 
-		// WarningText contains any warning messages for the MainBoss Administrato
+		// Any exception will be in variable Exception and contains the message for the MainBoss Administrator further more the variable  UserText will contain the error message for the end user 
+		// WarningText contains any warning messages for the MainBoss Administrator
 		// Assuming no error then InfoText with contain generic information messages for the MainBoss Administrator
 		protected MailAddress EmailAddress;
 		protected bool CreateRequestors = false;
@@ -115,23 +115,22 @@ namespace Thinkage.MainBoss.Database.Service {
 			//
 			// if no primary email address look for alternate email addresses
 			// the email address has to be an exact case match anywhere in the string for Alternate mails.
-			// and the text before or after cannnot be in an email address.
+			// and the text before or after cannot be in an email address.
 			// the funny characters came from the standard, but may not be in the domain address
 			//
-			source = KB.K("Requestors {0} have the same alternate email address '{1}'");
-			if (found.Count == 0)
+			if (found.Count == 0) {
+				source = KB.K("Requestors {0} have the same alternate email address '{1}'");
 				foreach (dsMB.ActiveRequestorRow row in ds.T.ActiveRequestor.Rows)
 					if (ServiceUtilities.CheckAlternateEmail(row.ContactIDParentRow.F.AlternateEmail, from))
 						found.Add(row);
+			}
 			// 
-			// if the contact does not have a email address matching try active direcory
+			// if the contact does not have a email address matching try active directory
 			//
-			source = KB.K("Requestors {0} have the same email address '{1}' in Active Directory");
 			if (found.Count == 0) {
+				source = KB.K("Requestors {0} have the same email address '{1}' in Active Directory");
 				try {
-					LDAPUsers =  LDAPEntry.GetActiveDirectoryGivenEmail(from);
-					if (LDAPUsers == null)
-						return null;
+					LDAPUsers = LDAPEntry.GetActiveDirectoryGivenEmail(from);
 					LDAPUsers = LDAPUsers.Where(sr=> sr.Disabled );
 					if (LDAPUsers.Count() > 1) {
 						var names = LDAPUsers.Select(e => e.UserPrincipalName);
@@ -175,7 +174,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			}
 			var ordered = found.OrderBy(e => e.ContactIDParentRow.F.Code.ToLower());
 			var requestor = ordered.First().RequestorIDParentRow;
-			RequestorError(DatabaseEnums.EmailRequestState.AmbiguousRequestor, ErrorToRequestor.NotFound, source, ValuesAsString(", ", ordered.Select(e => e.ContactIDParentRow.F.Code)), from);
+			RequestorError(DatabaseEnums.EmailRequestState.AmbiguousRequestor, ErrorToRequestor.Multiple, source, ValuesAsString(", ", ordered.Select(e => e.ContactIDParentRow.F.Code)), from);
 			return null;
 		}
 		#endregion
@@ -261,7 +260,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			State = state;
 			WarningText = null;
 			ErrorToRequestor = errorToRequestor;
-			Exception = new GeneralException(format, args);
+			Exception = new GeneralException(ex, format, args);
 			throw Exception;
 		}
 		#endregion

@@ -3,7 +3,9 @@
 # After changing this file you must do a Rebuild of the solution, since there is no way of telling Studio which projects depend on this file.
 # After the first rebuild, you then must close and reopen the solution because one of projects 'Import' statements will refer to a changed version in the SolutionSettings.targets
 # file and those values are only set at time solution is opened; you then must rebuild again. sigh
-$SolutionVersion = new-object System.Version(4,2,0,7)
+$SolutionVersion = new-object System.Version(4,2,0,35)
+$DesktopAppVersion = new-object System.Version(4,2,0,0) #Revision must be 0 for Desktop App
 $SolutionProduct = "MainBoss Advanced"
 #The following drives the localized WiX installation builds. It is a list for iteration purposes
-$WixCulturesToBuild = "en-US","es-ES", "fr-FR"
+$WixCulturesToBuildRelease = "en-US","es-ES", "fr-FR"
+$WixCulturesToBuildDesktop = "en-US"

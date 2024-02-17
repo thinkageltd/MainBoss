@@ -136,7 +136,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			if (String.IsNullOrEmpty(qty))
 				QuantityToActualize = null;
 			else {
-				object v = QuantityType.GetTypeEditTextHandler(System.Globalization.CultureInfo.CurrentUICulture).ParseEditText(qty);
+				object v = QuantityType.GetTypeEditTextHandler(Application.InstanceFormatCultureInfo).ParseEditText(qty);
 				QuantityToActualize = (T)QuantityType.ClosestValueTo(v);
 			}
 			System.Exception check = QuantityType.CheckMembership(QuantityToActualize);
@@ -191,7 +191,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		protected string FormatQuantity(object v) {
 			if (v == null)
 				return "";
-			return QuantityType.GetTypeFormatter(System.Globalization.CultureInfo.CurrentUICulture).Format(v);
+			return QuantityType.GetTypeFormatter(Application.InstanceFormatCultureInfo).Format(v);
 		}
 	}
 	#endregion

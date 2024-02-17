@@ -715,7 +715,7 @@ namespace Thinkage.MainBoss.Application {
 			Caption = KB.K("Pick View Cost Permissions");
 
 			IListComboDataControlWithExplicitMultipleRowValue picker = uiFactory.CreateList(new Thinkage.Libraries.TypeInfo.SetTypeInfo(false, Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse), null, UIListStyles.ExcludeDisabledRowsFromValue, null);
-			IListColumn column = picker.AddColumn(Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo));
+			IListColumn column = picker.AddColumn(Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo));
 			FormContents.Add(picker);
 
 			ButtonRowPanel okCancelButtons = new ButtonRowPanel(uiFactory);
@@ -755,7 +755,7 @@ namespace Thinkage.MainBoss.Application {
 			Caption = KB.K("Pick View Cost Roles");
 
 			IListComboDataControlWithExplicitMultipleRowValue picker = uiFactory.CreateList(new Thinkage.Libraries.TypeInfo.SetTypeInfo(false, Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse), null, UIListStyles.ExcludeDisabledRowsFromValue, null);
-			IListColumn column = picker.AddColumn(Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo));
+			IListColumn column = picker.AddColumn(Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo));
 			FormContents.Add(picker);
 
 			ButtonRowPanel okCancelButtons = new ButtonRowPanel(uiFactory);
@@ -808,7 +808,7 @@ namespace Thinkage.MainBoss.Application {
 			Caption = KB.K("Pick Roles");
 
 			IListComboDataControlWithExplicitMultipleRowValue picker = uiFactory.CreateList(new Thinkage.Libraries.TypeInfo.SetTypeInfo(false, Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse), null, UIListStyles.ExcludeDisabledRowsFromValue, null);
-			IListColumn column = picker.AddColumn(Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo));
+			IListColumn column = picker.AddColumn(Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo));
 			FormContents.Add(picker);
 
 			ButtonRowPanel okCancelButtons = new ButtonRowPanel(uiFactory);
@@ -855,7 +855,7 @@ namespace Thinkage.MainBoss.Application {
 			XAFClient session = TblDrivenMainBossApplication.Instance.AppConnectionMixIn.Session;
 
 			IListComboDataControlWithExplicitMultipleRowValue picker = uiFactory.CreateList(new Thinkage.Libraries.TypeInfo.SetTypeInfo(false, dsMB.Schema.T.Role.F.Id.EffectiveType), null, UIListStyles.ExcludeDisabledRowsFromValue, null);
-			IListColumn column = picker.AddColumn(Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo));
+			IListColumn column = picker.AddColumn(Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo));
 			FormContents.Add(picker);
 
 			ButtonRowPanel okCancelButtons = new ButtonRowPanel(uiFactory);

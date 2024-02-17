@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Text;
 using Thinkage.Libraries;
+using Thinkage.Libraries.Collections;
 using Thinkage.Libraries.DBAccess;
 using Thinkage.Libraries.DBILibrary;
 using Thinkage.Libraries.Translation;
@@ -15,8 +16,8 @@ namespace Thinkage.MainBoss.Database.Service {
 		// Because there is a need for two classes of error. The error suitable for the MainBoss Administration giving information about how to fix the problem
 		// and a generic error for the user. Exceptions can not be used to report errors.
 		// Instead a successful run had the variable RequestID set
-		// Any exception will be in variable Exception and contains the message for the MainBoss Administator further more the variable  UserText will contain the error message for the end user 
-		// WarningText contains any warning messages for the MainBoss Administrato
+		// Any exception will be in variable Exception and contains the message for the MainBoss Administrator further more the variable  UserText will contain the error message for the end user 
+		// WarningText contains any warning messages for the MainBoss Administrator
 		// Assuming no error then InfoText with contain generic information messages for the MainBoss Administrator
 		protected MailAddress EmailAddress;
 		private IEnumerable<LDAPEntry> LDAPUsers = null;
@@ -42,28 +43,26 @@ namespace Thinkage.MainBoss.Database.Service {
 				ContactError(DatabaseEnums.EmailRequestState.NoContact, ErrorToRequestor.Unknown, KB.K("Cannot find a contact since no email address or Active Directory Reference provided"));
 				return;
 			}
-			if (LDAPUsers == null && emailAddress != null)
-				LDAPUsers = LDAPEntry.GetActiveDirectoryGivenEmail(emailAddress.Address);
-			else if (LDAPUsers != null && emailAddress != null)
-				LDAPUsers = LDAPUsers.Concat(LDAPEntry.GetActiveDirectoryGivenEmail(emailAddress.Address));
-			LDAPUsers = LDAPUsers.Where(e => !e.Disabled);
+			if( emailAddress != null )
+				LDAPUsers = LDAPUsers == null ? LDAPEntry.GetActiveDirectoryGivenEmail(emailAddress.Address) : LDAPUsers.Concat(LDAPEntry.GetActiveDirectoryGivenEmail(emailAddress.Address));
+			LDAPUsers = LDAPUsers?.Where(e => !e.Disabled);
 			try {
 				using (dsMB ds = new dsMB(DB)) {
 					ds.EnsureDataTableExists(dsMB.Schema.T.Contact);
 					List<dsMB.ContactRow> found = new List<dsMB.ContactRow>();
 					SqlExpression mailtest = null;
 					SqlExpression test = null;
-					HashSet<object> LDAPEmail = null;
-					HashSet<object> LDAPAllEmail = null;
-					HashSet<object> LDAPguids = null;
+					Set<object> LDAPEmail = null;
+					Set<object> LDAPAllEmail = null;
+					Set<object> LDAPguids = null;
 					if (EmailAddress.Address != null)
 						mailtest = new SqlExpression(dsMB.Path.T.Contact.F.Email).Eq(EmailAddress.Address).Or(new SqlExpression(dsMB.Path.T.Contact.F.AlternateEmail).Like(SqlExpression.Constant(Strings.IFormat("%{0}%", EmailAddress.Address))));
-					if (LDAPUsers != null && LDAPUsers.Count() >= 1) {
-						LDAPguids = new HashSet<Object>(LDAPUsers.Select(e => (object)e.Guid));
-						LDAPEmail = new HashSet<Object>(LDAPUsers.Select(e => e.Mail));
-						LDAPAllEmail = new HashSet<Object>(LDAPUsers.Select(e => e.Mail).Concat(LDAPUsers.SelectMany(e => e.AlternateEmail)));
+					if (LDAPUsers != null && LDAPUsers.Any() ) {
+						LDAPguids = new Set<Object>(LDAPUsers.Select(e => (object)e.Guid));
+						LDAPEmail = new Set<Object>(LDAPUsers.Select(e => e.Mail));
+						LDAPAllEmail = new Set<Object>(LDAPUsers.Select(e => e.Mail).Concat(LDAPUsers.SelectMany(e => e.AlternateEmail)));
 						test = new SqlExpression(dsMB.Path.T.Contact.F.LDAPGuid).In(SqlExpression.Constant(LDAPguids));
-						if (LDAPAllEmail.Count() > 0)
+						if (LDAPAllEmail.Any() )
 							test = test.Or(new SqlExpression(dsMB.Path.T.Contact.F.Email).In(SqlExpression.Constant(LDAPAllEmail)));
 					}
 					if (mailtest != null && test != null)
@@ -106,7 +105,7 @@ namespace Thinkage.MainBoss.Database.Service {
 
 		}
 		#region ContactInformation
-		private dsMB.ContactRow ContactInformation(dsMB ds, List<dsMB.ContactRow> found, HashSet<object> LDAPguids, HashSet<object> LDAPEmail, HashSet<object> LDAPAllEmail, bool hidden) {
+		private dsMB.ContactRow ContactInformation(dsMB ds, List<dsMB.ContactRow> found, Set<object> LDAPguids, Set<object> LDAPEmail, Set<object> LDAPAllEmail, bool hidden) {
 			var from = EmailAddress != null ? EmailAddress.Address : null;
 			var source = KB.K("Contacts {0} have the same email address {1}");
 			// find all contacts with the LDAP reference on any mail that match if email address from contacts matches any from address
@@ -121,35 +120,39 @@ namespace Thinkage.MainBoss.Database.Service {
 				active = found.Where(e => e.F.Hidden == null);
 			// look for matching guid first
 			source = KB.K("Contacts {0} all have the same Active Directory Reference");
-			matched = active.Where(e => LDAPguids.Contains(e));
-			//
-			// look for primary email addresses next
-			if (matched.Count() == 0) {
-				source = KB.K("Contacts {0} have the same primary email address '{1}'");
-				matched = active.Where(e => LDAPEmail.Contains(e.F.Email));
-			}
-			//
-			// if no primary email address look for alternate email addresses
-			// the email address has to be an exact case match anywhere in the string for Alternate mails.
-			// and the text before or after cannnot be in an email address.
-			// the funny characters came from the standard, but may not be in the domain address
-			//
+			if (DomainAndIP.GetDomainName() != null && LDAPguids != null) {
+				matched = active.Where(e => LDAPguids.Contains(e));
+				//
+				// look for primary email addresses next
+				if (!matched.Any()) {
+					source = KB.K("Contacts {0} have the same primary email address '{1}'");
+					matched = active.Where(e => LDAPEmail.Contains(e.F.Email));
+				}
+				//
+				// if no primary email address look for alternate email addresses
+				// the email address has to be an exact case match anywhere in the string for Alternate mails.
+				// and the text before or after cannot be in an email address.
+				// the funny characters came from the standard, but may not be in the domain address
+				//
 
-			if (matched.Count() == 0 && from != null) {
-				source = KB.K("Contacts {0} have the same alternate email address '{1}'");
-				matched = active.Where(e => ServiceUtilities.CheckAlternateEmail(e.F.AlternateEmail, from));
+				if (!matched.Any() && from != null) {
+					source = KB.K("Contacts {0} have the same alternate email address '{1}'");
+					matched = active.Where(e => ServiceUtilities.CheckAlternateEmail(e.F.AlternateEmail, from));
+				}
+				// 
+				// if the contact does not have a email address matching try active direcory
+				//
+				if (!matched.Any()) {
+					source = KB.K("Contacts {0} have the same email address '{1}' in Active Directory");
+					matched = active.Where(e => LDAPAllEmail.Contains(e.F.Email));
+				}
+				// 
+				// we don't check contacts Alternate email address agains LDAP alternate email addresss
+				//
 			}
-			// 
-			// if the contact does not have a email address matching try active direcory
-			//
-			if (matched.Count() == 0) {
-				source = KB.K("Contacts {0} have the same email address '{1}' in Active Directory");
-				matched = active.Where(e => LDAPAllEmail.Contains(e.F.Email));
-			}
-			// 
-			// we don't check contacts Alternate email address agains LDAP alternate email addresss
-			//
-			if (matched.Count() == 0)
+			else
+				matched = active;
+			if (!matched.Any())
 				return null;
 			if (matched.Count() == 1 || hidden) {
 				var contactRow = hidden ? matched.OrderByDescending(e => e.F.Hidden).First() : matched.First();
@@ -165,23 +168,25 @@ namespace Thinkage.MainBoss.Database.Service {
 						InfoText = Strings.Format(KB.K("Restoring Contact '{0}'"), contactRow.F.Code);
 						changed = true;
 					}
-					LDAPEntry LDAPUser = null;
-					if (LDAPguids.Count() == 1 && contactRow.F.LDAPGuid == null)
-						LDAPUser = LDAPUsers.First();
-					if (LDAPUser != null && contactRow.F.LDAPGuid == null) {
-						contactRow.F.LDAPGuid = LDAPUser.Guid;
-						changed = true;
-					}
-					if (from == null)
-						from = LDAPUser.Mail;
-					if (contactRow.F.Email != from && !ServiceUtilities.CheckAlternateEmail(contactRow.F.AlternateEmail, from)) {
-						if (contactRow.F.Email == null)
-							contactRow.F.Email = from;
-						else if (contactRow.F.AlternateEmail == null)
-							contactRow.F.AlternateEmail = from;
-						else
-							contactRow.F.AlternateEmail = Strings.IFormat("{0} {1}", contactRow.F.AlternateEmail, from);
-						changed = true;
+					if (LDAPguids != null  && LDAPguids.Count() == 1) { 
+						LDAPEntry LDAPUser = null;
+						if ( contactRow.F.LDAPGuid == null)
+							LDAPUser = LDAPUsers.First();
+						if (LDAPUser != null && contactRow.F.LDAPGuid == null) {
+							contactRow.F.LDAPGuid = LDAPUser.Guid;
+							changed = true;
+						}
+						if (from == null)
+							from = LDAPUser.Mail;
+						if (contactRow.F.Email != from && !ServiceUtilities.CheckAlternateEmail(contactRow.F.AlternateEmail, from)) {
+							if (contactRow.F.Email == null)
+								contactRow.F.Email = from;
+							else if (contactRow.F.AlternateEmail == null)
+								contactRow.F.AlternateEmail = from;
+							else
+								contactRow.F.AlternateEmail = Strings.IFormat("{0} {1}", contactRow.F.AlternateEmail, from);
+							changed = true;
+						}
 					}
 					if (changed)
 						ds.DB.Update(ds);
@@ -198,7 +203,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			}
 			var ordered = found.OrderBy(e => e.F.Code.ToLower());
 			var contact = ordered.First();
-			ContactError(DatabaseEnums.EmailRequestState.AmbiguousContact, ErrorToRequestor.NotFound, source, ValuesAsString(", ", ordered.Select(e => e.F.Code)), from);
+			ContactError(DatabaseEnums.EmailRequestState.AmbiguousContact, ErrorToRequestor.Multiple, source, ValuesAsString(", ", ordered.Select(e => e.F.Code)), from);
 			return null;
 		}
 		#endregion

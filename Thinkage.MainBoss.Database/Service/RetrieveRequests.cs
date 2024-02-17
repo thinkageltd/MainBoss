@@ -12,7 +12,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Thinkage.MainBoss.Database.Service {
 	public class RetrieveRequests : EmailProcessor {
-		#region Constructors, Destructors
+		#region Constructors, Destructor
 		public RetrieveRequests(IServiceLogging logger, MB3Client dbSession)
 			: base(logger, dbSession) {
 			dsmb.EnsureDataTableExists(dsMB.Schema.T.EmailRequest, dsMB.Schema.T.EmailPart);
@@ -22,7 +22,7 @@ namespace Thinkage.MainBoss.Database.Service {
 		#region Run - GetEmailRequests
 		/// <summary>
 		/// Retrieves mail, creates work requests for valid mail-requests and put them in the user-defined state that is specified by XXX.
-		/// An erequest record is created for each email reguardless of validity.
+		/// An erequest record is created for each email regardless of validity.
 		/// </summary>
 		public void Run(bool traceDetails) {
 			var port = ServiceConfiguration.MailPort;
@@ -40,7 +40,7 @@ namespace Thinkage.MainBoss.Database.Service {
 #endif
 			try {
 				using (var messageSource = new EmailMessageSource(Logger, traceDetails, serverType, encryption, server, port??0, user, pw, mailbox)) {
-					// each email that is received will be stored in a new erequest record.
+					// each email that is received will be stored in a new request record.
 					int n = messageSource.Messages.Count();
 					Logger.LogTrace(traceDetails, Strings.Format(KB.K("Retrieving {0} Email {0.IsOne ? message : messages }"), n));
 					int deleteCount = 0;

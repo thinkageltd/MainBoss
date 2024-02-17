@@ -112,10 +112,11 @@ namespace Thinkage.MainBoss.Controls {
 			//
 			// if there is a LDAPGUid use that 
 			// if not use the a LDAP user with match LDAP 'mail' value
-			// if not use the a LDAP user whose priciple name match
+			// if not use the a LDAP user whose principle name match
 			// if not use the a LDAP whose defines the email address matching the Contact.F.Email
 			// The Contact.F.AlternateEmail is not used.
 			//
+			LDAPEntry.CheckActiveDirectory();
 			IEnumerable<LDAPEntry> ades = null;
 			Guid? LDAPGuid = (Guid?)LDAPGuidSource?.GetValue();
 			var OriginalName = (string)NameSource?.GetValue();
@@ -129,14 +130,14 @@ namespace Thinkage.MainBoss.Controls {
 				throw new GeneralException(KB.K("Cannot update because the Active Directory Reference cannot be found and there is no email address to match"));
 			if (ades == null)
 				ades = LDAPEntry.GetActiveDirectoryGivenPrimaryEmail(Email);
-			if (ades.Count() == 0)
-				ades = LDAPEntry.GetActiveDirectoryGivenPricipalName(Email);
-			if (ades.Count() == 0)
+			if ( !ades.Any() && OriginalName != null)
+				ades = LDAPEntry.GetActiveDirectoryGivenPricipalName(OriginalName);
+			if ( !ades.Any() )
 				ades = LDAPEntry.GetActiveDirectoryGivenEmail(Email);
-			if (ades.Count() == 0)
+			if ( !ades.Any() )
 				foreach (var a in ServiceUtilities.AlternateEmailAddresses(AlternateEmailString))
 					ades = ades.Concat(LDAPEntry.GetActiveDirectoryGivenEmail(a));
-			if (ades.Count() == 0)
+			if ( !ades.Any() )
 				throw new GeneralException(KB.K("Cannot update because Windows has no login names associated with any of the email addresses"));
 			if (ades.Count() > 1) {
 				var names = ades.Select(sr => sr.DisplayName);
@@ -233,5 +234,7 @@ namespace Thinkage.MainBoss.Controls {
 		private readonly Sink CommentSink;
 		private readonly Sink EmailSink;
 		private readonly Sink AlternateEmailSink;
+
+		static SettableDisablerProperties IsNotDomainDisableer = new SettableDisablerProperties(null, KB.K("Only available on computer that is a member of a domain"),DomainAndIP.GetDomainName() != null);
 	}
 }

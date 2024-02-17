@@ -43,3 +43,9 @@
 [submodule "Thinkage.Libraries.SQL"]
 	path = Thinkage.Libraries.SQL
 	url = https://github.com/thinkageltd/Thinkage.Libraries.SQL
+[submodule "Thinkage.Core"]
+	path = Thinkage.Core
+	url = https://github.com/thinkageltd/Thinkage.Core
+[submodule "Thinkage.Libraries.Presentation.ASPNet"]
+	path = Thinkage.Libraries.Presentation.ASPNet
+	url = https://github.com/thinkageltd/Thinkage.Libraries.Presentation.ASPNet

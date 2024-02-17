@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html lang="en">
 <head>
-<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
-<meta name="copyright" content="2016 Thinkage Ltd." />
+<meta charset="UTF-8" />
+<meta name="copyright" content="2018 Thinkage Ltd." />
 <link rel="stylesheet" type="text/css" href="mbmanual.css" />
 <title>MainBoss Advanced 4.2 Operating Reference Manual: Configuring MainBoss Service</title>
 </head>
@@ -79,7 +79,7 @@
 
 <br /><br />The rules governing the pattern are the standard regular expression rules for Windows. For an introduction to these rules, see
 
-<br /><br /><a href="http://www.codeproject.com/KB/dotnet/regextutorial.aspx">http://www.codeproject.com/KB/dotnet/regextutorial.aspx</a></p>
+<br /><br /><a href="https://www.codeproject.com/Articles/9099/The-Minute-Regex-Tutorial">https://www.codeproject.com/Articles/9099/The-Minute-Regex-Tutorial</a></p>
 <p class="wi2"><span class="CField">Reject Auto Create Email Pattern</span>: Is the opposite of "<span class="CField">Accept Auto Create Email Pattern</span>"&#8212;MainBoss Service automatically rejects all email requests sent by people whose email address matches "<span class="CField">Reject Auto Create Email Pattern</span>".
 
 <br /><br />For example, suppose that you have been receiving nuisance complaints from <span class="CU">joe@xyz.com</span>. You could add this address to your reject pattern so that MainBoss Service would automatically reject messages from the given address. If you have multiple addresses that you want to reject, you can just separate them with "<span class="CU">|</span>" characters as in
@@ -123,7 +123,7 @@
 <br /><br />If the time allowance expires and nothing has changed, MainBoss will reject the request.
 
 <br /><br />If the error message changes on a received request, MainBoss starts on a new delay. For example, suppose you see that there's a problem with a request and you make some change that you think will fix the problem. However, when MainBoss tries to process the request, a different problem arises. In this case, MainBoss will wait the full delay time again before rejecting the request; this gives you a chance to do something about the new problem.</p>
-<p class="wi"><span class="CButton">Outgoing Mail</span> section: Controls how MainBoss Service sends out email (acknowledgements to requestors and notifications to assignees).</p>
+<p class="wi"><span class="CButton">Outgoing Mail</span> section: If the MainBoss Service license exists, controls how MainBoss Service sends out email (acknowledgements to requestors and notifications to assignees).</p>
 <p class="wi2"><span class="CField">Process Notification Email</span>: If this box is checkmarked, MainBoss Service will send out notifications as normal. If the box is blanked out, MainBoss Service will not send out notifications. In general, this box should be checkmarked.</p>
 <p class="wi2"><span class="CField">Return Email Address</span>: The return email address to be placed on acknowledgements and notifications (i.e. the address that will be used if the recipient wants to reply). This should be the email address of a person in the maintenance department who can personally handle responses from clients.</p>
 <p class="box"><span class="CInset">Important:</span> The "<span class="CField">Return Email Address</span>" should <span class="Emphasis">not</span> be the same as the mailbox to which users submit requests. If it is, you'll run into trouble if a requestor has an auto-reply set up, such as "Hi, I've gone on vacation and won't be answering my email." What happens is this: if MainBoss Service sends an acknowledgement to the user, the auto-reply replies to the MainBoss Service mailbox; MainBoss Service thinks this is a new request, so sends an acknowledgement to the requestor; the requestor's auto-reply sends another reply to MainBoss Service; MainBoss Service sends another acknowledgement; and so on, until someone runs out of disk space. The way to avoid this is to set "<span class="CField">Return Email Address</span>" to refer to a human being (who can be smart about dealing with auto-replies).</p>
@@ -144,7 +144,7 @@
 <p class="wi3"><span class="CField">SMTP User Domain</span>: The domain that MainBoss Service should specify when sending out mail.</p>
 <p class="wi3"><span class="CField">SMTP User Name</span>: The username that MainBoss Service should specify when sending out mail.</p>
 <p class="wi3"><span class="CField">SMTP Encrypted Password</span>: As a protection measure, MainBoss encrypts this password before storing it in MainBoss's database.</p>
-<p class="wi"><span class="CButton">Messages</span> section: Controls the text strings used by MainBoss Service when sending email to users.
+<p class="wi"><span class="CButton">Messages</span> section: If the MainBoss Service license exists, controls the text strings used by MainBoss Service when sending email to users.
 
 <br /><br />The main list in this section shows the strings whose text can be changed. For example, the string with identifier <span class="CU">EstimatedCompletionDate</span> is used as a label when MainBoss Service puts an estimated completion date into an email message. If you change the value of this string to <span class="CU">"We think the job will be done by:"</span>, MainBoss will use the given phrase instead of the default <span class="CU">"Estimated Completion Date:"</span>.
 

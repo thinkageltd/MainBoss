@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html lang="en">
 <head>
-<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
-<meta name="copyright" content="2016 Thinkage Ltd." />
+<meta charset="UTF-8" />
+<meta name="copyright" content="2018 Thinkage Ltd." />
 <link rel="stylesheet" type="text/css" href="mbmanual.css" />
 <title>MainBoss Advanced 4.2 Operating Reference Manual: Security Roles and Permissions</title>
 </head>
@@ -14,13 +14,13 @@
 <!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
 <p><a href="MainBossModules.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="CostRelatedSecurityRoles.htm">Next section &gt;</a></p>
 
-<p>In order to use MainBoss, users need to be assigned one or more security roles. The available roles are listed in <span class="CPanel">Administration</span> | <span class="CPanel">Security Role</span>. The comments provided in each role record indicate what permissions that role provides.</p>
+<p>In order to use MainBoss, users need to be assigned one or more security roles. The available roles are listed in <span class="CPanel">Administration | Security Roles</span>. The comments provided in each role record indicate what permissions that role provides.</p>
 
 <p>Security roles affect what a user sees: if a user doesn't have permission to see a particular type of information, that information will be blanked out or missing entirely from MainBoss windows. Security roles also affect what a user can do; for example, if a user has permission to view work orders (<span class="CU">WorkOrderView</span>) but not to close them, the <span class="CButton">Close Work Order</span> button will be disabled for that user.</p>
 
 <p class="box"><span class="CInset">Important:</span> When information is blank because you don't have appropriate permissions, move the cursor to the blank; MainBoss will tell you what security roles will give you permission to see that information. Similarly, if a button is disabled, move the cursor to the button; MainBoss will tell you what security roles will allow you to use that button. Note, however, that in some cases, information will disappear entirely (e.g. sections of records just won't be displayed); in this case, you may not even know that something is missing.</p>
 
-<p>To assign security roles to a user, you use the <span class="CButton">Security Roles</span> section of a user record (<span class="CPanel">Administration</span> | <span class="CPanel">Users</span>). In order to decide what roles an individual user should be granted, you must consider what that user is expected to do in his/her job. For example, consider someone working on a help-desk and receiving problem reports from clients outside the maintenance department. What does that person need to do?</p>
+<p>To assign security roles to a user, you use the <span class="CButton">Security Roles</span> section of a user record (<span class="CPanel">Administration | MainBoss Users</span>). In order to decide what roles an individual user should be granted, you must consider what that user is expected to do in his/her job. For example, consider someone working on a help-desk and receiving problem reports from clients outside the maintenance department. What does that person need to do?</p>
 
 <ul class="b1"><li>He or she will need to create work requests describing problems; that requires <span class="CU">Request</span> permission.</li>
 <li>Help-desk personnel also need a small amount of information on work orders (so that they can tell a client, "Your work has been scheduled for Thursday"). This suggests the <span class="CU">WorkOrderSummary</span> security role.</li>

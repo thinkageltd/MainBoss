@@ -20,27 +20,12 @@ namespace Thinkage.MainBoss.Controls {
 	/// Register Tbl and/or DelayedCreateTbl objects for Security.
 	/// </summary>
 	public class TISecurity : TIGeneralMB3 {
-		#region RoleClasses
-		private static readonly Key[] SecurityRoleClassLabels = new Key[]
-			{
-			KB.K("Right"),
-			KB.K("Security Role"),
-			KB.K("Table")
-			};
-		private static readonly object[] SecurityRoleClasses = new object[]
-			{
-				(int)DatabaseEnums.SecurityRoleClass.Right,
-				(int)DatabaseEnums.SecurityRoleClass.Role,
-				(int)DatabaseEnums.SecurityRoleClass.Table
-			};
-		public static Thinkage.Libraries.EnumValueTextRepresentations SecurityRoleClassProvider = new Thinkage.Libraries.EnumValueTextRepresentations(SecurityRoleClassLabels, null, SecurityRoleClasses, 2);
-		#endregion
 		public static DelayedCreateTbl UserPickerTblCreator;
 		public static DelayedCreateTbl ManageDatabaseCredentialTblCreator;
 		public static DelayedCreateTbl ManageDatabaseLoginTblCreator;
 
 		public static DelayedCreateTbl RoleBrowserTblCreator;
-		public static DelayedCreateTbl RoleEditTblCreator;
+		public static DelayedCreateTbl BuiltinRoleEditTblCreator;
 		public static DelayedCreateTbl CustomRoleEditTblCreator;
 
 		public static DelayedCreateTbl UserRoleBrowserTblCreator;
@@ -156,7 +141,7 @@ namespace Thinkage.MainBoss.Controls {
 				object initialChoice = AuthenticationSettingsPermitted.Values[0];
 
 				bool needLoginChoices = permittedAuthenticationMethods.Contains(AuthenticationMethod.WindowsAuthentication);
-				bool needPassword = !needLoginChoices && permittedAuthenticationMethods.Contains(AuthenticationMethod.SQLPassword) || permittedAuthenticationMethods.Contains(AuthenticationMethod.ActiveDirectoryPassword);
+				bool needPassword = permittedAuthenticationMethods.Contains(AuthenticationMethod.SQLPassword) || permittedAuthenticationMethods.Contains(AuthenticationMethod.ActiveDirectoryPassword);
 
 				List<TblLayoutNode> nodes = new List<TblLayoutNode>();
 				if (forLoginCredentials) {
@@ -192,11 +177,13 @@ namespace Thinkage.MainBoss.Controls {
 					if (needPassword)
 						nodes.Add(TblColumnNode.New(dsSecurityOnServer.Path.T.SecurityOnServer.F.Password, ECol.Normal, Fmt.SetId(passwordControlId), Fmt.SetUsage(DBI_Value.UsageType.Password)));
 				}
-				nodes.Add(TblColumnNode.New(dsSecurityOnServer.Path.T.SecurityOnServer.F.CredentialAuthenticationMethod,
-					new ECol(
-						Fmt.SetEnumText(AuthenticationSettingsPermitted),
-						Fmt.SetId(methodControlId)
-					)));
+				bool offerMethodChoice = forLoginCredentials || needPassword;
+				if (offerMethodChoice)
+					nodes.Add(TblColumnNode.New(dsSecurityOnServer.Path.T.SecurityOnServer.F.CredentialAuthenticationMethod,
+						new ECol(
+							Fmt.SetEnumText(AuthenticationSettingsPermitted),
+							Fmt.SetId(methodControlId)
+						)));
 				var tblInits = new List<TblActionNode>();
 				tblInits.Add(Init.OnLoadNew(dsSecurityOnServer.Path.T.SecurityOnServer.F.CredentialAuthenticationMethod, new ConstantValue(initialChoice)));
 				if (needLoginChoices && !forLoginCredentials) {
@@ -381,11 +368,11 @@ namespace Thinkage.MainBoss.Controls {
 			);
 			DefineBrowseTbl(dsMB.Schema.T.User, UserBrowserTblCreator);
 			#region Role
-			RoleEditTblCreator = new DelayedCreateTbl(delegate () {
-				return new Tbl(dsMB.Schema.T.Role, TId.SecurityRole,
+			BuiltinRoleEditTblCreator = new DelayedCreateTbl(delegate () {
+				return new Tbl(dsMB.Schema.T.Role, TId.BuiltinSecurityRole,
 					new Tbl.IAttr[] {
 						SecurityGroup,
-						new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete, EdtMode.EditDefault, EdtMode.ViewDefault, EdtMode.New, EdtMode.Delete, EdtMode.Clone))
+						new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete, EdtMode.EditDefault, EdtMode.ViewDefault, EdtMode.Edit, EdtMode.New, EdtMode.Delete, EdtMode.Clone))
 					},
 					new TblLayoutNodeArray(
 						DetailsTabNode.New(
@@ -400,7 +387,7 @@ namespace Thinkage.MainBoss.Controls {
 					)
 				);
 			});
-			DefineEditTbl(dsMB.Schema.T.Role, RoleEditTblCreator);
+			DefineEditTbl(dsMB.Schema.T.Role, BuiltinRoleEditTblCreator);
 			CustomRoleEditTblCreator = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.CustomRole, TId.CustomSecurityRole,
 					new Tbl.IAttr[] {

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html lang="en">
 <head>
-<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
-<meta name="copyright" content="2016 Thinkage Ltd." />
+<meta charset="UTF-8" />
+<meta name="copyright" content="2018 Thinkage Ltd." />
 <link rel="stylesheet" type="text/css" href="mbmanual.css" />
 <title>MainBoss Advanced 4.2 Operating Reference Manual: MainBoss Service Email Log</title>
 </head>
@@ -27,7 +27,12 @@
 <p class="wi2"><span class="CButton">New Request</span>: Opens a window to let you create a new request. This button makes it easy for you to create a new request in response to any email messages in the list. For more on creating requests, see <a href="Edit.Request.htm">Editing Requests</a>.
 
 <br /><br />Note that you can copy and paste information from an email request into a new request that you're creating. However, the new request will not have an explicit link to the original email; the request's <span class="CButton">Email Request</span> section will be blank.</p>
-<p class="wi2"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi2"><span class="CButton">View Email</span>: Opens your email program where you can examine the selected record in a more appropriate venue.
+This button has a drop-down list containing:
+
+<br /><br /><span class="CButton">Save Email Message</span>: Save a copy of the email message into an external file.
+
+<br /><br /><span class="CButton">Import Email Message</span>: Create an email record from an external file</p>
 <p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the message that's currently selected. Unlike many delete operations in MainBoss, this doesn't just hide the message; the message is actually deleted. As a result, if there is a request associated with the message, the link in the request's <span class="CButton">Email Request</span> section will refer to a message that is no longer available.</p>
 <p class="wi2"><span class="CButton"><img src="PrintHS.png" alt="Print" /></span>: Opens a window to let you print your email requests. For more information, see <a href="Report.Email Request.htm">Printing the MainBoss Service Email Log</a>.</p>
 <p class="wi2"><span class="CButton">Reject Email Request</span>: Immediately rejects the email request that is currently selected in the table. The usual delay on rejection doesn't apply; a rejection message is immediately sent to the person who sent the email. (For more about the usual delay on rejection, see <a href="Edit.MainBoss Service Configuration.htm">Configuring MainBoss Service</a>.)

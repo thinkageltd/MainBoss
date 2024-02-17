@@ -5,6 +5,22 @@
 	<dependency table="Meter"/>
 	<dependency table="Task"/>
 	<data>
+--create a cost center mapping table from information in the MB2.9 database to records created in the import for assisting in building expense models later
+CREATE TABLE <ODB/>.dbo.CostCenterExpenseMapping (
+	[CostCenterID]	[uniqueidentifier] NOT NULL,
+	[WorkOrderTemplateID]	[uniqueidentifier]  NULL,-- WorkOrder Template associated with a CostCenter
+	[UnitLocationID] [uniqueidentifier]  NULL, -- The Unit associated with a CostCenter
+	);
+	GO
+	insert into <ODB/>.dbo.CostCenterExpenseMapping
+	  (CostCenterID, WorkOrderTemplateID, UnitLocationID) 
+		  SELECT I.[ID], W.[ID], NULL from <IDB/>.dbo.CostCenters as I
+						join <IDB/>.dbo.WorkOrders as W on W.COSTCENTER = I.CODE
+						where W.[TYPE] = 'T' or W.[TYPE] = 'S'
+		  UNION
+		  SELECT I.[ID], NULL, UL.LocationID from <IDB/>.dbo.CostCenters as I
+						join <IDB/>.dbo.Units as U on U.COSTCENTER = I.CODE
+						join <IDB/>.dbo.UnitLinkages as UL on UL.ID = U.ID
 
 -- Add columns with precalculated data all our new encodings for season/enabled weekdays as well as information for new Periodicity records.
 ALTER TABLE <IDB/>.dbo.PreventiveSchedules add
@@ -260,7 +276,7 @@ begin
 	begin
 		continue
 	end
-  
+
   -- Count the number of schedules associated with the SRec.
   declare @ScheduleCount int
   select @ScheduleCount = count(*) from <IDB/>.dbo.PreventiveSchedules where WOKEY = @SRecKey
@@ -347,7 +363,6 @@ begin
 		  (ID, UnitLocationID, ScheduleID, WorkOrderTemplateID, Inhibit, RescheduleBasisAlgorithm)
 		  select top 1 @SWOID, @UnitLocationID, @existingScheduleID, @TaskID, OPS.INHIBIT, case OPS.ALGORITHM when 2 then 0 else 1 end
 			  from <IDB/>.dbo.PreventiveSchedules as OPS where OPS.WOKEY = @SRecKey
-	  
 	  -- Make a detail record for the schedule batch
 	  set @lastScheduledDate = null
 	  select top 1 @lastScheduledDate = LASTDATE, @lastScheduledReading = LASTSCHED, @lastScheduledMeterID = M.ID

@@ -12,27 +12,30 @@ namespace Thinkage.MainBoss.Database.Service {
 	/// Does the actual work of retrieving  mail, updates requests status and sends requestor rejection messages.
 	/// </summary>
 	public class RequestProcessor : EmailNotificationProcessor {
-		#region Constructors, Destructors
+		#region Constructors, Destructor
 
-		private RequestProcessor(IServiceLogging logger, MB3Client dbSession) : base(logger, dbSession) {
+		private RequestProcessor(IServiceLogging logger, MB3Client dbSession, bool allowOutgoingEmail) : base(logger, dbSession, allowOutgoingEmail) {
 			// We clear some datasets during processing so ensure they exist.
 			dsmb.EnsureDataTableExists(dsMB.Schema.T.EmailRequest, dsMB.Schema.T.EmailPart, dsMB.Schema.T.ActiveRequestor, dsMB.Schema.T.Requestor, dsMB.Schema.T.RequestState,
 				dsMB.Schema.T.RequestStateHistory, dsMB.Schema.T.Request, dsMB.Schema.T.Contact,
 				dsMB.Schema.T.RequestAcknowledgement);
 		}
-		public static void DoAllRequestProcessing(IServiceLogging logger, MB3Client dbSession, bool traceActivities, bool traceDetails, bool sendRejections = true) {
-			sendRejections = true;
+		public static void DoAllRequestProcessing(IServiceLogging logger, MB3Client dbSession, bool traceActivities, bool traceDetails, bool allowOutgoingEmail = true) {
 			if (lastFlush + TimeSpan.FromDays(1) < DateTime.Today) {
 				RetrieveRequests.FlushIDs();
 				lastFlush = DateTime.Today;
 			}
-			
-			using (RequestProcessor x = new RequestProcessor(logger, dbSession)) {
+			using (RequestProcessor x = new RequestProcessor(logger, dbSession, allowOutgoingEmail)) {
 				if (x.ServiceConfiguration.ProcessRequestorIncomingEmail ) {
-					logger.LogTrace(traceDetails, KB.K("Email requests processing started").Translate());
-					if (x.ServiceConfiguration.MailServer != null)
+					if (x.ServiceConfiguration.MailServer == null)
+						logger.LogInfo(KB.K("Email cannot be processed because there is no incoming Mail Server configured").Translate());
+					else if( x.ServiceConfiguration.MailUserName == null )
+						logger.LogInfo(KB.K("Email cannot be processed because there is no incoming Mail User Name configured").Translate());
+					else {
+						logger.LogTrace(traceDetails, KB.K("Email requests processing started").Translate());
 						x.FetchAndProcessEmailRequests(traceActivities, traceDetails);
-					logger.LogTrace(traceDetails, KB.K("Email requests processing completed").Translate());
+						logger.LogTrace(traceDetails, KB.K("Email requests processing completed").Translate());
+					}
 				}
 				else if(x.ServiceConfiguration.ProcessRequestorIncomingEmail != oldProcessRequestorIncomingEmail ) { 
 					logger.LogInfo(KB.K("Processing Email requests has been disabled").Translate());

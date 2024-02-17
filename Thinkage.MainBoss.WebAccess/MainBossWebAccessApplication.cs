@@ -43,9 +43,9 @@ namespace Thinkage.MainBoss.WebAccess {
 		}
 		public delegate XAFClient CreateDBSession(XAFClient.Connection connection);
 
-		internal static MainBossWebAccessApplication CreateNewApplicationObject(System.Globalization.CultureInfo ci) {
+		internal static MainBossWebAccessApplication CreateNewApplicationObject(System.Globalization.CultureInfo formatCultureInfo, System.Globalization.CultureInfo messageCultureInfo) {
 			MainBossWebAccessApplication result = new MainBossWebAccessApplication();
-			new FixedUserInformationOverride(result, "", "", ci, null);
+			new FixedUserInformationOverride(result, "", "", formatCultureInfo, messageCultureInfo, null);
 			new StandardApplicationIdentification(result, "MainBossWebAccess", ApplicationName);
 			new DatabaseFeaturesApplication(result,
 				(XAFClient.Connection connection) =>
@@ -136,7 +136,7 @@ namespace Thinkage.MainBoss.WebAccess {
 			}
 			if (user != null) {
 				UserID = user.Id;
-				new FixedUserInformationOverride(Application.Instance, userIdentification, Application.Instance.WorkstationName, Application.InstanceCultureInfo, System.Web.HttpContext.Current.User);
+				new FixedUserInformationOverride(Application.Instance, userIdentification, Application.Instance.WorkstationName, Application.InstanceFormatCultureInfo, Application.InstanceMessageCultureInfo, System.Web.HttpContext.Current.User);
 				AuthenticationEntities.Contact contact = rp.GetContactForUser(UserID.Value);
 				ContactID = contact.Id;
 				ContactName = contact.Code;
@@ -153,7 +153,7 @@ namespace Thinkage.MainBoss.WebAccess {
 		}
 		private void ResetIdentificationProperties() {
 			UserID = null;
-			new FixedUserInformationOverride(Application.Instance, "", Application.Instance.WorkstationName, Application.InstanceCultureInfo, null);
+			new FixedUserInformationOverride(Application.Instance, "", Application.Instance.WorkstationName, Application.InstanceFormatCultureInfo, Application.InstanceMessageCultureInfo, null);
 			ContactName = null;
 			ContactID = null;
 		}

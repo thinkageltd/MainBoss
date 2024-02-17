@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html lang="en">
 <head>
-<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
-<meta name="copyright" content="2016 Thinkage Ltd." />
+<meta charset="UTF-8" />
+<meta name="copyright" content="2018 Thinkage Ltd." />
 <link rel="stylesheet" type="text/css" href="mbmanual.css" />
 <title>MainBoss Advanced 4.2 Operating Reference Manual: Searching for a Particular Record</title>
 </head>
@@ -23,8 +23,7 @@
 <p class="wi2"><span class="CButton">Contains</span>: If you select this option, MainBoss finds fields that contain the given value anywhere. For example, if you set the initial field to "<span class="CField">Code</span>" and the value to <span class="CU">abc</span>, MainBoss searches for records whose code contains <span class="CU">abc</span> anywhere in the code's text.</p>
 <p class="wi2"><span class="CButton">Matches pattern</span>: If you select this option, MainBoss treats the contents the given value as a <span class="NewTerm">regular expression</span> as defined in the Microsoft .NET environment. Regular expressions are primarily intended for technically sophisticated users; for an introduction, see
 
-<br /><br /><a href="http://www.codeproject.com/KB/dotnet/regextutorial.aspx">http://www.codeproject.com/KB/dotnet/regextutorial.aspx</a> </p>
-<p class="wi2"><span class="CButton">Is null</span>: If you select this option, MainBoss looks for records where the specified field is blank. For example, suppose you are searching through work orders; if you set the initial field to "<span class="CField">Closing Code</span>" and specify <span class="CButton">Is null</span>, MainBoss will only find work orders that don't have a closing code.</p>
+<br /><br /><a href="https://www.codeproject.com/Articles/9099/The-Minute-Regex-Tutorial">https://www.codeproject.com/Articles/9099/The-Minute-Regex-Tutorial</a><span class="CButton">Is null</span>: If you select this option, MainBoss looks for records where the specified field is blank. For example, suppose you are searching through work orders; if you set the initial field to "<span class="CField">Closing Code</span>" and specify <span class="CButton">Is null</span>, MainBoss will only find work orders that don't have a closing code.</p>
 <p class="wi2"><span class="CButton">Is not null</span>: MainBoss will find the next record where the field's value is not blank.</p>
 <p class="wi2"><span class="CField">Is on or after</span>: Used when searching by dates. (You can specify a date but not a time.) MainBoss will find the next record where the field's value is on or after the given date.</p>
 <p class="wi2"><span class="CField">Is on or before</span>: Used when searching by dates. (You can specify a date but not a time.) MainBoss will find the next record where the field's value is on or after the given date.</p>

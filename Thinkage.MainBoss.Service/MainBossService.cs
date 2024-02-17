@@ -286,7 +286,7 @@ namespace Thinkage.MainBoss.Service {
 				if (ServiceLogging == null)
 					Exit(-1); // there will have been an error
 			}
-			catch (SystemException ex) {
+			catch (System.Exception ex) {
 				LogErrorAndExit(1, Thinkage.Libraries.Exception.FullMessage(ex));
 			}
 			//
@@ -295,7 +295,7 @@ namespace Thinkage.MainBoss.Service {
 			try {
 				dbParms = ServiceUtilities.AcquireServiceRecordInfo(cmdParms.ConnectionInfo, DBConnection, cmdParms.ServiceCode, null);
 			}
-			catch (SystemException ex) {
+			catch (System.Exception ex) {
 				if (!ServiceOptions.DeleteService)  // no MainBoss Service record but a MainBoss Service may actually exist.
 					LogErrorAndExit(1, Thinkage.Libraries.Exception.FullMessage(ex));
 			}
@@ -331,7 +331,7 @@ namespace Thinkage.MainBoss.Service {
 				else if (!ServiceOptions.CreateService && !ServiceOptions.DeleteService && !ServiceOptions.UpdateService)
 					Console.WriteLine(Strings.Format(KB.K("Currently there is no Windows Service for MainBoss installed for {0}"), DBConnection.DisplayName));
 			}
-			catch (SystemException e) {
+			catch (System.Exception e) {
 				if (ServiceOptions.DeleteService && ServiceOptions.Force)
 					System.Console.WriteLine(Thinkage.Libraries.Exception.FullMessage(e));
 				else if (ServiceOptions.CreateService || ServiceOptions.UpdateService)

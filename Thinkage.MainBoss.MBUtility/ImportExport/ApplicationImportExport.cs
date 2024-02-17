@@ -14,15 +14,6 @@ namespace Thinkage.MainBoss.MBUtility.ImportExport {
 			: base(attachTo) {
 			RegisterService<IApplicationDataImportExport>(this);
 			RegisterService<IDataImportExport>(this);
-#if TESTINGOTHERLANGUAGEIMPORT
-			try {
-				System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("es", false);
-				System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("es", false);
-			}
-			catch (System.Exception e) {
-				throw new GeneralException(e, KB.K("Invalid CultureInfo '{0}'"), "es");
-			}
-#endif
 		}
 
 		#region IDataImportExport Members

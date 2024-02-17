@@ -66,11 +66,11 @@ namespace Thinkage.MainBoss.Database {
 				case Encrypt.Implicit:
 					return "POP3S";
 				case Encrypt.Explicit:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceCultureInfo, KB.K("{0} with {1}"), KB.I("POP3"), KB.I("TLS"));
+					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} with {1}"), KB.I("POP3"), KB.I("TLS"));
 				case Encrypt.None:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceCultureInfo, KB.K("{0} plain text"), KB.I("POP3"));
+					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} plain text"), KB.I("POP3"));
 				default:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceCultureInfo, KB.K("{0} with unknown security"), KB.I("POP3"));
+					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} with unknown security"), KB.I("POP3"));
 				}
 			}
 		}
@@ -114,12 +114,12 @@ namespace Thinkage.MainBoss.Database {
 			if (mailbox != null) {
 				DartImap.SelectedMailbox = DartImap.Mailboxes[mailbox];
 				if (DartImap.SelectedMailbox == null)
-					throw new GeneralException(KB.K("Mailbox '{0}' does not exist on server '{1}' on port {2} using {3}"), mailbox, server, port, Protocol);
+					throw Libraries.Exception.AddContext(new GeneralException(KB.K("Mailbox '{0}' does not exist on server '{1}' on port {2} using {3}"), mailbox, server, port, Protocol), new MessageExceptionContext(KB.K("Available Mailboxes: {0}"), string.Join(", ", DartImap.Mailboxes.Select(e => e.Name))));
 			}
 			else {
-				DartImap.SelectedMailbox = DartImap.Mailboxes["MBOX"] ?? DartImap.Mailboxes["INBOX"];
+				DartImap.SelectedMailbox = DartImap.Mailboxes["MBOX"] ?? DartImap.Mailboxes["INBOX"] ?? DartImap.Mailboxes["Inbox"];
 				if (DartImap.SelectedMailbox == null)
-					throw new GeneralException(KB.K("No incoming Mailbox found on server '{0}' on port {1} using {2}, tried 'MBOX' and 'INBOX'"), server, port, Protocol);
+					throw Libraries.Exception.AddContext(new GeneralException(KB.K("No incoming Mailbox found on server '{0}' on port {1} using {2}, tried 'MBOX', 'INBOX' and 'Inbox'"), server, port, Protocol), new MessageExceptionContext(KB.K("Available Mailboxes: {0}"), string.Join(", ", DartImap.Mailboxes.Select(e => e.Name))));
 			}
 		}
 		IEnumerable<EmailMessage> pMessages = null;
@@ -145,11 +145,11 @@ namespace Thinkage.MainBoss.Database {
 				case Encrypt.Implicit:
 					return "IMAP4S";
 				case Encrypt.Explicit:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceCultureInfo, KB.K("{0} with {1}"), KB.I("IMAP4"), KB.I("TLS"));
+					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} with {1}"), KB.I("IMAP4"), KB.I("TLS"));
 				case Encrypt.None:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceCultureInfo, KB.K("{0} plain text"), KB.I("IMAP4"));
+					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} plain text"), KB.I("IMAP4"));
 				default:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceCultureInfo, KB.K("{0} with unknown security"), KB.I("IMAP4"));
+					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} with unknown security"), KB.I("IMAP4"));
 				}
 			}
 		}

@@ -48,8 +48,7 @@ namespace Thinkage.MainBoss.MBUtility {
 		private readonly Definition Options;
 
 		private void Run() {
-			if (!LDAPEntry.IsInDomain())
-				throw new GeneralException(KB.K("'{0}' can only work if the computer is in a domain; if you are in a domain, then the domain controller is currently inaccessible"), KB.I("AddRequestorfromactivedirectory"));
+			LDAPEntry.CheckActiveDirectory(KB.I("AddRequestorfromactivedirectory"));
 			string oName;
 			System.Version minDBVersionForRolesTable = new System.Version(1, 0, 4, 38); // The roles table appeared in its current form at this version
 			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);

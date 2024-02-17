@@ -84,13 +84,13 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		internal class ServiceCommand : ServiceConfigurationApplicationCommand {
 			public ServiceCommand([Invariant]string command, [Invariant]string serviceName, XAFClient db) :
-				base(KB.I("Thinkage.MainBoss.MainBossServiceConfiguration.exe"), Strings.IFormat("{0} /ServiceCode:\"{1}\" /Connection:{2}"
+				base(KB.I(ServiceCommonBrowseLogic.ServiceConfigurationCommand), Strings.IFormat("{0} /ServiceCode:\"{1}\" /Connection:{2}"
 					, command, serviceName, ServiceConfiguration.EscapeArg(BuildSqlConnectString(db)))) {
 			}
 		}
 		internal class ClearEventLog : ServiceConfigurationApplicationCommand {
 			public ClearEventLog(string serviceName) :
-				base(KB.I("Thinkage.MainBoss.MainBossServiceConfiguration.exe"), "/ClearEventLog") {
+				base(KB.I(ServiceCommonBrowseLogic.ServiceConfigurationCommand), "/ClearEventLog") {
 			}
 		}
 		internal class ManualServiceExecution : ServiceConfigurationApplicationCommand {
@@ -127,14 +127,6 @@ namespace Thinkage.MainBoss.Controls {
 				finally {
 					ipdo.Complete();
 				}
-
-				// var log = new LogAndDatabaseAndError(DB.ConnectionInfo);
-				//RequestProcessor.DoAllRequestProcessing(log, (MB3Client)DB, Trace, Trace, SendingEmailOk);
-				//if (SendingEmailOk) {
-				//	AssignmentNotificationProcessor.DoAllAssignmentNotifications(log, (MB3Client)DB, Trace, Trace);
-				//	RequestorNotificationProcessor.DoAllRequestorNotifications(log, (MB3Client)DB, Trace, Trace);
-				//}
-				//	log.LogClose(KB.K("Retrieving Email completed").Translate());
 			}
 		}
 
@@ -890,7 +882,7 @@ namespace Thinkage.MainBoss.Controls {
 					System.Diagnostics.Debug.Assert((int)maxlen % 2 == 0);
 					maxlen = (int)maxlen / 2;
 				}
-				innerHandler = new StringTypeInfo(minlen, maxlen, 0, pTypeInfo.AllowNull, true, true).GetTypeEditTextHandler(Thinkage.Libraries.Application.InstanceCultureInfo);
+				innerHandler = new StringTypeInfo(minlen, maxlen, 0, pTypeInfo.AllowNull, true, true).GetTypeEditTextHandler(Thinkage.Libraries.Application.InstanceFormatCultureInfo);
 			}
 			private BlobTypeInfo pTypeInfo;
 			private TypeEditTextHandler innerHandler;

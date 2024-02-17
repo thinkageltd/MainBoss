@@ -618,7 +618,7 @@ namespace Thinkage.MainBoss.Database {
 				ds.V.MinAReqAppVersion.Value = MBUpgrader.UpgradeInformation.LastestAppVersion(dsMB.Schema.V.MinAReqAppVersion).ToString();
 				ds.V.MinMBRemoteAppVersion.Value = MBUpgrader.UpgradeInformation.LastestAppVersion(dsMB.Schema.V.MinMBRemoteAppVersion).ToString();
 				// Demo logo variable
-				Creation.Resources.Images.Culture = Thinkage.Libraries.Application.InstanceCultureInfo;
+				Creation.Resources.Images.Culture = Thinkage.Libraries.Application.InstanceMessageCultureInfo;
 				System.Drawing.Bitmap logo = Creation.Resources.Images.DemoLogo;
 				using (System.IO.MemoryStream ms = new MemoryStream()) {
 					logo.Save(ms, logo.RawFormat);
@@ -724,7 +724,10 @@ namespace Thinkage.MainBoss.Database {
 				dsMB.Schema.T.DatabaseHistory.F.Subject[databaseHistoryRow] = Strings.Format(KB.K("Database version {0} created"), MBUpgrader.UpgradeInformation.LatestDBVersion.ToString());
 				System.Text.StringBuilder description = new StringBuilder();
 				description.AppendLine(Strings.Format(KB.K("SQL Version {0}"), ds.DB.DatabaseServerProductIdentification));
-				description.AppendLine(Strings.Format(KB.K("Culture {0} ({1})"), Thinkage.Libraries.Application.InstanceCultureInfo.NativeName, Thinkage.Libraries.Application.InstanceCultureInfo.Name));
+				description.AppendLine(Strings.Format(KB.K("Formats {0} ({1}/{2:X4})"), Thinkage.Libraries.Application.InstanceFormatCultureInfo.NativeName, Thinkage.Libraries.Application.InstanceFormatCultureInfo.Name, Thinkage.Libraries.Application.InstanceFormatCultureInfo.LCID));
+				description.AppendLine(Strings.Format(KB.K("Messages {0} ({1}/{2:X4})"), Thinkage.Libraries.Application.InstanceMessageCultureInfo.NativeName, Thinkage.Libraries.Application.InstanceMessageCultureInfo.Name, Thinkage.Libraries.Application.InstanceMessageCultureInfo.LCID));
+				description.AppendLine(Strings.Format(KB.K("Installed as {0} ({1}/{2:X4})"), System.Globalization.CultureInfo.InstalledUICulture.NativeName, System.Globalization.CultureInfo.InstalledUICulture.Name, System.Globalization.CultureInfo.InstalledUICulture.LCID));
+
 				Application.IUserInformation uInfo = Application.Instance.QueryInterface<Application.IUserInformation>();
 				if (uInfo != null) {
 					description.AppendLine(Strings.Format(KB.K("By user {0}"), ds.DB.Session.ConnectionInformation.UserIdentification));

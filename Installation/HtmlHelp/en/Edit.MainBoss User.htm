@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="copyright" content="2018 Thinkage Ltd." />
+<link rel="stylesheet" type="text/css" href="mbmanual.css" />
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing MainBoss User Records</title>
+</head>
+<body>
+<table class="logohead">
+<tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
+<td class="pagehead"><h1 class="pagehead">Editing MainBoss User Records</h1>
+</td></tr></table>
+<!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
+<p><a href="Browse.MainBoss User.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.SQL Database User.htm">Next section &gt;</a></p>
+
+<p>You create or modify user records using the User editor. The usual way to open the editor is to click <span class="CButton">New User</span> or <span class="CButton">Edit</span> in the <span class="CButton">View</span> section of <span class="CPanel">Administration | MainBoss Users</span>.</p>
+
+<p class="box">Only someone with SQL Server Administration privileges can register new users with SQL Server. You will receive an error message if you try to add a new user but do not have appropriate permissions. The error occurs when you try to <span class="CButton">Save</span> the new user's record.</p>
+
+<p>The user editor window contains the following:</p>
+
+<p class="wi"><span class="CButton">Details</span> section: Provides general information about the user.</p>
+<p class="wi2"><span class="CField">Contact</span>: Contact information for this user. The contact information is given by a record in the Contacts table. For more on contacts, see <a href="Contacts.htm">Contacts</a>.</p>
+<p class="wi2"><span class="CField">Description</span>: A description of the user (typically the person's real name).</p>
+<p class="wi2"><span class="CField">Authentication Credential</span>: The name under which the user will access the MainBoss database. Click the "..." button to open a window where you can specify this name. For more information, see <a href="Browse.SQL Database User.htm">The Database User Table</a>.</p>
+<p class="wi2"><span class="CField">Comments</span>: Any comments you want to associate with the user.</p>
+<p class="wi"><span class="CButton">Security Roles</span> section: Specifies security permissions for the user. For more on roles, see <a href="SecurityRoles.htm">Security Roles</a>.
+
+<br /><br />By adding a security role to the user's list of roles, you give the user all security permissions associated with that role. Each role record has a "<span class="CField">Comments</span>" field explaining what permissions are associated with the role.
+
+<br /><br />A user may have any number of assigned security roles. We expect that <span class="BL">most people will have multiple security roles.</span>
+
+<br /><br />If you assign someone a "full" permission, you don't have to assign a "view" permission too. For example, if you assign someone the <span class="CU">WorkOrder</span> role (permission to edit work orders), you don't have to assign <span class="CU">WorkOrderView</span> (permission to view work orders) since <span class="CU">WorkOrder</span> automatically implies <span class="CU">WorkOrderView</span>. Similarly, "view" permissions automatically imply "summary" permissions; for example, <span class="CU">WorkOrderSummary</span> isn't necessary if someone already has <span class="CU">WorkOrderView</span>.
+
+<br /><br />We recommend that you be generous in assigning people "summary" roles (e.g. <span class="CU">UnitSummary</span>) since these provide a small amount of information that is useful for people performing many different jobs within your organization.</p>
+<p class="box"><span class="CInset">Important:</span> If a user has no assigned security roles, that person will not be able to use MainBoss in any way. Therefore, you should normally assign at least one security role to each user.
+
+<br /><br />After you assign security roles to a user, MainBoss makes it easy to test the effects of those security roles. For more, see the description of <span class="CButton">Evaluate Security As</span> in <a href="Browse.MainBoss User.htm">Viewing MainBoss Users</a>.</p>
+
+<p class="wi2"><span class="CButton">Assign Role</span>: Opens a window which lets you specify one or more roles for this user. For more information, see <a href="Edit.MainBoss-defined Security Role.htm">Assigning Security Roles to Users</a>.</p>
+<p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
+<p class="wi3"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
+<p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
+<p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Removes the assigned security role from this user.</p>
+<p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Lets you search through the list of records for a particular record. For more information, see <a href="Search.htm">Searching for a Particular Record</a>. The <span class="CButton"><img src="Find_VS.png" alt="Search" /></span> button has an accompanying drop-down list containing the following:</p>
+<p class="wi3"><span class="CButton">Find Next</span>: Uses the same search condition(s) as your most recent search and finds the next record in the table that matches the condition(s). If the search reaches the end of the table without finding a matching record, it goes to the start of the table and continues the search.</p>
+<p class="wi3"><span class="CButton">Find Previous</span>: Same as <span class="CButton">Find Next</span> except that it goes backward in the table. If the search reaches the start of the table without finding a matching record, it goes to the end of the table and continues the search.</p>
+<p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
+<p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
+<p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
+<p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
+<p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
+<p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<ul class="b1"><li>
+</li></ul><p>Note that the names in MainBoss's <span class="CPanel">Users</span> list must be individual SQL Authentication credentials; they cannot be groups. In MainBoss, Authentication Credentials are associated with records in order to create an audit trail. This is why MainBoss itself doesn't accept group authorizations&#8212;an audit should record exactly who made a particular change, which means tracking the individual Authentication Credentials, not just a group name.</p>
+
+<p>For more on users and groups, see <a href="Users.htm">Users</a>. For more on viewing user/groups, see <a href="Browse.MainBoss User.htm">Viewing MainBoss Users</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+
+
+<p><a href="Browse.MainBoss User.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.SQL Database User.htm">Next section &gt;</a></p>
+</body>
+</html>
+

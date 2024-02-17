@@ -161,7 +161,7 @@ namespace Thinkage.MainBoss.Database.Service {
 							break;
 					}
 				}
-				catch (SystemException ex) {
+				catch (System.Exception ex) {
 					Libraries.Exception ge = new GeneralException(ex, KB.K("Checking the Windows Service for MainBoss on '{0}' was not possible"), serviceComputer);
 					if (!isAdmin)
 						ge.WithContext(new MessageExceptionContext(KB.K("Running this program as an Administrator may enable the configuration checks")));
@@ -246,8 +246,8 @@ namespace Thinkage.MainBoss.Database.Service {
 				if (Password != null)
 					Connection.SqlConnectionObject.Password = Password;
 			}
-			catch( SystemException ex ) {
-				throw new GeneralException(ex, KB.K("Invalid Sql Server connection string '{0}'"), ConnectionO.Value);
+			catch( System.Exception ex ) {
+				throw new GeneralException(ex, KB.K("Invalid SQL Server connection string '{0}'"), ConnectionO.Value);
 			}
 			if( Connection == null)
 				throw new GeneralException(KB.K("Windows Service for MainBoss does not have the expected configuration."));

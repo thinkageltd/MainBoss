@@ -152,7 +152,7 @@ namespace Thinkage.MainBoss.Controls {
 				// Make sure the webUrl address entered is a valid Url
 				try {
 					if (webUrlAddress != null && webUrlAddress.Length > 0) {
-						var tf = dsMB.Path.T.Contact.F.WebURL.ReferencedColumn.EffectiveType.GetTypeFormatter(Application.InstanceCultureInfo);
+						var tf = dsMB.Path.T.Contact.F.WebURL.ReferencedColumn.EffectiveType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
 						var impliedUrl = Thinkage.Libraries.Xml.UriUtilities.SetImpliedProtocol(tf.Format(webUrlAddress), "http://");
 						if (!System.Uri.IsWellFormedUriString(impliedUrl, UriKind.RelativeOrAbsolute))
 							throw new GeneralException(KB.K("Not a well formed Url value"));
@@ -423,9 +423,9 @@ namespace Thinkage.MainBoss.Controls {
 				else if (!bestLicense.UsesCount)
 					return KB.K("Licensed").Translate();
 				else if (bestLicense.CountedItemsCount.HasValue)
-					return Strings.Format(Application.InstanceCultureInfo, KB.K("Licensed for {0} {0.IsOne ? {1} : {2} } of which {3} currently exist"), bestLicense.License.LicenseCount, bestLicense.CountedItemName, bestLicense.CountedItemsName, bestLicense.CountedItemsCount.Value);
+					return Strings.Format(Application.InstanceMessageCultureInfo, KB.K("Licensed for {0} {0.IsOne ? {1} : {2} } of which {3} currently exist"), bestLicense.License.LicenseCount, bestLicense.CountedItemName, bestLicense.CountedItemsName, bestLicense.CountedItemsCount.Value);
 				else
-					return Strings.Format(Application.InstanceCultureInfo, KB.K("Licensed for {0} {0.IsOne ? {1} : {2} }"), bestLicense.License.LicenseCount, bestLicense.CountedItemName, bestLicense.CountedItemsName);
+					return Strings.Format(Application.InstanceMessageCultureInfo, KB.K("Licensed for {0} {0.IsOne ? {1} : {2} }"), bestLicense.License.LicenseCount, bestLicense.CountedItemName, bestLicense.CountedItemsName);
 			}
 			else {
 				if (bestLicense.InvalidLicenseId ?? false)
@@ -1992,7 +1992,6 @@ namespace Thinkage.MainBoss.Controls {
 			}
 			#endregion
 			#region Members
-
 			#region - Node Ids
 			private static readonly object UseSuggestedQuantityId = KB.I("UseSuggestedQuantityId");
 			protected object QuantityId {
@@ -2006,6 +2005,20 @@ namespace Thinkage.MainBoss.Controls {
 			#region - Our readonly message keys
 			private static readonly Key UsingSuggestedQuantity = KB.K("The calculated quantity is being used");
 			#endregion
+			public TypeInfo QuantityTypeInfoWithZero {
+				get {
+					TypeInfo basis = QuantityPath.ReferencedColumn.EffectiveType;
+					if (basis is IntervalTypeInfo) {
+						// TODO: Having to figure out the epsilon of a singleton set for unioning should not be necessary!
+						if (((IntervalTypeInfo)basis).EpsilonType is IntervalTypeInfo)
+							return basis.UnionCompatible(new IntervalTypeInfo((TimeSpan)((IntervalTypeInfo)basis).NativeEpsilon(typeof(TimeSpan)), TimeSpan.Zero, TimeSpan.Zero, allow_null: false));
+						else
+							return basis.UnionCompatible(new IntervalTypeInfo((uint)((IntervalTypeInfo)basis).NativeEpsilon(typeof(uint)), TimeSpan.Zero, TimeSpan.Zero, allow_null: false));
+					}
+					else
+						return basis.UnionCompatible(new IntegralTypeInfo(false, 0, 0));
+				}
+			}
 			#endregion
 			#region Helper methods
 			#region - HandleSuggestedValue
@@ -2320,7 +2333,7 @@ namespace Thinkage.MainBoss.Controls {
 						TblColumnNode.New(dsMB.Path.T.POLineItem.F.ItemLocationID.F.ActualItemLocationID.F.Available, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(ItemLocationAvailableId))),
 						TblColumnNode.New(dsMB.Path.T.POLineItem.F.ItemLocationID.F.ActualItemLocationID.F.EffectiveMinimum, ECol.AllReadonly),
 						TblColumnNode.New(dsMB.Path.T.POLineItem.F.ItemLocationID.F.ActualItemLocationID.F.EffectiveMaximum, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(ItemLocationMaximumId))),
-						TblUnboundControlNode.New(QuantityTypeInfo, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(toOrderId)))
+						TblUnboundControlNode.New(KB.K("Recommended To Order"), QuantityTypeInfoWithZero, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(toOrderId)))
 					)
 				));
 				Actions.Add(RemainingCalculator<long>(ItemLocationMaximumId, ItemLocationAvailableId, toOrderId));
@@ -2609,7 +2622,7 @@ namespace Thinkage.MainBoss.Controls {
 					TblRowNode.New(QuantityLabel, new TblLayoutNode.ICtorArg[] { ECol.Normal },
 						TblColumnNode.New(dsMB.Path.T.POLineLabor.F.DemandLaborOutsideID.F.Quantity, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(POLineDemandedId))),
 						TblColumnNode.New(dsMB.Path.T.POLineLabor.F.DemandLaborOutsideID.F.OrderQuantity, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(POLineOrderedId))),
-						TblUnboundControlNode.New(QuantityTypeInfo, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(toOrderId)))
+						TblUnboundControlNode.New(KB.K("Recommended To Order"), QuantityTypeInfoWithZero, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(toOrderId)))
 					)
 				));
 				DetailColumns.Add(TblColumnNode.New(dsMB.Path.T.POLineLabor.F.DemandLaborOutsideID.F.LaborOutsideID.F.Cost, DCol.Normal, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(RequiredUnitCostId))));
@@ -2764,7 +2777,7 @@ namespace Thinkage.MainBoss.Controls {
 					TblRowNode.New(QuantityLabel, new TblLayoutNode.ICtorArg[] { ECol.Normal },
 						TblColumnNode.New(dsMB.Path.T.POLineOtherWork.F.DemandOtherWorkOutsideID.F.Quantity, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(POLineDemandedId))),
 						TblColumnNode.New(dsMB.Path.T.POLineOtherWork.F.DemandOtherWorkOutsideID.F.OrderQuantity, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(POLineOrderedId))),
-						TblUnboundControlNode.New(QuantityTypeInfo, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(toOrderId)))
+						TblUnboundControlNode.New(KB.K("Recommended To Order"), QuantityTypeInfoWithZero, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(toOrderId)))
 					)
 				));
 				DetailColumns.Add(TblColumnNode.New(dsMB.Path.T.POLineOtherWork.F.DemandOtherWorkOutsideID.F.OtherWorkOutsideID.F.Cost, DCol.Normal, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(RequiredUnitCostId))));
@@ -3211,7 +3224,7 @@ namespace Thinkage.MainBoss.Controls {
 					TblRowNode.New(QuantityLabel, new TblLayoutNode.ICtorArg[] { ECol.Normal },
 						TblColumnNode.New(dsMB.Path.T.POLineLaborTemplate.F.DemandLaborOutsideTemplateID.F.Quantity, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(POLineDemandedId))),
 						TblColumnNode.New(dsMB.Path.T.POLineLaborTemplate.F.DemandLaborOutsideTemplateID.F.OrderQuantity, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(POLineOrderedId))),
-						TblUnboundControlNode.New(QuantityTypeInfo, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(toOrderId)))
+						TblUnboundControlNode.New(KB.K("Recommended To Order"), QuantityTypeInfoWithZero, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(toOrderId)))
 					)
 				));
 				DetailColumns.Add(TblColumnNode.New(dsMB.Path.T.POLineLaborTemplate.F.DemandLaborOutsideTemplateID.F.LaborOutsideID.F.Cost, DCol.Normal, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(RequiredUnitCostId))));
@@ -3364,7 +3377,7 @@ namespace Thinkage.MainBoss.Controls {
 					TblRowNode.New(QuantityLabel, new TblLayoutNode.ICtorArg[] { ECol.Normal },
 						TblColumnNode.New(dsMB.Path.T.POLineOtherWorkTemplate.F.DemandOtherWorkOutsideTemplateID.F.Quantity, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(POLineDemandedId))),
 						TblColumnNode.New(dsMB.Path.T.POLineOtherWorkTemplate.F.DemandOtherWorkOutsideTemplateID.F.OrderQuantity, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(POLineOrderedId))),
-						TblUnboundControlNode.New(QuantityTypeInfo, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(toOrderId)))
+						TblUnboundControlNode.New(KB.K("Recommended To Order"), QuantityTypeInfoWithZero, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(toOrderId)))
 					)
 				));
 				DetailColumns.Add(TblColumnNode.New(dsMB.Path.T.POLineOtherWorkTemplate.F.DemandOtherWorkOutsideTemplateID.F.OtherWorkOutsideID.F.Cost, DCol.Normal, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(RequiredUnitCostId))));
@@ -4426,7 +4439,7 @@ namespace Thinkage.MainBoss.Controls {
 											return Strings.Format(KB.K("Unavailable: {0}"), e.Message);
 										}
 										catch (System.Exception) {
-											return Strings.Format(Application.InstanceCultureInfo, KB.K("Unavailable: {0}"), KB.K("No permissions"));
+											return Strings.Format(Application.InstanceMessageCultureInfo, KB.K("Unavailable: {0}"), KB.K("No permissions"));
 										}
 									}
 							))),
@@ -4441,7 +4454,7 @@ namespace Thinkage.MainBoss.Controls {
 											return Strings.Format(KB.K("Unavailable: {0}"), e.Message);
 										}
 										catch (System.Exception) {
-											return Strings.Format(Application.InstanceCultureInfo, KB.K("Unavailable: {0}"), KB.K("No permissions"));
+											return Strings.Format(Application.InstanceMessageCultureInfo, KB.K("Unavailable: {0}"), KB.K("No permissions"));
 										}
 									}
 							))),
@@ -4724,7 +4737,7 @@ namespace Thinkage.MainBoss.Controls {
 							Fmt.SetCreated(
 								delegate (IBasicDataControl valueCtrl) {
 									var link = (UILinkDisplay)valueCtrl;
-									link.MakeUrl = (tf, value) => KB.I("http://www.mainboss.com/info/licenses.shtml");
+									link.MakeUrl = (tf, value) => KB.I("http://www.mainboss.com/info/licenses.htm");
 									link.VerticalAlignment = System.Drawing.StringAlignment.Far;
 								}
 							),
@@ -4883,7 +4896,7 @@ namespace Thinkage.MainBoss.Controls {
 								TblInitSourceNode.New(null,
 									new DualCalculatedInitValue(StringTypeInfo.Universe,
 										delegate (object[] inputs) {
-											var defaultURL = Strings.IFormat("http://mainboss.com/english/MainBossNews/{0}.{1}.{2}/index.shtml", VersionInfo.ProductVersion.Major, VersionInfo.ProductVersion.Minor, VersionInfo.ProductVersion.Build, Thinkage.Libraries.Application.InstanceCultureInfo.TwoLetterISOLanguageName);
+											var defaultURL = Strings.IFormat("http://mainboss.com/english/MainBossNews/{0}.{1}.{2}/index.htm", VersionInfo.ProductVersion.Major, VersionInfo.ProductVersion.Minor, VersionInfo.ProductVersion.Build, Thinkage.Libraries.Application.InstanceFormatCultureInfo.TwoLetterISOLanguageName);
 											return new System.Uri((string)inputs[0] ?? defaultURL);
 										},
 										new VariableValue(dsMB.Schema.V.NewsURL)),

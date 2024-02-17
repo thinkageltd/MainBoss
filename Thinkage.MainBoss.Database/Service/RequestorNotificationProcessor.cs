@@ -10,10 +10,10 @@ namespace Thinkage.MainBoss.Database.Service {
 	/// Does the actual work for @Requests - retrieves mail, updates requests status and sends request acknowledgements.
 	/// </summary>
 	public class RequestorNotificationProcessor : EmailNotificationProcessor {
-		#region Constructors, Destructors
+		#region Constructors, Destructor
 
-		public RequestorNotificationProcessor(IServiceLogging logger, MB3Client dbSession)
-			: base(logger, dbSession) {
+		private RequestorNotificationProcessor(IServiceLogging logger, MB3Client dbSession)
+			: base(logger, dbSession, true) {
 		}
 		public static void DoAllRequestorNotifications(IServiceLogging logger, MB3Client dbSession, bool traceActivities, bool traceDetails) {
 			using (var x = new RequestorNotificationProcessor(logger, dbSession)) {
@@ -139,7 +139,7 @@ namespace Thinkage.MainBoss.Database.Service {
 
 			if (currentStateHistory.F.PredictedCloseDate.HasValue) {
 				builder.Append(UK.K("EstimatedCompletionDate").Translate(builder.PreferredLanguage));
-				builder.AppendLine(Strings.IFormat(" {0}", dsMB.Schema.T.RequestStateHistory.F.PredictedCloseDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo).Format(currentStateHistory.F.PredictedCloseDate)));
+				builder.AppendLine(Strings.IFormat(" {0}", dsMB.Schema.T.RequestStateHistory.F.PredictedCloseDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo).Format(currentStateHistory.F.PredictedCloseDate)));
 			}
 			if (ServiceConfiguration.MainBossRemoteURL != null && !currentState.F.FilterAsClosed) {
 				builder.AppendWebAccessLink(UK.K("RequestAddCommentPreamble").Translate(builder.PreferredLanguage), requestRow.F.Number,
@@ -152,7 +152,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				builder.StartHistoryItemTitle();
 				// Note we do not put the name of the commenter in this email; that is considered 'inside' information not typically communicated to external users.
 				// This differs from the Assignment notification whereby the information is deemed to come from an insider to an insider receiving the notification.
-				builder.Append(dsMB.Schema.T.RequestStateHistory.F.EffectiveDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo).Format(rshrow.F.EffectiveDate));
+				builder.Append(dsMB.Schema.T.RequestStateHistory.F.EffectiveDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo).Format(rshrow.F.EffectiveDate));
 				builder.AppendBlank();
 				builder.Append(rshrow.RequestStateIDParentRow.F.Desc.Translate(builder.PreferredLanguage));
 				builder.EndHistoryItemTitle();

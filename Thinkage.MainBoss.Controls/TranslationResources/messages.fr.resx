@@ -534,6 +534,9 @@
   <data name="TableObjects§MainBoss-defined Security Role" xml:space="preserve">
     <value>MainBoss-defined Security Role</value>
   </data>
+  <data name="TableObjects§Security Role" xml:space="preserve">
+    <value>Security Role</value>
+  </data>
   <data name="TableObjects§Maintenance Forecast" xml:space="preserve">
     <value>Prévisions Entretien</value>
   </data>
@@ -1722,9 +1725,6 @@
   <data name="Thinkage.MainBoss.Controls§Credit" xml:space="preserve">
     <value>Crédit</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Culture {0} ({1})" xml:space="preserve">
-    <value>Culture {0} ({1})</value>
-  </data>
   <data name="Thinkage.MainBoss.Controls§Current" xml:space="preserve">
     <value>Courant</value>
   </data>
@@ -1749,17 +1749,14 @@
   <data name="Thinkage.MainBoss.Controls§Data import package identified as {0}" xml:space="preserve">
     <value>package d'importation de données identifié comme {0}</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Database {0}" xml:space="preserve">
-    <value>Base de données {0}</value>
+  <data name="Thinkage.MainBoss.Controls§Database {0} Version {1}" xml:space="preserve">
+    <value>Base de données {0} Version {1}</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Database Management - Update Statistics" xml:space="preserve">
     <value>Gestion de base de données - Mise à jour statistiques</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Database server must be SQL Server 2008 or later" xml:space="preserve">
     <value>serveur de base de données doit être SQL Server 2008 ou plus tard</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Database version {0}" xml:space="preserve">
-    <value>la version de base de données {0}</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Date" xml:space="preserve">
     <value>Date</value>
@@ -1776,8 +1773,8 @@
   <data name="Thinkage.MainBoss.Controls§Days" xml:space="preserve">
     <value>Journées</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Days DaOverdue" xml:space="preserve">
-    <value>Jours Arriéré</value>
+  <data name="Thinkage.MainBoss.Controls§Days Overdue" xml:space="preserve">
+    <value>Jours en Retard</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Debit" xml:space="preserve">
     <value>Débit</value>
@@ -2154,6 +2151,9 @@
   <data name="Thinkage.MainBoss.Controls§For more information, see" xml:space="preserve">
     <value>Pour obtenir plus d'information, consultez</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Formats {0} ({1}/{2:X4})" xml:space="preserve">
+    <value>Formats {0} ({1}/{2:X4})</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Friday" xml:space="preserve">
     <value>Vendredi</value>
   </data>
@@ -2264,6 +2264,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Insert a new Email Message from a file" xml:space="preserve">
     <value>Insérer un nouveau message d'e-mail à partir d'un fichier</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Installed as {0} ({1}/{2:X4})" xml:space="preserve">
+    <value>Installé en tant que {0} ({1}/{2:X4})</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Internet Message Access Protocol version 4 revision 1" xml:space="preserve">
     <value>Protocole d'accès message Internet version 4 révision 1</value>
@@ -2402,6 +2405,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Maximum" xml:space="preserve">
     <value>Maximum</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Messages {0} ({1}/{2:X4})" xml:space="preserve">
+    <value>Messages {0} ({1}/{2:X4})</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Minimum" xml:space="preserve">
     <value>Minimum</value>
@@ -2588,6 +2594,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§One line per selected unit maintenance plan" xml:space="preserve">
     <value>Une ligne par sélectionnée plan de maintenance de l'unité</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Only available on computer that is a member of a domain" xml:space="preserve">
+    <value>Uniquement disponible sur un ordinateur membre d'un domaine</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Only include Demand Templates for work specifically from this Purchase Order Template's Vendor" xml:space="preserve">
     <value>Inclure uniquement les modèles des demandes de ressources pour le travail confié précisément au fournisseur rattaché à ce Bon de Commande</value>
@@ -3060,6 +3069,9 @@
   <data name="Thinkage.MainBoss.Controls§Receiving Storage Assignment" xml:space="preserve">
     <value>Réception d'une attribution d'espace de rangement</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Recommended To Order" xml:space="preserve">
+    <value>Recommandé pour commander</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Refresh from Active Directory" xml:space="preserve">
     <value>Rafraîchir à partir d'Active Directory</value>
   </data>
@@ -3210,9 +3222,6 @@
   <data name="Thinkage.MainBoss.Controls§Revision {0}" xml:space="preserve">
     <value>Révision {0}</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Right" xml:space="preserve">
-    <value>Droite</value>
-  </data>
   <data name="Thinkage.MainBoss.Controls§Sales Accounts Payable Vendor" xml:space="preserve">
     <value>Fournisseur, ventes, comptes fournisseurs</value>
   </data>
@@ -3260,9 +3269,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Seasonal exceptions" xml:space="preserve">
     <value>Exceptions saisonnières</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Security Role" xml:space="preserve">
-    <value>Rôle de sécurité</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Select from database users" xml:space="preserve">
     <value>Sélectionnez parmi les utilisateurs de la base de données</value>
@@ -3486,9 +3492,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Syntax error in regular expression" xml:space="preserve">
     <value>Erreur de syntaxe dans l'expression régulière</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Table" xml:space="preserve">
-    <value>Table</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Task demands and actuals" xml:space="preserve">
     <value>exigences de la tâche et les dépenses réelles</value>

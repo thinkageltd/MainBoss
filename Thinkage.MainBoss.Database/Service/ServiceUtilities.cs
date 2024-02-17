@@ -81,7 +81,9 @@ namespace Thinkage.MainBoss.Database.Service {
 		public string SqlUseridFormatted {
 			get {
 				var displayname = Utilities.UseridToDisplayName(ConnectionInfo.SqlUserid ?? WorkingServiceUserid);
-				return !Utilities.IsComputerLocalName(displayname) ? Strings.IFormat("'{0}'", displayname) : Strings.Format(KB.K("'{0}' (external name '{1}' )"), displayname, getMachineUserid(displayname));
+				var externalname = Utilities.IsComputerLocalName(displayname) ? getExternalMachineUserid(displayname) : null;
+				if (externalname == null) return displayname;
+				return !Utilities.IsComputerLocalName(displayname) ? Strings.IFormat("'{0}'", displayname) : Strings.Format(KB.K("'{0}' (external name '{1}')"), displayname, externalname);
 			}
 		}
 		public string ServiceUseridAsSqlUserid {
@@ -90,18 +92,15 @@ namespace Thinkage.MainBoss.Database.Service {
 				if (DomainAndIP.IsThisComputer(ServiceComputer))
 					return u;
 				if (ServiceComputer != null && Utilities.IsComputerLocalName(WorkingServiceUserid))
-					return getMachineUserid(u);
+					return getExternalMachineUserid(u);
 				return u;
 			}
 		}
-		private static string getMachineUserid(string u) {
-			try {
-				u = Strings.IFormat("{0}\\{1}$", DomainAndIP.GetDomainNetBiosName(), Environment.MachineName);
-			}
-			catch (SystemException) { // most like failure is the computer is not a member of a domain
-				u = Strings.IFormat("{0}$", Environment.MachineName); // computer is not a member of a domain
-			}
-			return u;
+		private static string getExternalMachineUserid(string u) {
+			var name = DomainAndIP.GetDomainName();
+			if( name != null )
+				return Strings.IFormat("{0}\\{1}$", name, Environment.MachineName);
+			return null;
 		}
 		public bool WindowsAccountExists {
 			get {

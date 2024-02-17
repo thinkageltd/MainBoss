@@ -423,28 +423,34 @@ namespace Thinkage.MainBoss.Application {
 																														  // extended properties of the schema and will thus automatically be there.
 			Thinkage.MainBoss.Database.MBRestrictions.DefineRestrictions();
 
-			FormsPresentationMixIn = new FormsPresentationApplication(this, !o.MBConnectionParameters.CompactBrowsers,
-				// This UIHandler adds a recursive containment filter to all Link(Location) type values. It uses the PermanentLocationPickerTblCreator, which is correct for most cases,
-				// but for Sublocation it contains values (Units and Storerooms) that cannot possibly contain a Sublocation. I don't have a good way of avoiding this because we don't
-				// know what types of Locations the search value allows in the first place. Even looking at the field underlying the search value is insufficient, because it might be
-				// RelativeLocation.ContainingLocationID which has exactly the ambiguity described above.
-				// Note that LocationContainment.ContainedLocationID is not nullable, but sv.TypeInfo might be so we have to remove nullability from the latter before testing the type.
-				new SearchExpressionControl.UIHandler(
-					(sv => sv.TypeInfo.IntersectCompatible(ObjectTypeInfo.NonNullUniverse).TypeEquals(dsMB.Schema.T.LocationContainment.F.ContainedLocationID.EffectiveType)),
-					KB.K("Is contained in one of"), KB.K("is contained in one of {0}"),
-					null,
-					// We can't code this as an EXISTS(SELECT * FROM LocationContainment WHERE ContainedLocationID = (Source Placeholder) AND ...
-					// because we would have to increment the scope level of any Path expr node in the Source value.
-					SearchExpressionControl.UIHandler.SourcePlaceholder.In(
-						new SelectSpecification(dsMB.Schema.T.LocationContainment, new[] { new SqlExpression(dsMB.Path.T.LocationContainment.F.ContainedLocationID) },
-												new SqlExpression(dsMB.Path.T.LocationContainment.F.ContainingLocationID).In(SearchExpressionControl.UIHandler.ValuePlaceholders[0]), null)),
-					SearchExpressionControl.Context.Server,
-					new SearchExpressionControl.UIHandler.ParameterInfoNode(
-						(searchValue) => new SetTypeInfo(false, dsMB.Schema.T.LocationContainment.F.ContainingLocationID.EffectiveType, 1),
-						(searchValue) => new Fmt(Fmt.SetPickFrom(TILocations.PermanentLocationPickerTblCreator)),
-						null, null, null, null)
-				)
-			);
+			var extraHandlers = new List<SearchExpressionControl.UIHandler>();
+			foreach (DBI_PathToRow pathToValue in new[] {
+					(DBI_PathToRow)dsMB.Path.T.Location,
+					(DBI_PathToRow)dsMB.Path.T.Location.F.RelativeLocationID.F.UnitID.PathToReferencedRow,
+					(DBI_PathToRow)dsMB.Path.T.Location.F.RelativeLocationID.F.PermanentStorageID.PathToReferencedRow
+				})
+				extraHandlers.Add(
+					// This UIHandler adds a recursive containment filter to all Link(Locationderivation) type values. It uses the PermanentLocationPickerTblCreator, which is correct for most cases,
+					// but for Sublocation it contains values (Units and Storerooms) that cannot possibly contain a Sublocation. I don't have a good way of avoiding this because we don't
+					// know what types of Locations the search value allows in the first place. Even looking at the field underlying the search value is insufficient, because it might be
+					// RelativeLocation.ContainingLocationID which has exactly the ambiguity described above.
+					new SearchExpressionControl.UIHandler(
+						(sv => sv.TypeInfo.IntersectCompatible(ObjectTypeInfo.NonNullUniverse).TypeEquals(new LinkedTypeInfo(false, pathToValue.ReferencedTable.InternalIdColumn))),
+						KB.K("Is contained in one of"), KB.K("is contained in one of {0}"),
+						null,
+						// We can't code this as an EXISTS(SELECT * FROM LocationContainment WHERE ContainedLocationID = (Source Placeholder) AND ...
+						// because we would have to increment the scope level of any Path expr node in the Source value.
+						SearchExpressionControl.UIHandler.SourcePlaceholder.In(
+							new SelectSpecification(dsMB.Schema.T.LocationContainment, new[] { new SqlExpression(new DBI_PathToRow(dsMB.Path.T.LocationContainment.F.ContainedLocationID.PathToReferencedRow, pathToValue).PathToReferencedRowId) },
+													new SqlExpression(dsMB.Path.T.LocationContainment.F.ContainingLocationID).In(SearchExpressionControl.UIHandler.ValuePlaceholders[0]), null)),
+						SearchExpressionControl.Context.Server,
+						new SearchExpressionControl.UIHandler.ParameterInfoNode(
+							(searchValue) => new SetTypeInfo(false, dsMB.Schema.T.LocationContainment.F.ContainingLocationID.EffectiveType, 1),
+							(searchValue) => new Fmt(Fmt.SetPickFrom(TILocations.PermanentLocationPickerTblCreator)),
+							null, null, null, null)
+					)
+				);
+			FormsPresentationMixIn = new FormsPresentationApplication(this, !o.MBConnectionParameters.CompactBrowsers, extraHandlers.ToArray());
 			new Thinkage.MainBoss.Database.RaiseErrorTranslationKeyBuilder(this);
 			var permManager = new MainBossPermissionsManager(Root.Rights);
 			new ApplicationTblDefaultsUsingWindows(this, new ETbl(), permManager, Root.Rights.Table, Root.RightsSchema, Root.Rights.Action.Customize);

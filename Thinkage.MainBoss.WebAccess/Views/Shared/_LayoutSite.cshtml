@@ -24,13 +24,13 @@
 	</div>
 	<footer>
 		<div>
-			<a href="http://www.mainboss.com/info/aboutMainBossWebAccess.shtml?version=4.0"><img src="~/Content/mb_thinkage.gif" alt="Thinkage Ltd." width="100" /></a>
+			<a href="http://www.mainboss.com/info/aboutMainBossWebAccess.htm?version=4.2"><img src="~/Content/mb_thinkage.gif" alt="Thinkage Ltd." width="100" /></a>
 		</div>
 	</footer>
 	@Scripts.Render("~/bundles/jquery")
 	@Scripts.Render("~/bundles/jqueryui")
 	@Styles.Render("~/Content/themes/base/css")
-	@Html.JQueryUI().InitializeDatepickerCulture(Thinkage.Libraries.Application.InstanceCultureInfo)
+	@Html.JQueryUI().InitializeDatepickerCulture(Thinkage.Libraries.Application.InstanceFormatCultureInfo)
 	@RenderSection("scripts", required: false)
 </body>
 </html>

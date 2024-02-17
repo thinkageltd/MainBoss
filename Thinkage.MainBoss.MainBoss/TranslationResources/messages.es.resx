@@ -234,9 +234,6 @@
   <data name="Thinkage.MainBoss.MainBoss§Credentials" xml:space="preserve">
     <value>Cartas Credenciales</value>
   </data>
-  <data name="Thinkage.MainBoss.MainBoss§CultureInfo" xml:space="preserve">
-    <value>Idioma</value>
-  </data>
   <data name="Thinkage.MainBoss.MainBoss§Database Operations" xml:space="preserve">
     <value>Operaciones de Base de Datos</value>
   </data>
@@ -263,6 +260,9 @@
   </data>
   <data name="Thinkage.MainBoss.MainBoss§Exit this application" xml:space="preserve">
     <value>Salir de esta aplicación</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§FormatCultureInfo" xml:space="preserve">
+    <value>FormatCultureInfo</value>
   </data>
   <data name="Thinkage.MainBoss.MainBoss§Free Limited Single User" xml:space="preserve">
     <value>Usuario Único Limitado Gratis</value>
@@ -297,6 +297,12 @@
   <data name="Thinkage.MainBoss.MainBoss§Input SQL database {0}" xml:space="preserve">
     <value>Base de datos SQL de entrada {0}</value>
   </data>
+  <data name="Thinkage.MainBoss.MainBoss§Invalid /FormatCultureInfo '{0}'" xml:space="preserve">
+    <value>Válido /FormatCultureInfo '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Invalid /MessageCultureInfo '{0}'" xml:space="preserve">
+    <value>Válido /MessageCultureInfo '{0}'</value>
+  </data>
   <data name="Thinkage.MainBoss.MainBoss§Invalid CultureInfo '{0}'" xml:space="preserve">
     <value>Válido CultureInfo '{0}'</value>
   </data>
@@ -329,6 +335,9 @@
   </data>
   <data name="Thinkage.MainBoss.MainBoss§MB2.9 data source {0}" xml:space="preserve">
     <value>Fuente de datos MB2.9 {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§MessageCultureInfo" xml:space="preserve">
+    <value>MessageCultureInfo</value>
   </data>
   <data name="Thinkage.MainBoss.MainBoss§No License" xml:space="preserve">
     <value>Sin licencia</value>
@@ -491,6 +500,9 @@
   </data>
   <data name="Thinkage.MainBoss.MainBoss§Upgrade the database structure to the one used by this version of MainBoss" xml:space="preserve">
     <value>Modificar la estructura de base de datos a la que se utiliza en esta versión de MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Use either /CultureInfo or /MessageCultureInfo and /FormatCultureInfo" xml:space="preserve">
+    <value>Utilizar cualquiera /CultureInfo o /MessageCultureInfo y /FormatCultureInfo</value>
   </data>
   <data name="Thinkage.MainBoss.MainBoss§User {0}" xml:space="preserve">
     <value>Usuario {0} </value>

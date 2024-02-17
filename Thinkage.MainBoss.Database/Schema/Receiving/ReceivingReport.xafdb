@@ -32,7 +32,7 @@
 	<field name="WorkOrderID" type="GUIDREF" link="WorkOrder">
 	  <doc>The WorkOrder that work was done for for Labor and Other Work</doc>
 	</field>
-	<field name="Code" type="Code" labelkey="Received">
+	<field name="Code" type="Code" labelkey="Resource">
 	  <doc>The Code of what was received (Labor, OtherWork, Item, PurchaseMiscellaneous)</doc>
 	</field>
 	<field name="TradeID" type="GUIDREF" link="Trade">

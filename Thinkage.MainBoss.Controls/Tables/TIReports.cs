@@ -251,8 +251,8 @@ namespace Thinkage.MainBoss.Controls {
 			// This may require refinement???????
 			var allAttribs = new List<TblLeafNode.ICtorArg>(attribs);
 			allAttribs.Add(Fmt.SetHorizontalAlignment(System.Drawing.StringAlignment.Far));
-			TypeFormatter longFormatter = longQuantityExpression.ResultType.GetTypeFormatter(Application.InstanceCultureInfo);
-			TypeFormatter timeFormatter = timeQuantityExpression.ResultType.GetTypeFormatter(Application.InstanceCultureInfo);
+			TypeFormatter longFormatter = longQuantityExpression.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
+			TypeFormatter timeFormatter = timeQuantityExpression.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
 			StringTypeInfo resultType = new StringTypeInfo(1, Math.Max((int)longFormatter.SizingInformation.MaxWidth, (int)timeFormatter.SizingInformation.MaxWidth), 0, longQuantityExpression.ResultType.AllowNull || timeQuantityExpression.ResultType.AllowNull, true, true);
 			return TblQueryValueNode.New(label, new TblQueryCalculation(
 					(values =>
@@ -281,8 +281,8 @@ namespace Thinkage.MainBoss.Controls {
 		/// <returns></returns>
 		public static TblLeafNode UnitCostNodeForMixedValues(Key label, SqlExpression longQuantityExpression, SqlExpression timeQuantityExpression, TblQueryExpression costCalculation, params TblLeafNode.ICtorArg[] attribs) {
 			// Client-side calculation of and formatting of the Unit Cost. We want different formatting for time-rates and unit-rates. Formatted text is fine because it never makes sense to total or otherwise summarize this.
-			var unitCostFormatter = TIGeneralMB3.ItemUnitCostTypeOnServer.GetTypeFormatter(System.Globalization.CultureInfo.CurrentCulture);
-			var hourlyCostFormatter = TIGeneralMB3.HourlyCostTypeOnServer.UnionCompatible(TIGeneralMB3.ItemUnitCostTypeOnServer).GetTypeFormatter(System.Globalization.CultureInfo.CurrentCulture);
+			var unitCostFormatter = TIGeneralMB3.ItemUnitCostTypeOnServer.GetTypeFormatter(Application.InstanceFormatCultureInfo);
+			var hourlyCostFormatter = TIGeneralMB3.HourlyCostTypeOnServer.UnionCompatible(TIGeneralMB3.ItemUnitCostTypeOnServer).GetTypeFormatter(Application.InstanceFormatCultureInfo);
 			var allAttribs = new List<TblLeafNode.ICtorArg>(attribs);
 			allAttribs.Add(Fmt.SetHorizontalAlignment(System.Drawing.StringAlignment.Far));
 
@@ -995,11 +995,9 @@ namespace Thinkage.MainBoss.Controls {
 		// grouping is the grouping to use for the Code of the Location of the storage assignment.
 		// NOTE: ShowXID does not include the Item even though it should. Currently callers to ActualItemLocationColumns tend to call ItemColumns themselves.
 		static ColumnBuilder ActualItemLocationColumns(dsMB.PathClass.PathToActualItemLocationLink actualItemLocation, FieldSelect effect = null) {
-			return ColumnBuilder.New(actualItemLocation.PathToReferencedRow
-				, ActualItemLocationCountColumns(actualItemLocation.PathToReferencedRow, effect)
-			);
+			return ActualItemLocationColumns(actualItemLocation.PathToReferencedRow, effect);
 		}
-		static ColumnBuilder ActualItemLocationCountColumns(dsMB.PathClass.PathToActualItemLocationRow actualItemLocation, FieldSelect effect = null) {
+		static ColumnBuilder ActualItemLocationColumns(dsMB.PathClass.PathToActualItemLocationRow actualItemLocation, FieldSelect effect = null) {
 			return ColumnBuilder.New(actualItemLocation
 				, ItemLocationColumns(actualItemLocation.F.ItemLocationID, effect)
 				, TblColumnNode.New(actualItemLocation.F.EffectiveMinimum, effect.ShowIfOneOf(ShowAll))
@@ -2066,9 +2064,9 @@ namespace Thinkage.MainBoss.Controls {
 			return new Tbl(PO.Table, title, iAttr.ToArray(), layout.LayoutArray(), extraNodes.ToArray());
 		}
 		public static Tbl PurchaseOrderFormReport = POHistoryOrFormTbl(TId.PurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport);
-		public static Tbl PurchaseOrderDraftFormReport = POHistoryOrFormTbl(TId.DraftPurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter: new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsDraft).IsTrue());
-		public static Tbl PurchaseOrderIssuedFormReport = POHistoryOrFormTbl(TId.IssuedPurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter: new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsIssued).IsTrue());
-		public static Tbl PurchaseOrderIssuedAndAssignedFormReport = POHistoryOrFormTbl(TId.IssuedPurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter:
+		public static Tbl PurchaseOrderDraftFormReport = POHistoryOrFormTbl(TId.PurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter: new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsDraft).IsTrue());
+		public static Tbl PurchaseOrderIssuedFormReport = POHistoryOrFormTbl(TId.PurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter: new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsIssued).IsTrue());
+		public static Tbl PurchaseOrderIssuedAndAssignedFormReport = POHistoryOrFormTbl(TId.PurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter:
 				new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID)
 									.In(new SelectSpecification(
 										null,
@@ -2076,8 +2074,8 @@ namespace Thinkage.MainBoss.Controls {
 										new SqlExpression(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderAssigneeID.F.ContactID.L.User.ContactID.F.Id).Eq(new SqlExpression(new UserIDSource()))
 												.And(new SqlExpression(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsIssued).IsTrue()),
 												null).SetDistinct(true)));
-		public static Tbl PurchaseOrderClosedFormReport = POHistoryOrFormTbl(TId.ClosedPurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter: new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsClosed).IsTrue());
-		public static Tbl PurchaseOrderVoidFormReport = POHistoryOrFormTbl(TId.VoidPurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter: new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsVoid).IsTrue());
+		public static Tbl PurchaseOrderClosedFormReport = POHistoryOrFormTbl(TId.PurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter: new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsClosed).IsTrue());
+		public static Tbl PurchaseOrderVoidFormReport = POHistoryOrFormTbl(TId.PurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter: new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsVoid).IsTrue());
 
 		public static Tbl SinglePurchaseOrderFormReport = POHistoryOrFormTbl(TId.PurchaseOrder.ReportSingle, true, dsMB.Path.T.PurchaseOrderFormReport, singleRecord: true);
 		public static Tbl PurchaseOrderByAssigneeFormReport = POHistoryOrFormTbl(TId.PurchaseOrder.ReportByAssignee, true, dsMB.Path.T.PurchaseOrderAssignmentReport.F.PurchaseOrderFormReportID.PathToReferencedRow,
@@ -2345,8 +2343,11 @@ namespace Thinkage.MainBoss.Controls {
 							ColumnBuilder.New(dsMB.Path.T.ReceiptReport.F.ReceiptID.PathToReferencedRow
 								, TblColumnNode.New(ReceivingReport.F.Code, DefaultShowInDetailsCol.Show())
 								, ItemColumns(ReceivingReport.F.ItemLocationID.F.ItemID)
-								, WorkOrderColumns(ReceivingReport.F.WorkOrderID)
 								, TblColumnNode.New(ReceivingReport.F.ItemLocationID.F.LocationID.F.Code, DefaultShowInDetailsCol.Hide())
+								, LaborOutsideColumns(ReceivingReport.F.LaborOutsideID)
+								, OtherWorkOutsideColumns(ReceivingReport.F.OtherWorkOutsideID)
+								, MiscellaneousColumns(ReceivingReport.F.MiscellaneousID)
+								, WorkOrderColumns(ReceivingReport.F.WorkOrderID)
 								, OQIHNode
 								, QIHNode
 								, UOMNode
@@ -2525,7 +2526,7 @@ namespace Thinkage.MainBoss.Controls {
 				ItemColumns(dsMB.Path.T.ActualItemLocation.F.ItemLocationID.F.ItemID, ShowXIDAndUOM),
 				TblColumnNode.New(dsMB.Path.T.ActualItemLocation.F.ItemLocationID.F.LocationID.F.Code, new MapSortCol(RDLReport.LocationSort), DefaultShowInDetailsCol.Show()),
 				TblColumnNode.New(dsMB.Path.T.ActualItemLocation.F.ItemLocationID.F.LocationID, Fmt.SetPickFrom(TILocations.AllStorageBrowseTblCreator), new AllowShowInDetailsChangeCol(false), DefaultShowInDetailsCol.Hide()),
-				ActualItemLocationCountColumns(dsMB.Path.T.ActualItemLocation, ShowXIDAndOnHand),
+				ActualItemLocationColumns(dsMB.Path.T.ActualItemLocation, ShowXIDAndOnHand),
 				TblColumnNode.New(dsMB.Path.T.ActualItemLocation.F.Id.L.ItemLocationReport.ActualItemLocationID.F.SuggestedRestockingQTY, DefaultShowInDetailsCol.Show()),
 				TblServerExprNode.New(KB.K("Physical Count"), SqlExpression.Constant("______"))   // Instead we should have a null value, and use Fmt attributes to force minimum width and underlining or a box (giving more vertical space)
 			).LayoutArray()
@@ -2731,7 +2732,7 @@ namespace Thinkage.MainBoss.Controls {
 			ColumnBuilder.New(dsMB.Path.T.TemporaryItemLocation,
 				ItemColumns(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID, ShowXIDAndUOM),
 				TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID.F.Code, new MapSortCol(RDLReport.LocationSort)),
-				ActualItemLocationCountColumns(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.PathToReferencedRow, ShowXIDAndOnHand),
+				ActualItemLocationColumns(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.PathToReferencedRow, ShowXIDAndOnHand),
 				TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemPriceID.F.UnitCost),
 				WorkOrderColumns(dsMB.Path.T.TemporaryItemLocation.F.WorkOrderID, ShowXID)
 			).LayoutArray()
@@ -2754,15 +2755,12 @@ namespace Thinkage.MainBoss.Controls {
 			},
 			ColumnBuilder.New(dsMB.Path.T.PermanentItemLocation,
 				ItemColumns(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID, ShowXIDAndUOM),
-				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID.F.Code, new MapSortCol(RDLReport.LocationSort), DefaultShowInDetailsCol.Show()),
-				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID, Fmt.SetPickFrom(TILocations.PermanentStorageBrowseTblCreator), new AllowShowInDetailsChangeCol(false), DefaultShowInDetailsCol.Hide()),
-				//				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemPriceID.F. need this in a columnbuilder based on item price
 				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ExternalTag),
 				TblQueryValueNode.New(KB.K("External Tag Bar Code"), ValueAsBarcode(dsMB.Path.T.PermanentItemLocation.F.ExternalTag), Fmt.SetUsage(DBI_Value.UsageType.Image)),
 				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.Minimum, DefaultShowInDetailsCol.Show()),
 				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.Maximum, DefaultShowInDetailsCol.Show()),
 				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID.L.LocationReport.LocationID.F.OrderByRank, DefaultShowInDetailsCol.Hide()),
-				ActualItemLocationCountColumns(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.PathToReferencedRow, ShowXIDAndOnHand),
+				ActualItemLocationColumns(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.PathToReferencedRow, ShowXIDAndOnHand),
 				TblServerExprNode.New(KB.K("Physical Count"), SqlExpression.Constant("______"))   // Instead we should have a null value, and use Fmt attributes to force minimum width and underlining or a box (giving more vertical space)
 			).LayoutArray()
 		);
@@ -3320,7 +3318,7 @@ namespace Thinkage.MainBoss.Controls {
 			// We would like to assume that the pitch of the regular and bold fonts match, and in most cases they do but not for Lucida Console (but they do for Lucida Console Typewriter).
 			// The widths in the format insertions correspond to the widths mbfn_WorkOrder_History_As_String uses for the data. The exception is the State column which is 44 wide and which
 			// we replace with maxStateLength characters.
-			var p = Strings.IFormat(Application.InstanceCultureInfo, "{0,-14} {1,-8} {2} {3,-25} {4}", StateHistoryKey, KB.K("Date"), KB.K("State").Translate().PadRight(maxStateLength), KB.K("User"), KB.K("Status"));
+			var p = Strings.IFormat(Application.InstanceFormatCultureInfo, "{0,-14} {1,-8} {2} {3,-25} {4}", StateHistoryKey, KB.K("Date"), KB.K("State").Translate().PadRight(maxStateLength), KB.K("User"), KB.K("Status"));
 			//			Textbox t = report.ValueTextbox(p);	// NOTE (W20130015): Should call LabelTextbox instead to get bold but we can't assume bold and non-bold pitches match (thanks, MS)
 			//			t.Style.FontFamily = report.Logic.FixedPitchFaceName;
 			//			t.Style.FontSize = new Size(report.Logic.FixedTextSizePoints, Size.Units.Points);
@@ -3730,26 +3728,26 @@ namespace Thinkage.MainBoss.Controls {
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandLaborInsideID.F.Quantity),
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandLaborOutsideID.F.Quantity)
 													);
-			TypeFormatter estimatedTimeFormatter = estimatedTime.ResultType.GetTypeFormatter(System.Globalization.CultureInfo.CurrentCulture);
+			TypeFormatter estimatedTimeFormatter = estimatedTime.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
 			SqlExpression estimatedCount = SqlExpression.Coalesce(
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandItemID.F.Quantity),
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandOtherWorkInsideID.F.Quantity),
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandOtherWorkOutsideID.F.Quantity)
 													);
-			TypeFormatter estimatedCountFormatter = estimatedCount.ResultType.GetTypeFormatter(System.Globalization.CultureInfo.CurrentCulture);
+			TypeFormatter estimatedCountFormatter = estimatedCount.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
 			StringTypeInfo formattedEstimatedQuantityType = new StringTypeInfo(Math.Min((int)estimatedTimeFormatter.SizingInformation.MinWidth, (int)estimatedCountFormatter.SizingInformation.MinWidth),
 																	Math.Max((int)estimatedTimeFormatter.SizingInformation.MaxWidth, (int)estimatedCountFormatter.SizingInformation.MaxWidth), 0, true, true, true);
 			SqlExpression actualTime = SqlExpression.Coalesce(
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandLaborInsideID.F.ActualQuantity),
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandLaborOutsideID.F.ActualQuantity)
 													);
-			TypeFormatter actualTimeFormatter = actualTime.ResultType.GetTypeFormatter(System.Globalization.CultureInfo.CurrentCulture);
+			TypeFormatter actualTimeFormatter = actualTime.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
 			SqlExpression actualCount = SqlExpression.Coalesce(
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandItemID.F.ActualQuantity),
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandOtherWorkInsideID.F.ActualQuantity),
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandOtherWorkOutsideID.F.ActualQuantity)
 													);
-			TypeFormatter actualCountFormatter = actualCount.ResultType.GetTypeFormatter(System.Globalization.CultureInfo.CurrentCulture);
+			TypeFormatter actualCountFormatter = actualCount.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
 			StringTypeInfo formattedActualQuantityType = new StringTypeInfo(Math.Min((int)actualTimeFormatter.SizingInformation.MinWidth, (int)actualCountFormatter.SizingInformation.MinWidth),
 																	Math.Max((int)actualTimeFormatter.SizingInformation.MaxWidth, (int)actualCountFormatter.SizingInformation.MaxWidth), 0, true, true, true);
 			RecordTypeClassifierByLinkages classifier = WOReportResourceCategoryClassifier(dsMB.Path.T.Demand.F);

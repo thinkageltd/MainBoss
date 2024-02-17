@@ -1464,9 +1464,6 @@
   <data name="dsMBLabel§ReceiveCost" xml:space="preserve">
     <value>Recevez coût</value>
   </data>
-  <data name="dsMBLabel§Received" xml:space="preserve">
-    <value>Reçu</value>
-  </data>
   <data name="dsMBLabel§ReceiveDate" xml:space="preserve">
     <value>Recevez date</value>
   </data>
@@ -2328,6 +2325,9 @@
   <data name="Thinkage.MainBoss.Database.StateCode§Work Order waiting" xml:space="preserve">
     <value>Ordre de Travail en attente</value>
   </data>
+  <data name="Thinkage.MainBoss.Database§'{0}' can only work if the computer is a member of a domain" xml:space="preserve">
+    <value>'{0}' ne peut fonctionner que si l'ordinateur est membre d'un domaine</value>
+  </data>
   <data name="Thinkage.MainBoss.Database§'{0}' cannot contain itself either directly or indirectly" xml:space="preserve">
     <value>'{0}' ne peut pas se contenir ni directement ni indirectement</value>
   </data>
@@ -2351,6 +2351,9 @@
   </data>
   <data name="Thinkage.MainBoss.Database§{0} rejection {0.IsOne ? message : messages } for {1}" xml:space="preserve">
     <value>{0} {0.IsOne ? message : messages } de réjection pour {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§'{0}' requires access to the domain controller for the domain '{1}' which is currently inaccessible" xml:space="preserve">
+    <value>'{0}' nécessite l'accès au contrôleur de domaine pour le domaine '{1}' qui est actuellement inaccessible</value>
   </data>
   <data name="Thinkage.MainBoss.Database§{0} server '{1}' on port {2} using {3}" xml:space="preserve">
     <value>{0} serveur '{1}' sur le port {2} utilisation de {3}</value>
@@ -2925,9 +2928,6 @@
   <data name="Thinkage.MainBoss.Database§Creating Work Order {0} of {1}" xml:space="preserve">
     <value>Création du bon de travail {0} de {1}</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Culture {0} ({1})" xml:space="preserve">
-    <value>Culture {0} ({1})</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§current date" xml:space="preserve">
     <value>date courante</value>
   </data>
@@ -3046,6 +3046,12 @@ Main-d'œuvre         __________________________ Matériaux    _________________
   <data name="Thinkage.MainBoss.Database§Email Address '{0}' does not match the email address of any Requestor, and a Requestor was not created because the email address matched the reject auto create email address pattern" xml:space="preserve">
     <value>Adresse e-mail '{0}' ne corrrespond à aucun demandeur, et un nouveau demandeur n'a pas été créé parce que l'adresse correspond au patron d'adresses nouvelles à rejeter</value>
   </data>
+  <data name="Thinkage.MainBoss.Database§Email cannot be processed because there is no incoming Mail Server configured" xml:space="preserve">
+    <value>Le courrier électronique ne peut pas être traité car aucun serveur de courrier entrant n'est configuré</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Email cannot be processed because there is no incoming Mail User Name configured" xml:space="preserve">
+    <value>Le courrier électronique ne peut pas être traité car aucun nom d'utilisateur de courrier entrant n'est configuré</value>
+  </data>
   <data name="Thinkage.MainBoss.Database§Email request from '{0}' does not match the email address of any Requestor" xml:space="preserve">
     <value>L'envoyeur '{0}' Demande de travail par courriel ne correspond à aucune adresse courriel de Demandeur</value>
   </data>
@@ -3112,6 +3118,9 @@ Main-d'œuvre         __________________________ Matériaux    _________________
   <data name="Thinkage.MainBoss.Database§ExternalTags cleared on Units and Locations" xml:space="preserve">
     <value>ExternalTags effacés sur certaines Unités</value>
   </data>
+  <data name="Thinkage.MainBoss.Database§Formats {0} ({1}/{2:X4})" xml:space="preserve">
+    <value>Formats {0} ({1}/{2:X4})</value>
+  </data>
   <data name="Thinkage.MainBoss.Database§From: {0}" xml:space="preserve">
     <value>De: {0}</value>
   </data>
@@ -3136,6 +3145,9 @@ Main-d'œuvre         __________________________ Matériaux    _________________
   <data name="Thinkage.MainBoss.Database§Info" xml:space="preserve">
     <value>Infos</value>
   </data>
+  <data name="Thinkage.MainBoss.Database§Installed as {0} ({1}/{2:X4})" xml:space="preserve">
+    <value>Installé en tant que {0} ({1}/{2:X4})</value>
+  </data>
   <data name="Thinkage.MainBoss.Database§Installed Windows Service for MainBoss '{0}' is version '{1}' and the MainBoss database expects version '{2}'." xml:space="preserve">
     <value>Installé le Service Windows pour MainBoss '{0}' est la version '{1}' et la base de données MainBoss attend version '{2}'.</value>
   </data>
@@ -3145,8 +3157,8 @@ Main-d'œuvre         __________________________ Matériaux    _________________
   <data name="Thinkage.MainBoss.Database§Interacts with your local mail system to send acknowledgments to requestors and to assignees of requests, work orders and purchase orders. If this service is disabled, all features that depend on it will be queued up until the service is enabled again." xml:space="preserve">
     <value>Interagit avec votre système de messagerie local pour envoyer des accusés aux demandeurs et aux cessionnaires de demandes, les bons de travail et des commandes. Si ce service est désactivé, toutes les fonctions qui en dépendent seront mises en attente jusqu'à ce que le service est activé à nouveau.</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Invalid Sql Server connection string '{0}'" xml:space="preserve">
-    <value>Chaîne de connexion du serveur Sql invalide '{0}'</value>
+  <data name="Thinkage.MainBoss.Database§Invalid SQL Server connection string '{0}'" xml:space="preserve">
+    <value>Chaîne de connexion SQL Server non valide '{0}'</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Inventory is limited to {0} items." xml:space="preserve">
     <value>L'inventaire est limité à {0} articles.</value>
@@ -3298,6 +3310,9 @@ Main-d'œuvre         __________________________ Matériaux    _________________
   <data name="Thinkage.MainBoss.Database§Message:{0}{1}" xml:space="preserve">
     <value>Message:{0}{1}</value>
   </data>
+  <data name="Thinkage.MainBoss.Database§Messages {0} ({1}/{2:X4})" xml:space="preserve">
+    <value>Messages {0} ({1}/{2:X4})</value>
+  </data>
   <data name="Thinkage.MainBoss.Database§Meter readings must not decrease with increasing Effective Date" xml:space="preserve">
     <value>Les lectures des compteurs ne doivent pas diminuer avec l'augmentation Date d'effet</value>
   </data>
@@ -3346,8 +3361,11 @@ Main-d'œuvre         __________________________ Matériaux    _________________
   <data name="Thinkage.MainBoss.Database§No Email requests to process" xml:space="preserve">
     <value>Aucune demande par courrier électronique à traiter</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§No incoming Mailbox found on server '{0}' on port {1} using {2}, tried 'MBOX' and 'INBOX'" xml:space="preserve">
-    <value>Aucune boîte aux lettres entrante trouvée sur le serveur '{0}' sur le port {1} en utilisant {2}, essayé 'MBOX' et 'INBOX'</value>
+  <data name="Thinkage.MainBoss.Database§No incoming Mailbox found on server '{0}' on port {1} using {2}, tried 'MBOX', 'INBOX' and 'Inbox'" xml:space="preserve">
+    <value>Aucune boîte aux lettres entrante trouvée sur le serveur '{0}' sur le port {1} en utilisant {2}, essayé 'MBOX' et 'INBOX' et 'Inbox'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Available Mailboxes: {0}" xml:space="preserve">
+    <value>Boîtes aux lettres disponibles: {0}</value>
   </data>
   <data name="Thinkage.MainBoss.Database§No intervals are defined for the Maintenance Timing '{0}'" xml:space="preserve">
     <value>Aucun intervalle n'est défini pour la fréquence d'entretien '{0}'</value>
@@ -3886,6 +3904,9 @@ Main-d'œuvre         __________________________ Matériaux    _________________
   <data name="Thinkage.MainBoss.Database§The DataBaseServer option is obsolete." xml:space="preserve">
     <value>L'option DataBaseServer est obsolète.</value>
   </data>
+  <data name="Thinkage.MainBoss.Database§The domain controller for the domain '{0}' is currently inaccessible" xml:space="preserve">
+    <value>Le contrôleur de domaine pour le domaine '{0}' est actuellement inaccessible</value>
+  </data>
   <data name="Thinkage.MainBoss.Database§The email message contains a virus or other unwanted software. The message will be deleted." xml:space="preserve">
     <value>Le message contient un virus ou autres logiciels indésirables. Le message sera supprimé.</value>
   </data>
@@ -4020,6 +4041,9 @@ Main-d'œuvre         __________________________ Matériaux    _________________
   </data>
   <data name="Thinkage.MainBoss.Database§This account is for the user who created this organization" xml:space="preserve">
     <value>Ce compte est réservé à l'utilisateur qui a créé cette entreprise</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§This computer is not a member of a domain" xml:space="preserve">
+    <value>Cet ordinateur n'est pas membre d'un domaine</value>
   </data>
   <data name="Thinkage.MainBoss.Database§This contact is for the user who created this organization" xml:space="preserve">
     <value>Ce contact est réservé à l'utilisateur qui a créé cette organisation.</value>

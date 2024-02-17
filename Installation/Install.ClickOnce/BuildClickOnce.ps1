@@ -29,7 +29,7 @@ function SaveXML {
 }
 
 ################################################################################################
-$source = "..\..\Thinkage.MainBoss.MainBoss\bin\release"
+$source = "..\..\Thinkage.MainBoss.MainBoss\bin\desktop"
 $teamviewer = "..\TeamViewerQS.exe"
 
 $entryAssembly = resolve-path (join-path -path "$source" -childpath "mainboss.exe")
@@ -50,8 +50,8 @@ if ([System.String]::IsNullOrEmpty($version))
 }
 $productName = "MainBoss Advanced"
 $supportUrlBase = "http://www.mainboss.com/info"
-$supportUrl = "$supportUrlBase/support.shtml?version=$supportVersion"
-$microsoftSupportUrl = "$supportUrlBase/microsoft.shtml"
+$supportUrl = "$supportUrlBase/support.htm?version=$supportVersion"
+$microsoftSupportUrl = "$supportUrlBase/microsoft.htm"
 
 #Filenames we build & other properties
 $applicationManifestFileName = "$assemblyName.exe.manifest"
@@ -67,7 +67,7 @@ rd -r -force "Installation" -ErrorAction SilentlyContinue
 md "Installation" | out-null
 md "Installation\Application Files" | out-null
 
-$DebugFiles = "PDB"+$version
+$DebugFiles = "PDB_ClickOnce"+$version
 rd -r -force $DebugFiles -ErrorAction SilentlyContinue
 md "$DebugFiles" | out-null
 
@@ -86,6 +86,7 @@ $documentation = "..\HtmlHelp\en-us"
 write-host "Copy .exe files"
 xcopy /q /s "$source\*.exe" $PackageAppFiles
 xcopy /q /s "$source\*.exe.config" $PackageAppFiles
+xcopy /q /s /i "$source\www\*.*" "$PackageAppFiles\www"
 write-host "Copy .dll files"
 xcopy /q /s "$source\*.dll" $PackageAppFiles
 rd -r -force "$PackageAppFiles\app.publish" #remove any remnant of Visual Studio publishing build files

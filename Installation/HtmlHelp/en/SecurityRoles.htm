@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html lang="en">
 <head>
-<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
-<meta name="copyright" content="2016 Thinkage Ltd." />
+<meta charset="UTF-8" />
+<meta name="copyright" content="2018 Thinkage Ltd." />
 <link rel="stylesheet" type="text/css" href="mbmanual.css" />
 <title>MainBoss Advanced 4.2 Operating Reference Manual: Security Roles</title>
 </head>
@@ -12,11 +12,11 @@
 <td class="pagehead"><h1 class="pagehead">Security Roles</h1>
 </td></tr></table>
 <!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
-<p><a href="Report.User.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Security Role.htm">Next section &gt;</a></p>
+<p><a href="Report.MainBoss User.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Security Role.htm">Next section &gt;</a></p>
 
 <p>Security roles make it possible for your organization to restrict access to information. By assigning a role to a MainBoss user, you give that user permission to perform various operations within MainBoss.</p>
 
-<p>In many cases, a single user will be given multiple security roles. Each new role that a user receives will give additional permissions to that person. If a user has no assigned roles, the user cannot use any feature in MainBoss; therefore, when you add a new user to the MainBoss <span class="CPanel">Users</span> table, you should assign that person at least one role.</p>
+<p>In many cases, a single user will be given multiple security roles. Each new role that a user receives will give additional permissions to that person. If a user has no assigned roles, the user cannot use any feature in MainBoss; therefore, when you add a new user to the <span class="CPanel">MainBoss Users</span> table, you should assign that person at least one role.</p>
 
 <p class="box"><span class="CInset">Important:</span> Each built-in security role has a brief description and a much longer "<span class="CField">Comments</span>" field describing how the role works. We strongly recommend that you read the "<span class="CField">Comments</span>" to understand the role in detail.</p>
 
@@ -40,11 +40,11 @@
 <li><span class="NewTerm">Accounting</span> roles: Provide access to monetary information. If you do not have an appropriate accounting role, you may be prevented from seeing prices and costs; for example, if you have <span class="CU">WorkOrder</span> role but not <span class="CU">AccountingWorkOrder</span>, you will be able to record, say, the quantities of materials used on a job, but you will not see the actual cost of those materials.
 </li></ul><p class="box">In addition to the selective roles listed above, there is a role called <span class="CReport">All</span>. This grants a user permission to use every aspect of the program. We recommend that you avoid using <span class="CReport">All</span>; too often, we have seen organizations give <span class="CReport">All</span> permission to users without thinking about it. Instead of taking the shortcut of <span class="CReport">All</span>, decide which permissions a particular user really needs and only give the user those permissions.</p>
 
-<p>Security roles are listed in the Security Role table (<span class="CPanel">Administration</span> | <span class="CPanel">Security Role</span>). To give someone one or more security roles, you open that person's record from the Users table (<span class="CPanel">Administration</span> | <span class="CPanel">Users</span>) and go to the record's <span class="CButton">Security Roles</span> section. You then use <span class="CButton">Assign Role</span> to add role records to the user's list of roles. Each role record contains a "<span class="CField">Comments</span>" field explaining what permissions the role provides.</p>
+<p>Security roles are listed in the Security Role table (<span class="CPanel">Administration | Security Roles</span>). To give someone one or more security roles, you open that person's record from the Users table (<span class="CPanel">Administration | MainBoss Users</span>) and go to the record's <span class="CButton">Security Roles</span> section. You then use <span class="CButton">Assign Role</span> to add role records to the user's list of roles. Each role record contains a "<span class="CField">Comments</span>" field explaining what permissions the role provides.</p>
 
 <p>Some security roles combine with each other to provide users with more information. For example, if you have both <span class="CU">ItemSummary</span> and <span class="CU">WorkOrderView</span>, you can see more information about the items on a work order than either <span class="CU">ItemSummary</span> or <span class="CU">WorkOrderView</span> would provide individually.</p>
 
-<p class="box">When you assign security roles to a user, it can be difficult to figure out the effect of those roles: what the user can and can't do with the roles you've assigned. To make it easier to see the effects of a person's security roles, you can use the <span class="CButton">Evaluate Security As</span> button in <span class="CPanel">Administration</span> | <span class="CPanel">Users</span>. For more information, see <a href="Browse.User.htm">Viewing Users</a>.</p>
+<p class="box">When you assign security roles to a user, it can be difficult to figure out the effect of those roles: what the user can and can't do with the roles you've assigned. To make it easier to see the effects of a person's security roles, you can use the <span class="CButton">Evaluate Security As</span> button in <span class="CPanel">Administration | MainBoss Users</span>. For more information, see <a href="Browse.MainBoss User.htm">Viewing MainBoss Users</a>.</p>
 
 <p>For information on viewing security roles, see <a href="Browse.Security Role.htm">Viewing Security Roles</a>. For information on creating and editing user records, see <a href="Edit.Custom Security Role.htm">Editing Security Role Records</a>.</p>
 
@@ -58,7 +58,7 @@
 
 <li><a href="Report.Security Role.htm">Printing Security Role Records</a></li>
 </ul>
-<p><a href="Report.User.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Security Role.htm">Next section &gt;</a></p>
+<p><a href="Report.MainBoss User.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.Security Role.htm">Next section &gt;</a></p>
 </body>
 </html>
 

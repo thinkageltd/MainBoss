@@ -1086,11 +1086,14 @@
   <data name="TableObjects§MainBoss-defined Security Role" xml:space="preserve">
     <value>MainBoss-defined Security Role</value>
   </data>
-  <data name="TableObjects§MainBoss-defined Security Role§plural" xml:space="preserve">
-    <value>MainBoss-defined Security Roles</value>
+  <data name="TableObjects§Security Role" xml:space="preserve">
+    <value>Security Role</value>
   </data>
-  <data name="TableObjects§MainBoss-defined Security Role§singular" xml:space="preserve">
-    <value>MainBoss-defined Security Role</value>
+  <data name="TableObjects§Security Role§plural" xml:space="preserve">
+    <value>Security Roles</value>
+  </data>
+  <data name="TableObjects§Security Role§singular" xml:space="preserve">
+    <value>Security Role</value>
   </data>
   <data name="TableObjects§Maintenance Forecast" xml:space="preserve">
     <value>Maintenance Forecast</value>
@@ -3168,9 +3171,6 @@
   <data name="Thinkage.MainBoss.Controls§Credit" xml:space="preserve">
     <value>Credit</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Culture {0} ({1})" xml:space="preserve">
-    <value>Culture {0} ({1})</value>
-  </data>
   <data name="Thinkage.MainBoss.Controls§Current" xml:space="preserve">
     <value>Current</value>
   </data>
@@ -3195,17 +3195,14 @@
   <data name="Thinkage.MainBoss.Controls§Data import package identified as {0}" xml:space="preserve">
     <value>Data import package identified as {0}</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Database {0}" xml:space="preserve">
-    <value>Database {0}</value>
+  <data name="Thinkage.MainBoss.Controls§Database {0} Version {1}" xml:space="preserve">
+    <value>Database {0} Version {1}</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Database Management - Update Statistics" xml:space="preserve">
     <value>Database Management - Update Statistics</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Database server must be SQL Server 2008 or later" xml:space="preserve">
     <value>Database server must be SQL Server 2008 or later</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Database version {0}" xml:space="preserve">
-    <value>Database version {0}</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Date" xml:space="preserve">
     <value>Date</value>
@@ -3600,6 +3597,9 @@
   <data name="Thinkage.MainBoss.Controls§For more information, see" xml:space="preserve">
     <value>For more information, see</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Formats {0} ({1}/{2:X4})" xml:space="preserve">
+    <value>Formats {0} ({1}/{2:X4})</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Friday" xml:space="preserve">
     <value>Friday</value>
   </data>
@@ -3710,6 +3710,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Insert a new Email Message from a file" xml:space="preserve">
     <value>Insert a new Email Message from a file</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Installed as {0} ({1}/{2:X4})" xml:space="preserve">
+    <value>Installed as {0} ({1}/{2:X4})</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Internet Message Access Protocol version 4 revision 1" xml:space="preserve">
     <value>Internet Message Access Protocol version 4 revision 1</value>
@@ -3848,6 +3851,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Maximum" xml:space="preserve">
     <value>Maximum</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Messages {0} ({1}/{2:X4})" xml:space="preserve">
+    <value>Messages {0} ({1}/{2:X4})</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Minimum" xml:space="preserve">
     <value>Minimum</value>
@@ -4034,6 +4040,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§One line per selected unit maintenance plan" xml:space="preserve">
     <value>One line per selected unit maintenance plan</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Only available on computer that is a member of a domain" xml:space="preserve">
+    <value>Only available on computer that is a member of a domain</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Only include Demand Templates for work specifically from this Purchase Order Template's Vendor" xml:space="preserve">
     <value>Only include Demand Templates for work specifically from this Purchase Order Template's Vendor</value>
@@ -4506,6 +4515,9 @@
   <data name="Thinkage.MainBoss.Controls§Receiving Storage Assignment" xml:space="preserve">
     <value>Receiving Storage Assignment</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Recommended To Order" xml:space="preserve">
+    <value>Recommended To Order</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Refresh from Active Directory" xml:space="preserve">
     <value>Refresh from Active Directory</value>
   </data>
@@ -4656,9 +4668,6 @@
   <data name="Thinkage.MainBoss.Controls§Revision {0}" xml:space="preserve">
     <value>Revision {0}</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Right" xml:space="preserve">
-    <value>Right</value>
-  </data>
   <data name="Thinkage.MainBoss.Controls§Sales Accounts Payable Vendor" xml:space="preserve">
     <value>Sales Accounts Payable Vendor</value>
   </data>
@@ -4706,9 +4715,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Seasonal exceptions" xml:space="preserve">
     <value>Seasonal exceptions</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Security Role" xml:space="preserve">
-    <value>Security Role</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Select from database users" xml:space="preserve">
     <value>Select from database users</value>
@@ -4931,9 +4937,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Syntax error in regular expression" xml:space="preserve">
     <value>Syntax error in regular expression</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Table" xml:space="preserve">
-    <value>Table</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Task demands and actuals" xml:space="preserve">
     <value>Task demands and actuals</value>

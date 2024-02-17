@@ -137,10 +137,10 @@ namespace Thinkage.MainBoss.Database {
 
 				if (belowRows.Count == 0)
 					// Two above. result is -infinity to closer (smaller) value
-					return MakeFuzzyRType(predictedVal, null, AddValueDelta(nearVal), KB.T(Strings.Format(KB.K("All readings on this meter are above the target {0}"), KeyColumn.ReferencedColumn.EffectiveType.GetTypeFormatter(Application.InstanceCultureInfo).Format(keymax))));
+					return MakeFuzzyRType(predictedVal, null, AddValueDelta(nearVal), KB.T(Strings.Format(KB.K("All readings on this meter are above the target {0}"), KeyColumn.ReferencedColumn.EffectiveType.GetTypeFormatter(Application.InstanceFormatCultureInfo).Format(keymax))));
 				else if (aboveRows.Count == 0)
 					// Two below, result is closer (larger) value to infinity.
-					return MakeFuzzyRType(predictedVal, nearVal, null, KB.T(Strings.Format(KB.K("All readings on this meter are below the target {0}"), KeyColumn.ReferencedColumn.EffectiveType.GetTypeFormatter(Application.InstanceCultureInfo).Format(key))));
+					return MakeFuzzyRType(predictedVal, nearVal, null, KB.T(Strings.Format(KB.K("All readings on this meter are below the target {0}"), KeyColumn.ReferencedColumn.EffectiveType.GetTypeFormatter(Application.InstanceFormatCultureInfo).Format(key))));
 				else
 					// Using one above and one below, treat it as definitive.
 					return MakeFuzzyRType(predictedVal);

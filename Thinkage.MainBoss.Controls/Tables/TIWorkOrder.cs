@@ -184,7 +184,7 @@ namespace Thinkage.MainBoss.Controls {
 		internal static BTbl.ListColumnArg.IAttr WorkOrderResourceActivityDateAsCodeWrapper() {
 			return BTbl.ListColumnArg.WrapSource(delegate (Source originalSource) {
 				if (sortableDateCultureInfo == null) {
-					sortableDateCultureInfo = (System.Globalization.CultureInfo)Thinkage.Libraries.Application.InstanceCultureInfo.Clone();
+					sortableDateCultureInfo = (System.Globalization.CultureInfo)Thinkage.Libraries.Application.InstanceFormatCultureInfo.Clone();
 					System.Globalization.DateTimeFormatInfo dtfi = (System.Globalization.DateTimeFormatInfo)System.Globalization.DateTimeFormatInfo.InvariantInfo.Clone();
 					dtfi.FullDateTimePattern = KB.I("yyyy/MM/dd HH:mm:ss.fff");
 					sortableDateCultureInfo.DateTimeFormat = dtfi;
@@ -2256,9 +2256,16 @@ namespace Thinkage.MainBoss.Controls {
 		public static DelayedCreateTbl WorkOrderPurchaseOrderLinkageTbl(bool showPurchaseOrders) {
 			List<BTbl.ICtorArg> BTblAttrs = new List<BTbl.ICtorArg>();
 			return new DelayedCreateTbl(delegate () {
-				DBI_Path parentPath = showPurchaseOrders
-										? (DBI_Path)dsMB.Path.T.WorkOrderPurchaseOrderView.F.LinkedPurchaseOrderID
-										: (DBI_Path)dsMB.Path.T.WorkOrderPurchaseOrderView.F.LinkedWorkOrderID;
+				DBI_Path parentPath;
+				DBI_Table containmentTable;
+				if (showPurchaseOrders) {
+					containmentTable = dsMB.Schema.T.WorkOrderLinkedPurchaseOrdersTreeview;
+					parentPath = dsMB.Path.T.WorkOrderPurchaseOrderView.F.LinkedPurchaseOrderID;
+				}
+				else {
+					containmentTable = dsMB.Schema.T.PurchaseOrderLinkedWorkOrdersTreeview;
+					parentPath = dsMB.Path.T.WorkOrderPurchaseOrderView.F.LinkedWorkOrderID;
+				}
 				object codeColumnId = KB.I("WOTemplatePOTemplateCodeColumnId");
 				object descColumnId = KB.I("WOTemplatePOTemplateDescColumnId");
 				return new CompositeTbl(dsMB.Schema.T.WorkOrderPurchaseOrderView, showPurchaseOrders ? TId.WorkOrder : TId.PurchaseOrder,
@@ -2267,8 +2274,8 @@ namespace Thinkage.MainBoss.Controls {
 							new BTbl(
 								BTbl.PerViewListColumn(dsMB.LabelKeyBuilder.K("Number"), codeColumnId),
 								BTbl.PerViewListColumn(CommonDescColumnKey, descColumnId)
-							),
-							new FilteredTreeStructuredTbl(parentPath, showPurchaseOrders ? (DBI_Table)dsMB.Schema.T.WorkOrderLinkedPurchaseOrdersTreeview : (DBI_Table)dsMB.Schema.T.PurchaseOrderLinkedWorkOrdersTreeview, 2, 2)
+								),
+								new FilteredTreeStructuredTbl(parentPath, containmentTable, 2, 2)
 						},
 					dsMB.Path.T.WorkOrderPurchaseOrderView.F.TableEnum,
 					new CompositeView(TIWorkOrder.WorkOrderEditTblCreator, dsMB.Path.T.WorkOrderPurchaseOrderView.F.WorkOrderID,
@@ -2298,9 +2305,17 @@ namespace Thinkage.MainBoss.Controls {
 		public static DelayedCreateTbl WorkOrderTemplatePurchaseOrderTemplateLinkageTbl(bool showPurchaseOrderTemplates) {
 			List<BTbl.ICtorArg> BTblAttrs = new List<BTbl.ICtorArg>();
 			return new DelayedCreateTbl(delegate () {
-				DBI_Path parentPath = showPurchaseOrderTemplates
-										? (DBI_Path)dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.LinkedPurchaseOrderTemplateID
-										: (DBI_Path)dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.LinkedWorkOrderTemplateID;
+				DBI_Path parentPath;
+				DBI_Table containmentTable;
+				if (showPurchaseOrderTemplates) {
+					containmentTable = dsMB.Schema.T.WorkOrderTemplateLinkedPurchaseOrderTemplatesTreeview;
+					parentPath = dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.LinkedPurchaseOrderTemplateID;
+				}
+				else {
+					containmentTable = dsMB.Schema.T.PurchaseOrderTemplateLinkedWorkOrderTemplatesTreeview;
+					parentPath = dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.LinkedWorkOrderTemplateID;
+				}
+
 				object codeColumnId = KB.I("WOTemplatePOTemplateCodeColumnId");
 				object descColumnId = KB.I("WOTemplatePOTemplateDescColumnId");
 				return new CompositeTbl(dsMB.Schema.T.WorkOrderTemplatePurchaseOrderTemplateView, showPurchaseOrderTemplates ? TId.Task : TId.PurchaseOrderTemplate,
@@ -2309,8 +2324,8 @@ namespace Thinkage.MainBoss.Controls {
 							new BTbl(
 								BTbl.PerViewListColumn(CommonCodeColumnKey, codeColumnId),
 								BTbl.PerViewListColumn(CommonDescColumnKey, descColumnId)
-							),
-							new FilteredTreeStructuredTbl(parentPath, dsMB.Schema.T.WorkOrderTemplateLinkedPurchaseOrderTemplatesTreeview, 2, 2)
+								),
+								new FilteredTreeStructuredTbl(parentPath, containmentTable, 2, 2)
 						},
 					dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.TableEnum,
 					new CompositeView(TIWorkOrder.WorkOrderTemplateEditTbl, dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.WorkOrderTemplateID,

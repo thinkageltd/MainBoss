@@ -80,7 +80,7 @@ namespace Thinkage.MainBoss.Database.Service {
 						emailAddresses.Add(address);
 					}
 				}
-				if (emailAddresses.Count() > 0 && forceCreate) 
+				if (emailAddresses.Count() > 0 && forceCreate && createdContacts.Count > 0) 
 					ds.DB.ViewAdditionalRows(ds, dsMB.Schema.T.EmailRequest, (new SqlExpression(dsMB.Path.T.EmailRequest.F.RequestorEmailAddress).In(SqlExpression.Constant(createdContacts)))
 					.And((new SqlExpression(dsMB.Path.T.EmailRequest.F.ProcessingState).In(SqlExpression.Constant(Createable)))));
 				foreach (dsMB.EmailRequestRow r in ds.T.EmailRequest.Rows) {

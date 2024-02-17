@@ -114,7 +114,7 @@ namespace Thinkage.MainBoss.MainBoss {
 
 			bool netDeployed;
 			try {
-				WebInfoRoot = GetWebDeploymentLocation(out netDeployed);
+				InfoRoot = GetInfoLocation(out netDeployed);
 				if (!netDeployed) {
 					InitialStartupSettings.IsWebBrowserContextMenuEnabled = true;
 				}
@@ -170,7 +170,8 @@ namespace Thinkage.MainBoss.MainBoss {
 			LicenseInformationToSend.Add(KB.K("ProductName"), Thinkage.Libraries.VersionInfo.ProductName);
 			LicenseInformationToSend.Add(KB.K("ProductVersion"), Thinkage.Libraries.VersionInfo.ProductVersion.ToString());
 			LicenseInformationToSend.Add(KB.K("WindowsVersion"), Environment.OSVersion.VersionString);
-			LicenseInformationToSend.Add(KB.K("CultureInfo"), Thinkage.Libraries.Application.InstanceCultureInfo.Name);
+			LicenseInformationToSend.Add(KB.K("FormatCultureInfo"), Thinkage.Libraries.Application.InstanceFormatCultureInfo.Name);
+			LicenseInformationToSend.Add(KB.K("MessageCultureInfo"), Thinkage.Libraries.Application.InstanceMessageCultureInfo.Name);
 		}
 		#region -   Disablers
 		private class CanDropDatabaseDisabler : Thinkage.Libraries.Presentation.BrowseLogic.GeneralConditionDisabler {
@@ -1044,7 +1045,6 @@ namespace Thinkage.MainBoss.MainBoss {
 						if (matches.Count != 1)
 							throw new GeneralException(KB.T(licenseHtml));
 						licenses.AddRange(Thinkage.Libraries.Licensing.License.FindLicensesInText(licenseHtml));
-						break;
 					}
 					catch (GeneralException e) {
 						switch (Ask.AbortRetryIgnore(Thinkage.Libraries.Exception.FullMessage(e))) {
@@ -1056,6 +1056,7 @@ namespace Thinkage.MainBoss.MainBoss {
 							break;
 						}
 					}
+					break;
 				}
 				try {
 					ipd = CommonUI.UIFactory.CreateProgressDisplay(ProgressCaption(), -1);
@@ -1111,7 +1112,7 @@ namespace Thinkage.MainBoss.MainBoss {
 						webFetch = new System.Net.WebClient();
 						webFetch.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
 						// TODO: Convert the dictionary of other information to query parameters ....
-						var uri = new Uri(Strings.IFormat("https://www.mainboss.com/GetLicense.shtml{0}", queryString.ToString()));
+						var uri = new Uri(Strings.IFormat("https://www.mainboss.com/GetLicense.htm{0}", queryString.ToString()));
 						licenseHtml = webFetch.DownloadString(uri);
 						if (String.IsNullOrEmpty(licenseHtml))
 							throw new GeneralException(KB.K("The license provider returned an empty response"));
@@ -1293,33 +1294,24 @@ namespace Thinkage.MainBoss.MainBoss {
 		#region Web Panel Support
 		HtmlDisplaySettings GetHtmlSettings() {
 			// Determine the initial URL to display to the user
-			string defaultURL = Strings.IFormat("{0}/{1}", WebInfoRoot, "default.htm");
+			string defaultURL = Strings.IFormat("{0}/{1}", InfoRoot, "default.htm");
 			var uri = new System.Uri(defaultURL);
 			return new HtmlDisplaySettings(uri) { ValueIsURI = true, SuppressScriptErrors = true, IsWebBrowserContextMenuEnabled = InitialStartupSettings.IsWebBrowserContextMenuEnabled };
 		}
-		private string WebInfoRoot;
+		private string InfoRoot;
 		private HtmlDisplaySettings InitialStartupSettings = new HtmlDisplaySettings();
 		#region GetWebDeployment
-		public static string GetWebDeploymentLocation(out bool isnetDeployed) {
-			string version = Strings.IFormat("{0}.{1}.{2}", Thinkage.Libraries.VersionInfo.ProductVersion.Major, Thinkage.Libraries.VersionInfo.ProductVersion.Minor, Thinkage.Libraries.VersionInfo.ProductVersion.Build);
-			string webRoot;
+		public static string GetInfoLocation(out bool isnetDeployed) {
+			string infoRoot;
 			try {
-				if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed) {
-					// Determine the root of our application from the UpdateLocation Uri (where our .application is stored)
-					webRoot = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.UpdateLocation.GetLeftPart(System.UriPartial.Path).Replace(KB.I("/mainboss.application"), "");
-					isnetDeployed = true;
-				}
-				else {
-					webRoot = Strings.IFormat("file://{0}/www", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
-					version = "version";
-					isnetDeployed = false;
-				}
+				isnetDeployed = System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed;
+				infoRoot = Strings.IFormat("file://{0}/www/version", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
 			}
 			catch (System.Exception) {
 				isnetDeployed = true;
 				throw;
 			}
-			return Strings.IFormat("{0}/{1}/{2}", webRoot, version, System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+			return Strings.IFormat("{0}/{1}", infoRoot, Thinkage.Libraries.Application.InstanceMessageCultureInfo.TwoLetterISOLanguageName);
 		}
 		#endregion
 		#endregion

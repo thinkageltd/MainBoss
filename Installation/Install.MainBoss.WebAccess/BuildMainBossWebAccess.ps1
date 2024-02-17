@@ -19,7 +19,7 @@ $outputdir = join-path -path (get-location) -childpath "installation"
 rd -r -force $outputdir
 md $outputdir | out-null
 
-$pdbdir = join-path -path (get-location) -childpath ("PDB"+$version)
+$pdbdir = join-path -path (get-location) -childpath ("PDB_WebAccess"+$version)
 rd -r -force $pdbdir 
 md $pdbdir | out-null
 

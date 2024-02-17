@@ -12,7 +12,7 @@ namespace Thinkage.MainBoss.Database.Service {
 	/// </summary>
 	public class AssignmentNotificationProcessor : EmailNotificationProcessor {
 		#region Constructor
-		public AssignmentNotificationProcessor(IServiceLogging logger, MB3Client dbSession)	: base(logger, dbSession) {	}
+		private AssignmentNotificationProcessor(IServiceLogging logger, MB3Client dbSession) : base(logger, dbSession, true) { }
 		public static void DoAllAssignmentNotifications(IServiceLogging logger, MB3Client dbSession, bool traceActivities, bool traceDetails) {
 			using (AssignmentNotificationProcessor x = new AssignmentNotificationProcessor(logger, dbSession)) {
 				if (x.Unavailable) return;
@@ -385,7 +385,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			foreach (dsMB.RequestStateHistoryRow rshrow in historyRows) {
 				builder.StartViewHistoryItem();
 				builder.StartHistoryItemTitle();
-				builder.Append(dsMB.Schema.T.RequestStateHistory.F.EffectiveDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo).Format(rshrow.F.EffectiveDate));
+				builder.Append(dsMB.Schema.T.RequestStateHistory.F.EffectiveDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo).Format(rshrow.F.EffectiveDate));
 				if (rshrow.UserIDParentRow != null) {
 					builder.AppendBlank();
 					builder.Append(rshrow.UserIDParentRow.ContactIDParentRow.F.Code);
@@ -426,7 +426,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			foreach (dsMB.WorkOrderStateHistoryRow woshrow in historyRows) {
 				builder.StartViewHistoryItem();
 				builder.StartHistoryItemTitle();
-				builder.Append(dsMB.Schema.T.WorkOrderStateHistory.F.EffectiveDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo).Format(woshrow.F.EffectiveDate));
+				builder.Append(dsMB.Schema.T.WorkOrderStateHistory.F.EffectiveDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo).Format(woshrow.F.EffectiveDate));
 				if (woshrow.UserIDParentRow != null) {
 					builder.AppendBlank();
 					builder.Append(woshrow.UserIDParentRow.ContactIDParentRow.F.Code);
@@ -464,7 +464,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			foreach (dsMB.PurchaseOrderStateHistoryRow poshrow in historyRows) {
 				builder.StartViewHistoryItem();
 				builder.StartHistoryItemTitle();
-				builder.Append(dsMB.Schema.T.PurchaseOrderStateHistory.F.EffectiveDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo).Format(poshrow.F.EffectiveDate));
+				builder.Append(dsMB.Schema.T.PurchaseOrderStateHistory.F.EffectiveDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo).Format(poshrow.F.EffectiveDate));
 				if (poshrow.UserIDParentRow != null) {
 					builder.AppendBlank();
 					builder.Append(poshrow.UserIDParentRow.ContactIDParentRow.F.Code);

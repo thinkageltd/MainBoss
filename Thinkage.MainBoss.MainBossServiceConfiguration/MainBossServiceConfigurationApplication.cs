@@ -99,7 +99,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			catch (Thinkage.Libraries.CommandLineParsing.Exception ex) {
 				throw new GeneralException(ex.InnerException, KB.T(Thinkage.Libraries.Translation.MessageBuilder.Build(Thinkage.Libraries.Exception.FullMessage(ex), Options.Help)));
 			}
-			new HelpUsingFolderOfHtml(this, ApplicationParameters.HelpFileLocalLocation, Thinkage.Libraries.Application.InstanceCultureInfo, ApplicationParameters.HelpFileOnlineLocation);
+			new HelpUsingFolderOfHtml(this, ApplicationParameters.HelpFileLocalLocation, Thinkage.Libraries.Application.InstanceMessageCultureInfo, ApplicationParameters.HelpFileOnlineLocation);
 		}
 		protected override void CreateUIFactory() {
 			new ApplicationTblDefaultsUsingWindows(this, new ETbl(), new AllowAllTablesAllOperationsPermissionsManager(Root.Table), Root.Table, null, null);
@@ -309,7 +309,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			if ( Controller.WaitForStatus(wantedStatus) )
 				return; // all errors will be forgiven if the service is in desired state
 			ex = ex ?? (System.Exception)Controller.LastStatusError;
-			Log.LogError(Strings.IFormat("{0}  {1}", Strings.Format(Thinkage.Libraries.Service.Application.InstanceCultureInfo, KB.K("Cannot {0} Windows Service for MainBoss '{1}' on computer '{2}'."), operation, dbParms.ServiceCode, dbParms.ServiceComputer), ex == null ? "" : Thinkage.Libraries.Exception.FullMessage(ex)));
+			Log.LogError(Strings.IFormat("{0}  {1}", Strings.Format(Thinkage.Libraries.Service.Application.InstanceMessageCultureInfo, KB.K("Cannot {0} Windows Service for MainBoss '{1}' on computer '{2}'."), operation, dbParms.ServiceCode, dbParms.ServiceComputer), ex == null ? "" : Thinkage.Libraries.Exception.FullMessage(ex)));
 			throw new GeneralException(ex, KB.K("Cannot {0} Windows Service for MainBoss '{1}' on computer '{2}'."), operation, dbParms.ServiceCode, dbParms.ServiceComputer);
 		}
 		protected static ServiceParms CheckServiceCmdLine(ServiceConfiguration sc, ServiceParms parms, string serviceBinary, Version minVersion) {
@@ -390,14 +390,12 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 		}
 		private ConfigureServiceVerb(Definition options) : base(ServiceOpType.Create, KB.K("Configure Service"), options) {}
 		private void Run() {
-			if (dbParms.ServiceComputer == null)
-				dbParms.ServiceComputer = DomainAndIP.MyDnsName;
 			bool oKToContinue = false;
 			bool sameComputer = DomainAndIP.IsThisComputer(dbParms.ServiceComputer);
 			if( ! sameComputer )
 				throw new GeneralException(KB.K("The Windows Service for MainBoss must be configured from the computer that it is to be run on."), dbParms.ServiceCode);
 			try { 
-				ServiceParameters = ServiceConfiguration.AcquireServiceConfiguration(true, true, dbParms.ServiceComputer, dbParms.ServiceCode);
+				ServiceParameters = ServiceConfiguration.AcquireServiceConfiguration(true, true, dbParms.ServiceComputer??DomainAndIP.MyDnsName, dbParms.ServiceCode);
 			}
 			catch(System.Exception e ) {
 					throw e as GeneralException ?? new GeneralException(e, KB.K("Cannot access Windows Service properties"), dbParms.ServiceComputer);
@@ -429,7 +427,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 					dbParms.MBVersion = ServiceParameters.Version;
 					ServiceUtilities.UpdateServiceRecord(DBConnection, dbParms, Log);
 				}
-				bool needsUpdate = ServiceBinary != ServiceParameters.ServiceExecutable ;
+				bool needsUpdate = ServiceBinary != ServiceParameters.ServiceExecutable || dbParms.ServiceComputer != DomainAndIP.MyDnsName;
 				if (string.Compare(Utilities.UseridToRegistryName(ServiceParameters.ServiceUserid), Utilities.UseridToRegistryName(dbParms.ServiceUseridAsSqlUserid)) != 0) {
 					var questiontextu = Strings.Format(KB.K("There is an existing Windows Service for MainBoss which is using Service Userid '{0}', the MainBoss Service configuration uses Userid '{1}'. Do you want to change the Service Userid?"), Utilities.UseridToDisplayName(ServiceParameters.ServiceUserid), dbParms.ServiceUserid);
 					if (Thinkage.Libraries.Application.Instance.AskQuestion(questiontextu, Strings.Format(KB.K("Change MainBoss Service Userid")), Ask.Questions.YesNo) == Ask.Result.Yes) {
@@ -454,6 +452,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 				}
 				oKToContinue = true;
 			}
+			dbParms.ServiceComputer = DomainAndIP.MyDnsName;
 			var accessToDatabase = new VerifyServiceAccessToDatabase(dbParms, ServiceParameters, DBSession.ConnectionInfo, false);
 			var problem = accessToDatabase.ReportAccessPermissionOnDatabase();
 			if (problem != null)

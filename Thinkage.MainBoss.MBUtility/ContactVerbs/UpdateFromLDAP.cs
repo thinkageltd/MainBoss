@@ -73,8 +73,7 @@ namespace Thinkage.MainBoss.MBUtility {
 
 		private void Run() {
 			string oName;
-			if (!LDAPEntry.IsInDomain())
-				throw new GeneralException(KB.K("'{0}' can only work if the computer is in a domain; if you are in a domain, then the domain controller is currently inaccessible"), KB.I("UpdateContactsfromactivedirectory"));
+			LDAPEntry.CheckActiveDirectory(KB.I("UpdateContactsfromactivedirectory"));
 			var EmailAddressPattern = Options.EmailAddressPattern.HasValue ? Options.EmailAddressPattern.Value : null;
 			var ExcludeEmailAddressPattern = Options.ExcludeEmailAddressPattern.HasValue ? Options.ExcludeEmailAddressPattern.Value : null;
 			var deleteContacts =  Options.DeleteContacts.HasValue ? Options.DeleteContacts.Value : false ;

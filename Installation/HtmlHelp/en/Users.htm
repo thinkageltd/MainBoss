@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html lang="en">
 <head>
-<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
-<meta name="copyright" content="2016 Thinkage Ltd." />
+<meta charset="UTF-8" />
+<meta name="copyright" content="2018 Thinkage Ltd." />
 <link rel="stylesheet" type="text/css" href="mbmanual.css" />
 <title>MainBoss Advanced 4.2 Operating Reference Manual: Users</title>
 </head>
@@ -12,42 +12,33 @@
 <td class="pagehead"><h1 class="pagehead">Users</h1>
 </td></tr></table>
 <!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
-<p><a href="Edit.Company Information.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.User.htm">Next section &gt;</a></p>
+<p><a href="Edit.Company Information.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.MainBoss User.htm">Next section &gt;</a></p>
 
-<p>In order for users to access a MainBoss maintenance organization, their login names must be recorded in the MainBoss database. When a maintenance organization is first created, the only user who can access the organization is the person who originally created the database.</p>
+<p>In order for users to access a MainBoss maintenance organization, their authentication credentials must be recorded in the MainBoss database. When a maintenance organization is first created, the only user who can access the organization is the person who originally created the database.</p>
 
-<p class="box">For full details on authorizing users for both MainBoss and SQL Server, see the <a href=" " >Installation and Administration Guide</a>.</p>
+<p class="box">For full details on authorizing users for both MainBoss and SQL Server, see the Installation and Administration Guide.</p>
 
-<p><span class="CInset">Scopes:</span> When setting up user records, you record the login names of people authorized to use MainBoss. During this process, you'll be given the opportunity to specify a <span class="NewTerm">scope</span> for that person's login name.</p>
-
-<ul class="b1"><li>If your site uses <span class="NewTerm">trusted domains</span>, the scope should be the trusted domain to which the user belongs. Do not leave the "<span class="CField">Scope Name</span>" field blank.</li>
-<li>If your site doesn't use trusted domains (or if you aren't sure whether you use them or not), <span class="BL">we strongly recommend leaving the</span> "<span class="CField">Scope Name</span>" <span class="BL">field blank</span>. A blank scope field means that the given login name is a valid account on the computer where SQL Server runs. SQL Server will then accept access from any other computer in your local network, provided that the login name and password on the other computer match the name and password on the Server computer.
-
-<br /><br />For example, suppose you authorize <span class="CU">jsmith</span> to use MainBoss and leave "<span class="CField">Scope Name</span>" blank. Then the Server computer must accept <span class="CU">jsmith</span> as a login name. SQL Server will accept access from any other <span class="CU">jsmith</span> in your local network, provided the password for <span class="CU">jsmith</span> on non-Server computers is the same as the password for <span class="CU">jsmith</span> on the Server computer.
-</li></ul><p>Note that the names in MainBoss's <span class="CPanel">Users</span> list must be individual login names; they can't be groups. In MainBoss, login names are associated with records in order to create an audit trail. This is why MainBoss itself doesn't accept group authorizations&#8212;an audit should record exactly who made a particular change, which means tracking the individual login name, not just a group name.</p>
+<p>When setting up user records, you record the SQL server authentication credential for people authorized to use MainBoss. </p>
+<p>Note that the Authentication Credential in MainBoss's <span class="CPanel">Users</span> list must be individual SQL credentials; they cannot be groups. In MainBoss, authentication credentials are associated with records in order to create an audit trail. This is why MainBoss itself doesn't accept group authorizations&#8212;an audit should record exactly who made a particular change, which means tracking the individual login name, not just a group name.</p>
 
 <p><span class="CInset">Security Roles:</span> When you create a new user record, it has no associated security roles. This means that new users have no permission to do anything in MainBoss, unless you specifically assign them roles. You must therefore assign each user at least one security role if you expect the person to use MainBoss in any way. For more on security roles, see <a href="SecurityRoles.htm">Security Roles</a>.</p>
 
 <p><span class="CInset">SQL Server Authorization:</span> In order for someone to use MainBoss, the person's login name must be registered in both the MainBoss database and with SQL Server. Only someone with SQL Server Administration privileges can register new users with SQL Server.</p>
 
-<ul class="b1"><li>The easiest scenario for adding new users to MainBoss is if someone with SQL Server Administration privileges does the work. In this case, MainBoss can automatically register each new user in the MainBoss database and with SQL Server.</li>
+<ul class="b1"><li>The easiest scenario for adding new users to MainBoss is if someone with SQL Server Administration privileges does the work. In this case, MainBoss can be used to register each new user in the MainBoss database and with SQL Server.</li>
 <li>If the person who adds new users to MainBoss <span class="Emphasis">doesn't</span> have SQL Server Administration privileges, then the process needs two separate steps:
-</li></ul><ul class="b2"><li>Registering the new users with MainBoss, as described in <a href="Edit.User.htm">Editing User Records</a> (which can be done by anyone who's already registered with MainBoss and SQL Server)</li>
-<li>Registering the new users with SQL Server, as described in the <a href=" " >Installation and Administration Guide</a> (which can only be done by someone with SQL Server Administration privileges)
+</li></ul><ul class="b2"><li>Registering the new users with MainBoss, as described in <a href="Edit.MainBoss User.htm">Editing MainBoss User Records</a> (which can be done by anyone who's already registered with MainBoss and SQL Server)</li>
+<li>Registering the new users with SQL Server, as described in the Installation and Administration Guide (which can only be done by someone with SQL Server Administration privileges)
 </li></ul>
-<p>In order to deal with these two scenarios, MainBoss has an option set in <span class="CPanel">Administration</span> | <span class="CPanel">Users</span>. Go to the <span class="CButton">Defaults for Users</span> section.</p>
+<p>(As an alternative two-stage approach, you could create a Windows group named <span class="CU">mainboss</span> in the domain. A SQL Server Administrator could then set up SQL Server permissions so that anyone in the group could access the MainBoss database. Then, whenever someone new needs to be authorized to use MainBoss, a Windows administrator simply adds the new person to the group. Some IT departments may prefer the group approach over authorizing each individual within SQL Server.)</p>
 
-<ul class="b1"><li>If the option <span class="CButton">MainBoss manages SQL Security</span> is checkmarked, anyone adding new users must have SQL Server Administration privileges</li>
-<li>If the option is blank, you must use the two-stage approach to adding new users (add the users in MainBoss first, then add them in SQL Server)
-</li></ul><p>(As an alternative two-stage approach, you could create a Windows group named <span class="CU">mainboss</span> in the domain. A SQL Server Administrator could then set up SQL Server permissions so that anyone in the group could access the MainBoss database. Then, whenever someone new needs to be authorized to use MainBoss, a Windows administrator simply adds the new person to the group. Some IT departments may prefer the group approach over authorizing each individual within SQL Server.)</p>
-
-<p>For information on viewing users, see <a href="Browse.User.htm">Viewing Users</a>. For information on creating and editing user records, see <a href="Edit.User.htm">Editing User Records</a>.</p>
+<p>For information on viewing users, see <a href="Browse.MainBoss User.htm">Viewing MainBoss Users</a>. For information on creating and editing user records, see <a href="Edit.MainBoss User.htm">Editing MainBoss User Records</a>.</p>
 
 
 <p>See Also:</p><ul>
-<li><a href="Browse.User.htm">Viewing Users</a></li>
+<li><a href="Browse.MainBoss User.htm">Viewing MainBoss Users</a></li>
 
-<li><a href="Edit.User.htm">Editing User Records</a></li>
+<li><a href="Edit.MainBoss User.htm">Editing MainBoss User Records</a></li>
 
 <li><a href="Browse.SQL Database User.htm">The Database User Table</a></li>
 
@@ -57,11 +48,11 @@
 
 <li><a href="Edit.SQL Database Login.htm">Adding Database Logins</a></li>
 
-<li><a href="Edit.User Security Role.htm">Assigning Security Roles to Users</a></li>
+<li><a href="Edit.MainBoss-defined Security Role.htm">Assigning Security Roles to Users</a></li>
 
-<li><a href="Report.User.htm">Printing User Records</a></li>
+<li><a href="Report.MainBoss User.htm">Printing User Records</a></li>
 </ul>
-<p><a href="Edit.Company Information.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.User.htm">Next section &gt;</a></p>
+<p><a href="Edit.Company Information.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.MainBoss User.htm">Next section &gt;</a></p>
 </body>
 </html>
 
