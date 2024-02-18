@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="copyright" content="2018 Thinkage Ltd." />
 <link rel="stylesheet" type="text/css" href="mbmanual.css" />
-<title>MainBoss Advanced 4.2 Operating Reference Manual: Backups</title>
+<title>MainBoss 4.2 Operating Reference Manual: Backups</title>
 </head>
 <body>
 <table class="logohead">
@@ -12,7 +12,7 @@
 <td class="pagehead"><h1 class="pagehead">Backups</h1>
 </td></tr></table>
 <!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
-<p><a href="Report.Database Management.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Backup.htm">Next section &gt;</a></p>
+<p><a href="Report.Database%20Management.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Backup.htm">Next section &gt;</a></p>
 
 <p>To protect your data, you should make regular backups of your data. One way to do this is with automated <span class="NewTerm">maintenance plans</span> as described in the MainBoss Installation and Administration Guide. Since these facilities do backups automatically, there's no risk of losing data because someone forgot to do a backup manually.</p>
 
@@ -21,7 +21,7 @@
 <ol><li>Create one or more <span class="NewTerm">backup names</span>. A backup name is the name of a file into which MainBoss should write backup data. For example, you might create seven backup names: one for each day of the week.</li>
 <li>When you want to perform a backup, select a name from the list of available backup names. Then click <span class="CButton">Backup</span>. This submits a request to the SQL Server asking the server to create a backup. (In order to use this function, you must have SQL Server Administrator privileges.) When the backup occurs, it will overwrite any current contents of the specified backup file.</li>
 <li>The next time you want to do a backup, select a different name from the list and click <span class="CButton">Backup</span> again. MainBoss sorts the backup names so that the oldest backup file is at the top of the list. Therefore, if you have seven backup names, and you always select the top name whenever you make a backup, your backup will always overwrite the oldest file. This makes it easy to reuse the same set of files by cycling through them.</li>
-<li>When you initiate a backup operation, MainBoss makes an appropriate note in the database history (<span class="CPanel">Administration</span> | <span class="CPanel">Database Management</span>&#8212;see <a href="Browse.Database Management.htm">Database Management</a>). If the backup fails for some reason, MainBoss makes note of the failure in the database history; however, if the backup succeeds, MainBoss doesn't make a history note. In other words, if there's no note about the backup failing, you can assume that it succeeded.
+<li>When you initiate a backup operation, MainBoss makes an appropriate note in the database history (<span class="CPanel">Administration</span> | <span class="CPanel">Database Management</span>&#8212;see <a href="Browse.Database%20Management.htm">Database Management</a>). If the backup fails for some reason, MainBoss makes note of the failure in the database history; however, if the backup succeeds, MainBoss doesn't make a history note. In other words, if there's no note about the backup failing, you can assume that it succeeded.
 </li></ol><p>A number of important considerations apply to the backup name:</p>
 
 <ul class="b1"><li>Backup operations are run by SQL Server itself on the computer where SQL Server is running. Because SQL Server does the backup, backup names must refer to files that are accessible to the login name under which SQL Server runs. Furthermore, backup names are interpreted relative to the computer where SQL Server is running.
@@ -71,7 +71,7 @@
 
 <li><a href="Report.Backup.htm">Printing Information About Your Backups</a></li>
 </ul>
-<p><a href="Report.Database Management.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Backup.htm">Next section &gt;</a></p>
+<p><a href="Report.Database%20Management.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Backup.htm">Next section &gt;</a></p>
 </body>
 </html>
 

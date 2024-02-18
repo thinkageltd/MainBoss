@@ -118,7 +118,7 @@ namespace Thinkage.MainBoss.Database.Service {
 						if (!OkayToSendRejectionEmail(from.Address))
 							throw new GeneralException(KB.K("The 'from address' is the same as the email address used for incoming MainBoss Service request emails. This email will be ignored to prevent a cycle of endless emails."));
 						// First try to locate an existing requestor that matches the email address in the email message
-						var requestorInfo = new AcquireRequestor(DB, from, CreateFromEmail, CreateFromLDAP, CreateFromEmail, AcceptRegex, RejectRegex, emailRequest.F.PreferredLanguage);
+						var requestorInfo = new AcquireRequestor(DB, from, CreateRequestors, CreateFromLDAP, CreateFromEmail, AcceptRegex, RejectRegex, emailRequest.F.PreferredLanguage);
 						if (requestorInfo.Exception != null) {
 							ProcessingError(emailRequest, requestorInfo.State, Thinkage.Libraries.Exception.FullMessage(requestorInfo.Exception), requestorInfo.UserText);
 							return InformSender;

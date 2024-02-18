@@ -66,7 +66,8 @@ namespace Thinkage.MainBoss.Database.Service {
 			// MS Exchange 2007 sticks a non-conforming (depends on how you interpret the RFCs) message-id tag onto a relayed message if that message doesn't have a message-id tag.
 			System.Net.NetworkInformation.IPGlobalProperties ipProperties = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties();
 			string fqdn = Strings.IFormat("{0}.{1}", ipProperties.HostName, ipProperties.DomainName);
-			mm.Headers.Add(KB.I("Message-ID"), string.Format(KB.I("<{0}@{1}>"), DateTime.Now.Ticks.ToString(), fqdn));
+			mm.Headers.Add(KB.I(Dart.Mail.HeaderKey.MessageID), string.Format(KB.I("<{0}@{1}>"), DateTime.Now.Ticks.ToString(), fqdn));
+			mm.Headers.Add(KB.I(Dart.Mail.HeaderKey.AutoSubmitted), KB.I("auto-generated")); // indicate this was an auto-generated reply
 			return mm;
 		}
 		public void Send(MailMessage msg) {

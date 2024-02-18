@@ -1029,7 +1029,7 @@ namespace Thinkage.MainBoss.Database {
 						}
 					}
 				System.Text.StringBuilder backupOutput = new System.Text.StringBuilder();
-				Server.BackupDatabase(ConnectionInfo.ConnectionInformation, filename, Strings.IFormat("MainBoss Advanced Backup - {0}", ConnectionInfo.DBName), backupOutput);
+				Server.BackupDatabase(ConnectionInfo.ConnectionInformation, filename, Strings.IFormat("MainBoss Backup - {0}", ConnectionInfo.DBName), backupOutput);
 				vh.LogHistory(this, Strings.Format(KB.K("Backup to '{0}'"), filename), backupOutput.ToString());
 				if (dbVersion >= new Version(1, 0, 10, 24))
 					using (dsBackupFileName_1_0_10_24 dsLog = new dsBackupFileName_1_0_10_24(this)) {

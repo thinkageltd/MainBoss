@@ -184,7 +184,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				if (dt.Rows.Count == 0)
 					sRow = null;
 				else if (dt.Rows.Count > 1 )
-					throw new GeneralException(KB.K("More than one service configuration is not currently support, please remove all except for one"));
+					throw new GeneralException(KB.K("More than one service configuration is not currently supported, please remove all except for one"));
 				else {
 					// if more than one and we asked for nothing by name, just take the first one !
 					sRow = (dsMB.ServiceConfigurationRow)dt.Rows[0];

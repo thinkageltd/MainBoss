@@ -26,10 +26,10 @@ namespace Thinkage.MainBoss.Database.Service {
 				lastFlush = DateTime.Today;
 			}
 			using (RequestProcessor x = new RequestProcessor(logger, dbSession, allowOutgoingEmail)) {
-				if (x.ServiceConfiguration.ProcessRequestorIncomingEmail ) {
+				if (x.ServiceConfiguration.ProcessRequestorIncomingEmail) {
 					if (x.ServiceConfiguration.MailServer == null)
 						logger.LogInfo(KB.K("Email cannot be processed because there is no incoming Mail Server configured").Translate());
-					else if( x.ServiceConfiguration.MailUserName == null )
+					else if (x.ServiceConfiguration.MailUserName == null)
 						logger.LogInfo(KB.K("Email cannot be processed because there is no incoming Mail User Name configured").Translate());
 					else {
 						logger.LogTrace(traceDetails, KB.K("Email requests processing started").Translate());
@@ -37,7 +37,7 @@ namespace Thinkage.MainBoss.Database.Service {
 						logger.LogTrace(traceDetails, KB.K("Email requests processing completed").Translate());
 					}
 				}
-				else if(x.ServiceConfiguration.ProcessRequestorIncomingEmail != oldProcessRequestorIncomingEmail ) { 
+				else if (x.ServiceConfiguration.ProcessRequestorIncomingEmail != oldProcessRequestorIncomingEmail) {
 					logger.LogInfo(KB.K("Processing Email requests has been disabled").Translate());
 				}
 				oldProcessRequestorIncomingEmail = x.ServiceConfiguration.ProcessRequestorIncomingEmail;
@@ -79,20 +79,20 @@ namespace Thinkage.MainBoss.Database.Service {
 
 			DB.ViewAdditionalRows(dsmb, dsMB.Schema.T.RequestState);
 			// Locate all the UnProcessed state EmailRequest records that are not hidden.
-			DB.ViewAdditionalRows(dsmb, dsMB.Schema.T.EmailRequest,new SqlExpression(dsMB.Path.T.EmailRequest.F.ProcessingState).In(SqlExpression.Constant(ToBeProcessed)));
+			DB.ViewAdditionalRows(dsmb, dsMB.Schema.T.EmailRequest, new SqlExpression(dsMB.Path.T.EmailRequest.F.ProcessingState).In(SqlExpression.Constant(ToBeProcessed)));
 			if (dsmb.T.EmailRequest.Rows.Count == 0) {
-				if( traceActivities)
+				if (traceActivities)
 					Logger.LogActivity(KB.K("No Email requests to process").Translate());
 				return;
 			}
 			var newEmail = 0;
 			var retryEmail = 0;
-			foreach( dsMB.EmailRequestRow r in dsmb.T.EmailRequest.Rows)
-				if( r.F.ProcessingState == (int)DatabaseEnums.EmailRequestState.UnProcessed )
+			foreach (dsMB.EmailRequestRow r in dsmb.T.EmailRequest.Rows)
+				if (r.F.ProcessingState == (int)DatabaseEnums.EmailRequestState.UnProcessed)
 					newEmail++;
 				else
 					retryEmail++;
-			Logger.LogTrace( traceDetails, Strings.Format(KB.K("Processing {0} new Email {0.IsOne ?  message : messages }, and retry processing {1} Email {1.IsOne ?  message : messages }"), newEmail, retryEmail));
+			Logger.LogTrace(traceDetails, Strings.Format(KB.K("Processing {0} new Email {0.IsOne ?  message : messages }, and retry processing {1} Email {1.IsOne ?  message : messages }"), newEmail, retryEmail));
 			for (int i = 0; i < dsmb.T.EmailRequest.Rows.Count; i++) {
 				System.Globalization.CultureInfo preferredLanguage = Thinkage.Libraries.Translation.MessageBuilder.PreferredLanguage((int?)dsMB.Schema.T.EmailRequest.F.PreferredLanguage[(dsMB.EmailRequestRow)dsmb.T.EmailRequest.Rows[i]]);
 				Guid emailRequestId = (Guid)dsMB.Schema.T.EmailRequest.F.Id[(dsMB.EmailRequestRow)dsmb.T.EmailRequest.Rows[i]];
@@ -101,13 +101,13 @@ namespace Thinkage.MainBoss.Database.Service {
 				ReplytoSender? reply = new NewRequestFromEmailRequest(DB, processingAllowance
 																			  , ServiceConfiguration.MailUserName
 																			  , ServiceConfiguration.AutomaticallyCreateRequestors
-																			  , ServiceConfiguration.AutomaticallyCreateRequestorsFromEmail
 																			  , ServiceConfiguration.AutomaticallyCreateRequestorsFromLDAP
+																			  , ServiceConfiguration.AutomaticallyCreateRequestorsFromEmail
 																			  , ServiceConfiguration.AcceptAutoCreateEmailPattern
 																			  , ServiceConfiguration.RejectAutoCreateEmailPattern
 																			  , Logger)
 																			  .ConvertOne(emailRequestId, commentToRequestor);
-				if (reply.HasValue && SendRejections )
+				if (reply.HasValue && SendRejections)
 					FormatReplyToSender(reply.Value);
 			}
 			ProcessRepliesToSender(traceDetails);
@@ -125,16 +125,16 @@ namespace Thinkage.MainBoss.Database.Service {
 		#region RejectionMessage Processing
 		private Dictionary<string, List<ReplytoSender>> MessageWithReplyToSender = new Dictionary<string, List<ReplytoSender>>();
 		private void FormatReplyToSender(ReplytoSender reply) {
-			List<ReplytoSender> replies;
-			var pending = UK.K("RequestorStatusPending").Translate(reply.PreferredLanguage);
-			if (!reply.Rejection && string.IsNullOrWhiteSpace(pending)) return; // no message no warning
-			if (!MessageWithReplyToSender.TryGetValue(reply.To.Address, out replies)) {
+			string pending = UK.K("RequestorStatusPending").Translate(reply.PreferredLanguage);
+			if (!reply.Rejection && string.IsNullOrWhiteSpace(pending))
+				return; // no message no warning
+			if (!MessageWithReplyToSender.TryGetValue(reply.To.Address, out List<ReplytoSender> replies)) {
 				replies = new List<ReplytoSender>();
 				MessageWithReplyToSender.Add(reply.To.Address, replies);
 			}
 			// Build the message to the user
 			StringBuilder body = new StringBuilder();
-			if( reply.Rejection)
+			if (reply.Rejection)
 				body.AppendLine(UK.K("RequestDeniedPreamble").Translate(reply.PreferredLanguage));
 			else
 				body.AppendLine(pending);
@@ -153,20 +153,21 @@ namespace Thinkage.MainBoss.Database.Service {
 		private void ProcessRepliesToSender(bool traceDetails) {
 			if (MessageWithReplyToSender.Count == 0)
 				return; // most likely case so lets not waste time setting up to send emails
-			if ( Unavailable || ! SendRejections) return; // there is no outgoing email, because of the configuration, to do not try sent the messages
+			if (Unavailable || !SendRejections)
+				return; // there is no outgoing email, because of the configuration, to do not try send the messages
 			Logger.LogTrace(traceDetails, Strings.Format(KB.K("Processing Replies to Sender for {0} {0.IsOne ?  requestor : requestors }"), MessageWithReplyToSender.Count));
 			foreach (string replyAddress in MessageWithReplyToSender.Keys) {
 				List<ReplytoSender> messagesToSend = MessageWithReplyToSender[replyAddress];
-				var rejections = MessageWithReplyToSender[replyAddress].Where(e=>e.Rejection).OrderBy(e=>e.ReceivedDate);
-				var delays = MessageWithReplyToSender[replyAddress].Where(e => !e.Rejection).OrderBy(e=>e.ReceivedDate).Take(1); // never need to tell the user more that once that his request has been delayed.
+				var rejections = MessageWithReplyToSender[replyAddress].Where(e => e.Rejection).OrderBy(e => e.ReceivedDate);
+				var delays = MessageWithReplyToSender[replyAddress].Where(e => !e.Rejection).OrderBy(e => e.ReceivedDate).Take(1); // never need to tell the user more that once that his request has been delayed.
 				DateTime dateSent;
 				IEnumerable<ReplytoSender> allreplies = rejections;
-				if ( delays.Any() && (!hadDelayMessage.TryGetValue(replyAddress, out dateSent) || dateSent + TimeSpan.FromDays(1) < DateTime.Today)) {
+				if (delays.Any() && (!hadDelayMessage.TryGetValue(replyAddress, out dateSent) || dateSent + TimeSpan.FromDays(1) < DateTime.Today)) {
 					allreplies = rejections.Concat(delays);
-					hadDelayMessage[replyAddress] =  DateTime.Today;
+					hadDelayMessage[replyAddress] = DateTime.Today;
 				}
 				int c = rejections.Count();
-				if( c != 0 )
+				if (c != 0)
 					Logger.LogWarning(Strings.Format(KB.K("{0} rejection {0.IsOne ? message : messages } for {1}"), c, replyAddress));
 				foreach (ReplytoSender rm in allreplies)
 					using (MailMessage mm = smtp.NewMailMessage(rm.To)) {

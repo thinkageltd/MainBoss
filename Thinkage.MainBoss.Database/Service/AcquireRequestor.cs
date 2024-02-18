@@ -53,7 +53,7 @@ namespace Thinkage.MainBoss.Database.Service {
 
 		public AcquireRequestor() {}
 
-		public AcquireRequestor(XAFClient DB,  MailAddress emailAddress, bool createRequestors, bool createFromLDAP, bool createFromEmail, Regex acceptRegex, Regex rejectRegex, int? preferedLanguage) {
+		public AcquireRequestor(XAFClient DB,  MailAddress emailAddress, bool createRequestors, bool createFromLDAP, bool createFromEmail, Regex acceptRegex, Regex rejectRegex, int? preferredLanguage) {
 			EmailAddress = emailAddress;
 			CreateRequestors = createRequestors;
 			CreateFromLDAP = createFromLDAP;
@@ -61,7 +61,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			AcceptRegex = acceptRegex;
 			RejectRegex = rejectRegex;
 			try { 
-				findRequestor(DB, preferedLanguage);
+				FindRequestor(DB, preferredLanguage);
 			}
 			catch( System.Exception ex) {
 				if (Exception == null) 
@@ -75,7 +75,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				Exception = new GeneralException(Exception ,KB.K("Unable to resolve '{0}' to a Requestor"), emailAddress);
 			
 		}
-		protected void findRequestor(XAFClient DB, int? preferedLanguage) {
+		protected void FindRequestor(XAFClient DB, int? preferredLanguage) {
 			using (dsMB ds = new dsMB(DB)) {
 				ds.EnsureDataTableExists(dsMB.Schema.T.Requestor, dsMB.Schema.T.ActiveRequestor, dsMB.Schema.T.Contact);
 				var RequestorRow = FetchRequestorInformation(ds);
@@ -83,10 +83,10 @@ namespace Thinkage.MainBoss.Database.Service {
 					var accept = AcceptRegex == null || AcceptRegex.Match(EmailAddress.Address).Length >= 1;
 					var reject = RejectRegex != null && RejectRegex.Match(EmailAddress.Address).Length >= 1;
 					if (!accept)
-						RequestorError(DatabaseEnums.EmailRequestState.RejectNoRequestor, ErrorToRequestor.NotFound,  KB.K("Email Address '{0}' does not match the email address of any Requestor, and a Requestor was not created because the email address failed to match the accept auto create email address pattern"), EmailAddress.Address);
+						RequestorError(DatabaseEnums.EmailRequestState.RejectNoRequestor, ErrorToRequestor.NotFound, KB.K("Email Address '{0}' does not match the email address of any Requestor, and a Requestor was not created because the email address failed to match the accept auto create email address pattern"), EmailAddress.Address);
 					else if (reject)
 						RequestorError(DatabaseEnums.EmailRequestState.RejectNoRequestor, ErrorToRequestor.NotFound, KB.K("Email Address '{0}' does not match the email address of any Requestor, and a Requestor was not created because the email address matched the reject auto create email address pattern"), EmailAddress.Address);
-					if ( ResurrectOrCreateRequestor(ds, LDAPUsers, preferedLanguage))
+					if (ResurrectOrCreateRequestor(ds, LDAPUsers, preferredLanguage))
 						RequestorRow = FetchRequestorInformation(ds); // See if we have one now
 				}
 				if (RequestorRow == null)
@@ -131,7 +131,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				source = KB.K("Requestors {0} have the same email address '{1}' in Active Directory");
 				try {
 					LDAPUsers = LDAPEntry.GetActiveDirectoryGivenEmail(from);
-					LDAPUsers = LDAPUsers.Where(sr=> sr.Disabled );
+					LDAPUsers = LDAPUsers.Where(sr => sr.Disabled);
 					if (LDAPUsers.Count() > 1) {
 						var names = LDAPUsers.Select(e => e.UserPrincipalName);
 						var namesAsString = string.Join(KB.I(", "), names.OrderBy(e => e.ToLower()).Select(e => Strings.IFormat("'{0}'", e)));
@@ -155,7 +155,8 @@ namespace Thinkage.MainBoss.Database.Service {
 				foreach (dsMB.ActiveRequestorRow row in ds.T.ActiveRequestor.Rows)
 					found.Add(row);
 			}
-			if (found.Count == 0) return null;
+			if (found.Count == 0)
+				return null;
 			if (found.Count == 1) {
 				// if the contact does not contain the email address that we found it by (as it possible could if we found the contact by using LDAP) update to contain the email address.
 				var r = found.First();
@@ -208,26 +209,35 @@ namespace Thinkage.MainBoss.Database.Service {
 		#region CreateRequestor
 		public void CreateRequestor(dsMB ds, Guid contactid, string contactcode, System.Net.Mail.MailAddress from) {
 			try {
-				if (ds.T.Requestor.Rows.Count == 1 && ((dsMB.RequestorRow)ds.T.Requestor.Rows[0]).F.Hidden == null)
-					return;  // there had to have been a non hidden requestor that pointed to a hidden contact
-				if (ds.T.Requestor.Rows.Count == 0) {
+				// Find all existing Requestors linked to this contact 
+				ds.DB.ViewAdditionalRows(ds, dsMB.Schema.T.Requestor, new SqlExpression(dsMB.Path.T.Requestor.F.ContactID).Eq(SqlExpression.Constant(contactid)), null
+					, new DBI_PathToRow[] {
+						dsMB.Path.T.Requestor.F.ContactID.PathToReferencedRow
+						});
+				if (ds.T.Requestor.Rows.Count == 0) { // none, create a new one.
 					dsMB.RequestorRow requestor = ds.T.Requestor.AddNewRequestorRow();
 					requestor.F.ContactID = contactid;
 					requestor.F.ReceiveAcknowledgement = true; // if we are creating the requestor, they are going to get an acknowledge despite any setting in the defaults for a Requestor record
 					requestor.F.Comment = Strings.Format(KB.K("Created by MainBoss on {0}"), DateTime.Now);
 					InfoText = Strings.Format(KB.K("Creating a Requestor from '{0}' with Contact Code '{1}'"), from, contactcode);
 				}
-				else { // must be at least one hidden requestor record; we will resurrect the most recently hidden one
-					SortExpression sortByHiddenField = new SortExpression(dsMB.Path.T.Requestor.F.Hidden, SortExpression.SortOrder.Asc);
+				else { // must be at least one hidden requestor record or active; we will resurrect the most recently hidden one if there is not active one (usually because someone deleted the contact record, but not the requestor)
+					SortExpression sortByHiddenField = new SortExpression(dsMB.Path.T.Requestor.F.Hidden, SortExpression.SortOrder.Asc); // Hidden null will be first so active Requestor will be first row
 					using (System.Data.DataView orderedByHiddenField = new System.Data.DataView(ds.T.Requestor, null, sortByHiddenField.ToDataExpressionString(), System.Data.DataViewRowState.CurrentRows)) {
 						dsMB.RequestorRow requestor = (dsMB.RequestorRow)orderedByHiddenField[0].Row;
-						StringBuilder updateComment = new StringBuilder();
-						updateComment.AppendLine(Strings.Format(KB.K("Restored by MainBoss on {0}"), DateTime.Now));
-						updateComment.AppendLine(requestor.F.Comment);
-						requestor.F.ReceiveAcknowledgement = true; // if we are recreating the requestor, they are going to get an acknowledge despite any setting in the defaults for a Requestor record
-						requestor.F.Comment = updateComment.ToString();
-						requestor.F.Hidden = null;
-						InfoText = Strings.Format(KB.K("Restoring a Requestor from '{0}' with Contact Code '{1}'"), from, contactcode);
+						if (requestor.F.Hidden != null) { // found an active one, use this one
+														  // otherwise use the LAST one in the sort list
+							if( orderedByHiddenField.Count > 1)
+								requestor = (dsMB.RequestorRow)orderedByHiddenField[orderedByHiddenField.Count-1].Row;
+
+							StringBuilder updateComment = new StringBuilder();
+							updateComment.AppendLine(Strings.Format(KB.K("Restored by MainBoss on {0}"), DateTime.Now));
+							updateComment.AppendLine(requestor.F.Comment);
+							requestor.F.ReceiveAcknowledgement = true; // if we are recreating the requestor, they are going to get an acknowledge despite any setting in the defaults for a Requestor record
+							requestor.F.Comment = updateComment.ToString();
+							requestor.F.Hidden = null;
+							InfoText = Strings.Format(KB.K("Restoring a Requestor from '{0}' with Contact Code '{1}'"), from, contactcode);
+						}
 					}
 				}
 				ds.DB.Update(ds);
@@ -268,7 +278,7 @@ namespace Thinkage.MainBoss.Database.Service {
 	#endregion
 	#region
 	public class AcquireRequestorAddressWithLogging : AcquireRequestor {
-		public AcquireRequestorAddressWithLogging([Thinkage.Libraries.Translation.Invariant] string source, XAFClient DB, MailAddress emailAddress, int? preferedLanguage) {
+		public AcquireRequestorAddressWithLogging([Thinkage.Libraries.Translation.Invariant] string source, XAFClient DB, MailAddress emailAddress, int? preferredLanguage) {
 			EmailAddress = emailAddress;
 			try {
 				using (dsMB ds = new dsMB(DB)) {
@@ -279,6 +289,8 @@ namespace Thinkage.MainBoss.Database.Service {
 						CreateRequestors |= sRow.F.AutomaticallyCreateRequestors;
 						CreateFromLDAP |= sRow.F.AutomaticallyCreateRequestorsFromLDAP;
 						CreateFromEmail |= sRow.F.AutomaticallyCreateRequestorsFromEmail;
+						// if asked to create from LDAP and/or Email, we will always create the Requestor function for the matching/created Contact
+						CreateRequestors |= CreateFromLDAP | CreateFromEmail;
 						string pat = sRow.F.AcceptAutoCreateEmailPattern;
 						try {
 							pat = sRow.F.AcceptAutoCreateEmailPattern;
@@ -297,7 +309,7 @@ namespace Thinkage.MainBoss.Database.Service {
 							throw new GeneralException(ex, KB.K("Unable to compile {0} /{1}/"), dsMB.Schema.T.ServiceConfiguration.F.RejectAutoCreateEmailPattern.LabelKey.Translate(), pat);
 						}
 					}
-					findRequestor(DB, preferedLanguage);
+					FindRequestor(DB, preferredLanguage);
 				}
 			}
 			catch( System.Exception ex) {

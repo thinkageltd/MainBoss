@@ -4737,11 +4737,11 @@ namespace Thinkage.MainBoss.Controls {
 							Fmt.SetCreated(
 								delegate (IBasicDataControl valueCtrl) {
 									var link = (UILinkDisplay)valueCtrl;
-									link.MakeUrl = (tf, value) => KB.I("http://www.mainboss.com/info/licenses.htm");
+									link.MakeUrl = (tf, value) => KB.I("http://mainboss.com/info/licenses.htm");
 									link.VerticalAlignment = System.Drawing.StringAlignment.Far;
 								}
 							),
-							Fmt.SetInitialValue(KB.I("MainBoss Advanced Licensing"))
+							Fmt.SetInitialValue(KB.I("MainBoss Licensing"))
 						)));
 
 				return new Tbl(dsMB.Schema.T.Session, TId.Administration,
@@ -4896,7 +4896,7 @@ namespace Thinkage.MainBoss.Controls {
 								TblInitSourceNode.New(null,
 									new DualCalculatedInitValue(StringTypeInfo.Universe,
 										delegate (object[] inputs) {
-											var defaultURL = Strings.IFormat("http://mainboss.com/english/MainBossNews/{0}.{1}.{2}/index.htm", VersionInfo.ProductVersion.Major, VersionInfo.ProductVersion.Minor, VersionInfo.ProductVersion.Build, Thinkage.Libraries.Application.InstanceFormatCultureInfo.TwoLetterISOLanguageName);
+											var defaultURL = Strings.IFormat("http://mainboss.com/MainBossNews/{0}.{1}.{2}/index.htm?version={0}.{1}.{2}.{3}&language={4}", VersionInfo.ProductVersion.Major, VersionInfo.ProductVersion.Minor, VersionInfo.ProductVersion.Build, VersionInfo.ProductVersion.Revision, Thinkage.Libraries.Application.InstanceFormatCultureInfo.TwoLetterISOLanguageName);
 											return new System.Uri((string)inputs[0] ?? defaultURL);
 										},
 										new VariableValue(dsMB.Schema.V.NewsURL)),

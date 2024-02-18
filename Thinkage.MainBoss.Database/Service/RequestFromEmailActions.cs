@@ -48,7 +48,7 @@ namespace Thinkage.MainBoss.Database.Service {
 		public  static void Create(MB3Client DB, Set<object> EmailRequestIds, bool forceCreate) { 
 			// there is a critical section here, but not important
 			// if the user sets one of the email request to create a requestor they should all have to be set.
-			// if not the serivce will create the Requestor when it finds it, any email request earlier will not be processed
+			// if not the service will create the Requestor when it finds it, any email request earlier will not be processed
 			// and any email request after will be.
 			// setting the state on all of them will cause them to be processed in order
 			// it is still possible to require the two pass effect. If a requestor was asked be be created on a retryable EmailRequest

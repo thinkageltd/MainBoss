@@ -683,9 +683,9 @@ namespace Thinkage.MainBoss.Database.Service {
 			}
 		}
 		#region EmailRequestFromEmail
-		public static Guid EmailRequestFromEmail(dsMB dsmb, EmailMessage message, int maxsize) {
+		public static Guid EmailRequestFromEmail(dsMB dsmb, EmailMessage message, int maxsize, DatabaseEnums.EmailRequestState processingState) {
 			dsMB.EmailRequestRow erequestrow = dsmb.T.EmailRequest.AddNewEmailRequestRow();
-			erequestrow.F.ProcessingState = (int)DatabaseEnums.EmailRequestState.UnProcessed;
+			erequestrow.F.ProcessingState = (short)processingState;
 			erequestrow.F.MailHeader = message.HeaderText;
 			erequestrow.F.Subject = message.Subject;
 			erequestrow.F.MailMessage = message.Body;
@@ -733,7 +733,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			}
 			using (var dsmb = new dsMB(DB)) {
 				dsmb.EnsureDataTableExists(dsMB.Schema.T.EmailRequest, dsMB.Schema.T.EmailPart);
-				var id = EmailRequestFromEmail(dsmb, emailmessage, int.MaxValue);
+				var id = EmailRequestFromEmail(dsmb, emailmessage, int.MaxValue, DatabaseEnums.EmailRequestState.UnProcessed);
 				DB.Update(dsmb);
 				return id;
 			}

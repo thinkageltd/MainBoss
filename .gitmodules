@@ -46,6 +46,8 @@
 [submodule "Thinkage.Core"]
 	path = Thinkage.Core
 	url = https://github.com/thinkageltd/Thinkage.Core
+	branch = 4.2
 [submodule "Thinkage.Libraries.Presentation.ASPNet"]
 	path = Thinkage.Libraries.Presentation.ASPNet
 	url = https://github.com/thinkageltd/Thinkage.Libraries.Presentation.ASPNet
+	branch = 4.2

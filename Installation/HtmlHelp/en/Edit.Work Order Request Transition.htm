@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="copyright" content="2018 Thinkage Ltd." />
 <link rel="stylesheet" type="text/css" href="mbmanual.css" />
-<title>MainBoss Advanced 4.2 Operating Reference Manual: Specifying Request State Transitions</title>
+<title>MainBoss 4.2 Operating Reference Manual: Specifying Request State Transitions</title>
 </head>
 <body>
 <table class="logohead">
@@ -12,7 +12,7 @@
 <td class="pagehead"><h1 class="pagehead">Specifying Request State Transitions</h1>
 </td></tr></table>
 <!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
-<p><a href="Browse.Request Assignment by Assignee.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Request.htm">Next section &gt;</a></p>
+<p><a href="Browse.Request%20Assignment%20by%20Assignee.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Request.htm">Next section &gt;</a></p>
 
 <p>A <span class="NewTerm">request state transition</span> is a rule telling MainBoss to change the state of a request whenever a linked work order changes its state. For example, you could tell MainBoss that every time you close a work order, MainBoss should automatically close all the requests linked to that work order.</p>
 
@@ -29,13 +29,13 @@
 <p>The window for managing a request transition rule contains the following:</p>
 
 <p class="wi"><span class="CField">Request State</span>: A drop-down list specifying all the possible states a request may be in. For more information, see <a href="Requests.htm">Requests</a>.</p>
-<p class="wi"><span class="CField">Work Order State</span>: A drop-down list specifying all the possible states of a work order. For more information, see <a href="View.Work Order States.htm">Work Order States</a>.</p>
+<p class="wi"><span class="CField">Work Order State</span>: A drop-down list specifying all the possible states of a work order. For more information, see <a href="View.Work%20Order%20States.htm">Work Order States</a>.</p>
 <p class="wi"><span class="CField">Change To Request State</span>: A drop-down list specifying the new state into which the request should be put.
 
 <br /><br />Putting these three fields together, you are saying, "When a request starts off in "<span class="CField">Request State</span>", and a linked work order changes into "<span class="CField">Work Order State</span>", then put the request into "<span class="CField">Change To Request State</span>".
 
 <br /><br />For example, suppose "<span class="CField">Request State</span>" is <span class="CButton">In Progress</span>, and "<span class="CField">Work Order State</span>" is <span class="CButton">Closed</span>, and "<span class="CField">Change To Request State</span>" is <span class="CButton">Closed</span>. This says that when a request is <span class="CButton">In Progress</span> and a linked work order is closed, then MainBoss should close the request too.</p>
-<p class="wi"><span class="CButton">Comment To Requestor</span>: A drop-down list giving possible messages to send to the requestor. You can choose from MainBoss's pre-existing messages. However, in many cases you would use the facilities of the drop-down list to create a new message of your own. To do so, click the right-hand drop-down arrow and then select <span class="CButton">New Message</span> in the resulting menu. This lets you create a new message of your own. For more information on creating new messages, see <a href="Edit.Message Translation.htm">Message String Translations</a>.</p>
+<p class="wi"><span class="CButton">Comment To Requestor</span>: A drop-down list giving possible messages to send to the requestor. You can choose from MainBoss's pre-existing messages. However, in many cases you would use the facilities of the drop-down list to create a new message of your own. To do so, click the right-hand drop-down arrow and then select <span class="CButton">New Message</span> in the resulting menu. This lets you create a new message of your own. For more information on creating new messages, see <a href="Edit.Message%20Translation.htm">Message String Translations</a>.</p>
 <p class="box"><span class="CInset">Note:</span> The same user message key can have different messages depending on the recipient's preferred language. For example, you might have key named <span class="CU">CommentWhenRequestIsClosed</span>. You could then have an English language message, a French message, a Spanish message and so on, all associated with the same key. MainBoss chooses which translation to send, based on the recipient's preferred language (if any).</p>
 
 <p class="wi"><span class="CButton">Current Translation</span>: A read-only field giving the current translation of the message specified in <span class="CButton">Comment To Requestor</span> (in your chosen language, if such a translation exists).</p>
@@ -46,7 +46,7 @@
 <p>For more on requests, see <a href="Requests.htm">Requests</a>. For more on editing requests, see <a href="Edit.Request.htm">Editing Requests</a>.</p>
 
 
-<p><a href="Browse.Request Assignment by Assignee.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Request.htm">Next section &gt;</a></p>
+<p><a href="Browse.Request%20Assignment%20by%20Assignee.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Report.Request.htm">Next section &gt;</a></p>
 </body>
 </html>
 

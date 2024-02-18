@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="copyright" content="2018 Thinkage Ltd." />
 <link rel="stylesheet" type="text/css" href="mbmanual.css" />
-<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing Work Orders</title>
+<title>MainBoss 4.2 Operating Reference Manual: Editing Work Orders</title>
 </head>
 <body>
 <table class="logohead">
@@ -12,7 +12,7 @@
 <td class="pagehead"><h1 class="pagehead">Editing Work Orders</h1>
 </td></tr></table>
 <!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
-<p><a href="Browse.Void Work Order.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Work Order State History.htm">Next section &gt;</a></p>
+<p><a href="Browse.Void%20Work%20Order.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Work%20Order%20State%20History.htm">Next section &gt;</a></p>
 
 <p>You create or modify work orders using the work order editor. The usual way to open the editor is to click <span class="CButton">New Work Order</span> or <span class="CButton">Edit</span> in the <span class="CButton">View</span> section of <span class="CPanel">Work Orders</span>.</p>
 
@@ -68,7 +68,7 @@
 <p class="wi2"><span class="CField">Close Code</span>: Different organizations use the closing code for different purposes. One common purpose is to specify the overall cause of the problem, e.g. normal wear and tear, operator error, accidental breakage, etc. This makes it possible to organize your work orders and their costs according to cause; not only does this give you a picture of the sources of maintenance trouble, it may help you allocate resources more effectively to reduce future difficulties. For more on closing codes, see <a href="ClosingCodes.htm">Closing Codes</a>.</p>
 <p class="wi2"><span class="CButton">Select for Printing</span>: If this box is checkmarked, the work order will be marked <span class="CButton">Select for Printing</span>. This makes it simpler to print work orders after they have been generated. For more on the use of <span class="CButton">Select for Printing</span>, see <a href="SelectPrintFlags.htm">Select Print Flags</a>.</p>
 <p class="wi"><span class="CButton">Assignments</span> section: Lists people who have been assigned to this work order. For more information on assignments, see <a href="Assignments.htm">Assignments</a>.</p>
-<p class="wi2"><span class="CButton">New Work Order Assignment</span>: Opens a window where you can assign someone to this work order. For more details, see <a href="Edit.Work Order Assignment.htm">Assigning Someone to a Work Order</a>.</p>
+<p class="wi2"><span class="CButton">New Work Order Assignment</span>: Opens a window where you can assign someone to this work order. For more details, see <a href="Edit.Work%20Order%20Assignment.htm">Assigning Someone to a Work Order</a>.</p>
 <p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
 <p class="wi3"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
 <p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
@@ -97,8 +97,8 @@
 
 <p class="wi2"><span class="CField">Total</span>: Read-only fields giving a running total of demand records and actual records. These totals sum up information from the <span class="CButton">Items</span>, <span class="CButton">Inside</span>, <span class="CButton">Outside</span> and <span class="CButton">Miscellaneous Expenses</span> subsections.</p>
 <p class="wi2"><span class="CButton">Items</span> subsection: Lists demands and actual uses of materials.</p>
-<p class="wi3"><span class="CButton">New Demand Item</span>: Opens a new window where you can reserve materials before the job begins. For more information, see <a href="Edit.Demand Item.htm">Demand Item</a>.</p>
-<p class="wi3"><span class="CButton">Actualize</span>: Opens a new window where you can create an actual resource usage entry from an existing demand entry. You should click the demand first, then click <span class="CButton">Actualize</span>. Typically, actual resource usage records are created as work is completed (when actual resource usage is known). For more about actual item usages, see <a href="Edit.Actual Item.htm">Actual Item</a>.</p>
+<p class="wi3"><span class="CButton">New Demand Item</span>: Opens a new window where you can reserve materials before the job begins. For more information, see <a href="Edit.Demand%20Item.htm">Demand Item</a>.</p>
+<p class="wi3"><span class="CButton">Actualize</span>: Opens a new window where you can create an actual resource usage entry from an existing demand entry. You should click the demand first, then click <span class="CButton">Actualize</span>. Typically, actual resource usage records are created as work is completed (when actual resource usage is known). For more about actual item usages, see <a href="Edit.Actual%20Item.htm">Actual Item</a>.</p>
 <p class="wi3"><span class="CButton">Edit</span>: Lets you edit an existing demand in the list.</p>
 <p class="wi3"><span class="CButton">View</span>: Lets you view an entry in the list (without changing any information in the entry).</p>
 <p class="wi3"><span class="CButton">View Storage Assignment</span>: Opens the storeroom assignment record associated with the currently selected entry. While you cannot make changes in the storeroom assignment itself, you can use the record's <span class="CButton">Item Activity</span> section to perform inventory operations such as transferring items to or from the storeroom, and receiving items into the storeroom. For example, if you buy materials for this work order, you can use <span class="CButton">View Storage Assignment</span> to open a storage assignment record for those materials, then go to the record's <span class="CButton">Item Activity</span> section and use <span class="CButton">Receive</span> or <span class="CButton">Receive (with PO)</span> to record the materials you bought.
@@ -108,17 +108,17 @@
 <p class="wi3"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Searches for a particular record.</p>
 <p class="wi3"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
 <p class="wi2"><span class="CButton">Inside</span> subsection: Lists demands and actual uses of inside labor.</p>
-<p class="wi3"><span class="CButton">New Demand Hourly Inside</span>: Opens a window where you can assign your own personnel to this job; expenses will be paid on an hourly basis. For more, see <a href="Edit.Demand Hourly Inside.htm">Demand Hourly Inside</a>.</p>
-<p class="wi3"><span class="CButton">New Demand Per Job Inside</span>: Opens a window where you can assign your own personnel to this job; expenses will be paid on a per job basis. For more, see <a href="Edit.Demand Per Job Inside.htm">Demand Per Job Inside</a>.</p>
-<p class="wi3"><span class="CButton">Actualize</span>: Opens a new window where you can create an actual labor usage entry from an existing demand entry. You should click the demand first, then click <span class="CButton">Actualize</span>. Typically, actual labor usage records are created as work is completed (when actual labor usage is known). For more about actual inside labor usages, see <a href="Edit.Actual Hourly Inside.htm">Actual Hourly Inside</a> and <a href="Edit.Actual Per Job Inside.htm">Actual Per Job Inside</a>.</p>
+<p class="wi3"><span class="CButton">New Demand Hourly Inside</span>: Opens a window where you can assign your own personnel to this job; expenses will be paid on an hourly basis. For more, see <a href="Edit.Demand%20Hourly%20Inside.htm">Demand Hourly Inside</a>.</p>
+<p class="wi3"><span class="CButton">New Demand Per Job Inside</span>: Opens a window where you can assign your own personnel to this job; expenses will be paid on a per job basis. For more, see <a href="Edit.Demand%20Per%20Job%20Inside.htm">Demand Per Job Inside</a>.</p>
+<p class="wi3"><span class="CButton">Actualize</span>: Opens a new window where you can create an actual labor usage entry from an existing demand entry. You should click the demand first, then click <span class="CButton">Actualize</span>. Typically, actual labor usage records are created as work is completed (when actual labor usage is known). For more about actual inside labor usages, see <a href="Edit.Actual%20Hourly%20Inside.htm">Actual Hourly Inside</a> and <a href="Edit.Actual%20Per%20Job%20Inside.htm">Actual Per Job Inside</a>.</p>
 <p class="wi3"><span class="CButton">Edit</span>: Lets you edit an existing demand in the list.</p>
 <p class="wi3"><span class="CButton">View</span>: Lets you view an entry in the list (without changing any information in the entry).</p>
 <p class="wi3"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the demand that's currently selected. You cannot delete demands that have already been actualized (in whole or in part).</p>
 <p class="wi3"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Searches for a particular record.</p>
 <p class="wi3"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
 <p class="wi2"><span class="CButton">Outside</span> subsection: Lists demands and actual uses of outside contractors.</p>
-<p class="wi3"><span class="CButton">New Demand Hourly Outside</span>: Opens a window where you can assign outside contractors to this job; expenses will be paid on an hourly basis. For more, see <a href="Edit.Demand Hourly Outside.htm">Demand Hourly Outside</a>.</p>
-<p class="wi3"><span class="CButton">New Demand Per Job Outside</span>: Opens a window where you can assign outside contractors to this job; expenses will be paid on a per job basis. For more, see <a href="Edit.Demand Per Job Outside.htm">Demand Per Job Outside</a>.</p>
+<p class="wi3"><span class="CButton">New Demand Hourly Outside</span>: Opens a window where you can assign outside contractors to this job; expenses will be paid on an hourly basis. For more, see <a href="Edit.Demand%20Hourly%20Outside.htm">Demand Hourly Outside</a>.</p>
+<p class="wi3"><span class="CButton">New Demand Per Job Outside</span>: Opens a window where you can assign outside contractors to this job; expenses will be paid on a per job basis. For more, see <a href="Edit.Demand%20Per%20Job%20Outside.htm">Demand Per Job Outside</a>.</p>
 <p class="wi3"><span class="CButton">New PO Line</span>: Is enabled when an hourly outside or per job outside demand is selected in the list of demands. Clicking <span class="CButton">New PO Line</span> adds a line for the selected demand in a purchase order associated with the current work order.
 
 <br /><br />For example, suppose you want to hire an outside plumber for a job. First, create a demand for the plumber's services (e.g. an hourly outside demand). Then select this demand and click <span class="CButton">New PO Line</span>. The resulting window asks you to specify a purchase order; you can either select one that's already associated with this work order, or you can create a new one.</p>
@@ -126,23 +126,23 @@
 
 <br /><br />If a demand has a purchase order line associated with it, click the purchase order line and then click <span class="CButton">Actualize</span>. Otherwise, click the demand and then click <span class="CButton">Actualize</span>.
 
-<br /><br />Typically, actual labor usage records are created <span class="Emphasis">after</span> a job is completed (when actual labor usage is known). For more about actual outside labor usages, see <a href="Edit.Actual Hourly Outside (no PO).htm">Actual Hourly Outside</a> or <a href="Edit.Actual Per Job Outside (no PO).htm">Actual Per Job Outside</a> (if there is no associated purchase order entry) and <a href="Edit.Actual Hourly Outside (with PO).htm">Actual Hourly Outside (with PO)</a> or <a href="Edit.Actual Per Job Outside (with PO).htm">Actual Per Job Outside (with PO)</a> (if there is an associated purchase order entry).</p>
+<br /><br />Typically, actual labor usage records are created <span class="Emphasis">after</span> a job is completed (when actual labor usage is known). For more about actual outside labor usages, see <a href="Edit.Actual%20Hourly%20Outside%20(no%20PO).htm">Actual Hourly Outside</a> or <a href="Edit.Actual%20Per%20Job%20Outside%20(no%20PO).htm">Actual Per Job Outside</a> (if there is no associated purchase order entry) and <a href="Edit.Actual%20Hourly%20Outside%20(with%20PO).htm">Actual Hourly Outside (with PO)</a> or <a href="Edit.Actual%20Per%20Job%20Outside%20(with%20PO).htm">Actual Per Job Outside (with PO)</a> (if there is an associated purchase order entry).</p>
 <p class="wi3"><span class="CButton">Edit</span>: Lets you edit an existing demand in the list.</p>
 <p class="wi3"><span class="CButton">View</span>: Lets you view an entry in the list (without changing any information in the entry).</p>
 <p class="wi3"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the demand that's currently selected. You cannot delete demands that have already been actualized (in whole or in part).</p>
 <p class="wi3"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Searches for a particular record.</p>
 <p class="wi3"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
 <p class="wi2"><span class="CButton">Miscellaneous Expenses</span> subsection: Lists miscellaneous costs to be added to the work order.</p>
-<p class="wi3"><span class="CButton">New Demand Miscellaneous Cost</span>: Opens a window where you can associated a miscellaneous cost with this job. For more, see <a href="Edit.Demand Miscellaneous Cost.htm">Demand Miscellaneous</a>.</p>
-<p class="wi3"><span class="CButton">Actualize</span>: Opens a new window where you can record the actual cost of an existing miscellaneous demand. You should click the demand first, then click <span class="CButton">Actualize</span>. For more about actual miscellaneous costs, see <a href="Edit.Actual Miscellaneous Cost.htm">Actual Miscellaneous</a>.</p>
+<p class="wi3"><span class="CButton">New Demand Miscellaneous Cost</span>: Opens a window where you can associated a miscellaneous cost with this job. For more, see <a href="Edit.Demand%20Miscellaneous%20Cost.htm">Demand Miscellaneous</a>.</p>
+<p class="wi3"><span class="CButton">Actualize</span>: Opens a new window where you can record the actual cost of an existing miscellaneous demand. You should click the demand first, then click <span class="CButton">Actualize</span>. For more about actual miscellaneous costs, see <a href="Edit.Actual%20Miscellaneous%20Cost.htm">Actual Miscellaneous</a>.</p>
 <p class="wi3"><span class="CButton">Edit</span>: Lets you edit an existing demand in the list.</p>
 <p class="wi3"><span class="CButton">View</span>: Lets you view an entry in the list (without changing any information in the entry).</p>
 <p class="wi3"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the demand that's currently selected. You cannot delete demands that have already been actualized (in whole or in part).</p>
 <p class="wi3"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Searches for a particular record.</p>
 <p class="wi3"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
 <p class="wi"><span class="CButton">Temporary Storage</span> section: Lets you associate temporary storage locations with this work order. Temporary storage may be used to hold some or all of the work order's materials. This allows for situations where spare parts and other materials are transferred from their usual storerooms to some more convenient place so they'll be accessible for use on a work order. When you're working on a unit, the best temporary storage location is often the unit itself, indicating that items have been transferred to the unit's location.</p>
-<p class="wi3"><span class="CButton">New Temporary Storage</span>: Associates a temporary storage location with this work order. For more, see <a href="Edit.Temporary Storage.htm">Temporary Storage Locations</a>.</p>
-<p class="wi3"><span class="CButton">New Temporary Storage Assignment</span>: Specifies an item that should be placed in a temporary storage location. Note that you must specify the temporary storage location (using <span class="CButton">New Temporary Storage</span>) before you can assign items to that location. For more on temporary storage assignments, see <a href="Edit.Temporary Storage Assignment.htm">Temporary Storage Assignments</a>.</p>
+<p class="wi3"><span class="CButton">New Temporary Storage</span>: Associates a temporary storage location with this work order. For more, see <a href="Edit.Temporary%20Storage.htm">Temporary Storage Locations</a>.</p>
+<p class="wi3"><span class="CButton">New Temporary Storage Assignment</span>: Specifies an item that should be placed in a temporary storage location. Note that you must specify the temporary storage location (using <span class="CButton">New Temporary Storage</span>) before you can assign items to that location. For more on temporary storage assignments, see <a href="Edit.Temporary%20Storage%20Assignment.htm">Temporary Storage Assignments</a>.</p>
 <p class="wi3"><span class="CButton">New Demand Item</span>: Is enabled when you select an entry for an item in the list above the <span class="CButton">New Demand Item</span> button. Clicking this button immediately opens a window where you can create a demand for the selected item. This is exactly like clicking <span class="CButton">New Demand Item</span> in the <span class="CButton">Resources</span> section of the record; you can just save a little time and effort because you've already specified which item you want to demand.</p>
 <p class="wi3"><span class="CButton">Edit</span>: Opens a window where you can correct the selected entry (either a temporary storage location or a temporary storage assignment).</p>
 <p class="wi3"><span class="CButton">View</span>: Opens a window where you can look at the selected entry (but not change it).</p>
@@ -150,14 +150,14 @@
 <p class="wi3"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Searches for a particular record.</p>
 <p class="wi3"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
 <p class="wi"><span class="CButton">Meters</span> section: Provides information about any meters associated with the unit covered by the work order. It also lets workers record any meter readings taken during the course of this job. For more about meters, see <a href="Meters.htm">Meters</a>.</p>
-<p class="wi2"><span class="CButton">New Work Order Meter Reading</span>: Opens a window where you can create a new meter reading associated with this unit. The new record is initialized with default values or blanks. For more, see <a href="Edit.Work Order Meter Reading.htm">Work Order Meter Readings</a>.</p>
+<p class="wi2"><span class="CButton">New Work Order Meter Reading</span>: Opens a window where you can create a new meter reading associated with this unit. The new record is initialized with default values or blanks. For more, see <a href="Edit.Work%20Order%20Meter%20Reading.htm">Work Order Meter Readings</a>.</p>
 <p class="wi2"><span class="CButton">View</span>: Opens a window displaying the selected meter record.</p>
 <p class="wi2"><span class="CButton">Restore</span>: Restores a deleted record.</p>
 <p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the selected meter record.</p>
 <p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Searches for a particular record.</p>
 <p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
 <p class="wi"><span class="CButton">Purchase Orders</span> section: Lets you associate one or more purchase orders with this job. For example, you might create a purchase order to cover the cost of outside labor expenses if the work will be done by an outside contractor.</p>
-<p class="wi2"><span class="CButton">New Work Order Purchase Order</span>: Opens a window where you can specify an existing purchase order that you wish to associate with this work order. For more, see <a href="Edit.Work Order Purchase Order.htm">Associating Work Orders with Purchase Orders</a>.</p>
+<p class="wi2"><span class="CButton">New Work Order Purchase Order</span>: Opens a window where you can specify an existing purchase order that you wish to associate with this work order. For more, see <a href="Edit.Work%20Order%20Purchase%20Order.htm">Associating Work Orders with Purchase Orders</a>.</p>
 <p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
 <p class="wi3"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
 <p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
@@ -181,7 +181,7 @@
 <p class="wi2"><span class="CButton"><img src="Delete.png" alt="Delete" /></span>: Deletes the selected request from the list.</p>
 <p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Searches the list for a particular record.</p>
 <p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
-<p class="wi"><span class="CButton">State History</span> section: Lists the states that this work order has been in and the date/times when it entered each state. For more about work order state history records, see <a href="Edit.Work Order State History.htm">Editing Work Order State History Records</a>.</p>
+<p class="wi"><span class="CButton">State History</span> section: Lists the states that this work order has been in and the date/times when it entered each state. For more about work order state history records, see <a href="Edit.Work%20Order%20State%20History.htm">Editing Work Order State History Records</a>.</p>
 <p class="wi2"><span class="CField">Effective Date</span>: This column shows the effective date/time when the work order entered the associated state. Effective date can be set manually by clicking the associated <span class="CButton">Edit</span> button.</p>
 <p class="wi2"><span class="CField">State</span>: This column shows the states through which the work order has passed.</p>
 <p class="wi2"><span class="CField">Status</span>: This column shows the status codes through which the work order has passed.</p>
@@ -210,18 +210,18 @@
 <p class="wi2"><span class="CButton">Suspend</span>: Changes an open work order into a draft one. You might do this if you find that you need to make significant changes to the work order. MainBoss opens a window where you may record a comment explaining why you're suspending the work order.</p>
 <p class="wi2"><span class="CButton">Void</span>: Changes a draft work order into a void one. This means canceling the job. MainBoss opens a window where you may record a comment explaining why you're canceling the work order.</p>
 <p class="wi2"><span class="CButton">Re-Draft</span>: Changes a void work order into a draft one. This means reactivating a canceled job. MainBoss opens a window where you may record a comment explaining why you're reactivating the work order.</p>
-<p class="box">If you have specified the appropriate request transition options, closing a work order automatically closes each linked request, provided that each request only has one linked work order. For more on this option, see <a href="Edit.Work Order Request Transition.htm">Specifying Request State Transitions</a>.</p>
+<p class="box">If you have specified the appropriate request transition options, closing a work order automatically closes each linked request, provided that each request only has one linked work order. For more on this option, see <a href="Edit.Work%20Order%20Request%20Transition.htm">Specifying Request State Transitions</a>.</p>
 
 <p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
 <p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
-<p class="wi"><span class="CButton">Add Work Order Comment</span>: Adds a comment to the selected work order. The comment is recorded in a state history record. For more, see <a href="Edit.Work Order State History.htm">Editing Work Order State History Records</a>.</p>
-<p>For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For more on viewing work orders, see <a href="Browse.Work Order.htm">Viewing Work Orders</a>. For more on printing work orders, see <a href="Report.Work Order.htm">Printing Work Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+<p class="wi"><span class="CButton">Add Work Order Comment</span>: Adds a comment to the selected work order. The comment is recorded in a state history record. For more, see <a href="Edit.Work%20Order%20State%20History.htm">Editing Work Order State History Records</a>.</p>
+<p>For more on work orders, see <a href="WorkOrders.htm">Work Orders</a>. For more on viewing work orders, see <a href="Browse.Work%20Order.htm">Viewing Work Orders</a>. For more on printing work orders, see <a href="Report.Work%20Order.htm">Printing Work Orders</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
 
 
 <p>See Also:</p><ul>
-<li><a href="Edit.Work Order State History.htm">Editing Work Order State History Records</a></li>
+<li><a href="Edit.Work%20Order%20State%20History.htm">Editing Work Order State History Records</a></li>
 </ul>
-<p><a href="Browse.Void Work Order.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Work Order State History.htm">Next section &gt;</a></p>
+<p><a href="Browse.Void%20Work%20Order.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Work%20Order%20State%20History.htm">Next section &gt;</a></p>
 </body>
 </html>
 

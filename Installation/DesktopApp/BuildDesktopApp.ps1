@@ -13,7 +13,7 @@ $appIdentity = "MainBoss"
 $PublisherStore = "CN=7D069FE8-6815-4B7C-88A9-87E6294070E8"
 $appIdentityStore = "ThinkageLtd.MainBoss"
 #The following was from using the MakeSelfSignedCertificateForStore procedure
-$StoreCertificateThumbprint = "52763F63D149A22C9781DE2F5FCFC786EAB36872"
+$StoreCertificateThumbprint = "2B2F9F03DC2B0AD60A4BCE316FC262BA58C23BD4"
 $StoreCertificate = "7D069FE8-6815-4B7C-88A9-87E6294070E8"
 DesktopAppConverter.exe -Installer .\bin\Desktop\en-US\Install.MainBoss-en-US.$SolutionVersion.msi -destination $appFolder -PackagePublisherDisplayName "Thinkage Ltd." -PackageDisplayName "MainBoss" -AppDisplayName "MainBoss" -PackageName "$appIdentity" -Publisher "$Publisher" -Version $DesktopAppVersion -PackageArch x86 -MakeAppx
 &$signtool sign /fd SHA256 /t http://tsa.starfieldtech.com /n "Thinkage Ltd." /i "Go Daddy Secure Certificate Authority - G2" "$appFolder\$appIdentity\$appIdentity.appx"

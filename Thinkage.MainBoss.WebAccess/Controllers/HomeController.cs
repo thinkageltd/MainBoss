@@ -83,7 +83,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		[MainBossAuthorization(MainBossAuthorized.Anyone)]
 		public ActionResult About() {
 			Version v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-			return Redirect(Thinkage.Libraries.Strings.IFormat("http://www.mainboss.com/info/aboutMainBossWebAccess.htm?version={0}.{1}", v.Major, v.Minor));
+			return Redirect(Thinkage.Libraries.Strings.IFormat("http://mainboss.com/info/aboutMainBossWebAccess.htm?version={0}.{1}", v.Major, v.Minor));
 		}
 		#endregion
 		#region NoPermission

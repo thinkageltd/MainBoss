@@ -10,7 +10,7 @@ if ($env:PLATFORMSDK -ne $null) {
 else {
 	throw "PLATFORMSDK environment variable must be set to use MAGE tools"
 }
-$magetool = join-path -path "$magetoolRoot" -childpath (join-path -path 'bin' (join-path -path 'NETFX 4.6 Tools' -childpath 'mage.exe'))
+$magetool = join-path -path "$magetoolRoot" -childpath (join-path -path 'bin' (join-path -path 'NETFX 4.6.1 Tools' -childpath 'mage.exe'))
 . (resolve-path '..\SignProcedure.ps1')
 ################# FUNCTIONS ############################
 function SaveXML {
@@ -48,7 +48,7 @@ if ([System.String]::IsNullOrEmpty($version))
 	write-host 'Version is missing! Quitting'
 	return
 }
-$productName = "MainBoss Advanced"
+$productName = "MainBoss"
 $supportUrlBase = "http://www.mainboss.com/info"
 $supportUrl = "$supportUrlBase/support.htm?version=$supportVersion"
 $microsoftSupportUrl = "$supportUrlBase/microsoft.htm"

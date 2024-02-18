@@ -45,8 +45,8 @@
 	  <result hosting="cached">
 		(select id from PMGenerationDetail)
 	  </result>
-	  <extension name="dependson">PMGenerationDetail</extension>
-	  <extension name="dependson">PMGenerationBatch</extension>
+	  <extension name="dependson">PMGenerationDetail@PMGenerationDetail.ScheduledWorkOrderID->ScheduledWorkOrder.Id</extension>
+	  <extension name="dependson">PMGenerationBatch.SessionID</extension>
 	</field>
 	<extension name="costrights">UnitValue</extension>
 	<extension name="deletemethod">hide</extension>
@@ -121,6 +121,7 @@
   <table name="PMGenerationDetail">
 	<field name="FirmScheduleData"/>
 	<field name="DetailType"/>
+	<field name="ScheduledWorkOrderID"/>
   </table>
   <table name="PMGenerationBatch">
 	<field name="SessionID"/>

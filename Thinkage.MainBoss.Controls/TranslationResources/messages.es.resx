@@ -2752,6 +2752,9 @@
   <data name="Thinkage.MainBoss.Controls§Email rejected: Senders Contact could not be created since another Contact exists with the same code" xml:space="preserve">
     <value>Email rechazó: Remitentes Contacto No se puede crear desde otra Contacto existe con el mismo código</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Email held for review: is stale dated or originated as an auto response" xml:space="preserve">
+    <value>Correo electrónico retenido para revisión: está anticuado o se originó como respuesta automática</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Email rejected: Senders email address doesn't match any Contact" xml:space="preserve">
     <value>Correo electrónico rechazada: Remitentes dirección de correo electrónico no coincide con ninguna de contacto</value>
   </data>

@@ -31,21 +31,24 @@ namespace Thinkage.MainBoss.Database.Service {
 		public String ContactEmail = null;
 		private bool CreateFromLDAP;
 		private bool CreateFromEmail;
-		int? PreferedLanguage;
+		int? PreferredLanguage;
 
-		public AcquireContact(XAFClient DB, IEnumerable<LDAPEntry> aLDAPUsers, MailAddress emailAddress, bool createFromLDAP, bool createFromEmail, int? preferedLanguage) {
+		public AcquireContact(XAFClient DB, IEnumerable<LDAPEntry> aLDAPUsers, MailAddress emailAddress, bool createFromLDAP, bool createFromEmail, int? preferredLanguage) {
 			EmailAddress = emailAddress;
 			CreateFromLDAP = createFromLDAP;
 			CreateFromEmail = createFromEmail;
 			LDAPUsers = aLDAPUsers;
-			PreferedLanguage = preferedLanguage;
+			PreferredLanguage = preferredLanguage;
 			if (LDAPUsers == null && emailAddress == null) {
 				ContactError(DatabaseEnums.EmailRequestState.NoContact, ErrorToRequestor.Unknown, KB.K("Cannot find a contact since no email address or Active Directory Reference provided"));
 				return;
 			}
-			if( emailAddress != null )
-				LDAPUsers = LDAPUsers == null ? LDAPEntry.GetActiveDirectoryGivenEmail(emailAddress.Address) : LDAPUsers.Concat(LDAPEntry.GetActiveDirectoryGivenEmail(emailAddress.Address));
-			LDAPUsers = LDAPUsers?.Where(e => !e.Disabled);
+			try { // try to enhance/find our LDAPUsers list; ignore any errors getting the LDAP list at this level
+				if (emailAddress != null)
+					LDAPUsers = LDAPUsers == null ? LDAPEntry.GetActiveDirectoryGivenEmail(emailAddress.Address) : LDAPUsers.Concat(LDAPEntry.GetActiveDirectoryGivenEmail(emailAddress.Address));
+				LDAPUsers = LDAPUsers?.Where(e => !e.Disabled);
+			}
+			catch { }
 			try {
 				using (dsMB ds = new dsMB(DB)) {
 					ds.EnsureDataTableExists(dsMB.Schema.T.Contact);
@@ -76,10 +79,12 @@ namespace Thinkage.MainBoss.Database.Service {
 					var contactRow = ContactInformation(ds, found, LDAPguids, LDAPEmail, LDAPAllEmail, false);
 					if (contactRow == null)  // look for hidden contacts that match
 						contactRow = ContactInformation(ds, found, LDAPguids, LDAPEmail, LDAPAllEmail, true);
+					// At this point, if we do not have a valid contactRow, we will try to create it depending on user options
 					if (contactRow == null && (createFromLDAP || createFromEmail)) {
-						if (LDAPUsers == null && !createFromEmail)
+						// if we have an ActiveDirectory present and we have no matching EmailAddresses there and we weren't told to createFromEmail, complain.
+						if (LDAPUsers != null && (LDAPAllEmail == null || !LDAPAllEmail.Any()) && !createFromEmail)
 							ContactError(DatabaseEnums.EmailRequestState.NoContact, ErrorToRequestor.NotFound, KB.K("Active Directory does not have an entry for email address '{0}'"), EmailAddress);
-						contactRow = CreateContact(ds, LDAPUsers, EmailAddress, preferedLanguage);
+						contactRow = CreateContact(ds, LDAPUsers, EmailAddress, preferredLanguage);
 						if (contactRow == null)
 							ContactError(DatabaseEnums.EmailRequestState.NoContact, ErrorToRequestor.Unknown, KB.K("Cannot create a Contact for email address '{0}'"), EmailAddress);
 					}

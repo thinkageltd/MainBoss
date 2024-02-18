@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="copyright" content="2018 Thinkage Ltd." />
 <link rel="stylesheet" type="text/css" href="mbmanual.css" />
-<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing Requests</title>
+<title>MainBoss 4.2 Operating Reference Manual: Editing Requests</title>
 </head>
 <body>
 <table class="logohead">
@@ -12,7 +12,7 @@
 <td class="pagehead"><h1 class="pagehead">Editing Requests</h1>
 </td></tr></table>
 <!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
-<p><a href="Browse.Closed Request.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Request Assignment.htm">Next section &gt;</a></p>
+<p><a href="Browse.Closed%20Request.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Request%20Assignment.htm">Next section &gt;</a></p>
 
 <p>You create or modify requests using the request editor. The usual way to open the editor is to click <span class="CButton">New Request</span> or <span class="CButton">Edit</span> in the <span class="CButton">View</span> section of <span class="CPanel">Requests</span>. However, you can also get to this window by clicking <span class="CButton">Edit Defaults</span> in the <span class="CButton">Defaults for Requests</span> section of the <span class="CPanel">Requests</span> viewer.</p>
 
@@ -47,7 +47,7 @@
 <p class="wi2"><span class="CField">Comments</span>: Any additional comments that may be useful to maintenance personnel.</p>
 <p class="wi2"><span class="CButton">Select for Printing</span>: If this box is checkmarked, the request will be marked <span class="CButton">Select for Printing</span>. This makes it simpler to print requests after they have been generated. For more on the use of <span class="CButton">Select for Printing</span>, see <a href="SelectPrintFlags.htm">Select Print Flags</a>.</p>
 <p class="wi"><span class="CButton">Assignments</span> section: Lists people who have been assigned to this request. For more information on assignments, see <a href="Assignments.htm">Assignments</a>.</p>
-<p class="wi2"><span class="CButton">New Request Assignment</span>: Opens a window where you can assign someone to this request. For more details, see <a href="Edit.Request Assignment.htm">Assigning Someone to a Request</a>.</p>
+<p class="wi2"><span class="CButton">New Request Assignment</span>: Opens a window where you can assign someone to this request. For more details, see <a href="Edit.Request%20Assignment.htm">Assigning Someone to a Request</a>.</p>
 <p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
 <p class="wi3"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
 <p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
@@ -78,7 +78,7 @@
 <p class="wi2"><span class="CField">Status</span>: Shows the status codes through which the request has passed.</p>
 <p class="wi2"><span class="CField">Comments</span>: Shows any comments associated with each state history record.</p>
 <p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
-<p class="wi3"><span class="CButton">Edit</span>: Opens a window to edit the selected state history record. For more, see <a href="Edit.Request State History.htm">Editing Request State History Records</a>.</p>
+<p class="wi3"><span class="CButton">Edit</span>: Opens a window to edit the selected state history record. For more, see <a href="Edit.Request%20State%20History.htm">Editing Request State History Records</a>.</p>
 <p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected state history record.</p>
 <p class="wi2"><span class="CButton"><img src="Find_VS.png" alt="Search" /></span>: Opens a window to search for a particular record.</p>
 <p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
@@ -91,7 +91,7 @@
 
 <br /><br />If the box is checkmarked, MainBoss will automatically change request states in response to state changes in linked work orders. The table below the checkbox lists when and how the request states will be changed.</p>
 <p class="wi2"><span class="CButton">Include Work Order History status code and comments in Comments to Requestor</span>: When a work order is closed, and the work order was originally created from a request, MainBoss can send acknowledgment email messages to the original requestor, indicating that the request has been satisfied. (You must have licensed the <span class="BL">Web Requests</span> module in order for this to happen.) If you checkmark <span class="CButton">Include Work Order History status code and comments in Comments to Requestor</span>, the acknowledgment message will include any comments and status codes that were associated with the work order. If you leave the checkbox blank, the acknowledgment message won't include this information.</p>
-<p class="wi2"><span class="CButton">New Work Order Request Transition</span>: Lets you specify rules for changing request states when a linked work order changes its state. For more information, see <a href="Edit.Work Order Request Transition.htm">Specifying Request State Transitions</a>.</p>
+<p class="wi2"><span class="CButton">New Work Order Request Transition</span>: Lets you specify rules for changing request states when a linked work order changes its state. For more information, see <a href="Edit.Work%20Order%20Request%20Transition.htm">Specifying Request State Transitions</a>.</p>
 <p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
 <p class="wi3"><span class="CButton">Edit</span>: Opens a window where you can edit the selected request transition.</p>
 <p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected request transition.</p>
@@ -110,7 +110,7 @@
 <p class="wi2"><span class="CButton">In Progress</span>: Marks the request as "in progress".</p>
 <p class="wi2"><span class="CButton">In Progress (With Comment)</span>: Marks the request as "in progress". MainBoss will also open a window where you can record a comment about what you're doing.</p>
 <p class="wi2"><span class="CButton">Void</span>: Cancels the selected request. MainBoss will also open a window where you can record a comment explaining why you are canceling the request.</p>
-<p class="box">As noted above, some of the "state-change" operations open a window where you can record comments about what you're doing. This window also gives you an opportunity to record comments to be sent to the original requestor. If you have the MainBoss Service module, these comments are automatically emailed to the requestor. The comments are also recorded in the request's <span class="CButton">State History</span> section. For further information, see <a href="Edit.Request State History.htm">Editing Request State History Records</a>.</p>
+<p class="box">As noted above, some of the "state-change" operations open a window where you can record comments about what you're doing. This window also gives you an opportunity to record comments to be sent to the original requestor. If you have the MainBoss Service module, these comments are automatically emailed to the requestor. The comments are also recorded in the request's <span class="CButton">State History</span> section. For further information, see <a href="Edit.Request%20State%20History.htm">Editing Request State History Records</a>.</p>
 
 <p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
 <p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
@@ -118,17 +118,17 @@
 
 <br /><br />Note that it's also possible for a single request to be associated with multiple work orders. For example, you might create one work order for a short-term work-around fix, and another work order for a more permanent repair. Using <span class="CButton">Link Work Orders</span> lets you associate the request with both work orders.
 
-<br /><br />A request may be linked to any number of work orders and vice versa. When you click <span class="CButton">Link Work Orders</span>, you get the window described in <a href="Edit.Requested Work Order.htm">Requested Work Orders</a>.</p>
-<p class="wi"><span class="CButton">New Work Order</span>: Opens a window that lets you create a work order based on this request. Information from the request will be copied into the new work order; however, this information can be changed if desired. For more on creating and editing work orders, see <a href="Edit.Work Order.htm">Editing Work Orders</a>.</p>
+<br /><br />A request may be linked to any number of work orders and vice versa. When you click <span class="CButton">Link Work Orders</span>, you get the window described in <a href="Edit.Requested%20Work%20Order.htm">Requested Work Orders</a>.</p>
+<p class="wi"><span class="CButton">New Work Order</span>: Opens a window that lets you create a work order based on this request. Information from the request will be copied into the new work order; however, this information can be changed if desired. For more on creating and editing work orders, see <a href="Edit.Work%20Order.htm">Editing Work Orders</a>.</p>
 <p class="wi"><span class="CButton">New Requestor Comment</span>: Lets you record a comment for the requestor. If you have the MainBoss Service module, this comment will be automatically emailed to the requestor. If not, you will have to convey the comment to the requestor in some other way.
 
 <br /><br />You can click <span class="CButton">New Requestor Comment</span> on a request as often as you like; each time, MainBoss will give you a chance to record a comment about the request. <span class="CButton">New Requestor Comment</span> therefore gives you a good way to keep track of problems, delays, and other special situations that arise during the course of a request, and to keep the requestor informed about these situations.
 
-<br /><br />Each requestor comment is recorded in the request's <span class="CButton">State History</span> section. For more on state histories, see <a href="Edit.Request State History.htm">Editing Request State History Records</a>.</p>
+<br /><br />Each requestor comment is recorded in the request's <span class="CButton">State History</span> section. For more on state histories, see <a href="Edit.Request%20State%20History.htm">Editing Request State History Records</a>.</p>
 <p>For more on requests, see <a href="Requests.htm">Requests</a>. For more on viewing requests, see <a href="Browse.Request.htm">Viewing Requests</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
 
 
-<p><a href="Browse.Closed Request.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Request Assignment.htm">Next section &gt;</a></p>
+<p><a href="Browse.Closed%20Request.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Request%20Assignment.htm">Next section &gt;</a></p>
 </body>
 </html>
 

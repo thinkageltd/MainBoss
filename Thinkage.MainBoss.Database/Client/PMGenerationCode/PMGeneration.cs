@@ -459,23 +459,38 @@ namespace Thinkage.MainBoss.Database {
 				FuzzyDate currentWorkEndDate = currentDateOnly;
 				FuzzyReading currentScheduleReading = null;
 				Guid? currentTriggeringMeterID = null;
-				List<ValidationException> aggregateExceptions = new List<ValidationException>();
 				try {
-					if(currentScheduledWORow.WorkOrderTemplateIDParentRow.F.Hidden.HasValue)
+					if (currentScheduledWORow.F.Inhibit) {
+						// This entire SWO is inhibited, say so.
+						// If the site doesn't want to see it at all, the can delete (hide) the maintenance plan.
+						// TODO: We don't have a PMType for this case, so we treat it as an Error.
+						// This means it will show up in the Errors tab of the PMGBatch tbl, but because we don't throw an exception here
+						// it does not show up as an error in a popup window on generation.
+						// Adding a PMType is nontrivial because we number them so the types that form a valid scheduling basis are the upper values
+						// so we would either have to add this value at the end and make this check more complex, or add the value in the middle and
+						// use an upgrade step to renumber all the values in existing records.
+						currentDetailRow.F.DetailType = (sbyte)DatabaseEnums.PMType.Error;
+						// We add only the message without context to the disposition record. FullMessage will not put AggregateException messages in so we need to do it explicitly
+						currentDetailRow.F.DetailContext = KB.K("This Unit Maintenance Plan record is Inhibited").Translate();
+						// Update the current detail row to reflect the 'current' values in case the ValidationException occurs between creating a new detail record and calculating a valid next schedule point.
+						SetWorkStartDate(currentDetailRow, currentWorkStartDate, currentWorkEndDate);
+						currentDetailRow.F.ScheduleDate = currentScheduleDate.ExpectedValue;
+						// On to the next Maintenance Plan
+						continue;
+					}
+					var aggregateExceptions = new List<GeneralException>();
+					if (currentScheduledWORow.WorkOrderTemplateIDParentRow.F.Hidden.HasValue)
 						// Treat it as an error if the Task is hidden.
-						aggregateExceptions.Add(new ValidationException(KB.K("The Task for this Unit Maintenance Plan has been deleted")));
+						aggregateExceptions.Add(new GeneralException(KB.K("The Task for this Unit Maintenance Plan has been deleted")));
 					if(currentScheduledWORow.UnitLocationIDParentRow.RelativeLocationIDParentRow.F.Hidden.HasValue)
 						// Treat it as an error if the Unit is hidden. Note though that we don't complain if the unit is *contained in* a deleted location.
-						aggregateExceptions.Add(new ValidationException(KB.K("The Unit for this Unit Maintenance Plan has been deleted")));
+						aggregateExceptions.Add(new GeneralException(KB.K("The Unit for this Unit Maintenance Plan has been deleted")));
 					if(currentScheduledWORow.ScheduleIDParentRow.F.Hidden.HasValue)
 						// Treat it as an error if the Schedule is hidden.
-						aggregateExceptions.Add(new ValidationException(KB.K("The Schedule for this Unit Maintenance Plan has been deleted")));
-					if(currentScheduledWORow.F.Inhibit)
-						// This entire SWO is inhibited, say so.
-						aggregateExceptions.Add(new ValidationException(KB.K("This Unit Maintenance Plan record is Inhibited")));
+						aggregateExceptions.Add(new GeneralException(KB.K("The Schedule for this Unit Maintenance Plan has been deleted")));
 					if(!currentScheduledWORow.F.CurrentPMGenerationDetailID.HasValue)
 						// If there is no schedule basis, just make an error row saying so.
-						aggregateExceptions.Add(new ValidationException(KB.K("There is no timing basis for this Unit Maintenance Plan")));
+						aggregateExceptions.Add(new GeneralException(KB.K("There is no timing basis for this Unit Maintenance Plan")));
 
 					Thinkage.Libraries.Exception.ThrowIfAggregateExceptions(aggregateExceptions, KB.K("Unit Maintenance Plan has multiple errors."));
 
@@ -503,17 +518,17 @@ namespace Thinkage.MainBoss.Database {
 							if(currentPeriodicityRow.F.CalendarUnit.HasValue)
 								// TODO: Add to the schema a CHECK constraint that (CalendarUnit IS NULL OR MeterClassID IS NULL) AND (CalendarUnit IS NOT NULL OR MeterClassID IS NOT NULL) so
 								// SQL will ensure that exactly one of these is non-null.
-								throw new ValidationException(KB.K("Maintenance Period for Maintenance Timing '{0}' contains both a Meter Class and a Calendar Unit"), currentScheduleRow.F.Code);
+								throw new GeneralException(KB.K("Maintenance Period for Maintenance Timing '{0}' contains both a Meter Class and a Calendar Unit"), currentScheduleRow.F.Code);
 							if(currentPeriodicityRow.MeterClassIDParentRow.F.Hidden.HasValue)
-								throw new ValidationException(KB.K("Maintenance Period for Maintenance Timing '{0}' references deleted Meter Class '{1}'"), currentScheduleRow.F.Code, currentPeriodicityRow.MeterClassIDParentRow.F.Code);
+								throw new GeneralException(KB.K("Maintenance Period for Maintenance Timing '{0}' references deleted Meter Class '{1}'"), currentScheduleRow.F.Code, currentPeriodicityRow.MeterClassIDParentRow.F.Code);
 							DataRow[] meterRows = LookupDs.T.Meter.Select(new ColumnExpressionUnparser().UnParse(
 										new SqlExpression(dsMB.Path.T.Meter.F.MeterClassID).Eq(SqlExpression.Constant(currentPeriodicityRow.F.MeterClassID))
 											.And(new SqlExpression(dsMB.Path.T.Meter.F.UnitLocationID).Eq(SqlExpression.Constant(currentScheduledWORow.F.UnitLocationID)))));
 							if(meterRows.Length == 0)
-								throw new ValidationException(KB.K("Maintenance Period for Maintenance Timing '{0}' refers to meter class '{1}' but Unit '{2}' has no meter of that class"), currentScheduleRow.F.Code, currentPeriodicityRow.MeterClassIDParentRow.F.Code, currentScheduledWORow.UnitLocationIDParentRow.F.Code);
+								throw new GeneralException(KB.K("Maintenance Period for Maintenance Timing '{0}' refers to meter class '{1}' but Unit '{2}' has no meter of that class"), currentScheduleRow.F.Code, currentPeriodicityRow.MeterClassIDParentRow.F.Code, currentScheduledWORow.UnitLocationIDParentRow.F.Code);
 							var meterRow = (dsMB.MeterRow)meterRows[0];
 							if(meterRow.F.Hidden.HasValue)
-								throw new ValidationException(KB.K("Maintenance Period for Maintenance Timing '{0}' refers to meter class '{1}' but the meter of that class for Unit '{2}' has been deleted"), currentScheduleRow.F.Code, currentPeriodicityRow.MeterClassIDParentRow.F.Code, currentScheduledWORow.UnitLocationIDParentRow.F.Code);
+								throw new GeneralException(KB.K("Maintenance Period for Maintenance Timing '{0}' refers to meter class '{1}' but the meter of that class for Unit '{2}' has been deleted"), currentScheduleRow.F.Code, currentPeriodicityRow.MeterClassIDParentRow.F.Code, currentScheduledWORow.UnitLocationIDParentRow.F.Code);
 							meterMapping[currentPeriodicityRow.F.Id] = meterRow.F.Id;
 						}
 					}
@@ -612,7 +627,7 @@ namespace Thinkage.MainBoss.Database {
 								basisDate = basisWorkEndDate;
 								break;
 							default:
-								throw new ValidationException(KB.K("Unknown timing basis algorithm {0}"), currentScheduledWORow.F.RescheduleBasisAlgorithm);
+								throw new GeneralException(KB.K("Unknown timing basis algorithm {0}"), currentScheduledWORow.F.RescheduleBasisAlgorithm);
 						}
 
 						#endregion
@@ -621,7 +636,7 @@ namespace Thinkage.MainBoss.Database {
 						// the earliest trigger date. However, if any of them cause estimated dates, we have to estimate everything.
 						dsMB.PeriodicityRow[] currentPeriodicityRows = currentScheduleRow.GetPeriodicityScheduleIDChildRows();
 						if(currentPeriodicityRows.Length == 0)
-							throw new ValidationException(KB.K("No intervals are defined for the Maintenance Timing '{0}'"), currentScheduleRow.F.Code);
+							throw new GeneralException(KB.K("No intervals are defined for the Maintenance Timing '{0}'"), currentScheduleRow.F.Code);
 						FuzzyDate nextScheduleDate = null;
 						FuzzyReading nextScheduleReading = null;
 						Guid? nextTriggeringMeterID = null;
@@ -651,7 +666,7 @@ namespace Thinkage.MainBoss.Database {
 									thisScheduleReading += periodicity.F.Interval;
 								}
 								catch(System.OverflowException) {
-									throw new ValidationException(KB.K("Overflow occurred adding the interval {0} to meter reading {1}"), periodicity.F.Interval, thisScheduleReading.ExpectedValue);
+									throw new GeneralException(KB.K("Overflow occurred adding the interval {0} to meter reading {1}"), periodicity.F.Interval, thisScheduleReading.ExpectedValue);
 								}
 								// Map that back to a date
 								thisScheduleDate = MeterDatePredictor.Predict(referencedMeterID, thisScheduleReading);
@@ -667,7 +682,7 @@ namespace Thinkage.MainBoss.Database {
 											thisScheduleDate = basisDate.AddDays(periodicity.F.Interval);
 										}
 										catch(System.OverflowException) {
-											throw new ValidationException(KB.K("Overflow occurred adding {0} days to basis date {1}"), periodicity.F.Interval, basisDate.ExpectedValue);
+											throw new GeneralException(KB.K("Overflow occurred adding {0} days to basis date {1}"), periodicity.F.Interval, basisDate.ExpectedValue);
 										}
 										break;
 									case DatabaseEnums.CalendarUnit.Months:
@@ -676,11 +691,11 @@ namespace Thinkage.MainBoss.Database {
 											thisScheduleDate = basisDate.AddMonths(periodicity.F.Interval);
 										}
 										catch(System.OverflowException) {
-											throw new ValidationException(KB.K("Overflow occurred adding {0} months to basis date {1}"), periodicity.F.Interval, basisDate.ExpectedValue);
+											throw new GeneralException(KB.K("Overflow occurred adding {0} months to basis date {1}"), periodicity.F.Interval, basisDate.ExpectedValue);
 										}
 										break;
 									default:
-										throw new ValidationException(KB.K("Unknown unit for period in Maintenance Timing '{0}'"), currentScheduleRow.F.Code);
+										throw new GeneralException(KB.K("Unknown unit for period in Maintenance Timing '{0}'"), currentScheduleRow.F.Code);
 								}
 							if(nextScheduleDate == null || thisScheduleDate.DefinitelyBefore(nextScheduleDate)) {
 								// 'this' schedule date is definitely before the (so far) 'next' schedule date (if any), so keep only the information from the former.
@@ -722,11 +737,11 @@ namespace Thinkage.MainBoss.Database {
 						#region Validate that the 'next' values can fit in the SQL fields of the Detail record before making them 'current'
 						System.Exception membershipException;
 						if((membershipException = dsMB.Schema.T.PMGenerationDetail.F.ScheduleDate.EffectiveType.CheckMembership(nextScheduleDate.ExpectedValue)) != null)
-							throw new ValidationException(membershipException, KB.K("The calculated Next Schedule Date {0} is invalid"), nextScheduleDate.ExpectedValue);
+							throw new GeneralException(membershipException, KB.K("The calculated Next Schedule Date {0} is invalid"), nextScheduleDate.ExpectedValue);
 						if((membershipException = dsMB.Schema.T.PMGenerationDetail.F.NextAvailableDate.EffectiveType.CheckMembership(nextScheduleDate.ExpectedValue + currentResolvedTemplateRow.F.Duration)) != null)
-							throw new ValidationException(membershipException, KB.K("The calculated Next Work End Date {0} is invalid"), nextScheduleDate.ExpectedValue + currentResolvedTemplateRow.F.Duration);
-						if(currentTriggeringMeterID.HasValue && (membershipException = dsMB.Schema.T.PMGenerationDetail.F.ScheduleReading.EffectiveType.CheckMembership(nextScheduleReading.ExpectedValue)) != null)
-							throw new ValidationException(membershipException, KB.K("The calculated Next Schedule Reading {0} is invalid"), nextScheduleReading.ExpectedValue);
+							throw new GeneralException(membershipException, KB.K("The calculated Next Work End Date {0} is invalid"), nextScheduleDate.ExpectedValue + currentResolvedTemplateRow.F.Duration);
+						if(nextTriggeringMeterID.HasValue && (membershipException = dsMB.Schema.T.PMGenerationDetail.F.ScheduleReading.EffectiveType.CheckMembership(nextScheduleReading.ExpectedValue)) != null)
+							throw new GeneralException(membershipException, KB.K("The calculated Next Schedule Reading {0} is invalid"), nextScheduleReading.ExpectedValue);
 						// Remember the old scheduled date so we can check for positive progress after updating the 'current' from 'next'
 						FuzzyDate previousScheduleDate = currentScheduleDate;
 						#endregion
@@ -747,9 +762,9 @@ namespace Thinkage.MainBoss.Database {
 						#endregion
 						if(currentScheduleDate.ExpectedValue <= previousScheduleDate.ExpectedValue)
 							if(previousScheduleDate.UncertaintyExplanationKey == null && currentScheduleDate.UncertaintyExplanationKey != null)
-								throw new ValidationException(currentScheduleDate.UncertaintyExplanationKey, currentScheduleDate.UncertaintyExplanationArguments);
+								throw new GeneralException(currentScheduleDate.UncertaintyExplanationKey, currentScheduleDate.UncertaintyExplanationArguments);
 							else
-								throw new ValidationException(KB.K("Maintenance Timing interval is not sufficient to advance scheduled date by at least a day"));
+								throw new GeneralException(KB.K("Maintenance Timing interval is not sufficient to advance scheduled date by at least a day"));
 						// TODO: if (!Firm && NoPredictionOption) also terminate scheduling.
 						#region Advance work start date based on deferrals
 						// Do Availability checking
@@ -777,7 +792,7 @@ namespace Thinkage.MainBoss.Database {
 									deferredWorkStartDate = availability.NextAvailableOnOrAfter(currentWorkStartDate);
 								}
 								catch(AvailabilityException ex) {
-									throw new ValidationException(ex, KB.K("Deferral error on availability '{0}'"), availability.IDText);
+									throw new GeneralException(ex, KB.K("Deferral error on availability '{0}'"), availability.IDText);
 								}
 								if(deferredWorkStartDate == currentWorkStartDate)
 									// No deferral actually took place because all the uncertainty boundaries are on 'available' dates
@@ -803,9 +818,9 @@ namespace Thinkage.MainBoss.Database {
 
 								// Validate the new work interval before making it 'current'
 								if((membershipException = dsMB.Schema.T.PMGenerationDetail.F.WorkStartDate.EffectiveType.CheckMembership(deferredWorkStartDate.ExpectedValue)) != null)
-									throw new ValidationException(membershipException, KB.K("The calculated Next Work Start Date {0} is invalid"), deferredWorkStartDate.ExpectedValue);
+									throw new GeneralException(membershipException, KB.K("The calculated Next Work Start Date {0} is invalid"), deferredWorkStartDate.ExpectedValue);
 								if((membershipException = dsMB.Schema.T.PMGenerationDetail.F.NextAvailableDate.EffectiveType.CheckMembership(deferredWorkStartDate.ExpectedValue + currentResolvedTemplateRow.F.Duration)) != null)
-									throw new ValidationException(membershipException, KB.K("The calculated Next Work End Date {0} is invalid"), deferredWorkStartDate.ExpectedValue + currentResolvedTemplateRow.F.Duration);
+									throw new GeneralException(membershipException, KB.K("The calculated Next Work End Date {0} is invalid"), deferredWorkStartDate.ExpectedValue + currentResolvedTemplateRow.F.Duration);
 								// Make it 'current'
 								currentWorkStartDate = deferredWorkStartDate;
 								currentWorkEndDate = deferredWorkStartDate + currentResolvedTemplateRow.F.Duration;
@@ -839,10 +854,9 @@ namespace Thinkage.MainBoss.Database {
 							currentDetailType = DatabaseEnums.PMType.Inhibited;
 							currentDetailRow.F.DetailContext = availability.MessageText.Translate();
 						}
-						else
+						else if(currentWorkStartDate.UncertaintyExplanationKey == null) {
 							// Made it this far and available - make a workorder and advance to next schedule point.
-							if(currentWorkStartDate.UncertaintyExplanationKey == null) {
-							if(lastMakeWorkOrderRow != null && lastMakeWorkOrderRow.F.WorkStartDate == currentWorkStartDate.ExpectedValue) {
+							if (lastMakeWorkOrderRow != null && lastMakeWorkOrderRow.F.WorkStartDate == currentWorkStartDate.ExpectedValue) {
 								lastMakeWorkOrderRow.F.DetailType = (sbyte)DatabaseEnums.PMType.MakeSharedWorkOrder;
 								currentDetailType = DatabaseEnums.PMType.MakeSharedWorkOrder;
 							}
@@ -867,32 +881,26 @@ namespace Thinkage.MainBoss.Database {
 						#endregion
 					}
 				}
-				catch( System.Exception ex) {
-					if(ex is ValidationException || ex is GeneralException) {
-						++validationErrorCount;
-						currentDetailRow.F.DetailType = (sbyte)DatabaseEnums.PMType.Error;
-						// We add only the message without context to the disposition record. FullMessage will not put AggregateException messages in so we need to do it explicitly
-						currentDetailRow.F.DetailContext = Thinkage.Libraries.Exception.FullMessage(ex);
-						// Update the current detail row to reflect the 'current' values in case the ValidationException occurs between creating a new detail record and calculating a valid next schedule point.
-						SetWorkStartDate(currentDetailRow, currentWorkStartDate, currentWorkEndDate);
-						currentDetailRow.F.ScheduleDate = currentScheduleDate.ExpectedValue;
-						if(currentTriggeringMeterID.HasValue) {
-							currentDetailRow.F.ScheduleReading = currentScheduleReading.ExpectedValue;
-							currentDetailRow.F.TriggeringMeterID = currentTriggeringMeterID;
-						}
-						if(resultMessage != null) { // Add the message PLUS context to our resultMessage. We try to make a numbered list of the errors.
-							Thinkage.Libraries.Exception.AddContext(ex, new MessageExceptionContext(KB.K("Task '{0}', Schedule '{1}'"), currentScheduledWORow.WorkOrderTemplateIDParentRow.F.Code, currentScheduledWORow.ScheduleIDParentRow.F.Code));
-							Thinkage.Libraries.Exception.AddContext(ex, new MessageExceptionContext(KB.K("Unit '{0}'"), currentScheduledWORow.UnitLocationIDParentRow.F.Code));
-							System.Text.StringBuilder sb = new System.Text.StringBuilder();
-							resultMessage.Append(Strings.IFormat("{0}) ", validationErrorCount));
-							Thinkage.Libraries.Exception.AddFullMessage(sb, ex, 4); // want these indented; we will remove the FIRST 4 blanks on return to account for our numbering
-																					// message returned has a new line so using AppendLine will make it double spaced
-							resultMessage.AppendLine(sb.ToString().TrimStart(' ')); // Trim will remove the initial indentation we specified, but the inner exceptions will be indented accordingly
-						}
+				catch (System.Exception ex) {
+					++validationErrorCount;
+					currentDetailRow.F.DetailType = (sbyte)DatabaseEnums.PMType.Error;
+					// We add only the message without context to the disposition record. FullMessage will not put AggregateException messages in so we need to do it explicitly
+					currentDetailRow.F.DetailContext = Thinkage.Libraries.Exception.FullMessage(ex);
+					// Update the current detail row to reflect the 'current' values in case the ValidationException occurs between creating a new detail record and calculating a valid next schedule point.
+					SetWorkStartDate(currentDetailRow, currentWorkStartDate, currentWorkEndDate);
+					currentDetailRow.F.ScheduleDate = currentScheduleDate.ExpectedValue;
+					if (currentTriggeringMeterID.HasValue) {
+						currentDetailRow.F.ScheduleReading = currentScheduleReading.ExpectedValue;
+						currentDetailRow.F.TriggeringMeterID = currentTriggeringMeterID;
 					}
-					else {
+					if (resultMessage != null) { // Add the message PLUS context to our resultMessage. We try to make a numbered list of the errors.
 						Thinkage.Libraries.Exception.AddContext(ex, new MessageExceptionContext(KB.K("Task '{0}', Schedule '{1}'"), currentScheduledWORow.WorkOrderTemplateIDParentRow.F.Code, currentScheduledWORow.ScheduleIDParentRow.F.Code));
-						throw;
+						Thinkage.Libraries.Exception.AddContext(ex, new MessageExceptionContext(KB.K("Unit '{0}'"), currentScheduledWORow.UnitLocationIDParentRow.F.Code));
+						System.Text.StringBuilder sb = new System.Text.StringBuilder();
+						resultMessage.Append(Strings.IFormat("{0}) ", validationErrorCount));
+						Thinkage.Libraries.Exception.AddFullMessage(sb, ex, 4); // want these indented; we will remove the FIRST 4 blanks on return to account for our numbering
+																				// message returned has a new line so using AppendLine will make it double spaced
+						resultMessage.AppendLine(sb.ToString().TrimStart(' ')); // Trim will remove the initial indentation we specified, but the inner exceptions will be indented accordingly
 					}
 				}
 			}
@@ -932,18 +940,6 @@ namespace Thinkage.MainBoss.Database {
 						Strings.Append(explanation, KB.K("Work Start Date could potentially have any value from {0} up to but not including {1}"), workStartDate.InclusiveMinValue.Value, workStartDate.ExclusiveMaxValue.Value);
 				}
 				detailRow.F.BasisDetails = explanation.ToString();
-			}
-		}
-		#endregion
-		#region - ValidationException - A special exception class for errors directly attributable to a particular SWO record.
-		// This is a special exception class which we use for errors that relate directly to the particular ScheduledWorkOrder and its
-		// related records. When one of these is thrown, it will be caught and the message converted into an Error disposition Detail
-		// record.
-		class ValidationException : GeneralException {
-			public ValidationException(Key msg, params object[] p)
-				: this(null, msg, p) {
-			}
-			public ValidationException(System.Exception inner, Key msg, params object[] p) : base(inner, msg, p) {
 			}
 		}
 		#endregion

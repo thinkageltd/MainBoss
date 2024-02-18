@@ -1,6 +1,7 @@
 #And we need the PLATFORMSDK bin directory in our path using the NETFX 4.0 tools
 $MSDOTNET =  join-path -path $env:WINDIR -childpath(join-path -path "Microsoft.Net" -childpath (join-path -path "Framework" -childpath "v4.0.30319"))
-$MSBUILD = join-path -path "${env:ProgramFiles(x86)}" -childpath(join-path -path "MSBuild" -childpath (join-path "14.0" -childpath(join-path "bin" -childpath  "msbuild.exe")))
+$VISUALSTUDIO = join-path -path "${env:ProgramFiles(x86)}" -childpath(join-path -path "Microsoft Visual Studio" -childpath (join-path -path "2017" -childpath "Enterprise"))
+$MSBUILD = join-path -path "$VISUALSTUDIO" -childpath(join-path -path "MSBuild" -childpath (join-path "15.0" -childpath(join-path "bin" -childpath  "msbuild.exe")))
 $ASPCOMPILER = join-path -path "$MSDOTNET" -childpath "aspnet_compiler.exe"
 ####################################################################
 $project = "Thinkage.MainBoss.WebAccess"
@@ -43,6 +44,7 @@ $SolutionDir = $SolutionDir.ToString() + "\\"
 &$MSBUILD ($project+".csproj") /t:Package /p:SolutionDir=$SolutionDir /p:Configuration=Release /p:PackageFileName=$packagefile /p:PackageTempRootDir=$TempDir /p:PackageArchiveRootDir=$archivedir /p:PackageAsSingleFile=true
 
 xcopy bin\*.pdb ($pdbdir) /a /s /i
+
 # NUGETPACKAGES assumes the Microsoft.AspNet.Merge package has been installed; it may still be a prerelease if you need to find it in nuget.
 $NUGETPACKAGES = "$SolutionDir\packages\Microsoft.AspNet.Merge.5.0.0-beta2\tools\net40"
 $ASPMERGE = join-path -path "$NUGETPACKAGES" -childpath "aspnet_merge.exe"
@@ -52,4 +54,6 @@ $ASPMERGE = join-path -path "$NUGETPACKAGES" -childpath "aspnet_merge.exe"
 
 pop-location
 Import-module Pscx
+del installation\Thinkage.MainBoss.WebAccess.wpp.targets
+del -r installation -include *.pdb
 write-zip installation/* Install.MainBoss.WebAccess.$version.zip

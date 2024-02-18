@@ -5751,7 +5751,7 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 			}
 		},
 		// The DEBUG check schema has CODE; update when Schema has changed and upgrade steps have been added
-		0X15d43e90fb147649UL, dsMB.Schema);
+		0X4281b21caa4f32b4UL, dsMB.Schema);
 		#endregion
 	}
 }

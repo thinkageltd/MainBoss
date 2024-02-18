@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="copyright" content="2018 Thinkage Ltd." />
 <link rel="stylesheet" type="text/css" href="mbmanual.css" />
-<title>MainBoss Advanced 4.2 Operating Reference Manual: Configuring MainBoss Service</title>
+<title>MainBoss 4.2 Operating Reference Manual: Configuring MainBoss Service</title>
 </head>
 <body>
 <table class="logohead">
@@ -12,7 +12,7 @@
 <td class="pagehead"><h1 class="pagehead">Configuring MainBoss Service</h1>
 </td></tr></table>
 <!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
-<p><a href="Browse.MainBoss Service Configuration.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Message.htm">Next section &gt;</a></p>
+<p><a href="Browse.MainBoss%20Service%20Configuration.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Message.htm">Next section &gt;</a></p>
 
 <p>The first time you configure MainBoss Service, you create a configuration record by clicking <span class="CButton">New MainBoss Service Configuration</span> in <span class="CPanel">Administration</span> | <span class="CPanel">MainBoss Service</span> | <span class="CPanel">Configuration</span>. Once you have created an initial configuration, you can edit the configuration by clicking <span class="CButton">Edit</span> in the same window.</p>
 
@@ -71,7 +71,7 @@
 <br /><br />If no matches are found in the Active Directory, MainBoss Service will attempt to create a contact record using information in the email message itself. The contact record's "<span class="CField">Code</span>" field will be set to the message's "Display Name" and the contact record's "<span class="CField">Email</span>" field will be set to the message's sender.
 
 <br /><br />When MainBoss Service attempts to create such a contact record, the process may fail (typically because there's already a contact record with the same name). In this case, the original email message is marked for rejection. If MainBoss Service succeeds in creating the contact record, it creates a corresponding requestor record and accepts the email message as a request.</p>
-<p class="box">In general, we do not recommend checkmarking <span class="CButton">Automatically Create Requestors From Email</span>&#8212;for example, if you receive spam in your mailbox, MainBoss Service will attempt to create a requestor record for whoever sent the spam. However, the option may be acceptable if your mailbox is well protected from spam, or if you only activate the option for a limited time, e.g. when you first start using MainBoss Advanced and you want MainBoss to "learn" about your usual requestors.</p>
+<p class="box">In general, we do not recommend checkmarking <span class="CButton">Automatically Create Requestors From Email</span>&#8212;for example, if you receive spam in your mailbox, MainBoss Service will attempt to create a requestor record for whoever sent the spam. However, the option may be acceptable if your mailbox is well protected from spam, or if you only activate the option for a limited time, e.g. when you first start using MainBoss and you want MainBoss to "learn" about your usual requestors.</p>
 
 <p class="wi2"><span class="CField">Accept Auto Create Email Pattern</span>: Is a string specifying a pattern (also called a <span class="NewTerm">regular expression</span>). Every time MainBoss Service processes an incoming email request, the email address of the sender will be checked against this pattern. If the address matches the pattern, the incoming email message will automatically be accepted; in addition, the message's sender will be added to the list of acceptable requestors (if the sender isn't on the list already).
 
@@ -135,8 +135,8 @@
 <br /><br /><span class="CU">http://ourcompany.com/MainBossWeb</p>
 <p class="wi2"></span><span class="CField">Notification Interval</span>: Dictates how often MainBoss Service will check to see if notifications should be sent. By default, this is <span class="CU">0:10</span> (every 10 minutes).</p>
 <p class="wi2"><span class="CField">SMTP Server</span>: The name of the computer that will handle MainBoss Service's outgoing mail. Normally, this is the same as "<span class="CField">Mail Server</span>" in the <span class="CButton">Incoming Mail</span> section of the configuration record; however, it doesn't have to be.</p>
-<p class="wi2"><span class="CField">SMTP Port</span>: The port used by the SMTP mail server. This is usually port 25.</p>
-<p class="wi2"><span class="CButton">SMTP Use SSL</span>: If this box is checkmarked, MainBoss Service will use SSL encryption when sending out mail (to requestors).</p>
+<p class="wi2"><span class="CField">SMTP Port</span>: The port used by the SMTP mail server. This is usually port 25 or 587.</p>
+<p class="wi2"><span class="CButton">Use TLS/StartTLS</span>: If this box is checkmarked, MainBoss Service will use TLS encryption when sending mail notifications.</p>
 <p class="wi2"><span class="CField">SMTP Credential Type</span>: The options in this area determine what kind of authentication (if any) MainBoss Service will use when sending out mail.</p>
 <p class="wi3"><span class="CButton">Anonymous</span>: If this option is selected, MainBoss Service will not use authentication (mail is sent without going through any identification process).</p>
 <p class="wi3"><span class="CButton">Use the default network credential</span>: If this option is selected, MainBoss Service uses whatever authentication is provided by the network as the default.</p>
@@ -160,7 +160,7 @@
 <p>For more on MainBoss Service, see <a href="TheMainBossServiceModule.htm">The MainBoss Service Module</a>.</p>
 
 
-<p><a href="Browse.MainBoss Service Configuration.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Message.htm">Next section &gt;</a></p>
+<p><a href="Browse.MainBoss%20Service%20Configuration.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Edit.Message.htm">Next section &gt;</a></p>
 </body>
 </html>
 

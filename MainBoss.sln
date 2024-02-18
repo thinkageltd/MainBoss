@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installation", "Installation", "{9E964703-0677-46DC-B2CF-7445B98ECC62}"
 	ProjectSection(SolutionItems) = preProject
@@ -47,6 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Install.MainBoss.WebAccess"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BFF7892A-58BA-42F0-94C0-A33E64C7EB48}"
 	ProjectSection(SolutionItems) = preProject
+		BuildAll.ps1 = BuildAll.ps1
 		GenerateProjectSolutionSettings.ps1 = GenerateProjectSolutionSettings.ps1
 		JQueryUIHelpers.snk = JQueryUIHelpers.snk
 		SolutionSettings.ps1 = SolutionSettings.ps1

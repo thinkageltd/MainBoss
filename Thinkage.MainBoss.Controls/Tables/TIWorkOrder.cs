@@ -428,8 +428,7 @@ namespace Thinkage.MainBoss.Controls {
 		private static DelayedCreateTbl DemandLaborOutsideDefaultEditorTblCreator;
 		private static DelayedCreateTbl DemandOtherWorkInsideDefaultEditorTblCreator;
 		private static DelayedCreateTbl DemandOtherWorkOutsideDefaultEditorTblCreator;
-		private static DelayedCreateTbl DemandMiscellaneousWorkOrderCostTblCreator;
-
+		private static DelayedCreateTbl DemandMiscellaneousWorkOrderCostDefaultEditorTblCreator;
 
 		private static readonly DelayedCreateTbl AssociatedPurchaseOrdersTbl;
 		private static readonly DelayedCreateTbl AssociatedPurchaseOrderTemplatesTbl;
@@ -545,7 +544,7 @@ namespace Thinkage.MainBoss.Controls {
 				views.Add(CompositeView.AdditionalEditDefault(DemandLaborOutsideDefaultEditorTblCreator, CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
 				views.Add(CompositeView.AdditionalEditDefault(DemandOtherWorkInsideDefaultEditorTblCreator, CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
 				views.Add(CompositeView.AdditionalEditDefault(DemandOtherWorkOutsideDefaultEditorTblCreator, CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
-				views.Add(CompositeView.AdditionalEditDefault(DemandMiscellaneousWorkOrderCostTblCreator, CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
+				views.Add(CompositeView.AdditionalEditDefault(DemandMiscellaneousWorkOrderCostDefaultEditorTblCreator, CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
 				views.Add(CompositeView.AdditionalEditDefault(FindDelayedEditTbl(dsMB.Schema.T.WorkOrderStateHistory)));
 			}
 
@@ -1890,7 +1889,7 @@ namespace Thinkage.MainBoss.Controls {
 			public void BuildCommonDemandTemplateHeaderControls() {
 				DetailColumns.Add(TblFixedRecordTypeNode.New());
 				DetailColumns.Add(TblColumnNode.New(dsMB.Path.T.DemandTemplate.F.WorkOrderTemplateID.ReOrientFromRelatedTable(MostDerivedTable),
-					new DCol(Fmt.SetDisplayPath(dsMB.Path.T.WorkOrderTemplate.F.Code)), ECol.Normal));
+						new DCol(Fmt.SetDisplayPath(dsMB.Path.T.WorkOrderTemplate.F.Code)), new NonDefaultCol(), ECol.Normal));
 			}
 			#endregion
 
@@ -2349,7 +2348,7 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		#endregion
 		#region Task Browsers
-		private static Tbl TaskBrowserTbl(bool includeMakeWO) {
+		private static Tbl TaskBrowserTbl(bool includeMakeWO, bool includeDefaultViews) {
 			var views = new List<CompositeView>();
 			// Table #0 (WorkOrderTemplate)
 			views.Add(new CompositeView(WorkOrderTemplateEditTbl, dsMB.Path.T.WorkOrderTemplate.F.Id));
@@ -2364,7 +2363,15 @@ namespace Thinkage.MainBoss.Controls {
 						CompositeView.IdentificationOverride(TId.WorkOrderFromTask),
 						NoNewMode,
 						CompositeView.ContextualInit(0, new CompositeView.Init(new ControlTarget(WorkOrderFromTemplateEditLogic.TemplateControlId), dsMB.Path.T.WorkOrderTemplate.F.Id))));
-
+			if (includeDefaultViews) {
+				Key GroupDefaultDemands = TId.TaskResource.Compose(Tbl.TblIdentification.TablePhrase_DefaultsFor);
+				views.Add(CompositeView.AdditionalEditDefault(FindDelayedEditTbl(dsMB.Schema.T.DemandItemTemplate), CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
+				views.Add(CompositeView.AdditionalEditDefault(FindDelayedEditTbl(dsMB.Schema.T.DemandLaborInsideTemplate), CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
+				views.Add(CompositeView.AdditionalEditDefault(FindDelayedEditTbl(dsMB.Schema.T.DemandLaborOutsideTemplate), CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
+				views.Add(CompositeView.AdditionalEditDefault(FindDelayedEditTbl(dsMB.Schema.T.DemandOtherWorkInsideTemplate), CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
+				views.Add(CompositeView.AdditionalEditDefault(FindDelayedEditTbl(dsMB.Schema.T.DemandOtherWorkOutsideTemplate), CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
+				views.Add(CompositeView.AdditionalEditDefault(FindDelayedEditTbl(dsMB.Schema.T.DemandMiscellaneousWorkOrderCostTemplate), CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
+			}
 			return new CompositeTbl(dsMB.Schema.T.WorkOrderTemplate, TId.Task,
 				new Tbl.IAttr[] {
 						SchedulingGroup,
@@ -2761,7 +2768,7 @@ namespace Thinkage.MainBoss.Controls {
 			DemandOtherWorkOutsideDefaultEditorTblCreator = new DelayedCreateTbl(delegate () {
 				return DemandOtherWorkOutsideTbl(false, false, false, false, true);
 			});
-			DemandMiscellaneousWorkOrderCostTblCreator = new DelayedCreateTbl(delegate () {
+			DemandMiscellaneousWorkOrderCostDefaultEditorTblCreator = new DelayedCreateTbl(delegate () {
 				return DemandMiscellaneousWorkOrderCostTbl(false, true);
 			});
 			#endregion
@@ -2771,7 +2778,7 @@ namespace Thinkage.MainBoss.Controls {
 			#endregion
 			#region Task Picker Tbl Creators
 			TaskPickerTblCreator = new DelayedCreateTbl(delegate () {
-				return TaskBrowserTbl(false);
+				return TaskBrowserTbl(false, false);
 			});
 			#endregion
 			#region Chargeback
@@ -4795,7 +4802,7 @@ namespace Thinkage.MainBoss.Controls {
 				);
 			});
 			DefineBrowseTbl(dsMB.Schema.T.WorkOrderTemplate, delegate () {
-				return TaskBrowserTbl(true);
+				return TaskBrowserTbl(true, includeDefaultViews: true);
 			});
 			#region WorkOrder Template From WorkOrder EditTbl
 			WorkOrderTemplateFromWorkOrderEditTbl = new DelayedCreateTbl(delegate () {

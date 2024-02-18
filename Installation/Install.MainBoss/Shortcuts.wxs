@@ -6,7 +6,7 @@
 			<Component Id="ProgramShortcuts" Guid="D29D9008-53CC-40AD-A637-9D0C07372503">
 				<Shortcut Id="MainBossShortcut"
 					Name="$(var.PRODUCTNAME) $(var.VERSION)"
-					Description="MainBoss Advanced"
+					Description="MainBoss"
 					Target="[INSTALLDIR]MainBoss.exe"/>
 
 				<RemoveFolder Id="RemoveShortcutsDir" On="uninstall"/>

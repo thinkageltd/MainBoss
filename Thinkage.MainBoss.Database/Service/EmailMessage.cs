@@ -181,7 +181,7 @@ namespace Thinkage.MainBoss.Database {
 			get {
 				if (pMessageId != null)
 					return pMessageId;
-				var property = Header("Message-ID");
+				var property = Header(HeaderKey.MessageID);
 				if (property == null)
 					return null;
 				pMessageId = property.Value;
@@ -193,7 +193,7 @@ namespace Thinkage.MainBoss.Database {
 			get {
 				if (isAlternative.HasValue)
 					return isAlternative.Value;
-				var property = Header("Content-Type");
+				var property = Header(HeaderKey.ContentType);
 				if (property == null)
 					return false;
 				isAlternative = property.Value.IndexOf(KB.I("multipart/alternative"), StringComparison.OrdinalIgnoreCase) >= 0;
@@ -205,7 +205,7 @@ namespace Thinkage.MainBoss.Database {
 			get {
 				if (pSentAsString != null)
 					return pSentAsString;
-				var property = Header("Date");
+				var property = Header(HeaderKey.Date);
 				pSentAsString = property?.Value;
 				return pSentAsString;
 			}
@@ -305,7 +305,7 @@ namespace Thinkage.MainBoss.Database {
 				if (hadLanguage)
 					return pPreferredLanguage;
 				hadLanguage = true;
-				var language = Header("Accept-Language");
+				var language = Header(HeaderKey.AcceptLanguage);
 				if (language != null && !String.IsNullOrWhiteSpace(language.Value)) {
 					string[] acceptableLanguages = language.Value.Split(',');
 					foreach (string l in acceptableLanguages) {
@@ -318,6 +318,15 @@ namespace Thinkage.MainBoss.Database {
 					}
 				}
 				return pPreferredLanguage;
+			}
+		}
+		/// <summary>
+		/// See if this message was AutoSubmitted such as out of office reply, or some other auto means. Note we only look for auto-replied to be ignored.
+		/// </summary>
+		public bool AutoSubmitted {
+			get {
+				var autosubmit = Header(HeaderKey.AutoSubmitted);
+				return autosubmit != null && autosubmit.Value == KB.I("auto-replied");
 			}
 		}
 		GeneralException pError = null;

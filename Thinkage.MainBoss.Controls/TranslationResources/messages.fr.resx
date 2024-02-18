@@ -1992,6 +1992,9 @@
   <data name="Thinkage.MainBoss.Controls§Email rejected: Senders Contact could not be created since another Contact exists with the same code" xml:space="preserve">
     <value>Email rejeté: le contact des expéditeurs n'a pas pu être créé car un autre contact existe avec le même code</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Email held for review: is stale dated or originated as an auto response" xml:space="preserve">
+    <value>E-mail conservé pour examen: date périmée ou origine en tant que réponse automatique</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Email rejected: Senders email address doesn't match any Contact" xml:space="preserve">
     <value>Email rejeté: l'adresse e-mail des expéditeurs ne correspond à aucun contact</value>
   </data>

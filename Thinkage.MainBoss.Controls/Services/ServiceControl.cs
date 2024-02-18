@@ -251,17 +251,11 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		private bool HasLogEntries(Database.DatabaseEnums.ServiceLogEntryType? type) {
 			try {
-				using(dsMB ds = new dsMB(this.DB)) {
-					ds.DB.ViewAdditionalRows(ds, dsMB.Schema.T.ServiceLog);
-					foreach(dsMB.ServiceLogRow r in dsMB.Schema.T.ServiceLog.GetDataTable(ds).Rows)
-						if(type == null || r.F.EntryType == (int)type.Value)
-							return true;
-				}
+				return DB.CountRows(dsMB.Schema.T.ServiceLog, type.HasValue ? new SqlExpression(dsMB.Path.T.ServiceLog.F.EntryType).Eq(SqlExpression.Constant((int)type.Value)) : null, null) > 0;
 			}
-			catch(System.Exception) {
+			catch {
 				return true; // some thing is weird
 			}
-			return false;
 		}
 	}
 	#endregion

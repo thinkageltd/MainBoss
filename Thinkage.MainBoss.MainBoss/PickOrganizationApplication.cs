@@ -443,7 +443,7 @@ namespace Thinkage.MainBoss.MainBoss {
 								Fmt.SetCreator(
 									delegate (CommonLogic logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer) {
 										// TODO: Backup file must be accessible to the SQL server
-										// TODO: "SQL backup from MainBoss Advanced (*.bak)|*.bak|All Files (*.*)|*.*"
+										// TODO: "SQL backup from MainBoss (*.bak)|*.bak|All Files (*.*)|*.*"
 										return logicObject.CommonUI.UIFactory.CreateNamePicker(FilenameTypeInfo, enabledDisabler, writeableDisabler, UINamePickerOptions.ClassExistingFile | UINamePickerOptions.FormatFilePath);
 									}
 								)
@@ -1112,7 +1112,7 @@ namespace Thinkage.MainBoss.MainBoss {
 						webFetch = new System.Net.WebClient();
 						webFetch.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
 						// TODO: Convert the dictionary of other information to query parameters ....
-						var uri = new Uri(Strings.IFormat("https://www.mainboss.com/GetLicense.htm{0}", queryString.ToString()));
+						var uri = new Uri(Strings.IFormat("https://mainboss.com/GetLicense.htm{0}", queryString.ToString()));
 						licenseHtml = webFetch.DownloadString(uri);
 						if (String.IsNullOrEmpty(licenseHtml))
 							throw new GeneralException(KB.K("The license provider returned an empty response"));

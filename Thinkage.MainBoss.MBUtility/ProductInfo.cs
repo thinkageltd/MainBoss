@@ -6,4 +6,4 @@ using System.Runtime.CompilerServices;
 // are specific to this version of MainBoss.
 //
 [assembly: AssemblyTrademark("MainBoss and Thinkage are registered trademarks of Thinkage Ltd.")]
-[assembly: AssemblyProduct("MainBoss Advanced Utility Tool")]
+[assembly: AssemblyProduct("MainBoss Utility Tool")]

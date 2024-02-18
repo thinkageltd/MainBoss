@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="copyright" content="2018 Thinkage Ltd." />
 <link rel="stylesheet" type="text/css" href="mbmanual.css" />
-<title>MainBoss Advanced 4.2 Operating Reference Manual: Imported Maintenance Organizations</title>
+<title>MainBoss 4.2 Operating Reference Manual: Imported Maintenance Organizations</title>
 </head>
 <body>
 <table class="logohead">
@@ -14,20 +14,20 @@
 <!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
 <p><a href="ExistingMaintenanceOrganizations.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="DemonstrationMaintenanceOrganizations.htm">Next section &gt;</a></p>
 
-<p>To move from MainBoss Basic 2.9 to MainBoss Advanced, you should follow the instructions given in the guide titled Migrating from MainBoss Basic to MainBoss Advanced.</p>
+<p>To move from MainBoss Basic 2.9 to MainBoss, you should follow the instructions given in the guide titled Migrating from MainBoss Basic to MainBoss.</p>
 
 <p class="box">This operation requires SQL Server Administrator privileges, since it creates a new database.</p>
 
 <p>The essential steps for importing are:</p>
 
 <ol><li>Export data from your MainBoss Basic 2.9 database.</li>
-<li>In MainBoss Advanced, click <span class="CButton">Create New Organization using MainBoss Basic 2.9 export file</span> in the Maintenance Organization window (see <a href="Browse.Organization.htm">Your Maintenance Organization List</a>). This action creates a new maintenance organization and imports your old data into the new database.
-</li></ol><p>When you click <span class="CButton">Create New Organization using MainBoss Basic 2.9 export file</span>, MainBoss Advanced opens a window containing the following:</p>
+<li>In MainBoss, click <span class="CButton">Create New Organization using MainBoss Basic 2.9 export file</span> in the Maintenance Organization window (see <a href="Browse.Organization.htm">Your Maintenance Organization List</a>). This action creates a new maintenance organization and imports your old data into the new database.
+</li></ol><p>When you click <span class="CButton">Create New Organization using MainBoss Basic 2.9 export file</span>, MainBoss opens a window containing the following:</p>
 
 <p class="wi"><span class="CField">Database Server</span>: The network location of the SQL Server through which you will access the database. For more information, see the Installation and Administration Guide.
 
-<br /><br />If you click the accompanying "..." button, MainBoss displays a list of database servers that are known to your Windows system. There may be additional servers that you can use but that Windows doesn't currently know about. For more, see <a href="Browse.SQL Server.htm">The Database Server List</a>.</p>
-<p class="wi"><span class="CField">Database Name</span>: The name you want SQL Server to give to the new database. This name must be different from the names of any other databases on the server. For example, you can't name every database "MainBoss". If you want to see what MainBoss databases already exist, click the "..." button at the end of the "<span class="CField">Database Name</span>" line. (For more, see <a href="Browse.SQL Database.htm">The Database Name List</a>.)</p>
+<br /><br />If you click the accompanying "..." button, MainBoss displays a list of database servers that are known to your Windows system. There may be additional servers that you can use but that Windows doesn't currently know about. For more, see <a href="Browse.SQL%20Server.htm">The Database Server List</a>.</p>
+<p class="wi"><span class="CField">Database Name</span>: The name you want SQL Server to give to the new database. This name must be different from the names of any other databases on the server. For example, you can't name every database "MainBoss". If you want to see what MainBoss databases already exist, click the "..." button at the end of the "<span class="CField">Database Name</span>" line. (For more, see <a href="Browse.SQL%20Database.htm">The Database Name List</a>.)</p>
 <p class="wi"><span class="CField">Organization Name</span>: A name that you will use for this database. The value of "<span class="CField">Organization Name</span>" may contain spaces and other punctuation characters.</p>
 <p class="wi"><span class="CButton">Make browsers smaller by not showing details for selected record by default</span>: If you checkmark this box, MainBoss will automatically hide the details panel when displaying tables in this database. For more, see <a href="HidingtheDetailsforaSelectedRecord.htm">Hiding the Details for a Selected Record</a>. Note that you can still ask MainBoss to display the details panel for a particular table by pressing the button for displaying details.</p>
 <p class="wi"><span class="CField">Preferred Mode</span>: The default mode in which this database should be opened. If you do not specify a mode explicitly, the database will be opened in the given mode. For more on modes, see <a href="Browse.Organization.htm">Your Maintenance Organization List</a>.</p>

@@ -1696,7 +1696,7 @@
     <value>SMTP User Name</value>
   </data>
   <data name="dsMBLabel§SMTPUseSSL" xml:space="preserve">
-    <value>SMTP Use SSL</value>
+    <value>Use TLS/StartTLS</value>
   </data>
   <data name="dsMBLabel§Source" xml:space="preserve">
     <value>Source</value>
@@ -3322,8 +3322,8 @@ Labor         __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§Missing Unit Maintenance Plan data row" xml:space="preserve">
     <value>Missing Unit Maintenance Plan data row</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§More than one service configuration is not currently support, please remove all except for one" xml:space="preserve">
-    <value>More than one service configuration is not currently support, please remove all except for one</value>
+  <data name="Thinkage.MainBoss.Database§More than one service configuration is not currently supported, please remove all except for one" xml:space="preserve">
+    <value>More than one service configuration is not currently supported, please remove all except for one</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Multiple meter readings match the target" xml:space="preserve">
     <value>Multiple meter readings match the target</value>

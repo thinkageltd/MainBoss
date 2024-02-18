@@ -6,4 +6,4 @@ using System.Reflection;
 // Version information is found in the associated VersionInfo.cs file
 //
 [assembly: AssemblyTrademark("MainBoss and Thinkage are registered trademarks of Thinkage Ltd.")]
-[assembly: AssemblyProduct("MainBoss Advanced")]
+[assembly: AssemblyProduct("MainBoss")]

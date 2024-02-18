@@ -169,6 +169,7 @@ namespace Thinkage.MainBoss.Controls {
 				KB.K("Email rejected: Senders Contact could not be created since another Contact exists with the same code"),
 				KB.K("Email to be rejected by a MainBoss user"),
 				KB.K("Email was rejected by a MainBoss user"),
+				KB.K("Email held for review: is stale dated or originated as an auto response")
 			},
 			null,
 			new object[] {
@@ -187,6 +188,7 @@ namespace Thinkage.MainBoss.Controls {
 				(int)DatabaseEnums.EmailRequestState.RejectAmbiguousContactCreation,
 				(int)DatabaseEnums.EmailRequestState.ToBeRejected,
 				(int)DatabaseEnums.EmailRequestState.RejectManual,
+				(int)DatabaseEnums.EmailRequestState.HoldRequiresManualReview
 			}
 		);
 

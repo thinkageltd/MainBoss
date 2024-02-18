@@ -8,25 +8,20 @@ if ($env:WINDOWSKIT10 -ne $null ) {
 	$signtoolRoot = $env:WINDOWSKIT10
     $WIN10VERSION = "10.0.16299.0"
 }
-elseif ($env:PLATFORMSDK -ne $null) {
-	$signtoolRoot = $env:PLATFORMSDK
-}
 else {
-	throw "WINDOWSKIT10 or PLATFORMSDK environment variable must be set to allow assembly signing"
+	throw "WINDOWSKIT10  environment variable must be set to allow assembly signing"
 }
-$signtool = join-path -path "$signtoolRoot" -childpath (join-path -path 'bin' -childpath 'signtool.exe')
+# The new "Windows Kits" organization divides bin into x86, x64, and ARM.
+$signtool = join-path -path "$signtoolRoot" -childpath (join-path -path 'bin' -childpath (join-path -path "$WIN10VERSION" -childpath (join-path -path 'x86' -childpath 'signtool.exe')))
+if (-not (test-path "$signtool")) {
+	throw "Unable to locate signtool at expected location "+$signtool
+}
 #signtoolvsix is built from github open source project separately and included as executable files in our Installation directory; see https://github.com/vcsjones/OpenOpcSignTool.git
 $signtoolvsix = join-path -path ".." -childpath (join-path -path 'OpenVsixSignTool' -childpath 'OpenVsixSignTool.exe')
 #following is the thumbprint of the current Thinkage Code Sign certificate (only way to provide identity to vsix signer)
 $signingCertificateThumbPrint = "0072e09a760bfac04e5cd4f5a26abc34a1c0072b"
 
-if (-not (test-path "$signtool")) {
-	# The new "Windows Kits" organization divides bin into x86, x64, and ARM.
-	$signtool = join-path -path "$signtoolRoot" -childpath (join-path -path 'bin' -childpath (join-path -path "$WIN10VERSION" -childpath (join-path -path 'x86' -childpath 'signtool.exe')))
-	if (-not (test-path "$signtool")) {
-		throw "Unable to locate signtool at expected location "+$signtool
-	}
-}
+
 
 # Sign one or more files specified on the command-line. This will retry the sign operation up to 10 times.
 # TODO: The purpose of retrying is to cover the case where a transient problem causes the timestamp fetch to fail, and this is really the only
