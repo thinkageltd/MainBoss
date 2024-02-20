@@ -5744,6 +5744,28 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinAReqAppVersion, new Version(4,2,0,7)),
 							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinMBRemoteAppVersion, new Version(4,2,0,7))
 						),
+						new UpgradeStepSequence(// 1.1.5.3 (1.1.5.5 in HEAD) Replace date/interval functions with more effecient ones
+							new BuiltinFunctionUpdateUpgradeStep("_DMinValue"),
+							new BuiltinFunctionUpdateUpgradeStep("_DClosestValue"),
+							new BuiltinFunctionUpdateUpgradeStep("_IIToSum"),
+							new BuiltinFunctionUpdateUpgradeStep("_IIToMilliseconds"),
+							new BuiltinFunctionUpdateUpgradeStep("_ISumToI"),
+							new BuiltinFunctionUpdateUpgradeStep("_IAdd"),
+							new BuiltinFunctionUpdateUpgradeStep("_ISubtract"),
+							new BuiltinFunctionUpdateUpgradeStep("_ISum"),
+							new BuiltinFunctionUpdateUpgradeStep("_IDiff"),
+							new BuiltinFunctionUpdateUpgradeStep("_INegate"),
+							new BuiltinFunctionUpdateUpgradeStep("_IScale"),
+							new BuiltinFunctionUpdateUpgradeStep("_IRatio"),
+							new BuiltinFunctionUpdateUpgradeStep("_INew"),
+							new BuiltinFunctionUpdateUpgradeStep("_IDateDiff")
+						),
+						new UpgradeStepSequence(// 1.1.5.4 Replace WorkOrderExtras view to properly calculate EarliestEndDate
+							new RemoveTableUpgradeStep(GetOriginalSchema, "MaintenanceForecastReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderExtras"),
+							new AddTableUpgradeStep("WorkOrderExtras"),
+							new AddTableUpgradeStep("MaintenanceForecastReport")
+						)
 						#endregion
 					}
 				}
@@ -5751,7 +5773,7 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 			}
 		},
 		// The DEBUG check schema has CODE; update when Schema has changed and upgrade steps have been added
-		0X4281b21caa4f32b4UL, dsMB.Schema);
+		0X57693847b155c66cUL, dsMB.Schema);
 		#endregion
 	}
 }

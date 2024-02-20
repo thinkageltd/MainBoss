@@ -11,13 +11,9 @@
 @section EditFormContent {
 	@(Html.ValidationSummary(true, T.Text("Self Assign was unsuccessful. Please correct the errors and try again.")))
 	<div class="viewPanel">
-		<table>
-			<tbody>
-				@(Html.LabelValue(T.Text("Number"), dsMB.Schema.T.WorkOrder.F.Number.EffectiveType, Model.WorkOrderNumber))
-				@(Html.LabelValue(T.Text("Current State"), dsMB.Schema.T.WorkOrderState.F.Code.EffectiveType, Model.CurrentStateCode))
-				@(Html.LabelValue(T.Text("Current Status"), dsMB.Schema.T.WorkOrderStateHistoryStatus.F.Code.EffectiveType, Model.CurrentStatusCode))
-			</tbody>
-		</table>
+		@(Html.LabelValueRow(T.Text("Number"), dsMB.Schema.T.WorkOrder.F.Number.EffectiveType, Model.WorkOrderNumber))
+		@(Html.LabelValueRow(T.Text("Current State"), dsMB.Schema.T.WorkOrderState.F.Code.EffectiveType, Model.CurrentStateCode))
+		@(Html.LabelValueRow(T.Text("Current Status"), dsMB.Schema.T.WorkOrderStateHistoryStatus.F.Code.EffectiveType, Model.CurrentStatusCode))
 	</div>
 	<br />
 	@using (Html.BeginForm()) {

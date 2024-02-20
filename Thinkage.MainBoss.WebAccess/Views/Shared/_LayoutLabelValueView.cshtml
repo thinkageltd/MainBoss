@@ -1,18 +1,22 @@
 ﻿@using Thinkage.Web.Mvc.Html;
+@using Thinkage.MainBoss.WebAccess;
 @{
 	Layout = "~/Views/Shared/_LayoutSite.cshtml";
 }
 @section MainContent {
-	<h2>@ViewBag.Title@RenderSection("LabelValueViewHeader", required: false)</h2>
+	<div style="display:inline-block">
+		<h2>@ViewBag.Title</h2>
+		@RenderSection("LabelValueViewHeader", required: false)
+	</div>
 	@(Html.ResultMessage(@ViewData["ResultMessage"]))
 	<div class="viewPanel">
-		<table>
-			<tbody>
-				@RenderSection("LabelValueViewPanel")
-			</tbody>
-		</table>
+		@RenderSection("LabelValueViewPanel")
 	</div>
 	@RenderSection("LabelValueViewTrailer", required: false)
+	<div class="Actions">
+		<div class="Action">@(Html.ActionButton(T.Text("Refresh"), (string)@ViewData["Refresh"]))</div>
+		@RenderSection("BackToContent", required: false)
+	</div>
 }
 @section scripts{
 	@RenderSection("scripts", required: false)

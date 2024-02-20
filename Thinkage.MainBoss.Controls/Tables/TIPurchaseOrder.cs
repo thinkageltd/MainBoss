@@ -966,7 +966,7 @@ namespace Thinkage.MainBoss.Controls
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
-						SingleContactGroup(dsMB.Path.T.PurchaseOrderAssignee.F.ContactID),
+						TIContact.SingleContactGroup(dsMB.Path.T.PurchaseOrderAssignee.F.ContactID),
 						TblColumnNode.New(dsMB.Path.T.PurchaseOrderAssignee.F.ReceiveNotification, new FeatureGroupArg(MainBossServiceAsWindowsServiceGroup), DCol.Normal, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.PurchaseOrderAssignee.F.Comment, DCol.Normal, ECol.Normal)
 					),
@@ -1817,10 +1817,10 @@ namespace Thinkage.MainBoss.Controls
 					TblColumnNode.New(dsMB.Path.T.Vendor.F.Code, DCol.Normal, ECol.Normal),
 					TblColumnNode.New(dsMB.Path.T.Vendor.F.Desc, DCol.Normal, ECol.Normal),
 					TblColumnNode.New(dsMB.Path.T.Vendor.F.VendorCategoryID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.VendorCategory.F.Code)), ECol.Normal),
-					ContactGroupTblLayoutNode(
-						ContactGroupRow(dsMB.Path.T.Vendor.F.SalesContactID, ECol.Normal),
-						ContactGroupRow(dsMB.Path.T.Vendor.F.ServiceContactID, ECol.Normal),
-						ContactGroupRow(dsMB.Path.T.Vendor.F.PayablesContactID, ECol.Normal)
+					TIContact.ContactGroupTblLayoutNode(
+						TIContact.ContactGroupRow(dsMB.Path.T.Vendor.F.SalesContactID, ECol.Normal),
+						TIContact.ContactGroupRow(dsMB.Path.T.Vendor.F.ServiceContactID, ECol.Normal),
+						TIContact.ContactGroupRow(dsMB.Path.T.Vendor.F.PayablesContactID, ECol.Normal)
 					),
 					TblColumnNode.New(dsMB.Path.T.Vendor.F.AccountsPayableCostCenterID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.CostCenter.F.Code)), ECol.Normal, CommonNodeAttrs.PermissionToViewAccounting, CommonNodeAttrs.PermissionToEditAccounting, AccountingFeatureArg),
 					TblColumnNode.New(dsMB.Path.T.Vendor.F.AccountNumber, DCol.Normal, ECol.Normal),

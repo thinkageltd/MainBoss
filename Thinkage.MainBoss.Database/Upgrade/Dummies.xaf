@@ -112,6 +112,12 @@
 		select newid() where 1 = 2
 	</extension>
   </table>
+  <table name="WorkOrderExtras" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+  </table>
   <table name="PurchaseOrderAssignmentByAssignee" defaults="false" log="false">
 	<field name="Id" read="id(nonnull)"/>
 	<extension name="query">

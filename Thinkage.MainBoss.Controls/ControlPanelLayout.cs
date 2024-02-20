@@ -229,7 +229,7 @@ namespace Thinkage.MainBoss.Controls {
 				, browseExplorer(112, TId.ServiceContract, dsMB.Schema.T.ServiceContract)
 				, browseExplorer(113, TId.Part, dsMB.Schema.T.SparePart)
 				, containerMenuItem(114, "Reports"
-				// TODO: , new MenuDef("Maintenance Status") whatever that means
+					// TODO: , new MenuDef("Maintenance Status") whatever that means
 					, reportExplorer(115, TId.Unit.ReportSummary, TIReports.UnitSummary, KB.K("One line per selected unit"))
 					, reportExplorer(116, TId.ServiceContract.ReportSummary, TIReports.ServiceContractSummaryReport, KB.K("One line per selected service contract"))
 					, reportExplorer(117, TId.MaintenanceHistory, TIReports.UnitMaintenanceHistory, KB.K("History of work orders on selected units"))
@@ -293,7 +293,7 @@ namespace Thinkage.MainBoss.Controls {
 				//				,embeddedBrowseMenuItem("All Locations Except Temporary", TIComposites.PermanentLocationPickerTblCreator)
 				, browseExplorer(162, TId.Location, TILocations.LocationBrowseTblCreator
 					, browseExplorer(163, "Organize", TILocations.LocationOrganizerBrowseTblCreator))
-				, browseExplorer(164, TId.Contact, dsMB.Schema.T.Contact)
+				, browseExplorer(164, TId.Contact, TIContact.ContactWithMergeTbl)
 				, browseExplorer(165, TId.Relationship, dsMB.Schema.T.Relationship)
 				, browseExplorer(166, TId.CostCenter, dsMB.Schema.T.CostCenter)
 				, browseExplorer(167, TId.UnitOfMeasure, dsMB.Schema.T.UnitOfMeasure)
@@ -472,7 +472,7 @@ namespace Thinkage.MainBoss.Controls {
 				return new BrowseMenuDef(Id(270), KB.TOControlPanel(TId.Administration), TIGeneralMB3.AdministrationTblCreator, adminSubNodes());
 			else if (TIGeneralMB3.SessionsModeGroup.Enabled)
 				return new BrowseMenuDef(Id(280), KB.TOControlPanel(TId.Session), TIGeneralMB3.FindDelayedBrowseTbl(dsMB.Schema.T.Session));
-			else 
+			else
 				throw new System.InvalidOperationException(KB.I("ControlPanelLayout: unknown application mode"));
 		}
 		#endregion

@@ -304,88 +304,6 @@ namespace Thinkage.MainBoss.Controls {
 			return schema.Columns[KB.I(ActualQuantityColumnName)];
 		}
 		#endregion
-		#region Contact Group
-		// TODO: The following various contact groups should perhaps be changed to follow the model of CurrentStateHistoryGroup,
-		// except to allow several paths to contact rows. This would eliminate the need for all the explicit column labels and the combinatorial explosion
-		// of methods based on what columns should be shown.
-		/// <summary>
-		/// Create the Layout Node for a multicolumn layout of one of more rows of Contact information, specifically the Name, Business Phone, and Email for the contact.
-		/// </summary>
-		/// <param name="nodes">Definitions for the individual rows, typically the return values from ContactRowGroup</param>
-		/// <returns></returns>
-		protected static TblContainerNode ContactGroupTblLayoutNode(params TblRowNode[] nodes) {
-			return TblMultiColumnNode.New(
-				new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-				new Key[] { KB.K("Name"), KB.K("Business Phone"), KB.K("Email") },
-				nodes
-			);
-		}
-		protected static TblContainerNode ContactGroupPreferredLanguageTblLayoutNode(params TblRowNode[] nodes) {
-			return TblMultiColumnNode.New(
-				new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-				new Key[] { KB.K("Name"), KB.K("Email"), KB.K("Preferred Language") },
-				nodes
-			);
-		}
-		/// <summary>
-		/// Define a single row for a multicolumn contact row group, where the editor should be able to pick a Contact directly
-		/// </summary>
-		/// <param name="pathToContact">Path from the Tbl root to the Contact record</param>
-		/// <param name="nameEcolAttr">ECol attribute to use on the Name entry in the row</param>
-		/// <returns></returns>
-		protected static TblRowNode ContactGroupRow(DBI_Path pathToContact, ECol nameEcolAttr) {
-			return ContactGroupRow(pathToContact, dsMB.Path.T.Contact, nameEcolAttr);
-		}
-		/// <summary>
-		/// Define a single row for a multicolumn contact row group, where the editor should be able to pick a record that refers to and is identified by a Contact record.
-		/// </summary>
-		/// <param name="pathToRecord">Path from the Tbl root to the picked record</param>
-		/// <param name="pathRecordToContact">Path from the picked record to its identifying Contact</param>
-		/// <param name="nameEcolAttr">ECol attribute to use on the Name entry in the row</param>
-		/// <returns></returns>
-		protected static TblRowNode ContactGroupRow(DBI_Path pathToRecord, DBI_PathToRow pathRecordToContact, ECol nameEcolAttr) {
-			return TblRowNode.New(pathToRecord.Key(), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-					TblColumnNode.New(pathToRecord, new NonDefaultCol(), new DCol(Fmt.SetDisplayPath(new DBI_Path(pathRecordToContact, dsMB.Path.T.Contact.F.Code))), nameEcolAttr),
-					TblColumnNode.New(new DBI_Path(pathToRecord.PathToReferencedRow, new DBI_Path(pathRecordToContact, dsMB.Path.T.Contact.F.BusinessPhone)), DCol.Normal, ECol.AllReadonly),
-					TblColumnNode.New(new DBI_Path(pathToRecord.PathToReferencedRow, new DBI_Path(pathRecordToContact, dsMB.Path.T.Contact.F.Email)), DCol.Normal, ECol.AllReadonly));
-		}
-		/// <summary>
-		/// Make a multicolumn Contact row group that represents a Requestor, with phone and email information
-		/// </summary>
-		/// <param name="pathToRequestor"></param>
-		/// <param name="editable"></param>
-		/// <returns></returns>
-		public static readonly object RequestorPickerNodeId = KB.I("RequestorPickerNodeId");
-		public static readonly object RequestorEmailFilterNodeId = KB.I("RequestorEmailFilterNodeId");
-		protected static TblContainerNode SingleRequestorGroup(DBI_Path pathToRequestor, bool editable) {
-			return ContactGroupTblLayoutNode(
-					ContactGroupRow(pathToRequestor, dsMB.Path.T.Requestor.F.ContactID.PathToReferencedRow, editable
-						? new ECol(ECol.NormalAccess, Fmt.SetId(RequestorPickerNodeId), Fmt.SetBrowserFilter(BTbl.TaggedEqFilter(dsMB.Path.T.Requestor.F.ContactID.F.Email, RequestorEmailFilterNodeId, true)))
-						: ECol.AllReadonly)
-				);
-		}
-		/// <summary>
-		/// Make a multicolumn Contact row group that represents a Requestor, with email information and language preference
-		/// </summary>
-		/// <param name="pathToRequestor"></param>
-		/// <returns></returns>
-		protected static TblContainerNode SingleRequestorLanguagePreferenceGroup(DBI_Path pathToRequestor) {
-			return ContactGroupPreferredLanguageTblLayoutNode(TblRowNode.New(KB.TOi(TId.Requestor), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-					TblColumnNode.New(pathToRequestor, new NonDefaultCol(), new DCol(Fmt.SetDisplayPath(new DBI_Path(dsMB.Path.T.Requestor.F.ContactID.PathToReferencedRow, dsMB.Path.T.Contact.F.Code))), ECol.AllReadonly),
-					TblColumnNode.New(new DBI_Path(pathToRequestor.PathToReferencedRow, new DBI_Path(dsMB.Path.T.Requestor.F.ContactID.PathToReferencedRow, dsMB.Path.T.Contact.F.Email)), new NonDefaultCol(), DCol.Normal, ECol.AllReadonly),
-					TblColumnNode.New(new DBI_Path(pathToRequestor.PathToReferencedRow, new DBI_Path(dsMB.Path.T.Requestor.F.ContactID.PathToReferencedRow, dsMB.Path.T.Contact.F.PreferredLanguage)), new NonDefaultCol(), DCol.Normal, ECol.AllReadonly)
-				));
-		}
-		#endregion
-		#region Requestor Assignee Group
-		/// <summary>
-		/// Return a List of nodes to add to a TblLayoutNode Array display common Contact information for an Assignee
-		/// </summary>
-		protected static TblContainerNode SingleContactGroup(DBI_Path pathToContact) {
-			return ContactGroupTblLayoutNode(
-				ContactGroupRow(pathToContact, ECol.Normal)
-			);
-		}
 		#endregion
 		#region CurrentStateGroup
 		/// <summary>
@@ -1281,7 +1199,7 @@ namespace Thinkage.MainBoss.Controls {
 				if (Correction) {
 					// Add the Inits that copy Original record information to the Correction record.
 					var prefix = new DBI_PathToRow(MostDerivedTable);
-					for (;;) {
+					for (; ; ) {
 						foreach (DBI_Column c in prefix.ReferencedTable.Columns) {
 							DBI_Path pathToC = new DBI_Path(prefix, c);
 							if (!PathShouldNotBeCopiedToCorrection(pathToC))
@@ -3522,7 +3440,6 @@ namespace Thinkage.MainBoss.Controls {
 			#endregion
 		}
 		#endregion
-		#endregion
 		#region Calculators
 		#region Quantity/Unit/Total Triple Control Calculators
 		public static Check QuantityUnitTotalTripleCalculator<T>(object quantityCol, object unitCostCol, object totalCostCol)
@@ -3726,7 +3643,6 @@ namespace Thinkage.MainBoss.Controls {
 
 		#endregion
 		#region General Tbl definitions
-		public static readonly DelayedCreateTbl ContactFunctionsBrowsetteTblCreator = null;
 		public static readonly DelayedCreateTbl AccountingTransactionDerivationsTblCreator;
 		public static readonly DelayedCreateTbl CompanyInformationTblCreator;
 		public static readonly DelayedCreateTbl NewsPanelTblCreator;
@@ -3736,43 +3652,6 @@ namespace Thinkage.MainBoss.Controls {
 		public static readonly DelayedCreateTbl UserMessageKeyWithEditAbilityTblCreator;
 		public static readonly DelayedCreateTbl UserMessageKeyPickerTblCreator;
 		public static readonly DelayedCreateTbl DatabaseManagementTblCreator;
-		#region ContactFunctionProvider
-		private static object[] ContactFunctionValues = new object[] {
-			(int)ViewRecordTypes.ContactFunctions.Contact,
-			(int)ViewRecordTypes.ContactFunctions.Requestor,
-			(int)ViewRecordTypes.ContactFunctions.BillableRequestor,
-			(int)ViewRecordTypes.ContactFunctions.Employee,
-			(int)ViewRecordTypes.ContactFunctions.SalesVendor,
-			(int)ViewRecordTypes.ContactFunctions.ServiceVendor,
-			(int)ViewRecordTypes.ContactFunctions.AccountsPayableVendor,
-			(int)ViewRecordTypes.ContactFunctions.SalesServiceVendor,
-			(int)ViewRecordTypes.ContactFunctions.SalesAccountsPayableVendor,
-			(int)ViewRecordTypes.ContactFunctions.ServiceAccountsPayableVendor,
-			(int)ViewRecordTypes.ContactFunctions.SalesServiceAccountsPayableVendor,
-			(int)ViewRecordTypes.ContactFunctions.RequestAssignee,
-			(int)ViewRecordTypes.ContactFunctions.WorkOrderAssignee,
-			(int)ViewRecordTypes.ContactFunctions.PurchaseOrderAssignee,
-			(int)ViewRecordTypes.ContactFunctions.User
-		};
-		private static Key[] ContactFunctionLabels = new Key[] {
-			KB.K("Contact"),
-			KB.TOi(TId.Requestor),
-			KB.TOi(TId.BillableRequestor),
-			KB.TOi(TId.Employee),
-			KB.K("Sales Vendor"),
-			KB.K("Service Vendor"),
-			KB.K("Accounts Payable Vendor"),
-			KB.K("Sales Service Vendor"),
-			KB.K("Sales Accounts Payable Vendor"),
-			KB.K("Service Accounts Payable Vendor"),
-			KB.K("Sales Service Accounts Payable Vendor"),
-			KB.TOi(TId.RequestAssignee),
-			KB.TOi(TId.WorkOrderAssignee),
-			KB.TOi(TId.PurchaseOrderAssignee),
-			KB.TOi(TId.User)
-		};
-		public static EnumValueTextRepresentations ContactFunctionProvider = new EnumValueTextRepresentations(ContactFunctionLabels, null, ContactFunctionValues);
-		#endregion
 		#region Name Providers
 		public static EnumValueTextRepresentations UnassignedNameProvider = new EnumValueTextRepresentations(
 			new Key[] {
@@ -3982,46 +3861,6 @@ namespace Thinkage.MainBoss.Controls {
 				);
 			});
 
-			#endregion
-			#region ContactFunctions
-			ContactFunctionsBrowsetteTblCreator = new DelayedCreateTbl(delegate () {
-				Key assigneeGroup = KB.K("New Assignee");
-				return new CompositeTbl(dsMB.Schema.T.ContactFunctions, TId.ContactFunction,
-					new Tbl.IAttr[] {
-						new BTbl(BTbl.ListColumn(dsMB.Path.T.ContactFunctions.F.TableEnum))
-					},
-					dsMB.Path.T.ContactFunctions.F.TableEnum,
-					null,               // Table 0 (Contact)
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.RequestorID,               // Table 1 (Requestor)
-						CompositeView.PathAlias(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.Requestor.F.ContactID)),
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.BillableRequestorID,       // Table 2 (BillableRequestor)
-						CompositeView.PathAlias(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.BillableRequestor.F.ContactID)),
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.EmployeeID,                // Table 3 (Employee)
-						CompositeView.PathAlias(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.Employee.F.ContactID)),
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.VendorID,                  // Table 4 (Sales Vendor)
-						CompositeView.ContextFreeInit(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.Vendor.F.SalesContactID),
-						CompositeView.ContextFreeInit(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.Vendor.F.ServiceContactID),
-						CompositeView.ContextFreeInit(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.Vendor.F.PayablesContactID)),
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.VendorID, NoNewMode),// Table 5 (Service Vendor)
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.VendorID, NoNewMode),// Table 6 (Accounts Payable Vendor)
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.VendorID, NoNewMode),// Table 7 (Sales & Service Vendor)
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.VendorID, NoNewMode),// Table 8 (Sales & Accounts Payable Vendor)
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.VendorID, NoNewMode),// Table 9 (Service & Accounts Payable Vendor)
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.VendorID, NoNewMode),// Table 10 (Sales, Service & Accounts Payable Vendor)
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.RequestAssigneeID,     // Table 11 (RequestAssignee)
-						CompositeView.PathAlias(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.RequestAssignee.F.ContactID),
-						CompositeView.NewCommandGroup(assigneeGroup)),
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.WorkOrderAssigneeID,   // Table 12(WorkOrderAssignee)
-						CompositeView.PathAlias(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.WorkOrderAssignee.F.ContactID),
-						CompositeView.NewCommandGroup(assigneeGroup)),
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.PurchaseOrderAssigneeID,// Table 13 (PurchaseOrderRequestAssignee)
-						CompositeView.PathAlias(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.PurchaseOrderAssignee.F.ContactID),
-						CompositeView.NewCommandGroup(assigneeGroup)),
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.UserID,                // Table 14 (User)
-						CompositeView.PathAlias(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.User.F.ContactID),
-						NoNewMode)
-				);
-			});
 			#endregion
 			#region UserMessageKey & UserMessageTranslation
 			DefineTbl(dsMB.Schema.T.UserMessageKey, UserMessageKeyTblCreator(false, false));
@@ -4273,110 +4112,6 @@ namespace Thinkage.MainBoss.Controls {
 			});
 			#endregion
 
-			#region Contact
-			Tbl contactCreatorFromDirectoryServiceTbl = new Tbl(dsUserPrincipal.Schema.T.UserPrincipal, TId.UserPrincipalInformation,
-				new Tbl.IAttr[] {
-					new UseNamedTableSchemaPermissionTbl(dsMB.Schema.T.Contact),
-					xyzzy.ContactsDependentGroup,
-					new BTbl(
-						BTbl.LogicClass(typeof(ContactFromDirectoryServiceBrowseLogic)),
-						BTbl.ListColumn(dsUserPrincipal.Path.T.UserPrincipal.F.Name),
-						BTbl.ListColumn(dsUserPrincipal.Path.T.UserPrincipal.F.DisplayName),
-						BTbl.ListColumn(dsUserPrincipal.Path.T.UserPrincipal.F.BusPhone),
-						BTbl.ListColumn(dsUserPrincipal.Path.T.UserPrincipal.F.EmailAddress)
-					),
-					new ETbl(ETbl.EditorDefaultAccess(false)),
-					new CustomSessionTbl(delegate(XAFClient existingDatabaseAccess, DBI_Database schema, out bool callerHasCustody) {
-						callerHasCustody = true;
-						return new XAFClient(existingDatabaseAccess.ConnectionInfo, new UserFromDirectoryServiceSession(existingDatabaseAccess));
-					})
-				},
-				new TblLayoutNodeArray(
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.Name, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.DisplayName, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.BusPhone, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.EmailAddress, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.HomePhone, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.PagerPhone, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.MobilePhone, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.FaxPhone, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.WebURL, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.PreferredLanguage, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.LDAPPath, DCol.Normal)
-				)
-			);
-			DefineTbl(dsMB.Schema.T.Contact, delegate () {
-				return new Tbl(dsMB.Schema.T.Contact, TId.Contact,
-				new Tbl.IAttr[] {
-						ContactsDependentGroup,
-						// Note that there was up until Oct 24/08 a ContactBrowseControl which contained #if'ed-off inoperational code to import from Outlook Contacts
-						new BTbl(
-							BTbl.ListColumn(dsMB.Path.T.Contact.F.Code),
-							BTbl.ListColumn(dsMB.Path.T.Contact.F.BusinessPhone, BTbl.ListColumnArg.Contexts.List|BTbl.ListColumnArg.Contexts.SearchAndFilter),
-							BTbl.ListColumn(dsMB.Path.T.Contact.F.MobilePhone, BTbl.ListColumnArg.Contexts.List|BTbl.ListColumnArg.Contexts.SearchAndFilter),
-							BTbl.AdditionalVerb(KB.K("Create from Active Directory"),
-								delegate(BrowseLogic browserLogic) {
-									return new CallDelegateCommand(
-										delegate() {
-											BrowseForm.NewBrowseForm(browserLogic.CommonUI.UIFactory, browserLogic.DB, contactCreatorFromDirectoryServiceTbl).ShowForm();
-										}
-									);
-								}
-							)
-						),
-						new ETbl(
-							ETbl.CustomCommand(delegate(EditLogic editorLogic) {
-								if (editorLogic.WillBeEditingDefaults)
-									return null;
-								Source CommentSource = editorLogic.GetPathNotifyingValue(dsMB.Path.T.Contact.F.Comment, 0);
-								var userDirectory = new EditLogic.CommandDeclaration(KB.K("Initialize all from Active Directory"), new FillContactFromUserDirectoryCommand(editorLogic, false));
-								var useActiveDirectoryGroup = new EditLogic.MutuallyExclusiveCommandSetDeclaration();
-								useActiveDirectoryGroup.Add(userDirectory);
-								return useActiveDirectoryGroup;
-							}),
-							ETbl.CustomCommand(delegate(EditLogic editorLogic) {
-								if (editorLogic.WillBeEditingDefaults)
-									return null;
-								var userDirectory = new EditLogic.CommandDeclaration(KB.K("Update all from Active Directory"), new FillContactFromUserDirectoryCommand(editorLogic, true));
-								var useActiveDirectoryGroup = new EditLogic.MutuallyExclusiveCommandSetDeclaration();
-								useActiveDirectoryGroup.Add(userDirectory);
-								return useActiveDirectoryGroup;
-							})
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.ContactReport; }))
-				},
-				new TblLayoutNodeArray(
-					DetailsTabNode.New(
-						TblColumnNode.New(dsMB.Path.T.Contact.F.Code, DCol.Normal, new ECol(Fmt.SetId(ContactNameId))),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.BusinessPhone, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.Email, DCol.Normal, new ECol(Fmt.SetId(EmailAddressId))),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.AlternateEmail, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.HomePhone, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.PagerPhone, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.MobilePhone, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.FaxPhone, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.WebURL, DCol.Normal, new ECol(Fmt.SetId(WebUrlAddressId))),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.LocationID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.Location.F.Code)), ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.LocationID.F.Desc, DCol.Normal),
-						// TODO: In the following we only really need the version check for the ECol since the edit buffer fetches the entire record and the schema must match even for fields we don't use,
-						// but MinimumDBVersionTbl is not an ECol.ICtorArg
-						TblColumnNode.New(dsMB.Path.T.Contact.F.Id.L.User.ContactID.F.AuthenticationCredential, ECol.AllReadonly, new MinimumDBVersionTbl(new Version(1, 1, 4, 2)), DCol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.PreferredLanguage, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.LDAPGuid, DCol.Normal, ECol.AllReadonly),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.Comment, DCol.Normal, ECol.Normal)
-					),
-					// NOTE: Currently the Requestors tab appears blank because the only information that the Requestor
-					// Tbl entry displays comes from the Contact record, and these fields get removed since this is
-					// a browsette on the Contact table.
-					BrowsetteTabNode.New(TId.ContactFunction, TId.Contact,
-						TblColumnNode.NewBrowsette(TIGeneralMB3.ContactFunctionsBrowsetteTblCreator, dsMB.Path.T.ContactFunctions.F.ParentContactID, DCol.Normal, ECol.Normal)),
-					BrowsetteTabNode.New(TId.ContactRelation, TId.Contact,
-						TblColumnNode.NewBrowsette(TIRelationship.ContactRelatedRecordsBrowseTbl, dsMB.Path.T.ContactRelatedRecords.F.ThisContactID, DCol.Normal, ECol.Normal))
-				), EmailAddressValidator, WebUrlAddressValidator
-				);
-			});
-			RegisterExistingForImportExport(TId.Contact, dsMB.Schema.T.Contact);
-			#endregion
 			#region CostCenter
 			DefineTbl(dsMB.Schema.T.CostCenter, delegate () {
 				return new Tbl(dsMB.Schema.T.CostCenter, TId.CostCenter,
@@ -4896,7 +4631,7 @@ namespace Thinkage.MainBoss.Controls {
 								TblInitSourceNode.New(null,
 									new DualCalculatedInitValue(StringTypeInfo.Universe,
 										delegate (object[] inputs) {
-											var defaultURL = Strings.IFormat("http://mainboss.com/MainBossNews/{0}.{1}.{2}/index.htm?version={0}.{1}.{2}.{3}&language={4}", VersionInfo.ProductVersion.Major, VersionInfo.ProductVersion.Minor, VersionInfo.ProductVersion.Build, VersionInfo.ProductVersion.Revision, Thinkage.Libraries.Application.InstanceFormatCultureInfo.TwoLetterISOLanguageName);
+											var defaultURL = Strings.IFormat("http://mainboss.com/MainBossNews/{0}.{1}.{2}/index.htm?version={0}.{1}.{2}.{3}&language={4}&id={5}", VersionInfo.ProductVersion.Major, VersionInfo.ProductVersion.Minor, VersionInfo.ProductVersion.Build, VersionInfo.ProductVersion.Revision, Thinkage.Libraries.Application.InstanceFormatCultureInfo.TwoLetterISOLanguageName, Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().OrganizationId);
 											return new System.Uri((string)inputs[0] ?? defaultURL);
 										},
 										new VariableValue(dsMB.Schema.V.NewsURL)),
@@ -5712,7 +5447,7 @@ namespace Thinkage.MainBoss.Controls {
 				// We use a peculiar looping structure so that new nodes introduced to the head of the list during a visit are eventually visited as well.
 				int loopcount = 0;
 				List<DelayedCreateTbl> previousList = new List<DelayedCreateTbl>();
-				for (;;) {
+				for (; ; ) {
 					List<DelayedCreateTbl> currentList = new List<DelayedCreateTbl>();
 					System.GC.Collect();
 					foreach (DelayedCreateTbl dct in DelayedCreateTbl.AllInstances.Keys)

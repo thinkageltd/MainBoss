@@ -140,7 +140,7 @@ namespace Thinkage.MainBoss.Database {
 				List<string> columns = new List<string>(tKey.GetValueNames());
 				if (!columns.Contains(dsSavedOrganizations.Schema.T.Organizations.F.CompactBrowsers.Name))
 					tKey.SetValue(dsSavedOrganizations.Schema.T.Organizations.F.CompactBrowsers.Name, toConverter(false), valueKind);
-				tKey.Close();
+				tKey.Dispose();
 			}
 			CloseItemEnumerable(organizations);
 		}
@@ -168,13 +168,13 @@ namespace Thinkage.MainBoss.Database {
 								ds.DataVariables[v].Value = v.EffectiveType.GenericAsNativeType(value, v.EffectiveType.GenericMinimalNativeType());
 						}
 						varsToMigrate.DeleteValue(valueName);
-						vKey.Close();
+						vKey.Dispose();
 					}
 					catch (System.Exception) {
 					}
 				}
 				ds.DB.Update(ds);
-				varsToMigrate.Close();
+				varsToMigrate.Dispose();
 			}
 		}
 		private void UpgradeTo_1000_2_0_0(RegistryKey root) {
@@ -189,43 +189,13 @@ namespace Thinkage.MainBoss.Database {
 
 			RegistryValueKind authenticationMethodValueKind;
 			GetConverters(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsAuthenticationMethod.EffectiveType, out authenticationMethodfromConverter, out authenticationMethodtoConverter, out authenticationMethodValueKind);
-			// Move any Solo connection to a new organization record, and set the SoloOrganization variable to the id of that record. Then delete the Solo SubKey
-			var solo = root.OpenSubKey(KB.I("Solo"), true);
-			if (solo != null) {
-				var connection = solo.OpenSubKey(KB.I("ConnectionDefinition"), true);
-				if (connection != null) {
-					Guid soloRowId;
-					XAFClient forUpdate = new XAFClient(new DBClient.Connection(ConnectionObject, dsSavedOrganizations.Schema), this);
-					using (var ds = new dsSavedOrganizations(forUpdate)) {
-						ds.DisableUpdatePropagation();
-						ds.EnsureDataTableExists(dsSavedOrganizations.Schema.T.Organizations);
-						var soloRow = ds.T.Organizations.AddNewOrganizationsRow();
-						soloRow.F.OrganizationName = KB.I("MainBoss Solo");
-						soloRowId = soloRow.F.Id;
-						ds.EnsureDataVariableExists(dsSavedOrganizations.Schema.V.SoloOrganization);
-						DBI_Variable v = dsSavedOrganizations.Schema.V.SoloOrganization;
-						ds.DB.EditVariable(ds, v);
-						ds.DataVariables[v].Value = v.EffectiveType.GenericAsNativeType(soloRowId, v.EffectiveType.GenericMinimalNativeType());
-						// leave the 'columns' to our cheater code later to copy the ConnectionDefinition key to the Organizationkey
-						ds.DB.Update(ds);
-					}
-					var dest = root.OpenSubKey(KB.I("Organizations") + "\\" + soloRowId.ToString(), RegistryKeyPermissionCheck.Default, System.Security.AccessControl.RegistryRights.CreateSubKey | System.Security.AccessControl.RegistryRights.FullControl);
-					Thinkage.Libraries.MSWindows.Registry.RegCopyTree(connection.Handle.DangerousGetHandle(), dest.Handle.DangerousGetHandle());
-					dest.Close();
-					connection.Close();
-					solo.DeleteSubKey(KB.I("ConnectionDefinition"));
-				}
-				solo.Close();
-				root.DeleteSubKey(KB.I("Solo"));
-			}
-
 			var organizations = GetItemEnumerable(dsSavedOrganizations.Schema.T.Organizations);
 			foreach (KeyValuePair<RegistryKey, string> organization in organizations) {
 				RegistryKey tKey = PrepareItemForWrite(organization);
 				List<string> columns = new List<string>(tKey.GetValueNames());
 				if (!columns.Contains(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsAuthenticationMethod.Name))
 					tKey.SetValue(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsAuthenticationMethod.Name, authenticationMethodtoConverter(Thinkage.Libraries.DBILibrary.AuthenticationMethod.WindowsAuthentication), authenticationMethodValueKind);
-				tKey.Close();
+				tKey.Dispose();
 			}
 			CloseItemEnumerable(organizations);
 		}

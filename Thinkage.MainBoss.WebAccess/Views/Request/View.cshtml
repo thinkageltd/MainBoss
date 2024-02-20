@@ -8,110 +8,113 @@
 	ViewBag.Title = T.Text("View Request {0}", Model.Number);
 }
 @section LabelValueViewPanel {
-	@(Html.LabelValue(dsMB.Path.T.Request.F.Number, Model.Number))
-	@(Html.LabelValue(dsMB.Path.T.Request.F.Subject, Model.Subject))
-	@(Html.CodeDescLabelValue(dsMB.Path.T.RequestStateHistory.F.RequestStateID, Model.CurrentRequestStateHistory.RequestState))
-	@(Html.CodeDescLabelValue(dsMB.Path.T.RequestStateHistory.F.RequestStateHistoryStatusID, Model.CurrentRequestStateHistory.RequestStateHistoryStatus))
-	@(Html.LabelValue(dsMB.Path.T.RequestStateHistory.F.PredictedCloseDate, Model.CurrentRequestStateHistory.PredictedCloseDate))
-	@(Html.LabelValue(dsMB.Path.T.Request.F.RequestorID, Html.ValueIfDefined<RequestEntities.Requestor>(Model.Requestor, m => Html.ContactValue(m.Contact.Code, m.Contact.BusinessPhone, m.Contact.Email, m.Contact.Hidden != null || m.Hidden != null))))
+	@(Html.LabelValueRow(dsMB.Path.T.Request.F.Number, Model.Number))
+	@(Html.LabelValueRow(dsMB.Path.T.Request.F.Subject, Model.Subject))
+	@(Html.LabelValueRowCodeDesc(dsMB.Path.T.RequestStateHistory.F.RequestStateID, Model.CurrentRequestStateHistory.RequestState))
+	@(Html.LabelValueRowCodeDesc(dsMB.Path.T.RequestStateHistory.F.RequestStateHistoryStatusID, Model.CurrentRequestStateHistory.RequestStateHistoryStatus))
+	@(Html.LabelValueRow(dsMB.Path.T.RequestStateHistory.F.PredictedCloseDate, Model.CurrentRequestStateHistory.PredictedCloseDate))
+	@(Html.LabelValueRow(dsMB.Path.T.Request.F.RequestorID, Html.ValueIfDefined<RequestEntities.Requestor>(Model.Requestor, m => Html.ContactValue(m.Contact.Code, m.Contact.BusinessPhone, m.Contact.Email, m.Contact.Hidden != null || m.Hidden != null))))
 	@if (Model.UnitLocationID != null) {@(Html.LabelActionValue<RequestEntities.Location>(dsMB.Path.T.Request.F.UnitLocationID, Model.UnitLocation, m => m.Code, i => Model.UnitLocationID.Value, m => m.DerivedRelativeLocation.Hidden != null))}
-	@(Html.CodeDescLabelValue(dsMB.Path.T.Request.F.AccessCodeID.F.Code, Model.AccessCode))
-	@(Html.CodeDescLabelValue(dsMB.Path.T.Request.F.RequestPriorityID.F.Code, Model.RequestPriority))
-	@(Html.LabelValueMultiLine(dsMB.Path.T.Request.F.Description, Model.Description, false))
-	@(Html.LabelValueMultiLine(dsMB.Path.T.Request.F.Comment, Model.Comment, true))
+	@(Html.LabelValueRowCodeDesc(dsMB.Path.T.Request.F.AccessCodeID.F.Code, Model.AccessCode))
+	@(Html.LabelValueRowCodeDesc(dsMB.Path.T.Request.F.RequestPriorityID.F.Code, Model.RequestPriority))
+	@(Html.LabelValueRowMultiLine(dsMB.Path.T.Request.F.Description, Model.Description, false))
+	@(Html.LabelValueRowMultiLine(dsMB.Path.T.Request.F.Comment, Model.Comment, true))
 }
 @section LabelValueViewTrailer {
-	<br />
-	@(Html.ActionLink(T.Text("Add Comment"), ((bool)ViewData["UnAssigned"]) ? "UnAssignedAddComment" : "AddComment", "RequestStateHistory", new
-{
-	ParentID = Model.Id,
-	CurrentStateHistoryID = Model.CurrentRequestStateHistoryID
-}, new
-{
-	@class = "StateActionLink"
-}))
-	@if ((bool)ViewData["UnAssigned"]) {
-		if ((bool)ViewData["CanSelfAssign"]) {
-			@(Html.ActionLink(T.Text("Self Assign"), "SelfAssign", "RequestStateHistory", new
-			{
-				ParentID = Model.Id,
-				CurrentStateHistoryID = Model.CurrentRequestStateHistoryID
-			}, new
-			{
-				@class = "StateActionLink"
-			}))
+	<div class="Actions">
+		<div class="Action">
+			@(Html.ActionLink(T.Text("Add Comment"), ((bool)ViewData["UnAssigned"]) ? "UnAssignedAddComment" : "AddComment", "RequestStateHistory", new {
+					ParentID = Model.Id,
+					CurrentStateHistoryID = Model.CurrentRequestStateHistoryID
+				}, new {
+					@class = "StateActionLink"
+				}))
+		</div>
+		@if ((bool)ViewData["UnAssigned"]) {
+			if ((bool)ViewData["CanSelfAssign"]) {
+				<div class="Action">
+					@(Html.ActionLink(T.Text("Self Assign"), "SelfAssign", "RequestStateHistory", new {
+							ParentID = Model.Id,
+							CurrentStateHistoryID = Model.CurrentRequestStateHistoryID
+						}, new {
+							@class = "StateActionLink"
+						}))
+				</div>
+			}
 		}
-	}
-	else { // The already assigned version allows Close and Change to InProgress
-		if (Model.CurrentRequestStateHistory.RequestState.FilterAsInProgress) {@(Html.ActionLink(T.Text("Close Request"), "Close", "RequestStateHistory", new
-{
-	ParentID = Model.Id,
-	CurrentStateHistoryID = Model.CurrentRequestStateHistoryID
-}, new
-{
-	@class = "StateActionLink"
-}))}
-		if (Model.CurrentRequestStateHistory.RequestState.FilterAsNew) {@(Html.ActionLink(T.Text("Change to In Progress"), "InProgress", "RequestStateHistory", new
-{
-	ParentID = Model.Id,
-	CurrentStateHistoryID = Model.CurrentRequestStateHistoryID
-}, new
-{
-	@class = "StateActionLink"
-}))}
-	}
-	<!--	@(Html.ActionLink(T.Text("Requestor Add Comment"), "AddComment", "Requestor", new {parentID = Model.Id, CurrentStateHistoryID = Model.CurrentRequestStateHistoryID}, new { @class = "StateActionLink" })) -->
-	<p />
+		else { // The already assigned version allows Close and Change to InProgress
+			if (Model.CurrentRequestStateHistory.RequestState.FilterAsInProgress) {
+				<div class="Action">
+					@(Html.ActionLink(T.Text("Close Request"), "Close", "RequestStateHistory", new {
+							ParentID = Model.Id,
+							CurrentStateHistoryID = Model.CurrentRequestStateHistoryID
+						}, new {
+							@class = "StateActionLink"
+						}))
+				</div>
+			}
+			if (Model.CurrentRequestStateHistory.RequestState.FilterAsNew) {
+				<div class="Action">
+					@(Html.ActionLink(T.Text("Change to In Progress"), "InProgress", "RequestStateHistory", new {
+							ParentID = Model.Id,
+							CurrentStateHistoryID = Model.CurrentRequestStateHistoryID
+						}, new {
+							@class = "StateActionLink"
+						}))
+				</div>
+			}
+		}
+		<!--	@(Html.ActionLink(T.Text("Requestor Add Comment"), "AddComment", "Requestor", new {parentID = Model.Id, CurrentStateHistoryID = Model.CurrentRequestStateHistoryID}, new { @class = "StateActionLink" })) -->
+	</div>
 	<div id="History">
 		<h2>@(T.Text("Current History"))</h2>
-<div class="viewHistoryItem">
-	<div class="title">
-		@(Model.CurrentRequestStateHistory.EffectiveDate)@Html.NBSP()@if (Model.CurrentRequestStateHistory.User != null && Model.CurrentRequestStateHistory.User.Contact != null) {@(Model.CurrentRequestStateHistory.User.Contact.Code)@Html.NBSP()}<span class="StateCode">@(Model.CurrentRequestStateHistory.RequestState.Code.Translate())</span>@if (Model.CurrentRequestStateHistory.RequestStateHistoryStatus != null) {@Html.NBSP()<span class="StatusCode">@(Model.CurrentRequestStateHistory.RequestStateHistoryStatus.Code)</span>}
-</div>
-<div class="body">
-	@if (Model.CurrentRequestStateHistory.CommentToRequestor != null) {
-	<div class="RequestorComment MultiLine">@(Model.CurrentRequestStateHistory.CommentToRequestor)</div>
+		<div class="viewHistoryItem">
+			<div class="title">
+				@(Model.CurrentRequestStateHistory.EffectiveDate)@Html.NBSP()@if (Model.CurrentRequestStateHistory.User != null && Model.CurrentRequestStateHistory.User.Contact != null) {@(Model.CurrentRequestStateHistory.User.Contact.Code)@Html.NBSP()}<span class="StateCode">@(Model.CurrentRequestStateHistory.RequestState.Code.Translate())</span>@if (Model.CurrentRequestStateHistory.RequestStateHistoryStatus != null) {@Html.NBSP()<span class="StatusCode">@(Model.CurrentRequestStateHistory.RequestStateHistoryStatus.Code)</span>}
+			</div>
+			<div class="body">
+				@if (Model.CurrentRequestStateHistory.CommentToRequestor != null) {
+					<div class="RequestorComment MultiLine">@(Model.CurrentRequestStateHistory.CommentToRequestor)</div>
+				}
+				@if (Model.CurrentRequestStateHistory.Comment != null) {
+					<div class="MultiLine">@(Model.CurrentRequestStateHistory.Comment)</div>
+				}
+			</div>
+		</div>
+		<h2>@T.Text("All History")</h2>
+		<div>
+			@foreach (var h in (from wsh in Model.RequestStateHistoryRequest
+							   orderby wsh.EffectiveDate ascending
+							   select wsh)) {
+				<div class="viewHistoryItem">
+					<div class="title">
+						@(h.EffectiveDate)@Html.NBSP()@if (h.User != null && h.User.Contact != null) {@(h.User.Contact.Code)@Html.NBSP()}<span class="StateCode">@(h.RequestState.Code.Translate())</span>@if (h.RequestStateHistoryStatus != null) {@Html.NBSP()<span class="StatusCode">@(h.RequestStateHistoryStatus.Code)</span>}
+					</div>
+					<div class="body">
+						@if (h.CommentToRequestor != null) {
+							<div class="RequestorComment MultiLine">@(h.CommentToRequestor)</div>
+						}
+						@if (h.Comment != null) {
+							<div class="MultiLine">@(h.Comment)</div>
+						}
+					</div>
+				</div>
+			}
+		</div>
+	</div>
 }
-@if (Model.CurrentRequestStateHistory.Comment != null) {
-	<div class="MultiLine">@(Model.CurrentRequestStateHistory.Comment)</div>
-}
-</div>
-</div>
-<h2>@T.Text("All History")</h2>
-<div>
-	@foreach (var h in (from wsh in Model.RequestStateHistoryRequest
-				   orderby wsh.EffectiveDate ascending
-				   select wsh)) {
-	<div class="viewHistoryItem">
-		<div class="title">
-			@(h.EffectiveDate)@Html.NBSP()@if (h.User != null && h.User.Contact != null) {@(h.User.Contact.Code)@Html.NBSP()}<span class="StateCode">@(h.RequestState.Code.Translate())</span>@if (h.RequestStateHistoryStatus != null) {@Html.NBSP()<span class="StatusCode">@(h.RequestStateHistoryStatus.Code)</span>}
-</div>
-<div class="body">
-	@if (h.CommentToRequestor != null) {
-	<div class="RequestorComment MultiLine">@(h.CommentToRequestor)</div>
-}
-@if (h.Comment != null) {
-	<div class="MultiLine">@(h.Comment)</div>
-}
-</div>
-</div>
-}
-</div>
-</div>
-
-<div>
+@section BackToContent {
 	@(Html.BackOperation(T.Text("Back to List"), TempData))
-</div>
 }
 @section scripts {
-	<script type="text/javascript">
-	$(function () {
-		$(".selector").accordion({ header: "h2" });
-		$("#History").accordion({
-			collapsible: true,
-			active: 0,
-			heightStyle: "content"
+	<script>
+		$(function () {
+			$(".selector").accordion({ header: "h2" });
+			$("#History").accordion({
+				collapsible: true,
+				active: 0,
+				heightStyle: "content"
+			});
 		});
-	});
 	</script>
 }

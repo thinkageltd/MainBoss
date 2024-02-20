@@ -51,7 +51,8 @@ namespace Thinkage.MainBoss.Database
 			public readonly Right ViewAccounting;								// Permission to view accounting-related information
 			public readonly Right EditAccounting;								// Permission to edit accounting-related information
 			public readonly Right UpgradeDatabase;								// Permission to upgraded this database
-			public readonly Right Customize;									// Permission to Customize the UI
+			public readonly Right Customize;                                    // Permission to Customize the UI
+			public readonly Right MergeContacts;									// Permission to Merge Contacts
 		}
 		#endregion
 		#region TransitionGroupClass

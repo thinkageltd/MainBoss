@@ -1,0 +1,41 @@
+@model IEnumerable<RequestEntities.Request>
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.MainBoss.WebAccess.Models
+@using Thinkage.MainBoss.Database
+@using Thinkage.Web.Mvc.Html
+@{
+	Layout = "~/Views/Shared/_LayoutBrowse.cshtml";
+	ViewBag.Title = T.Text("Your pending requests");
+}
+@section BrowseContent {
+	<thead>
+		<tr>
+			<th />
+			@Html.LabelOnly(dsMB.Path.T.Request.F.Number, "th")
+			@Html.LabelOnly(dsMB.Path.T.Request.F.Subject, "th", new string[] { "SuppressWhenNarrow" })
+			@Html.LabelOnly(T.Text("Current Status"), "th")
+			@Html.LabelOnly(dsMB.Path.T.RequestStateHistory.F.PredictedCloseDate, "th")
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var request in Model) {
+		<tr>
+			<td>
+				@Html.ActionLink(T.Text("AddComment"), "AddComment", "Requestor", new {
+						parentID = request.Id,
+						CurrentStateHistoryID = request.CurrentRequestStateHistoryID
+					}, new {
+						@class = "StateActionLink"
+					})
+			</td>
+			@Html.ValueOnlyWithValue2Popup(dsMB.Path.T.Request.F.Number.ReferencedType, request.Number, request.Subject, false, "td")
+			<td class="SuppressWhenNarrow">@(request.Subject) </td>
+			@Html.CodeValueForBrowsePanel(request.CurrentRequestStateHistory.RequestStateHistoryStatus)
+			@Html.ValueOnlyForBrowsePanel(dsMB.Path.T.Request.F.CurrentRequestStateHistoryID.F.PredictedCloseDate.ReferencedType, request.CurrentRequestStateHistory.PredictedCloseDate)
+		</tr>
+		}
+	</tbody>
+}
+@section BackToContent {
+	<div class="Action">@(Html.ActionLink(T.Text(" Assignments"), "Index", "Assignment"))</div>
+}

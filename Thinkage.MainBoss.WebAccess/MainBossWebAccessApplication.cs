@@ -21,7 +21,7 @@ namespace Thinkage.MainBoss.WebAccess {
 			// TODO: VersionInfo.ProductVersion farts around with AssemblyInformationalVersionAttribute which no one specifies anywhere, and then falls back on a file version somewhere.
 			// It turns out that the [AssemblyVersion] attribute is a NON-"custom" attribute and so does not appear in assembly.GetCustomAttributes and instead appears as the Version property of the assembly name.
 			get {
-				lock (LockObject) {	// This is not necessary if System.Reflection.Assembly.GetExecutingAssembly().GetName().Version always returns the same object; concurrent calls would just set the value twice to the same object. TODO: Check this.
+				lock (LockObject) { // This is not necessary if System.Reflection.Assembly.GetExecutingAssembly().GetName().Version always returns the same object; concurrent calls would just set the value twice to the same object. TODO: Check this.
 					if (pMBWebAccessAppVersionX == null)
 						pMBWebAccessAppVersionX = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 				}
@@ -48,8 +48,7 @@ namespace Thinkage.MainBoss.WebAccess {
 			new FixedUserInformationOverride(result, "", "", formatCultureInfo, messageCultureInfo, null);
 			new StandardApplicationIdentification(result, "MainBossWebAccess", ApplicationName);
 			new DatabaseFeaturesApplication(result,
-				(XAFClient.Connection connection) =>
-				{
+				(XAFClient.Connection connection) => {
 					return new Thinkage.MainBoss.Database.MB3Client(connection);
 				});
 			new ApplicationPermissions(result, new MainBossPermissionsManager(Root.Rights));
@@ -86,7 +85,7 @@ namespace Thinkage.MainBoss.WebAccess {
 					new LicenseEnabledFeature(Licensing.RequestsLicense, delegate() { HasRequestsLicense = true; }),
 					new LicenseEnabledFeature(Licensing.WorkOrderLaborLicense, delegate() { HasWorkOrdersLicense = true; }),
 					new LicenseEnabledFeature(Licensing.PurchasingLicense, delegate() { HasPurchaseOrdersLicense = true; }),
-					new LicenseEnabledFeature(Licensing.InventoryLicense, delegate() { HasInventoryLicense = false; }) // DISABLED for current release; no inventory stuff for 4.2
+					new LicenseEnabledFeature(Licensing.InventoryLicense, delegate() { HasInventoryLicense = true; })
 				},
 				licensedObject, GetInterface<IDBVersionDatabaseFeature>().VersionHandler.GetLicenses(GetInterface<ISessionDatabaseFeature>().Session), null);
 			ReAuthenticateMainBossUser();
@@ -112,27 +111,27 @@ namespace Thinkage.MainBoss.WebAccess {
 				return;
 			}
 			AuthenticationRepository rp = new AuthenticationRepository();
-//			string[] splitUser = userIdentification.ToLower().Split(new char[] { '\\' }); // split domain and user name for validating in MainBoss User table
-//			if (splitUser.Length != 2)
-//				throw new GeneralException(KB.K("The name of the current user \"{0}\" is not in the expected form \"SCOPE\\USER\""), userIdentification);
+			//			string[] splitUser = userIdentification.ToLower().Split(new char[] { '\\' }); // split domain and user name for validating in MainBoss User table
+			//			if (splitUser.Length != 2)
+			//				throw new GeneralException(KB.K("The name of the current user \"{0}\" is not in the expected form \"SCOPE\\USER\""), userIdentification);
 
 
 			// try as a mainboss user first
 			var validUsers = from u in rp.Users()
 							 where !u.Hidden.HasValue // Not hidden
-							 && u.AuthenticationCredential.ToLower() == userIdentification.ToLower()
+							 && string.Compare(u.AuthenticationCredential, userIdentification, true) == 0
 							 select u;
 			AuthenticationEntities.User user;
 			switch (validUsers.Count()) {
-			case 0:
-				user = null;
-				break;
-			case 1:
-				user = (AuthenticationEntities.User)validUsers.First();
-				break;
-			default:
-				user = null;
-				break;
+				case 0:
+					user = null;
+					break;
+				case 1:
+					user = (AuthenticationEntities.User)validUsers.First();
+					break;
+				default:
+					user = null;
+					break;
 			}
 			if (user != null) {
 				UserID = user.Id;
@@ -143,8 +142,7 @@ namespace Thinkage.MainBoss.WebAccess {
 				ContactEmail = contact.Email;
 				var manager = (MainBossPermissionsManager)GetInterface<IPermissionsFeature>().PermissionsManager;
 				manager.ResetPermissions();
-				GetInterface<IDBVersionDatabaseFeature>().VersionHandler.LoadPermissions(GetInterface<ISessionDatabaseFeature>().Session, UserID.Value, false, delegate(string pattern, bool grant)
-				{
+				GetInterface<IDBVersionDatabaseFeature>().VersionHandler.LoadPermissions(GetInterface<ISessionDatabaseFeature>().Session, UserID.Value, false, delegate (string pattern, bool grant) {
 					manager.SetPermission(pattern, grant);
 				});
 			}
@@ -379,7 +377,7 @@ namespace Thinkage.MainBoss.WebAccess {
 					DBSession = null;
 				}
 				if (ex is GeneralException)
-					throw;			// message should be good
+					throw;          // message should be good
 				throw new GeneralException(ex, KB.K("There was a problem validating access to {0}"), connection.ConnectionInformation.DisplayNameLowercase);
 			}
 		}

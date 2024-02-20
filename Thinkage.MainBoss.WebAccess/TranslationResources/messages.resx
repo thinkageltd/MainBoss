@@ -126,6 +126,12 @@
   <data name="dsMBLabel§Accounting Transaction" xml:space="preserve">
     <value>Accounting Transaction</value>
   </data>
+  <data name="dsMBLabel§AccountNumber" type="" mimetype="">
+    <value>Account Number</value>
+  </data>
+  <data name="dsMBLabel§AccountsPayable Cost Center" type="" mimetype="">
+    <value>Accounts Payable Cost Center</value>
+  </data>
   <data name="dsMBLabel§Actual" xml:space="preserve">
     <value>Actual</value>
   </data>
@@ -441,11 +447,11 @@
   <data name="dsMBLabel§Item Location" type="" mimetype="">
     <value>Item Location</value>
   </data>
+  <data name="dsMBLabel§Item Price" type="" mimetype="">
+    <value>Item Price</value>
+  </data>
   <data name="dsMBLabel§ItemAdjustment" type="" mimetype="">
     <value>ItemAdjustment</value>
-  </data>
-  <data name="dsMBLabel§ItemCategory" type="" mimetype="">
-    <value>Item Category</value>
   </data>
   <data name="dsMBLabel§ItemIssue" type="" mimetype="">
     <value>ItemIssue</value>
@@ -585,6 +591,12 @@
   <data name="dsMBLabel§Path" xml:space="preserve">
     <value>Path</value>
   </data>
+  <data name="dsMBLabel§Payables Contact" type="" mimetype="">
+    <value>Payables Contact</value>
+  </data>
+  <data name="dsMBLabel§PaymentTerm" type="" mimetype="">
+    <value>Payment Term</value>
+  </data>
   <data name="dsMBLabel§Per Job Inside" xml:space="preserve">
     <value>Per Job Inside</value>
   </data>
@@ -672,6 +684,9 @@
   <data name="dsMBLabel§PurchaseOrderStateHistory" type="" mimetype="">
     <value>Purchase Order State History</value>
   </data>
+  <data name="dsMBLabel§PurchaseOrderText" type="" mimetype="">
+    <value>Purchase Order Text</value>
+  </data>
   <data name="dsMBLabel§Quantity" xml:space="preserve">
     <value>Quantity</value>
   </data>
@@ -750,6 +765,9 @@
   <data name="dsMBLabel§Role" type="" mimetype="">
     <value>Role</value>
   </data>
+  <data name="dsMBLabel§Sales Contact" type="" mimetype="">
+    <value>Sales Contact</value>
+  </data>
   <data name="dsMBLabel§ScrapDate" xml:space="preserve">
     <value>Scrap Date</value>
   </data>
@@ -761,6 +779,9 @@
   </data>
   <data name="dsMBLabel§Serial" xml:space="preserve">
     <value>Serial</value>
+  </data>
+  <data name="dsMBLabel§Service Contact" type="" mimetype="">
+    <value>Service Contact</value>
   </data>
   <data name="dsMBLabel§ServiceConfiguration" type="" mimetype="">
     <value>Service Configuration</value>
@@ -876,6 +897,9 @@
   <data name="dsMBLabel§Vendor" type="" mimetype="">
     <value>Vendor</value>
   </data>
+  <data name="dsMBLabel§VendorCategory" type="" mimetype="">
+    <value>Vendor Category</value>
+  </data>
   <data name="dsMBLabel§VoidCode" type="" mimetype="">
     <value>Void Code</value>
   </data>
@@ -957,6 +981,18 @@
   <data name="dsMBLabel§WorkOrderTemplate" type="" mimetype="">
     <value>Work Order Template</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§ Assignments" xml:space="preserve">
+    <value> Assignments</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§{0} from vendor {1}" type="" mimetype="">
+    <value>{0} from vendor {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§A Web Access license is required to work with MainBoss." type="" mimetype="">
+    <value>A Web Access license is required to work with MainBoss.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§A Web Request license is required to submit requests." type="" mimetype="">
+    <value>A Web Request license is required to submit requests.</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§Activity" type="" mimetype="">
     <value>Activity</value>
   </data>
@@ -990,6 +1026,9 @@
   <data name="Thinkage.MainBoss.WebAccess§Add Remarks to Request {0}" xml:space="preserve">
     <value>Add Remarks to Request {0}</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§AddComment" type="" mimetype="">
+    <value>Add Comment</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§All History" type="" mimetype="">
     <value>All History</value>
   </data>
@@ -998,6 +1037,12 @@
   </data>
   <data name="Thinkage.MainBoss.WebAccess§An unexpected error occurred" type="" mimetype="">
     <value>An unexpected error occurred</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Apply" type="" mimetype="">
+    <value>Apply</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Apply is disabled." type="" mimetype="">
+    <value>Apply is disabled.</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Assigned Requests" xml:space="preserve">
     <value>Assigned Requests</value>
@@ -1008,11 +1053,17 @@
   <data name="Thinkage.MainBoss.WebAccess§Attachments" xml:space="preserve">
     <value>Attachments</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§Back to Assignment Status" xml:space="preserve">
-    <value>Back to Assignment Status</value>
+  <data name="Thinkage.MainBoss.WebAccess§Back to Inventory" type="" mimetype="">
+    <value>Back to Inventory</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Back to List" xml:space="preserve">
     <value>Back to List</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Back to Storeroom counting" type="" mimetype="">
+    <value>Back to Storeroom counting</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Back to Storeroom list" type="" mimetype="">
+    <value>Back to Storeroom list</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Cancel" xml:space="preserve">
     <value>Cancel</value>
@@ -1074,8 +1125,14 @@
   <data name="Thinkage.MainBoss.WebAccess§Cost must not exceed value on hand" xml:space="preserve">
     <value>Cost must not exceed value on hand</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§Count" type="" mimetype="">
+    <value>Count</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§Create" type="" mimetype="">
     <value>Create</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Create a Request" type="" mimetype="">
+    <value>Create a Request</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Current History" type="" mimetype="">
     <value>Current History</value>
@@ -1086,6 +1143,9 @@
   <data name="Thinkage.MainBoss.WebAccess§Current Status" xml:space="preserve">
     <value>Current Status</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§Days since last Count" type="" mimetype="">
+    <value>Days since last Count</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§Demanded" xml:space="preserve">
     <value>Demanded</value>
   </data>
@@ -1094,9 +1154,6 @@
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Draft" xml:space="preserve">
     <value>Draft</value>
-  </data>
-  <data name="Thinkage.MainBoss.WebAccess§Effective Date" type="" mimetype="">
-    <value>Effective Date</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Email Address" xml:space="preserve">
     <value>Email Address</value>
@@ -1119,23 +1176,32 @@
   <data name="Thinkage.MainBoss.WebAccess§External tag '{0}' not found." type="" mimetype="">
     <value>External tag '{0}' not found.</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§From Cost Center" type="" mimetype="">
-    <value>From Cost Center</value>
+  <data name="Thinkage.MainBoss.WebAccess§Goto enter a request page." type="" mimetype="">
+    <value>Goto enter a request page.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Goto the activity page for MainBoss Users." type="" mimetype="">
+    <value>Goto the activity page for MainBoss Users.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Goto the Web Access start page." type="" mimetype="">
+    <value>Goto the Web Access start page.</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§History" xml:space="preserve">
     <value>History</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§Home" type="" mimetype="">
+    <value>Home</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§In Progress" xml:space="preserve">
     <value>In Progress</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§Inventory" type="" mimetype="">
-    <value>Inventory</value>
-  </data>
-  <data name="Thinkage.MainBoss.WebAccess§Item Activity" type="" mimetype="">
-    <value>Item Activity</value>
+  <data name="Thinkage.MainBoss.WebAccess§Inventory Activity" type="" mimetype="">
+    <value>Inventory Activity</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Item Adjustment" type="" mimetype="">
     <value>Item Adjustment</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Item assignments for {0}" type="" mimetype="">
+    <value>Item assignments for {0}</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Item Issue" type="" mimetype="">
     <value>Item Issue</value>
@@ -1149,8 +1215,8 @@
   <data name="Thinkage.MainBoss.WebAccess§ItemAssignment '{0}' not found." type="" mimetype="">
     <value>ItemAssignment '{0}' not found.</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§Login as MainBoss User to view your assignments" xml:space="preserve">
-    <value>Login as MainBoss User to view your assignments</value>
+  <data name="Thinkage.MainBoss.WebAccess§Login as MainBoss User to work with MainBoss" type="" mimetype="">
+    <value>Login as MainBoss User to work with MainBoss</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Logout" xml:space="preserve">
     <value>Logout</value>
@@ -1166,6 +1232,9 @@
   </data>
   <data name="Thinkage.MainBoss.WebAccess§New" xml:space="preserve">
     <value>New</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§New Count" type="" mimetype="">
+    <value>New Count</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§New Request" xml:space="preserve">
     <value>New Request</value>
@@ -1188,17 +1257,20 @@
   <data name="Thinkage.MainBoss.WebAccess§on" xml:space="preserve">
     <value>on</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§On Hand" type="" mimetype="">
+    <value>On Hand</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§Open" xml:space="preserve">
     <value>Open</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Physical Count" type="" mimetype="">
     <value>Physical Count</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§Priority" xml:space="preserve">
-    <value>Priority</value>
+  <data name="Thinkage.MainBoss.WebAccess§Physical Count for {0}" type="" mimetype="">
+    <value>Physical Count for {0}</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§Quantity" type="" mimetype="">
-    <value>Quantity</value>
+  <data name="Thinkage.MainBoss.WebAccess§Provide access to inventory items and item assignments." type="" mimetype="">
+    <value>Provide access to inventory items and item assignments.</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Quantity has been changed before your actualization submission" xml:space="preserve">
     <value>Quantity has been changed before your actualization submission</value>
@@ -1254,6 +1326,9 @@
   <data name="Thinkage.MainBoss.WebAccess§Save Remarks was unsuccessful. Please correct the errors and try again." xml:space="preserve">
     <value>Save Remarks was unsuccessful. Please correct the errors and try again.</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§See my Requests" type="" mimetype="">
+    <value>See my Requests</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§Self Assign" type="" mimetype="">
     <value>Self Assign</value>
   </data>
@@ -1269,8 +1344,17 @@
   <data name="Thinkage.MainBoss.WebAccess§Self assigned" type="" mimetype="">
     <value>Self assigned</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§Show all request and work order assignments attributed to you, or to see unassigned work that you may assign to yourself." type="" mimetype="">
+    <value>Show all request and work order assignments attributed to you, or to see unassigned work that you may assign to yourself.</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§Show on Map" xml:space="preserve">
     <value>Show on Map</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Show your inventory item list." type="" mimetype="">
+    <value>Show your inventory item list.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Show your permanent storage locations." type="" mimetype="">
+    <value>Show your permanent storage locations.</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Specifications" xml:space="preserve">
     <value>Specifications</value>
@@ -1278,14 +1362,11 @@
   <data name="Thinkage.MainBoss.WebAccess§Start Date must be on or before End Date" type="" mimetype="">
     <value>Start Date must be on or before End Date</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§State" xml:space="preserve">
-    <value>State</value>
-  </data>
   <data name="Thinkage.MainBoss.WebAccess§State history has changed before we could save your information. Please review any changed information and try again" type="" mimetype="">
     <value>State history has changed before we could save your information. Please review any changed information and try again</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§Status" xml:space="preserve">
-    <value>Status</value>
+  <data name="Thinkage.MainBoss.WebAccess§Storerooms" type="" mimetype="">
+    <value>Storerooms</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Subject" xml:space="preserve">
     <value>Subject</value>
@@ -1295,6 +1376,9 @@
   </data>
   <data name="Thinkage.MainBoss.WebAccess§The email address is not valid" type="" mimetype="">
     <value>The email address is not valid</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§The item with Id '{0}' was not found." type="" mimetype="">
+    <value>The item with Id '{0}' was not found.</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§The request comment history has been changed, possibly by someone else adding comments. Your remarks were not saved." type="" mimetype="">
     <value>The request comment history has been changed, possibly by someone else adding comments. Your remarks were not saved.</value>
@@ -1314,6 +1398,12 @@
   <data name="Thinkage.MainBoss.WebAccess§The work order with Id '{0}' was not found." xml:space="preserve">
     <value>The work order with Id '{0}' was not found.</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§There are no item assignments for {0}" type="" mimetype="">
+    <value>There are no item assignments for {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§There are no item assignments for this storeroom" type="" mimetype="">
+    <value>There are no item assignments for this storeroom</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§There is no MainBoss Requestor with this email address." xml:space="preserve">
     <value>There is no MainBoss Requestor with this email address.</value>
   </data>
@@ -1323,20 +1413,11 @@
   <data name="Thinkage.MainBoss.WebAccess§This would set quantity on hand to zero but leave non-zero value" xml:space="preserve">
     <value>This would set quantity on hand to zero but leave non-zero value</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§To Cost Center" type="" mimetype="">
-    <value>To Cost Center</value>
-  </data>
-  <data name="Thinkage.MainBoss.WebAccess§Total Cost" type="" mimetype="">
-    <value>Total Cost</value>
-  </data>
   <data name="Thinkage.MainBoss.WebAccess§UnAssigned Requests" type="" mimetype="">
     <value>UnAssigned Requests</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§UnAssigned Work Orders" type="" mimetype="">
     <value>UnAssigned Work Orders</value>
-  </data>
-  <data name="Thinkage.MainBoss.WebAccess§Unit Cost" type="" mimetype="">
-    <value>Unit Cost</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Unit Location" type="" mimetype="">
     <value>Unit Location</value>
@@ -1350,11 +1431,23 @@
   <data name="Thinkage.MainBoss.WebAccess§View Assignment Status" xml:space="preserve">
     <value>View Assignment Status</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§View Inventory" type="" mimetype="">
+    <value>View Inventory</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§View Item {0}" type="" mimetype="">
+    <value>View Item {0}</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§View Item Assignment {0}" type="" mimetype="">
     <value>View Item Assignment {0}</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§View Item list" type="" mimetype="">
+    <value>View Item list</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§View Request {0}" xml:space="preserve">
     <value>View Request {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§View Storeroom list" type="" mimetype="">
+    <value>View Storeroom list</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§View Unit {0}" xml:space="preserve">
     <value>View Unit {0}</value>
@@ -1364,6 +1457,9 @@
   </data>
   <data name="Thinkage.MainBoss.WebAccess§View your assignments" xml:space="preserve">
     <value>View your assignments</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§View your Inventory" type="" mimetype="">
+    <value>View your Inventory</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Void Physical Count" type="" mimetype="">
     <value>Void Physical Count</value>
@@ -1376,6 +1472,9 @@
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Work Orders" xml:space="preserve">
     <value>Work Orders</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Work with MainBoss" type="" mimetype="">
+    <value>Work with MainBoss</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§You cannot add a comment to the request in its current state" type="" mimetype="">
     <value>You cannot add a comment to the request in its current state</value>
@@ -1413,17 +1512,20 @@
   <data name="Thinkage.MainBoss.WebAccess§You cannot submit requests." xml:space="preserve">
     <value>You cannot submit requests.</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§You must be a MainBoss User to view Inventory" type="" mimetype="">
+    <value>You must be a MainBoss User to view Inventory</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§You must be a MainBoss User to view your Assignment status" xml:space="preserve">
     <value>You must be a MainBoss User to view your Assignment status</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§You require a Web Access license to view your MainBoss assignments." xml:space="preserve">
-    <value>You require a Web Access license to view your MainBoss assignments.</value>
-  </data>
-  <data name="Thinkage.MainBoss.WebAccess§You require a Web Requests license to submit requests." xml:space="preserve">
-    <value>You require a Web Requests license to submit requests.</value>
+  <data name="Thinkage.MainBoss.WebAccess§You need to authenticate as a MainBoss User to access this page." type="" mimetype="">
+    <value>You need to authenticate as a MainBoss User to access this page.</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Your email address does not match that of the originator of this request." xml:space="preserve">
     <value>Your email address does not match that of the originator of this request.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Your pending requests" type="" mimetype="">
+    <value>Your pending requests</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Your Remarks" xml:space="preserve">
     <value>Your Remarks</value>

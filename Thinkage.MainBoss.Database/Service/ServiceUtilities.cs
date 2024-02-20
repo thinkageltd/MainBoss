@@ -47,7 +47,7 @@ namespace Thinkage.MainBoss.Database.Service {
 		private string pServicePassword;
 		public string ServicePassword {
 			get { return pServicePassword; }
-			set { pServicePassword = string.IsNullOrWhiteSpace(pServicePassword) ? null : value; }
+			set { pServicePassword = string.IsNullOrWhiteSpace(value) ? null : value; }
 		}
 		public SQLConnectionInfo ConnectionInfo;
 		public ServiceParms UpdateWith(ServiceParms n) {
@@ -267,7 +267,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				if (serviceConfiguration != null && serviceConfiguration.StartType == System.ServiceProcess.ServiceStartMode.Manual)
 					logTo.LogWarning(Strings.Format(KB.K("Start mode of MainBoss Service '{0}' is 'Manual'. It should be set to 'Automatic'"), serviceConfiguration.ServiceName));
 				if (dbParms.ServiceUserid != null && Utilities.UseridToDisplayName(serviceConfiguration.StartName) != Utilities.UseridToDisplayName(dbParms.ServiceUserid))
-					logTo.LogWarning(Strings.Format(KB.K("The Service Configuration expects the service to be running as user '{0}'. The MainBoss Service is configured to be running as {1}")
+					logTo.LogWarning(Strings.Format(KB.K("The Service Configuration expects the service to be running as user '{0}'. The MainBoss Service is configured to be running as '{1}'")
 						, dbParms.ServiceUserid, Utilities.UseridToDisplayName(serviceConfiguration.StartName)));
 			}
 		}
@@ -493,7 +493,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			Thinkage.Libraries.Exception baseError = null;
 			if (string.IsNullOrWhiteSpace(sc.DatabaseName))
 				return new GeneralException(Thinkage.MainBoss.Database.KB.K("The Windows Service for MainBoss has no database configured, cannot confirm that the service belong to this database"));
-			if (string.IsNullOrWhiteSpace(sc.DatabaseName))
+			if (string.IsNullOrWhiteSpace(sc.DatabaseServer))
 				return new GeneralException(Thinkage.MainBoss.Database.KB.K("The Windows Service for MainBoss has no SQL Server configured, cannot confirm that the service belong to this database"));
 			if (!DomainAndIP.SameComputer(sc.DatabaseServer, dbParms.ConnectionInfo.DatabaseServer))
 				baseError = new GeneralException(Thinkage.MainBoss.Database.KB.K("The Windows Service for MainBoss '{0}' is configured to serve database '{1}' on '{2}' rather than '{3}' on '{4}'."), dbParms.ServiceCode, sc.DatabaseName, sc.ConnectionInfo.DatabaseServer, dbParms.ConnectionInfo.DatabaseName, dbParms.ConnectionInfo.DatabaseServer);
@@ -677,7 +677,7 @@ namespace Thinkage.MainBoss.Database.Service {
 					var k2 = key.OpenSubKey(systemRootKey);
 					string expandedSystemRoot = k2.GetValue(KB.I("SystemRoot")).ToString();
 					path = path.Replace(KB.I("%SystemRoot%"), expandedSystemRoot);
-					k2.Close();
+					k2.Dispose();
 					return path;
 				}
 			}

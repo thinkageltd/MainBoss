@@ -25,23 +25,6 @@ namespace Thinkage.MainBoss.MainBoss {
 					var form = Libraries.Presentation.MSWindows.BrowseForm.NewBrowseForm(GetInterface<UIFactory>(), null, SavedOrganizationsBrowserTblCreator);
 					form.Menu = form.MainBrowseControl.UIFactory.CreateMainMenu(
 						form.MainBrowseControl.UIFactory.CreateSubMenu(KB.K("Session"), null,
-#if DEBUG
-						form.MainBrowseControl.UIFactory.CreateCommandMenuItem(KB.T("DEBUG: Start a SQLite instance"), new CallDelegateCommand(KB.K("Start a SQLite MainBoss instance"), new EventHandler(delegate (object sender, EventArgs args) {
-							var junk = new NamedOrganization(KB.I("MainBoss SQLite"), new MB3Client.MBConnectionDefinitionNoServer(DatabaseEnums.ApplicationModeID.Normal, false));
-							var app = MainBossApplication.CreateMainBossApplication(junk);
-							Thinkage.Libraries.Application.ReplaceActiveApplication(app);
-						}))),
-						form.MainBrowseControl.UIFactory.CreateCommandMenuItem(KB.T("DEBUG: Create a SQLite database"), new CallDelegateCommand(KB.K("Create a SQLite MainBoss database"), new EventHandler(delegate (object sender, EventArgs args) {
-							var junk = new MB3Client.MBConnectionDefinitionNoServer(DatabaseEnums.ApplicationModeID.Normal, false);
-							MB3Client.CreateDatabase(junk, KB.I("MainBoss SQLite"), delegate (MB3Client db) {
-								var licenses = new List<License>(new License[] {
-								new Thinkage.Libraries.Licensing.License("5muy5-x3cx9-qqp66-17ba1-rfg0f"), //  Named Users 1 licenses, LicenseID 1
-								new Thinkage.Libraries.Licensing.License("9gm8m-0ap7r-k8fw9-q5xm9-ggp0b") // Requests License 10 Requestors
-								});
-								DatabaseCreation.AddLicenses(db, licenses.ToArray());
-							}, null);
-						}))),
-#endif
 						form.MainBrowseControl.UIFactory.CreateCommandMenuItem(KB.K("Exit"), new CallDelegateCommand(KB.K("Close this window"),
 								delegate () {
 									form.CloseForm(UIDialogResult.Cancel);

@@ -1,0 +1,37 @@
+﻿@using Thinkage.MainBoss.WebAccess;
+@model IEnumerable<ItemCountValueEntities.Item>
+@using Thinkage.Web.Mvc.Html
+@using Thinkage.MainBoss.Database
+@{
+	ViewBag.Title = "Items";
+	Layout = "~/Views/Shared/_LayoutBrowse.cshtml";
+}
+@section BrowseContent {
+	<thead>
+		<tr>
+			@Html.LabelOnly(dsMB.Path.T.Item.F.Code, "th")
+			@Html.LabelOnly(dsMB.Path.T.Item.F.ItemCategoryID, "th")
+			@Html.LabelOnly(dsMB.Path.T.Item.F.OnHand, "th")
+			@Html.LabelOnly(dsMB.Path.T.Item.F.Available, "th")
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model) {
+		<tr>
+			<td class="WithPopup">
+				@Html.ActionLink(item.Code, "View", new {
+					id = item.Id,
+					resultMessage = ""
+				})
+				<span class="ThePopup">@(item.Desc)</span>
+			</td>
+			@Html.CodeValueForBrowsePanel(item.ItemCategory)
+			@Html.ValueOnlyForBrowsePanel(dsMB.Path.T.Item.F.OnHand.ReferencedType, item.OnHand)
+			@Html.ValueOnlyForBrowsePanel(dsMB.Path.T.Item.F.Available.ReferencedType, item.Available)
+		</tr>
+		}
+	</tbody>
+}
+@section BackToContent {
+	<div class="Action">@(Html.ActionLink(T.Text("Back to Inventory"), "Index", "Inventory"))</div>
+}

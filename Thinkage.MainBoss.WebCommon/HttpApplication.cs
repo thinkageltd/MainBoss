@@ -10,10 +10,8 @@ using Thinkage.Libraries;
 //using System.Web.Optimization;
 //using System.Web.Http;
 
-namespace Thinkage.MainBoss.WebCommon
-{
-	abstract public class HttpApplication<APPOBJ> : System.Web.HttpApplication where APPOBJ : Thinkage.Libraries.Application
-	{
+namespace Thinkage.MainBoss.WebCommon {
+	abstract public class HttpApplication<APPOBJ> : System.Web.HttpApplication where APPOBJ : Thinkage.Libraries.Application {
 		/// <summary>
 		/// Derived class must be able to create a new ApplicationObject when we need it
 		/// </summary>
@@ -26,11 +24,9 @@ namespace Thinkage.MainBoss.WebCommon
 		//replace the appObj.CultureInfo below with testingCI to force spanish to appear to test translation
 #endif
 		protected HttpApplication()
-			:base()
-		{
+			: base() {
 			// Arrange to set the current thread's Thinkage.Libraries.Application.Instance at the start of each request and clear it out when done.
-			PostAcquireRequestState += delegate(object sender, EventArgs e)
-			{
+			PostAcquireRequestState += delegate (object sender, EventArgs e) {
 				if (Context.Session != null)  // Context.Session is null on content load of /Content/Site.css file
 				{
 					var appObj = (APPOBJ)Context.Session[InstanceKey];
@@ -42,13 +38,11 @@ namespace Thinkage.MainBoss.WebCommon
 					}
 				}
 			};
-			EndRequest += delegate(object sender, EventArgs e)
-			{
+			EndRequest += delegate (object sender, EventArgs e) {
 				Thinkage.Libraries.Application.SetApplicationObject(null);
 			};
 		}
-		protected void Application_PostAuthorizeRequest()
-		{
+		protected void Application_PostAuthorizeRequest() {
 			HttpContext.Current.SetSessionStateBehavior(SessionStateBehavior.Required);
 		}
 
@@ -56,21 +50,16 @@ namespace Thinkage.MainBoss.WebCommon
 		// Multiple Application objects exist, one for each simultaneous processing thread, but
 		// these methods are 'special' insofar as they are only called on the first Application object created, which might in fact not
 		// be the one that actually processes the request! As a result setting event handlers here on 'this' is pointless.
-		protected virtual void Application_Start()
-		{
+		protected virtual void Application_Start() {
 			Thinkage.Libraries.Application.SetCustomApplicationInstance(new HttpContextInstanceStore());
 		}
 		#region ContextInstanceStore
-		private class HttpContextInstanceStore : Thinkage.Libraries.Application.IApplicationInstanceStore
-		{
-			public Application Instance
-			{
-				get
-				{
+		private class HttpContextInstanceStore : Thinkage.Libraries.Application.IApplicationInstanceStore {
+			public Application Instance {
+				get {
 					return HttpContext.Current == null ? instance : (Application)HttpContext.Current.Items[InstanceKey];
 				}
-				set
-				{
+				set {
 					if (HttpContext.Current == null)
 						instance = value;
 					else {
@@ -86,16 +75,14 @@ namespace Thinkage.MainBoss.WebCommon
 		#endregion
 		#endregion
 		#region Application_End
-		protected virtual void Application_End(object sender, EventArgs e)
-		{
+		protected virtual void Application_End(object sender, EventArgs e) {
 		}
 		#endregion
 
 		#region Session_Start
 		// These methods do no appear to have corresponding event handlers, so instead they are protected methods called by the surrounding
 		// coded-on-the-fly calling framework.
-		protected virtual void Session_Start(object sender, EventArgs e)
-		{
+		protected virtual void Session_Start(object sender, EventArgs e) {
 			// This is called when a new Session is created. This code creates our Thinkage.Libraries.Application object and adds it to the
 			// Session state but leaves Application.Instance null.
 
@@ -105,22 +92,20 @@ namespace Thinkage.MainBoss.WebCommon
 			//if (Thinkage.Libraries.Application.Instance != null)
 			//	throw new GeneralException(KB.K("HTTP state indicates a new session but Application.Instance is non-null"));
 			System.Globalization.CultureInfo messageCultureInfo = null;
-			System.Globalization.CultureInfo formatCultureInfo = null;
+			System.Globalization.CultureInfo formatCultureInfo = System.Threading.Thread.CurrentThread.CurrentCulture;
+			;
 			for (int i = 0; i < Request.UserLanguages.Length && messageCultureInfo == null; ++i) {
 				try {
 					string simpleUserLanguage = Request.UserLanguages[i].Split(';')[0]; // separate any "; q = xx" parameters that might be present
 					messageCultureInfo = System.Globalization.CultureInfo.GetCultureInfoByIetfLanguageTag(simpleUserLanguage);
 					messageCultureInfo = System.Globalization.CultureInfo.CreateSpecificCulture(messageCultureInfo.Name); // must use Specific cultures in .NET programs (see MSDN)
-					System.Threading.Thread.CurrentThread.CurrentCulture = messageCultureInfo;
 					System.Threading.Thread.CurrentThread.CurrentUICulture = messageCultureInfo;
-					formatCultureInfo = messageCultureInfo; // use messageCultureInfo for formatting as well
 				}
 				catch (ArgumentException) { // Unsupported culture, try another
 					messageCultureInfo = null;
 				}
 			}
 			if (messageCultureInfo == null) {
-				formatCultureInfo = System.Globalization.CultureInfo.CurrentCulture;
 				messageCultureInfo = System.Globalization.CultureInfo.CurrentUICulture;
 			}
 
@@ -147,8 +132,7 @@ namespace Thinkage.MainBoss.WebCommon
 		/// proper virtual directory that may have been used to install the application when we get an unhandled exception
 		/// </summary>
 		/// <returns></returns>
-		private string GetSiteRoot()
-		{
+		private string GetSiteRoot() {
 			var port = Request.ServerVariables["SERVER_PORT"];
 			if (String.IsNullOrEmpty(port) || port == "80" || port == "443")
 				port = "";
@@ -167,8 +151,7 @@ namespace Thinkage.MainBoss.WebCommon
 		#endregion
 		#endregion
 		#region Session_End
-		protected virtual void Session_End(object sender, EventArgs e)
-		{
+		protected virtual void Session_End(object sender, EventArgs e) {
 			// This is called when a session dies, either by timeout or because we called Abandon on it.
 			var endingApplication = (Thinkage.Libraries.Application)Session[InstanceKey];
 			// Using the HttpContext InstanceStore on session end requires us to tell it the application instance ourselves since on Session_End HttpContext.Current will be null (the Session end is apparently not an HttpRequest)

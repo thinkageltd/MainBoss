@@ -74,25 +74,6 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 				return RedirectToAction("UnHandledException", "Error");
 			}
 			return GetViewModel(repository);
-
-#if OLD
-			DBConcurrencyExceptionView = delegate()
-			{
-				return ToConcurrencyErrorView(parentID);
-			};
-			try {
-				var emailFromCookie = Cookies.GetRequestorEmail(Request);
-				if (emailFromCookie != null)
-					Model.EmailAddress = emailFromCookie;
-			}
-			catch (System.Exception gex) {
-				Session.Add("Exception", gex);
-				return RedirectToAction("UnHandledException", "Error");
-			}
-			CompleteTheModel(repository);
-			// Need to stash the id in the form so the Post code can link the New Request State history to the Request (actually it automagically appears in the FormCollection ...)
-			return View(Model);
-#endif
 		}
 		#endregion
 		#region AddComment (POST)
@@ -122,30 +103,6 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 				return RedirectBack(parentID, newStateHistoryID);
 			}
 			RemoveCancelURL();
-#if OLD
-			var requestId = new System.Guid(collection["RequestID"]);
-			var repository = NewRepository<RequestStateHistoryRepository>();
-			Model = new RequestStateHistoryModel();
-			try {
-				Model = UpdateFromForm(Model, collection);
-				if (!Model.IsValid)
-					throw new Exception();
-			}
-			catch {
-				CollectRuleViolations(Model);
-				CompleteTheModel(repository);
-				return View(Model);
-			}
-			Guid requestStateHistoryId;
-			try {
-				requestStateHistoryId = repository.AddRequestorsComment(Model);
-				Cookies.CreateRequestorEmail(Response, Model.EmailAddress);
-			}
-			catch (NotCorrectRequestorForCommentException) {
-				ModelState.AddModelError("EmailAddress", KB.K("Your email address does not match that of the originator of this request.").Translate());
-				return View(Model);
-			}
-#endif
 			// return to the now 'new' current statehistory comment so Requestor can see what they added, and maybe add another. The 
 			// comment is placed into the RequestorComment field.
 			return RedirectToAction("AddComment", "Requestor", new {

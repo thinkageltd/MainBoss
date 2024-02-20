@@ -39,6 +39,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 			ViewData["ResultMessage"] = "";
 			ViewData["UnAssigned"] = false;
 			ViewData["Refresh"] = "";
+			ViewData["Home"] = "WebAccess";
 			ViewData["CanSelfAssign"] = false;
 		}
 		#region UnAssigned

@@ -2358,6 +2358,9 @@
   <data name="Thinkage.MainBoss.Database§{0} server '{1}' on port {2} using {3}" xml:space="preserve">
     <value>{0} serveur '{1}' sur le port {2} utilisation de {3}</value>
   </data>
+  <data name="Thinkage.MainBoss.Database§{0} skipped to date {1}" xml:space="preserve">
+    <value>{0} ignoré jusqu'à la date {1}</value>
+  </data>
   <data name="Thinkage.MainBoss.Database§{0} with {1}" xml:space="preserve">
     <value>{0} avec {1}</value>
   </data>
@@ -2579,6 +2582,9 @@
   </data>
   <data name="Thinkage.MainBoss.Database§Authorized by ___________________________________" xml:space="preserve">
     <value>Autorisé par ___________________________________</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Available Mailboxes: {0}" xml:space="preserve">
+    <value>Boîtes aux lettres disponibles: {0}</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Backup failed to '{0}'" xml:space="preserve">
     <value>Échec de la sauvegarde à {0}</value>
@@ -3364,9 +3370,6 @@ Main-d'œuvre         __________________________ Matériaux    _________________
   <data name="Thinkage.MainBoss.Database§No incoming Mailbox found on server '{0}' on port {1} using {2}, tried 'MBOX', 'INBOX' and 'Inbox'" xml:space="preserve">
     <value>Aucune boîte aux lettres entrante trouvée sur le serveur '{0}' sur le port {1} en utilisant {2}, essayé 'MBOX' et 'INBOX' et 'Inbox'</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Available Mailboxes: {0}" xml:space="preserve">
-    <value>Boîtes aux lettres disponibles: {0}</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§No intervals are defined for the Maintenance Timing '{0}'" xml:space="preserve">
     <value>Aucun intervalle n'est défini pour la fréquence d'entretien '{0}'</value>
   </data>
@@ -3480,6 +3483,9 @@ Main-d'œuvre         __________________________ Matériaux    _________________
   </data>
   <data name="Thinkage.MainBoss.Database§Planned maintenance is limited to {0} Maintenance Plans, and only {1} generations of work orders." xml:space="preserve">
     <value>Maintenance planifiée est limitée à {0} Plans de maintenance, et que {1} générations de Ordres de Travail.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Plus {0} more" xml:space="preserve">
+    <value>Plus {0} plus</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Postal Address" xml:space="preserve">
     <value>Adresse postale</value>
@@ -3607,11 +3613,11 @@ Main-d'œuvre         __________________________ Matériaux    _________________
   <data name="Thinkage.MainBoss.Database§Request {0} created for requestor '{1}' using email from '{2}'" xml:space="preserve">
     <value>Demande de travaux {0} créée pour demandeur '{1}' dérivée du courriel reçu de '{2}'</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Request acknowledgement for request {0} skipped to date {1}: {2}" xml:space="preserve">
-    <value>Accusé de réception de la Demande de travaux {0} ignorée à ce jour {1}: {2}</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§Request acknowledgement for request {0} to '{1}' with email address '{2}' skipped to date {3}" xml:space="preserve">
     <value>Accusé de réception à '{1}' avec adresse courriel '{2}' de la Demande de travaux {0} sauté à jour {3}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Request acknowledgement for:" xml:space="preserve">
+    <value>Accusé de réception pour:</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Request acknowledgement sent for request {0} to '{1}' with email address '{2}'" xml:space="preserve">
     <value>Accusé de réception pour la Demande de travaux {0} envoyé à '{1}' avec adresse courriel '{2}'</value>
@@ -3946,8 +3952,8 @@ Main-d'œuvre         __________________________ Matériaux    _________________
   <data name="Thinkage.MainBoss.Database§The Schedule for this Unit Maintenance Plan has been deleted" xml:space="preserve">
     <value>L'annexe de ce plan de maintenance Unité a été supprimé</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§The Service Configuration expects the service to be running as user '{0}'. The MainBoss Service is configured to be running as {1}" xml:space="preserve">
-    <value>La configuration du service se attend que le service soit en cours d'exécution en utilisant l'utilisateur '{0}'. Le Service MainBoss est configuré pour être exécuté en tant que {1}</value>
+  <data name="Thinkage.MainBoss.Database§The Service Configuration expects the service to be running as user '{0}'. The MainBoss Service is configured to be running as '{1}'" xml:space="preserve">
+    <value>La configuration du service s'attend à ce que le service s'exécute en tant qu'utilisateur '{0}'. Le service MainBoss est configuré pour fonctionner en tant que '{1}'</value>
   </data>
   <data name="Thinkage.MainBoss.Database§The service name identifier." xml:space="preserve">
     <value>Le nom de service identifiant.</value>

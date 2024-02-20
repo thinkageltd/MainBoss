@@ -6,20 +6,14 @@
 	<title>@ViewBag.Title - MainBoss Web Access</title>
 	<link rel="Shortcut Icon" href="~/Content/favicon.ico" type="image/x-icon" />
 	<meta name="viewport" content="width=device-width" />
-	@{
-		var style = "~/Content/css";
-		if (Request.Browser.IsMobileDevice) {
-			style = "~/Content/mobilecss";
-		}
-	}
-	@Styles.Render(@style)
+	@Styles.Render("~/Content/themes/base/css")
+	@Styles.Render("~/Content/css")
 </head>
 <body>
 	<header>
 		<a href="http://www.thinkage.ca"><img src="~/Content/logo.gif" width="280" alt="Thinkage Ltd." /></a><br />@Html.Partial("LogOnUserControl")
 	</header>
 	<div id="main">
-
 		@RenderSection("MainContent")
 	</div>
 	<footer>
@@ -29,7 +23,6 @@
 	</footer>
 	@Scripts.Render("~/bundles/jquery")
 	@Scripts.Render("~/bundles/jqueryui")
-	@Styles.Render("~/Content/themes/base/css")
 	@Html.JQueryUI().InitializeDatepickerCulture(Thinkage.Libraries.Application.InstanceFormatCultureInfo)
 	@RenderSection("scripts", required: false)
 </body>

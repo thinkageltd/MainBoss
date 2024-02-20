@@ -11,13 +11,9 @@
 @section EditFormContent {
 	@(Html.ValidationSummary(true, T.Text("Close Request was unsuccessful. Please correct the errors and try again.")))
 	<div class="viewPanel">
-		<table>
-			<tbody>
-				@(Html.LabelValue(T.Text("Number"), dsMB.Schema.T.Request.F.Number.EffectiveType, Model.RequestNumber))
-				@(Html.LabelValue(T.Text("Current State"), dsMB.Schema.T.RequestState.F.Code.EffectiveType, Model.CurrentStateCode))
-				@(Html.LabelValue(T.Text("Current Status"), dsMB.Schema.T.RequestStateHistoryStatus.F.Code.EffectiveType, Model.CurrentStatusCode))
-			</tbody>
-		</table>
+		@(Html.LabelValueRow(T.Text("Number"), dsMB.Schema.T.Request.F.Number.EffectiveType, Model.RequestNumber))
+		@(Html.LabelValueRow(T.Text("Current State"), dsMB.Schema.T.RequestState.F.Code.EffectiveType, Model.CurrentStateCode))
+		@(Html.LabelValueRow(T.Text("Current Status"), dsMB.Schema.T.RequestStateHistoryStatus.F.Code.EffectiveType, Model.CurrentStatusCode))
 	</div>
 	<br />
 	@using (Html.BeginForm()) {

@@ -9,6 +9,11 @@ using Thinkage.MainBoss.WebAccess.Models;
 
 namespace Thinkage.MainBoss.WebAccess.Controllers {
 	abstract public class ErrorHandlingController : Controller {
+		protected override void OnAuthorization(AuthorizationContext filterContext) {
+			base.OnAuthorization(filterContext);
+			if (filterContext.Result == null)
+				((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance).ReAuthenticateMainBossUser();
+		}
 		protected override void OnException(ExceptionContext filterContext) {
 			base.OnException(filterContext);
 			if (filterContext.ExceptionHandled)
@@ -48,6 +53,12 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 				TempData.Remove("HomeURL");
 			if (!String.IsNullOrEmpty(uri))
 				TempData.Add("HomeURL", uri);
+		}
+		public void SetHomeURLAsReferrer() {
+			if (TempData.ContainsKey("HomeURL"))
+				TempData.Remove("HomeURL");
+			if (Request.UrlReferrer != null && !String.IsNullOrEmpty(Request.UrlReferrer.AbsoluteUri))
+				TempData.Add("HomeURL", Request.UrlReferrer.AbsoluteUri);
 		}
 	}
 	#region BaseController for WebAccess
@@ -91,11 +102,6 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 				//				HandleErrorInfo model = new HandleErrorInfo(filterContext.Exception, controllerName, actionName);
 				View("NoPermission", filterContext.Exception).ExecuteResult(this.ControllerContext);
 			}
-		}
-		protected override void OnAuthorization(AuthorizationContext filterContext) {
-			base.OnAuthorization(filterContext);
-			if (filterContext.Result == null)
-				((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance).ReAuthenticateMainBossUser();
 		}
 	}
 	#endregion

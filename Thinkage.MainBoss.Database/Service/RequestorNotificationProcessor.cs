@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Net.Mail;
+using System.Text;
 using Thinkage.Libraries;
 using Thinkage.Libraries.Service;
 using Thinkage.Libraries.DBILibrary;
@@ -29,9 +32,11 @@ namespace Thinkage.MainBoss.Database.Service {
 		/// <summary>
 		/// Determine what requests require email acknowledgments to be sent to the Requestor
 		/// - checks for changes in requeststatehistory for requests that have requestors associated with them
-		/// - sends acknowledgements to requestors about changes to their requests.
+		/// - sends acknowledgments to requestors about changes to their requests.
 		/// </summary>
 		public void DoRequestorNotifications(bool traceActivities, bool traceDetails) {
+			var requestorError = new Dictionary<string, string>();
+			var requestorErrorOnRequest = new Dictionary<string, List<string>>();
 			try {
 				DB.ViewAdditionalRows(dsmb, dsMB.Schema.T.RequestAcknowledgement, null, null, new DBI_PathToRow[] {
 					dsMB.Path.T.RequestAcknowledgement.F.RequestStateHistoryID.PathToReferencedRow,
@@ -54,7 +59,7 @@ namespace Thinkage.MainBoss.Database.Service {
 						new ColumnExpressionUnparser().UnParse(new SqlExpression(dsMB.Path.T.RequestStateHistory.F.RequestID).Eq(requestRow.F.Id)),
 						new SortExpression(dsMB.Path.T.RequestStateHistory.F.EntryDate, SortExpression.SortOrder.Desc).ToDataExpressionString());
 
-					// The last aknowledgement date is the date of the last history record (which is the first in our list)
+					// The last acknowledgement date is the date of the last history record (which is the first in our list)
 					DateTime ackdate = (DateTime)dsMB.Schema.T.RequestStateHistory.F.EntryDate[rshrows[0]];
 					string lastAcknowledgementError = null;
 
@@ -76,10 +81,15 @@ namespace Thinkage.MainBoss.Database.Service {
 							noAcknowledgement = Strings.Format(KB.K("Contact '{0}' does not want to receive acknowledgements"), contactRow.F.Code);
 					}
 					if (noAcknowledgement != null) {
-						// update the request's LastAcknowledgementDate date with the last entry date from the requeststatehistory for any entry
+						// update the request's LastAcknowledgementDate date with the last entry date from the acknowledgement for any entry
 						// that we cannot contact
-						lastAcknowledgementError = Strings.Format(KB.K("Request acknowledgement for request {0} skipped to date {1}: {2}"), requestRow.F.Number, ackdate, noAcknowledgement);
-						Logger.LogWarning(lastAcknowledgementError);
+						lastAcknowledgementError = Strings.Format(KB.K("{0} skipped to date {1}"), requestRow.F.Number, ackdate);
+
+						if (!requestorErrorOnRequest.ContainsKey(contactRow.F.Code)) {
+							requestorError[contactRow.F.Code] = noAcknowledgement;
+							requestorErrorOnRequest[contactRow.F.Code] = new List<string>();
+						}
+						requestorErrorOnRequest[contactRow.F.Code].Add(lastAcknowledgementError);
 						requestRow.F.LastRequestorAcknowledgementDate = ackdate;
 					}
 					else {
@@ -125,6 +135,17 @@ namespace Thinkage.MainBoss.Database.Service {
 			}
 			catch (System.Exception e) {
 				throw new MainBossServiceWorkerException(e, KB.K("Error processing request acknowledgements")).WithContext(smtp.SmtpServerContext);
+			}
+			finally {
+				foreach (var r in requestorError.OrderBy(e => e.Key)) {
+					var mess = new StringBuilder();
+					mess.AppendLine(r.Value).AppendLine().AppendLine(Strings.Format(KB.K("Request acknowledgement for:"))).AppendLine();
+					foreach (var m in requestorErrorOnRequest[r.Key].Take(20))
+						mess.AppendLine(m);
+					if (requestorErrorOnRequest[r.Key].Count > 20)
+						mess.AppendLine().AppendLine(Strings.Format(KB.K("Plus {0} more"), requestorErrorOnRequest[r.Key].Count - 20));
+					Logger.LogWarning(mess.ToString());
+				}
 			}
 		}
 		#region BuildRequestorNotificationMessage

@@ -9,10 +9,15 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 	#region Interfaces & Descriptors
 	[Serializable]
 	public struct ResourceDescription {
+		public string Code;
 		public string Description;
-		public bool HiddenDescription;
-		public string Location;
-		public bool HiddenLocation;
+		public bool IsHidden;
+		public string LocationShort;
+		public string LocationLong;
+		public bool IsHiddenLocation;
+		public long? QuantityOnHand; // For countable resource; null if not countable
+		public string ViewController;
+		public Guid? ViewId; // Id to View Resource directly
 	}
 	interface IWOResource {
 		string Quantity {
@@ -23,7 +28,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			get;
 			set;
 		}
-		ResourceDescription Description {
+		ResourceDescription ResourceIdentification {
 			get;
 		}
 		bool CanBeActualized {
@@ -49,7 +54,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			get;
 			set;
 		}
-		public ResourceDescription Description {
+		public ResourceDescription ResourceIdentification {
 			get;
 			set;
 		}
@@ -106,7 +111,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 				RemainingToActualize = this.RemainingToActualize,
 				CanBeActualized = this.CanBeActualized,
 				ActualQuantity = this.ActualQuantity,
-				Description = this.Description,
+				ResourceIdentification = this.ResourceIdentification,
 				Quantity = this.Quantity,
 				InputAttributes = Thinkage.Web.Mvc.Html.ThinkageExtensions.HtmlAttributes(Id.ToString(), QuantityType, null)
 			};
@@ -125,19 +130,19 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			get;
 			set;
 		}
-		abstract public ResourceDescription Description {
+		abstract public ResourceDescription ResourceIdentification {
 			get;
 		}
 		/// <summary>
 		/// Actual value to be used to actualize; init
 		/// </summary>
 		protected T? QuantityToActualize;
-		public void SetQuantityToActualize(string qty) {
-			if (String.IsNullOrEmpty(qty))
+		public void SetQuantityToActualize(string v) {
+			if (String.IsNullOrEmpty(v))
 				QuantityToActualize = null;
 			else {
-				object v = QuantityType.GetTypeEditTextHandler(Application.InstanceFormatCultureInfo).ParseEditText(qty);
-				QuantityToActualize = (T)QuantityType.ClosestValueTo(v);
+				object r = QuantityType.GetTypeEditTextHandler(Libraries.Application.InstanceFormatCultureInfo).ParseEditText(v);
+				QuantityToActualize = (T)QuantityType.ClosestValueTo(r);
 			}
 			System.Exception check = QuantityType.CheckMembership(QuantityToActualize);
 			if (check != null)
@@ -240,13 +245,13 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 				return Compute.Remaining<T>(DerivedEntity.MBQuantity, DerivedEntity.MBActualQuantity);
 			}
 		}
-		public override bool GetDemandEstimateCostBasis(out decimal totalCost, out T? quantity) {
-			totalCost = 0;
+		public override bool GetDemandEstimateCostBasis(out decimal TotalCost, out T? quantity) {
+			TotalCost = 0;
 			quantity = null;
 
 			if (!DemandBase.CostEstimate.HasValue || !DerivedEntity.MBQuantity.HasValue)
 				return false;
-			totalCost = DemandBase.CostEstimate.Value;
+			TotalCost = DemandBase.CostEstimate.Value;
 			quantity = DerivedEntity.MBQuantity.Value;
 			return true;
 		}
@@ -284,22 +289,27 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		public ItemWOResourceInfo(WOResourceEntities.DemandItem r, Guid toCostCenter)
 			: base(r, toCostCenter, dsMB.Schema.T.DemandItem.F.Quantity.EffectiveType) {
 		}
-		public override ResourceDescription Description {
+		public override ResourceDescription ResourceIdentification {
 			get {
 				return new ResourceDescription() {
-					Description = DerivedEntity.ItemLocation.Item.Code,
-					HiddenDescription = DerivedEntity.ItemLocation.Item.Hidden != null,
-					Location = DerivedEntity.ItemLocation.Location.Code,
-					HiddenLocation = DerivedEntity.ItemLocation.Hidden != null
+					Code = DerivedEntity.ItemLocation.Item.Code,
+					Description = DerivedEntity.ItemLocation.Item.Desc,
+					IsHidden = DerivedEntity.ItemLocation.Item.Hidden != null,
+					LocationShort = DerivedEntity.ItemLocation.Location.DerivedRelativeLocation.Code,
+					LocationLong = DerivedEntity.ItemLocation.Location.Code,
+					IsHiddenLocation = DerivedEntity.ItemLocation.Hidden != null,
+					QuantityOnHand = DerivedEntity.ItemLocation.DerivedActualItemLocation.OnHand,
+					ViewController = "Item",
+					ViewId = DerivedEntity.ItemLocation.Item.Id
 				};
 			}
 		}
-		public override bool GetCurrentSourceInformationCostBasis(out decimal cost, out long? quantity) {
-			cost = 0;
+		public override bool GetCurrentSourceInformationCostBasis(out decimal TotalCost, out long? quantity) {
+			TotalCost = 0;
 			quantity = null;
 			if (DerivedEntity.ItemLocation.DerivedActualItemLocation.OnHand == 0)
 				return false;
-			cost = DerivedEntity.ItemLocation.DerivedActualItemLocation.TotalCost;
+			TotalCost = DerivedEntity.ItemLocation.DerivedActualItemLocation.TotalCost;
 			quantity = DerivedEntity.ItemLocation.DerivedActualItemLocation.OnHand;
 			return true;
 		}
@@ -335,13 +345,15 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		public HourlyWOResourceInfo(WOResourceEntities.DemandLaborInside r, Guid toCostCenter)
 			: base(r, toCostCenter, dsMB.Schema.T.DemandLaborInside.F.Quantity.EffectiveType) {
 		}
-		public override ResourceDescription Description {
+		public override ResourceDescription ResourceIdentification {
 			get {
 				return new ResourceDescription() {
-					Description = DerivedEntity.LaborInside.Trade == null ? KB.K("Unspecified Trade").Translate() : DerivedEntity.LaborInside.Trade.Code,
-					HiddenDescription = DerivedEntity.LaborInside.Trade != null && DerivedEntity.LaborInside.Trade.Hidden != null,
-					Location = DerivedEntity.LaborInside.Employee == null ? KB.K("Unspecified Employee").Translate() : DerivedEntity.LaborInside.Employee.Contact.Code,
-					HiddenLocation = DerivedEntity.LaborInside.Employee != null && DerivedEntity.LaborInside.Employee.Contact.Hidden != null
+					Code = DerivedEntity.LaborInside.Trade == null ? KB.K("Unspecified Trade").Translate() : DerivedEntity.LaborInside.Trade.Code,
+					Description = DerivedEntity.LaborInside.Trade == null ? String.Empty : DerivedEntity.LaborInside.Trade.Desc,
+					IsHidden = DerivedEntity.LaborInside.Trade != null && DerivedEntity.LaborInside.Trade.Hidden != null,
+					LocationShort = DerivedEntity.LaborInside.Employee == null ? KB.K("Unspecified Employee").Translate() : DerivedEntity.LaborInside.Employee.Contact.Code,
+					LocationLong = String.Empty,
+					IsHiddenLocation = DerivedEntity.LaborInside.Employee != null && DerivedEntity.LaborInside.Employee.Contact.Hidden != null
 				};
 			}
 		}
@@ -380,12 +392,12 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			r.F.Quantity = (TimeSpan)QuantityType.GenericAsNativeType(QuantityToActualize, typeof(TimeSpan));
 			SetAccountingTransactionInformation(r.AccountingTransactionIDParentRow);
 		}
-		public override bool GetCurrentSourceInformationCostBasis(out decimal cost, out TimeSpan? quantity) {
-			cost = 0;
+		public override bool GetCurrentSourceInformationCostBasis(out decimal TotalCost, out TimeSpan? quantity) {
+			TotalCost = 0;
 			quantity = null;
 			if (!DerivedEntity.LaborInside.Cost.HasValue)
 				return false;
-			cost = DerivedEntity.LaborInside.Cost.Value;
+			TotalCost = DerivedEntity.LaborInside.Cost.Value;
 			quantity = new TimeSpan(1, 0, 0); // per hour
 			return true;
 		}
@@ -401,13 +413,15 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		public PerJobWOResourceInfo(WOResourceEntities.DemandOtherWorkInside r, Guid toCostCenter)
 			: base(r, toCostCenter, dsMB.Schema.T.DemandOtherWorkInside.F.Quantity.EffectiveType) {
 		}
-		public override ResourceDescription Description {
+		public override ResourceDescription ResourceIdentification {
 			get {
 				return new ResourceDescription() {
-					Description = DerivedEntity.OtherWorkInside.Trade == null ? KB.K("Unspecified Trade").Translate() : DerivedEntity.OtherWorkInside.Trade.Code,
-					HiddenDescription = DerivedEntity.OtherWorkInside.Trade != null && DerivedEntity.OtherWorkInside.Trade.Hidden != null,
-					Location = DerivedEntity.OtherWorkInside.Employee == null ? KB.K("Unspecified Employee").Translate() : DerivedEntity.OtherWorkInside.Employee.Contact.Code,
-					HiddenLocation = DerivedEntity.OtherWorkInside.Employee != null && DerivedEntity.OtherWorkInside.Employee.Contact.Hidden != null
+					Code = DerivedEntity.OtherWorkInside.Trade == null ? KB.K("Unspecified Trade").Translate() : DerivedEntity.OtherWorkInside.Trade.Code,
+					Description = DerivedEntity.OtherWorkInside.Trade == null ? String.Empty : DerivedEntity.OtherWorkInside.Trade.Desc,
+					IsHidden = DerivedEntity.OtherWorkInside.Trade != null && DerivedEntity.OtherWorkInside.Trade.Hidden != null,
+					LocationShort = DerivedEntity.OtherWorkInside.Employee == null ? KB.K("Unspecified Employee").Translate() : DerivedEntity.OtherWorkInside.Employee.Contact.Code,
+					LocationLong = String.Empty,
+					IsHiddenLocation = DerivedEntity.OtherWorkInside.Employee != null && DerivedEntity.OtherWorkInside.Employee.Contact.Hidden != null
 				};
 			}
 		}
@@ -418,13 +432,13 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			r.F.Quantity = (int)QuantityType.GenericAsNativeType(QuantityToActualize, typeof(int));
 			SetAccountingTransactionInformation(r.AccountingTransactionIDParentRow);
 		}
-		public override bool GetCurrentSourceInformationCostBasis(out decimal cost, out long? quantity) {
-			cost = 0;
+		public override bool GetCurrentSourceInformationCostBasis(out decimal TotalCost, out long? quantity) {
+			TotalCost = 0;
 			quantity = null;
 
 			if (!DerivedEntity.OtherWorkInside.Cost.HasValue)
 				return false;
-			cost = DerivedEntity.OtherWorkInside.Cost.Value;
+			TotalCost = DerivedEntity.OtherWorkInside.Cost.Value;
 			quantity = 1;
 			return true;
 		}
@@ -440,13 +454,15 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		public MiscellaneousWOResourceInfo(WOResourceEntities.DemandMiscellaneousWorkOrderCost r, Guid toCostCenter)
 			: base(r, toCostCenter, dsMB.Path.T.DemandMiscellaneousWorkOrderCost.F.DemandID.F.CostEstimate.ReferencedColumn.EffectiveType) {
 		}
-		public override ResourceDescription Description {
+		public override ResourceDescription ResourceIdentification {
 			get {
 				return new ResourceDescription() {
-					Description = DerivedEntity.MiscellaneousWorkOrderCost.Code,
-					HiddenDescription = DerivedEntity.MiscellaneousWorkOrderCost.Hidden != null,
-					Location = "",
-					HiddenLocation = false
+					Code = DerivedEntity.MiscellaneousWorkOrderCost.Code,
+					Description = DerivedEntity.MiscellaneousWorkOrderCost.Desc,
+					IsHidden = DerivedEntity.MiscellaneousWorkOrderCost.Hidden != null,
+					LocationShort = String.Empty,
+					LocationLong = string.Empty,
+					IsHiddenLocation = false
 				};
 			}
 		}
@@ -461,11 +477,11 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 				throw new GeneralException(KB.K("Cost cannot be zero"));
 			return QuantityToActualize.Value; // whatever the user entered is the actual cost
 		}
-		public override bool GetCurrentSourceInformationCostBasis(out decimal cost, out decimal? quantity) {
+		public override bool GetCurrentSourceInformationCostBasis(out decimal TotalCost, out decimal? quantity) {
 			if (DerivedEntity.MiscellaneousWorkOrderCost.Cost.HasValue)
-				cost = DerivedEntity.MiscellaneousWorkOrderCost.Cost.Value;
+				TotalCost = DerivedEntity.MiscellaneousWorkOrderCost.Cost.Value;
 			else
-				cost = 0;
+				TotalCost = 0;
 			quantity = 1;
 			return true;
 		}

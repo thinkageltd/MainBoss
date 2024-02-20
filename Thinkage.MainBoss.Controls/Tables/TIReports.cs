@@ -994,12 +994,12 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		// grouping is the grouping to use for the Code of the Location of the storage assignment.
 		// NOTE: ShowXID does not include the Item even though it should. Currently callers to ActualItemLocationColumns tend to call ItemColumns themselves.
-		static ColumnBuilder ActualItemLocationColumns(dsMB.PathClass.PathToActualItemLocationLink actualItemLocation, FieldSelect effect = null) {
-			return ActualItemLocationColumns(actualItemLocation.PathToReferencedRow, effect);
+		static ColumnBuilder ActualItemLocationColumns(dsMB.PathClass.PathToActualItemLocationLink actualItemLocation, FieldSelect effect = null, DelayedCreateTbl locationPickerTbl = null) {
+			return ActualItemLocationColumns(actualItemLocation.PathToReferencedRow, effect, locationPickerTbl);
 		}
-		static ColumnBuilder ActualItemLocationColumns(dsMB.PathClass.PathToActualItemLocationRow actualItemLocation, FieldSelect effect = null) {
+		static ColumnBuilder ActualItemLocationColumns(dsMB.PathClass.PathToActualItemLocationRow actualItemLocation, FieldSelect effect = null, DelayedCreateTbl locationPickerTbl = null) {
 			return ColumnBuilder.New(actualItemLocation
-				, ItemLocationColumns(actualItemLocation.F.ItemLocationID, effect)
+				, ItemLocationColumns(actualItemLocation.F.ItemLocationID, effect, locationPickerTbl)
 				, TblColumnNode.New(actualItemLocation.F.EffectiveMinimum, effect.ShowIfOneOf(ShowAll))
 				, TblColumnNode.New(actualItemLocation.F.EffectiveMaximum, effect.ShowIfOneOf(ShowAll))
 				, TblColumnNode.New(actualItemLocation.F.OnHand, effect.ShowIfOneOf(ShowAll, ShowXIDAndOnHand))
@@ -1011,7 +1011,7 @@ namespace Thinkage.MainBoss.Controls {
 			);
 		}
 		// NOTE: ShowXID does not include the Item even though it should. Currently callers to ItemLocationColumns tend to call ItemColumns themselves.
-		static ColumnBuilder ItemLocationColumns(dsMB.PathClass.PathToItemLocationLink itemLocation, FieldSelect effect = null) {
+		static ColumnBuilder ItemLocationColumns(dsMB.PathClass.PathToItemLocationLink itemLocation, FieldSelect effect = null, DelayedCreateTbl locationPickerTbl = null) {
 			return ColumnBuilder.New(itemLocation.PathToReferencedRow
 				// ItemLocationID.F.LocationID has no PickFrom declared in the xafdb file, because the actual choices depend on the derived record type.
 				// We want to name a picker here, so we do this by adding a report column node that cannot be used for grouping and cannot be shown on the report.
@@ -1019,7 +1019,7 @@ namespace Thinkage.MainBoss.Controls {
 				// a Work Order or Task and so it is not generally useful to do so.
 				// Note that for this information to stick, it must appear before the longer path because the code that creates the search values does not merge fmt attributes
 				// from both definitions.
-				, TblColumnNode.New(itemLocation.F.LocationID, Fmt.SetPickFrom(TILocations.PermanentLocationPickerTblCreator), new AllowShowInDetailsChangeCol(false), DefaultShowInDetailsCol.Hide())  // Don't show the value at all.
+				, TblColumnNode.New(itemLocation.F.LocationID, Fmt.SetPickFrom(locationPickerTbl ?? TILocations.AllStorageBrowseTblCreator), new AllowShowInDetailsChangeCol(false), DefaultShowInDetailsCol.Hide())  // Don't show the value at all.
 				, TblColumnNode.New(itemLocation.F.LocationID.F.Code, effect.ShowIfOneOf(ShowXID), new MapSortCol(RDLReport.LocationSort))
 				, ItemPriceColumns(itemLocation.F.ItemPriceID, effect)
 			);
@@ -2524,8 +2524,6 @@ namespace Thinkage.MainBoss.Controls {
 			},
 			ColumnBuilder.New(dsMB.Path.T.ActualItemLocation,
 				ItemColumns(dsMB.Path.T.ActualItemLocation.F.ItemLocationID.F.ItemID, ShowXIDAndUOM),
-				TblColumnNode.New(dsMB.Path.T.ActualItemLocation.F.ItemLocationID.F.LocationID.F.Code, new MapSortCol(RDLReport.LocationSort), DefaultShowInDetailsCol.Show()),
-				TblColumnNode.New(dsMB.Path.T.ActualItemLocation.F.ItemLocationID.F.LocationID, Fmt.SetPickFrom(TILocations.AllStorageBrowseTblCreator), new AllowShowInDetailsChangeCol(false), DefaultShowInDetailsCol.Hide()),
 				ActualItemLocationColumns(dsMB.Path.T.ActualItemLocation, ShowXIDAndOnHand),
 				TblColumnNode.New(dsMB.Path.T.ActualItemLocation.F.Id.L.ItemLocationReport.ActualItemLocationID.F.SuggestedRestockingQTY, DefaultShowInDetailsCol.Show()),
 				TblServerExprNode.New(KB.K("Physical Count"), SqlExpression.Constant("______"))   // Instead we should have a null value, and use Fmt attributes to force minimum width and underlining or a box (giving more vertical space)
@@ -2731,8 +2729,7 @@ namespace Thinkage.MainBoss.Controls {
 			},
 			ColumnBuilder.New(dsMB.Path.T.TemporaryItemLocation,
 				ItemColumns(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID, ShowXIDAndUOM),
-				TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID.F.Code, new MapSortCol(RDLReport.LocationSort)),
-				ActualItemLocationColumns(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.PathToReferencedRow, ShowXIDAndOnHand),
+				ActualItemLocationColumns(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.PathToReferencedRow, ShowXIDAndOnHand, TILocations.AllTemporaryStoragePickerTblCreator),
 				TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemPriceID.F.UnitCost),
 				WorkOrderColumns(dsMB.Path.T.TemporaryItemLocation.F.WorkOrderID, ShowXID)
 			).LayoutArray()
@@ -2760,7 +2757,7 @@ namespace Thinkage.MainBoss.Controls {
 				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.Minimum, DefaultShowInDetailsCol.Show()),
 				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.Maximum, DefaultShowInDetailsCol.Show()),
 				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID.L.LocationReport.LocationID.F.OrderByRank, DefaultShowInDetailsCol.Hide()),
-				ActualItemLocationColumns(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.PathToReferencedRow, ShowXIDAndOnHand),
+				ActualItemLocationColumns(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.PathToReferencedRow, ShowXIDAndOnHand, TILocations.PermanentStorageBrowseTblCreator),
 				TblServerExprNode.New(KB.K("Physical Count"), SqlExpression.Constant("______"))   // Instead we should have a null value, and use Fmt attributes to force minimum width and underlining or a box (giving more vertical space)
 			).LayoutArray()
 		);
@@ -3040,7 +3037,7 @@ namespace Thinkage.MainBoss.Controls {
 				UnitColumns(dsMB.Path.T.ExistingAndForecastResources.F.UnitLocationID, ShowXID),
 				ForecastWorkOrderColumns(dsMB.Path.T.ExistingAndForecastResources, ShowXID),
 				ItemColumns(dsMB.Path.T.ExistingAndForecastResources.F.ItemLocationID.F.ItemID, ShowXID),
-				ItemLocationColumns(dsMB.Path.T.ExistingAndForecastResources.F.ItemLocationID, ShowXID),
+				ItemLocationColumns(dsMB.Path.T.ExistingAndForecastResources.F.ItemLocationID, ShowXID, TILocations.PermanentItemLocationPickerTblCreator),
 				TblColumnNode.New(dsMB.Path.T.ExistingAndForecastResources.F.QuantityCount, FooterAggregateCol.Sum(), FieldSelect.ShowAlways)
 			//, TblColumnNode.New(dsMB.Path.T.ExistingAndForecastResources.F.Cost)
 			).LayoutArray()

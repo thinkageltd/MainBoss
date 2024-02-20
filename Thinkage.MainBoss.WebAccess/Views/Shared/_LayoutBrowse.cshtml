@@ -5,26 +5,25 @@
 }
 @section MainContent {
 	<h2>@ViewBag.Title</h2>
-	<div id="browsePanel">
+	<div class="browsePanel">
 		<table class="tablesorter">
 			@RenderSection("BrowseContent")
 		</table>
 	</div>
-	<br />
-	@(Html.ActionButton(T.Text("Refresh"), (string)@ViewData["Refresh"]))@Html.NBSP()@Html.NBSP()@(Html.ActionLink(T.Text("Back to Assignment Status"), "Index", "Assignment"))
+	<div class="Actions">
+		<div class="Action">@(Html.ActionButton(T.Text("Refresh"), (string)@ViewData["Refresh"]))</div>
+		<div class="Action">@(Html.ActionLink(T.Text("Home"), (string)@ViewData["Home"], "Home"))</div>
+		@RenderSection("BackToContent", required: false)
+	</div>
 }
 @section scripts {
 	@Scripts.Render("~/bundles/tablesorter")
-	<script type="text/javascript">
+	<script>
 		$(document).ready(function () {
-			$(".tablesorter").tablesorter({
-				headers: {
-					0: { // disable first column (contains operations on browseHeaders)
-						sorter: false
-					}
-				},
-				sortList: [[1, 0]] // second column sorted ascending
-			});
+			if( $(".tablesorter").find("tr").length > 1)
+				$(".tablesorter").tablesorter({
+					theme: 'jui'
+				});
 		});
 		@RenderSection("scripts", required: false)
 	</script>

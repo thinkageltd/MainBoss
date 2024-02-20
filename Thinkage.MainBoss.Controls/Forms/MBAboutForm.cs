@@ -55,15 +55,20 @@ namespace Thinkage.MainBoss.Controls {
 				var webRoot = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.UpdateLocation.GetLeftPart(UriPartial.Authority);
 				aboutText.AppendLine(Strings.Format(KB.K("Network Deployed {0}"), webRoot));
 			}
-			if (db != null) {
-				aboutText.AppendLine(Strings.Format(KB.K("Database {0} Version {1}"), db.ConnectionInfo.DBName, Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().VersionHandler.CurrentVersion));
-				aboutText.Append("\n");
-				aboutText.Append(Strings.Format(KB.K("Server {0}"), db.ConnectionInfo.DBServer));
-				aboutText.Append("\n");
-				aboutText.Append(db.DatabaseServerProductIdentification);
+			StringBuilder DBInformation = new StringBuilder();
+			try {
+				if (db == null)
+					throw new System.Exception(); // don't even bother, just use the exception message
+				DBInformation.AppendLine(Strings.Format(KB.K("Database {0} Version {1}"), db.ConnectionInfo.DBName, Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().VersionHandler.CurrentVersion));
+				DBInformation.Append("\n");
+				DBInformation.Append(Strings.Format(KB.K("Server {0}"), db.ConnectionInfo.DBServer));
+				DBInformation.Append("\n");
+				DBInformation.Append(db.DatabaseServerProductIdentification);
 			}
-			else
-				aboutText.AppendLine(KB.K("Not connected to a database").Translate());
+			catch (System.Exception) {
+				DBInformation.AppendLine(KB.K("Not connected to a database").Translate());
+			}
+			aboutText.AppendLine(DBInformation.ToString());
 			var mixin = Libraries.Application.Instance.QueryInterface<IApplicationWithSingleDatabaseConnection>();
 			if (mixin != null)
 				aboutText.AppendLine(mixin.LicenseMessage);

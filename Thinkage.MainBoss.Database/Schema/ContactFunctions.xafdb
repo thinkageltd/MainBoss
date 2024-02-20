@@ -13,7 +13,7 @@
 	</field>
 	<field name="TableEnum" labelkey="Contact Function" type="integer(min 0, max 14,nonnull)">
 	  <doc>Record type identification. See DatabaseLayout.ViewRecordTypes for values.</doc>
-	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIGeneralMB3.ContactFunctionProvider,Thinkage.MainBoss.Controls</extension>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIContact.ContactFunctionProvider,Thinkage.MainBoss.Controls</extension>
 	</field>
 	<field name="ParentContactID" type="GUIDREF" link="Contact"/>
 	<field name="ContactID" type="RequiredGUIDREF" link="Contact"/>

@@ -18,11 +18,11 @@
 
 			@(Html.InputControlFor(f, r => r.Number, null, new
 		{
-			@readonly = "true"
+			@readonly = "readonly"
 		}))
 			@(Html.InputControlFor(f, r => r.Subject))
 			<p>
-					@(Html.LabelFor(f, r => r.UnitLocationID))
+					<label for="WhereIsProblem">Where is the problem</label>
 					@(Html.TextBox("WhereIsProblem", null, new
 				{
 					@size = "100"

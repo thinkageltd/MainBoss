@@ -14,6 +14,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 			ViewData["ResultMessage"] = "";
 			ViewData["UnAssigned"] = false;
 			ViewData["Refresh"] = "";
+			ViewData["Home"] = "WebAccess";
 			ViewData["CanSelfAssign"] = false;
 		}
 		#region UnAssigned
@@ -88,6 +89,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 			createRepository.PrepareForNewRequest(Model);
 			Model.RequestPriorityPickList = createRepository.RequestPriorityPickList(Model.RequestPriorityID);
 			SetCancelURL();
+			ViewData["Home"] = "Index";
 			return View(Model);
 		}
 		#endregion
@@ -106,6 +108,19 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 			return RedirectToAction("Index", "Home");
 		}
 		#endregion
+		#endregion
+		#region RequestorList
+		[MainBossAuthorization(MainBossAuthorized.Requestor)]
+		public ActionResult RequestorList(Guid requestorID, string resultMessage) {
+			InitViewData();
+			SetCancelURL();
+			RequestRepository repository = NewRepository<RequestRepository>();
+			var requests = repository.BrowseRequestorPendingRequests(requestorID);
+			ViewData["Refresh"] = "";
+			ViewData["Home"] = "Index";
+			ViewData["ResultMessage"] = resultMessage;
+			return View(requests);
+		}
 		#endregion
 	}
 }

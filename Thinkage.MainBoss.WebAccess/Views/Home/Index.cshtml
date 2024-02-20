@@ -14,36 +14,64 @@
 	@{
 		var instance = (Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance;
 
-		if ( !instance.HasWebRequestsLicense  && !instance.HasWebAccessLicense ) {
-			@(Html.LabelFor<HomeModel, string>(T.Text("Enter your email address to submit a MainBoss request"), m => m.EmailAddress))@(Html.NBSP())@(Html.TextBoxFor(m => m.EmailAddress))@(Html.NBSP())@(T.Text("You require a Web Requests license to submit requests."))
-			<p>
-				@(Html.ActionLink(T.Text("Login as MainBoss User to view your assignments"), "Index", "Home"))@(Html.NBSP())@(T.Text("You require a Web Access license to view your MainBoss assignments."))
-			</p>
-        }
-        else {
-            if (instance.HasWebRequestsLicense) {
-                using (Html.BeginForm("Index", "Home")) {
-                    if (!User.Identity.IsAuthenticated) { 
-                        @(Html.LabelFor<HomeModel, string>(T.Text("Enter your email address to submit a MainBoss request"), m => m.EmailAddress))@(Html.NBSP())@(Html.TextBoxFor(m => m.EmailAddress)) <input type="submit" value="@(T.Text("Enter my Request"))" />
-                    }
-                    else if (!String.IsNullOrWhiteSpace(Model.EmailAddress)) {
-
-                         @(Html.LabelFor<HomeModel, string>(T.Text("Email address for request will be"), m => m.EmailAddress))@(Html.NBSP())@(Html.TextBoxFor(m => m.EmailAddress,  new {@readonly = true})) <input type="submit" value="@(T.Text("Enter my Request"))" />
-                    }
-                    else { 
-                        <h3>To submit a request you must have an email address associated with your Windows login</h3>
-                    }
-                    @(Html.ValidationMessageFor(m => m.EmailAddress))
+		if (instance.HasWebRequestsLicense) {
+			<div id="EnterRequestPanel">
+				@using (Html.BeginForm("Index", "Home")) {
+					if (!User.Identity.IsAuthenticated) {
+						@(Html.LabelFor<HomeModel, string>(T.Text("Enter your email address to submit a MainBoss request"), m => m.EmailAddress))@(Html.NBSP())@(Html.TextBoxFor(m => m.EmailAddress)) <input type="submit" name="CreateRequest" value="@(T.Text("Enter my Request"))" /> <input type="submit" name="SeeRequests" value="@(T.Text("See my Requests"))" />
+					}
+					else if (!String.IsNullOrWhiteSpace(Model.EmailAddress)) {
+						@(Html.LabelFor<HomeModel, string>(T.Text("Email address for request will be"), m => m.EmailAddress))@(Html.NBSP())@(Html.TextBoxFor(m => m.EmailAddress, new { @readonly = "readonly" })) <input type="submit" name="CreateRequest" value="@(T.Text("Enter my Request"))" /> <input type="submit" name="SeeRequests" value="@(T.Text("See my Requests"))" />
+					}
+					else {
+						<h3>To submit a request you must have an email address associated with your Windows login</h3>
+					}
+					@(Html.ValidationMessageFor(m => m.EmailAddress))
 				}
+			</div>
+		}
+		else {
+			if (instance.IsMainBossUser) {
+				<div class="ResultMessage">
+					@(T.Text("A Web Request license is required to submit requests."))
+				</div>
 			}
-			if (instance.HasWebAccessLicense) {
-				if (instance.IsMainBossUser) {
-					<h3>@(Html.ActionLink(T.Text("View your assignments"), "Index", "Assignment"))</h3>
-				}
-				else {
-					<h3>@(Html.ActionLink(T.Text("Login as MainBoss User to view your assignments"), "Index", "Assignment"))</h3>
-				}
+		}
+		if (instance.HasWebAccessLicense) {
+			if (instance.IsMainBossUser) {
+				<div class="ActivityLink">
+					@(Html.ActionLink(T.Text("Work with MainBoss"), "WebAccess", "Home"))
+					<span class="HelpPopup">@T.Text("Goto the activity page for MainBoss Users.")</span>
+				</div>
+			}
+			else {
+				<div class="ActivityLink">
+					@(Html.ActionLink(T.Text("Login as MainBoss User to work with MainBoss"), "WebAccess", "Home"))
+					<span class="HelpPopup">@T.Text("You need to authenticate as a MainBoss User to access this page.")</span>
+				</div>
+			}
+		}
+		else {
+			if (instance.IsMainBossUser) {
+				<p>
+					<div class="ResultMessage">
+						@(T.Text("A Web Access license is required to work with MainBoss."))
+					</div>
+				</p>
 			}
 		}
 	}
+}
+@section scripts {
+	@*
+		This section removes the Submit operation allowing requestors to see their requests based on the setting the Custom JS file.
+	*@
+	<script src="~/Content/Custom/RequestorViewRequests.js"></script>
+	<script>
+		$(document).ready(function () {
+			if (!RequestAllowRequestorToViewTheirRequests()) {
+				$("input[type='submit'][name='SeeRequests']").remove();
+			}
+		});
+	</script>
 }

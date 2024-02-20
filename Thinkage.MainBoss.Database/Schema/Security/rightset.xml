@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rightset xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
-  <!-- Costright permission -->
-  <right name="AccountingWorkOrderInsideLabor">
+	<!-- Costright permission -->
+	<right name="AccountingWorkOrderInsideLabor">
 	<costrights>WorkOrderInside LaborInside</costrights>
-  </right>
-  <right name="AccountingWorkOrderOutsideLabor">
+	</right>
+	<right name="AccountingWorkOrderOutsideLabor">
 	<costrights>WorkOrderOutside LaborOutside</costrights>
-  </right>
-  <right name="AccountingWorkOrderMiscellaneous">
+	</right>
+	<right name="AccountingWorkOrderMiscellaneous">
 	<costrights>WorkOrderMiscellaneous</costrights>
-  </right>
-  <right name="AccountingPersonnel">
+	</right>
+	<right name="AccountingPersonnel">
 	<costrights>WorkOrderInside LaborInside</costrights>
-  </right>
-  <right name="AccountingWorkOrderItems">
+	</right>
+	<right name="AccountingWorkOrderItems">
 	<costrights>WorkOrderMiscellaneous WorkOrderItem</costrights>
-  </right>
-  <right name="AccountingPurchaseOrderItems">
+	</right>
+	<right name="AccountingPurchaseOrderItems">
 	<costrights>PurchaseOrderMiscellaneous PurchaseOrderItem</costrights>
-  </right>
-  <right name="AccountingPurchaseOrderLabor">
+	</right>
+	<right name="AccountingPurchaseOrderLabor">
 	<costrights>PurchaseOrderMiscellaneous PurchaseOrderLabor</costrights>
-  </right>
-  <right name="AccountingUnitValueAndSpareParts">
+	</right>
+	<right name="AccountingUnitValueAndSpareParts">
 	<costrights>UnitValue UnitSparePart</costrights>
-  </right>
-  <right name="AccountingInventoryActivity">
+	</right>
+	<right name="AccountingInventoryActivity">
 	<costrights>InventoryActivity</costrights>
-  </right>
-  <right name="AccountingServiceContract">
+	</right>
+	<right name="AccountingServiceContract">
 	<costrights>ServiceContract</costrights>
-  </right>
-  <right name="AccountingChargeback">
+	</right>
+	<right name="AccountingChargeback">
 	<costrights>Chargeback</costrights>
-  </right>
+	</right>
 
-  <!--Right and Internal -->
+	<!--Right and Internal -->
 
-  <internal name="LocationBase">
+	<internal name="LocationBase">
 	<tableright name="Location"/>
 	<tableright name="LocationAndContainers"/>
 	<tableright name="LocationContainment"/>
@@ -47,76 +47,76 @@
 	<tableright name="RelativeLocation"/>
 	<tableright name="PlainRelativeLocation"/>
 	<tableright name="PostalAddress"/>
-  </internal>
-  <right name="Location">
+	</internal>
+	<right name="Location">
 	<include mask="VEBCD">LocationBase</include>
-  </right>
+	</right>
 
-  <right name="PermanentStorage">
+	<right name="PermanentStorage">
 	<include demote="true">Location</include>
 	<tableright name="PermanentStorage"/>
-  </right>
-  <right name="TemporaryStorage">
+	</right>
+	<right name="TemporaryStorage">
 	<include demote="true">Location</include>
 	<tableright name="WorkOrderTemporaryStorage"/>
 	<tableright name="WorkOrderTemporaryStorageTreeView"/>
 	<tableright name="TemporaryStorage"/>
-  </right>
-  <right name="CultureInfo">
+	</right>
+	<right name="CultureInfo">
 	<tableright name="CultureInfo">VB</tableright>
-  </right>
-  <right name="UserPrincipal">
+	</right>
+	<right name="UserPrincipal">
 	<tableright name="UserPrincipal">VB</tableright>
-  </right>
-  <internal name="ContactBase">
+	</right>
+	<internal name="ContactBase">
 	<include>Location</include>
 	<include>CultureInfo</include>
 	<tableright name="Contact"/>
 	<tableright name="ContactReport"/>
 	<tableright name="ContactFunctions">VB</tableright>
-  </internal>
-  <right name="Contact">
+	</internal>
+	<right name="Contact">
 	<include mask="VEBCD">ContactBase</include>
-  </right>
+	</right>
 
-  <right name="RequestAssignee">
+	<right name="RequestAssignee">
 	<include demote="true">Contact</include>
 	<tableright name="RequestAssignee"/>
 	<tableright name="RequestAssigneeProspect"/>
-  </right>
-  <right name="Requestor">
+	</right>
+	<right name="Requestor">
 	<include>Contact</include>
 	<tableright name="Requestor"/>
-  </right>
-  <right name="BillableRequestor">
+	</right>
+	<right name="BillableRequestor">
 	<include demote="true">Contact</include>
 	<tableright name="BillableRequestor"/>
 	<tableright name="CostCenter">VB</tableright>
-  </right>
-  <right name="Vendor">
+	</right>
+	<right name="Vendor">
 	<action>ViewAccounting</action>
 	<include>Contact</include>
 	<tableright name="CostCenter">VB</tableright>
 	<tableright name="Vendor"/>
 	<tableright name="VendorCategory">VB</tableright>
-  </right>
-  <right name="Employee">
+	</right>
+	<right name="Employee">
 	<include>Contact</include>
 	<tableright name="Employee"/>
-  </right>
+	</right>
 
-  <internal name="UnitBase">
+	<internal name="UnitBase">
 	<include demote="true">Contact</include>
 	<include>Location</include>
 	<tableright name="AccessCode">VB</tableright>
 	<tableright name="Unit"/>
 	<tableright name="UnitCategory">VB</tableright>
-  </internal>
-  <right name="UnitSummary">
+	</internal>
+	<right name="UnitSummary">
 	<include demote="true">UnitBase</include>
-  </right>
+	</right>
 
-  <internal name="RequestBase">
+	<internal name="RequestBase">
 	<include demote="true">RequestAssignee</include>
 	<include mask="VEBCD">Requestor</include>
 	<tableright name="AccessCode">VB</tableright>
@@ -133,8 +133,8 @@
 	<tableright name="RequestPriority">VB</tableright>
 	<tableright name="RequestStateHistoryStatus">VB</tableright>
 	<tableright name="AssignedRequest"/>
-  </internal>
-  <right name="Request">
+	</internal>
+	<right name="Request">
 	<include mask="VEBCD">RequestBase</include>
 	<tableright name="RequestedWorkOrder"/>
 	<tableright name="ManageRequestTransition"/>
@@ -152,46 +152,46 @@
 	<tableright name="RequestExtras"/>
 	<tableright name="UnassignedRequest"/>
 	<request/>
-  </right>
-  <right name="RequestView">
+	</right>
+	<right name="RequestView">
 	<include demote="true">Request</include>
 	<tableright name="RequestStateHistoryStatus"/>
 	<tableright name="RequestedWorkOrder">VB</tableright>
 	<tableright name="UnassignedRequest">Browse View Edit</tableright>
-  </right>
-  <internal name="RequestAssignment">
+	</right>
+	<internal name="RequestAssignment">
 	<include demote="true">RequestBase</include>
 	<tableright name="AssignedRequest"/>
 	<tableright name="RequestStateHistoryStatus"/>
-  </internal>
-  <right name="RequestAssignSelf">
+	</internal>
+	<right name="RequestAssignSelf">
 	<include mask="VB">RequestView</include>
 	<tableright name="UnassignedRequest">Create Browse View Edit</tableright>
-  </right>
-  <right name="RequestFulfillment">
+	</right>
+	<right name="RequestFulfillment">
 	<include demote="true">RequestAssignment</include>
 	<tableright name="RequestStateHistory">Browse Create View</tableright>
 	<tableright name="UnassignedRequest">Browse View Edit</tableright>
-  </right>
-  <right name="RequestClose">
+	</right>
+	<right name="RequestClose">
 	<include demote="true">RequestAssignment</include>
 	<tableright name="RequestStateHistory">Browse Create View</tableright>
 	<tableright name="UnassignedRequest">Browse View Edit</tableright>
 	<request>Close</request>
-  </right>
-  <internal name="Meter">
+	</right>
+	<internal name="Meter">
 	<tableright name="Meter"/>
 	<tableright name="MeterAndReadingVariants"></tableright>
 	<tableright name="MeterClass">VB</tableright>
 	<tableright name="WorkOrderMeterTreeView"/>
-  </internal>
-  <internal name="Specification">
+	</internal>
+	<internal name="Specification">
 	<tableright name="Specification"/>
 	<tableright name="SpecificationData">View</tableright>
 	<tableright name="SpecificationForm">VB</tableright>
 	<tableright name="SpecificationFormField">View</tableright>
-  </internal>
-  <internal name="ItemIssueAdjust">
+	</internal>
+	<internal name="ItemIssueAdjust">
 	<tableright name="Employee">VB</tableright>
 	<tableright name="ItemAdjustment"/>
 	<tableright name="ItemAdjustmentCode">VB</tableright>
@@ -201,9 +201,9 @@
 	<tableright name="ItemRestocking"/>
 	<tableright name="ItemRestockingReport"/>
 	<tableright name="VoidCode">VB</tableright>
-  </internal>
+	</internal>
 
-  <internal name="ItemBase">
+	<internal name="ItemBase">
 	<tableright name="ActualItemLocation"/>
 	<tableright name="Item"/>
 	<tableright name="ItemCategory">VB</tableright>
@@ -217,12 +217,12 @@
 	<tableright name="UnitOfMeasure">VB</tableright>
 	<include demote="true">PermanentStorage</include>
 	<include demote="true">LocationBase</include>
-  </internal>
-  <right name="ItemSummary">
+	</internal>
+	<right name="ItemSummary">
 	<include demote="true">LocationBase</include>
 	<include demote="true">ItemBase</include>
-  </right>
-  <right name="Item">
+	</right>
+	<right name="Item">
 	<action>ViewAccounting</action>
 	<include demote="true">Vendor</include>
 	<include mask="VEBCD">ItemBase</include>
@@ -236,22 +236,22 @@
 	<tableright name="LocationDerivationsAndItemLocations"/>
 	<tableright name="TemplateItemLocation"/>
 	<tableright name="RationalizedInventoryActivityDeltas"/>
-  </right>
-  <right name="ItemView">
+	</right>
+	<right name="ItemView">
 	<action>ViewAccounting</action>
 	<include demote="true">Item</include>
-  </right>
-  <internal name="ItemUse">
+	</right>
+	<internal name="ItemUse">
 	<include demote="true">ItemSummary</include>
-  </internal>
-  <right name="ItemFulfillment">
+	</internal>
+	<right name="ItemFulfillment">
 	<include>ItemIssueAdjust</include>
 	<include>ItemSummary</include>
 	<tableright name="ItemActivity"/>
 	<tableright name="ItemCountValue"/>
-  </right>
+	</right>
 
-  <right name="Unit">
+	<right name="Unit">
 	<include demote="true">Vendor</include>
 	<include mask="VEBCD">UnitBase</include>
 	<include>Meter</include>
@@ -274,26 +274,26 @@
 	<tableright name="ContactRelatedRecordsContainment"/>
 	<tableright name="UnitUsage">VB</tableright>
 	<tableright name="WorkOrderExpenseModel">VB</tableright>
-  </right>
-  <right name="UnitView">
+	</right>
+	<right name="UnitView">
 	<include demote="true">Unit</include>
-  </right>
+	</right>
 
-  <right name="PurchaseOrderAssignee">
+	<right name="PurchaseOrderAssignee">
 	<include demote="true">Contact</include>
 	<tableright name="PurchaseOrderAssignee"/>
 	<tableright name="PurchaseOrderAssigneeProspect"/>
-  </right>
-  <internal name="PurchaseOrderReceiveBase">
+	</right>
+	<internal name="PurchaseOrderReceiveBase">
 	<tableright name="ItemReceiving"/>
 	<tableright name="Receipt">Browse Create Edit View</tableright>
 	<tableright name="ReceiptActivity"/>
 	<tableright name="ReceiveItemNonPO"/>
 	<tableright name="ReceiveItemPO"/>
 	<tableright name="ReceiveMiscellaneousPO"/>
-  </internal>
+	</internal>
 
-  <internal name="PurchaseOrderBase">
+	<internal name="PurchaseOrderBase">
 	<include>ItemSummary</include>
 	<include demote="true">Location</include>
 	<include demote="true">PermanentStorage</include>
@@ -322,12 +322,12 @@
 	<tableright name="AssignedPurchaseOrder"/>
 	<tableright name="Project">VB</tableright>
 	<tableright name="PurchaseOrderCategory">VB</tableright>
-  </internal>
-  <internal name="PurchaseOrderSummary">
+	</internal>
+	<internal name="PurchaseOrderSummary">
 	<include demote="true">PurchaseOrderBase</include>
-  </internal>
+	</internal>
 
-  <right name="PurchaseOrder">
+	<right name="PurchaseOrder">
 	<action>ViewAccounting</action>
 	<include mask="VEBCD">PurchaseOrderBase</include>
 	<include>Vendor</include>
@@ -345,38 +345,38 @@
 	<tableright name="PurchaseOrderStateHistoryReport"/>
 	<tableright name="UnassignedPurchaseOrder"/>
 	<purchaseorder/>
-  </right>
-  <right name="PurchaseOrderReceive">
+	</right>
+	<right name="PurchaseOrderReceive">
 	<include>PurchaseOrderReceiveBase</include>
 	<include>PurchaseOrderSummary</include>
 	<tableright name="UnassignedPurchaseOrder">Browse View Edit</tableright>
 	<tableright name="PurchaseOrderStateHistory"/>
 	<tableright name="PurchaseOrderStateHistoryStatus">VB</tableright>
-  </right>
-  <right name="PurchaseOrderClose">
+	</right>
+	<right name="PurchaseOrderClose">
 	<include>PurchaseOrderSummary</include>
 	<include demote="true">PurchaseOrderReceive</include>
 	<tableright name="PurchaseOrderStateHistory"/>
 	<tableright name="PurchaseOrderStateHistoryStatus">VB</tableright>
 	<purchaseorder>Close</purchaseorder>
 	<tableright name="UnassignedPurchaseOrder">Browse View Edit</tableright>
-  </right>
-  <right name="PurchaseOrderReceiveView">
+	</right>
+	<right name="PurchaseOrderReceiveView">
 	<include demote="true">PurchaseOrderReceive</include>
-  </right>
-  <right name="PurchaseOrderView">
+	</right>
+	<right name="PurchaseOrderView">
 	<action>ViewAccounting</action>
 	<include demote="true">PurchaseOrder</include>
 	<include demote="true">PurchaseOrderReceive</include>
 	<tableright name="POLineLabor">View</tableright>
 	<tableright name="POLineOtherWork">View</tableright>
 	<tableright name="UnassignedPurchaseOrder">Browse View Edit</tableright>
-  </right>
-  <right name="PurchaseOrderAssignSelf">
+	</right>
+	<right name="PurchaseOrderAssignSelf">
 	<include mask="VB">PurchaseOrderView</include>
 	<tableright name="UnassignedPurchaseOrder">Create Browse View Edit</tableright>
-  </right>
-  <right name="PurchaseOrderTemplate">
+	</right>
+	<right name="PurchaseOrderTemplate">
 	<tableright name="PurchaseOrderTemplate"/>
 	<tableright name="PurchaseOrderTemplateReport"/>
 	<tableright name="PurchaseOrderTemplateLine"/>
@@ -390,38 +390,38 @@
 	<tableright name="WorkOrderTemplatePurchaseOrderTemplateView"/>
 	<tableright name="Project"/>
 	<tableright name="PurchaseOrderCategory"/>
-  </right>
-  <right name="PurchaseOrderTemplateView">
+	</right>
+	<right name="PurchaseOrderTemplateView">
 	<include demote="true">PurchaseOrderTemplate</include>
-  </right>
+	</right>
 
-  <internal name="LaborInside">
+	<internal name="LaborInside">
 	<include demote="true">Employee</include>
 	<tableright name="CostCenter">VB</tableright>
 	<tableright name="LaborInside"/>
 	<tableright name="OtherWorkInside"/>
 
-  </internal>
-  <internal name="LaborInsideView">
+	</internal>
+	<internal name="LaborInsideView">
 	<include demote="true">LaborInside</include>
-  </internal>
-  <internal name="LaborOutside">
+	</internal>
+	<internal name="LaborOutside">
 	<include demote="true">Vendor</include>
 	<tableright name="CostCenter">VB</tableright>
 	<tableright name="LaborOutside"/>
 	<tableright name="OtherWorkOutside"/>
-  </internal>
-  <internal name="LaborOutSideView">
+	</internal>
+	<internal name="LaborOutSideView">
 	<include demote="true">LaborOutside</include>
-  </internal>
-  <right name="WorkOrderChargeback">
+	</internal>
+	<right name="WorkOrderChargeback">
 	<tableright name="Chargeback"/>
 	<tableright name="ChargebackActivity"/>
 	<tableright name="ChargebackFormReport"/>
 	<tableright name="ChargebackLine"/>
 	<tableright name="ChargebackLineCategory">VB</tableright>
-  </right>
-  <right name="AccountingWorkOrder">
+	</right>
+	<right name="AccountingWorkOrder">
 	<include demote="true">BillableRequestor</include>
 	<include>AccountingChargeback</include>
 	<include>AccountingInventoryActivity</include>
@@ -432,9 +432,9 @@
 	<include>AccountingWorkOrderOutsideLabor</include>
 	<include>WorkOrderChargeback</include>
 	<tableright name="CostCenter">VB</tableright>
-  </right>
+	</right>
 
-  <right name="Accounting">
+	<right name="Accounting">
 	<action>ViewAccounting</action>
 	<action>EditAccounting</action>
 	<include>AccountingPersonnel</include>
@@ -454,8 +454,8 @@
 	<tableright name="AccountingTransactionsAndReversals"/>
 	<tableright name="AccountingTransactionVariants"/>
 	<tableright name="CostCenter"/>
-  </right>
-  <right name="AccountingView">
+	</right>
+	<right name="AccountingView">
 	<action>ViewAccounting</action>
 	<include demote="true">Accounting</include>
 	<include>AccountingChargeback</include>
@@ -468,14 +468,14 @@
 	<include>AccountingWorkOrderInsideLabor</include>
 	<include>AccountingWorkOrderItems</include>
 	<include>AccountingWorkOrderOutsideLabor</include>
-  </right>
+	</right>
 
-  <right name="WorkOrderAssignee">
+	<right name="WorkOrderAssignee">
 	<include demote="true">Contact</include>
 	<tableright name="WorkOrderAssignee"/>
-  </right>
+	</right>
 
-  <internal name="WorkOrderResourceItem">
+	<internal name="WorkOrderResourceItem">
 	<tableright name="ActualItem"/>
 	<tableright name="Demand"/>
 	<tableright name="DemandItem"/>
@@ -483,8 +483,8 @@
 	<tableright name="WorkOrderItemsTreeView"/>
 	<tableright name="WorkOrderPurchaseOrderView"/>
 	<tableright name="DemandWorkOrderExpenseModelEntry"/>
-  </internal>
-  <internal name="WorkOrderResourceInsideLabor">
+	</internal>
+	<internal name="WorkOrderResourceInsideLabor">
 	<tableright name="ActualLaborInside"/>
 	<tableright name="Demand"/>
 	<tableright name="DemandLaborInside"/>
@@ -492,8 +492,8 @@
 	<tableright name="WorkOrderInsideTreeView"/>
 	<tableright name="Employee">VB</tableright>
 	<tableright name="Trade">VB</tableright>
-  </internal>
-  <internal name="WorkOrderResourceOutsideLabor">
+	</internal>
+	<internal name="WorkOrderResourceOutsideLabor">
 	<tableright name="ActualLaborOutsideNonPO"/>
 	<tableright name="ActualLaborOutsidePO"/>
 	<tableright name="Demand"/>
@@ -502,15 +502,15 @@
 	<tableright name="WorkOrderOutside"/>
 	<tableright name="WorkOrderLinkedPurchaseOrdersTreeview"/>
 	<tableright name="WorkOrderOutsideTreeView"/>
-  </internal>
-  <internal name="WorkOrderResourceMiscellaneous">
+	</internal>
+	<internal name="WorkOrderResourceMiscellaneous">
 	<tableright name="ActualMiscellaneousWorkOrderCost"/>
 	<tableright name="Demand"/>
 	<tableright name="DemandMiscellaneousWorkOrderCost"/>
 	<tableright name="WorkOrderMiscellaneous"/>
 	<tableright name="WorkOrderMiscellaneousTreeView"/>
-  </internal>
-  <internal name="WorkOrderResourceOtherOutSide">
+	</internal>
+	<internal name="WorkOrderResourceOtherOutSide">
 	<tableright name="ActualOtherWorkOutsideNonPO"/>
 	<tableright name="ActualOtherWorkOutsidePO"/>
 	<tableright name="Demand"/>
@@ -518,16 +518,16 @@
 	<tableright name="DemandOtherWorkOutsideActivity"/>
 	<tableright name="WorkOrderLinkedPurchaseOrdersTreeview"/>
 	<tableright name="WorkOrderOutsideTreeView"/>
-  </internal>
-  <internal name="WorkOrderResourceOtherInside">
+	</internal>
+	<internal name="WorkOrderResourceOtherInside">
 	<tableright name="ActualOtherWorkInside"/>
 	<tableright name="Demand"/>
 	<tableright name="DemandOtherWorkInside"/>
 	<tableright name="WorkOrderInside"/>
 	<tableright name="WorkOrderInsideTreeView"/>
-  </internal>
+	</internal>
 
-  <internal name="WorkOrderBase">
+	<internal name="WorkOrderBase">
 	<include mask="VEBCD">Requestor</include>
 	<tableright name="AccessCode">VB</tableright>
 	<tableright name="CloseCode">VB</tableright>
@@ -550,11 +550,11 @@
 	<tableright name="WorkOrderStateHistory">VB</tableright>
 	<tableright name="WorkOrderExpenseCategory">VB</tableright>
 	<tableright name="DemandWorkOrderExpenseModelEntry"/>
-  </internal>
-  <right name="WorkOrderSummary">
+	</internal>
+	<right name="WorkOrderSummary">
 	<include demote="true">WorkOrderBase</include>
-  </right>
-  <right name="WorkOrder">
+	</right>
+	<right name="WorkOrder">
 	<include demote="true">BillableRequestor</include>
 	<include demote="true">LaborInside</include>
 	<include demote="true">LaborOutside</include>
@@ -593,14 +593,14 @@
 	<tableright name="POLineLabor">View</tableright>
 	<tableright name="UnassignedWorkOrder"/>
 	<workorder/>
-  </right>
-  <right name="WorkOrderView">
+	</right>
+	<right name="WorkOrderView">
 	<include demote="true">WorkOrder</include>
 	<include>ItemSummary</include>
 	<tableright name="POLineLabor">View</tableright>
 	<tableright name="UnassignedWorkOrder">Browse View Edit</tableright>
-  </right>
-  <internal name="WorkOrderAssignment">
+	</right>
+	<internal name="WorkOrderAssignment">
 	<include demote="true">WorkOrderSummary</include>
 	<include demote="true">Meter</include>
 	<include demote="true">TemporaryStorage</include>
@@ -625,12 +625,12 @@
 	<tableright name="LaborOutside">View</tableright>
 	<tableright name="Trade">View</tableright>
 	<tableright name="MiscellaneousWorkOrderCost">View</tableright>
-  </internal>
-  <right name="WorkOrderAssignSelf">
+	</internal>
+	<right name="WorkOrderAssignSelf">
 	<include mask="VB">WorkOrderView</include>
 	<tableright name="UnassignedWorkOrder">Create Browse View Edit</tableright>
-  </right>
-  <right name="WorkOrderFulfillment">
+	</right>
+	<right name="WorkOrderFulfillment">
 	<include>WorkOrderAssignment</include>
 	<tableright name="UnassignedWorkOrder">Browse View Edit</tableright>
 	<tableright name="ActualItem"/>
@@ -644,16 +644,16 @@
 	<tableright name="MeterReading"/>
 	<tableright name="WorkOrderStateHistory">Browse Create View</tableright>
 	<tableright name="Receipt">Create View Edit</tableright>
-  </right>
-  <right name="WorkOrderClose">
+	</right>
+	<right name="WorkOrderClose">
 	<include>WorkOrderAssignment</include>
 	<include demote="true">WorkOrderFulfillment</include>
 	<tableright name="WorkOrderStateHistory">Browse Create View</tableright>
 	<tableright name="CloseCode">VB</tableright>
 	<tableright name="UnassignedWorkOrder">Browse View Edit</tableright>
 	<workorder>Close</workorder>
-  </right>
-  <right name="WorkOrderTemplate">
+	</right>
+	<right name="WorkOrderTemplate">
 	<tableright name="WorkOrderTemplate"/>
 	<tableright name="NonLoopedWorkOrderTemplates"/>
 	<tableright name="WorkOrderTemplateContainment"/>
@@ -687,12 +687,12 @@
 	<tableright name="WorkOrderTemplateStorageTreeView"/>
 	<tableright name="DemandOtherWorkInsideTemplate"/>
 	<tableright name="DemandOtherWorkOutsideTemplate"/>
-  </right>
-  <right name="WorkOrderTemplateView">
+	</right>
+	<right name="WorkOrderTemplateView">
 	<include demote="true">WorkOrderTemplate</include>
-  </right>
+	</right>
 
-  <internal name="UnitMaintenancePlansBase">
+	<internal name="UnitMaintenancePlansBase">
 	<tableright name="PMGenerationBatch"/>
 	<tableright name="PMGenerationDetail"/>
 	<tableright name="PMGenerationDetailAndContainers"/>
@@ -705,23 +705,23 @@
 	<tableright name="Schedule"/>
 	<tableright name="ScheduledWorkOrder"/>
 	<tableright name="ScheduledWorkOrderReport"/>
-  </internal>
-  <right name="UnitMaintenancePlansFulfillment">
+	</internal>
+	<right name="UnitMaintenancePlansFulfillment">
 	<include demote="true">UnitMaintenancePlansBase</include>
 	<tableright name="PMGenerationBatch">VEBCD</tableright>
-  </right>
-  <right name="UnitMaintenancePlans">
+	</right>
+	<right name="UnitMaintenancePlans">
 	<include>UnitMaintenancePlansBase</include>
 	<tableright name="CommittedPMGenerationDetailAndBatches"/>
 	<tableright name="CommittedPMGenerationDetailAndPMGenerationBatch"/>
 	<tableright name="Periodicity"/>
 	<tableright name="PurchaseOrderTemplateLinkedWorkOrderTemplatesTreeview"/>
-  </right>
-  <right name="UnitMaintenancePlansView">
+	</right>
+	<right name="UnitMaintenancePlansView">
 	<include demote="true">UnitMaintenancePlans</include>
-  </right>
+	</right>
 
-  <right name="CodingDefinitions">
+	<right name="CodingDefinitions">
 	<include demote="true" mask="EditDefault">Accounting</include>
 	<include mask="EditDefault">BillableRequestor</include>
 	<include mask="EditDefault">ContactBase</include>
@@ -775,14 +775,15 @@
 	<tableright name="WorkCategory"/>
 	<tableright name="WorkOrderPriority"/>
 	<tableright name="WorkOrderStateHistoryStatus"/>
-  </right>
-  <right name="CodingDefinitionsView">
+	</right>
+	<right name="CodingDefinitionsView">
 	<include demote="true">CodingDefinitions</include>
-  </right>
+	</right>
 
-  <right name="Administration">
+	<right name="Administration">
 	<action>UpgradeDatabase</action>
 	<action>Customize</action>
+ <action>MergeContacts</action>
 	<include>Requestor</include>
 	<tableright name="CompanyInformation"/>
 	<tableright name="DatabaseHistory"/>
@@ -815,81 +816,82 @@
 	<tableright name="ServiceLog"/>
 	<tableright name="SettingsAdministration"/>
 	<tableright name="WorkOrderAssignee"/>
-  </right>
-  <right name="AdministrationView">
+	</right>
+	<right name="AdministrationView">
 	<include demote="true">Administration</include>
-  </right>
-  <internal name="AdministrationDefault">
+	</right>
+	<internal name="AdministrationDefault">
 	<tableright name="DatabaseStatus">VB</tableright>
-  </internal>
+	</internal>
 
-  <right name="Default">
+	<right name="Default">
 	<tableright name="AttentionStatus">VB</tableright>
 	<tableright name="DatabaseStatus">VB</tableright>
 	<tableright name="Settings">VB</tableright>
 	<tableright name="DefaultSettings">VB</tableright>
 	<tableright name="SettingsName">VB</tableright>
-  </right>
+	</right>
 
-  <right name="All">
+	<right name="All">
 	<purchaseorder/>
 	<request/>
 	<workorder/>
 	<tableright name="*"/>
 	<action>UpgradeDatabase</action>
+	<action>MergeContacts</action>
 	<action>EditAccounting</action>
 	<action>ViewAccounting</action>
 	<action>Customize</action>
-  </right>
-  <right name="AllView">
+	</right>
+	<right name="AllView">
 	<include demote="true">All</include>
 	<action>ViewAccounting</action>
-  </right>
+	</right>
 
-  <!--Start of Roles -->
-  <role name="Request" id="12" rank="001">
+	<!--Start of Roles -->
+	<role name="Request" id="12" rank="001">
 	<description>View, create, edit requests</description>
 	<comment>Permission to create and modify basic requests. In order to fill out more complete requests, users should also have at least UnitSummary. In order to check on the progress of jobs, users should also have at least WorkOrderSummary.</comment>
 	<include>Request</include>
 	<include>Default</include>
-  </role>
-  <role name="RequestView" id="13" rank="002">
+	</role>
+	<role name="RequestView" id="13" rank="002">
 	<description>View permission on requests</description>
 	<comment>Permission to view all information in the Requests section of the MainBoss control panel. You cannot change any of this information unless you have additional security roles. (RequestView is not needed if a user already has the Request security role.)</comment>
 	<include>RequestView</include>
 	<include>Default</include>
-  </role>
-  <role name="RequestFulfillment" id="14" rank="004">
+	</role>
+	<role name="RequestFulfillment" id="14" rank="004">
 	<description>Add comment to request</description>
 	<comment>Permission to use "New Requestor Comment" to add a comment to an existing request (either an internal comment, a comment to the requestor, or both). If you have no other permissions, RequestFulfillment only lets you add comments to requests which have been assigned to you. (RequestFulfillment is not needed if a user already has the Request security role.)</comment>
 	<include>Default</include>
 	<include>RequestFulfillment</include>
-  </role>
-  <role name="RequestClose" id="41" rank="005">
+	</role>
+	<role name="RequestClose" id="41" rank="005">
 	<description>Close requests</description>
 	<comment>Permission to close requests with "Close Request" or "Close Request (With Comment)"; also to add comments with "New Requestor Comment". If you have no other permissions, RequestClose only lets you deal with requests which have been assigned to you. (RequestClose is not needed if a user already has the Request security role.)</comment>
 	<include>Default</include>
 	<include>RequestClose</include>
-  </role>
-  <role name="RequestAssignSelf" id="44" rank="006">
+	</role>
+	<role name="RequestAssignSelf" id="44" rank="006">
 	<description>Assign unassigned requests to self</description>
 	<comment>Permission to assign requests with "Self Assign"; also to add comments with "New Requestor Comment". If you have no other permissions, RequestAssignSelf only lets you deal with requests which have been assigned to you and requests that are not assigned to anyone.</comment>
 	<include>Default</include>
 	<include>RequestAssignSelf</include>
-  </role>
-  <role name="WorkOrderAssignSelf" id="45" rank="007">
+	</role>
+	<role name="WorkOrderAssignSelf" id="45" rank="007">
 	<description>Assign unassigned work orders to self</description>
 	<comment>Permission to assign work orders with "Self Assign". If you have no other permissions, WorkOrderAssignSelf only lets you deal with work orders which have been assigned to you and work orders that are not assigned to anyone.</comment>
 	<include>Default</include>
 	<include>WorkOrderAssignSelf</include>
-  </role>
-  <role name="PurchaseOrderAssignSelf" id="46" rank="008">
+	</role>
+	<role name="PurchaseOrderAssignSelf" id="46" rank="008">
 	<description>Assign unassigned purchase orders to self</description>
 	<comment>Permission to assign purchase orders with "Self Assign". If you have no other permissions, PurchaseOrderAssignSelf only lets you deal with purchase orders which have been assigned to you and purchase orders that are not assigned to anyone.</comment>
 	<include>Default</include>
 	<include>PurchaseOrderAssignSelf</include>
-  </role>
-  <role name="WorkOrder" id="15" rank="101">
+	</role>
+	<role name="WorkOrder" id="15" rank="101">
 	<description>View, create, edit work orders</description>
 	<comment>Permission to create and modify work orders. This automatically gives you limited access to other information in MainBoss. For example, you can browse the Items table, but not view the contents of Items records (unless you have additional roles). Similarly, you can browse Inside and Outside Labor records, but cannot see the actual money amounts associated with them (unless you have additional security roles). To deal with item costs on work orders, a user needs the AccountingWorkOrder security role; to deal with labor costs, a user needs AccountingView.</comment>
 	<include>AccountingWorkOrderMiscellaneous</include>
@@ -898,111 +900,111 @@
 	<include>WorkOrder</include>
 	<include>WorkOrderFulfillment</include>
 	<include>WorkOrderTemplateView</include>
-  </role>
-  <role name="WorkOrderView" id="16" rank="102">
+	</role>
+	<role name="WorkOrderView" id="16" rank="102">
 	<description>Read work orders</description>
 	<comment>Permission to view much of the information on work orders. Viewing money amounts (e.g. labor costs) requires additional security roles (e.g. AccountingWorkOrder). (WorkOrderView is not needed if a user already has the WorkOrder security role.)</comment>
 	<include>Default</include>
 	<include>WorkOrderView</include>
-  </role>
-  <role name="WorkOrderSummary" id="17" rank="103">
+	</role>
+	<role name="WorkOrderSummary" id="17" rank="103">
 	<description>Read basic information about work orders</description>
 	<comment>Permission to see a small subset of the information in a work order. This does not include information about labor or materials (unless you have additional security roles). Often, this security role is useful for people whose primary interest is tracking requests.  (WorkOrderSummary is not needed if a user already has WorkOrderView or WorkOrder.)</comment>
 	<include>Default</include>
 	<include>WorkOrderSummary</include>
-  </role>
-  <role name="WorkOrderFulfillment" id="18" rank="104">
+	</role>
+	<role name="WorkOrderFulfillment" id="18" rank="104">
 	<description>Actualize information on an existing work order</description>
 	<comment>Permission to turn existing item demands into actuals, and to enter other information related to finishing a job (e.g. downtime and closing code). If you have no other permissions, WorkOrderFulfillment only lets you deal with your assigned work orders. You may want to combine WorkOrderFulfillment with AccountingWorkOrder to allow a user to specify and edit the cost of work order materials and outside labor.  If WorkOrderFulfillment is combined with WorkOrderView, it allows the user to specify finishing information for any work order. (WorkOrderFulfillment is not needed if a user already has the WorkOrder security role.)</comment>
 	<include>Default</include>
 	<include>AccountingWorkOrderMiscellaneous</include>
 	<include>WorkOrderFulfillment</include>
-  </role>
-  <role name="WorkOrderClose" id="42" rank="105">
+	</role>
+	<role name="WorkOrderClose" id="42" rank="105">
 	<description>Close work orders</description>
 	<comment>Permission to close work orders with "Close Work Order" and "Close Work Order (With Comment)"; also to add comments with "Add Work Order Comment". Also allows user to view much of the information on work orders. Viewing money amounts (e.g. labor costs) requires additional security roles (e.g. AccountingWorkOrder).  WorkOrderClose only lets you deal with your assigned work orders. If WorkOrderClose is combined with WorkOrderView, the user can close any work order, not just assigned ones. (WorkOrderClose is not needed if a user already has the WorkOrder security role.)</comment>
 	<include>Default</include>
 	<include>WorkOrderClose</include>
-  </role>
+	</role>
 
-  <role name="UnitMaintenancePlans" id="26" rank="201">
+	<role name="UnitMaintenancePlans" id="26" rank="201">
 	<description>View, create, edit and delete records related to Planned Maintenance</description>
 	<comment>Full access to records related to Planned Maintenance. This includes the ability to create/edit tasks and unit maintenance plans. It also includes permission to generate Planned Maintenance work orders.</comment>
 	<include>Default</include>
 	<include>UnitMaintenancePlans</include>
 	<include>WorkOrderTemplate</include>
 	<include>PurchaseOrderTemplate</include>
-  </role>
-  <role name="UnitMaintenancePlansView" id="27" rank="202">
+	</role>
+	<role name="UnitMaintenancePlansView" id="27" rank="202">
 	<description>View records related to Planned Maintenance</description>
 	<comment>Permission to read all data in the Generate Planned Maintenance section of the MainBoss control panel, as well as task records and unit maintenance plans. You cannot make any kind of change to the data unless you have additional security roles. (UnitMaintenancePlansView is not needed if a user already has the UnitMaintenancePlans security role.)</comment>
 	<include>Default</include>
 	<include>UnitMaintenancePlansView</include>
 	<include>WorkOrderTemplateView</include>
 	<include>PurchaseOrderTemplateView</include>
-  </role>
-  <role name="UnitMaintenancePlansFulfillment" id="28" rank="204">
+	</role>
+	<role name="UnitMaintenancePlansFulfillment" id="28" rank="204">
 	<description>Generate planned maintenance work orders</description>
 	<comment>Permission to generate and commit Planned Maintenance work orders. (UnitMaintenancePlansFulfillment is not needed if a user already has the UnitMaintenancePlans security role.)</comment>
 	<include>Default</include>
 	<include>UnitMaintenancePlansFulfillment</include>
 	<include>WorkOrderTemplateView</include>
 	<include>PurchaseOrderTemplateView</include>
-  </role>
+	</role>
 
-  <role name="Unit" id="23" rank="301">
+	<role name="Unit" id="23" rank="301">
 	<description>View, edit, create, delete Unit records</description>
 	<comment>Complete access to Unit records and reports in the Units section of the MainBoss control panel. This includes the ability to browse the tables needed to create a Unit record (e.g. Unit Categories and Locations).</comment>
 	<include>AccountingServiceContract</include>
 	<include>AccountingUnitValueAndSpareParts</include>
 	<include>Default</include>
 	<include>Unit</include>
-  </role>
-  <role name="UnitView" id="24" rank="302">
+	</role>
+	<role name="UnitView" id="24" rank="302">
 	<description>Read Units section</description>
 	<comment>Permission to read all information in the Units section of the MainBoss control panel. You cannot change any of this information unless you have additional security roles. (UnitView is not needed if a user already has the Unit security role.)</comment>
 	<include>AccountingServiceContract</include>
 	<include>AccountingUnitValueAndSpareParts</include>
 	<include>Default</include>
 	<include>UnitView</include>
-  </role>
-  <role name="UnitSummary" id="25" rank="303">
+	</role>
+	<role name="UnitSummary" id="25" rank="303">
 	<description>Read basic information about units</description>
 	<comment>Permission to read a small subset of information from Unit records. For example, this allows you to see the Unit Category of units but not any work orders associated with the unit or any money information associated with the unit (e.g. replacement cost). The amount of information available is partly determined by what other security roles you have. Often, UnitSummary is useful for people whose primary interest is some other part of MainBoss (e.g. work orders or requests). (UnitSummary is not needed if a user already has the Unit or UnitView security role.)</comment>
 	<include>Default</include>
 	<include>UnitSummary</include>
-  </role>
+	</role>
 
-  <role name="Item" id="19" rank="401">
+	<role name="Item" id="19" rank="401">
 	<description>View, edit, create, delete Item records</description>
 	<comment>Complete access to Item records and reports in the Items section of the MainBoss control panel. This includes the ability to browse the tables needed to create an Item record.</comment>
 	<include>AccountingInventoryActivity</include>
 	<include>AccountingWorkOrderItems</include>
 	<include>Default</include>
 	<include>Item</include>
-  </role>
-  <role name="ItemView" id="20" rank="402">
+	</role>
+	<role name="ItemView" id="20" rank="402">
 	<description>Read Items section</description>
 	<comment>Permission to read all information in the Items section of the MainBoss control panel. You cannot change any of this information unless you have additional security roles. (ItemView is not needed if a user already has the Item security role.)</comment>
 	<include>AccountingInventoryActivity</include>
 	<include>AccountingWorkOrderItems</include>
 	<include>Default</include>
 	<include>ItemView</include>
-  </role>
-  <role name="ItemSummary" id="21" rank="403">
+	</role>
+	<role name="ItemSummary" id="21" rank="403">
 	<description>Read basic information about items</description>
 	<comment>Permission to view a small subset of information from Item records. The amount of information available is partly determined by what other security roles you have. Often, ItemSummary is useful for people whose primary interest is some other part of MainBoss (e.g. work orders or units). (ItemSummary is not needed if a user already has the Item or ItemView security role. ItemSummary is not sufficient to show you the cost of items; for that you need ItemView.)</comment>
 	<include>Default</include>
 	<include>ItemSummary</include>
-  </role>
-  <role name="ItemFulfillment" id="22" rank="404">
+	</role>
+	<role name="ItemFulfillment" id="22" rank="404">
 	<description>Perform inventory operations</description>
 	<comment>Permission to perform operations on Items, such as entering physical counts, making issues, and transferring from one storeroom to another. This does not allow you to create Items records, but does let you read such records and generate reports from the Items section of the control panel. (ItemFulfillment is not needed if a user already has the Item security role.) ItemFulfillment is not sufficient to show you the cost of items; for that you need ItemView.</comment>
 	<include>Default</include>
 	<include>ItemFulfillment</include>
-  </role>
+	</role>
 
-  <role name="PurchaseOrder" id="29" rank="501">
+	<role name="PurchaseOrder" id="29" rank="501">
 	<description>View, create, edit purchase orders</description>
 	<comment>Complete access to everything in the Purchase Orders section of the MainBoss control panel.</comment>
 	<include>AccountingInventoryActivity</include>
@@ -1012,8 +1014,8 @@
 	<include>PurchaseOrder</include>
 	<include>PurchaseOrderReceive</include>
 	<include>PurchaseOrderTemplateView</include>
-  </role>
-  <role name="PurchaseOrderView" id="30" rank="502">
+	</role>
+	<role name="PurchaseOrderView" id="30" rank="502">
 	<description>Read purchase orders</description>
 	<comment>Permission to view the contents of existing purchase orders, including the cost of each line item. You cannot change the purchase orders in any way unless you have additional security roles. (PurchaseOrderView is not needed if a user already has the PurchaseOrder security role.)</comment>
 	<include>AccountingInventoryActivity</include>
@@ -1021,92 +1023,92 @@
 	<include>AccountingPurchaseOrderLabor</include>
 	<include>Default</include>
 	<include>PurchaseOrderView</include>
-  </role>
-  <role name="PurchaseOrderSummary" id="31" rank="503">
+	</role>
+	<role name="PurchaseOrderSummary" id="31" rank="503">
 	<description>Read basic information about purchase orders</description>
 	<comment>Permission to view the contents of existing purchase orders. However, descriptions of line items will not include costs. You cannot change the purchase orders in any way unless you have additional security roles. (PurchaseOrderSummary is not needed if a user already has PurchaseOrder, PurchaseOrderView, or PurchaseOrderReceive.)</comment>
 	<include>Default</include>
 	<include>PurchaseOrderSummary</include>
 	<include>PurchaseOrderReceiveView</include>
-  </role>
-  <role name="PurchaseOrderReceive" id="32" rank="504">
+	</role>
+	<role name="PurchaseOrderReceive" id="32" rank="504">
 	<description>Record purchase order receipts</description>
 	<comment>Permission to record receipt of goods in response to purchase orders. This includes the ability to view related information (e.g. storerooms and storeroom assignments). PurchaseOrderReceive is not sufficient to show you the cost of any line item on a purchase order; for that, you need PurchaseOrderView. (PurchaseOrderReceive is not needed if a user already has the PurchaseOrder security role.)</comment>
 	<include>Default</include>
 	<include>PurchaseOrderReceive</include>
-  </role>
-  <role name="PurchaseOrderClose" id="43" rank="505">
+	</role>
+	<role name="PurchaseOrderClose" id="43" rank="505">
 	<description>Close purchase orders</description>
 	<comment>Permission to close purchase orders with "Close Purchase Order" or "Close Purchase Order (With Comment)". This includes the ability to view most information on the purchase order. PurchaseOrderClose is not sufficient to show you the cost of any line item on a purchase order; for that, you need PurchaseOrderView. Unless you have another purchase order security role, PurchaseOrderClose only lets you deal with purchase orders to which you have been assigned. (PurchaseOrderClose is not needed if a user already has the PurchaseOrder security role.)</comment>
 	<include>Default</include>
 	<include>PurchaseOrderClose</include>
-  </role>
+	</role>
 
-  <role name="CodingDefinitions" id="36" rank="601">
+	<role name="CodingDefinitions" id="36" rank="601">
 	<description>View, create, edit, delete codes and categories in Coding Definitions</description>
 	<comment>Permission to create, modify and delete the codes and categories defined in the Coding Definitions section of the MainBoss control panel. This security role also gives you permission to change the Defaults used when creating new records (e.g. to make changes in all the "Defaults for..." sections of table viewers).</comment>
 	<include>CodingDefinitions</include>
 	<include>Default</include>
-  </role>
-  <role name="CodingDefinitionsView" id="37" rank="602">
+	</role>
+	<role name="CodingDefinitionsView" id="37" rank="602">
 	<description>Read Coding Definitions section</description>
 	<comment>Permission to read all code and category definitions in the Coding Definitions section of the MainBoss control panel. You cannot make any kind of change to the data unless you have additional security roles. (CodingDefinitionsView is not needed if a user already has the CodingDefinitions security role.)</comment>
 	<include>CodingDefinitionsView</include>
 	<include>Default</include>
-  </role>
+	</role>
 
-  <role name="Administration" id="38" rank="701">
+	<role name="Administration" id="38" rank="701">
 	<description>View, create, edit and delete Administration data</description>
 	<comment>Complete access to all appropriate records in the Administration section of the MainBoss control panel. This also allows access to certain other types of records including the tables for authorized assignees and requestors. This role does NOT require Windows Administrator privileges; however, anyone with Windows Administrator privileges can automatically acquire the MainBoss Administration security role by starting MainBoss with "Run as Administrator". The MainBoss Administration security role will require SQL Server Administrator privileges if you turn on "MainBoss manages SQL security" in the MainBoss Users table default settings. (Note that records in Administration | Database History can never be edited, in order to preserve an accurate history.)</comment>
 	<include>Administration</include>
 	<include>AdministrationDefault</include>
-  </role>
-  <role name="AdministrationView" id="39" rank="702">
+	</role>
+	<role name="AdministrationView" id="39" rank="702">
 	<description>Read access to Administration section</description>
 	<comment>Permission to read all data in the Administration section of the MainBoss control panel. This also permits viewing certain other types of records, including the tables for authorized assignees and requestors. You cannot make any kind of change to the data unless you have additional security roles. (AdministrationView is not needed if a user already has the Administration security role.)</comment>
 	<include>AdministrationView</include>
 	<include>AdministrationDefault</include>
-  </role>
+	</role>
 
-  <role name="Accounting" id="33" rank="801">
+	<role name="Accounting" id="33" rank="801">
 	<description>Create, edit money-related information</description>
 	<comment>Permission to view and edit money-related information, including cost centers, chargebacks, work order expenses, and purchase order costs. If you only have this role, you only have access to relevant entries in the Coding Definitions section of the MainBoss control panel; therefore you usually combine this role with other roles. For example, if you have both the WorkOrder and AccountingView security roles, you will be able to specify and edit cost information in work orders.</comment>
 	<include>Accounting</include>
 	<include>Default</include>
-  </role>
-  <role name="AccountingView" id="34" rank="802">
+	</role>
+	<role name="AccountingView" id="34" rank="802">
 	<description>Read accounting information</description>
 	<comment>Permission to read money-related information, including cost centers, chargebacks, work order expenses, and purchase order costs. You cannot change any of this information unless you have additional security roles. (For example, if you have this role and also the WorkOrder security role, you can change resource costs associated with a specific work order.)</comment>
 	<include>AccountingView</include>
 	<include>Default</include>
-  </role>
-  <role name="AccountingWorkOrder" id="35" rank="805">
+	</role>
+	<role name="AccountingWorkOrder" id="35" rank="805">
 	<description>View, override costs of labor and materials on work orders</description>
 	<comment>Permission to deal with all costs of materials on work orders. To deal with labor costs on work orders, you also need AccountingView. Other permissions may let you specify the quantity of items and/or labor used in a work order, but not their cost.</comment>
 	<include>AccountingWorkOrder</include>
 	<include>Default</include>
-  </role>
+	</role>
 
-  <role name="Contact" id="40" rank="901">
+	<role name="Contact" id="40" rank="901">
 	<description>View, create, edit, delete Contact records</description>
 	<comment>Complete access to Contact records. Since new Contact records typically require new Locations, this security role includes the ability to view, create, edit and delete Location records.</comment>
 	<include>Contact</include>
 	<include>Default</include>
-  </role>
+	</role>
 
-  <role name="All" id="10" rank="1001">
+	<role name="All" id="10" rank="1001">
 	<description>Complete permissions</description>
 	<comment>Complete access to every available feature of MainBoss (subject to your license keys). This security role should be equivalent to Accounting, AccountingView, Administration, CodingDefinitions, Contact, Item, PurchaseOrder, PurchaseOrderReceive, Request, Unit, UnitMaintenancePlans and WorkOrder.</comment>
 	<include>Accounting</include>
 	<include>All</include>
 	<include>Default</include>
-  </role>
-  <role name="AllView" id="11" rank="1002">
+	</role>
+	<role name="AllView" id="11" rank="1002">
 	<description>Complete read access to data</description>
 	<comment>Permission to read all the data in your MainBoss database (subject to your license keys). You cannot change the data in any way unless you have additional security roles. This security role should be equivalent to AccountingView, AdministrationView, CodingDefinitionsView, ItemView, PurchaseOrderView, RequestView, UnitView, UnitMaintenancePlansView and WorkOrderView.</comment>
 	<include>AccountingView</include>
 	<include>AllView</include>
 	<include>Default</include>
-  </role>
+	</role>
 
 </rightset>

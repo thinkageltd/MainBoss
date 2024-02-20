@@ -9,59 +9,60 @@
 	ViewBag.Title = T.Text("View WorkOrder {0}", Model.Number);
 }
 @section LabelValueViewHeader {
-	@(Html.NBSP())<a href="#History">@(T.Text("History"))</a>@if (Model.Resources.Count > 0) {@Html.NBSP()<a href="#Resources">@(T.Text("Resources"))</a>}
+	<div class="Actions">
+		<div class="Action"><a href="#History">@(T.Text("History"))</a></div>@if (Model.Resources.Count > 0) {<div class="Action"><a href="#Resources">@(T.Text("Resources"))</a></div>}
+	</div>
 }
 @section LabelValueViewPanel {
-@(Html.LabelValue(dsMB.Path.T.WorkOrder.F.Number, Model.Number))
-@(Html.LabelValue(dsMB.Path.T.WorkOrder.F.Subject, Model.Subject))
-@(Html.CodeDescLabelValue(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderStateID, Model.CurrentWorkOrderStateHistory.WorkOrderState))
-@(Html.CodeDescLabelValue(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderStateHistoryStatusID, Model.CurrentWorkOrderStateHistory.WorkOrderStateHistoryStatus))
-@(Html.LabelValue(dsMB.Path.T.WorkOrder.F.RequestorID, Html.ValueIfDefined<WorkOrderEntities.Requestor>(Model.Requestor, m => Html.ContactValue(m.Contact.Code, m.Contact.BusinessPhone, m.Contact.Email, m.Contact.Hidden != null || m.Hidden != null))))
-@if (Model.UnitLocationID != null) {@(Html.LabelActionValue<WorkOrderEntities.Location>(dsMB.Path.T.WorkOrder.F.UnitLocationID, Model.UnitLocation, m => m.Code, i => Model.UnitLocationID, m => m.DerivedRelativeLocation.Hidden != null))}
-@(Html.LabelValue(dsMB.Path.T.WorkOrder.F.StartDateEstimate, Model.StartDateEstimate))
-@(Html.LabelValue(dsMB.Path.T.WorkOrder.F.EndDateEstimate, Model.EndDateEstimate))
-@(Html.CodeDescLabelValue(dsMB.Path.T.WorkOrder.F.WorkCategoryID, Model.WorkCategory))
-@(Html.CodeDescLabelValue(dsMB.Path.T.WorkOrder.F.AccessCodeID.F.Code, Model.AccessCode))
-@(Html.CodeDescLabelValue(dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Code, Model.WorkOrderPriority))
-@(Html.CodeDescLabelValue(dsMB.Path.T.WorkOrder.F.ProjectID, Model.Project))
-@(Html.LabelValueMultiLine(dsMB.Path.T.WorkOrder.F.Description, Model.Description, false))
-@(Html.LabelValueMultiLine(dsMB.Path.T.WorkOrder.F.ClosingComment, Model.ClosingComment, true))
+	@(Html.LabelValueRow(dsMB.Path.T.WorkOrder.F.Number, Model.Number))
+	@(Html.LabelValueRow(dsMB.Path.T.WorkOrder.F.Subject, Model.Subject))
+	@(Html.LabelValueRowCodeDesc(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderStateID, Model.CurrentWorkOrderStateHistory.WorkOrderState))
+	@(Html.LabelValueRowCodeDesc(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderStateHistoryStatusID, Model.CurrentWorkOrderStateHistory.WorkOrderStateHistoryStatus))
+	@if (Model.UnitLocationID != null) {@(Html.LabelActionValue<WorkOrderEntities.Location>(dsMB.Path.T.WorkOrder.F.UnitLocationID, Model.UnitLocation, m => m.Code, i => Model.UnitLocationID, m => m.DerivedRelativeLocation.Hidden != null))}
+	@(Html.LabelValueRow(dsMB.Path.T.WorkOrder.F.StartDateEstimate, Model.StartDateEstimate))
+	@(Html.LabelValueRow(dsMB.Path.T.WorkOrder.F.EndDateEstimate, Model.EndDateEstimate))
+	@(Html.LabelValueRow(dsMB.Path.T.WorkOrder.F.RequestorID, Html.ValueIfDefined<WorkOrderEntities.Requestor>(Model.Requestor, m => Html.ContactValue(m.Contact.Code, m.Contact.BusinessPhone, m.Contact.Email, m.Contact.Hidden != null || m.Hidden != null))))
+	@(Html.LabelValueRowCodeDesc(dsMB.Path.T.WorkOrder.F.WorkCategoryID, Model.WorkCategory))
+	@(Html.LabelValueRowCodeDesc(dsMB.Path.T.WorkOrder.F.AccessCodeID.F.Code, Model.AccessCode))
+	@(Html.LabelValueRowCodeDesc(dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Code, Model.WorkOrderPriority))
+	@(Html.LabelValueRowCodeDesc(dsMB.Path.T.WorkOrder.F.ProjectID, Model.Project))
+	@(Html.LabelValueRowMultiLine(dsMB.Path.T.WorkOrder.F.Description, Model.Description, false))
+	@(Html.LabelValueRowMultiLine(dsMB.Path.T.WorkOrder.F.ClosingComment, Model.ClosingComment, true))
 }
 @section LabelValueViewTrailer {
-	@(Html.ActionLink(T.Text("Add Comment"), ((bool)ViewData["UnAssigned"]) ? "UnAssignedAddComment" : "AddComment", "WorkOrderStateHistory", new
-		{
-			ParentID = Model.Id,
-			CurrentStateHistoryID = Model.CurrentWorkOrderStateHistoryID
-		}, new
-		 {
-			 @class = "StateActionLink"
-		 }))
-	@if ((bool)ViewData["UnAssigned"]) {
-		if ((bool)ViewData["CanSelfAssign"]) {
-			@(Html.ActionLink(T.Text("Self Assign"), "SelfAssign", "WorkOrderStateHistory", new
-			{
-				ParentID = Model.Id,
-				CurrentStateHistoryID = Model.CurrentWorkOrderStateHistoryID
-			}, new
-			{
-				@class = "StateActionLink"
-			}))
-		}
-	}
-	else { // The already assigned version allows Close
-		if (Model.CurrentWorkOrderStateHistory.WorkOrderState.FilterAsOpen) {
-
-			@(Html.ActionLink(T.Text("Close Work Order"), "Close", "WorkOrderStateHistory", new
-	 {
-		 ParentID = Model.Id,
-		 CurrentStateHistoryID = Model.CurrentWorkOrderStateHistoryID
-	 }, new
-				{
+	<div class="Actions">
+		<div class="Action">
+			@(Html.ActionLink(T.Text("Add Comment"), ((bool)ViewData["UnAssigned"]) ? "UnAssignedAddComment" : "AddComment", "WorkOrderStateHistory", new {
+					ParentID = Model.Id,
+					CurrentStateHistoryID = Model.CurrentWorkOrderStateHistoryID
+				}, new {
 					@class = "StateActionLink"
 				}))
-		}
-	}
-	<p></p>
+		</div>
+		<div class="Action">
+			@if ((bool)ViewData["UnAssigned"]) {
+				if ((bool)ViewData["CanSelfAssign"]) {
+					@(Html.ActionLink(T.Text("Self Assign"), "SelfAssign", "WorkOrderStateHistory", new {
+							ParentID = Model.Id,
+							CurrentStateHistoryID = Model.CurrentWorkOrderStateHistoryID
+						}, new {
+							@class = "StateActionLink"
+						}))
+				}
+			}
+			else { // The already assigned version allows Close
+				if (Model.CurrentWorkOrderStateHistory.WorkOrderState.FilterAsOpen) {
+
+					@(Html.ActionLink(T.Text("Close Work Order"), "Close", "WorkOrderStateHistory", new {
+							ParentID = Model.Id,
+							CurrentStateHistoryID = Model.CurrentWorkOrderStateHistoryID
+						}, new {
+							@class = "StateActionLink"
+						}))
+				}
+			}
+		</div>
+	</div>
 	<div id="History">
 		<h2>@(T.Text("Current History"))</h2>
 		<div class="viewHistoryItem">
@@ -94,84 +95,50 @@
 	</div>
 
 	@if (Model.Resources.Count > 0) {
-		<h2 id="Resources">@(T.Text("Resources"))</h2>
-		<div id="resourcePanel">
-			@using (Html.BeginForm("Actualize", "WorkOrder")) {
-				bool SelfAssignView = (bool)ViewData["UnAssigned"];
-				<fieldset>
-					@(Html.Hidden("OriginalValuesModel", SerializationUtils.Serialize(Model.Resources)))
-					@(Html.Hidden("WorkOrderID", ViewData["WorkOrderID"]))
-					<table>
-						<tr>
-							@if (!SelfAssignView) {
-								<th>
-									@Html.NBSP()
-								</th>
-								<th>
-									@(T.Text("Actualize"))
-								</th>
-							}
-							<th>
-								@(T.Text("Demanded"))
-							</th>
-							<th>
-								@(T.Text("Actual"))
-							</th>
-							<th>
-								@(T.Text("Remaining"))
-							</th>
-							@*			@if (!Request.Browser.IsMobileDevice) { *@
-							<th class="Subject" colspan="2">
-								@(T.Text("Description"))
-							</th>
-							@*			}*@
-						</tr>
-						@foreach (var item in Model.Resources) {
-							string checkId = String.Format("CheckBox_{0}", item.Id);
-							string inputId = String.Format("Input_{0}", item.Id);
-							<tr class="Info">
-								@if (!SelfAssignView) {
-									<td>@(item.CanBeActualized && Model.CurrentWorkOrderStateHistory.WorkOrderState.FilterAsOpen ? Html.CheckBox(checkId) : MvcHtmlString.Create("&nbsp;"))</td>
-									if (item.CanBeActualized && Model.CurrentWorkOrderStateHistory.WorkOrderState.FilterAsOpen) {
-										<td>@(Html.TextBox(inputId, item.RemainingToActualize, item.InputAttributes))@(Html.ValidationMessage(inputId))</td>
-									}
-									else {
-										<td></td>
-									}
-								}
-								<td class="IntegralValue">@(item.Quantity)</td>
-								<td class="IntegralValue">@(item.ActualQuantity)</td>
-								<td class="IntegralValue">@(item.RemainingToActualize)</td>
-								@*
-									@if (Request.Browser.IsMobileDevice) {
-										</tr>
-										<tr class="Subject">
-										<td>@Html.NBSP()</td>
-									}
-								*@
-								@(Html.ValueOnly(Thinkage.Libraries.TypeInfo.StringTypeInfo.Universe, item.Description.Description, item.Description.HiddenDescription))@Html.NBSP()@(Html.ValueOnly(Thinkage.Libraries.TypeInfo.StringTypeInfo.Universe, item.Description.Location, item.Description.HiddenLocation))
-							</tr>
-						}
-					</table>
-					@if (Model.CurrentWorkOrderStateHistory.WorkOrderState.FilterAsOpen && !SelfAssignView) {
-						var whyCantWe = Model.CannotActualizeBecause;
-						if (whyCantWe == null) {
-							<p><input type="submit" value="@(T.Text("Actualize Resources"))" /></p>
-						}
-						else {
-							<p>@T.Text("Actualize Resources is disabled.")<br />@whyCantWe</p>
-						}
+		<h3 id="Resources">@(T.Text("Resources"))</h3>
+		using (Html.BeginForm("Actualize", "WorkOrder")) {
+			bool SelfAssignView = (bool)ViewData["UnAssigned"];
+			<fieldset>
+				@(Html.Hidden("OriginalValuesModel", SerializationUtils.Serialize(Model.Resources)))
+				@(Html.Hidden("WorkOrderID", ViewData["WorkOrderID"]))
+				@foreach (var item in Model.Resources) {
+					string checkId = String.Format("CheckBox_{0}", item.Id);
+					string inputId = String.Format("Input_{0}", item.Id);
+				<div class="viewPanel">
+					@(Html.WOResourceIdentifier(item.ResourceIdentification))
+					@if (item.ResourceIdentification.QuantityOnHand.HasValue) {
+						@(Html.LabelValueRow(T.Text("On Hand"), Thinkage.Libraries.TypeInfo.IntegralTypeInfo.Universe, item.ResourceIdentification.QuantityOnHand.Value))
 					}
-				</fieldset>
-			}
-		</div>
+					@(Html.LabelValueRow(T.Text("Demanded"), Thinkage.Libraries.TypeInfo.StringTypeInfo.Universe, item.Quantity))
+					@(Html.LabelValueRow(T.Text("Actual"), Thinkage.Libraries.TypeInfo.StringTypeInfo.Universe, item.ActualQuantity))
+					@(Html.LabelValueRow(T.Text("Remaining"), Thinkage.Libraries.TypeInfo.StringTypeInfo.Universe, item.RemainingToActualize))
+					@if (!SelfAssignView && item.CanBeActualized && Model.CurrentWorkOrderStateHistory.WorkOrderState.FilterAsOpen) {
+						<div class="ResourceRow">
+							<div class="ResourceLabel">@T.Text("Actualize")</div>
+							<div class="ResourceValue">@(Html.TextBox(inputId, item.RemainingToActualize, item.InputAttributes))@(Html.ValidationMessage(inputId))</div>
+							<div class="ResourceCheckbox">@Html.CheckBox(checkId)</div>
+						</div>
+					}
+				</div>
+				}
+				@if (Model.CurrentWorkOrderStateHistory.WorkOrderState.FilterAsOpen && !SelfAssignView) {
+					var whyCantWe = Model.CannotActualizeBecause;
+					if (whyCantWe == null) {
+						<p><input type="submit" value="@(T.Text("Actualize Resources"))" /></p>
+					}
+					else {
+						<p>@T.Text("Actualize Resources is disabled.")<br />@whyCantWe</p>
+					}
+				}
+			</fieldset>
+		}
 	}
-	<div>
-		@(Html.BackOperation(T.Text("Back to List"), TempData))
-	</div>
+}
+@section BackToContent {
+	@(Html.BackOperation(T.Text("Back to List"), TempData))
 }
 @section scripts {
-	<script type="text/javascript">
+	<script>
 		$(function () {
 			$("input[type='text']").focus(function () {
 				$(this).css("background-color", "yellow");

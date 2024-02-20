@@ -819,15 +819,6 @@
   <data name="TableObjects§MainBoss-defined Security Role" xml:space="preserve">
     <value>Función de seguridad definida por MainBoss</value>
   </data>
-  <data name="TableObjects§Security Role" xml:space="preserve">
-    <value>Función de seguridad</value>
-  </data>
-  <data name="TableObjects§Security Role§mplural" xml:space="preserve">
-    <value>Funciones de seguridad</value>
-  </data>
-  <data name="TableObjects§Security Role§msingular" xml:space="preserve">
-    <value>Función de seguridad</value>
-  </data>
   <data name="TableObjects§Maintenance Forecast" xml:space="preserve">
     <value>Pronóstico Mantenimiento</value>
   </data>
@@ -1274,6 +1265,15 @@
   </data>
   <data name="TableObjects§Scheduling Basis§fsingular" xml:space="preserve">
     <value>Fundamentos de Programación</value>
+  </data>
+  <data name="TableObjects§Security Role" xml:space="preserve">
+    <value>Función de seguridad</value>
+  </data>
+  <data name="TableObjects§Security Role§mplural" xml:space="preserve">
+    <value>Funciones de seguridad</value>
+  </data>
+  <data name="TableObjects§Security Role§msingular" xml:space="preserve">
+    <value>Función de seguridad</value>
   </data>
   <data name="TableObjects§Service Contract§mplural" xml:space="preserve">
     <value>Contratos de Servicio</value>
@@ -2004,8 +2004,14 @@
   <data name="Thinkage.MainBoss.Controls§." xml:space="preserve">
     <value>.</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§'{0}'    deleted on {1}" xml:space="preserve">
+    <value>'{0}'    eliminado en {1}</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§{0} {0.IsOne ? error was : errors were } encountered during import." xml:space="preserve">
     <value>{0} {0.IsOne ? error fue encontrado : se han encontrado errores } durante la importación.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§{0} merged contact {1} into contact {2}" xml:space="preserve">
+    <value>{0} contacto combinado {1} en contacto {2}</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§A password is not required for this authentication method" xml:space="preserve">
     <value>No se requiere una contraseña para este método de autenticación</value>
@@ -2331,6 +2337,9 @@
   <data name="Thinkage.MainBoss.Controls§Change the parent location of the selected records to be the destination location" xml:space="preserve">
     <value>Cambiar la ubicación de los padres de los registros seleccionados para ser el lugar de destino</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Choose the contact which the selected contacts will be merged into" xml:space="preserve">
+    <value>Elija el contacto en el que se fusionarán los contactos seleccionados</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Choose the location where the selected records will be moved to" xml:space="preserve">
     <value>Elija el lugar donde los registros seleccionados se moverán a</value>
   </data>
@@ -2382,6 +2391,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Contact could not be created for senders email address" xml:space="preserve">
     <value>Contacto No se podría crear para los remitentes dirección de correo electrónico</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Contacts that have associated MainBoss Users cannot be completely merged." xml:space="preserve">
+    <value>Los contactos que tienen usuarios de MainBoss asociados no se pueden fusionar completamente.</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Content is not printable" xml:space="preserve">
     <value>El contenido no es imprimible</value>
@@ -2701,6 +2713,12 @@
   <data name="Thinkage.MainBoss.Controls§Do not use encryption" xml:space="preserve">
     <value>No utilice cifrado</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Do you want to merge contact:" xml:space="preserve">
+    <value>¿Quieres fusionar contacto?</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Do you want to merge contacts:" xml:space="preserve">
+    <value>¿Quieres fusionar contactos?</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Due Date" xml:space="preserve">
     <value>Fecha de vencimiento</value>
   </data>
@@ -2740,6 +2758,9 @@
   <data name="Thinkage.MainBoss.Controls§Email" xml:space="preserve">
     <value>Correo Electrónico</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Email held for review: is stale dated or originated as an auto response" xml:space="preserve">
+    <value>Correo electrónico retenido para revisión: está anticuado o se originó como respuesta automática</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Email Message" xml:space="preserve">
     <value>Mensaje de Correo Electrónico</value>
   </data>
@@ -2751,9 +2772,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Email rejected: Senders Contact could not be created since another Contact exists with the same code" xml:space="preserve">
     <value>Email rechazó: Remitentes Contacto No se puede crear desde otra Contacto existe con el mismo código</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Email held for review: is stale dated or originated as an auto response" xml:space="preserve">
-    <value>Correo electrónico retenido para revisión: está anticuado o se originó como respuesta automática</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Email rejected: Senders email address doesn't match any Contact" xml:space="preserve">
     <value>Correo electrónico rechazada: Remitentes dirección de correo electrónico no coincide con ninguna de contacto</value>
@@ -2980,6 +2998,9 @@
   <data name="Thinkage.MainBoss.Controls§HTML Content" xml:space="preserve">
     <value>Contenido HTML</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§If you or other users are currently using the contact which is the source of the merge, the merge may cause transient errors in MainBoss, restarting MainBoss will fix the problem" xml:space="preserve">
+    <value>Si usted u otros usuarios están utilizando actualmente el contacto que es la fuente de la combinación, la combinación puede causar errores transitorios en MainBoss, reiniciar MainBoss solucionará el problema</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Image Content" xml:space="preserve">
     <value>Contenido de Imagen</value>
   </data>
@@ -3036,6 +3057,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Internet Message Access Protocol version 4 revision 1 over SSL" xml:space="preserve">
     <value>Protocolo de acceso a mensajes de Internet versión 4 revisión 1 a través de SSL</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§into contact:" xml:space="preserve">
+    <value>en contacto:</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Item Pricing and Purchasing History" xml:space="preserve">
     <value>Precios Artículo e Histórico de Compra</value>
@@ -3168,6 +3192,21 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Maximum" xml:space="preserve">
     <value>Máximo</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Merge all contact information from the selected contacts into the target contact" xml:space="preserve">
+    <value>Combine toda la información de contacto de los contactos seleccionados en el contacto objetivo</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Merge into Contact" xml:space="preserve">
+    <value>Fusionarse en contacto</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Merge to" xml:space="preserve">
+    <value>Fusionarse con</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Merging contacts" xml:space="preserve">
+    <value>Fusionar contactos</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Merging contacts should only be done when you are the sole user of MainBoss" xml:space="preserve">
+    <value>La fusión de contactos solo debe hacerse cuando usted es el único usuario de MainBoss</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Messages {0} ({1}/{2:X4})" xml:space="preserve">
     <value>Mensajes {0} ({1}/{2:X4})</value>
@@ -3451,6 +3490,9 @@
   <data name="Thinkage.MainBoss.Controls§Only include Storage Assignments which have a preferred Price Quote associated with them" xml:space="preserve">
     <value>Solo incluir Trasteros Asignado que tienen una cotización de Precio preferido asociados con estos</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Only one Contact at a time can be merged" xml:space="preserve">
+    <value>Solo un contacto a la vez puede ser fusionado</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Only one record is allowed" xml:space="preserve">
     <value>Sólo un registro se le permite</value>
   </data>
@@ -3579,6 +3621,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Physical Count" xml:space="preserve">
     <value>Conteo Físico</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§plus {0} more" xml:space="preserve">
+    <value>más {0} más</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§PM Batch has been committed" xml:space="preserve">
     <value>PM por lote ha sido comprometido</value>
@@ -4033,6 +4078,12 @@
   <data name="Thinkage.MainBoss.Controls§Seasonal exceptions" xml:space="preserve">
     <value>Excepciones de Temporada</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Select a contact to be merged from" xml:space="preserve">
+    <value>Seleccione un contacto para ser fusionado</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Select a contact to be merged into" xml:space="preserve">
+    <value>Seleccione un contacto para ser fusionado en</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Select from database users" xml:space="preserve">
     <value>Seleccione usuarios de bases de datos</value>
   </data>
@@ -4167,6 +4218,12 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Source Type" xml:space="preserve">
     <value>Tipo de Fuente</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§SQL User '{0}'" xml:space="preserve">
+    <value>Usuario SQL '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§SQL user '{0}' (Windows user '{1}')" xml:space="preserve">
+    <value>Usuario SQL '{0}' (Usuario de Windows '{1}')</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Start" xml:space="preserve">
     <value>Iniciar</value>
@@ -4398,6 +4455,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§These limits specify the entire year." xml:space="preserve">
     <value>Estos límites especifican el año entero</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§This action cannot be undone" xml:space="preserve">
+    <value>Esta acción no se puede deshacer</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§This command needs to show a form for some but not all of the selected records" xml:space="preserve">
     <value>Este comando necesita mostrar un formulario para algunos pero no para todos los registros seleccionados</value>

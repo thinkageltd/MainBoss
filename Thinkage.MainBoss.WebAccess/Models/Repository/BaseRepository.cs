@@ -27,7 +27,6 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			GoverningTableRight = GetTableRightsGroup(governingTableRight);
 		}
 		private readonly TableOperationRightsGroup GoverningTableRight;
-
 		public DatabaseConnection Connection {
 			get {
 				return ((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance).Connection;
@@ -55,8 +54,21 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 				return (Thinkage.MainBoss.Database.MB3Client)((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance).GetInterface<ISessionDatabaseFeature>().Session;
 			}
 		}
+		#region Accounting/Cost Right Support
+		public bool HasViewCostRight([Invariant]string rightName, out string disablerReason) {
+			Right right = Root.Rights.ViewCost.FindRightByName(rightName);
+			var pd = (MainBossPermissionDisabler)PermissionsManager.GetPermission(right);
+			disablerReason = pd.DisablerTip;
+			return pd.Enabled;
+		}
+		public bool HasActionRight([Invariant]string rightName, out string disablerReason) {
+			Right right = Root.Rights.Action.FindRightByName(rightName);
+			var pd = (MainBossPermissionDisabler)PermissionsManager.GetPermission(right);
+			disablerReason = pd.DisablerTip;
+			return pd.Enabled;
+		}
+		#endregion
 		#region Table Right support
-
 		protected TableOperationRightsGroup GetTableRightsGroup([Invariant]string tableName) {
 			return (TableOperationRightsGroup)Root.Rights.Table.FindDirectChild(tableName);
 		}
@@ -76,6 +88,5 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			}
 		}
 		#endregion
-
 	}
 }

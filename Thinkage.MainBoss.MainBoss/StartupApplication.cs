@@ -16,6 +16,7 @@ namespace Thinkage.MainBoss.MainBoss {
 				if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed) {
 					// Clickonce deployments can configure their URLs to include the mainboss parameters as ?param1&param2&...
 					// E.g. to change the language (CultureInfo), put ?/ci:es after the deployment url
+					// .NET PORTABILITY - SetupInformation and ActivationArguments not supported in .NET Core 3.0
 					string[] urlargs = System.AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData;
 					if (urlargs != null && urlargs.Length > 0) {
 						string[] splitArgs = urlargs[0].Split('?');

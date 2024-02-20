@@ -15,9 +15,9 @@
 	<div class="viewPanel">
 		<table>
 			<tbody>
-				@(Html.LabelValue(dsMB.Path.T.Request.F.Number, Model.RequestNumber))
-				@(Html.LabelValue(dsMB.Path.T.Request.F.Subject, Model.RequestSubject))
-				@(Html.LabelValueMultiLine(dsMB.Path.T.Request.F.Description, Model.RequestDescription, false))
+				@(Html.LabelValueRow(dsMB.Path.T.Request.F.Number, Model.RequestNumber))
+				@(Html.LabelValueRow(dsMB.Path.T.Request.F.Subject, Model.RequestSubject))
+				@(Html.LabelValueRowMultiLine(dsMB.Path.T.Request.F.Description, Model.RequestDescription, false))
 			</tbody>
 		</table>
 		<div id="LastComment">
@@ -32,17 +32,15 @@
 			@(Html.HiddenFor(s => s.RequestStateID))
 			@(Html.HiddenFor(s => s.RequestStateHistoryStatusID))
 			@(Html.HiddenFor(s => s.CurrentStateHistoryID))
-			@(Html.InputControlFor(f, s => s.EffectiveDate, null, new
-		{
-			@hidden = "true"
-		}))
+			@(Html.InputControlFor(f, s => s.EffectiveDate, null, new {
+					@hidden = "true"
+				}))
 			<p>
-				@(Html.LabelOnly(T.Text("Confirm your email address")))
-				@(Html.InputControlFor(f, m => m.EmailAddress, null, new {
-					@data_val = "true",
-					@data_val_required = "This is required"
-					
-			}))
+				@(Html.InputControlFor(f, m => m.EmailAddress, T.Text("Confirm your email address"), new {
+						@data_val = "true",
+						@data_val_required = "This is required"
+
+					}))
 			</p>
 			@(Html.InputControlFor(f, s => s.CommentToRequestor, T.Text("Your Remarks")))
 			<p>
@@ -50,6 +48,9 @@
 			</p>
 		</fieldset>
 	}
+}
+@section BackToContent {
+	<div class="Action">@(Html.ActionLink(T.Text("Home"), "Index", "Home"))</div>
 }
 @section scripts {
 	<script type="text/javascript">
@@ -60,6 +61,7 @@
 				active: false,
 				heightStyle: "content"
 			});
+			$(".ui-datepicker-trigger").hide();
 		});
 	</script>
 }

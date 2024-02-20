@@ -28,7 +28,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
   </PropertyGroup>
@@ -359,6 +359,7 @@
     <Compile Include="SolutionSettings.cs" />
     <Compile Include="Translation.cs" />
     <Compile Include="DatabaseEnums.cs" />
+    <Compile Include="Upgrade\BuiltinFunctionUpdateUpgradeStep.cs" />
     <Compile Include="Upgrade\DBVersionHandler30.cs" />
     <Compile Include="Upgrade\EmailMessageToPartsUpgradeStep.cs" />
     <Compile Include="Upgrade\PermissionUpgradeStep.cs" />

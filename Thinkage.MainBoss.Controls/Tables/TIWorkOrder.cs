@@ -625,7 +625,7 @@ namespace Thinkage.MainBoss.Controls {
 						)
 					),
 					// No value is provided when editing so commented out for now					IsPreventiveValueNodeBuilder(dsMB.Path.T.WorkOrder, new NonDefaultCol(), ECol.AllReadonly),
-					SingleRequestorGroup(dsMB.Path.T.WorkOrder.F.RequestorID, true),
+					TIContact.SingleRequestorGroup(dsMB.Path.T.WorkOrder.F.RequestorID, true),
 					TblColumnNode.New(dsMB.Path.T.WorkOrder.F.UnitLocationID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.Location.F.Code)), ECol.Normal),
 					TblMultiColumnNode.New(
 						new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal, new NonDefaultCol() },
@@ -2239,8 +2239,8 @@ namespace Thinkage.MainBoss.Controls {
 							new DCol(Fmt.SetDisplayPath(dsMB.Path.T.WorkOrder.F.Number)),
 							new ECol(Fmt.SetPickFrom(TIWorkOrder.AllWorkOrderChargebackBrowsePickerTblCreator))),
 						TblColumnNode.New(dsMB.Path.T.Chargeback.F.Code, DCol.Normal, ECol.Normal),
-						ContactGroupTblLayoutNode(
-							ContactGroupRow(dsMB.Path.T.Chargeback.F.BillableRequestorID, dsMB.Path.T.BillableRequestor.F.ContactID.PathToReferencedRow, ECol.Normal)
+						TIContact.ContactGroupTblLayoutNode(
+							TIContact.ContactGroupRow(dsMB.Path.T.Chargeback.F.BillableRequestorID, dsMB.Path.T.BillableRequestor.F.ContactID.PathToReferencedRow, ECol.Normal)
 						),
 						TblColumnNode.New(dsMB.Path.T.Chargeback.F.TotalCost, DCol.Normal, ECol.AllReadonly),
 						TblColumnNode.New(dsMB.Path.T.Chargeback.F.Comment, DCol.Normal, ECol.Normal)),
@@ -2916,7 +2916,7 @@ namespace Thinkage.MainBoss.Controls {
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
-						SingleContactGroup(dsMB.Path.T.WorkOrderAssignee.F.ContactID),
+						TIContact.SingleContactGroup(dsMB.Path.T.WorkOrderAssignee.F.ContactID),
 						TblColumnNode.New(dsMB.Path.T.WorkOrderAssignee.F.ReceiveNotification, new FeatureGroupArg(MainBossServiceAsWindowsServiceGroup), DCol.Normal, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.WorkOrderAssignee.F.Comment, DCol.Normal, ECol.Normal)
 					),
@@ -3067,7 +3067,7 @@ namespace Thinkage.MainBoss.Controls {
 			},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
-						ContactGroupTblLayoutNode(ContactGroupRow(dsMB.Path.T.BillableRequestor.F.ContactID, ECol.Normal)),
+						TIContact.ContactGroupTblLayoutNode(TIContact.ContactGroupRow(dsMB.Path.T.BillableRequestor.F.ContactID, ECol.Normal)),
 						TblColumnNode.New(dsMB.Path.T.BillableRequestor.F.AccountsReceivableCostCenterID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.CostCenter.F.Code)), ECol.Normal, CommonNodeAttrs.PermissionToViewAccounting, CommonNodeAttrs.PermissionToEditAccounting),
 						TblColumnNode.New(dsMB.Path.T.BillableRequestor.F.Comment, DCol.Normal, ECol.Normal)),
 					BrowsetteTabNode.New(TId.Chargeback, TId.BillableRequestor,
@@ -3493,7 +3493,7 @@ namespace Thinkage.MainBoss.Controls {
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
 						TblFixedRecordTypeNode.New(),
-						ContactGroupTblLayoutNode(ContactGroupRow(dsMB.Path.T.Employee.F.ContactID, ECol.Normal)),
+						TIContact.ContactGroupTblLayoutNode(TIContact.ContactGroupRow(dsMB.Path.T.Employee.F.ContactID, ECol.Normal)),
 						TblColumnNode.New(dsMB.Path.T.Employee.F.Desc, DCol.Normal, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.Employee.F.Comment, DCol.Normal, ECol.Normal)
 					),

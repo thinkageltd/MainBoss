@@ -1,15 +1,5 @@
-﻿#And we need the PLATFORMSDK bin directory in our path using the NETFX 4.0 tools
-#$env:path = $env:PLATFORMSDK + '\bin\NETFX 4.6 Tools' + ';' + $env:path
-
-#write-host $env:path
-
-$magetoolRoot = $null
-if ($env:PLATFORMSDK -ne $null) {
-	$magetoolRoot = $env:PLATFORMSDK
-}
-else {
-	throw "PLATFORMSDK environment variable must be set to use MAGE tools"
-}
+﻿# adjust location of magetoolRoot as needed given microsoft shuffles it around constantly.
+$magetoolRoot = "C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v10.0A"
 $magetool = join-path -path "$magetoolRoot" -childpath (join-path -path 'bin' (join-path -path 'NETFX 4.6.1 Tools' -childpath 'mage.exe'))
 . (resolve-path '..\SignProcedure.ps1')
 ################# FUNCTIONS ############################

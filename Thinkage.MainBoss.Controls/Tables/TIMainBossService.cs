@@ -435,7 +435,7 @@ namespace Thinkage.MainBoss.Controls {
 						//TODO: The following filter shows Requestors that have a NULL email address field in the contact record; the user might expect the email value to be set in the contact record (but there is no structure to permit this)
 						//TODO: THe email address field in the Contact record might be more than a simple EMAIL address (it might be in the form "Display Name <display@email.com>" in which case the filter will not find it.
 						//		we are considering separating the Display Name and Address into distinct fields in the Contact and EmailRequest records.
-						new CompositeView.Init(new InSubBrowserTarget(TIGeneralMB3.RequestorPickerNodeId, new BrowserFilterTarget(TIGeneralMB3.RequestorEmailFilterNodeId)), dsMB.Path.T.EmailRequest.F.RequestorEmailAddress)
+						new CompositeView.Init(new InSubBrowserTarget(TIContact.RequestorPickerNodeId, new BrowserFilterTarget(TIContact.RequestorEmailFilterNodeId)), dsMB.Path.T.EmailRequest.F.RequestorEmailAddress)
 					})) //
 			);
 		}

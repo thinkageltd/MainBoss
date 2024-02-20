@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Thinkage.MainBoss.Controls</RootNamespace>
     <AssemblyName>Thinkage.MainBoss.Controls</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <FileUpgradeFlags>
@@ -79,6 +79,10 @@
     <ProjectReference Include="..\Thinkage.Libraries.Presentation\Thinkage.Libraries.Presentation.csproj">
       <Project>{DED2C505-EF02-483C-95A6-F2AD5B60A081}</Project>
       <Name>Thinkage.Libraries.Presentation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.Sql\Thinkage.Libraries.Sql.csproj">
+      <Project>{F83BDC83-15EB-4778-A127-80BB86A7ACE3}</Project>
+      <Name>Thinkage.Libraries.Sql</Name>
     </ProjectReference>
     <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Layout\Thinkage.Libraries.XAF.Database.Layout.csproj">
       <Project>{D329682F-5E4C-496D-9DF4-E94896DAEC54}</Project>
@@ -153,6 +157,7 @@
     <Compile Include="Services\ServiceControl.cs" />
     <Compile Include="SolutionSettings.cs" />
     <Compile Include="Tables\DataImportExportPackage.cs" />
+    <Compile Include="Tables\TIContact.cs" />
     <Compile Include="Tbl.cs" />
     <Compile Include="Tables\TId.cs" />
     <Compile Include="Tables\TIMainBossService.cs" />

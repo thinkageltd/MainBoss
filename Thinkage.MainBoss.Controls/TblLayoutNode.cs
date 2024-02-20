@@ -44,7 +44,8 @@ namespace Thinkage.MainBoss.Controls {
 	public static class CommonNodeAttrs {
 		public static TblLayoutNode.ICtorArg PermissionToViewAccounting = new PermissionToView(Root.Rights.Action.ViewAccounting);
 		public static TblLayoutNode.ICtorArg PermissionToEditAccounting = new PermissionToEdit(Root.Rights.Action.EditAccounting);
-		public static TblLayoutNode.ICtorArg PermissionToEditGlobalSettings = new PermissionToEdit(Root.Rights.Action.Customize);	// TODO: For now. Do we want a separate permission for this?
+		public static TblLayoutNode.ICtorArg PermissionToEditGlobalSettings = new PermissionToEdit(Root.Rights.Action.Customize);   // TODO: For now. Do we want a separate permission for this?
+		public static TblLayoutNode.ICtorArg PermissionToMergeContacts = new PermissionToEdit(Root.Rights.Action.MergeContacts);
 		public static TblLayoutNode.ICtorArg ViewUnitValueCosts = new PermissionToView(Root.Rights.ViewCost.UnitValue);
 		public static TblLayoutNode.ICtorArg[] ViewTotalWorkOrderCosts = new TblLayoutNode.ICtorArg[] {
 			new PermissionToView(Root.Rights.ViewCost.WorkOrderInside),

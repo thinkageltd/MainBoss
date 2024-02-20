@@ -36,7 +36,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <SignAssembly>true</SignAssembly>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <GenerateManifests>true</GenerateManifests>
     <ApplicationManifest>Resources\MainBoss.manifest</ApplicationManifest>
     <TargetZone>Custom</TargetZone>
@@ -58,12 +58,12 @@
     <ProductName>MainBoss Advanced</ProductName>
     <PublisherName>Thinkage</PublisherName>
     <SuiteName>MainBoss</SuiteName>
-    <MinimumRequiredVersion>4.2.0.22</MinimumRequiredVersion>
+    <MinimumRequiredVersion>4.2.2.5</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>WebDeploy.htm</WebPage>
     <TrustUrlParameters>true</TrustUrlParameters>
-    <ApplicationRevision>22</ApplicationRevision>
-    <ApplicationVersion>4.2.0.22</ApplicationVersion>
+    <ApplicationRevision>5</ApplicationRevision>
+    <ApplicationVersion>4.2.2.5</ApplicationVersion>
     <UseApplicationTrust>true</UseApplicationTrust>
     <ExcludeDeploymentUrl>true</ExcludeDeploymentUrl>
     <PublishWizardCompleted>true</PublishWizardCompleted>

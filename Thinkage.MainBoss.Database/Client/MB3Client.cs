@@ -574,30 +574,6 @@ namespace Thinkage.MainBoss.Database {
 					);
 			}
 		}
-		#region No Server Connection
-		public class ConnectionDefinitionNoServer : DBClient.Connection {
-			public ConnectionDefinitionNoServer()
-				: base(new SQLite.Connection(delegate () {
-					// we want the database files to exist under the User Personal folder in a directory called MainBoss
-					return System.IO.Path.ChangeExtension(
-						System.IO.Path.Combine(
-						Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-						KB.I("MainBoss"),
-						KB.I("Database")), KB.I(".mdf"));
-				}), dsMB.Schema) {
-			}
-		}
-		public class MBConnectionDefinitionNoServer : ConnectionDefinitionNoServer, IMBConnectionParameters {
-			public MBConnectionDefinitionNoServer(DatabaseEnums.ApplicationModeID applicationMode, bool compactBrowsers)
-				: base() {
-				ApplicationMode = applicationMode;
-				CompactBrowsers = compactBrowsers;
-			}
-			public DatabaseEnums.ApplicationModeID ApplicationMode { get; private set; }
-			public bool CompactBrowsers { get; private set; }
-			public DBClient.Connection Connection { get { return this; } }
-		}
-		#endregion
 		#endregion
 		#region Constructors
 		/// <summary>

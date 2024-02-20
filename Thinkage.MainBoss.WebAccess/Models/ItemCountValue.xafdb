@@ -13,9 +13,12 @@
   <merge uri="../../Thinkage.MainBoss.Database/Schema/Inventory/ActualItemLocation.xafdb"/>
   <merge uri="../../Thinkage.MainBoss.Database/Schema/Inventory/PermanentItemLocation.xafdb"/>
   <merge uri="../../Thinkage.MainBoss.Database/Schema/Inventory/Item.xafdb"/>
+	<merge uri="../../Thinkage.MainBoss.Database/Schema/Inventory/ItemCategory.xafdb"/>
   <merge uri="../../Thinkage.MainBoss.Database/Schema/Inventory/ItemAdjustmentCode.xafdb"/>
+	<merge uri="../../Thinkage.MainBoss.Database/Schema/Inventory/ItemPrice.xafdb"/>
   <merge uri="../../Thinkage.MainBoss.Database/Schema/Inventory/ItemCountValue.xafdb"/>
   <merge uri="../../Thinkage.MainBoss.Database/Schema/Inventory/ItemCountValueVoid.xafdb"/>
   <merge uri="../../Thinkage.MainBoss.Database/Schema/Inventory/ItemActivity.xafdb"/>
   <merge uri="../../Thinkage.MainBoss.Database/Schema/UnitOfMeasure.xafdb"/>
+	<merge uri="../../Thinkage.MainBoss.Database/Schema/Vendor.xafdb"/>
 </database>

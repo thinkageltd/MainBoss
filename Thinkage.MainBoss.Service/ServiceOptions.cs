@@ -2,13 +2,11 @@
 using System.Linq;
 using System.Security.Principal;
 using Thinkage.Libraries;
-using Thinkage.Libraries.Service;
-using Thinkage.Libraries.DBILibrary;
 using Thinkage.Libraries.CommandLineParsing;
-using Thinkage.Libraries.Translation;
-using System.Data.SqlClient;
-using Thinkage.MainBoss.Database;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
+using Thinkage.Libraries.Service;
 using Thinkage.MainBoss.Database.Service;
+using System.Data.SqlClient;
 
 namespace Thinkage.MainBoss.Service {
 	public class ServiceOptions {
@@ -25,26 +23,27 @@ namespace Thinkage.MainBoss.Service {
 			try {
 				startupOptions.Parse(args);
 				startupOptions.CheckRequired();
-				ServiceName				= startupOptions.ServiceName.HasValue			? startupOptions.ServiceName.Value			: null;
-				MBVersion				= startupOptions.MBVersion.HasValue				? startupOptions.MBVersion.Value			: null;
-				ServiceComputer			= startupOptions.ServiceComputer.HasValue		? startupOptions.ServiceComputer.Value		: null;
-				DatabaseName			= startupOptions.DatabaseName.HasValue			? startupOptions.DatabaseName.Value			: null;
-				DatabaseServer			= startupOptions.DatabaseServer.HasValue		? startupOptions.DatabaseServer.Value		: null; 
-				Connection				= startupOptions.Connection.HasValue			? startupOptions.Connection.Value			: null; 
-				ManuallyRun				= startupOptions.ManuallyRun.HasValue			? startupOptions.ManuallyRun.Value			: false;
-				TestConfiguration		= startupOptions.TestConfiguration.HasValue		? startupOptions.TestConfiguration.Value	: false;
-				Force					= startupOptions.Force.HasValue					? startupOptions.Force.Value				: false;
-				CreateService			= startupOptions.CreateService.HasValue			? startupOptions.CreateService.Value		: false;
-				DeleteService			= startupOptions.DeleteService.HasValue			? startupOptions.DeleteService.Value		: false;
-				GrantAccess				= startupOptions.GrantAccess.HasValue			? startupOptions.GrantAccess.Value			: false;
-				ServiceUserid			= startupOptions.ServiceUserid.HasValue			? startupOptions.ServiceUserid.Value		: null;
-				sqlPass					= startupOptions.SQLPassword.HasValue			? startupOptions.SQLPassword.Value			: null;
-				sqlToken				= startupOptions.SecurityToken.HasValue			? startupOptions.SecurityToken.Value		: null;
-				SQLUserid				= startupOptions.SQLUserid.HasValue				? startupOptions.SQLUserid.Value			: null;
-				SQLPassword				= startupOptions.SQLPassword.HasValue			? startupOptions.ServicePassword.Value		: null;
-				ListMainBossServices	= startupOptions.ListMainBossServices.HasValue	? startupOptions.ListMainBossServices.Value : false;
-				UpdateService			= startupOptions.UpdateService.HasValue			? startupOptions.UpdateService.Value		: false;
-				authenicationName		= startupOptions.Authentication.HasValue		? startupOptions.Authentication.Value		: null;
+				ServiceName = startupOptions.ServiceName.HasValue ? startupOptions.ServiceName.Value : null;
+				MBVersion = startupOptions.MBVersion.HasValue ? startupOptions.MBVersion.Value : null;
+				ServiceComputer = startupOptions.ServiceComputer.HasValue ? startupOptions.ServiceComputer.Value : null;
+				DatabaseName = startupOptions.DatabaseName.HasValue ? startupOptions.DatabaseName.Value : null;
+				DatabaseServer = startupOptions.DatabaseServer.HasValue ? startupOptions.DatabaseServer.Value : null;
+				Connection = startupOptions.Connection.HasValue ? startupOptions.Connection.Value : null;
+				ManuallyRun = startupOptions.ManuallyRun.HasValue ? startupOptions.ManuallyRun.Value : false;
+				TestConfiguration = startupOptions.TestConfiguration.HasValue ? startupOptions.TestConfiguration.Value : false;
+				Force = startupOptions.Force.HasValue ? startupOptions.Force.Value : false;
+				CreateService = startupOptions.CreateService.HasValue ? startupOptions.CreateService.Value : false;
+				DeleteService = startupOptions.DeleteService.HasValue ? startupOptions.DeleteService.Value : false;
+				GrantAccess = startupOptions.GrantAccess.HasValue ? startupOptions.GrantAccess.Value : false;
+				ServiceUserid = startupOptions.ServiceUserid.HasValue ? startupOptions.ServiceUserid.Value : null;
+				ServicePassword = startupOptions.ServicePassword.HasValue ? startupOptions.ServicePassword.Value : null;
+				sqlPass = startupOptions.SQLPassword.HasValue ? startupOptions.SQLPassword.Value : null;
+				sqlToken = startupOptions.SecurityToken.HasValue ? startupOptions.SecurityToken.Value : null;
+				SQLUserid = startupOptions.SQLUserid.HasValue ? startupOptions.SQLUserid.Value : null;
+				SQLPassword = startupOptions.SQLPassword.HasValue ? startupOptions.SQLPassword.Value : null;
+				ListMainBossServices = startupOptions.ListMainBossServices.HasValue ? startupOptions.ListMainBossServices.Value : false;
+				UpdateService = startupOptions.UpdateService.HasValue ? startupOptions.UpdateService.Value : false;
+				authenicationName = startupOptions.Authentication.HasValue ? startupOptions.Authentication.Value : null;
 			}
 			catch (Thinkage.Libraries.CommandLineParsing.Exception ex)	{
 				var m = Libraries.Translation.MessageBuilder.Build(ex.Message, startupOptions.Help);
@@ -76,13 +75,13 @@ namespace Thinkage.MainBoss.Service {
 			var isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
 			if (!isAdmin && (DeleteService || CreateService || UpdateService))
 				throw new GeneralException(KB.K("{0} options all require the program to be run as an Administrator"), KB.I("/DELeteService /CreateService /UpdateService"));
-			if( ServiceName != null && !ServiceName.All(e=>Char.IsLetterOrDigit(e)) ) 
+			if (ServiceName != null && !ServiceName.All(e => Char.IsLetterOrDigit(e)))
 				throw new GeneralException(KB.K("Service Name must be alphanumeric with no spaces"));
-			if( ServiceUserid != null  && !(CreateService || UpdateService) )
+			if (ServiceUserid != null && !(CreateService || UpdateService))
 				throw new GeneralException(KB.K("{0} can only be used with {1}"), KB.I("/ServiceUsername"), KB.I("/CreateService | /UpdateService"));
 			if (ServicePassword != null && ServiceUserid == null)
 				throw new GeneralException(KB.K("{0} can only be used with {1}"), KB.I("/ServicePassword"), KB.I("/ServiceUsername"));
-			if( DeleteService && (CreateService || UpdateService)) 
+			if (DeleteService && (CreateService || UpdateService))
 				throw new GeneralException(KB.K("{0} must be used with no other options"), KB.I("/DELeteService"));
 			if (isAService && ServiceComputer != null )
 				throw new GeneralException(KB.K("{0} option can only be used in user interactive mode"), KB.I("/ServiceComputer"));
@@ -93,16 +92,16 @@ namespace Thinkage.MainBoss.Service {
 			if ( !string.IsNullOrWhiteSpace(sqlPass) )
 				SQLPassword = sqlPass;
 			if ( !string.IsNullOrWhiteSpace(authenicationName) )
-				AuthenicationMethod = (new SQLAuthenticationFromName(authenicationName)).Method;
-			if (AuthenicationMethod == null && SQLPassword != null && SQLUserid != null)
-				AuthenicationMethod = SqlAuthenticationMethod.SqlPassword;
-			if ((AuthenicationMethod == null || AuthenicationMethod == SqlAuthenticationMethod.NotSpecified) && (SQLPassword != null || SQLUserid != null) )
+				AuthenticationMethod = (new SQLAuthenticationFromName(authenicationName)).Method;
+			if (AuthenticationMethod == null && SQLPassword != null && SQLUserid != null)
+				AuthenticationMethod = SqlAuthenticationMethod.SqlPassword;
+			if ((AuthenticationMethod == null || AuthenticationMethod == SqlAuthenticationMethod.NotSpecified) && (SQLPassword != null || SQLUserid != null) )
 				throw new GeneralException(KB.K("{0} and {1} should not be supplied without specifying a {2}"), KB.I("/SQLUsernane"), KB.I("/SQLPassword"), KB.I("/Authentication"));
-			if ((AuthenicationMethod == SqlAuthenticationMethod.ActiveDirectoryPassword || AuthenicationMethod == SqlAuthenticationMethod.ActiveDirectoryPassword) && SQLPassword == null)
+			if ((AuthenticationMethod == SqlAuthenticationMethod.ActiveDirectoryPassword || AuthenticationMethod == SqlAuthenticationMethod.ActiveDirectoryPassword) && SQLPassword == null)
 				throw new GeneralException(KB.K("A {0} is needed with {1} or {2}"), KB.I("/SQLPassword"), KB.I("/Authentication:SQLAuthentication"), KB.I("/Authentication:ActiveDirectoryPassword"));
-			else if ((AuthenicationMethod ?? SqlAuthenticationMethod.NotSpecified) != SqlAuthenticationMethod.NotSpecified && SQLUserid == null )
+			else if ((AuthenticationMethod ?? SqlAuthenticationMethod.NotSpecified) != SqlAuthenticationMethod.NotSpecified && SQLUserid == null )
 				throw new GeneralException(KB.K("A {0} is needed with {1} or {2} or {3}"), KB.I("/SQLUsername"), KB.I("/Authentication:SQLAuthentication"), KB.I("/Authentication:ActiveDirectoryPassword"),KB.I("/Authentication:ActiveDirectoryIntegrated"));
-			else if ((AuthenicationMethod != null && AuthenicationMethod != SqlAuthenticationMethod.NotSpecified) && (SQLPassword == null || SQLUserid == null))
+			else if ((AuthenticationMethod != null && AuthenticationMethod != SqlAuthenticationMethod.NotSpecified) && (SQLPassword == null || SQLUserid == null))
 				throw new GeneralException(KB.K("{0} and {1} are required with all authentication methods other than {0}=\"{1}\""), KB.I("/SQLUsername"), KB.I("/SQLPassword"), KB.I("/Authentication=WindowsAuthentication"));
 			if (!DomainAndIP.IsThisComputer(ServiceComputer) && (ManuallyRun || TestConfiguration))
 				throw new GeneralException(KB.K("{0} can not be used on a remote computer"), KB.I("/TestConfiguration"));
@@ -211,7 +210,7 @@ namespace Thinkage.MainBoss.Service {
 		public string ServicePassword { get; set; }
 		public string SQLUserid { get; set; }
 		public string SQLPassword { get; set; }
-		public SqlAuthenticationMethod? AuthenicationMethod { get; set; }
+		public SqlAuthenticationMethod? AuthenticationMethod { get; set; }
 		public string Connection { get; set; }
 		public bool ManuallyRun { get; set; }
 		public bool TestConfiguration { get; set; }

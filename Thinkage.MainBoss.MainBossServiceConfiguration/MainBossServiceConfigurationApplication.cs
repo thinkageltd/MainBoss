@@ -196,10 +196,12 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 					dbParms = CheckServiceCmdLine(ServiceParameters, dbParms, OperationType == ServiceOpType.Delete ? null : ServiceBinary, ServiceUtilities.MinRequiredServiceVersion(DBConnection));
 			}
 			catch (System.Exception ex) {
-				if (!(ex is GeneralException))
-					ex = new GeneralException(ex, KB.K("Errors in MainBoss Service configuration. The Windows Service for MainBoss must be reconfigured"));
-				Log.LogError(Thinkage.Libraries.Exception.FullMessage(ex));
-				throw ex;
+				var rex = ex;
+				if (!(rex is GeneralException))
+					rex = new GeneralException(ex, KB.K("Errors in MainBoss Service configuration. The Windows Service for MainBoss must be reconfigured"));
+				Log.LogError(Thinkage.Libraries.Exception.FullMessage(rex));
+				if( rex != ex ) throw rex;
+				throw;
 			}
 		}
 		protected void VerifyDatabaseServer(string computer) {

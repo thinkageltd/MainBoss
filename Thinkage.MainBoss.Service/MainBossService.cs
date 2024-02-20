@@ -156,8 +156,8 @@ namespace Thinkage.MainBoss.Service {
 						builder.Password = ServiceOptions.SQLPassword;
 					if (!string.IsNullOrWhiteSpace(ServiceOptions.DatabaseServer))
 						builder.DataSource = ServiceOptions.DatabaseServer;
-					if (ServiceOptions.AuthenicationMethod != null)
-						builder.Authentication = ServiceOptions.AuthenicationMethod.Value;
+					if (ServiceOptions.AuthenticationMethod != null)
+						builder.Authentication = ServiceOptions.AuthenticationMethod.Value;
 					if (string.IsNullOrWhiteSpace(builder.DataSource) || builder.DataSource == ".")
 						builder.DataSource = DomainAndIP.MyDnsName;
 				}
@@ -166,7 +166,7 @@ namespace Thinkage.MainBoss.Service {
 				}
 				cmdParms.ConnectionInfo = new SQLConnectionInfo(builder);
 			}
-			else if (!string.IsNullOrWhiteSpace(ServiceOptions.SQLUserid) || ServiceOptions.AuthenicationMethod != null || !string.IsNullOrWhiteSpace(ServiceOptions.SQLPassword))
+			else if (!string.IsNullOrWhiteSpace(ServiceOptions.SQLUserid) || ServiceOptions.AuthenticationMethod != null || !string.IsNullOrWhiteSpace(ServiceOptions.SQLPassword))
 				throw new GeneralException(KB.K("Database connection information was not supplied"));
 			if (System.Threading.Thread.CurrentThread.Name == null)
 				System.Threading.Thread.CurrentThread.Name = cmdParms.ServiceCode ?? KB.I("MainBossService");
@@ -230,8 +230,11 @@ namespace Thinkage.MainBoss.Service {
 				LogErrorAndExit(1, Strings.Format(KB.K("'{0}' is configured with Windows Service for MainBoss '{1}' not '{2}'"), DBConnection.DisplayNameLowercase, dbParms.ServiceComputer, DomainAndIP.MyDnsName));
 			if (!DomainAndIP.SameComputer(cmdParms.ServiceComputer, dbParms.ServiceComputer))
 				LogErrorAndExit(1, Strings.Format(KB.K("'{0}' is configured with its Windows Service for MainBoss on computer '{1}' not computer '{2}'"), DBConnection.DisplayNameLowercase, dbParms.ServiceComputer, DomainAndIP.MyDnsName));
-			var isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
-			var workingUserid = Environment.UserName[Environment.UserName.Length - 1] == '$' ? Utilities.NETWORKSERVICE_DISPLAYNAME : isAdmin ? Utilities.LOCALADMIN_DISPLAYNAME : Environment.UserName;
+			var idenity = WindowsIdentity.GetCurrent();
+			var isAdmin = new WindowsPrincipal(idenity).IsInRole(WindowsBuiltInRole.Administrator);
+			var workingUserid = idenity.Name;
+			if (workingUserid[workingUserid.Length - 1] == '$')
+				workingUserid = isAdmin ? Utilities.LOCALADMIN_DISPLAYNAME : Utilities.NETWORKSERVICE_DISPLAYNAME;
 			if (string.Compare(dbParms.ServiceUserid, workingUserid, true) != 0) { // needed in case User change Service Userid using the Windows Server Manager
 				dbParms.ServiceUserid = workingUserid;
 				ServiceUtilities.UpdateServiceRecord(DBConnection, dbParms, ServiceLogging ?? this);

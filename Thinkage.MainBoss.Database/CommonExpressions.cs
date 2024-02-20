@@ -51,10 +51,10 @@ namespace Thinkage.MainBoss.Database {
 		/// Difference between EarliestEndDate and the original EndDateEstimate in the workorder
 		/// </summary>
 		public static SqlExpression EndingDelay(dsMB.PathClass.PathToWorkOrderRow WO, dsMB.PathClass.PathToWorkOrderExtrasRow WOR) {
-			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(WO.F.EndDateEstimate).Plus(OneDayTimeSpan), new SqlExpression(WOR.F.EarliestEndDate));
+			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(WO.F.EndDateEstimate), new SqlExpression(WOR.F.EarliestEndDate));
 		}
 		public static SqlExpression NegatedEndingDelay(dsMB.PathClass.PathToWorkOrderRow WO, dsMB.PathClass.PathToWorkOrderExtrasRow WOR) {
-			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(WOR.F.EarliestEndDate), new SqlExpression(WO.F.EndDateEstimate).Plus(OneDayTimeSpan));
+			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(WOR.F.EarliestEndDate), new SqlExpression(WO.F.EndDateEstimate));
 		}
 		// A common definition of overdue on a work order
 		public static SqlExpression Overdue(dsMB.PathClass.PathToWorkOrderRow WO, dsMB.PathClass.PathToWorkOrderExtrasRow WOR) {
@@ -100,10 +100,10 @@ namespace Thinkage.MainBoss.Database {
 			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(WO.F.StartDateEstimate), new SqlExpression(WO.F.EndDateEstimate)).Plus(OneDayTimeSpan);
 		}
 		public static SqlExpression MinimumDuration(dsMB.PathClass.PathToWorkOrderExtrasRow WOR) {
-			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(WOR.F.EarliestOpenDate), new SqlExpression(WOR.F.EarliestEndDate));
+			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(WOR.F.EarliestOpenDate), new SqlExpression(WOR.F.EarliestEndDate)).Plus(OneDayTimeSpan);
 		}
 		public static SqlExpression ActualDuration(dsMB.PathClass.PathToWorkOrderExtrasRow WOR) {
-			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(WOR.F.FirstOpenedDate), new SqlExpression(WOR.F.EndedDateIfEnded));
+			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(WOR.F.FirstOpenedDate), new SqlExpression(WOR.F.EndedDateIfEnded)).Plus(OneDayTimeSpan);
 		}
 		#endregion
 		#region Lifetime
