@@ -1,6 +1,7 @@
 ﻿<#
 .SYNOPSIS
 Create the objects necessary in Azure AD and Exchange to allow the MainBoss Service to fetch mail using PO or IMAP with OAuth2 authentication.
+There must be an existing MainBoss Service Configuration in the MainBoss database.
 
 .DESCRIPTION
 This command script creates an Application Registration, gives it appropriate scopes, provides it with sign-on credentials,
@@ -13,23 +14,23 @@ None.
 None.
 
 .NOTES
-Version 4.2.4.14 $Modtime: 2023-03-12 11:02:53-04:00 $
+Version 4.2.4.18 $Modtime: 2023-04-03 08:13:58-04:00 $
 #>
 [CmdletBinding(PositionalBinding=$false)]
 param (
-<<<<<<< HEAD
     [Parameter(Mandatory=$false)][string]
-        # Specifies the name to use for the Application Registration, and the Display Name for other objects
+        # Specifies the name to use for the Application Registration and the Display Name for other objects
         $ApplicationName = "MainBoss Service",
     [Parameter(Mandatory=$true)][string]
-        # Specifies the connection string for the SQL server. This should contain the server name, database name, and authentication credentials.
+        # Specifies the connection string for the SQL server. This should contain the SQL server name and database name.
+        # If windows authentication is not used then authentication credentials must also be supplied.
         $SQLConnectString
 )
 # This seems a bit complicated because the model is intended for applications that will be published and used in several domains (tenants)
 # Thus there is the App Registration, which is sort of a prototype, and the Enterprise Application, which is an instance.
 # The App Registration can be marked as multi-tenant (so it can be instantiated in several domains) but the Credentials here will be the same for all.
 # In our case we have a single-tenant App Registration, and we only instantiate it in our own domain. It is the Enterprise Application which ultimately
-# if granted permissions to access the mailbox.
+# is granted permissions to access the mailbox.
 
 # There are two ways to grant permissions (scopes) to the Enterprise Application:
 # One is to add them to the App Registration, in which case they are automatically inherited by the Enterprise Application, except that because
@@ -62,7 +63,7 @@ if (!$?)
 {
     exit
 }    
-
+Install-Module SqlServer -Scope CurrentUser
 $configRow = Invoke-Sqlcmd -connectionstring $SQLConnectString -query "select MailUserName from ServiceConfiguration"
 $EMailAddress = $configRow.MailUserName
 
@@ -94,7 +95,7 @@ if ($appObject = Get-AzureADApplication -Filter "DisplayName eq '$($ApplicationN
 # Before creating the App Registration, we need to build a list of the Scopes.
 # We know them by name, and we have to search the appropriate objects to find their Id's.
 # The scopes we want are in two different applications so we need to do two searches
-# NOTE: Some day we might also want SMPT.Send from this group
+# NOTE: Some day we might also want SMTP.Send from this group
 # NOTE: The resource accesses are now being added to the Enterprise Application, further down, to remove the need for Admin Consent grant.
 $authorizingPrincipal = get-azureadserviceprincipal -filter "displayName eq 'Office 365 Exchange Online'"
 #$accesses = New-Object -TypeName "microsoft.open.azuread.model.requiredresourceAccess" `
