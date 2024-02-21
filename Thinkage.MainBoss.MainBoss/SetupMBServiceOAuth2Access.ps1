@@ -31,9 +31,9 @@ to the Exchange server.
 
 The user must be a valid MainBoss user who has permission to modify the Service Configuration.
 
-Version 4.2.4.20 $Modtime: 2023-06-27 09:30:55-04:00 $
+Version 4.2.4.20
 #>
-[CmdletBinding(PositionalBinding=$false)]
+[CmdletBinding(PositionalBinding=$false, DefaultParameterSetName="Help")]
 param (
 	[Parameter(Mandatory=$true,parameterSetName="Setup")]
 		# Set up the objects and permissions required to give the MainBoss Service access to a requests mailbox.
@@ -49,9 +49,13 @@ param (
 	[Parameter(Mandatory=$true,parameterSetName="Refresh")]
 		# Refresh an existing MainBoss Service connection with a new password.
 		[switch] $Refresh,
+	[Parameter(Mandatory=$false,parameterSetName="Help")]
+		# Use the web browser to show some help on using this script. This is the default command
+		[switch] $Help,
 	[Parameter(Mandatory=$true,parameterSetName="Setup")]
 	[Parameter(Mandatory=$true,parameterSetName="RemoveCurrent")]
 	[Parameter(Mandatory=$true,parameterSetName="Refresh")]
+	[Parameter(Mandatory=$false,parameterSetName="Help")]
         # Specifies the connection string for the SQL server. 
 		# When used with windows authentication the format can be something like
 		#   "server=mysqlerver.domain.com;initial catalog=MyDataBaseName;Integrated Security=True"
@@ -62,21 +66,25 @@ param (
 		#   "server=mysqlerver.domain.com\InstanceName;initial catalog=TyDataBaseName;Integrated Security=True"
         [string]$SQLConnectString = $null,
 	[Parameter(Mandatory=$true,parameterSetName="RemoveNonCurrent")]
+	[Parameter(Mandatory=$false,parameterSetName="Help")]
 		# specifies the mailbox to remove permissions from and implicitly the tenant (domain) in which changes should be made.
 		[string]$EmailAddress = $null,
 	[Parameter(Mandatory=$false,parameterSetName="RemoveCurrent")]
 	[Parameter(Mandatory=$false,parameterSetName="RemoveNonCurrent")]
+	[Parameter(Mandatory=$false,parameterSetName="Help")]
 		# specifies that the application and its permissions should be removed from all mailboxes rather than just the one used by the MainBoss Service,
 		# and that applications with certain SignInAudience values are allowed to be deleted.
 		[switch]$Force,
 	[Parameter(Mandatory=$false,parameterSetName="Setup")]
 	[Parameter(Mandatory=$false,parameterSetName="RemoveCurrent")]
 	[Parameter(Mandatory=$true,parameterSetName="RemoveNonCurrent")]
+	[Parameter(Mandatory=$false,parameterSetName="Help")]
         # Specifies the name to use for the Application Registration and the Display Name for other objects.
         [string]$ApplicationName = $null,
 	[Parameter(Mandatory=$false,parameterSetName="Setup")]
 	[Parameter(Mandatory=$false,parameterSetName="RemoveCurrent")]
 	[Parameter(Mandatory=$false,parameterSetName="Refresh")]
+	[Parameter(Mandatory=$false,parameterSetName="Help")]
 		# the path to the MainBoss Install directory.
 		[string]$MainBossInstallDirectory = $([Environment]::GetEnvironmentVariable("ProgramFiles(x86)")+"\Thinkage\MainBoss")
  
@@ -108,6 +116,27 @@ param (
 
 # We need a name for the app, for the service principal, and for the Exchange service principal.
 # right now they are all the same, done here. We could have an option for the "root name" and options to override each specific name
+if ($PsCmdlet.ParameterSetName -eq "Help") {
+	# The user either explicitly asked for help, or did not specify any verb
+	# Note that if a verb is given with -Help the user must still supply all the required parameters.
+	start "https://www.mainboss.com/support/MB424/help/OAuth2Setup.htm"
+	if ($Setup) {
+	#	"Show setup help"
+	}
+	elseif ($Remove) {
+	#	"Show Remove help"
+	}
+	elseif ($Refresh) {
+	#	"Show Refresh help"
+	}
+	elseif ($Help) {
+	#	"Show overall help"
+	}
+	else {
+	#	"Mention a verb is required/Show some help!"
+	}
+	exit
+}
 if ($Setup -and [string]::IsNullOrEmpty($ApplicationName)) {
 	$ApplicationName = "MainBoss Service"
 }
@@ -151,11 +180,36 @@ if (![String]::IsNullOrEmpty($SqlConnectString)) {
 	$cmd.Connection = $conn
 	$EmailAddress = $cmd.ExecuteScalar()
 	$conn.Close()
-}
 
-# Extract the tenant name from $emailAddress
-# This is the same thing the OAuth2Manager does in the service, with the same concerns about error checking and pretty emails like "John Smith <jsmith@xxx.ca>"
-$tenantName = $EMailAddress.Split('@')[1]
+	if ($EmailAddress -is [System.DBNull] -or [string]::IsNullOrEmpty($EmailAddress)) {
+		throw "E-mail address in Service Configuration record is null or empty"
+	}
+	# Clean up the e-mail address if it looks like "text <real_address>"
+	# Verify the address has the appropriate form word@word[\.word]*\.?
+	try {
+		$parsedEmailAddress = new-object System.Net.Mail.MailAddress $emailAddress
+	}
+	catch {
+		throw "E-mail address '$emailAddress' in Service Configuration record has an invalid format: $($_.Exception.InnerException.Message)"
+	}
+}
+else {
+	# e-mail address explicitly provided
+	if ([string]::IsNullOrEmpty($EmailAddress)) {
+		throw "Specified E-mail address is null or empty"
+	}
+	# Clean up the e-mail address if it looks like "text <real_address>"
+	# Verify the address has the appropriate form word@word[\.word]*\.?
+	try {
+		$parsedEmailAddress = new-object System.Net.Mail.MailAddress $emailAddress
+	}
+	catch {
+		throw "Specified E-mail address '$emailAddress' has an invalid format: $($_.Exception.InnerException.Message)"
+	}
+}
+write-host "Setting up/Modifying access to mailbox '$emailAddress'"
+# Extract the tenant name from $parsedEmailAddress
+$tenantName = $parsedEmailAddress.Host
 
 # Create the certificate: $cert = New-SelfSignedCertificate -Subject "CN=Kevins Test MBRequests" -CertStoreLocation "Cert:\CurrentUser\My" -KeyExportPolicy Exportable -KeySpec Signature -KeyLength 2048 -KeyAlgorithm RSA -HashAlgorithm SHA256
 # Export the certificate so you can upload it to make a credential for the spp registration: Export-Certificate -Cert $cert -FilePath "C:\Users\kpmartin\documents\MBService.cer"
@@ -263,7 +317,7 @@ if ($Setup) {
 	# Give the Enterprise Application permission to access the mailbox
 	Connect-ExchangeOnline -Organization $tenantName -ShowBanner:$false
 	$ExchangePrincipalObject = New-ServicePrincipal -AppId $appObject.AppId -objectid $ADprincipalObject.Id -DisplayName $ExchangePrincipalName
-	$mailboxPermission = Add-MailboxPermission -Identity $emailAddress -User $ExchangePrincipalObject.ObjectID -AccessRights FullAccess
+	$mailboxPermission = Add-MailboxPermission -Identity $parsedEmailAddress.Address -User $ExchangePrincipalObject.ObjectID -AccessRights FullAccess
 
 	# Place the client secret into the MB config record. We have to figure out how to encrypt this MB-style.
 	# Alternatively we could give the MBService exe file an option to update this information.
@@ -302,9 +356,9 @@ elseif ($Remove) {
 				throw $errorObject
 			}
 		}
-		# Note that $EmailAddress may be an alias and so not the Identity of the mailbox.
+		# Note that $parsedEmailAddress may be an alias and so not the Identity of the mailbox.
 		Connect-ExchangeOnline -Organization $tenantName -ShowBanner:$false
-		$targetMailbox = Get-Mailbox -Identity $EmailAddress
+		$targetMailbox = Get-Mailbox -Identity $parsedEmailAddress.Address
 		if (!$Force) {
 			# Refuse to do anything if other mailboxes use the principal
 			foreach ($ADprincipalObject in $(Get-MgServicePrincipal -filter "Appid eq '$($ApplicationObject.AppId)'")) {
@@ -436,7 +490,7 @@ catch {
 	if ($Setup) {
 		# If we died doing a Setup, delete anything we've created.
 		if ($mailboxPermission -ne $null) {
-			Remove-MailboxPermission -Identity $emailAddress -User $ExchangePrincipalObject.ObjectID -AccessRights FullAccess
+			Remove-MailboxPermission -Identity $parsedEmailAddress.Address -User $ExchangePrincipalObject.ObjectID -AccessRights FullAccess
 		}
 		if ($ExchangePrincipalObject -ne $null) {
 			Remove-ServicePrincipal -identity $ExchangePrincipalObject.ObjectID
