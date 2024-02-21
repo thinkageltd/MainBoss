@@ -32,7 +32,7 @@
 			phoneTag.SetInnerText(phone);
 			TagBuilder emailTag = new TagBuilder("div");
 			emailTag.AddCssClass("Email");
-			emailTag.InnerHtml = htmlHelper.Mailto(htmlHelper.Encode(email).Replace("@", "&#8203;@"), email)?.ToString(); // allow to fold at @ sign
+			emailTag.InnerHtml = htmlHelper.Mailto(htmlHelper.Encode(email ?? "").Replace("@", "&#8203;@"), email ?? "")?.ToString(); // allow to fold at @ sign
 			if (deleted) {
 				nameTag.AddCssClass("Deleted");
 				phoneTag.AddCssClass("Deleted");
