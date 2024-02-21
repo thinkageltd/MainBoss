@@ -12,7 +12,7 @@
 		"*" to generate new GUID every build and always replace same version with new version
 		without changing the version number
 	-->
-	<Product Id="A2A29A82-E7AA-4054-A7FD-6C13259B4A3C"
+	<Product Id="B9B876FA-1D0F-4D41-9668-C5F8F5AE7A56"
 			 Name="$(var.PRODUCTNAME) $(var.VERSION).$(var.UPDATE)"
 			 Language="1033"
 			 Version="$(var.VERSION).$(var.UPDATE).$(var.BUILD)"

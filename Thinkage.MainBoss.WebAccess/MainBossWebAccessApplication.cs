@@ -119,19 +119,16 @@ namespace Thinkage.MainBoss.WebAccess {
 			// try as a mainboss user first
 			var validUsers = from u in rp.Users()
 							 where !u.Hidden.HasValue // Not hidden
-							 && string.Compare(u.AuthenticationCredential, userIdentification, true) == 0
+							 && u.AuthenticationCredential.ToLower().Contains(userIdentification.ToLower())
 							 select u;
-			AuthenticationEntities.User user;
-			switch (validUsers.Count()) {
-				case 0:
-					user = null;
+			AuthenticationEntities.User user = null;
+			StringComparer credentialComparer = StringComparer.Create(System.Globalization.CultureInfo.CurrentCulture, true);
+			foreach (var potential in validUsers) {
+				string[] potentialCredentials = potential.AuthenticationCredential.Split(';');
+				if (potentialCredentials.Contains(userIdentification, credentialComparer)) {
+					user = potential;
 					break;
-				case 1:
-					user = (AuthenticationEntities.User)validUsers.First();
-					break;
-				default:
-					user = null;
-					break;
+				}
 			}
 			if (user != null) {
 				UserID = user.Id;

@@ -173,7 +173,7 @@ namespace Thinkage.MainBoss.MBUtility {
 						if (row.F.LDAPGuid != null) {
 							ldapusers = LDAPEntry.GetActiveDirectoryGivenGuid(row.F.LDAPGuid.Value);
 							if (ldapusers.Count() == 1)
-								changed = LDAPEntry.SetContactValues(row, ldapusers.First(), PreservePrimaryEmail);
+								changed = LDAPEntryHelper.SetContactValues(row, ldapusers.First(), PreservePrimaryEmail);
 							else {
 								if( deleteContacts ) {
 									hideContacts(ds, row);
@@ -193,11 +193,11 @@ namespace Thinkage.MainBoss.MBUtility {
 								emailAddresses.Add(row.F.Email);
 							ldapusers = new List<LDAPEntry>();
 							foreach (var ea in emailAddresses) {
-								var ad = LDAPEntry.GetActiveDirectoryGivenEmail(ea);
-								ldapusers = ldapusers.Concat(ad);
+								var ad = LDAPEntry.GetActiveDirectoryUsingEmail(ea);
+								ldapusers = ldapusers.Union(ad, new LDAPEntryComparerByGuid());
 							}
 							if( ldapusers.Count() >= 1 && ldapusers.Select(e=>e.Guid).Distinct().Count() == 1 )
-								changed = LDAPEntry.SetContactValues(row, ldapusers.First(), PreservePrimaryEmail);
+								changed = LDAPEntryHelper.SetContactValues(row, ldapusers.First(), PreservePrimaryEmail);
 							else if( ldapusers.Count() > 1 )
 								System.Console.WriteLine(Strings.Format(KB.K("Contact '{0}' email address is defined in multiple Active Directory Users {1}"), row.F.Code, string.Join(", ", ldapusers.Select(e => Strings.IFormat("'{0}'", e.DisplayName)))));
 						}

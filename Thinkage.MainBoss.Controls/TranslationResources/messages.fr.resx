@@ -1281,6 +1281,10 @@
   <data name="Thinkage.MainBoss.Controls§Acknowledgements are sent by email" xml:space="preserve">
     <value>Remerciements sont envoyés par e-mail</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Active Directory does not have any relevant information for email address {0}" xml:space="preserve">
+    <value>Active Directory does not have any relevant information for email address {0}</value>
+    <comment>New!</comment>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Active filter shows only records less than this many days old" xml:space="preserve">
     <value>Filtre actif montre uniquement les enregistrements moins de cette vieille plusieurs jours</value>
   </data>

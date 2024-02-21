@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion" first="AlterDatabaseCompatibility" >
+  <!-- This 'patch' is intended to be run using the PickOrganization Run Script with this file as the input script and no input database specified.
+      It is to correct WO2020004 where performance may be impacted if the database is not at SQL Server 2008 compatibility (100)
+  -->
+  <table name="AlterDatabaseCompatibility">
+    <data>
+	ALTER DATABASE <ODB/> SET COMPATIBILITY_LEVEL = 100
+	</data>
+  </table>
+</dbconversion>
+

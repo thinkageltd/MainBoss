@@ -5715,7 +5715,7 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 						#endregion
 					},
 					new UpgradeStep[] { // 1.1.5.x  Release Versions of MB4.2
-						#region 1.1.5.0 -
+						#region 1.1.5.0 - 1.1.5.9
 						new UpgradeStepSequence( //1.1.5.0 Set the minimum app version to 4.2
 							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinMBAppVersion, new Version(4,2,0,4)),
 							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinAReqAppVersion, new Version(4,2,0,4)),
@@ -5744,7 +5744,19 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinAReqAppVersion, new Version(4,2,0,7)),
 							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinMBRemoteAppVersion, new Version(4,2,0,7))
 						),
-						new UpgradeStepSequence(// 1.1.5.3 (1.1.5.5 in HEAD) Replace date/interval functions with more effecient ones
+						// Databases upgraded with Head code had other steps numbered 1.1.5.3, 1.1.5.4, or 1.1.5.5.
+						// These did not make the cut for 4.2 and so have been combined into a single step 1.1.6.0.
+						// However, to ensure that DB's upgraded with the Head code in the interem properly get the remaining 1.1.5.x steps
+						// these three dummy steps have been added to synchronize the numbering.
+						// A side effect of this is that sites running 4.2 may re-execute up to three of the steps now numbered 1.1.5.6-1.1.5.10
+						// (formerly 1.1.5.3-1.1.5.8 in 4.2) but these steps are all idempotent: delete a view or function and re-create it.
+						new UpgradeStepSequence(// Dummy 1.1.5.3
+						),
+						new UpgradeStepSequence(// Dummy 1.1.5.4
+						),
+						new UpgradeStepSequence(// Dummy 1.1.5.5
+						),
+						new UpgradeStepSequence(// 1.1.5.6 (originally 1.1.5.3) Replace date/interval functions with more effecient ones
 							new BuiltinFunctionUpdateUpgradeStep("_DMinValue"),
 							new BuiltinFunctionUpdateUpgradeStep("_DClosestValue"),
 							new BuiltinFunctionUpdateUpgradeStep("_IIToSum"),
@@ -5760,17 +5772,17 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 							new BuiltinFunctionUpdateUpgradeStep("_INew"),
 							new BuiltinFunctionUpdateUpgradeStep("_IDateDiff")
 						),
-						new UpgradeStepSequence(// 1.1.5.4 Replace WorkOrderExtras view to properly calculate EarliestEndDate
+						new UpgradeStepSequence(// 1.1.5.7 (originally 1.1.5.4) Replace WorkOrderExtras view to properly calculate EarliestEndDate
 							new RemoveTableUpgradeStep(GetOriginalSchema, "MaintenanceForecastReport"),
 							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderExtras"),
 							new AddTableUpgradeStep("WorkOrderExtras"),
 							new AddTableUpgradeStep("MaintenanceForecastReport")
 						),
-						new UpgradeStepSequence(// 1.1.5.5 Add DemandID and POLineID to AccountingTransactionDerivations view
+						new UpgradeStepSequence(// 1.1.5.8 (originally 1.1.5.5) Add DemandID and POLineID to AccountingTransactionDerivations view
 							new RemoveTableUpgradeStep(GetOriginalSchema, "AccountingTransactionVariants"),
 							new AddTableUpgradeStep("AccountingTransactionVariants")
 						),
-						new UpgradeStepSequence(// 1.1.5.6 Correct ticks per day
+						new UpgradeStepSequence(// 1.1.5.9 (originally 1.1.5.6) Correct ticks per day and _IRatio definition
 							new BuiltinFunctionUpdateUpgradeStep("_IRatio"),
 							new RemoveTableUpgradeStep(GetOriginalSchema, "UnitReport"),
 							new AddTableUpgradeStep("UnitReport"),
@@ -5783,7 +5795,9 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedWorkOrderEndDateHistogram"),
 							new AddTableUpgradeStep("AssignedWorkOrderEndDateHistogram")
 						),
-						new UpgradeStepSequence(// 1.1.5.7 Correct _DClosestValue for dates on or before 1/jan/1900
+						#endregion
+						#region 1.1.5.10 -
+						new UpgradeStepSequence(// 1.1.5.10 (originally 1.1.5.7) Correct _DClosestValue for dates on or before 1/jan/1900
 							new BuiltinFunctionUpdateUpgradeStep("_DClosestValue")
 						),
 						#endregion

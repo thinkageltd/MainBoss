@@ -58,5 +58,5 @@
   <PrepareComputer DisableWindowsSearchService="true" />
   <SaveLocation PackagePath="#DESKTOPAPP_BASE#\#APPFILENAME#.msix" TemplatePath="#DESKTOPAPP_BASE#\the_template.xml" />
   <Installer Path="#DESKTOPAPP_BASE#\INSTALLFILE.msi" InstallLocation="#DESKTOPAPP_BASE#\installLoc" />
-  <PackageInformation PackageName="MainBoss#VERSION#" PackageDisplayName="MainBoss #VERSION#" PublisherName="#PUBLISHERNAME#" PublisherDisplayName="Thinkage" Version="#VERSION#.0" p4:PackageDescription="MainBoss #VERSION#" xmlns:p4="http://schemas.microsoft.com/msix/msixpackagingtool/template/1910" />
+  <PackageInformation PackageName="#PACKAGENAME#" PackageDisplayName="MainBoss" PublisherName="#PUBLISHERNAME#" PublisherDisplayName="Thinkage Ltd." Version="#VERSION#.0" p4:PackageDescription="MainBoss #VERSION#" xmlns:p4="http://schemas.microsoft.com/msix/msixpackagingtool/template/1910" />
 </MsixPackagingToolTemplate>

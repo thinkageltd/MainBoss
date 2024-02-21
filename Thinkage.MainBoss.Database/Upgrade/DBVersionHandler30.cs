@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
 using Thinkage.Libraries.DBILibrary;
@@ -38,14 +39,23 @@ namespace Thinkage.MainBoss.Database {
 		public override Guid? IdentifyUser(DBClient db) {
 			string system_user = DatabaseCreation.GetDatabaseSystemUser(db);
 
-			using(dsUser_1_1_4_2 dsUser = new dsUser_1_1_4_2(db.Session.Server)) {
+			using (dsUser_1_1_4_2 dsUser = new dsUser_1_1_4_2(db.Session.Server)) {
 				dsUser.DataSetName = KB.I("DBVersionHandler30.IdentifyUser.dsUser");
-
+				db.ViewAdditionalRows(dsUser, dsUser_1_1_4_2.Schema.T.User, new SqlExpression(dsUser_1_1_4_2.Path.T.User.F.Hidden).IsNull()
+					.And(new SqlExpression(dsUser_1_1_4_2.Path.T.User.F.AuthenticationCredential).Lower().Like( SqlExpression.Constant(Strings.IFormat("%{0}%", system_user))))); //Get all the valid User records
+				StringComparer credentialComparer = StringComparer.Create(System.Globalization.CultureInfo.CurrentCulture, true);
+				foreach (dsUser_1_1_4_2.UserRow row in dsUser.T.User.Rows) {
+					string[] potentialCredentials = row.F.AuthenticationCredential.Split(';');
+					if (potentialCredentials.Contains(system_user, credentialComparer))
+						return row.F.Id;
+				}
+#if OLD
 				db.ViewAdditionalRows(dsUser, dsUser_1_1_4_2.Schema.T.User, new SqlExpression(dsUser_1_1_4_2.Path.T.User.F.Hidden).IsNull()
 					.And(new SqlExpression(dsUser_1_1_4_2.Path.T.User.F.AuthenticationCredential).Lower().Eq(SqlExpression.Constant(system_user))));
+				// We allow multiple credential identifies separated by ; to match against the mainboss user record. Make a dictionary of UserID to Credentials, split on ; in the AuthenticationCredential fields
 
 				// We should have at most one row
-				switch(dsUser.T.User.Rows.Count) {
+				switch (dsUser.T.User.Rows.Count) {
 					case 0:
 						break;
 					case 1:
@@ -54,14 +64,16 @@ namespace Thinkage.MainBoss.Database {
 						break;
 				}
 			}
-			return null;
+#endif
+				return null;
+			}
 		}
-		#region UpdateUsersAfterRestore - DEPRECATED
+#region UpdateUsersAfterRestore - DEPRECATED
 		public override void UpdateUsersAfterRestore(DBClient client, System.Text.StringBuilder restoreErrors) {
 			// as of conversion to AuthenticationCredentials, post processing of User table is no longer performed after a restore. The SysAdmin restoring the database is responsible
 			// for establishing the proper credentials for the users.
 		}
-		#endregion
+#endregion
 		protected virtual object GetVariableValue(DBClient db, XAFDataSet ds, DBI_Variable v) {
 			// This is only called for DBVersion, and any MinAppVersion variables that may exist.
 			// Because we only have a DBClient we cannot use View(..., DBI_Variable) to get at the variables.
@@ -215,7 +227,7 @@ namespace Thinkage.MainBoss.Database {
 			}
 			return null;
 		}
-		#region UpdateUsersAfterRestore
+#region UpdateUsersAfterRestore
 		public override void UpdateUsersAfterRestore(DBClient client, System.Text.StringBuilder restoreErrors) {
 			ISession db = client.Session;
 			using(dsUser_1_0_4_14_To_1_1_4_1 ds = new dsUser_1_0_4_14_To_1_1_4_1(db.Server)) {
@@ -308,7 +320,7 @@ namespace Thinkage.MainBoss.Database {
 			public readonly string ScopeName;
 			public readonly string UserName;
 		}
-		#endregion
+#endregion
 		public override List<License> GetLicenses(DBClient db) {
 			List<License> result = new List<License>();
 			using(dsLicense_1_0_0_1_To_1_0_4_13 ds = new dsLicense_1_0_0_1_To_1_0_4_13(db.Session.Server)) {

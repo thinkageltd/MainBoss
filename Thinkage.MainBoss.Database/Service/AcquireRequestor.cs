@@ -130,8 +130,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			if (found.Count == 0) {
 				source = KB.K("Requestors {0} have the same email address '{1}' in Active Directory");
 				try {
-					LDAPUsers = LDAPEntry.GetActiveDirectoryGivenEmail(from);
-					LDAPUsers = LDAPUsers.Where(sr => sr.Disabled);
+					LDAPUsers = LDAPEntry.GetActiveDirectoryUsingEmail(from);
 					if (LDAPUsers.Count() > 1) {
 						var names = LDAPUsers.Select(e => e.UserPrincipalName);
 						var namesAsString = string.Join(KB.I(", "), names.OrderBy(e => e.ToLower()).Select(e => Strings.IFormat("'{0}'", e)));
@@ -293,8 +292,7 @@ namespace Thinkage.MainBoss.Database.Service {
 						CreateRequestors |= CreateFromLDAP | CreateFromEmail;
 						string pat = sRow.F.AcceptAutoCreateEmailPattern;
 						try {
-							pat = sRow.F.AcceptAutoCreateEmailPattern;
-							if (AcceptRegex != null && !String.IsNullOrWhiteSpace(pat))
+							if (!String.IsNullOrWhiteSpace(pat))
 								AcceptRegex = new Regex(pat, RegexOptions.IgnoreCase);
 						}
 						catch (ArgumentException ex) {
@@ -302,7 +300,7 @@ namespace Thinkage.MainBoss.Database.Service {
 						}
 						pat = sRow.F.RejectAutoCreateEmailPattern;
 						try {
-							if (RejectRegex != null && !String.IsNullOrWhiteSpace(pat))
+							if (!String.IsNullOrWhiteSpace(pat))
 								RejectRegex = new Regex(pat, RegexOptions.IgnoreCase);
 						}
 						catch (ArgumentException ex) {

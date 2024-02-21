@@ -331,7 +331,7 @@
     <Compile Include="Schema\Security\Security.cs" />
     <Compile Include="Service\AssignmentNotificationProcessor.cs" />
     <Compile Include="Service\AcquireContact.cs" />
-    <Compile Include="Service\LDAPEntry.cs" />
+    <Compile Include="Service\LDAPEntryHelper.cs" />
     <Compile Include="Service\RequestFromEmailActions.cs" />
     <Compile Include="Service\EmailHelper.cs" />
     <Compile Include="Service\EmailMessage.cs" />

@@ -1,4 +1,4 @@
-#It expects to find a base image (not part of vault because they are so large) beside this script and the Desktop converter program installed
+#It expects to use the MSIXPackagingTool that is installed
 #and you have started this script as Administrator
 . (resolve-path '..\SignProcedure.ps1')
 . (resolve-path '..\..\SolutionSettings.ps1')
@@ -18,14 +18,14 @@ $appIdentityStore = "ThinkageLtd.MainBoss"
 #The following was from using the MakeSelfSignedCertificateForStore procedure
 $StoreCertificateThumbprint = "AB655D498DF6F06B655EDE858989666FBFD4E3A9"
 $StoreCertificate = "7D069FE8-6815-4B7C-88A9-87E6294070E8"
-$template = (Get-Content .\MainBoss_template.xml).replace('#VERSION#',$VERSION).replace('#DESKTOPAPP_BASE#',$DESKTOPAPP_BASE).replace('#APPFILENAME#',$appIdentity).replace('#PUBLISHERNAME#',$Publisher) | set-content .\the_template.xml
+$template = (Get-Content .\MainBoss_template.xml).replace('#PACKAGENAME#',$appIdentity).replace('#VERSION#',$VERSION).replace('#DESKTOPAPP_BASE#',$DESKTOPAPP_BASE).replace('#APPFILENAME#',$appIdentity).replace('#PUBLISHERNAME#',$Publisher) | set-content .\the_template.xml
 MSIXPackagingTool.exe create-package --template .\the_template.xml
 ThinkageCodeSign "$DESKTOPAPP_BASE\$appIdentity.msix"
 #
 # Now do the Microsoft App store version
 #
 msiexec /uninstall INSTALLFILE.msi /quiet | out-null
-$template = (Get-Content .\MainBoss_template.xml).replace('#VERSION#',$VERSION).replace('#DESKTOPAPP_BASE#',$DESKTOPAPP_BASE).replace('#APPFILENAME#',$appIdentityStore).replace('#PUBLISHERNAME#',$PublisherStore) | set-content .\the_template.xml
+$template = (Get-Content .\MainBoss_template.xml).replace('#PACKAGENAME#',$appIdentityStore).replace('#VERSION#',$VERSION).replace('#DESKTOPAPP_BASE#',$DESKTOPAPP_BASE).replace('#APPFILENAME#',$appIdentityStore).replace('#PUBLISHERNAME#',$PublisherStore) | set-content .\the_template.xml
 MSIXPackagingTool.exe create-package --template .\the_template.xml
 &$signtool sign /fd SHA256 /a /sm /s "My" /n "$StoreCertificate" "$DESKTOPAPP_BASE\$appIdentityStore.msix"
 #Cleanup

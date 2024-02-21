@@ -44,8 +44,11 @@ namespace Thinkage.MainBoss.Database.Service {
 				return;
 			}
 			try { // try to enhance/find our LDAPUsers list; ignore any errors getting the LDAP list at this level
-				if (emailAddress != null)
-					LDAPUsers = LDAPUsers == null ? LDAPEntry.GetActiveDirectoryGivenEmail(emailAddress.Address) : LDAPUsers.Concat(LDAPEntry.GetActiveDirectoryGivenEmail(emailAddress.Address));
+				if (emailAddress != null) {
+					if (LDAPUsers == null)
+						LDAPUsers = new List<LDAPEntry>();
+					LDAPUsers = LDAPUsers.Union(LDAPEntry.GetActiveDirectoryUsingEmail(emailAddress.Address), new LDAPEntryComparerByGuid());
+				}
 				LDAPUsers = LDAPUsers?.Where(e => !e.Disabled);
 			}
 			catch { }
@@ -177,6 +180,8 @@ namespace Thinkage.MainBoss.Database.Service {
 						LDAPEntry LDAPUser = null;
 						if ( contactRow.F.LDAPGuid == null)
 							LDAPUser = LDAPUsers.First();
+						else
+							LDAPUser = LDAPUsers.Single(e => e.Guid == contactRow.F.LDAPGuid);
 						if (LDAPUser != null && contactRow.F.LDAPGuid == null) {
 							contactRow.F.LDAPGuid = LDAPUser.Guid;
 							changed = true;
@@ -186,10 +191,11 @@ namespace Thinkage.MainBoss.Database.Service {
 						if (contactRow.F.Email != from && !ServiceUtilities.CheckAlternateEmail(contactRow.F.AlternateEmail, from)) {
 							if (contactRow.F.Email == null)
 								contactRow.F.Email = from;
-							else if (contactRow.F.AlternateEmail == null)
-								contactRow.F.AlternateEmail = from;
-							else
-								contactRow.F.AlternateEmail = Strings.IFormat("{0} {1}", contactRow.F.AlternateEmail, from);
+							changed = true;
+						}
+						string newAlternate = LDAPEntryHelper.BuildAlternateEmail(contactRow.F.AlternateEmail, contactRow.F.Email, LDAPUser.Mail, LDAPUser.AlternateEmail);
+						if (LDAPEntryHelper.IsChangedValue(contactRow.F.AlternateEmail, newAlternate)) {
+							contactRow.F.AlternateEmail = newAlternate;
 							changed = true;
 						}
 					}
@@ -229,7 +235,7 @@ namespace Thinkage.MainBoss.Database.Service {
 					LDAPUser = primary.First();
 				}
 				if (LDAPUser != null)
-					LDAPEntry.SetContactValues(contactRow, LDAPUser);
+					LDAPEntryHelper.SetContactValues(contactRow, LDAPUser);
 			}
 			if (LDAPUser == null) { // use email to try to create a contact with the email address and Code = DisplayName
 				contactRow.F.Code = string.IsNullOrWhiteSpace(from.DisplayName) ? from.Address : from.DisplayName;

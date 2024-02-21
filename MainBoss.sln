@@ -241,7 +241,58 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HtmlHelp", "HtmlHelp", "{18C862CF-63AD-4A0F-B5EF-CD588B1AF5CB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "en", "en", "{0E2F7564-08A7-42A2-A041-8D52564B40AF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "manual", "manual", "{CC47BA94-4459-4535-B65F-324676F37CDA}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\manual\config.docx = Documentation\manual\config.docx
+		Documentation\manual\config.pdf = Documentation\manual\config.pdf
+		Documentation\manual\gettingstarted.docx = Documentation\manual\gettingstarted.docx
+		Documentation\manual\gettingstarted.pdf = Documentation\manual\gettingstarted.pdf
+		Documentation\manual\install.docx = Documentation\manual\install.docx
+		Documentation\manual\install.pdf = Documentation\manual\install.pdf
+		Documentation\manual\migration.docx = Documentation\manual\migration.docx
+		Documentation\manual\migration.pdf = Documentation\manual\migration.pdf
+		Documentation\manual\online42.docx = Documentation\manual\online42.docx
+		Documentation\manual\Online42.dotm = Documentation\manual\Online42.dotm
+		Documentation\manual\operations.docx = Documentation\manual\operations.docx
+		Documentation\manual\operations.pdf = Documentation\manual\operations.pdf
+		Documentation\manual\quickconfig.docx = Documentation\manual\quickconfig.docx
+		Documentation\manual\quickconfig.pdf = Documentation\manual\quickconfig.pdf
+		Documentation\manual\quickops.docx = Documentation\manual\quickops.docx
+		Documentation\manual\quickops.pdf = Documentation\manual\quickops.pdf
+		Documentation\manual\reference.docx = Documentation\manual\reference.docx
+		Documentation\manual\reference.pdf = Documentation\manual\reference.pdf
+		Documentation\manual\webops.docx = Documentation\manual\webops.docx
+		Documentation\manual\webops.pdf = Documentation\manual\webops.pdf
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{5E6F1817-F864-4BD3-84A9-CC45AF095F24}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\manual\Resources\AboutLogo.jpg = Documentation\manual\Resources\AboutLogo.jpg
+		Documentation\manual\Resources\Delete.png = Documentation\manual\Resources\Delete.png
+		Documentation\manual\Resources\Edit.png = Documentation\manual\Resources\Edit.png
+		Documentation\manual\Resources\Export.png = Documentation\manual\Resources\Export.png
+		Documentation\manual\Resources\Find_VS.png = Documentation\manual\Resources\Find_VS.png
+		Documentation\manual\Resources\mbmanual.css = Documentation\manual\Resources\mbmanual.css
+		Documentation\manual\Resources\PrintHS.png = Documentation\manual\Resources\PrintHS.png
+		Documentation\manual\Resources\PrintPreviewHS.png = Documentation\manual\Resources\PrintPreviewHS.png
+		Documentation\manual\Resources\Refresh.png = Documentation\manual\Resources\Refresh.png
+		Documentation\manual\Resources\Remove.png = Documentation\manual\Resources\Remove.png
+		Documentation\manual\Resources\View.png = Documentation\manual\Resources\View.png
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DesktopApp", "DesktopApp", "{DBC00BD8-FC89-497D-834D-4E1A30374F32}"
+	ProjectSection(SolutionItems) = preProject
+		Installation\DesktopApp\BuildDesktopApp.ps1 = Installation\DesktopApp\BuildDesktopApp.ps1
+		Installation\DesktopApp\MainBoss_template.xml = Installation\DesktopApp\MainBoss_template.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SqlUpgradePatch", "SqlUpgradePatch", "{210CD979-213A-4BC5-9ED1-F10C9DAD3A9F}"
+	ProjectSection(SolutionItems) = preProject
+		Installation\SqlUpgradePatch\IRatioFunctionUpgrade.xml = Installation\SqlUpgradePatch\IRatioFunctionUpgrade.xml
+		Installation\SqlUpgradePatch\SetCompatibilityLevel100.xml = Installation\SqlUpgradePatch\SetCompatibilityLevel100.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "en", "en", "{BCF70D41-8B69-4F7E-9760-7D3F8E6C83EB}"
 	ProjectSection(SolutionItems) = preProject
 		Installation\HtmlHelp\en\0000.htm = Installation\HtmlHelp\en\0000.htm
 		Installation\HtmlHelp\en\AboutLogo.jpg = Installation\HtmlHelp\en\AboutLogo.jpg
@@ -621,6 +672,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "en", "en", "{0E2F7564-08A7-
 		Installation\HtmlHelp\en\image042.png = Installation\HtmlHelp\en\image042.png
 		Installation\HtmlHelp\en\image043.png = Installation\HtmlHelp\en\image043.png
 		Installation\HtmlHelp\en\image044.png = Installation\HtmlHelp\en\image044.png
+		Installation\HtmlHelp\en\image045.png = Installation\HtmlHelp\en\image045.png
 		Installation\HtmlHelp\en\ImportedMaintenanceOrganizations.htm = Installation\HtmlHelp\en\ImportedMaintenanceOrganizations.htm
 		Installation\HtmlHelp\en\ImportingandExportingDatainTables.htm = Installation\HtmlHelp\en\ImportingandExportingDatainTables.htm
 		Installation\HtmlHelp\en\ImportingDataintoaMainBossTable.htm = Installation\HtmlHelp\en\ImportingDataintoaMainBossTable.htm
@@ -845,6 +897,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "en", "en", "{0E2F7564-08A7-
 		Installation\HtmlHelp\en\Report.Work Order Per Job Outside Actual (with PO).htm = Installation\HtmlHelp\en\Report.Work Order Per Job Outside Actual (with PO).htm
 		Installation\HtmlHelp\en\Report.Work Order Per Job Outside.htm = Installation\HtmlHelp\en\Report.Work Order Per Job Outside.htm
 		Installation\HtmlHelp\en\Report.Work Order Priority.htm = Installation\HtmlHelp\en\Report.Work Order Priority.htm
+		Installation\HtmlHelp\en\Report.Work Order Resource Actual.htm = Installation\HtmlHelp\en\Report.Work Order Resource Actual.htm
 		Installation\HtmlHelp\en\Report.Work Order Resource Demand.htm = Installation\HtmlHelp\en\Report.Work Order Resource Demand.htm
 		Installation\HtmlHelp\en\Report.Work Order State History Summary.htm = Installation\HtmlHelp\en\Report.Work Order State History Summary.htm
 		Installation\HtmlHelp\en\Report.Work Order State History.htm = Installation\HtmlHelp\en\Report.Work Order State History.htm
@@ -933,56 +986,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "en", "en", "{0E2F7564-08A7-
 		Installation\HtmlHelp\en\WorkOrders.htm = Installation\HtmlHelp\en\WorkOrders.htm
 		Installation\HtmlHelp\en\WorkOrderStatusCodes.htm = Installation\HtmlHelp\en\WorkOrderStatusCodes.htm
 		Installation\HtmlHelp\en\XML.htm = Installation\HtmlHelp\en\XML.htm
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "manual", "manual", "{CC47BA94-4459-4535-B65F-324676F37CDA}"
-	ProjectSection(SolutionItems) = preProject
-		Documentation\manual\config.docx = Documentation\manual\config.docx
-		Documentation\manual\config.pdf = Documentation\manual\config.pdf
-		Documentation\manual\gettingstarted.docx = Documentation\manual\gettingstarted.docx
-		Documentation\manual\gettingstarted.pdf = Documentation\manual\gettingstarted.pdf
-		Documentation\manual\install.docx = Documentation\manual\install.docx
-		Documentation\manual\install.pdf = Documentation\manual\install.pdf
-		Documentation\manual\migration.docx = Documentation\manual\migration.docx
-		Documentation\manual\migration.pdf = Documentation\manual\migration.pdf
-		Documentation\manual\online42.docx = Documentation\manual\online42.docx
-		Documentation\manual\Online42.dotm = Documentation\manual\Online42.dotm
-		Documentation\manual\operations.docx = Documentation\manual\operations.docx
-		Documentation\manual\operations.pdf = Documentation\manual\operations.pdf
-		Documentation\manual\quickconfig.docx = Documentation\manual\quickconfig.docx
-		Documentation\manual\quickconfig.pdf = Documentation\manual\quickconfig.pdf
-		Documentation\manual\quickops.docx = Documentation\manual\quickops.docx
-		Documentation\manual\quickops.pdf = Documentation\manual\quickops.pdf
-		Documentation\manual\reference.docx = Documentation\manual\reference.docx
-		Documentation\manual\reference.pdf = Documentation\manual\reference.pdf
-		Documentation\manual\webops.docx = Documentation\manual\webops.docx
-		Documentation\manual\webops.pdf = Documentation\manual\webops.pdf
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{5E6F1817-F864-4BD3-84A9-CC45AF095F24}"
-	ProjectSection(SolutionItems) = preProject
-		Documentation\manual\Resources\AboutLogo.jpg = Documentation\manual\Resources\AboutLogo.jpg
-		Documentation\manual\Resources\Delete.png = Documentation\manual\Resources\Delete.png
-		Documentation\manual\Resources\Edit.png = Documentation\manual\Resources\Edit.png
-		Documentation\manual\Resources\Export.png = Documentation\manual\Resources\Export.png
-		Documentation\manual\Resources\Find_VS.png = Documentation\manual\Resources\Find_VS.png
-		Documentation\manual\Resources\mbmanual.css = Documentation\manual\Resources\mbmanual.css
-		Documentation\manual\Resources\PrintHS.png = Documentation\manual\Resources\PrintHS.png
-		Documentation\manual\Resources\PrintPreviewHS.png = Documentation\manual\Resources\PrintPreviewHS.png
-		Documentation\manual\Resources\Refresh.png = Documentation\manual\Resources\Refresh.png
-		Documentation\manual\Resources\Remove.png = Documentation\manual\Resources\Remove.png
-		Documentation\manual\Resources\View.png = Documentation\manual\Resources\View.png
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DesktopApp", "DesktopApp", "{DBC00BD8-FC89-497D-834D-4E1A30374F32}"
-	ProjectSection(SolutionItems) = preProject
-		Installation\DesktopApp\BuildDesktopApp.ps1 = Installation\DesktopApp\BuildDesktopApp.ps1
-		Installation\DesktopApp\MainBoss_template.xml = Installation\DesktopApp\MainBoss_template.xml
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SqlUpgradePatch", "SqlUpgradePatch", "{210CD979-213A-4BC5-9ED1-F10C9DAD3A9F}"
-	ProjectSection(SolutionItems) = preProject
-		Installation\SqlUpgradePatch\IRatioFunctionUpgrade.xml = Installation\SqlUpgradePatch\IRatioFunctionUpgrade.xml
 	EndProjectSection
 EndProject
 Global
@@ -1270,11 +1273,11 @@ Global
 		{95F282C2-41D5-46E8-A497-5C48CB9904AB} = {9E964703-0677-46DC-B2CF-7445B98ECC62}
 		{C996DF73-625A-4670-94F1-61D37F5500FC} = {9E964703-0677-46DC-B2CF-7445B98ECC62}
 		{18C862CF-63AD-4A0F-B5EF-CD588B1AF5CB} = {9E964703-0677-46DC-B2CF-7445B98ECC62}
-		{0E2F7564-08A7-42A2-A041-8D52564B40AF} = {18C862CF-63AD-4A0F-B5EF-CD588B1AF5CB}
 		{CC47BA94-4459-4535-B65F-324676F37CDA} = {66B03468-B88D-4B58-AA5E-281CB88A0350}
 		{5E6F1817-F864-4BD3-84A9-CC45AF095F24} = {CC47BA94-4459-4535-B65F-324676F37CDA}
 		{DBC00BD8-FC89-497D-834D-4E1A30374F32} = {9E964703-0677-46DC-B2CF-7445B98ECC62}
 		{210CD979-213A-4BC5-9ED1-F10C9DAD3A9F} = {9E964703-0677-46DC-B2CF-7445B98ECC62}
+		{BCF70D41-8B69-4F7E-9760-7D3F8E6C83EB} = {18C862CF-63AD-4A0F-B5EF-CD588B1AF5CB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5B32EC15-87AB-4748-A6C7-797F3590DFB3}

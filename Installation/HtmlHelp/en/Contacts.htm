@@ -22,7 +22,8 @@
 
 <p>When you create a contact record, MainBoss can check Active Directory to see if the person is in your network's Active Directory. If so, MainBoss can obtain information from the Active Directory record and fill that information into the contact record. This helps you avoid typing in the information directly. It may also help you obtain more complete, more up-to-date information about the person.</p>
 
-<p>To create a contact record using Active Directory information, click <span class="CButton">Create from Active Directory</span> in <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Contacts</span>. For more information, see <a href="Browse.Contact.htm">Viewing Contacts</a>. You can also use <span class="CButton">Initialize all from Active Directory</span> in the contact record editor; for more information, see <a href="Edit.Contact.htm">Editing Contacts</a>.</p>
+<p>To create a contact record using Active Directory information, click <span class="CButton">Create from Active Directory</span> in <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Contacts</span>. For more information, see <a href="Browse.Contact.htm">Viewing Contacts</a>. You can also use <span class="CButton">Initialize all from Active Directory</span> in the contact record editor; for more information, see <a href="Edit.Contact.htm">Editing Contacts</a>.
+You can also use <span class="CButton">Update all from Active Directory</span> if you provide the email address of the user in the "<span class="CField">Email</span>" field to find the matching Active Directory user who has that email address.</p>
 
 <p>When you create a contact record with information from Active Directory, the record's "<span class="CField">AD Reference</span>" field is filled in with an identification code from Active Directory. This code is unique; if, for example, you have two John Smiths in your organization, each will have a different ID code (technically called a GUID).</p>
 
@@ -35,7 +36,7 @@
 <p>When you create or update contact information from Active Directory, MainBoss adds a message to the contact record's "<span class="CField">Comments</span>" field, indicating when the operation was done. This lets you see how recently you've checked the contact record against Active Directory.</p>
 
 <p class="box"><span class="CInset">Note:</span> Active Directory runs on Windows systems. However, there are network services on other systems (e.g. Linux) which claim to be compatible with Active Directory. If they truly are compatible, then MainBoss should work with those services too.</p>
-
+<p></p>
 <p>For information on viewing contacts, see <a href="Browse.Contact.htm">Viewing Contacts</a>. For information on creating and editing contacts, see <a href="Edit.Contact.htm">Editing Contacts</a>. For information on printing contact information, see <a href="Report.Contact.htm">Printing Contacts</a>.</p>
 
 

@@ -188,32 +188,19 @@ namespace Thinkage.MainBoss.Database {
 					}
 					else {
 						// both exist, do the 'relevant' comparisons and construct a replacement if needed.
-						// relevant applies only to the DBS, the DBN, the ON. Username/password Credentials will be LEFT ALONE but the type will change as required
+						// relevant applies only to the DBS, the DBN, the ON. Username/password Credentials will be LEFT ALONE 
 						// Changes in ApplicationMode will be ignored as well. Is this correct is debatable.
 						if (lcuOrg.DisplayName != auOrg.DisplayName
 							|| lcuOrg.ConnectionDefinition.DBServer != auOrg.ConnectionDefinition.DBServer
 							|| lcuOrg.ConnectionDefinition.DBName != auOrg.ConnectionDefinition.DBName
 							|| lcuOrg.ConnectionDefinition.DisplayName != auOrg.ConnectionDefinition.DisplayName
-							|| lcuOrg.ConnectionDefinition.DBCredentials.Type != auOrg.ConnectionDefinition.DBCredentials.Type
 							) {
-							// construct the new credentials and detect if there is a change in credential type between auOrg and lcuOrg
-							AuthenticationCredentials credentials;
-
-							credentialTypeChange = lcuOrg.ConnectionDefinition.DBCredentials.Type != auOrg.ConnectionDefinition.DBCredentials.Type;
-							if (credentialTypeChange) {
-								credentials = new AuthenticationCredentials(auOrg.ConnectionDefinition.DBCredentials.Type,
-								lcuOrg.ConnectionDefinition.DBCredentials.Username,
-								lcuOrg.ConnectionDefinition.DBCredentials.Password);
-							}
-							else
-								credentials = lcuOrg.ConnectionDefinition.DBCredentials; // use the existing user credentials
-
 							var newOrg = new NamedOrganization(auOrg.Id, auOrg.DisplayName, new MBConnectionDefinition(
 								lcuOrg.MBConnectionParameters.ApplicationMode,        // keep user existing
 								lcuOrg.MBConnectionParameters.CompactBrowsers,    // keep user existing 
 								auOrg.ConnectionDefinition.DBServer,
 								auOrg.ConnectionDefinition.DBName,
-								credentials));
+								lcuOrg.ConnectionDefinition.DBCredentials));
 							localOrganizations.Replace(lcuOrg, newOrg);
 							lcuOrg = newOrg;
 							retValue |= LocalAllUserRecordUpdateBehaviors.LocalRecordUpdated;
