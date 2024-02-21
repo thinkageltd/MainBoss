@@ -158,7 +158,7 @@ IF NOT EXISTS(select * from <IDB/>.dbo.Defaults where SERIAL = 'IgnoreLoc') BEGI
 	declare @text nvarchar(max)	
 	<!--  leave null for no creation, or set to 'SubLocation' or 'Unit' to control what record type is created -->
 	declare @creationType nvarchar(max)
-	set @CreationType = 'SubLocation'			<!-- TODO: Use <IDB/>.dbo.Defaults.SERIAL to control the setting of this (null, 'SubLocation', or 'Unit') -->
+	set @CreationType = 'Unit'			<!-- TODO: Use <IDB/>.dbo.Defaults.SERIAL to control the setting of this (null, 'SubLocation', or 'Unit') -->
 	<!--  Step 0, if post-repairing a database, synthesize the UnitLinkages, BuildingLinkages, and StoreroomLinkages tables by correlating the -->
 	<!--  PostalAddresses, Units, and Storerooms in the database to the ones in the import data. This will perforce be inexact.			 -->
 	<!--  Step 1a, Report Units moving to their own building. -->

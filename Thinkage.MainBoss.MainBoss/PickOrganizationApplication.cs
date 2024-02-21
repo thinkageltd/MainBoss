@@ -609,10 +609,11 @@ namespace Thinkage.MainBoss.MainBoss {
 					ipd.Update(KB.T(Strings.Format(KB.K("Running script on database {0} on database server {1}"), connectInfo.DBName, connectInfo.DBServer)));
 					mb3db = new MB3Client(connectInfo);
 					ScriptProcessing(mb3db, inputDatabase, scriptUrl, ipd);
+					string scriptFileName = System.IO.Path.GetFileName(scriptUrl);
 					if (HistoryLogText.Length == 0)
-						MBUpgrader.UpgradeInformation.CreateCurrentVersionHandler(mb3db).LogHistory(mb3db, Strings.Format(KB.K("SQL Script completed {0}"), scriptUrl), null);
+						MBUpgrader.UpgradeInformation.CreateCurrentVersionHandler(mb3db).LogHistory(mb3db, Strings.Format(KB.K("SQL Script completed {0}"), scriptFileName), null);
 					else {
-						MBUpgrader.UpgradeInformation.CreateCurrentVersionHandler(mb3db).LogHistory(mb3db, Strings.Format(KB.K("SQL Script completed with errors {0}"), scriptUrl), HistoryLogText.ToString());
+						MBUpgrader.UpgradeInformation.CreateCurrentVersionHandler(mb3db).LogHistory(mb3db, Strings.Format(KB.K("SQL Script completed with errors {0}"), scriptFileName), HistoryLogText.ToString());
 						gex = new GeneralException(KB.K("Run Script has errors"));
 					}
 				}

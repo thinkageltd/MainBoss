@@ -140,6 +140,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.ico" />
+    <None Include="GeneralScripts\ConvertSubLocationToUnit.xml" />
     <None Include="ConversionNotes.txt" />
     <None Include="MP2 6.0\Schedule.xml" />
     <Compile Include="AssemblyInfo.cs" />
