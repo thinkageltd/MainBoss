@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.ServiceProcess;
 using System.Text;
 using Dart.Mail;
 using Thinkage.Libraries;
@@ -11,262 +12,333 @@ using Thinkage.Libraries.Service;
 using Thinkage.Libraries.Translation;
 
 namespace Thinkage.MainBoss.Database {
-	public interface IMailMessageSource : IDisposable {
-		IEnumerable<EmailMessage> Messages {
-			get;
-		}
-		int Port {
-			get;
-		}
-		string Protocol {
-			get;
-		}
-		void Close();
-	}
-	#region Dart Adapters
-	public class DartPopMessages : IMailMessageSource {
-		Pop DartPop;
-		public DartPopMessages(Encrypt tryingEncryption, RemoteCertificateValidationCallback CheckCertificate, string server, int port, string user, string pwOrAccessToken, bool useOAuth2) {
-			DartPop = new Pop {
-				Session = new MailSession {
-					Username = user,
-					Password = pwOrAccessToken,
-					Security = new MailSecurity {
-						TargetHost = server,
-						Encrypt = tryingEncryption,
-						ValidationCallback = CheckCertificate,
-						//Trying to pass Protocols.None per the MSDN documentation (https://docs.microsoft.com/en-us/dotnet/api/system.security.authentication.sslprotocols?view=net-5.0#System_Security_Authentication_SslProtocols_Default)
-						// is rejected by
-						// System.ArgumentException
-						// System.Net.Security.SslState.ValidateCreateContext(Boolean isServer, String targetHost, SslProtocols enabledSslProtocols, X509Certificate serverCertificate, X509CertificateCollection clientCertificates, Boolean remoteCertRequired, Boolean checkCertRevocationStatus, Boolean checkCertName)
-						// in .NET 4.0 at least
-						// Default only permits TLS 1.0 and SSL3; we need to enable the others explicitly
-						Protocols = System.Security.Authentication.SslProtocols.Ssl3
-						| System.Security.Authentication.SslProtocols.Tls11
-						| System.Security.Authentication.SslProtocols.Tls12
-						| System.Security.Authentication.SslProtocols.Tls
-					},
-					Authentication = useOAuth2 ? Authentication.OAuth2 : Authentication.Auto
-				}
-			};
-
-			try {
-				DartPop.Session.RemoteEndPoint = new IPEndPoint(System.Net.Dns.GetHostAddresses(server)[0], port);
-			}
-			catch (System.Exception) {
-				throw new GeneralException(KB.K("Cannot open a connect to server '{0}' on port {1} using {2}"), server, port, Protocol);
-			}
-			DartPop.Connection.Log += EmailMessageSource.Connection_Log;
-			DartPop.Connect();
-			DartPop.Authenticate(true, true);
-		}
-		IEnumerable<EmailMessage> pMessages = null;
-		public IEnumerable<EmailMessage> Messages {
-			get {
-				if (pMessages == null)
-					pMessages = DartPop.Messages.Select(e => new EmailMessage(e));
-				return pMessages;
-			}
-		}
-		public int Port {
-			get {
-				return DartPop?.Session.RemoteEndPoint.Port ?? 0;
-			}
-		}
-		public string Protocol {
-			[Invariant]
-			get {
-				if (DartPop == null || DartPop.Session == null || DartPop.Session.Security == null)
-					return "POP3";
-				switch (DartPop.Session.Security.Encrypt) {
-				case Encrypt.Implicit:
-					return "POP3S";
-				case Encrypt.Explicit:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} with {1}"), KB.I("POP3"), KB.I("TLS"));
-				case Encrypt.None:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} plain text"), KB.I("POP3"));
-				default:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} with unknown security"), KB.I("POP3"));
-				}
-			}
-		}
-		public void Close() {
-			DartPop.Close();
-		}
-		#region IDisposable Members
-		public void Dispose() {
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		protected virtual void Dispose(bool disposing) {
-			if (disposing) {
-				pMessages = null;
-				if (DartPop != null)
-					DartPop.Dispose();
-			}
-		}
-		#endregion
-	}
-	public class DartImapMessages : IMailMessageSource {
-		Imap DartImap;
-		public DartImapMessages(Encrypt tryingEncryption, RemoteCertificateValidationCallback CheckCertificate, string server, int port, string user, string pwOrAccessToken, string mailbox, bool useOAuth2) {
-			DartImap = new Imap {
-				Session = new ImapSession {
-					Username = user,
-					Password = pwOrAccessToken,
-					Security = new MailSecurity {
-						TargetHost = server,
-						Encrypt = tryingEncryption,
-						ValidationCallback = CheckCertificate,
-						//Trying to pass Protocols.None per the MSDN documentation (https://docs.microsoft.com/en-us/dotnet/api/system.security.authentication.sslprotocols?view=net-5.0#System_Security_Authentication_SslProtocols_Default)
-						// is rejected by
-						// System.ArgumentException
-						// System.Net.Security.SslState.ValidateCreateContext(Boolean isServer, String targetHost, SslProtocols enabledSslProtocols, X509Certificate serverCertificate, X509CertificateCollection clientCertificates, Boolean remoteCertRequired, Boolean checkCertRevocationStatus, Boolean checkCertName)
-						// in .NET 4.0 at least
-						// Default only permits TLS 1.0 and SSL3; we need to enable the others explicitly
-						Protocols = System.Security.Authentication.SslProtocols.Ssl3
-									| System.Security.Authentication.SslProtocols.Tls11
-									| System.Security.Authentication.SslProtocols.Tls12
-									| System.Security.Authentication.SslProtocols.Tls
-					},
-						Authentication = useOAuth2 ? Authentication.OAuth2 : Authentication.Auto
-				}
-			};
-			try {
-				DartImap.Session.RemoteEndPoint = new IPEndPoint(System.Net.Dns.GetHostAddresses(server)[0], port);
-			}
-			catch (System.Exception) {
-				throw new GeneralException(KB.K("Cannot open a connect to server '{0}' on port {1} using {2}"), server, port, Protocol);
-			}
-			DartImap.Connection.Log += EmailMessageSource.Connection_Log;
-			DartImap.Connect();
-			DartImap.Authenticate();
-			if (mailbox != null) {
-				DartImap.SelectedMailbox = DartImap.Mailboxes[mailbox];
-				if (DartImap.SelectedMailbox == null)
-					throw Libraries.Exception.AddContext(new GeneralException(KB.K("Mailbox '{0}' does not exist on server '{1}' on port {2} using {3}"), mailbox, server, port, Protocol), new MessageExceptionContext(KB.K("Available Mailboxes: {0}"), string.Join(", ", DartImap.Mailboxes.Select(e => e.Name))));
-			}
-			else {
-				DartImap.SelectedMailbox = DartImap.Mailboxes["MBOX"] ?? DartImap.Mailboxes["INBOX"] ?? DartImap.Mailboxes["Inbox"];
-				if (DartImap.SelectedMailbox == null)
-					throw Libraries.Exception.AddContext(new GeneralException(KB.K("No incoming Mailbox found on server '{0}' on port {1} using {2}, tried 'MBOX', 'INBOX' and 'Inbox'"), server, port, Protocol), new MessageExceptionContext(KB.K("Available Mailboxes: {0}"), string.Join(", ", DartImap.Mailboxes.Select(e => e.Name))));
-			}
-		}
-		IEnumerable<EmailMessage> pMessages = null;
-		public IEnumerable<EmailMessage> Messages {
-			get {
-				if (pMessages == null && DartImap.SelectedMailbox != null)
-					pMessages = DartImap.SelectedMailbox.Select(e => new EmailMessage(e));
-				return pMessages;
-			}
-		}
-
-		public int Port {
-			get {
-				return DartImap?.Session.RemoteEndPoint.Port ?? 0;
-			}
-		}
-		public string Protocol {
-			[Invariant]
-			get {
-				if (DartImap == null || DartImap.Session == null || DartImap.Session.Security == null)
-					return "IMAP4";
-				switch (DartImap.Session.Security.Encrypt) {
-				case Encrypt.Implicit:
-					return "IMAP4S";
-				case Encrypt.Explicit:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} with {1}"), KB.I("IMAP4"), KB.I("TLS"));
-				case Encrypt.None:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} plain text"), KB.I("IMAP4"));
-				default:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} with unknown security"), KB.I("IMAP4"));
-				}
-			}
-		}
-
-		public void Close() {
-			DartImap.Close();
-		}
-		#region IDisposable Members
-		public void Dispose() {
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		protected virtual void Dispose(bool disposing) {
-			if (disposing) {
-				if (DartImap != null)
-					DartImap.Dispose();
-			}
-		}
-		#endregion
-	}
-	#endregion
 	#region EMailMessageSource
 	public class EmailMessageSource : IDisposable {
+		#region Dart Adapters
+		#region - IMailMessageSource common interface
+		public interface IMailMessageSource : IDisposable {
+			IEnumerable<EmailMessage> Messages {
+				get;
+			}
+			void Close();
+		}
+		#endregion
+		#region - GetEncrypt - Get the Dart encryption type from ConnectionInformation
+		private static Encrypt GetEncrypt(ConnectionInformation connectInfo) {
+			if ((connectInfo.ServiceType & ConnectionInformation.ServiceTypes.ImplicitlyEncrypted) != 0)
+				return Encrypt.Implicit;
+			else if ((connectInfo.ServiceType & ConnectionInformation.ServiceTypes.ExplicitlyEncrypted) != 0)
+				return Encrypt.Explicit;
+			return Encrypt.None;
+		}
+		#endregion
+		#region - DartPopMessages
+		public class DartPopMessages : IMailMessageSource {
+			Pop DartPop;
+			public DartPopMessages(RemoteCertificateValidationCallback CheckCertificate, ConnectionInformation connectInfo, EventHandler<DataEventArgs> logger) {
+				DartPop = new Pop {
+					Session = new MailSession {
+						Username = connectInfo.User,
+						Password = connectInfo.AccessTokenOrPW,
+						Security = new MailSecurity {
+							TargetHost = connectInfo.Server,
+							Encrypt = GetEncrypt(connectInfo),
+							ValidationCallback = CheckCertificate,
+							//Trying to pass Protocols.None per the MSDN documentation (https://docs.microsoft.com/en-us/dotnet/api/system.security.authentication.sslprotocols?view=net-5.0#System_Security_Authentication_SslProtocols_Default)
+							// is rejected by
+							// System.ArgumentException
+							// System.Net.Security.SslState.ValidateCreateContext(Boolean isServer, String targetHost, SslProtocols enabledSslProtocols, X509Certificate serverCertificate, X509CertificateCollection clientCertificates, Boolean remoteCertRequired, Boolean checkCertRevocationStatus, Boolean checkCertName)
+							// in .NET 4.0 at least
+							// Default only permits TLS 1.0 and SSL3; we need to enable the others explicitly
+							Protocols = System.Security.Authentication.SslProtocols.Ssl3
+							| System.Security.Authentication.SslProtocols.Tls11
+							| System.Security.Authentication.SslProtocols.Tls12
+							| System.Security.Authentication.SslProtocols.Tls
+						},
+						Authentication = connectInfo.UseOAuth2 ? Authentication.OAuth2 : Authentication.Auto
+					}
+				};
+
+				try {
+					DartPop.Session.RemoteEndPoint = connectInfo.IPEndPoint;
+				}
+				catch (System.Exception) {
+					// This is a bad error message:
+					// 1 - It loses the original exception information
+					// 2 - Is states that we can't open a connection but we haven't tried that yet (see DartPop.Connect() below)
+					// 3 - It is grammatically incorrect
+					//
+					// We should put the entire new IPEndPoint/Connect/Authenticate in the try block, and just add an exception context to supply some/most of the connectInfo.
+					// Better yet, the IncomingEmailServerConnectionInformation object should be able to supply the exception context
+					throw new GeneralException(KB.K("Cannot connect to {0}"), connectInfo.FullName);
+				}
+				DartPop.Connection.Log += logger;
+				DartPop.Connect();
+				DartPop.Authenticate(true, true);
+			}
+			IEnumerable<EmailMessage> pMessages = null;
+			public IEnumerable<EmailMessage> Messages {
+				get {
+					if (pMessages == null)
+						pMessages = DartPop.Messages.Select(e => new EmailMessage(e));
+					return pMessages;
+				}
+			}
+			public void Close() {
+				DartPop.Close();
+			}
+			#region IDisposable Members
+			public void Dispose() {
+				Dispose(true);
+				GC.SuppressFinalize(this);
+			}
+			protected virtual void Dispose(bool disposing) {
+				if (disposing) {
+					pMessages = null;
+					if (DartPop != null)
+						DartPop.Dispose();
+				}
+			}
+			#endregion
+		}
+		#endregion
+		#region - DartImapMessages
+		public class DartImapMessages : IMailMessageSource {
+			Imap DartImap;
+			public DartImapMessages(RemoteCertificateValidationCallback CheckCertificate, ConnectionInformation connectInfo, string mailbox, EventHandler<DataEventArgs> logger) {
+				DartImap = new Imap {
+					Session = new ImapSession {
+						Username = connectInfo.User,
+						Password = connectInfo.AccessTokenOrPW,
+						Security = new MailSecurity {
+							TargetHost = connectInfo.Server,
+							Encrypt = GetEncrypt(connectInfo),
+							ValidationCallback = CheckCertificate,
+							//Trying to pass Protocols.None per the MSDN documentation (https://docs.microsoft.com/en-us/dotnet/api/system.security.authentication.sslprotocols?view=net-5.0#System_Security_Authentication_SslProtocols_Default)
+							// is rejected by
+							// System.ArgumentException
+							// System.Net.Security.SslState.ValidateCreateContext(Boolean isServer, String targetHost, SslProtocols enabledSslProtocols, X509Certificate serverCertificate, X509CertificateCollection clientCertificates, Boolean remoteCertRequired, Boolean checkCertRevocationStatus, Boolean checkCertName)
+							// in .NET 4.0 at least
+							// Default only permits TLS 1.0 and SSL3; we need to enable the others explicitly
+							Protocols = System.Security.Authentication.SslProtocols.Ssl3
+										| System.Security.Authentication.SslProtocols.Tls11
+										| System.Security.Authentication.SslProtocols.Tls12
+										| System.Security.Authentication.SslProtocols.Tls
+						},
+						Authentication = connectInfo.UseOAuth2 ? Authentication.OAuth2 : Authentication.Auto
+					}
+				};
+				try {
+					DartImap.Session.RemoteEndPoint = connectInfo.IPEndPoint;
+				}
+				catch (System.Exception) {
+					// This exception handling is atrocious, see similar in DartPopMessages ctor.
+					throw new GeneralException(KB.K("Cannot connect to {0}"), connectInfo.FullName);
+				}
+				DartImap.Connection.Log += logger;
+				DartImap.Connect();
+				DartImap.Authenticate();
+				GeneralException noMailboxException = null;
+				if (!string.IsNullOrWhiteSpace(mailbox)) {
+					DartImap.SelectedMailbox = DartImap.Mailboxes[mailbox];
+					if (DartImap.SelectedMailbox == null)
+						noMailboxException = new GeneralException(KB.K("Mailbox '{0}' does not exist"), mailbox);
+				}
+				else {
+					DartImap.SelectedMailbox = DartImap.Mailboxes["MBOX"] ?? DartImap.Mailboxes["INBOX"] ?? DartImap.Mailboxes["Inbox"];
+					if (DartImap.SelectedMailbox == null)
+						noMailboxException = new GeneralException(KB.K("No default Mailbox found, tried 'MBOX', 'INBOX' and 'Inbox'"));
+				}
+				if (noMailboxException != null)
+					throw noMailboxException.WithContext(new MessageExceptionContext(KB.K("Available Mailboxes: {0}"), string.Join(", ", DartImap.Mailboxes.Select(e => e.Name))));
+			}
+			IEnumerable<EmailMessage> pMessages = null;
+			public IEnumerable<EmailMessage> Messages {
+				get {
+					if (pMessages == null && DartImap.SelectedMailbox != null)
+						pMessages = DartImap.SelectedMailbox.Select(e => new EmailMessage(e));
+					return pMessages;
+				}
+			}
+			public void Close() {
+				DartImap.Close();
+			}
+			#region IDisposable Members
+			public void Dispose() {
+				Dispose(true);
+				GC.SuppressFinalize(this);
+			}
+			protected virtual void Dispose(bool disposing) {
+				if (disposing) {
+					if (DartImap != null)
+						DartImap.Dispose();
+				}
+			}
+			#endregion
+		}
+		#endregion
+		#endregion
+		#region ConnectionInformation
+		public struct ConnectionInformation {
+			public enum ServiceTypeIndices {
+				// These are in order from least to most preferable and this determines the search order when probing.
+				POP3,
+				IMAP4,
+				N_Basic,
+				ExplicitEncryptionOffset = N_Basic,
+				POP3_TLS = POP3 + ExplicitEncryptionOffset,
+				IMAP4_TLS = IMAP4 + ExplicitEncryptionOffset,
+				ImplicitEncryptionOffset = 2 * N_Basic,
+				POP3S = POP3 + ImplicitEncryptionOffset,
+				IMAP4S = IMAP4 + ImplicitEncryptionOffset,
+
+				Count
+			}
+			[Flags]
+			public enum ServiceTypes {
+				POP3 = 1 << ServiceTypeIndices.POP3,
+				IMAP4 = 1 << ServiceTypeIndices.IMAP4,
+				POP3_TLS = 1 << ServiceTypeIndices.POP3_TLS,
+				IMAP4_TLS = 1 << ServiceTypeIndices.IMAP4_TLS,
+				POP3S = 1 << ServiceTypeIndices.POP3S,
+				IMAP4S = 1 << ServiceTypeIndices.IMAP4S,
+
+				Plaintext = POP3 | IMAP4,
+				ImplicitlyEncrypted = POP3S | IMAP4S,
+				ExplicitlyEncrypted = POP3_TLS | IMAP4_TLS,
+				Encrypted = ExplicitlyEncrypted | ImplicitlyEncrypted,
+
+				CanSpecifyMailbox = IMAP4 | IMAP4S | IMAP4_TLS,
+
+				AnyIMAPProtocol = CanSpecifyMailbox,
+				AnyPOPProtocol = All & ~AnyIMAPProtocol,
+
+				None = 0,
+				Last = IMAP4_TLS,
+				All = (1 << Last) - 1
+			}
+			static readonly int[] ServiceTypeToPort = new[] {
+				110,
+				143,
+				110,
+				143,
+				995,
+				993
+			};
+			// Most of the information we have is definite.
+			// However, pPort can be unset (using zero right now), which means use the standard port for ServiceType.
+			// ServiceType can be Any.
+			public readonly string Server;
+			public readonly ServiceTypes ServiceType;
+			private readonly ServiceTypeIndices? ServiceTypeIndex;
+			public readonly int Port;
+			public readonly string User;
+			public readonly string AccessTokenOrPW;
+			public readonly bool UseOAuth2;
+
+			// TODO: Encapsulate the port==0 vs using int? for port when port is unspecified
+			// TODO: Encapsulate the emptry-string vs null-string duality. We should use null for don't know/unspecified as must as possible
+			// TODO: Have a property that provides exception context
+			// TODO: Roll the Protocol and useEncryption information into us as well, clean up the partial redundancy between Protocol and Port
+			public ConnectionInformation(string server, ServiceTypes serviceType, int port, string user, string accessTokenOrPW, bool useOAuth2) {
+				Server = server;
+				// Check right away that the server DNS name can be resolved
+				try {
+					// This will throw an error if there are no A records in DNS.
+					if (System.Net.Dns.GetHostAddresses(Server).Length == 0)
+						throw new GeneralException(KB.K("Only IPv6 addresses could be found but IPv6 is not enabled on this computer"));
+				}
+				catch (System.Exception ex) {
+					throw new GeneralException(ex, KB.K("Cannot resolve an IP address for Server '{0}'"), Server);
+				}
+				ServiceType = serviceType;
+				if ((serviceType & (serviceType - 1)) == 0) {
+					// a single service type is specified, get its index
+					// With only 6 values to choose from this loop is simplest.
+					int index = (int)ServiceTypeIndices.Count;
+					while (--index >= 0 && ((int)serviceType & (1 << index)) == 0) { }
+					// If there was a rogue bit or no bits, we set a null index.
+					ServiceTypeIndex = index >= 0 ? (ServiceTypeIndices?)index : null;
+					Port = port == 0 ? ServiceTypeToPort[(int)ServiceTypeIndex] : port;
+				}
+				else {
+					ServiceTypeIndex = null;
+					Port = port;
+				}
+				User = user;
+				AccessTokenOrPW = accessTokenOrPW;
+				UseOAuth2 = useOAuth2;
+			}
+			public ConnectionInformation(ConnectionInformation basis, ServiceTypes serviceType) {
+				Server = basis.Server;
+				ServiceType = serviceType;
+				// in the basis there may have already been a port forced by having a single service selected already
+				// If we now allow selection of a different service the original specification of a default port in basis
+				// will not be overridden by the new service selection.
+				// We get around this by asserting that the new service selection be a subset of the old one.
+				System.Diagnostics.Debug.Assert((serviceType & ~basis.ServiceType) == 0);
+				if ((serviceType & (serviceType - 1)) == 0) {
+					// a single service type is specified, get its index
+					// With only 6 values to choose from this loop is simplest.
+					int index = (int)ServiceTypeIndices.Count;
+					while (--index >= 0 && ((int)serviceType & (1 << index)) == 0) { }
+					// If there was a rogue bit or no bits, we set a null index.
+					ServiceTypeIndex = index >= 0 ? (ServiceTypeIndices?)index : null;
+				}
+				else
+					ServiceTypeIndex = null;
+				Port = basis.Port == 0 ? ServiceTypeToPort[(int)ServiceTypeIndex] : basis.Port;
+				User = basis.User;
+				AccessTokenOrPW = basis.AccessTokenOrPW;
+				UseOAuth2 = basis.UseOAuth2;
+			}
+
+			public IPEndPoint IPEndPoint => new IPEndPoint(System.Net.Dns.GetHostAddresses(Server)[0], Port);
+
+			public bool IsSpecific => ServiceTypeIndex.HasValue;
+			// [Translated]
+			public string ProtocolName =>
+				(ServiceType & ServiceTypes.ExplicitlyEncrypted) != 0
+					? Strings.IFormat("{0} with TLS", (ServiceTypes)((int)ServiceType >> (int)ServiceTypeIndices.ExplicitEncryptionOffset))
+					: ServiceType.ToString();
+			// [Translated]
+			public string FullName =>
+				Strings.Format(KB.K("User '{0}' on server '{1}', port '{2}', using {3}"), User, Server, Port, ProtocolName);
+			public IExceptionContext ExceptionContext => new MessageExceptionContext(KB.T(FullName));
+			public bool Match(ConnectionInformation pattern) {
+				// We return true if our connection information is possible using 'other'
+				// Everything must be the same except:
+				// Our ServiceType must be a subset of other.ServiceType
+				// The tricky one is the port: If both ports are equal it is a match, but we can also have the default port for our protocol and other can be zero.
+				if (Server != pattern.Server
+					|| User != pattern.User
+					|| AccessTokenOrPW != pattern.AccessTokenOrPW
+					|| UseOAuth2 != pattern.UseOAuth2)
+					return false;
+				if ((ServiceType & ~pattern.ServiceType) != 0)
+					return false;
+				if (Port == pattern.Port)
+					return true;
+				if (ServiceTypeIndex.HasValue && Port == ServiceTypeToPort[(int)ServiceTypeIndex.Value]
+					&& !pattern.ServiceTypeIndex.HasValue && pattern.Port == 0)
+					// The port we are using is the default for the protocol, and other is not specifying a port
+					return true;
+				return false;
+			}
+		}
+		#endregion
+		public string Protocol => LastConnectInfo.Value.ProtocolName;
+		public int Port => LastConnectInfo.Value.Port;
 		IMailMessageSource Source;
-		System.Exception Error;
 		bool TraceDetails;
 		IServiceLogging Logger;
-		DatabaseEnums.MailServerType ServiceType;
-		static DatabaseEnums.MailServerType LastServiceType;
-		static DatabaseEnums.MailServerEncryption LastRequestedEncryption;
-		static int LastPort = 0;
-		bool LastEncrypt;
-		DatabaseEnums.MailServerEncryption RequestedEncryption;
-		static readonly Dictionary<DatabaseEnums.MailServerType, int> ServiceTypeToPort = new Dictionary<DatabaseEnums.MailServerType, int> {
-			{ DatabaseEnums.MailServerType.POP3,   110 },
-			{ DatabaseEnums.MailServerType.IMAP4,  143 },
-			{ DatabaseEnums.MailServerType.POP3S,  995 },
-			{ DatabaseEnums.MailServerType.IMAP4S, 993 },
-		};
-		static readonly Dictionary<DatabaseEnums.MailServerType, Encrypt> ServiceTypeToEncypt = new Dictionary<DatabaseEnums.MailServerType, Encrypt> {
-			{ DatabaseEnums.MailServerType.POP3,   Encrypt.Explicit },
-			{ DatabaseEnums.MailServerType.IMAP4,  Encrypt.Explicit },
-			{ DatabaseEnums.MailServerType.POP3S,  Encrypt.Implicit },
-			{ DatabaseEnums.MailServerType.IMAP4S, Encrypt.Implicit },
-		};
-		public EmailMessageSource(IServiceLogging logger, bool traceDetails, DatabaseEnums.MailServerType serviceType, DatabaseEnums.MailServerEncryption requestedEncryption, string server, int port, string user, string pw, string mailbox, bool useOAuth2) {
-			RequestedEncryption = requestedEncryption;
-			this.ServiceType = serviceType;
-			TraceDetails = traceDetails;
-			Logger = logger;
-			// if the user want one type try that
-			if (serviceType != DatabaseEnums.MailServerType.Any) {
-				if (port == 0)
-					port = ServiceTypeToPort[serviceType];
-				bool encrypt = requestedEncryption == DatabaseEnums.MailServerEncryption.None ? false : true;
-				bool tryagain = tryOneMailSource(encrypt, serviceType, server, port, user, pw, mailbox, useOAuth2);
-				if (tryagain && requestedEncryption == DatabaseEnums.MailServerEncryption.AnyAvailable && (serviceType == DatabaseEnums.MailServerType.POP3 || serviceType == DatabaseEnums.MailServerType.IMAP4)) {
-					encrypt = false;
-					tryOneMailSource(encrypt, serviceType, server, port, user, pw, mailbox, useOAuth2);
-				}
-				if (Source == null)
-					throw Error ?? (string.IsNullOrWhiteSpace(mailbox) ? new GeneralException(KB.K("Cannot access mail messages using {0} on server '{1}' on port {2}"), serviceType, server, port).WithContext(TraceContext(this))
-							: new GeneralException(KB.K("Cannot access mail messages from mailbox '{0}' using {1} on server '{2}' on port {3}"), mailbox, serviceType, server, port).WithContext(TraceContext(this)));
-				LastPort = port;
-				LastServiceType = serviceType;
-				LastEncrypt = encrypt;
-				return;
-			}
-			if (LastPort != 0  // we were successful the last time and our environment didn't change
-				&& (port == 0 || LastPort == port)
-				&& (this.ServiceType == DatabaseEnums.MailServerType.Any || this.ServiceType == LastServiceType)
-				&& (LastRequestedEncryption == requestedEncryption)) {
-				tryOneMailSource(LastEncrypt, LastServiceType, server, LastPort, user, pw, mailbox, useOAuth2);
-				if (Source != null)
-					return;
-			}
-			LastPort = 0;
-			FindMessageSource(server, port, user, pw, mailbox, useOAuth2);
-			if (Source == null)
-				throw Error ?? new GeneralException(KB.K("Cannot access mail messages on server '{0}'"), server).WithContext(TraceContext(this));
-			if (string.IsNullOrWhiteSpace(mailbox))
-				logger.LogInfo(Strings.Format(KB.K("Using {0} server '{1}' on port {2}"), Protocol, server, LastPort));
-			else
-				logger.LogInfo(Strings.Format(KB.K("Using {0} with mailbox '{0}' server '{2}' on port {3}"), Protocol, mailbox, server, LastPort));
-		}
-		private void FindMessageSource(string server, int port, string user, string pw, string mailbox, bool useOAuth2) {
-			List<System.Exception> errors = new List<System.Exception>();
+		// This is the last ConnectionInformation that successfully connected.
+		// If Source != null this is also the info for that Source.
+		static ConnectionInformation? LastConnectInfo = null;
+		#region Construction
+		#region - Constructor
+		public EmailMessageSource(IServiceLogging logger, bool traceDetails, ConnectionInformation connectInfo, string mailbox, bool requireCertificate) {
+			// What is the following even doing here??????????????
 			Attachment.Directory = Path.GetTempPath();
 			var path = Path.Combine(Attachment.Directory, Path.GetRandomFileName());
 			try {
@@ -277,113 +349,155 @@ namespace Thinkage.MainBoss.Database {
 				File.Delete(path);
 			}
 			catch (System.Exception e) {
-				throw new GeneralException(e,KB.K("The Windows System supplied directory '{0}' acquired from System.IO.Path.GetTempPath is not usable"), Attachment.Directory);
+				throw new GeneralException(e, KB.K("The Windows System supplied directory '{0}' acquired from System.IO.Path.GetTempPath is not usable"), Attachment.Directory);
 			}
-			try {
-				System.Net.Dns.GetHostAddresses(server); // will throw an error if machine does not exists, don't want to retry if there is no hope
-			}
-			catch (System.Exception) {
-				throw new GeneralException(KB.K("Cannot find an IP address for Computer '{0}'"), server);
-			}
-			bool tryagain = true;
-			bool usingEncryption = true;
-			int tryPort = port;
-			DatabaseEnums.MailServerType serviceUsed = DatabaseEnums.MailServerType.Any;
-			DatabaseEnums.MailServerType[] mailServerType = new DatabaseEnums.MailServerType[] { DatabaseEnums.MailServerType.POP3, DatabaseEnums.MailServerType.IMAP4, DatabaseEnums.MailServerType.POP3S, DatabaseEnums.MailServerType.IMAP4S };
-			if (!string.IsNullOrWhiteSpace(mailbox)) // if the user supplied a mailbox it must be IMAP
-				mailServerType = new DatabaseEnums.MailServerType[] { DatabaseEnums.MailServerType.IMAP4, DatabaseEnums.MailServerType.IMAP4S };
-			// try with encryption
-			foreach (var s in mailServerType) {
-				serviceUsed = s;
-				tryPort = port != 0 ? port : ServiceTypeToPort[s];
-				Error = null;
-				tryagain = tryOneMailSource(usingEncryption, s, server, tryPort, user, pw, mailbox, useOAuth2);
-				if (Error != null)
-					errors.Add(Error);
-				if (Source != null || !tryagain)
-					break;
-			}
-			// try without Encryption
-			mailServerType = mailbox == null ? new DatabaseEnums.MailServerType[] { DatabaseEnums.MailServerType.POP3, DatabaseEnums.MailServerType.IMAP4 } : new DatabaseEnums.MailServerType[] { DatabaseEnums.MailServerType.IMAP4 };
-			if (Source != null && tryagain && RequestedEncryption == DatabaseEnums.MailServerEncryption.AnyAvailable) {
-				usingEncryption = false;
-				foreach (var s in mailServerType) {
-					serviceUsed = s;
-					tryPort = port != 0 ? port : ServiceTypeToPort[s];
-					Error = null;
-					tryagain = tryOneMailSource(usingEncryption, s, server, tryPort, user, pw, mailbox, useOAuth2);
-					if (Error != null)
-						errors.Add(Error);
-					if (Source != null || !tryagain)
-						break;
-				}
-			}
-			if (Source != null) {
-				LastPort = tryPort;
-				LastServiceType = serviceUsed;
-				LastRequestedEncryption = RequestedEncryption;
-				LastEncrypt = usingEncryption;
+			// end of what is this doing here?????????????
+
+			TraceDetails = traceDetails;
+			Logger = logger;
+			// if the user want one type try that only
+			if (connectInfo.IsSpecific) {
+				tryOneMailSource(connectInfo, mailbox, requireCertificate, false, out bool _);
 				return;
 			}
+			// The user has not specified a connection type. If the current connection info matches the most recent
+			// succesful connection try that again.
+			if (LastConnectInfo.HasValue && LastConnectInfo.Value.Match(connectInfo))
+				try {
+					tryOneMailSource(LastConnectInfo.Value, mailbox, requireCertificate, false, out bool _);
+					return;
+				}
+				catch (System.Exception) {
+					// We ignore the exception here, it should happen again when we try FindMessageSource
+					// Note that this may not be true if it is a transient exception.
+				}
+
+			// Search from scratch through all server types
+			List<System.Exception> errors = new List<System.Exception>();
+
+			// try all the connection types in typesToTry.
+			// We only throw an exception if they all fail, otherwise we just log the successful one.
+			// If a site wants to diagnose why they are not getting a particular higher-priority protocol they can name it specifically and see what error occurs.
+			for (int index = (int)ConnectionInformation.ServiceTypeIndices.Count; --index >= 0;) {
+				if (((int)connectInfo.ServiceType & (1 << index)) == 0)
+					continue;
+				var specificConnectionInfo = new ConnectionInformation(connectInfo, (ConnectionInformation.ServiceTypes)(1 << index));
+				bool tryagain = true;
+				try {
+					tryOneMailSource(specificConnectionInfo, mailbox, requireCertificate, true, out tryagain);
+					return;
+				}
+				catch (System.Exception ex) {
+					errors.Add(ex);
+					if (!tryagain)
+						break;
+					continue;
+				}
+			}
 			if (errors.Count == 1)
-				throw Error;
-			var err = new GeneralException(KB.K("Cannot access mail messages on server '{0}' the following was tried:"), server).WithContext(TraceContext(this));
+				throw errors[0];
+			var err = new GeneralException(KB.K("Cannot connect to incoming mail server. The following was tried:"), connectInfo.Server).WithContext(TraceContext);
 			foreach (var e in errors)
 				err = err.WithContext(new Thinkage.Libraries.MessageExceptionContext(KB.T(Thinkage.Libraries.Exception.FullMessage(e))));
-			Error = err;
-			throw Error;
+			throw err;
 		}
-		private bool tryOneMailSource(bool usingEncryption, DatabaseEnums.MailServerType serviceType, string server, int port, string user, string pw, string mailbox, bool useOAuth2) {
+		private void tryOneMailSource(ConnectionInformation connectInfo, string mailbox, bool requireCertificate, bool traceSuccess, out bool tryAnotherProtocol) {
+			// This always throws an exception on failure. For all expected exceptions we add the connect info context.
+			// Otherwise it sets Source and LastConnectInfo. The latter is static and is used on subsequent Email MessageSource ctor calls when a non-specific
+			// connectInfo is provided. It can also be used to get identification information for Source.
 			Source = null;
-			Encrypt encryption = usingEncryption ? ServiceTypeToEncypt[serviceType] : Encrypt.None;
+			tryAnotherProtocol = false;
 			try {
-				switch (serviceType) {
-				case DatabaseEnums.MailServerType.POP3:
-				case DatabaseEnums.MailServerType.POP3S:
-					Source = new DartPopMessages(encryption, CheckCertificate, server, port, user, pw, useOAuth2);
-					break;
-				case DatabaseEnums.MailServerType.IMAP4:
-				case DatabaseEnums.MailServerType.IMAP4S:
-					Source = new DartImapMessages(encryption, CheckCertificate, server, port, user, pw, mailbox, useOAuth2);
-					break;
-				}
-				if (Source == null)
-					LogTrace(Logger, TraceDetails, KB.K("Tried"), server, port, Protocol, mailbox, this);
+				RemoteCertificateValidationCallback checker
+					= (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) => CheckCertificate(sender, certificate, chain, sslPolicyErrors, requireCertificate);
+				if ((connectInfo.ServiceType & ConnectionInformation.ServiceTypes.AnyIMAPProtocol) == 0)
+					Source = new DartPopMessages(checker, connectInfo, Connection_Log);
 				else
-					LogTrace(Logger, TraceDetails, KB.K("Successfully authenticated with"), server, port, Protocol, mailbox, this);
+					Source = new DartImapMessages(checker, connectInfo, mailbox, Connection_Log);
+				if (traceSuccess || TraceDetails) {
+					// We build but never throw an Exception to get the formatting of exception contexts
+					var sb = new StringBuilder();
+					Strings.Append(sb, KB.K("Successfully authenticated with {0}"), connectInfo.FullName);
+					if (!string.IsNullOrWhiteSpace(mailbox))
+						Strings.Append(sb, KB.K(", mailbox '{0}'"), mailbox);
+					if (TraceDetails)
+						Logger.LogTrace(true, Thinkage.Libraries.Exception.FullMessage(new GeneralException(KB.T(sb.ToString())).WithContext(TraceContext)));
+					else
+						Logger.LogInfo(sb.ToString());
+				}
+				LastConnectInfo = connectInfo;
 			}
-			catch (GeneralException e) {
-				Error = e;
-				return false;
+			catch (Libraries.Exception e) {
+				e.WithContext(connectInfo.ExceptionContext);
+				throw;
 			}
 			catch (Dart.Mail.ProtocolException e) {
-				if (e.Message.Contains(KB.I(" -ERR [AUTH] Authentication failed"))                    // pop
+				Libraries.Exception te;
+				// This could be an unaccepted protocol or an authorization failure.
+				// In the former case we want to indicate that a different protocol might work.
+				// In the latter case we prefer not to do this but it is not particularly harmful if we do.
+				// This check is heuristic because other than the actual basic response ("-ERR" in POP, "NO" in IMAP)
+				// the rest of the message is free-form so these checks only really work for particular servers set up in English.
+				// The IMAP responses start with a tag which was applied by our client to the command; in this case the authorization
+				// command is tagged A2 in POP3/POP3S because it is the second command issued, and A4 in POP3/TLS because of the
+				// extra commands in TLS setup
+				if (e.Message.Contains(KB.I("-ERR [AUTH] Authentication failed"))                    // pop
 					|| e.Message.Contains(KB.I("[AUTHENTICATIONFAILED] Authentication failed"))       // imap
+					|| e.Message.Contains(KB.I("A2 NO AUTHENTICATE failed"))                          // imap
 					|| e.Message.Contains(KB.I("A4 NO AUTHENTICATE failed"))                          // imap
-					) { // heuristic but it will not matter if it fails, the failure will just clutter the logs.
+					) {
+					te = new GeneralException(e, KB.K("Cannot authenticate user")).WithContext(connectInfo.ExceptionContext);
 					if (TraceDetails)
-						Error = new GeneralException(KB.K("Cannot authenticate user '{0}' on server '{1}'"), user, server).WithContext(TraceContext(this));
-					else
-						Error = new GeneralException(KB.K("Cannot authenticate user '{0}' on server '{1}'"), user, server);
-					return false;
+						Libraries.Exception.AddContext(te, TraceContext);
 				}
-				Error = new GeneralException(e, KB.K("Cannot access Mail Server on server '{0}' on port {1} using {2}"), server, port, SourceType(Source, serviceType, usingEncryption)).WithContext(TraceContext(this));
-				return true;
+				else {
+					tryAnotherProtocol = true;
+					te = new GeneralException(e, KB.K("Cannot access Mail Server")).WithContext(connectInfo.ExceptionContext).WithContext(TraceContext);
+				}
+				throw te;
 			}
 			catch (System.Net.Sockets.SocketException e) {
-				var p = SourceType(Source, serviceType, usingEncryption);
-				GeneralException ge;
-				if (port != 0)
-					ge = new GeneralException(e, KB.K("Cannot access Mail Server on server '{0}' on port {1} using {2}"), server, port, p);
-				else
-					ge = new GeneralException(e, KB.K("Cannot access Mail Server on server '{0}' using {1}"), server, p);
-				Error = ge.WithContext(TraceContext(this));
+				Libraries.Exception ge = new GeneralException(e, KB.K("Cannot access Mail Server")).WithContext(connectInfo.ExceptionContext)
+					.WithContext(TraceContext);
 				if (TraceDetails)
-					Logger.LogTrace(true, Thinkage.Libraries.Exception.FullMessage(Error));
+					Logger.LogTrace(true, Thinkage.Libraries.Exception.FullMessage(ge));
+				throw e;
+			}
+		}
+		#endregion
+		#region - Certificate checking and logging
+		static private string LastCertificate;
+		public bool CheckCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors, bool requireCertificate) {
+			var newCertificateAsString = certificate.ToString(false);
+			var newCertificate = LastCertificate != newCertificateAsString;
+			LastCertificate = newCertificateAsString;
+			if (sslPolicyErrors == SslPolicyErrors.None) {
+				if (newCertificate)
+					Logger.LogTrace(TraceDetails, certificateMessage(KB.K("Valid Certificate '{0}' found"), certificate.Subject, sslPolicyErrors, newCertificateAsString));
 				return true;
 			}
-			return Source == null;
+			if (requireCertificate) {
+				if (newCertificate)
+					Logger.LogError(certificateMessage(KB.K("Certificate '{0}' had error {1}"), certificate.Subject, sslPolicyErrors, newCertificateAsString));
+				return false;
+			}
+			if (newCertificate)
+				if (TraceDetails)
+					Logger.LogInfo(certificateMessage(KB.K("Certificate '{0}' had error {1}"), certificate.Subject, sslPolicyErrors, newCertificateAsString));
+				else
+					Logger.LogInfo(Strings.Format(KB.K("Certificate '{0}' had error {1}"), certificate.Subject, sslPolicyErrors));
+			return true;
 		}
+
+		private string certificateMessage(Key format, string subject, SslPolicyErrors policyErrors, string certificateText) {
+			var s = new StringBuilder();
+			s.AppendLine(Strings.Format(format, subject, policyErrors.ToString()));
+			s.AppendLine(Strings.Format(KB.K("Details:")));
+			s.Append(certificateText);
+			return s.ToString();
+		}
+		#endregion
+		#endregion
 		public void Close() {
 			Source.Close();
 		}
@@ -394,6 +508,7 @@ namespace Thinkage.MainBoss.Database {
 				throw new GeneralException(KB.K("No email message source"));
 			}
 		}
+		#region Trace (a log of the protocol interactions)
 		public string Trace(bool forceFullTrace = false) {
 			if (log == null || log.Length == 0)
 				return string.Empty;
@@ -423,53 +538,8 @@ namespace Thinkage.MainBoss.Database {
 		public void TraceClear() {
 			log = null;
 		}
-		static private string CertificateCache;
-		public bool CheckCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
-			var newCertificateAsString = certificate.ToString(false);
-			var newCertificate = CertificateCache != newCertificateAsString;
-			CertificateCache = newCertificateAsString;
-			if (sslPolicyErrors == SslPolicyErrors.None) {
-				if (newCertificate)
-					Logger.LogTrace(TraceDetails, certificateMessage(KB.K("Valid Certificate '{0}' found"), certificate.Subject, sslPolicyErrors, CertificateCache));
-				return true;
-			}
-			if (RequestedEncryption == DatabaseEnums.MailServerEncryption.RequireValidCertificate) {
-				if (newCertificate)
-					Logger.LogError(certificateMessage(KB.K("Certificate '{0}' had error {1}"), certificate.Subject, sslPolicyErrors, CertificateCache));
-				return false;
-			}
-			if (newCertificate)
-				if (TraceDetails)
-					Logger.LogInfo(certificateMessage(KB.K("Certificate '{0}' had error {1}"), certificate.Subject, sslPolicyErrors, CertificateCache));
-				else
-					Logger.LogInfo(Strings.Format(KB.K("Certificate '{0}' had error {1}"), certificate.Subject, sslPolicyErrors));
-			return true;
-		}
-
-		private string certificateMessage(Key format, string subject, SslPolicyErrors policyErrors, string certificateText) {
-			var s = new StringBuilder();
-			s.AppendLine(Strings.Format(format, subject, policyErrors.ToString()));
-			s.AppendLine(Strings.Format(KB.K("Details:")));
-			s.Append(certificateText);
-			return s.ToString();
-		}
-		public string Protocol {
-			get {
-				if (Source != null)
-					return Source.Protocol;
-				return ServiceType.ToString();
-			}
-		}
-		public string SourceType(IMailMessageSource source, DatabaseEnums.MailServerType servicetype, bool encrypt) {
-			if (source != null)
-				return Source.Protocol;
-			if ((servicetype == DatabaseEnums.MailServerType.POP3 || servicetype == DatabaseEnums.MailServerType.IMAP4) && encrypt)
-				return Strings.IFormat("{0} with TLS", servicetype);
-			return servicetype.ToString();
-		}
-		public int Port => LastPort;
-		static StringBuilder log = null;
-		public static void Connection_Log(object sender, DataEventArgs e) {
+		private StringBuilder log = null;
+		private void Connection_Log(object sender, DataEventArgs e) {
 			if (log == null)
 				log = new StringBuilder();
 			log.Append(e.Data.Direction == DataDirection.In ? KB.I("<--- ") : KB.I("---> "));
@@ -477,19 +547,8 @@ namespace Thinkage.MainBoss.Database {
 				log.Append((char)e.Data.Buffer[i]);
 			}
 		}
-		private static void LogTrace(IServiceLogging logger, bool traceDetails, Key prefix, string server, int port, string protocol, string mailbox, EmailMessageSource source) {
-			if (!traceDetails)
-				return;
-			if (string.IsNullOrWhiteSpace(mailbox))
-				logger.LogTrace(traceDetails, Thinkage.Libraries.Exception.FullMessage(new GeneralException(KB.K("{0} server '{1}' on port {2} using {3}"), prefix, server, port, protocol).WithContext(TraceContext(source))));
-			else
-				logger.LogTrace(traceDetails, Thinkage.Libraries.Exception.FullMessage(new GeneralException(KB.K("{0} mailbox '{1}' server '{2}' on port {3} using {4}"), prefix, mailbox, server, port, protocol).WithContext(TraceContext(source))));
-		}
-		public static MessageExceptionContext TraceContext(EmailMessageSource messageSource) {
-			if (messageSource == null || messageSource.TraceLength == 0)
-				return null;
-			return new MessageExceptionContext(KB.T(messageSource.Trace()));
-		}
+		public MessageExceptionContext TraceContext => TraceLength == 0 ? null : new MessageExceptionContext(KB.T(Trace()));
+		#endregion
 		#region IDisposable Members
 		public void Dispose() {
 			Dispose(true);

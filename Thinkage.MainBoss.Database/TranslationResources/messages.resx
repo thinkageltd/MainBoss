@@ -2337,9 +2337,6 @@
   <data name="Thinkage.MainBoss.Database§'{0}' is not a MainBoss database" xml:space="preserve">
     <value>'{0}' is not a MainBoss database</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§{0} mailbox '{1}' server '{2}' on port {3} using {4}" xml:space="preserve">
-    <value>{0} mailbox '{1}' server '{2}' on port {3} using {4}</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§{0} must be zero" xml:space="preserve">
     <value>{0} must be zero</value>
   </data>
@@ -2349,8 +2346,8 @@
   <data name="Thinkage.MainBoss.Database§{0} rejection {0.IsOne ? message : messages } for {1}" xml:space="preserve">
     <value>{0} rejection {0.IsOne ? message : messages } for {1}</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§{0} server '{1}' on port {2} using {3}" xml:space="preserve">
-    <value>{0} server '{1}' on port {2} using {3}</value>
+  <data name="Thinkage.MainBoss.Database§, mailbox '{0}'" xml:space="preserve">
+    <value>, mailbox '{0}'</value>
   </data>
   <data name="Thinkage.MainBoss.Database§{0} skipped to date {1}" xml:space="preserve">
     <value>{0} skipped to date {1}</value>
@@ -2604,29 +2601,14 @@
   <data name="Thinkage.MainBoss.Database§Cannot access Active Directory to check email address {0}. Details: {1}" xml:space="preserve">
     <value>Cannot access Active Directory to check email address {0}. Details: {1}</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access mail messages from mailbox '{0}' using {1} on server '{2}' on port {3}" xml:space="preserve">
-    <value>Cannot access mail messages from mailbox '{0}' using {1} on server '{2}' on port {3}</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access mail messages on server '{0}'" xml:space="preserve">
-    <value>Cannot access mail messages on server '{0}'</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access mail messages on server '{0}' the following was tried:" xml:space="preserve">
-    <value>Cannot access mail messages on server '{0}' the following was tried:</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access mail messages using {0} on server '{1}' on port {2}" xml:space="preserve">
-    <value>Cannot access mail messages using {0} on server '{1}' on port {2}</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access Mail Server on server '{0}' on port {1} using {2}" xml:space="preserve">
-    <value>Cannot access Mail Server on server '{0}' on port {1} using {2}</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access Mail Server on server '{0}' using {1}" xml:space="preserve">
-    <value>Cannot access Mail Server on server '{0}' using {1}</value>
+  <data name="Thinkage.MainBoss.Database§Cannot access Mail Server" xml:space="preserve">
+    <value>Cannot access Mail Server</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Cannot access MainBoss database '{0}' on database server {1}" xml:space="preserve">
     <value>Cannot access MainBoss database '{0}' on database server {1}</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Cannot authenticate user '{0}' on server '{1}'" xml:space="preserve">
-    <value>Cannot authenticate user '{0}' on server '{1}'</value>
+  <data name="Thinkage.MainBoss.Database§Cannot authenticate" xml:space="preserve">
+    <value>Cannot authenticate user</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Cannot calculate Demand cost because Quantity is null" xml:space="preserve">
     <value>Cannot calculate Demand cost because Quantity is null</value>
@@ -2658,8 +2640,8 @@
   <data name="Thinkage.MainBoss.Database§Cannot find a contact since no email address or Active Directory Reference provided" xml:space="preserve">
     <value>Cannot find a contact since no email address or Active Directory Reference provided</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Cannot find an IP address for Computer '{0}'" xml:space="preserve">
-    <value>Cannot find an IP address for Computer '{0}'</value>
+  <data name="Thinkage.MainBoss.Database§Cannot resolve an IP address for Server '{0}'" xml:space="preserve">
+    <value>Cannot resolve an IP address for Server '{0}'</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Cannot find organization '{0}'" xml:space="preserve">
     <value>Cannot find organization '{0}'</value>
@@ -2675,9 +2657,6 @@
   </data>
   <data name="Thinkage.MainBoss.Database§Cannot locate Email Request {0} for processing." xml:space="preserve">
     <value>Cannot locate Email Request {0} for processing.</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot open a connect to server '{0}' on port {1} using {2}" xml:space="preserve">
-    <value>Cannot open a connect to server '{0}' on port {1} using {2}</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Cannot parse email message" xml:space="preserve">
     <value>Cannot parse email message</value>
@@ -3808,8 +3787,8 @@ Labor         __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§Subject: {0}" xml:space="preserve">
     <value>Subject: {0}</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Successfully authenticated with" xml:space="preserve">
-    <value>Successfully authenticated with</value>
+  <data name="Thinkage.MainBoss.Database§Successfully authenticated with {0}" xml:space="preserve">
+    <value>Successfully authenticated with {0}</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Suspend WO" xml:space="preserve">
     <value>S&amp;uspend</value>
@@ -4072,9 +4051,6 @@ Labor         __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§Transfer To" xml:space="preserve">
     <value>Transfer To</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Tried" xml:space="preserve">
-    <value>Tried</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§Unable to access any MainBoss Service records in {0}.  User '{1}' must have SQL Administrator privileges on the SQL server." xml:space="preserve">
     <value>Unable to access any MainBoss Service records in {0}.  User '{1}' must have SQL Administrator privileges on the SQL server.</value>
   </data>
@@ -4225,11 +4201,8 @@ Labor         __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§Users {0} in the Active Directory have the same email address '{1}'" xml:space="preserve">
     <value>Users {0} in the Active Directory have the same email address '{1}'</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Using {0} server '{1}' on port {2}" xml:space="preserve">
-    <value>Using {0} server '{1}' on port {2}</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Using {0} with mailbox '{0}' server '{2}' on port {3}" xml:space="preserve">
-    <value>Using {0} with mailbox '{0}' server '{2}' on port {3}</value>
+  <data name="Thinkage.MainBoss.Database§User '{0}' on server '{1}', port '{2}', using {3}" xml:space="preserve">
+    <value>User '{0}' on server '{1}', port '{2}', using {3}</value>
   </data>
   <data name="Thinkage.MainBoss.Database§using Purchase Template Hourly Outside referencing Hourly Outside {0}" xml:space="preserve">
     <value>using Purchase Template Hourly Outside referencing Hourly Outside '{0}'</value>
@@ -4422,5 +4395,29 @@ Labor         __________________________ Material    __________________________<
   </data>
   <data name="Thinkage.MainBoss.Database§Your request using email address {0} cannot be accepted. Please contact Maintenance by some other means." xml:space="preserve">
     <value>Your request using email address {0} cannot be accepted. Please contact Maintenance by some other means.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Configuration record contains both a client certificate name and a client secret" xml:space="preserve">
+    <value>Configuration record contains both a client certificate name and a client secret</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Mail Service Type does not allow any plaintext protocol, so Encryption 'None' will be ignored" xml:space="preserve">
+    <value>Mail Service Type does not allow any plaintext protocol, so Encryption 'None' will be ignored</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Mail Service Type does not allow specification of a Mailbox, so the Mailbox setting will be ignored" xml:space="preserve">
+    <value>Mail Service Type does not allow specification of a Mailbox, so the Mailbox setting will be ignored</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Cannot connect to {0}" xml:space="preserve">
+    <value>Cannot connect to {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Cannot connect to incoming mail server. The following was tried:" xml:space="preserve">
+    <value>Cannot connect to incoming mail server. The following was tried:</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Mailbox '{0}' does not exist" xml:space="preserve">
+    <value>Mailbox '{0}' does not exist</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§No default Mailbox found, tried 'MBOX', 'INBOX' and 'Inbox'" xml:space="preserve">
+    <value>No default Mailbox found, tried 'MBOX', 'INBOX' and 'Inbox'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Only IPv6 addresses could be found but IPv6 is not enabled on this computer" xml:space="preserve">
+    <value>Only IPv6 addresses could be found but IPv6 is not enabled on this computer</value>
   </data>
 </root>

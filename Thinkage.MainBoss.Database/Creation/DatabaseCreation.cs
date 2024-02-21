@@ -669,6 +669,7 @@ namespace Thinkage.MainBoss.Database {
 				dsMB.Schema.T.ServiceConfiguration.F.NotificationInterval[defaultServiceConfiguration] = new TimeSpan(0, 10, 0);
 				dsMB.Schema.T.ServiceConfiguration.F.ProcessNotificationEmail[defaultServiceConfiguration] = true;
 				dsMB.Schema.T.ServiceConfiguration.F.ProcessRequestorIncomingEmail[defaultServiceConfiguration] = true;
+				dsMB.Schema.T.ServiceConfiguration.F.MailAuthenticationType[defaultServiceConfiguration] = DatabaseEnums.MailServerAuthentication.Plain;
 
 				#region MainBoss Service UserMessageKeys
 				/// Define the MainBoss Service UserMessageTranslation keys (invariant ONLY provided)

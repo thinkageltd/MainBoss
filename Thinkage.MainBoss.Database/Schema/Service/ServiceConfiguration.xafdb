@@ -45,6 +45,10 @@
 	  <doc>The type of mail server: Any, POP3, IMAP4, POP3S IMAP4S</doc>
 	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIMainBossService.EmailServerTypeProvider,Thinkage.MainBoss.Controls</extension>
 	</field>
+	<field name="MailAuthenticationType" type="integer(min 0, max 1, nonnull)" labelkey="Mail Authentication Type">
+	  <doc>The type of authentication: Plain (password) or OAuth2</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIMainBossService.EmailServerAuthenticationProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
 	<field name="ProcessNotificationEmail" type="Requiredbool">
 	  <doc>Whether or not the service processes outgoing notifications to Requestors and Assignees</doc>
 	</field>
@@ -64,10 +68,21 @@
 	  <doc>The name of the mailbox where @Requests' emails are stored (only used for IMAP4 accounts)</doc>
 	</field>
 	<field name="MailEncryptedPassword" type="blob(minlength 8, maxlength 520, null)" >
-	  <!-- encryption always produces 8-byte blocks, and the size required is 8*(1+floor(plaintextLen)/4) so for 256 plaintext characters we need 520 bytes.
+	  <!-- encryption always produces 8-byte blocks, and the size required is 8*(1+floor(plaintextLen/4)) so for 256 plaintext characters we need 520 bytes.
 	  The plaintext length is encoded into the passwordType in function MainBossServiceConfigurationEditTbl in TIMainBossService.cs -->
 	  <doc>@Requests' Email account's password (encrypted)</doc>
 	  <extension name="usage">password</extension>
+	</field>
+	<field name="MailEncryptedClientSecret" type="MaxBlob" labelkey="Mail Client Secret">
+	  <!-- encryption always produces 8-byte blocks, and the size required is 8*(1+floor(plaintextLen/4));  -->
+	  <doc>@Requests' Email account's Client Secret for OAuth2 (encrypted)</doc>
+	  <extension name="usage">password</extension>
+	</field>
+	<field name="MailClientCertificateName" type="SingleLineUnlimited" labelkey="Mail Client Certificate Name">
+	  <doc>@Requests' Email account's Client Certificate name</doc>
+	</field>
+	<field name="MailClientID" type="SingleLineUnlimited" labelkey="Mail Client ID">
+	  <doc>@Requests' Email account's Client ID</doc>
 	</field>
 	<field name="MaxMailSize" type="integer(32)" labelkey="Maximum Mail Size">
 		<doc>Any Mail component larger than this size will be ignored.</doc>	

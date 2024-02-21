@@ -134,6 +134,11 @@ namespace Thinkage.MainBoss.Controls {
 
 		#region NodeIds
 		private static readonly object IncomingMailServerTypeId = KB.I("IncomingMailServerTypeId");
+		private static readonly object IncomingMailAuthenticationTypeId = KB.I("IncomingMailAuthenticationTypeId");
+		private static readonly object MailEncryptedPasswordId = KB.I("MailEncryptedPasswordId");
+		private static readonly object MailClientIDId = KB.I("MailClientIDId");
+		private static readonly object MailEncryptedClientSecretId = KB.I("MailEncryptedClientSecretId");
+		private static readonly object MailClientCertificateNameId = KB.I("MailClientCertificateNameId");
 		private static readonly object IncomingMailEncryptionId = KB.I("IncomingMailEncryptionId");
 		private static readonly object IncomingMailServerPortId = KB.I("IncomingMailServerPortId");
 		private static readonly object OutgoingMailServerAuthenticationId = KB.I("OutgoingMailServerAuthenticationId");
@@ -146,8 +151,15 @@ namespace Thinkage.MainBoss.Controls {
 		private static readonly object OutgoingMailServerUsernameId = KB.I("OutgoingMailServerUsernameId");
 		private static readonly object OutgoingMailServerPasswordId = KB.I("OutgoingMailServerPasswordId");
 		protected static readonly Key BecauseOutgoingMailServerAuthenticationIsNotCustom = KB.K("Readonly because the Outgoing SMTP server authentication is not using the specified SMTP domain, username and password");
+		protected static readonly Key BecauseWrongAuthentication = KB.K("Readonly because the selected Authentication Type does not use this value");
 		private static readonly EditorCalculatedInitValue.CalculationDelegate OutgoingMailServerAuthenticationControlReadonly = delegate (object[] inputs) {
 			return (inputs[0] != null && (DatabaseEnums.SMTPCredentialType)(int)IntegralTypeInfo.AsNativeType(inputs[0], typeof(int)) != DatabaseEnums.SMTPCredentialType.CUSTOM);
+		};
+		private static readonly EditorCalculatedInitValue.CalculationDelegate UsingPlainAuthentication = delegate (object[] inputs) {
+			return (inputs[0] != null && (DatabaseEnums.MailServerAuthentication)(int)IntegralTypeInfo.AsNativeType(inputs[0], typeof(int)) == DatabaseEnums.MailServerAuthentication.Plain);
+		};
+		private static readonly EditorCalculatedInitValue.CalculationDelegate UsingOAuth2Authentication = delegate (object[] inputs) {
+			return (inputs[0] != null && (DatabaseEnums.MailServerAuthentication)(int)IntegralTypeInfo.AsNativeType(inputs[0], typeof(int)) == DatabaseEnums.MailServerAuthentication.OAuth2);
 		};
 		#endregion
 
@@ -201,7 +213,7 @@ namespace Thinkage.MainBoss.Controls {
 				KB.K("IMAP4S"),
 			},
 			new Key[] {
-				KB.K("Try in order POP3 with TLS, IMAP4 with TLS, POP3S, IMAP4S, POP3 and IMAP4"),
+				KB.K("Try all server types that spport the requested Encryption"),
 				KB.K("Post Office Protocol version 3"),
 				KB.K("Internet Message Access Protocol version 4 revision 1"),
 				KB.K("Post Office Protocol version 3 over SSL"),
@@ -233,6 +245,20 @@ namespace Thinkage.MainBoss.Controls {
 				(int)DatabaseEnums.MailServerEncryption.RequireEncryption,
 				(int)DatabaseEnums.MailServerEncryption.RequireValidCertificate,
 				(int)DatabaseEnums.MailServerEncryption.None
+			}, 4
+		);
+		public static EnumValueTextRepresentations EmailServerAuthenticationProvider = new EnumValueTextRepresentations(
+			new Key[] {
+				KB.K("Plain"),
+				KB.K("OAuth2")
+			},
+			new Key[] {
+				KB.K("Plain authentication using a password"),
+				KB.K("Open Authentication 2.0")
+			},
+			new object[] {
+				(int)DatabaseEnums.MailServerAuthentication.Plain,
+				(int)DatabaseEnums.MailServerAuthentication.OAuth2
 			}, 4
 		);
 
@@ -812,6 +838,7 @@ namespace Thinkage.MainBoss.Controls {
 		private static Tbl MainBossServiceManageTbl() {
 			return new Tbl(dsMB.Schema.T.ServiceConfiguration, TId.MainBossService,
 				new Tbl.IAttr[] {
+					new MinimumDBVersionTbl(new Version(1, 1, 5, 15)),
 					MainBossServiceAdminGroup,
 					new BTbl(
 						new MB3BTbl.WithManageServiceLogicArg(typeof(MainBossServiceDefinition),
@@ -874,16 +901,13 @@ namespace Thinkage.MainBoss.Controls {
 		private class EncryptingEditTextHandler : TypeEditTextHandler {
 			public EncryptingEditTextHandler(TypeInfo tinfo) {
 				pTypeInfo = (BlobTypeInfo)tinfo;
-				object minlen = pTypeInfo.SizeType.NativeMinLimit(typeof(int));
-				if (minlen != null) {
-					System.Diagnostics.Debug.Assert((int)minlen % 2 == 0);
-					minlen = (int)minlen / 2;
-				}
-				object maxlen = pTypeInfo.SizeType.NativeMaxLimit(typeof(int));
-				if (maxlen != null) {
-					System.Diagnostics.Debug.Assert((int)maxlen % 2 == 0);
-					maxlen = (int)maxlen / 2;
-				}
+				// The byte lengths of the blob are 8*(1+floor(plaintextLen/4)).
+				// Thus plaintextLen = 4 * (bytelen/8 - 1) == 4*bytelen/8 - 4.
+				// The division by 8 should round up for the lower bounds, and down for the upper bounds.
+				int? minlen = 4 * (((int?)pTypeInfo.SizeType.NativeMinLimit(typeof(int?)) + 7) / 8) - 4;
+				if (minlen < 0)
+					minlen = 0;
+				int? maxlen = 4 * ((int?)pTypeInfo.SizeType.NativeMaxLimit(typeof(int?)) / 8) - 4;
 				innerHandler = new StringTypeInfo(minlen, maxlen, 0, pTypeInfo.AllowNull, true, true).GetTypeEditTextHandler(Thinkage.Libraries.Application.InstanceFormatCultureInfo);
 			}
 			private BlobTypeInfo pTypeInfo;
@@ -925,6 +949,7 @@ namespace Thinkage.MainBoss.Controls {
 		private static Tbl MainBossServiceConfigurationBrowseTbl() {
 			return new CompositeTbl(dsMB.Schema.T.ServiceConfiguration, TId.MainBossServiceConfiguration,
 				new Tbl.IAttr[] {
+					new MinimumDBVersionTbl(new Version(1, 1, 5, 15)),
 					MainBossServiceAdminGroup,
 					new BTbl(
 						BTbl.ListColumn(KB.K("Service Name"), dsMB.Path.T.ServiceConfiguration.F.Code), BTbl.ListColumn(dsMB.Path.T.ServiceConfiguration.F.Desc),
@@ -961,6 +986,7 @@ namespace Thinkage.MainBoss.Controls {
 			delegate () {
 				return new Tbl(dsMB.Schema.T.ServiceConfiguration, TId.MainBossServiceConfiguration,
 					new Tbl.IAttr[] {
+						new MinimumDBVersionTbl(new Version(1, 1, 5, 15)),
 						MainBossServiceAdminGroup,
 						new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete))
 					},
@@ -977,6 +1003,7 @@ namespace Thinkage.MainBoss.Controls {
 			Libraries.DataFlow.TransformingNotifyingValue.GetTransform decryptor = (bytes => bytes == null ? bytes : ServicePassword.Decode((byte[])bytes));
 			return new Tbl(dsMB.Schema.T.ServiceConfiguration, TId.MainBossServiceConfiguration,
 				new Tbl.IAttr[] {
+					new MinimumDBVersionTbl(new Version(1, 1, 5, 15)),
 					MainBossServiceAdminGroup,
 					new ETbl(
 						ETbl.SetAllowMultiRecordEditing(false),
@@ -1012,7 +1039,18 @@ namespace Thinkage.MainBoss.Controls {
 					TblColumnNode.New(KB.K("Override Default Port"), dsMB.Path.T.ServiceConfiguration.F.MailPort, DCol.Normal, new ECol(Fmt.SetId(IncomingMailServerPortId))),
 					TblColumnNode.New(KB.K("Override Default MailBox"), dsMB.Path.T.ServiceConfiguration.F.MailboxName, DCol.Normal, ECol.Normal),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailUserName, DCol.Normal, ECol.Normal),
-					TblColumnNode.New(KB.K("Mail User's Password"), dsMB.Path.T.ServiceConfiguration.F.MailEncryptedPassword, new ECol(getPasswordCreatorAttribute())),
+					TblGroupNode.New(dsMB.Path.T.ServiceConfiguration.F.MailAuthenticationType, new TblLayoutNode.ICtorArg[] { ECol.Normal },
+						TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailAuthenticationType, new ECol(Fmt.SetId(IncomingMailAuthenticationTypeId)))
+					),
+					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailAuthenticationType, DCol.Normal),
+					// Flip panel, page 1:
+					TblColumnNode.New(KB.K("Mail User's Password"), dsMB.Path.T.ServiceConfiguration.F.MailEncryptedPassword,
+						new ECol(getPasswordCreatorAttribute(), Fmt.SetId(MailEncryptedPasswordId))),
+					// Page 2: Client ID, Client Secret, Client Certificate Name
+					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailClientID, DCol.Normal, ECol.Normal, Fmt.SetId(MailClientIDId)),
+					TblColumnNode.New(KB.K("Mail Client Secret"), dsMB.Path.T.ServiceConfiguration.F.MailEncryptedClientSecret,
+						new ECol(getPasswordCreatorAttribute(), Fmt.SetId(MailEncryptedClientSecretId))),
+					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailClientCertificateName, DCol.Normal, ECol.Normal, Fmt.SetId(MailClientCertificateNameId)),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.WakeUpInterval, DCol.Normal, ECol.Normal),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MaxMailSize, DCol.Normal, ECol.Normal),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.ManualProcessingTimeAllowance, DCol.Normal, ECol.Normal)
@@ -1086,6 +1124,17 @@ namespace Thinkage.MainBoss.Controls {
 						}
 						return null;
 					}).Operand1(RejectPattern),
+
+				// Make the irrelevant incoming mail authentication fields readonly
+				Init.Continuous(new ControlReadonlyTarget(MailEncryptedPasswordId, BecauseWrongAuthentication)
+						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, UsingOAuth2Authentication, new ControlValue(IncomingMailAuthenticationTypeId))),
+				Init.Continuous(new ControlReadonlyTarget(MailClientIDId, BecauseWrongAuthentication)
+						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, UsingPlainAuthentication, new ControlValue(IncomingMailAuthenticationTypeId))),
+				Init.Continuous(new ControlReadonlyTarget(MailEncryptedClientSecretId, BecauseWrongAuthentication)
+						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, UsingPlainAuthentication, new ControlValue(IncomingMailAuthenticationTypeId))),
+				Init.Continuous(new ControlReadonlyTarget(MailClientCertificateNameId, BecauseWrongAuthentication)
+						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, UsingPlainAuthentication, new ControlValue(IncomingMailAuthenticationTypeId))),
+				// Make the irrelevant outgoing mail authentication fields readonly
 				Init.Continuous(new ControlReadonlyTarget(OutgoingMailServerUserDomainId, BecauseOutgoingMailServerAuthenticationIsNotCustom)
 						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, OutgoingMailServerAuthenticationControlReadonly, new ControlValue(OutgoingMailServerAuthenticationId))),
 				Init.Continuous(new ControlReadonlyTarget(OutgoingMailServerUsernameId, BecauseOutgoingMailServerAuthenticationIsNotCustom)
@@ -1093,7 +1142,34 @@ namespace Thinkage.MainBoss.Controls {
 				Init.Continuous(new ControlReadonlyTarget(OutgoingMailServerPasswordId, BecauseOutgoingMailServerAuthenticationIsNotCustom)
 						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, OutgoingMailServerAuthenticationControlReadonly, new ControlValue(OutgoingMailServerAuthenticationId))),
 				Init.OnLoadNew(new PathTarget(dsMB.Path.T.ServiceConfiguration.F.Code), new ConstantValue(KB.I("MainBossService"))),
-				Init.OnLoadNew(new PathTarget(dsMB.Path.T.ServiceConfiguration.F.Encryption), new ConstantValue(DatabaseEnums.MailServerEncryption.RequireEncryption))
+				Init.OnLoadNew(new PathTarget(dsMB.Path.T.ServiceConfiguration.F.Encryption), new ConstantValue(DatabaseEnums.MailServerEncryption.RequireEncryption)),
+
+				new Check2<int, int>(
+					(stype, enc) => (stype == (int)DatabaseEnums.MailServerType.POP3S || stype == (int)DatabaseEnums.MailServerType.IMAP4S) && enc == (int)DatabaseEnums.MailServerEncryption.None
+						? EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("Selected Server Type requires encryption")))
+						: null
+					).Operand1(IncomingMailServerTypeId)
+					.Operand2(IncomingMailEncryptionId),
+				// Force a Client ID if using OAuth2 (don't error-flag the auth type)
+				new Check2<int, string>(
+					(authtype, clientid) => authtype == (int)DatabaseEnums.MailServerAuthentication.OAuth2 && clientid == null
+						? new EditLogic.ValidatorAndCorrector.ValidatorStatus(1, new GeneralException(KB.K("OAuth2 requires a Client ID")))
+						: null
+					).Operand1(IncomingMailAuthenticationTypeId)
+					.Operand2(MailClientIDId),
+				// Force exactly one of CLient Secret or Certificate Name if using OAuth2 (don't error-flag the auth type)
+				new Check3<int, byte[], string>(
+					(authtype, secret, certname) => {
+						if (authtype != (int)DatabaseEnums.MailServerAuthentication.OAuth2 || (secret == null) != (certname == null))
+							return null;
+						var e = new GeneralException(KB.K("OAuth2 requires either a Client Secret or a Client Certificate Name, but not both"));
+						return new EditLogic.ValidatorAndCorrector.ValidatorStatus(1, e, 2, e);
+					}).Operand1(IncomingMailAuthenticationTypeId)
+					.Operand2(MailEncryptedClientSecretId)
+					.Operand3(MailClientCertificateNameId)
+				// TODO: Other checks:
+				// OAuth2 but no Client ID
+				// OAuth2 but not exactly one of Certificate or Secret
 				);
 		}
 		#endregion

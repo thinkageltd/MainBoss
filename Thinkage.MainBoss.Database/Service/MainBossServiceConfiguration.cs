@@ -119,7 +119,7 @@ namespace Thinkage.MainBoss.Database.Service {
 		public static string ServiceCmdLine([Invariant]string executable, SQLConnectionInfo sqlConnectionInfo, [Invariant]string version,[Invariant]string serviceCode) {
 			if (sqlConnectionInfo.Credentials.Type == AuthenticationMethod.WindowsAuthentication)
 				return Strings.IFormat("\"{0}\" /ServiceName:{1} /Connection:{2}  /Version:\"{3}\"", executable, serviceCode, EscapeArg(sqlConnectionInfo.ConnectionString), version);
-			var noPassword = sqlConnectionInfo.ConnectionStringNoPassword;
+			var noPassword = Libraries.Sql.SqlUtilities.NoPasswordConnectionString(sqlConnectionInfo.SqlConnectionObject);
 			var encrypted = Convert.ToBase64String(Database.Service.ServicePassword.Encode(sqlConnectionInfo.SqlPassword));
 			return Strings.IFormat("\"{0}\" /ServiceName:{1} /Connection:{2} /Version:\"{3}\" /SecurityToken:{4} ", executable, serviceCode, EscapeArg(noPassword), version.ToString(), EscapeArg(encrypted));
 		}		

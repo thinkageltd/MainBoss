@@ -195,7 +195,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			DBVersionHandler VersionHandler = null;
 			// validate the databaselog
 			try {
-				Version MinDBVersion = new Version(1, 1, 5, 2); // Usually kept in lock step with mainboss application; changing this should be reflected in the checkin comment to vault
+				Version MinDBVersion = new Version(1, 1, 5, 15); // Usually kept in lock step with mainboss application; changing this should be reflected in the checkin comment to vault
 																// MinMBAppVersion; 4.2; MinDBVersion; changing this should be reflected in the checkin comment to vault
 				VersionHandler = MBUpgrader.UpgradeInformation.CheckDBVersion(DBSession, VersionInfo.ProductVersion, MinDBVersion, dsMB.Schema.V.MinMBRemoteAppVersion, KB.I("MainBoss Service"));
 			}
@@ -1078,14 +1078,6 @@ namespace Thinkage.MainBoss.Database.Service {
 		public SqlConnectionStringBuilder SqlConnectionObject { get; }
 		public string DatabaseServer => SqlConnectionObject.DataSource;
 		public string ConnectionString => SqlConnectionObject.ConnectionString;
-		public string ConnectionStringNoPassword {
-			get {
-				var c = new SqlConnectionStringBuilder(ConnectionString);
-				c.Password = "";
-				return c.ConnectionString;
-
-			}
-		}
 		public string DatabaseName => SqlConnectionObject.InitialCatalog;
 		public string Server {
 			get {

@@ -2337,9 +2337,6 @@
   <data name="Thinkage.MainBoss.Database§'{0}' is not a MainBoss database" xml:space="preserve">
     <value>'{0}' No es una base de datos de MainBoss</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§{0} mailbox '{1}' server '{2}' on port {3} using {4}" xml:space="preserve">
-    <value>{0} buzón '{1}' servidor '{2}' en el puerto {3} usando {4} </value>
-  </data>
   <data name="Thinkage.MainBoss.Database§{0} must be zero" xml:space="preserve">
     <value>{0} debe ser cero</value>
   </data>
@@ -2349,8 +2346,8 @@
   <data name="Thinkage.MainBoss.Database§{0} rejection {0.IsOne ? message : messages } for {1}" xml:space="preserve">
     <value>{0} {0.IsOne ? mensaje : mensajes } de rechazo para {1}</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§{0} server '{1}' on port {2} using {3}" xml:space="preserve">
-    <value>{0} Servidor '{1}' en el puerto {2} usando {3}</value>
+  <data name="Thinkage.MainBoss.Database§, mailbox '{0}'" xml:space="preserve">
+    <value>, buzón '{0}'</value>
   </data>
   <data name="Thinkage.MainBoss.Database§{0} skipped to date {1}" xml:space="preserve">
     <value>{0} saltado hasta la fecha {1}</value>
@@ -2604,29 +2601,14 @@
   <data name="Thinkage.MainBoss.Database§Cannot access Active Directory to check email address {0}. Details: {1}" xml:space="preserve">
     <value>No se puede tener acceso a Active Directory para comprobar la dirección de correo electrónico {0}. Detalles: {1}</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access mail messages from mailbox '{0}' using {1} on server '{2}' on port {3}" xml:space="preserve">
-    <value>No se puede acceder a los mensajes de correo del buzón '{0}' usando {1} en el servidor '{2}' en el puerto {3}</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access mail messages on server '{0}'" xml:space="preserve">
-    <value>No se puede acceder a los mensajes de correo en el servidor '{0}'</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access mail messages on server '{0}' the following was tried:" xml:space="preserve">
-    <value>No se puede acceder a los mensajes de correo en el servidor '{0}' se trató de la siguiente:</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access mail messages using {0} on server '{1}' on port {2}" xml:space="preserve">
-    <value>No se puede acceder a los mensajes usando {0} en el servido '{1}' en puerto {2}</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access Mail Server on server '{0}' on port {1} using {2}" xml:space="preserve">
-    <value>No se puede acceder al Servidor Mensaje de correo en el servidor '{0}' en puerto {1} usando {2}</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access Mail Server on server '{0}' using {1}" xml:space="preserve">
-    <value>No se puede acceder al Servidor Mensaje de correo en el servidor '{0}' usando {1}</value>
+  <data name="Thinkage.MainBoss.Database§Cannot access Mail Server" xml:space="preserve">
+    <value>No se puede acceder al Servidor Mensaje de correo</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Cannot access MainBoss database '{0}' on database server {1}" xml:space="preserve">
     <value>No se ha podido acceder a la base de datos de MainBoss '{0}' en la base de datos del servidor {1}</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Cannot authenticate user '{0}' on server '{1}'" xml:space="preserve">
-    <value>No se puede autenticar el usuario '{0}' en el servidor '{1}'</value>
+  <data name="Thinkage.MainBoss.Database§Cannot authenticate user" xml:space="preserve">
+    <value>No se puede autenticar el usuario</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Cannot calculate Demand cost because Quantity is null" xml:space="preserve">
     <value>No se puede calcular el costo de exigido porque la cantidad es nula</value>
@@ -2658,8 +2640,8 @@
   <data name="Thinkage.MainBoss.Database§Cannot find a contact since no email address or Active Directory Reference provided" xml:space="preserve">
     <value>No puede encontrar un contacto desde ninguna dirección de correo electrónico o de referencia de Active Directory siempre</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Cannot find an IP address for Computer '{0}'" xml:space="preserve">
-    <value>Si no encuentra una dirección IP para ordenador '{0}'</value>
+  <data name="Thinkage.MainBoss.Database§Cannot resolve an IP address for Server '{0}'" xml:space="preserve">
+    <value>Si no encuentra una dirección IP para el servidor '{0}'</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Cannot find organization '{0}'" xml:space="preserve">
     <value>No puede encontrar organización '{0}'</value>
@@ -2675,9 +2657,6 @@
   </data>
   <data name="Thinkage.MainBoss.Database§Cannot locate Email Request {0} for processing." xml:space="preserve">
     <value>No se puede localizar Email Solicitud {0} para el procesamiento.</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot open a connect to server '{0}' on port {1} using {2}" xml:space="preserve">
-    <value>No se puede abrir un conectan al servidor '{0}' en el puerto {1} usando {2}</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Cannot parse email message" xml:space="preserve">
     <value>No se puede analizar el mensaje de correo electrónico</value>
@@ -3809,8 +3788,8 @@ Laboral       __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§Subject: {0}" xml:space="preserve">
     <value>Sujeto: {0}</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Successfully authenticated with" xml:space="preserve">
-    <value>Autenticado con éxito</value>
+  <data name="Thinkage.MainBoss.Database§Successfully authenticated with {0}" xml:space="preserve">
+    <value>Autenticado con {0}</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Suspend WO" xml:space="preserve">
     <value>Suspender</value>
@@ -4073,9 +4052,6 @@ Laboral       __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§Transfer To" xml:space="preserve">
     <value>Traslado Para</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Tried" xml:space="preserve">
-    <value>Intento</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§Unable to access any MainBoss Service records in {0}.  User '{1}' must have SQL Administrator privileges on the SQL server." xml:space="preserve">
     <value>No se puede acceder cualquier registro de servicio MainBoss en {0}. Usuario '{1}' debe tener privilegios de administrador de SQL en el servidor SQL.</value>
   </data>
@@ -4226,11 +4202,8 @@ Laboral       __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§Users {0} in the Active Directory have the same email address '{1}'" xml:space="preserve">
     <value>Los usuarios {0} en el Active Directory tienen la misma dirección de correo electrónico '{1}'</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Using {0} server '{1}' on port {2}" xml:space="preserve">
-    <value>El uso de {0} servidor '{1}' en el puerto {2}</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Using {0} with mailbox '{0}' server '{2}' on port {3}" xml:space="preserve">
-    <value>El uso de {0} con el buzón '{0}' servidor '{2}' en el puerto {3}</value>
+  <data name="Thinkage.MainBoss.Database§User '{0}' on server '{1}', port '{2}', using {3}" xml:space="preserve">
+    <value>Usario '{0}' en el servidor '{1}', puerto '{2}', usando {3}</value>
   </data>
   <data name="Thinkage.MainBoss.Database§using Purchase Template Hourly Outside referencing Hourly Outside {0}" xml:space="preserve">
     <value>utilizar la adquisición de plantilla hace referencia a cada hora fuera de horario fuera de '{0}'</value>
@@ -4423,5 +4396,29 @@ Laboral       __________________________ Material    __________________________<
   </data>
   <data name="Thinkage.MainBoss.Database§Your request using email address {0} cannot be accepted. Please contact Maintenance by some other means." xml:space="preserve">
     <value>Su solicitud utilizando la dirección de correo electrónico {0} no puede ser aceptada. Por favor, póngase en contacto con Mantenimiento por algún otro medio.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Configuration record contains both a client certificate name and a client secret" xml:space="preserve">
+    <value>Configuration record contains both a client certificate name and a client secret</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Mail Service Type does not allow any plaintext protocol, so Encryption 'None' will be ignored" xml:space="preserve">
+    <value>Mail Service Type does not allow any plaintext protocol, so Encryption 'None' will be ignored</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Mail Service Type does not allow specification of a Mailbox, so the Mailbox setting will be ignored" xml:space="preserve">
+    <value>Mail Service Type does not allow specification of a Mailbox, so the Mailbox setting will be ignored</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Cannot connect to {0}" xml:space="preserve">
+    <value>Cannot connect to {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Cannot connect to incoming mail server. The following was tried:" xml:space="preserve">
+    <value>Cannot connect to incoming mail server. The following was tried:</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Mailbox '{0}' does not exist" xml:space="preserve">
+    <value>Mailbox '{0}' does not exist</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§No default Mailbox found, tried 'MBOX', 'INBOX' and 'Inbox'" xml:space="preserve">
+    <value>No default Mailbox found, tried 'MBOX', 'INBOX' and 'Inbox'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Only IPv6 addresses could be found but IPv6 is not enabled on this computer" xml:space="preserve">
+    <value>Solo se puderion encontrar direcciones IPv6, pero IPv6 no està habilitado en esra computadora</value>
   </data>
 </root>

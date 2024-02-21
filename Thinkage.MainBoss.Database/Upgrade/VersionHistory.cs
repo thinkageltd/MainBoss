@@ -5871,8 +5871,20 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 							new SqlUpgradeStep(@"
 								update ServiceConfiguration set MailEncryptedPassword = TempPassword
                                 alter table ServiceConfiguration drop column TempPassword"),
-							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinMBAppVersion, new Version(4,2,4,9)),
-							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinAReqAppVersion, new Version(4,2,4,9))
+							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinMBAppVersion, new Version(4, 2, 4, 9)),
+							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinAReqAppVersion, new Version(4, 2, 4, 9))
+						),
+						new UpgradeStepSequence(	// 1.1.5.15 Add fields to support OAuth2
+							new AddColumnUpgradeStep("ServiceConfiguration.MailAuthenticationType"),
+							new SqlUpgradeStep(@"
+								update ServiceConfiguration set MailAuthenticationType = 0
+							"),
+							new SetColumnRequiredUpgradeStep("ServiceConfiguration.MailAuthenticationType"),
+							new AddColumnUpgradeStep("ServiceConfiguration.MailEncryptedClientSecret"),
+							new AddColumnUpgradeStep("ServiceConfiguration.MailClientCertificateName"),
+							new AddColumnUpgradeStep("ServiceConfiguration.MailClientID"),
+							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinMBAppVersion, new Version(4, 2, 4, 12)),
+							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinAReqAppVersion, new Version(4, 2, 4, 12))
 						)
 						#endregion
 					}
@@ -5881,7 +5893,7 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 			}
 		},
 		// The DEBUG check schema has CODE; update when Schema has changed and upgrade steps have been added
-		0Xc6fd6d2c208e955UL, dsMB.Schema);
+		0x8f9bca082cff5074UL, dsMB.Schema);
 		#endregion
 	}
 }

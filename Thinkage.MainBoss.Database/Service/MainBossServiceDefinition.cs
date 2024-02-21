@@ -220,6 +220,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				 AutomaticallyCreateRequestorsFromLDAP = false;
 				 WakeUpInterval = new System.TimeSpan(0);
 				 MailServerType = 0;
+				 MailAuthenticationType = 0;
 				 ProcessNotificationEmail = false;
 				 ProcessRequestorIncomingEmail = false;
 				 MailServer = null;
@@ -228,6 +229,10 @@ namespace Thinkage.MainBoss.Database.Service {
 				 MaxMailSize = null;
 				 MailUserName = null;
 				 MailboxName = null;
+				 MailEncryptedPassword = null;
+				 MailEncryptedClientSecret = null;
+				 MailClientCertificateName = null;
+				 MailClientID = null;
 				 SMTPServer = null;
 				 SMTPPort = 0;
 				 SMTPUseSSL = false;
@@ -235,7 +240,6 @@ namespace Thinkage.MainBoss.Database.Service {
 				 SMTPUserDomain = null;
 				 SMTPUserName = null;
 				 SMTPEncryptedPassword = null;
-				 MailEncryptedPassword = null;
 				 AcceptAutoCreateEmailPattern = null;
 				 RejectAutoCreateEmailPattern = null;
 			 }
@@ -258,6 +262,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				AutomaticallyCreateRequestorsFromEmail = sRow.F.AutomaticallyCreateRequestorsFromEmail;
 				WakeUpInterval = sRow.F.WakeUpInterval;
 				MailServerType = sRow.F.MailServerType;
+				MailAuthenticationType = sRow.F.MailAuthenticationType;
 				ProcessNotificationEmail = sRow.F.ProcessNotificationEmail;
 				ProcessRequestorIncomingEmail = sRow.F.ProcessRequestorIncomingEmail;
 				MailServer = sRow.F.MailServer;
@@ -266,6 +271,10 @@ namespace Thinkage.MainBoss.Database.Service {
 				MaxMailSize = sRow.F.MaxMailSize;
 				MailUserName = sRow.F.MailUserName;
 				MailboxName = sRow.F.MailboxName;
+				MailEncryptedPassword = sRow.F.MailEncryptedPassword;
+				MailEncryptedClientSecret = sRow.F.MailEncryptedClientSecret;
+				MailClientCertificateName = sRow.F.MailClientCertificateName;
+				MailClientID = sRow.F.MailClientID;
 				SMTPServer = sRow.F.SMTPServer;
 				SMTPPort = sRow.F.SMTPPort;
 				SMTPUseSSL = sRow.F.SMTPUseSSL;
@@ -273,7 +282,6 @@ namespace Thinkage.MainBoss.Database.Service {
 				SMTPUserDomain = sRow.F.SMTPUserDomain;
 				SMTPUserName = sRow.F.SMTPUserName;
 				SMTPEncryptedPassword = sRow.F.SMTPEncryptedPassword;
-				MailEncryptedPassword = sRow.F.MailEncryptedPassword;
 				AcceptAutoCreateEmailPattern = sRow.F.AcceptAutoCreateEmailPattern;
 				RejectAutoCreateEmailPattern = sRow.F.RejectAutoCreateEmailPattern;
 			 }
@@ -299,6 +307,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				AutomaticallyCreateRequestorsFromEmail == sRow.F.AutomaticallyCreateRequestorsFromEmail,
 				WakeUpInterval == sRow.F.WakeUpInterval,
 				MailServerType == sRow.F.MailServerType,
+				MailAuthenticationType == sRow.F.MailAuthenticationType,
 				ProcessNotificationEmail == sRow.F.ProcessNotificationEmail,
 				ProcessRequestorIncomingEmail == sRow.F.ProcessRequestorIncomingEmail,
 				MailServer == sRow.F.MailServer,
@@ -307,6 +316,10 @@ namespace Thinkage.MainBoss.Database.Service {
 				MaxMailSize == sRow.F.MaxMailSize,
 				MailUserName == sRow.F.MailUserName,
 				MailboxName == sRow.F.MailboxName,
+				(MailEncryptedPassword??new byte[]{}).SequenceEqual((sRow.F.MailEncryptedPassword??new byte[]{})),
+				(MailEncryptedClientSecret??new byte[]{}).SequenceEqual((sRow.F.MailEncryptedClientSecret??new byte[]{})),
+				MailClientCertificateName == sRow.F.MailClientCertificateName,
+				MailClientID == sRow.F.MailClientID,
 				SMTPServer == sRow.F.SMTPServer,
 				SMTPPort == sRow.F.SMTPPort,
 				SMTPUseSSL == sRow.F.SMTPUseSSL,
@@ -314,7 +327,6 @@ namespace Thinkage.MainBoss.Database.Service {
 				SMTPUserDomain == sRow.F.SMTPUserDomain,
 				SMTPUserName == sRow.F.SMTPUserName,
 				(SMTPEncryptedPassword??new byte[]{}).SequenceEqual((sRow.F.SMTPEncryptedPassword??new byte[]{})),
-				(MailEncryptedPassword??new byte[]{}).SequenceEqual((sRow.F.MailEncryptedPassword??new byte[]{})),
 				AcceptAutoCreateEmailPattern == sRow.F.AcceptAutoCreateEmailPattern,
 				RejectAutoCreateEmailPattern == sRow.F.RejectAutoCreateEmailPattern
 			}.All(e => e);
@@ -341,6 +353,7 @@ namespace Thinkage.MainBoss.Database.Service {
 		public bool AutomaticallyCreateRequestorsFromLDAP { get; private set; }
 		public System.TimeSpan WakeUpInterval  { get; private set; }
 		public sbyte MailServerType  { get; private set; }
+		public sbyte MailAuthenticationType { get; private set; }
 		public bool ProcessNotificationEmail  { get; private set; }
 		public bool ProcessRequestorIncomingEmail  { get; private set; }
 		public string MailServer  { get; private set; }
@@ -350,6 +363,9 @@ namespace Thinkage.MainBoss.Database.Service {
 		public string MailUserName  { get; private set; }
 		public string MailboxName  { get; private set; }
 		public byte[] MailEncryptedPassword  { get; private set; }
+		public byte[] MailEncryptedClientSecret { get; private set; }
+		public string MailClientCertificateName { get; private set; }
+		public string MailClientID { get; private set; }
 		public string SMTPServer  { get; private set; }
 		public int SMTPPort { get; private set; }
 		public bool SMTPUseSSL { get; private set; }

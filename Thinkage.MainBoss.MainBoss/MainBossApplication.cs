@@ -50,7 +50,7 @@ namespace Thinkage.MainBoss.MainBoss {
 						),
 						new ModeDefinition("MainBoss Assignments", (int)DatabaseEnums.ApplicationModeID.Assignments, KB.K("Start MainBoss showing only user's assignments."),
 							// This is a simplified mode for users to see only Work Orders, Requests, and/or Purchase Orders which are assigned to them.
-							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 5, 2), // changing this should be reflected in the checkin comment to vault
+							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 5, 15), // changing this should be reflected in the checkin comment to vault
 							new [] {
 								new [] {new Libraries.Licensing.LicenseRequirement(Licensing.NamedUsersLicense, overLimitFatal: true)}
 							},
@@ -58,7 +58,7 @@ namespace Thinkage.MainBoss.MainBoss {
 						),
 						new ModeDefinition("MainBoss Requests", (int)DatabaseEnums.ApplicationModeID.Requests, KB.K("Start only MainBoss Requests"),
 							// This is a simplified mode only for users to enter Requests and monitor requests they have entered (and are thus part of their Assigned requests)
-							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 5, 2), // changing this should be reflected in the checkin comment to vault
+							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 5, 15), // changing this should be reflected in the checkin comment to vault
 							new[] {
 								new [] { new Libraries.Licensing.LicenseRequirement(Licensing.NamedUsersLicense, overLimitFatal: true), new Libraries.Licensing.LicenseRequirement(Licensing.RequestsLicense, overLimitFatal: true) }
 							},

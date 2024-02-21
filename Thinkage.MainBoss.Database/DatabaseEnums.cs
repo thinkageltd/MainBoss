@@ -805,13 +805,20 @@ namespace Thinkage.MainBoss.Database {
 			IMAP4S
 		}
 		/// <summary>
-		/// The type of mail server that @Requests will attempt to connect to.
+		/// The acceptable types of encryption for the incoming mail server connection
 		/// </summary>
 		public enum MailServerEncryption {
 			AnyAvailable,			  // Use Encryption if available
 			RequireEncryption,		  // Require encryption
 			RequireValidCertificate,  // Require a valid certicate
 			None,					  // No Encryption
+		}
+		/// <summary>
+		/// The type of authentication used when connecting to the incoming mail server.
+		/// </summary>
+		public enum MailServerAuthentication {
+			Plain,						// User and password
+			OAuth2,						// OAuth2 (at least, as implemented by Microsoft)
 		}
 		/// <summary>
 		/// The authentication method to use when connecting the SMTP server.
