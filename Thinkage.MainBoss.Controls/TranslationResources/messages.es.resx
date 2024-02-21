@@ -1995,6 +1995,13 @@
   <data name="Thinkage.MainBoss.Controls.ControlPanel§Reports" xml:space="preserve">
     <value>Informes</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§&#xD;&#xA;Contacts from the source of the merge will be deleted including their associated MainBoss user.&#xD;&#xA;The merge will not delete any of the SQL Database Logins or SQL Database Users.&#xD;&#xA;If desired the SQL Database Login and SQL Database User may be manually deleted.&#xD;&#xA;" xml:space="preserve">
+    <value>
+Los contactos de la fuente de la fusión se eliminarán, incluido su usuario de MainBoss asociado.
+La combinación no eliminará ninguno de los inicios de sesión de la base de datos SQL o los usuarios de la base de datos SQL.
+Si lo desea, el inicio de sesión de la base de datos SQL y el usuario de la base de datos SQL se pueden eliminar manualmente.
+</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§*Global" xml:space="preserve">
     <value>*Global</value>
   </data>
@@ -2041,8 +2048,7 @@
     <value>Agradecimientos son enviados por correo electrónico</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Active Directory does not have any relevant information for email address {0}" xml:space="preserve">
-    <value>Active Directory does not have any relevant information for email address {0}</value>
-    <comment>New!</comment>
+    <value>Active Directory no tiene información relevante para la dirección de correo electrónico {0}</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Active filter shows only records less than this many days old" xml:space="preserve">
     <value>El filtro activo muestra solo los Registros que tengan menos de estos días de Antigüedad</value>
@@ -2395,9 +2401,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Contact could not be created for senders email address" xml:space="preserve">
     <value>Contacto No se podría crear para los remitentes dirección de correo electrónico</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Contacts that have associated MainBoss Users cannot be completely merged." xml:space="preserve">
-    <value>Los contactos que tienen usuarios de MainBoss asociados no se pueden fusionar completamente.</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Content is not printable" xml:space="preserve">
     <value>El contenido no es imprimible</value>
@@ -3014,8 +3017,8 @@
   <data name="Thinkage.MainBoss.Controls§Import Email Message" xml:space="preserve">
     <value>Importación de Correo Electrónico Mensaje</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§In order to update the contact there must be either an Active Directory Reference or an Email address" xml:space="preserve">
-    <value>Con el fin de actualizar el contacto debe ser una referencia de Active Directory o una dirección de correo electrónico</value>
+  <data name="Thinkage.MainBoss.Controls§In order to update the contact there must be either an Active Directory Reference or an email address" xml:space="preserve">
+    <value>Para actualizar el contacto, debe haber una referencia de Active Directory o una dirección de correo electrónico</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Include Work Order History status code and comments in Comments to Requestor" xml:space="preserve">
     <value>Incluir el código de estado del historial de órdenes de trabajo y los comentarios en los comentarios al solicitante</value>
@@ -3325,6 +3328,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Not a well formed Url value" xml:space="preserve">
     <value>No es un valor Url bien formada</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§not available" xml:space="preserve">
+    <value>no disponible</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Not connected to a database" xml:space="preserve">
     <value>No se ha conectado a la base de datos</value>
@@ -3949,6 +3955,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Report on Work Orders without Resources or State History" xml:space="preserve">
     <value>Informe sobre las órdenes de trabajo y sin recursos o de Historia del Estado</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Report Viewer Version {0}" xml:space="preserve">
+    <value>Versión del visor de informes {0}</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Reports" xml:space="preserve">
     <value>Informes</value>

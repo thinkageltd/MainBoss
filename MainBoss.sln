@@ -178,6 +178,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.Libraries.RDLReports", "Thinkage.Libraries.RDLReports\Thinkage.Libraries.RDLReports.csproj", "{36B915C0-1B85-4F64-B459-DCF6A690E693}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.MainBoss.MainBoss", "Thinkage.MainBoss.MainBoss\Thinkage.MainBoss.MainBoss.csproj", "{197192AF-2D5A-437F-BA83-DD174A7DF65E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DDBE6907-254E-463F-BBB9-DCC3E2982E5E} = {DDBE6907-254E-463F-BBB9-DCC3E2982E5E}
+		{DD52589F-DDB8-46A0-9B79-606254FF4201} = {DD52589F-DDB8-46A0-9B79-606254FF4201}
+		{5CE02DDB-C336-4416-848E-454325F3FB0F} = {5CE02DDB-C336-4416-848E-454325F3FB0F}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.MainBoss.MBUtility", "Thinkage.MainBoss.MBUtility\Thinkage.MainBoss.MBUtility.csproj", "{DD52589F-DDB8-46A0-9B79-606254FF4201}"
 EndProject

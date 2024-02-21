@@ -238,7 +238,11 @@ namespace Thinkage.MainBoss.Controls {
 				question.AppendLine();
 				question.AppendLine(toContact);
 				question.AppendLine();
-				question.AppendLine(Strings.Format(KB.K("Contacts that have associated MainBoss Users cannot be completely merged.")));
+				question.AppendLine(Strings.Format(KB.K(@"
+Contacts from the source of the merge will be deleted including their associated MainBoss user.
+The merge will not delete any of the SQL Database Logins or SQL Database Users.
+If desired the SQL Database Login and SQL Database User may be manually deleted.
+")));
 				question.AppendLine();
 				question.AppendLine(Strings.Format(KB.K("If you or other users are currently using the contact which is the source of the merge, the merge may cause transient errors in MainBoss, restarting MainBoss will fix the problem")));
 				question.AppendLine();
@@ -288,7 +292,9 @@ namespace Thinkage.MainBoss.Controls {
 
 			#region Contact Merge SQL Code
 			private readonly string mergeSql = @"
+	begin transaction MergeContact
 		declare @work uniqueidentifier
+		declare @now datetime = dbo._DClosestValue(getdate(), 2, 100)
 		set @work = (select top 1 id from Requestor where ContactId = @keepContact or ContactId = @deleteContact 
 			order by (case when Hidden is null then 0 else 1 end ),(case when ContactID = @keepContact then 0 else 1 end),Hidden desc  )
 		update Requestor set ContactID   = @keepContact from Requestor where Id = @work and ContactId != @keepContact
@@ -306,25 +312,25 @@ namespace Thinkage.MainBoss.Controls {
 			order by (case when Hidden is null then 0 else 1 end ),(case when ContactID = @keepContact then 0 else 1 end),Hidden desc  )
 		update Employee  set ContactID  = @keepContact  from Employee   where @work = id and Employee.ContactID = @deleteContact
 
-		update old set EmployeeID = @work, Hidden = getdate()
+		update old set EmployeeID = @work, Hidden = @now
 			from LaborInside as old 
 			join LaborInside as new on new.Code = old.Code and new.TradeID = old.TradeId
 			join Employee on old.EmployeeID = Employee.Id
 				where new.id = @work and new.id != old.id and ContactId = @deleteContact and new.Hidden is null and old.Hidden is null
 
-		update old set EmployeeID = @work, Hidden = getdate()
+		update old set EmployeeID = @work, Hidden = @now
 			from OtherWorkInside as old 
 			join OtherWorkInside as new on new.Code = old.Code and new.TradeID = old.TradeId
 			join Employee on old.EmployeeID = Employee.Id
 				where new.id = @work  and new.id != old.id   and ContactId = @deleteContact and new.Hidden is null and old.Hidden is null
 
-		update old set EmployeeID = @work, Hidden = getdate()
+		update old set EmployeeID = @work, Hidden = @now
 			from _DLaborInside as old 
 			join _DLaborInside as new on new.Code = old.Code and new.TradeID = old.TradeId
 			join Employee on old.EmployeeID = Employee.Id
 				where new.id = @work    and new.id != old.id and ContactId = @deleteContact and new.Hidden is null and old.Hidden is null
 
-		update old set EmployeeID = @work, Hidden = getdate()
+		update old set EmployeeID = @work, Hidden = @now
 			from _DOtherWorkInside as old 
 			join _DOtherWorkInside as new on new.Code = old.Code and new.TradeID = old.TradeId
 			join Employee on old.EmployeeID = Employee.Id
@@ -340,7 +346,10 @@ namespace Thinkage.MainBoss.Controls {
 		delete from Employee where employee.id != @work and (ContactID = @keepContact or ContactID = @deleteContact)
 
 		if( @keepContact = @deleteContact )
+		begin 
+			commit transaction MergeContact
 			return
+		end
 
 	-- Update tables that do not have derived records.
 
@@ -354,15 +363,16 @@ namespace Thinkage.MainBoss.Controls {
 		update _DRequestor set contactid = @keepContact where contactid = @deletecontact
 		update _DPurchaseOrderAssignee set contactid = @keepContact where contactid = @deletecontact
 		update _DRequestAssignee set contactid = @keepContact where contactid = @deletecontact
+		update _DWorkOrderAssignee set contactid = @keepContact where contactid = @deletecontact
 		update _DBillableRequestor set ContactID = @keepContact where ContactID = @deleteContact
-		update _DBillableRequestor set ContactID = @keepContact where ContactID = @deleteContact
+		update _DEmployee set ContactID = @keepContact where ContactID = @deleteContact
 
 		set @work = (select top 1 id from RequestAssignee where ContactID = @keepContact)
 		update RequestAssignee set ContactID = @keepContact from RequestAssignee where @work is null and ContactID = @deleteContact
 		delete from new from RequestAssignment as old join  RequestAssignment as new on old.RequestID = new.RequestID join RequestAssignee on ContactID = @deleteContact
-			where  new.RequestAssigneeID = @work and  Contactid = @deleteContact and new.LastNotificationDate < old.LastNotificationDate
+			where  new.RequestAssigneeID = @work and  Contactid = @deleteContact and new.LastNotificationDate < old.LastNotificationDate or new.LastNotificationDate is null
 		delete from old from RequestAssignment as old join  RequestAssignment as new on old.RequestID = new.RequestID join RequestAssignee on ContactID = @deleteContact
-			where  new.RequestAssigneeID = @work and  Contactid = @deleteContact and new.LastNotificationDate >= old.LastNotificationDate
+			where  new.RequestAssigneeID = @work and  Contactid = @deleteContact 
 		update RequestAssignment set RequestAssigneeId = @work from RequestAssignment join RequestAssignee on  RequestAssigneeID = RequestAssignee.Id where ContactID = @deleteContact 
 		delete from RequestAssignee where ContactID = @deleteContact
 
@@ -376,9 +386,9 @@ namespace Thinkage.MainBoss.Controls {
 		set @work = (select top 1 id from PurchaseOrderAssignee where ContactID = @keepContact)
 		update PurchaseOrderAssignee set ContactID = @keepContact from PurchaseOrderAssignee where @work is null and ContactID = @deleteContact
 		delete from new from PurchaseOrderAssignment as old join  PurchaseOrderAssignment as new on old.PurchaseOrderID = new.PurchaseOrderID join PurchaseOrderAssignee on ContactID = @deleteContact
-			where  new.PurchaseOrderAssigneeID = @work and  Contactid = @deleteContact and new.LastNotificationDate < old.LastNotificationDate
+			where  new.PurchaseOrderAssigneeID = @work and  Contactid = @deleteContact and new.LastNotificationDate < old.LastNotificationDate or new.LastNotificationDate = null
 		delete from old from PurchaseOrderAssignment as old join  PurchaseOrderAssignment as new on old.PurchaseOrderID = new.PurchaseOrderID join PurchaseOrderAssignee on ContactID = @deleteContact
-			where  new.PurchaseOrderAssigneeID = @work and  Contactid = @deleteContact and new.LastNotificationDate >= old.LastNotificationDate
+			where  new.PurchaseOrderAssigneeID = @work and  Contactid = @deleteContact 
 		update PurchaseOrderAssignment set PurchaseOrderAssigneeId = @work from PurchaseOrderAssignment join PurchaseOrderAssignee on PurchaseOrderAssigneeID = PurchaseOrderAssignee.Id where ContactID = @deleteContact 
 		delete from PurchaseOrderAssignee where ContactID = @deleteContact
 
@@ -397,17 +407,16 @@ namespace Thinkage.MainBoss.Controls {
 		if( (select count(*) from [User] where ContactID = @keepContact  ) = 0 )
 			update [User] set ContactId = @keepContact where ContactId = @deleteContact
 		else
-			update [User] set Hidden =  getDate() where ContactId = @deleteContact and hidden is null
+			update [User] set Hidden =  @now where ContactId = @deleteContact and hidden is null
 
 
 		--	Users in general cannot be merged unless they have the same authenticationCredentails.
-
+		drop table if exists #mappings 
 		select a.id as keep, b.id as remove into #mappings from [User] as a join [User] as b 
-			on (a.Hidden is null or (b.Hidden is not null and a.Hidden > b.Hidden)) and a.ContactID = @keepContact and a.ContactID = b.ContactID and a.AuthenticationCredential = b.AuthenticationCredential
+			on (a.Hidden is null or (b.Hidden is not null and a.Hidden > b.Hidden)) and a.ContactID = @keepContact and b.ContactID = @deletecontact
 		if( (select count(*) from #mappings ) != 0 ) begin
 			update AccountingTransaction        set Userid = keep from AccountingTransaction       join #mappings on remove = Userid
 			update _DAccountingTransaction      set Userid = keep from _DAccountingTransaction     join #mappings on remove = Userid
-			update DefaultSettings              set Userid = keep from DefaultSettings             join #mappings on remove = Userid
 			update PMGenerationBatch            set Userid = keep from PMGenerationBatch           join #mappings on remove = Userid
 			update PurchaseOrderStateHistory    set Userid = keep from PurchaseOrderStateHistory   join #mappings on remove = Userid
 			update _DPurchaseOrderStateHistory  set Userid = keep from _DPurchaseOrderStateHistory join #mappings on remove = Userid
@@ -415,9 +424,17 @@ namespace Thinkage.MainBoss.Controls {
 			update _DRequestStateHistory        set Userid = keep from _DRequestStateHistory       join #mappings on remove = Userid
 			update WorkOrderStateHistory        set Userid = keep from WorkOrderStateHistory       join #mappings on remove = Userid
 			update _DWorkOrderStateHistory      set Userid = keep from _DWorkOrderStateHistory     join #mappings on remove = Userid
-			update UserRole                     set Userid = keep from UserRole                    join #mappings on remove = Userid
-			update _DUserRole                   set Userid = keep from _DUserRole                  join #mappings on remove = Userid
-			update Settings                     set Userid = keep from Settings                    join #mappings on remove = Userid
+	--	    update MeterReading                 set Userid = keep from MeterReading                join #mappings on remove = Userid -- not in 4.2
+	--		update _MeterReading                set Userid = keep from MeterReading                join #mappings on remove = Userid -- would never occur
+			delete DefaultSettings                           from DefaultSettings                  join #mappings on remove = Userid -- can't preserve, the 'settings' may not move
+			update Settings                     set Userid = keep from Settings	                   join #mappings on remove = Userid
+				where not exists( select * from Settings as a where a.Userid = keep and Settings.SettingsNameID = a.SettingsNameID )
+			delete Settings                     from Settings                                      join #mappings on remove = Userid
+		   	update UserRole                     set Userid = keep from UserRole                    join #mappings on remove = Userid
+				where not exists( select * from UserRole as a where a.Userid = keep and Userrole.PrincipalID = a.PrincipalID )
+			delete UserRole                     from UserRole                                      join #mappings on  remove = Userid
+	--		delete _DUserRole                   from UserRole                                      join #mappings on  remove = Userid -- would never occur
+			delete from [user]                  from [user]                                        join #mappings on [user].id = remove
 		end
 		drop table #mappings
 		update new  
@@ -439,10 +456,11 @@ namespace Thinkage.MainBoss.Controls {
 			where new.ID = @keepContact
 
 		-- hide the contact to be deleted
-		update Contact set Hidden = getDate() where Hidden is null  and Id = @deleteContact
-		insert into DatabaseHistory (Id, EntryDate, Subject, Description) values ( NEWID(), GETDATE(), @subject, @description)
+		update Contact set Hidden = @now where Hidden is null  and Id = @deleteContact
+		insert into DatabaseHistory (Id, EntryDate, Subject, Description) values ( NEWID(), @now, @subject, @description)
 		-- if the deleted contact has no user record the contact record can be deleted.
 		delete Contact where Contact.id = @deleteContact and not Exists(select * from [User] where [User].ContactID = @deleteContact)
+	commit transaction MergeContact
 ";
 			#endregion
 

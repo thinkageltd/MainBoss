@@ -153,9 +153,9 @@ namespace Thinkage.MainBoss.Service {
 				ConsoleIndent();
 				System.Console.WriteLine(KB.K("This option requires the command to be run as an Administrator.").Translate());
 				ConsoleIndent();
-				System.Console.WriteLine(Strings.Format(KB.K("The '{0}' and '{1}' options can be used to set the user and password for the Windows Service for MainBoss")));
+				System.Console.WriteLine(Strings.Format(KB.K("The '{0}' and '{1}' options can be used to set the user and password for the Windows Service for MainBoss"), KB.I("/ServiceUsername:username"), KB.I("/ServicePassword:password")));
 				ConsoleIndent();
-				System.Console.WriteLine(Strings.Format(KB.K(", but normally should not be used as the service defaults to 'Network Service'"), KB.I("/ServiceUsername:username"), KB.I("/ServicePassword:password")));
+				System.Console.WriteLine(Strings.Format(KB.K(", but normally should not be used as the service defaults to 'Network Service'")));
 				System.Console.WriteLine();
 				System.Console.WriteLine(Strings.Format(KB.K("The '{0}' option updates and refreshes the Windows Service for MainBoss as necessary."), KB.I("/Update")));
 				ConsoleIndent();

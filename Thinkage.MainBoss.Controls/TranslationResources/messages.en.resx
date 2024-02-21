@@ -2682,6 +2682,13 @@
   <data name="Thinkage.MainBoss.Controls.ControlPanel§Reports" xml:space="preserve">
     <value>Reports</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§&#xD;&#xA;Contacts from the source of the merge will be deleted including their associated MainBoss user.&#xD;&#xA;The merge will not delete any of the SQL Database Logins or SQL Database Users.&#xD;&#xA;If desired the SQL Database Login and SQL Database User may be manually deleted.&#xD;&#xA;" xml:space="preserve">
+    <value>
+Contacts from the source of the merge will be deleted including their associated MainBoss user.
+The merge will not delete any of the SQL Database Logins or SQL Database Users.
+If desired the SQL Database Login and SQL Database User may be manually deleted.
+</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§*Global" xml:space="preserve">
     <value>*Global</value>
   </data>
@@ -2729,7 +2736,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Active Directory does not have any relevant information for email address {0}" xml:space="preserve">
     <value>Active Directory does not have any relevant information for email address {0}</value>
-    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Controls§Active filter shows only records less than this many days old" xml:space="preserve">
     <value>Active filter shows only records less than this many days old</value>
@@ -3081,9 +3087,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Contact could not be created for senders email address" xml:space="preserve">
     <value>Contact could not be created for senders email address</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Contacts that have associated MainBoss Users cannot be completely merged." xml:space="preserve">
-    <value>Contacts that have associated MainBoss Users cannot be completely merged.</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Content is not printable" xml:space="preserve">
     <value>Content is not printable</value>
@@ -3700,8 +3703,8 @@
   <data name="Thinkage.MainBoss.Controls§Import Email Message" xml:space="preserve">
     <value>Import Email Message</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§In order to update the contact there must be either an Active Directory Reference or an Email address" xml:space="preserve">
-    <value>In order to update the contact there must be either an Active Directory Reference or an Email address</value>
+  <data name="Thinkage.MainBoss.Controls§In order to update the contact there must be either an Active Directory Reference or an email address" xml:space="preserve">
+    <value>In order to update the contact there must be either an Active Directory Reference or an email address</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Include Work Order History status code and comments in Comments to Requestor" xml:space="preserve">
     <value>Include Work Order History status code and comments in Comments to Requestor</value>
@@ -4011,6 +4014,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Not a well formed Url value" xml:space="preserve">
     <value>Not a well formed Url value</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§not available" xml:space="preserve">
+    <value>not available</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Not connected to a database" xml:space="preserve">
     <value>Not connected to a database</value>
@@ -4635,6 +4641,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Report on Work Orders without Resources or State History" xml:space="preserve">
     <value>Report on Work Orders without Resources or State History</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Report Viewer Version {0}" xml:space="preserve">
+    <value>Report Viewer Version {0}</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Reports" xml:space="preserve">
     <value>Reports</value>

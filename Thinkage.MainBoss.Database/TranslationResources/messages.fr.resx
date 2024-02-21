@@ -2325,9 +2325,6 @@
   <data name="Thinkage.MainBoss.Database.StateCode§Work Order waiting" xml:space="preserve">
     <value>Ordre de Travail en attente</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§'{0}' can only work if the computer is a member of a domain" xml:space="preserve">
-    <value>'{0}' ne peut fonctionner que si l'ordinateur est membre d'un domaine</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§'{0}' cannot contain itself either directly or indirectly" xml:space="preserve">
     <value>'{0}' ne peut pas se contenir ni directement ni indirectement</value>
   </data>
@@ -2351,9 +2348,6 @@
   </data>
   <data name="Thinkage.MainBoss.Database§{0} rejection {0.IsOne ? message : messages } for {1}" xml:space="preserve">
     <value>{0} {0.IsOne ? message : messages } de réjection pour {1}</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§'{0}' requires access to the domain controller for the domain '{1}' which is currently inaccessible" xml:space="preserve">
-    <value>'{0}' nécessite l'accès au contrôleur de domaine pour le domaine '{1}' qui est actuellement inaccessible</value>
   </data>
   <data name="Thinkage.MainBoss.Database§{0} server '{1}' on port {2} using {3}" xml:space="preserve">
     <value>{0} serveur '{1}' sur le port {2} utilisation de {3}</value>
@@ -3910,9 +3904,6 @@ Main-d'œuvre         __________________________ Matériaux    _________________
   <data name="Thinkage.MainBoss.Database§The DataBaseServer option is obsolete." xml:space="preserve">
     <value>L'option DataBaseServer est obsolète.</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§The domain controller for the domain '{0}' is currently inaccessible" xml:space="preserve">
-    <value>Le contrôleur de domaine pour le domaine '{0}' est actuellement inaccessible</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§The email message contains a virus or other unwanted software. The message will be deleted." xml:space="preserve">
     <value>Le message contient un virus ou autres logiciels indésirables. Le message sera supprimé.</value>
   </data>
@@ -4021,6 +4012,9 @@ Main-d'œuvre         __________________________ Matériaux    _________________
   <data name="Thinkage.MainBoss.Database§The Windows Service for MainBoss must be reconfigured." xml:space="preserve">
     <value>Le service Windows pour MainBoss doit être reconfiguré.</value>
   </data>
+  <data name="Thinkage.MainBoss.Database§The Windows System supplied directory '{0}' acquired from System.IO.Path.GetTempPath is not usable" xml:space="preserve">
+    <value>Le répertoire fourni par le système Windows '{0}' acquis à partir de System.IO.Path.GetTempPath n'est pas utilisable</value>
+  </data>
   <data name="Thinkage.MainBoss.Database§There are {0} errors." xml:space="preserve">
     <value>Il y a {0} erreurs.</value>
   </data>
@@ -4047,9 +4041,6 @@ Main-d'œuvre         __________________________ Matériaux    _________________
   </data>
   <data name="Thinkage.MainBoss.Database§This account is for the user who created this organization" xml:space="preserve">
     <value>Ce compte est réservé à l'utilisateur qui a créé cette entreprise</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§This computer is not a member of a domain" xml:space="preserve">
-    <value>Cet ordinateur n'est pas membre d'un domaine</value>
   </data>
   <data name="Thinkage.MainBoss.Database§This contact is for the user who created this organization" xml:space="preserve">
     <value>Ce contact est réservé à l'utilisateur qui a créé cette organisation.</value>

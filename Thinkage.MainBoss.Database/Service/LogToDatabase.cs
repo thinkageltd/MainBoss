@@ -121,7 +121,10 @@ namespace Thinkage.MainBoss.Database.Service {
 							dsMB.ServiceLogDataTable log = (dsMB.ServiceLogDataTable)dsMB.Schema.T.ServiceLog.GetDataTable(LogDs);
 							dsMB.ServiceLogRow entry = log.AddNewServiceLogRow();
 							entry.F.Source = msg.Source;
-							entry.F.Message = msg.Message;
+							var m = msg.Message ?? "";
+							if (m.Length > 5000) // we have seen megabytes in error message from dart.
+								m = m.Substring(0, 5000) + "...";
+							entry.F.Message = m;
 							entry.F.EntryType = (byte)mtype;
 							LogDs.DB.Update(LogDs);
 							log.Clear(); // work is done, remove all rows for this action

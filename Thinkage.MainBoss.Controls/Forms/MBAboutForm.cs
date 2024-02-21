@@ -14,7 +14,7 @@ namespace Thinkage.MainBoss.Controls {
 	/// </summary>
 	public class MBAboutForm : TblForm<UIPanel> {
 		// Name of Teamviewer executable for Help menu references; put here as a common place accessible to MainBoss
-		static string TeamviewerFileName = KB.I("TeamViewerQS.exe");
+		static readonly string TeamviewerFileName = KB.I("TeamViewerQS.exe");
 		public static void StartTeamviewer() {
 			var path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), MBAboutForm.TeamviewerFileName);
 			try {
@@ -28,7 +28,7 @@ namespace Thinkage.MainBoss.Controls {
 		/// <summary>
 		/// Link for the company website is active for the Logo as well.
 		/// </summary>
-		UILinkDisplay webLink;
+		readonly UILinkDisplay webLink;
 		public MBAboutForm(UIFactory uiFactory, MB3Client db, string appName)
 			: base(uiFactory, PanelHelper.NewCenterColumnPanel(uiFactory)) {
 			Caption = KB.T(Strings.Format(KB.K("About {0}"), appName));
@@ -50,6 +50,8 @@ namespace Thinkage.MainBoss.Controls {
 			aboutText.Append(Strings.Format(KB.K("Messages {0} ({1}/{2:X4})"), Thinkage.Libraries.Application.InstanceMessageCultureInfo.NativeName, Thinkage.Libraries.Application.InstanceMessageCultureInfo.Name, Thinkage.Libraries.Application.InstanceMessageCultureInfo.LCID));
 			aboutText.Append("\n"); // single space next three
 			aboutText.Append(Strings.Format(KB.K("Installed as {0} ({1}/{2:X4})"), System.Globalization.CultureInfo.InstalledUICulture.NativeName, System.Globalization.CultureInfo.InstalledUICulture.Name, System.Globalization.CultureInfo.InstalledUICulture.LCID));
+			aboutText.AppendLine(Strings.Format(KB.K("Report Viewer Version {0}"), VersionInfo.AssemblyInformationVersion(KB.I("Microsoft.ReportViewer.WinForms")) ?? KB.K("not available").Translate()));
+
 			if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed) {
 				// Determine the root of our application from the UpdateLocation Uri if we have been clickonce deployed
 				var webRoot = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.UpdateLocation.GetLeftPart(UriPartial.Authority);
@@ -115,7 +117,7 @@ namespace Thinkage.MainBoss.Controls {
 		}
 
 		private class MyLineBuilder {
-			private StringBuilder sb;
+			private readonly StringBuilder sb;
 			public MyLineBuilder(StringBuilder sb) {
 				this.sb = sb;
 			}

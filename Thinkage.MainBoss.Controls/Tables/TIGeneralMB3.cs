@@ -4458,7 +4458,7 @@ namespace Thinkage.MainBoss.Controls {
 				}
 				licensingNodes.Add(
 					TblUnboundControlNode.New(KB.K("Deemed Release Date for license validation"),
-						DateTimeTypeInfo.NullableOneDayEpsilon.IntersectCompatible(ObjectTypeInfo.NonNullUniverse),
+						DateTimeTypeInfo.NonNullableOneDayEpsilon,
 						new DCol(Fmt.SetInitialValue(Thinkage.MainBoss.Database.Licensing.DeemedReleaseDate))
 					)
 				);

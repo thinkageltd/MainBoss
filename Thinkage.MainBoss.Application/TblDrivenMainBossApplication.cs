@@ -447,7 +447,7 @@ namespace Thinkage.MainBoss.Application {
 						new SearchExpressionControl.UIHandler.ParameterInfoNode(
 							(searchValue) => new SetTypeInfo(false, dsMB.Schema.T.LocationContainment.F.ContainingLocationID.EffectiveType, 1),
 							(searchValue) => new Fmt(Fmt.SetPickFrom(TILocations.PermanentLocationPickerTblCreator)),
-							null, null, null, null)
+							null, null, null, null, null)
 					)
 				);
 			FormsPresentationMixIn = new FormsPresentationApplication(this, !o.MBConnectionParameters.CompactBrowsers, extraHandlers.ToArray());

@@ -119,7 +119,7 @@ write-host "OS Info changed from" $b4 " to " $x
 [System.Xml.XmlNode] $assemblyIdentity = $manifest.assembly.assemblyIdentity
 $assemblyIdentity.name="$assemblyName.exe"
 SaveXML "$applicationManifest" $manifest
-&$magetool -sign "$applicationManifest" -CertHash $signingCertificateThumbPrint -Algorithm sha256RSA -timestampUri "http://timestamp.verisign.com/scripts/timestamp.dll"
+&$magetool -sign "$applicationManifest" -CertHash $signingCertificateThumbPrint -Algorithm sha256RSA -timestampUri "http://sha256timestamp.ws.symantec.com/sha256/timestamp"
 #################### DEPLOYMENT manifest #########################################
 $deploymentManifest = join-path -path "$PackageAppFiles" -childpath $deploymentManifestFileName
 $AppCodeBase = join-path -path $AppFiles -childpath $applicationManifestFileName
@@ -147,7 +147,7 @@ $compatibleFrameworks.AppendChild($framework) | out-null
 # Save the updated manifest
 SaveXML "$deploymentManifest" $manifest
 #Sign the mangled deployment manifest
-&$magetool -sign "$deploymentManifest" -CertHash $signingCertificateThumbPrint -Algorithm sha256RSA -timestampUri "http://timestamp.verisign.com/scripts/timestamp.dll"
+&$magetool -sign "$deploymentManifest" -CertHash $signingCertificateThumbPrint -Algorithm sha256RSA -timestampUri "http://sha256timestamp.ws.symantec.com/sha256/timestamp"
 #################### WEB Page and prerequisite Setup ##############################
 #Add the web page and setup file
 copy $deploymentManifest Installation

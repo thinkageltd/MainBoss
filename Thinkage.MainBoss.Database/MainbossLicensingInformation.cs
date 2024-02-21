@@ -67,6 +67,6 @@ namespace Thinkage.MainBoss.Database {
 		/// <summary>
 		/// For Version expiry of this product, this is the deemed release date for all licensed objects in MainBoss 4.2
 		/// </summary>
-		public static readonly System.DateTime DeemedReleaseDate = new System.DateTime(2018, 1, 1);
+		public static readonly System.DateTime DeemedReleaseDate = new System.DateTime(2021, 1, 1);
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -25,15 +26,30 @@ namespace Thinkage.MainBoss.Database {
 	#region Dart Adapters
 	public class DartPopMessages : IMailMessageSource {
 		Pop DartPop;
-		public DartPopMessages(Encrypt tryingEncryption, RemoteCertificateValidationCallback CheckCertificate, string server, int port, string user, string pw) {
-			DartPop = new Pop();
-			DartPop.Session = new MailSession();
-			DartPop.Session.Username = user;
-			DartPop.Session.Password = pw;
-			DartPop.Session.Security = new MailSecurity();
-			DartPop.Session.Security.TargetHost = server;
-			DartPop.Session.Security.Encrypt = tryingEncryption;
-			DartPop.Session.Security.ValidationCallback += CheckCertificate;
+		public DartPopMessages(Encrypt tryingEncryption, RemoteCertificateValidationCallback CheckCertificate, string server, int port, string user, string pwOrAccessToken, bool useOAuth2) {
+			DartPop = new Pop {
+				Session = new MailSession {
+					Username = user,
+					Password = pwOrAccessToken,
+					Security = new MailSecurity {
+						TargetHost = server,
+						Encrypt = tryingEncryption,
+						ValidationCallback = CheckCertificate,
+						//Trying to pass Protocols.None per the MSDN documentation (https://docs.microsoft.com/en-us/dotnet/api/system.security.authentication.sslprotocols?view=net-5.0#System_Security_Authentication_SslProtocols_Default)
+						// is rejected by
+						// System.ArgumentException
+						// System.Net.Security.SslState.ValidateCreateContext(Boolean isServer, String targetHost, SslProtocols enabledSslProtocols, X509Certificate serverCertificate, X509CertificateCollection clientCertificates, Boolean remoteCertRequired, Boolean checkCertRevocationStatus, Boolean checkCertName)
+						// in .NET 4.0 at least
+						// Default only permits TLS 1.0 and SSL3; we need to enable the others explicitly
+						Protocols = System.Security.Authentication.SslProtocols.Ssl3
+						| System.Security.Authentication.SslProtocols.Tls11
+						| System.Security.Authentication.SslProtocols.Tls12
+						| System.Security.Authentication.SslProtocols.Tls
+					},
+					Authentication = useOAuth2 ? Authentication.OAuth2 : Authentication.Auto
+				}
+			};
+
 			try {
 				DartPop.Session.RemoteEndPoint = new IPEndPoint(System.Net.Dns.GetHostAddresses(server)[0], port);
 			}
@@ -93,15 +109,29 @@ namespace Thinkage.MainBoss.Database {
 	}
 	public class DartImapMessages : IMailMessageSource {
 		Imap DartImap;
-		public DartImapMessages(Encrypt tryingEncryption, RemoteCertificateValidationCallback CheckCertificate, string server, int port, string user, string pw, string mailbox) {
-			DartImap = new Imap();
-			DartImap.Session = new ImapSession();
-			DartImap.Session.Username = user;
-			DartImap.Session.Password = pw;
-			DartImap.Session.Security = new MailSecurity();
-			DartImap.Session.Security.TargetHost = server;
-			DartImap.Session.Security.Encrypt = tryingEncryption;
-			DartImap.Session.Security.ValidationCallback += CheckCertificate;
+		public DartImapMessages(Encrypt tryingEncryption, RemoteCertificateValidationCallback CheckCertificate, string server, int port, string user, string pwOrAccessToken, string mailbox, bool useOAuth2) {
+			DartImap = new Imap {
+				Session = new ImapSession {
+					Username = user,
+					Password = pwOrAccessToken,
+					Security = new MailSecurity {
+						TargetHost = server,
+						Encrypt = tryingEncryption,
+						ValidationCallback = CheckCertificate,
+						//Trying to pass Protocols.None per the MSDN documentation (https://docs.microsoft.com/en-us/dotnet/api/system.security.authentication.sslprotocols?view=net-5.0#System_Security_Authentication_SslProtocols_Default)
+						// is rejected by
+						// System.ArgumentException
+						// System.Net.Security.SslState.ValidateCreateContext(Boolean isServer, String targetHost, SslProtocols enabledSslProtocols, X509Certificate serverCertificate, X509CertificateCollection clientCertificates, Boolean remoteCertRequired, Boolean checkCertRevocationStatus, Boolean checkCertName)
+						// in .NET 4.0 at least
+						// Default only permits TLS 1.0 and SSL3; we need to enable the others explicitly
+						Protocols = System.Security.Authentication.SslProtocols.Ssl3
+									| System.Security.Authentication.SslProtocols.Tls11
+									| System.Security.Authentication.SslProtocols.Tls12
+									| System.Security.Authentication.SslProtocols.Tls
+					},
+						Authentication = useOAuth2 ? Authentication.OAuth2 : Authentication.Auto
+				}
+			};
 			try {
 				DartImap.Session.RemoteEndPoint = new IPEndPoint(System.Net.Dns.GetHostAddresses(server)[0], port);
 			}
@@ -195,7 +225,7 @@ namespace Thinkage.MainBoss.Database {
 			{ DatabaseEnums.MailServerType.POP3S,  Encrypt.Implicit },
 			{ DatabaseEnums.MailServerType.IMAP4S, Encrypt.Implicit },
 		};
-		public EmailMessageSource(IServiceLogging logger, bool traceDetails, DatabaseEnums.MailServerType serviceType, DatabaseEnums.MailServerEncryption requestedEncryption, string server, int port, string user, string pw, string mailbox) {
+		public EmailMessageSource(IServiceLogging logger, bool traceDetails, DatabaseEnums.MailServerType serviceType, DatabaseEnums.MailServerEncryption requestedEncryption, string server, int port, string user, string pw, string mailbox, bool useOAuth2) {
 			RequestedEncryption = requestedEncryption;
 			this.ServiceType = serviceType;
 			TraceDetails = traceDetails;
@@ -205,10 +235,10 @@ namespace Thinkage.MainBoss.Database {
 				if (port == 0)
 					port = ServiceTypeToPort[serviceType];
 				bool encrypt = requestedEncryption == DatabaseEnums.MailServerEncryption.None ? false : true;
-				bool tryagain = tryOneMailSource(encrypt, serviceType, server, port, user, pw, mailbox);
+				bool tryagain = tryOneMailSource(encrypt, serviceType, server, port, user, pw, mailbox, useOAuth2);
 				if (tryagain && requestedEncryption == DatabaseEnums.MailServerEncryption.AnyAvailable && (serviceType == DatabaseEnums.MailServerType.POP3 || serviceType == DatabaseEnums.MailServerType.IMAP4)) {
 					encrypt = false;
-					tryOneMailSource(encrypt, serviceType, server, port, user, pw, mailbox);
+					tryOneMailSource(encrypt, serviceType, server, port, user, pw, mailbox, useOAuth2);
 				}
 				if (Source == null)
 					throw Error ?? (string.IsNullOrWhiteSpace(mailbox) ? new GeneralException(KB.K("Cannot access mail messages using {0} on server '{1}' on port {2}"), serviceType, server, port).WithContext(TraceContext(this))
@@ -222,12 +252,12 @@ namespace Thinkage.MainBoss.Database {
 				&& (port == 0 || LastPort == port)
 				&& (this.ServiceType == DatabaseEnums.MailServerType.Any || this.ServiceType == LastServiceType)
 				&& (LastRequestedEncryption == requestedEncryption)) {
-				tryOneMailSource(LastEncrypt, LastServiceType, server, LastPort, user, pw, mailbox);
+				tryOneMailSource(LastEncrypt, LastServiceType, server, LastPort, user, pw, mailbox, useOAuth2);
 				if (Source != null)
 					return;
 			}
 			LastPort = 0;
-			FindMessageSource(server, port, user, pw, mailbox);
+			FindMessageSource(server, port, user, pw, mailbox, useOAuth2);
 			if (Source == null)
 				throw Error ?? new GeneralException(KB.K("Cannot access mail messages on server '{0}'"), server).WithContext(TraceContext(this));
 			if (string.IsNullOrWhiteSpace(mailbox))
@@ -235,9 +265,20 @@ namespace Thinkage.MainBoss.Database {
 			else
 				logger.LogInfo(Strings.Format(KB.K("Using {0} with mailbox '{0}' server '{2}' on port {3}"), Protocol, mailbox, server, LastPort));
 		}
-		private void FindMessageSource(string server, int port, string user, string pw, string mailbox) {
+		private void FindMessageSource(string server, int port, string user, string pw, string mailbox, bool useOAuth2) {
 			List<System.Exception> errors = new List<System.Exception>();
-			Attachment.Directory = System.IO.Path.GetTempPath();
+			Attachment.Directory = Path.GetTempPath();
+			var path = Path.Combine(Attachment.Directory, Path.GetRandomFileName());
+			try {
+				// TODO this code will give an error and stop the processing, but I am not sure what the customer should do if it gets the error, 
+				// the only fix is to manual construct the directories with the right permissions.
+				Directory.CreateDirectory(Attachment.Directory); // they should be there and available, but if not the error message will be better
+				using (File.Create(path)) { }
+				File.Delete(path);
+			}
+			catch (System.Exception e) {
+				throw new GeneralException(e,KB.K("The Windows System supplied directory '{0}' acquired from System.IO.Path.GetTempPath is not usable"), Attachment.Directory);
+			}
 			try {
 				System.Net.Dns.GetHostAddresses(server); // will throw an error if machine does not exists, don't want to retry if there is no hope
 			}
@@ -256,7 +297,7 @@ namespace Thinkage.MainBoss.Database {
 				serviceUsed = s;
 				tryPort = port != 0 ? port : ServiceTypeToPort[s];
 				Error = null;
-				tryagain = tryOneMailSource(usingEncryption, s, server, tryPort, user, pw, mailbox);
+				tryagain = tryOneMailSource(usingEncryption, s, server, tryPort, user, pw, mailbox, useOAuth2);
 				if (Error != null)
 					errors.Add(Error);
 				if (Source != null || !tryagain)
@@ -270,7 +311,7 @@ namespace Thinkage.MainBoss.Database {
 					serviceUsed = s;
 					tryPort = port != 0 ? port : ServiceTypeToPort[s];
 					Error = null;
-					tryagain = tryOneMailSource(usingEncryption, s, server, tryPort, user, pw, mailbox);
+					tryagain = tryOneMailSource(usingEncryption, s, server, tryPort, user, pw, mailbox, useOAuth2);
 					if (Error != null)
 						errors.Add(Error);
 					if (Source != null || !tryagain)
@@ -292,18 +333,18 @@ namespace Thinkage.MainBoss.Database {
 			Error = err;
 			throw Error;
 		}
-		private bool tryOneMailSource(bool usingEncryption, DatabaseEnums.MailServerType serviceType, string server, int port, string user, string pw, string mailbox) {
+		private bool tryOneMailSource(bool usingEncryption, DatabaseEnums.MailServerType serviceType, string server, int port, string user, string pw, string mailbox, bool useOAuth2) {
 			Source = null;
 			Encrypt encryption = usingEncryption ? ServiceTypeToEncypt[serviceType] : Encrypt.None;
 			try {
 				switch (serviceType) {
 				case DatabaseEnums.MailServerType.POP3:
 				case DatabaseEnums.MailServerType.POP3S:
-					Source = new DartPopMessages(encryption, CheckCertificate, server, port, user, pw);
+					Source = new DartPopMessages(encryption, CheckCertificate, server, port, user, pw, useOAuth2);
 					break;
 				case DatabaseEnums.MailServerType.IMAP4:
 				case DatabaseEnums.MailServerType.IMAP4S:
-					Source = new DartImapMessages(encryption, CheckCertificate, server, port, user, pw, mailbox);
+					Source = new DartImapMessages(encryption, CheckCertificate, server, port, user, pw, mailbox, useOAuth2);
 					break;
 				}
 				if (Source == null)

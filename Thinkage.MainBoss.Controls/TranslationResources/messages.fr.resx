@@ -1236,6 +1236,13 @@
   <data name="Thinkage.MainBoss.Controls.ControlPanel§Reports" xml:space="preserve">
     <value>Rapports</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§&#xD;&#xA;Contacts from the source of the merge will be deleted including their associated MainBoss user.&#xD;&#xA;The merge will not delete any of the SQL Database Logins or SQL Database Users.&#xD;&#xA;If desired the SQL Database Login and SQL Database User may be manually deleted.&#xD;&#xA;" xml:space="preserve">
+    <value>
+Les contacts de la source de la fusion seront supprimés, y compris leur utilisateur MainBoss associé.
+La fusion ne supprimera aucune des connexions à la base de données SQL ou des utilisateurs de la base de données SQL.
+Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur de la base de données SQL peuvent être supprimés manuellement.
+</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§*Global" xml:space="preserve">
     <value>*Global</value>
   </data>
@@ -1282,8 +1289,7 @@
     <value>Remerciements sont envoyés par e-mail</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Active Directory does not have any relevant information for email address {0}" xml:space="preserve">
-    <value>Active Directory does not have any relevant information for email address {0}</value>
-    <comment>New!</comment>
+    <value>Active Directory ne dispose d'aucune information pertinente pour l'adresse e-mail {0}</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Active filter shows only records less than this many days old" xml:space="preserve">
     <value>Filtre actif montre uniquement les enregistrements moins de cette vieille plusieurs jours</value>
@@ -1635,9 +1641,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Contact could not be created for senders email address" xml:space="preserve">
     <value>Contact n'a pas pu être créé pour les expéditeurs de courriel</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Contacts that have associated MainBoss Users cannot be completely merged." xml:space="preserve">
-    <value>Les contacts associés à des utilisateurs MainBoss ne peuvent pas être complètement fusionnés.</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Content is not printable" xml:space="preserve">
     <value>Contenu n'est pas imprimable</value>
@@ -2254,7 +2257,7 @@
   <data name="Thinkage.MainBoss.Controls§Import Email Message" xml:space="preserve">
     <value>Message d'importation de messagerie</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§In order to update the contact there must be either an Active Directory Reference or an Email address" xml:space="preserve">
+  <data name="Thinkage.MainBoss.Controls§In order to update the contact there must be either an Active Directory Reference or an email address" xml:space="preserve">
     <value>Pour mettre à jour le contact, il doit y avoir une référence Active Directory ou une adresse e-mail</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Include Work Order History status code and comments in Comments to Requestor" xml:space="preserve">
@@ -2565,6 +2568,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Not a well formed Url value" xml:space="preserve">
     <value>Pas une valeur Url bien formés</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§not available" xml:space="preserve">
+    <value>pas disponible</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Not connected to a database" xml:space="preserve">
     <value>Aucune connexion à la base de données</value>
@@ -3189,6 +3195,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Report on Work Orders without Resources or State History" xml:space="preserve">
     <value>Rapport sur les Ordres de Travail, sans ressources ou État Histoire</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Report Viewer Version {0}" xml:space="preserve">
+    <value>Version de la visionneuse de rapports {0}</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Reports" xml:space="preserve">
     <value>Rapports</value>

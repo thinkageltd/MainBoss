@@ -3163,6 +3163,8 @@ namespace Thinkage.MainBoss.Controls {
 			}
 			public static readonly PowerCallee Instance = new PowerCallee();
 		}
+		// We should not need the following, SqlExpresion allows division of one Interval by another but the result type is Integral,
+		// whereas we want a real number. The unparser does, however, call _IRatio and return a FLOAT.
 		public class IntervalRatioCallee : SqlExpression.INamedCallable, SqlExpression.ICallableStaticResultType {
 			public IntervalRatioCallee() {
 			}
@@ -3185,13 +3187,12 @@ namespace Thinkage.MainBoss.Controls {
 		public static DelayedCreateTbl UnitReplacementSchedule =
 			new DelayedCreateTbl(delegate () {
 				RTblBase.ReportParameterArg inflationParameter = RTblBase.ReportParameter(KB.K("Annual inflation rate"), new PercentTypeInfo(0.0001m, 0m, 0.50m, allow_null: false), 0.02m);
-				// TODO: SqlExpression.Plus does not properly calculate its result type range in general and instead just uses its left operand type for the result.
-				// To get around this we force the type of the constant 1 (100%) to have a range up to 1.5 (150%) corresponding to the sum of the constant 1 and the max value of the inflation parameter (50%)
-				var annualInflationValue = SqlExpression.Constant(1.0m, new PercentTypeInfo(0.0001m, 0m, 1.50m, allow_null: false)).Plus(SqlExpression.CustomLeafNode(inflationParameter));
+				var unitInflationRate = SqlExpression.Constant(1.0m, new PercentTypeInfo(1.0m, 1.0m, false));
+				var annualInflationValue = unitInflationRate.Plus(SqlExpression.CustomLeafNode(inflationParameter));
 				var inflationBasisToNow = SqlExpression.Call(PowerCallee.Instance, annualInflationValue, SqlExpression.Call(IntervalRatioCallee.Instance, new SqlExpression(dsMB.Path.T.Unit.F.Id.L.UnitReport.UnitID.F.TimeSinceCostBasis), SqlExpression.Constant(new TimeSpan(365, 6, 0, 0))));
 				var inflationBasisToEndOfLife = SqlExpression.Call(PowerCallee.Instance, annualInflationValue, SqlExpression.Call(IntervalRatioCallee.Instance, new SqlExpression(dsMB.Path.T.Unit.F.Id.L.UnitReport.UnitID.F.LifetimeAfterCostBasis), SqlExpression.Constant(new TimeSpan(365, 6, 0, 0))));
-				var estimatedReplacementCost = new SqlExpression(dsMB.Path.T.Unit.F.Id.L.UnitReport.UnitID.F.CostBasis).Times(inflationBasisToEndOfLife);
-				var currentReplacementCost = new SqlExpression(dsMB.Path.T.Unit.F.Id.L.UnitReport.UnitID.F.CostBasis).Times(inflationBasisToNow);
+				var estimatedReplacementCost = inflationBasisToEndOfLife.Times(new SqlExpression(dsMB.Path.T.Unit.F.Id.L.UnitReport.UnitID.F.CostBasis)).Cast(dsMB.Schema.T.UnitReport.F.CostBasis.EffectiveType);
+				var currentReplacementCost = inflationBasisToNow.Times(new SqlExpression(dsMB.Path.T.Unit.F.Id.L.UnitReport.UnitID.F.CostBasis)).Cast(dsMB.Schema.T.UnitReport.F.CostBasis.EffectiveType);
 				SameKeyContextAs ourContext = new SameKeyContextAs(dsMB.Path.T.Unit.F.RelativeLocationID.F.ExternalTag.Key());
 				return new Tbl(dsMB.Schema.T.Unit,
 					TId.UnitReplacementForecast,
@@ -3241,8 +3242,8 @@ namespace Thinkage.MainBoss.Controls {
 						, TblColumnNode.New(dsMB.Path.T.Unit.F.Id.L.UnitReport.UnitID.F.EndOfLife, DefaultShowInDetailsCol.Show())
 						, TblColumnNode.New(dsMB.Path.T.Unit.F.TypicalLife)
 						, TblColumnNode.New(dsMB.Path.T.Unit.F.Id.L.UnitReport.UnitID.F.LifetimeAfterCostBasis) // TODO: Show whole years only
-						, TblServerExprNode.New(KB.K("Inflation to date"), inflationBasisToNow.Minus(SqlExpression.Constant(1.0m)))
-						, TblServerExprNode.New(KB.K("Inflation to end of life"), inflationBasisToEndOfLife.Minus(SqlExpression.Constant(1.0m)))
+						, TblServerExprNode.New(KB.K("Inflation to date"), inflationBasisToNow.Minus(unitInflationRate))
+						, TblServerExprNode.New(KB.K("Inflation to end of life"), inflationBasisToEndOfLife.Minus(unitInflationRate))
 						, TblServerExprNode.New(KB.K("Current replacement cost"), currentReplacementCost, DefaultShowInDetailsCol.Show(), FooterAggregateCol.Sum())
 						, TblServerExprNode.New(KB.K("End of life replacement cost"), estimatedReplacementCost, DefaultShowInDetailsCol.Show(), FooterAggregateCol.Sum())
 					).LayoutArray()

@@ -60,7 +60,7 @@ namespace Thinkage.MainBoss.Database {
 			}
 			pError = new GeneralException(KB.K("No email message available to be examined."));
 		}
-		private HeaderField Header([Invariant]string key) {
+		private HeaderField Header([Invariant] string key) {
 			messageGet();
 			HeaderField property;
 			if (Message.Headers.TryGetValue(key, out property))
@@ -354,7 +354,7 @@ namespace Thinkage.MainBoss.Database {
 			}
 			return System.Text.Encoding.ASCII;
 		}
-#region IDisposable Members
+		#region IDisposable Members
 		public void Dispose() {
 			Dispose(true);
 			GC.SuppressFinalize(this);
@@ -366,7 +366,7 @@ namespace Thinkage.MainBoss.Database {
 				Message = null;
 			}
 		}
-#endregion
+		#endregion
 		static public string EmailRequestToRFC822(XAFClient DB, bool encode, Guid EmailRequestId) {
 			using (dsMB ds = new dsMB(DB)) {
 				ds.EnsureDataTableExists(dsMB.Schema.T.EmailRequest, dsMB.Schema.T.EmailPart);

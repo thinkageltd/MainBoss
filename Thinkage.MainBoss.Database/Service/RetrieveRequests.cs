@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Thinkage.MainBoss.Database.Service {
+
 	public class RetrieveRequests : EmailProcessor {
 		#region Constructors, Destructor
 		public RetrieveRequests(IServiceLogging logger, MB3Client dbSession)
@@ -34,13 +35,21 @@ namespace Thinkage.MainBoss.Database.Service {
 			var serverType = (DatabaseEnums.MailServerType)ServiceConfiguration.MailServerType;
 			var mailbox = ServiceConfiguration.MailboxName;
 			var maxMailSize = ServiceConfiguration.MaxMailSize ?? int.MaxValue;
+			bool useOAuth2 = false; // eventually will have to get this setting and values from Service Configuration
+
+
 			if (server == null)
 				return;
+
+			if (useOAuth2) {
+				// need access token which is the password in Dart
+				pw = new OAuth2ManagerAzure().GetAccessToken();
+			}
 #if DEBUG_Connection
 			DebugDart(Logger, user, pw );
 #endif
 			try {
-				using (var messageSource = new EmailMessageSource(Logger, traceDetails, serverType, encryption, server, port ?? 0, user, pw, mailbox)) {
+				using (var messageSource = new EmailMessageSource(Logger, traceDetails, serverType, encryption, server, port ?? 0, user, pw, mailbox, useOAuth2)) {
 					// each email that is received will be stored in a new request record.
 					int n = messageSource.Messages.Count();
 					Logger.LogTrace(traceDetails, Strings.Format(KB.K("Retrieving {0} Email {0.IsOne ? message : messages }"), n));
@@ -80,7 +89,7 @@ namespace Thinkage.MainBoss.Database.Service {
 								processingState = DatabaseEnums.EmailRequestState.HoldRequiresManualReview;
 							}
 							else if (message.AutoSubmitted)
-								processingState =  DatabaseEnums.EmailRequestState.HoldRequiresManualReview;
+								processingState = DatabaseEnums.EmailRequestState.HoldRequiresManualReview;
 
 							ServiceUtilities.EmailRequestFromEmail(dsmb, message, maxMailSize, processingState);
 							DB.Update(dsmb);
@@ -255,9 +264,9 @@ namespace Thinkage.MainBoss.Database.Service {
 			DebugClient(Logger, KB.K("IMAP4S-cert"), DatabaseEnums.MailServerType.IMAP4S, DatabaseEnums.MailServerEncryption.RequireValidCertificate, server, port, user, pw, mailbox);
 			DebugClient(Logger, KB.K("Any-cert"), DatabaseEnums.MailServerType.Any, DatabaseEnums.MailServerEncryption.RequireValidCertificate, server, port, user, pw, mailbox);
 		}
-		private void DebugClient(IServiceLogging logger, Key prefix, DatabaseEnums.MailServerType serverType, DatabaseEnums.MailServerEncryption Encryption, string server, int port, string user, string pw, string mailbox) {
+		private void DebugClient(IServiceLogging logger, Key prefix, DatabaseEnums.MailServerType serverType, DatabaseEnums.MailServerEncryption Encryption, string server, int port, string user, string pw, string mailbox, bool useOAuth2 = false) {
 			try {
-				using (var messagesource = new EmailMessageSource(Logger, true, serverType, Encryption, server, port, user, pw, mailbox)) {
+				using (var messagesource = new EmailMessageSource(Logger, true, serverType, Encryption, server, port, user, pw, mailbox, useOAuth2)) {
 					logger.LogTrace(true, Thinkage.Libraries.Exception.FullMessage(new GeneralException(KB.K("Succeeded with {0} -- server '{1}' on port {2} using {3}\n"),
 						prefix, server, messagesource.Port, messagesource.Protocol).WithContext(EmailMessageSource.TraceContext(messagesource))));
 				}
