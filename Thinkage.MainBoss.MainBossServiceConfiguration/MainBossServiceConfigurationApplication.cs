@@ -15,6 +15,7 @@ using Thinkage.Libraries.XAF.UI.MSWindows;
 using Thinkage.MainBoss.Database;
 using Thinkage.MainBoss.Database.Service;
 using System.Data.SqlClient;
+using System.Collections.Generic;
 
 namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 	#region CommanLine Setup and Processing
@@ -117,12 +118,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 		private class Optable : Thinkage.Libraries.CommandLineParsing.Optable {
 			public Optable(params ServiceVerbDefinition[] subapps) {
 				Subapps = subapps;
-				object[] arg = new object[subapps.Length * 2];
-				for (int i = 0; i < subapps.Length; i++) {
-					arg[2 * i] = subapps[i].Verb;
-					arg[2 * i + 1] = subapps[i];
-				}
-				DefineVerbs(true, arg);
+				DefineVerbs(true, subapps.Select(svd => new KeyValuePair<string, Libraries.CommandLineParsing.Optable>(svd.Verb, svd.Optable)));
 			}
 			private readonly ServiceVerbDefinition[] Subapps;
 			public void RunVerb() {

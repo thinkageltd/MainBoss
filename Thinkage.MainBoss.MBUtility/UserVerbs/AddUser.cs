@@ -41,7 +41,7 @@ namespace Thinkage.MainBoss.MBUtility {
 		public class Definition : UtilityVerbWithDatabaseDefinition {
 			public Definition()
 				: base() {
-				Add(AuthenticationCredential = new StringValueOption("AuthenticationCredential", KB.K("Specify the SQL authentication credential of the MainBoss user").Translate(), true));
+				Optable.Add(AuthenticationCredential = new StringValueOption("AuthenticationCredential", KB.K("Specify the SQL authentication credential of the MainBoss user").Translate(), true));
 			}
 			public readonly StringValueOption AuthenticationCredential;
 			public override string Verb {
@@ -59,9 +59,8 @@ namespace Thinkage.MainBoss.MBUtility {
 		}
 		private readonly Definition Options;
 		private void Run() {
-			string oName;
 			System.Version minDBVersionForRolesTable = new System.Version(1, 0, 4, 38); // The roles table appeared in its current form at this version
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = Options.ConnectionDefinition(out string oName);
 			// Get a connection to the database that we are referencing
 			var dbapp = new ApplicationWithSingleDatabaseConnection(Thinkage.Libraries.Application.Instance);
 			try {

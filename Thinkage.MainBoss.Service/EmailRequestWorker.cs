@@ -28,7 +28,7 @@ namespace Thinkage.MainBoss.Service
 				switch ((ApplicationServiceRequests)command) {
 					case ApplicationServiceRequests.PROCESS_REQUESTS_INCOMING_EMAIL:
 					case ApplicationServiceRequests.PROCESS_ALL: {
-						RequestProcessor.DoAllRequestProcessing(ServiceLogging, DBSession, Logging.Activities, Logging.ReadEmailRequest);
+						RequestProcessor.DoAllRequestProcessing(ServiceLogging, DBSession, Logging.Activities, Logging.ReadEmailRequest, allowOutgoingEmail: true, MainBossServiceBase.Force);
 							break;
 						}
 				}

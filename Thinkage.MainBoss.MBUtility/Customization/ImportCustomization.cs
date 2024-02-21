@@ -15,7 +15,7 @@ namespace Thinkage.MainBoss.MBUtility
 			public Definition()
 				: base()
 			{
-				Add(CustomizationFileName = new StringValueOption("Customizations", KB.K("Specify the name of the file containing the customizations to be imported").Translate(), true));
+				Optable.Add(CustomizationFileName = new StringValueOption("Customizations", KB.K("Specify the name of the file containing the customizations to be imported").Translate(), true));
 			}
 			public readonly StringValueOption CustomizationFileName;
 			public override string Verb
@@ -38,8 +38,7 @@ namespace Thinkage.MainBoss.MBUtility
 		private readonly Definition Options;
 		private void Run()
 		{
-			string oName;
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = Options.ConnectionDefinition(out string oName);
 
 			Customization.SetupDatabaseAccess(oName, connect);
 			Thinkage.Libraries.DBAccess.XAFClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;

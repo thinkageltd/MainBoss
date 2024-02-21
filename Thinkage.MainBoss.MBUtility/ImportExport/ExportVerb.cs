@@ -12,13 +12,13 @@ namespace Thinkage.MainBoss.MBUtility
 		public class Definition : UtilityVerbWithDatabaseDefinition {
 			public Definition()
 				: base() {
-				Add(SchemaIdentification = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("SchemaIdentification"), KB.I("Identity of schema"), true));
-				Add(OutputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("Output"), KB.I("File to receive the export data"), true));
-				Add(EmbedSchema = new BooleanOption(KB.I("EmbeddedSchema"), KB.I("Indicates if the output XML file should contain an embedded schema"), '+', false));
-				Add(ExcelOption = new Thinkage.Libraries.CommandLineParsing.BooleanOption(KB.I("EXCEL"), KB.I("Output has both export and schema files ready for import to EXCEL"), '+', false));
+				Optable.Add(SchemaIdentification = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("SchemaIdentification"), KB.I("Identity of schema"), true));
+				Optable.Add(OutputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("Output"), KB.I("File to receive the export data"), true));
+				Optable.Add(EmbedSchema = new BooleanOption(KB.I("EmbeddedSchema"), KB.I("Indicates if the output XML file should contain an embedded schema"), '+', false));
+				Optable.Add(ExcelOption = new Thinkage.Libraries.CommandLineParsing.BooleanOption(KB.I("EXCEL"), KB.I("Output has both export and schema files ready for import to EXCEL"), '+', false));
 				EmbedSchema.Value = false;
 				ExcelOption.Value = false;
-				MarkAsDefaults();
+				Optable.MarkAsDefaults();
 			}
 			public readonly StringValueOption SchemaIdentification;
 			public readonly StringValueOption OutputFile;
@@ -44,8 +44,7 @@ namespace Thinkage.MainBoss.MBUtility
 			DataImportExportHelper.Setup();
 			DataImportExport id = new DataImportExport(DataImportExportHelper.ValidateSchemaIdentification(Options.SchemaIdentification.Value));
 			// Get a connection to the database that we are exporting from
-			string oName;
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = Options.ConnectionDefinition(out string oName);
 			DataImportExportHelper.SetupDatabaseAccess(oName, connect);
 			Thinkage.Libraries.DBAccess.XAFClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
 			DataSet exportDataSet = id.LoadDataSetFromDatabase(db, dsMB.Schema);

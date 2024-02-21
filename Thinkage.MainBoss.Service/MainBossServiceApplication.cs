@@ -35,7 +35,7 @@ namespace Thinkage.MainBoss.Service
 		public override Thinkage.Libraries.Service.Application.RunApplicationDelegate GetRunApplicationDelegate	{
 			get	{
 				return delegate() {
-					using (var x = new MainBossService(this)) {
+					using (var x = new MainBossService(this, ServiceOptions.Force)) {
 						x.Run();
 						int NBusy = 0;
 						if (!UserInterface.IsRunningAsAService) {

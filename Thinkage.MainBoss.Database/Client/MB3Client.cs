@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Net;
 using System.Threading;
 using Thinkage.Libraries;
 using Thinkage.Libraries.CommandLineParsing;
@@ -20,7 +22,206 @@ namespace Thinkage.MainBoss.Database {
 
 		#region Option Support
 		public static class OptionSupport {
-			#region Encryption/Decryption of credentials password
+			public class DatabaseConnectionOptable : Optable {
+				// TODO: Use this as a basis for the ServiceOptions, but this requires deciphering that tangled interpretation code.
+				// TODO: Also use this as the basis for ServiceVerbWithServiceNameDefinition
+				public DatabaseConnectionOptable() {
+					// TODO: ctor argument(s) to control whether we have:
+					// OrganizationName (not wanted on the Service because it runs on a strange user with a strange HKCU registry, also not wanted for e.g. AddOrganization)
+					// EncodedPassword (only wanted for the service so the password in the command arguments in the service registration can be encoded
+					Add(OrganizationName = CreateOrganizationNameOption(false));
+					Add(DataBaseServer = CreateServerNameOption(false));
+					Add(DataBaseName = CreateDatabaseNameOption(false));
+					Add(AuthenticationMethod = CreateAuthenticationMethodOption(false));
+					Add(Username = CreateCredentialsAuthenticationUsernameOption(false));
+					Add(Password = CreateCredentialsAuthenticationPasswordOption(false));
+					Add(SQLConnectString = new StringValueOption(KB.I("Connection"), KB.K("SQL Server Connection string.").Translate(), false));
+					Add(EncodedPassword = new StringValueOption(KB.I("SecurityToken"), KB.K("SQL Server Security Token.").Translate(), false));
+				}
+
+				private readonly StringValueOption OrganizationName;
+				private readonly StringValueOption DataBaseName;
+				private readonly StringValueOption DataBaseServer;
+				private readonly KeywordValueOption AuthenticationMethod;
+				private readonly StringValueOption Username;
+				private readonly StringValueOption Password;
+				private readonly StringValueOption SQLConnectString;
+				private readonly StringValueOption EncodedPassword;
+
+				public void DisallowConnectionOptions(Key message) {
+					if (OrganizationName.ExplicitlySet)
+						throw new GeneralException(message, OrganizationName.OptionName);
+					if (DataBaseServer.ExplicitlySet)
+						throw new GeneralException(message, DataBaseServer.OptionName);
+					if (DataBaseName.ExplicitlySet)
+						throw new GeneralException(message, DataBaseName.OptionName);
+					if (AuthenticationMethod.ExplicitlySet)
+						throw new GeneralException(message, AuthenticationMethod.OptionName);
+					if (Username.ExplicitlySet)
+						throw new GeneralException(message, Username.OptionName);
+					if (Password.ExplicitlySet)
+						throw new GeneralException(message, Password.OptionName);
+					if (SQLConnectString.ExplicitlySet)
+						throw new GeneralException(message, SQLConnectString.OptionName);
+					if (EncodedPassword.ExplicitlySet)
+						throw new GeneralException(message, EncodedPassword.OptionName);
+				}
+
+				/// <summary>
+				/// Get the ConnectionDefinition based on options, and also return the organization name and saved organization, if any
+				/// </summary>
+				/// <param name="organizationName"></param>
+				/// <param name="existingOrganization"></param>
+				/// <returns></returns>
+				/// <exception cref="GeneralException"></exception>
+				public ConnectionDefinition ResolveConnectionDefinition(out string organizationName, out NamedOrganization existingOrganization) {
+
+					NamedOrganization organization = null;
+					SqlConnectionStringBuilder connectionString = null;
+
+					MainBossNamedOrganizationStorage organizations = new MainBossNamedOrganizationStorage(new SavedOrganizationSession.Connection());
+
+					string orgName = null;
+
+					// Command line arguments override any preferred Organization settings.
+					if (OrganizationName.HasValue) {
+						if (SQLConnectString.HasValue)
+							throw new GeneralException(KB.K("'{0}' cannot be used with '{1}'"), OrganizationName.OptionName, SQLConnectString.OptionName);
+						var organizationIds = organizations.GetOrganizationNames(orgName = OrganizationName.Value);
+#if DEBUG          // I don't see how this could ever happen, (It can now that old display names differing only in case can exist
+						if (organizationIds.Count >= 2)
+							throw new GeneralException(KB.K("There are multiple organizations with the name '{0}'"), orgName);
+#endif
+						if (organizationIds.Count >= 1)
+							organization = organizationIds[0];
+						// If we didn't find one the user wanted or an error quietly occurred loading it, complain
+						if (organization == null)
+							throw new GeneralException(KB.K("Cannot find organization '{0}'"), orgName);
+					}
+					else if (SQLConnectString.HasValue) {
+						if (string.IsNullOrEmpty(SQLConnectString.Value))
+							throw new GeneralException(KB.K("Empty SQL connection string"));
+						try {
+							connectionString = new SqlConnectionStringBuilder(SQLConnectString.Value);
+						}
+						catch (System.Exception ex) {
+							throw new GeneralException(ex, KB.K("Invalid SQL connection string '{0}'"), SQLConnectString.Value);
+						}
+					}
+					else {
+						// If no organization name was specified, use the preferred one if any. If there is none we will charge on with a null OrganizationName anyway.
+						organization = organizations.Load(organizations.PreferredOrganizationId);
+						if (organization != null)
+							orgName = organization.DisplayName;
+					}
+
+					// Get the DB server
+					string server;
+					if (DataBaseServer.ExplicitlySet) {
+						server = DataBaseServer.Value;
+						// If the server is explicitly changed, only use the org name if it was explicitly named.
+						orgName = OrganizationName.Value;
+					}
+					else if (connectionString != null && !string.IsNullOrEmpty(connectionString.DataSource))
+						server = connectionString.DataSource;
+					else if (organization != null)
+						server = organization.ConnectionDefinition.DBServer;
+					else if (DataBaseServer.HasValue)
+						server = DataBaseServer.Value;
+					else
+						throw new GeneralException(KB.K("No database server was specified"));
+
+					// Get the DB name
+					string dbname;
+					if (DataBaseName.ExplicitlySet) {
+						dbname = DataBaseName.Value;
+						// If the database name is explicitly changed, only use the org name if it was explicitly named.
+						orgName = OrganizationName.Value;
+					}
+					else if (connectionString != null && !string.IsNullOrEmpty(connectionString.InitialCatalog))
+						dbname = connectionString.InitialCatalog;
+					else if (organization != null)
+						dbname = organization.ConnectionDefinition.DBName;
+					else if (DataBaseName.HasValue)
+						dbname = DataBaseName.Value;
+					else
+						throw new GeneralException(KB.K("No database name was specified"));
+
+					// Get the credentials
+					AuthenticationMethod method = AuthenticationCredentials.Default.Type;
+					if (AuthenticationMethod.ExplicitlySet)
+						method = (AuthenticationMethod)AuthenticationMethod.Value;
+					else if (connectionString != null && (connectionString.IntegratedSecurity || connectionString.Authentication != SqlAuthenticationMethod.NotSpecified)) {
+						if (connectionString.IntegratedSecurity)
+							method = Libraries.DBILibrary.AuthenticationMethod.WindowsAuthentication;
+						else
+							switch (connectionString.Authentication) {
+							case SqlAuthenticationMethod.SqlPassword:
+								method = Libraries.DBILibrary.AuthenticationMethod.SQLPassword;
+								break;
+							case SqlAuthenticationMethod.ActiveDirectoryPassword:
+								method = Libraries.DBILibrary.AuthenticationMethod.ActiveDirectoryPassword;
+								break;
+							case SqlAuthenticationMethod.ActiveDirectoryIntegrated:
+								method = Libraries.DBILibrary.AuthenticationMethod.ActiveDirectoryIntegrated;
+								break;
+							}
+					}
+					else if (organization != null)
+						method = organization.ConnectionDefinition.DBCredentials.Type;
+					else
+						method = AuthenticationCredentials.Default.Type;
+
+					string userName = null;
+					if (Username.ExplicitlySet)
+						userName = Username.Value;
+					else if (connectionString != null && !string.IsNullOrEmpty(connectionString.UserID))
+						userName = connectionString.UserID;
+					else if (organization != null)
+						userName = organization.ConnectionDefinition.DBCredentials.Username;
+
+					string password = null;
+					if (Password.ExplicitlySet) {
+						if (EncodedPassword.ExplicitlySet)
+							throw new GeneralException(KB.K("'{0}' cannot be used with '{1}'"), Password.OptionName, EncodedPassword.OptionName);
+						password = Password.Value;
+					}
+					else if (EncodedPassword.ExplicitlySet)
+						password = Service.ServicePassword.Decode(Convert.FromBase64String(EncodedPassword.Value));
+					else if (connectionString != null && !string.IsNullOrEmpty(connectionString.UserID))
+						password = connectionString.Password;
+					else if (organization != null)
+						password = organization.ConnectionDefinition.DBCredentials.Password;
+
+					AuthenticationCredentials credentials;
+					switch (method) {
+					case Libraries.DBILibrary.AuthenticationMethod.WindowsAuthentication:
+					case Libraries.DBILibrary.AuthenticationMethod.None:
+					case Libraries.DBILibrary.AuthenticationMethod.ActiveDirectoryIntegrated:
+							
+						if (!string.IsNullOrEmpty(password) || !string.IsNullOrEmpty(userName))
+							throw new GeneralException(KB.K("Cannot specify user name and/or password with {0} authentication"),
+								AuthenticationCredentials.AuthenticationMethodProvider.Format(method));
+						break;
+					case Libraries.DBILibrary.AuthenticationMethod.SQLPassword:
+					case Libraries.DBILibrary.AuthenticationMethod.ActiveDirectoryPassword:
+						if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(userName))
+							throw new GeneralException(KB.K("Must specify user name and password with {0} authentication"),
+								AuthenticationCredentials.AuthenticationMethodProvider.Format(method));
+						break;
+					}
+					credentials = new AuthenticationCredentials(method, userName, password);
+
+					// Finally, summarize the results; need original NamedOrganization in case so we save to same record.
+					existingOrganization = organization;
+					organizationName = orgName;
+					return new ConnectionDefinition(server, dbname, credentials);
+	}
+}
+#			region Encryption/Decryption of credentials password
+			// Note that these methods can only be used if the encryption and decryption occur in the context of the same user,
+			// so for instance they can encrypt the pawwwords in the Save Organizations in a user's registry, but not the e-mail service
+			// passwords in the ServiceConfiguration record.
 			public static string DecryptCredentialsPassword(string spwd) {
 				if (spwd == null)
 					return null;
@@ -62,7 +263,7 @@ namespace Thinkage.MainBoss.Database {
 
 			// This is a list of the modes that the MainBoss application can start in.
 			// Except for PickOrganization, there should be Mode definitions in the TblDrivenMainBossApplication for these, and only these, modes.
-			public static readonly DatabaseEnums.ApplicationModeID[] ApplicationIdChoices = new DatabaseEnums.ApplicationModeID[] {
+			private static readonly DatabaseEnums.ApplicationModeID[] ApplicationIdChoices = new DatabaseEnums.ApplicationModeID[] {
 				DatabaseEnums.ApplicationModeID.Requests,			// Just requests, admin, related definition tables
 				DatabaseEnums.ApplicationModeID.Normal,				// full mainboss and admin
 				DatabaseEnums.ApplicationModeID.Sessions,			// license keys, sessions in progress
@@ -100,11 +301,11 @@ namespace Thinkage.MainBoss.Database {
 				return new BooleanOption("CompactBrowsers", KB.K("Make the browser screens more compact by not showing details of the selected record").Translate(), required);
 			}
 			public static KeywordValueOption CreateAuthenticationMethodOption(bool required) {
-				int l = Thinkage.Libraries.DBILibrary.AuthenticationCredentials.AuthenticationMethodProvider.Values.Length;
+				int l = AuthenticationCredentials.AuthenticationMethodProvider.Values.Length;
 				string[] choices = new string[l];
 				for (int i = l; --i >= 0;)
 					// Note that as with all other options, we use the untranslated text
-					choices[(int)Thinkage.Libraries.DBILibrary.AuthenticationCredentials.AuthenticationMethodProvider.Values[i]] = Thinkage.Libraries.DBILibrary.AuthenticationCredentials.AuthenticationMethodProvider.Labels[i].Translate(null);
+					choices[(int)AuthenticationCredentials.AuthenticationMethodProvider.Values[i]] = Thinkage.Libraries.DBILibrary.AuthenticationCredentials.AuthenticationMethodProvider.Labels[i].Translate(null);
 
 				return new KeywordValueOption(CredentialsAuthenticationMethodArgument,
 					KB.K("Server authentication method to use").Translate(), required,
@@ -219,178 +420,7 @@ namespace Thinkage.MainBoss.Database {
 			}
 			#endregion
 			#region static methods to handle the interaction between OrganizationName and the other four options for use with actual DB access.
-			/// <summary>
-			/// Handle the options used to refer to an existing organization. The organization may be one that is saved under the current user's
-			/// registry, in which case the saved organization provides defaults for all the other options. All the options should be created as
-			/// non-required, although they can be given default values which will apply if they are not explicitly speficied and also there is no
-			/// reference to a saved organization. The values in any saved organization are assumed to be valid. For each of the other options, the
-			/// priority is: (1) the explicit value specified in the options (2) the value from the organization if any (3) the default value from
-			/// the option.
-			/// </summary>
-			/// <param name="organizationNameOption"></param>
-			/// <param name="serverNameOption"></param>
-			/// <param name="databaseNameOption"></param>
-			///
-			/// <param name="applicationOption"></param>
-			/// This can be null if the user did not name one and we also did not load any default organization.</param>
-			/// <returns>A NamedOrganization or if the mode was PickOrganization, null is returned</returns>
-			public static NamedOrganization ResolveSavedOrganization(
-				StringValueOption organizationNameOption,
-				StringValueOption serverNameOption,
-				StringValueOption databaseNameOption,
-				KeywordValueOption applicationOption,
-				BooleanOption compactBrowsersOption) {
 
-				NamedOrganization organization = null;
-
-				string orgName = null;
-				DatabaseEnums.ApplicationModeID appId;
-				bool compact;
-
-				if (applicationOption.ExplicitlySet && DecodeApplicationOptionValue(applicationOption.Value) == DatabaseEnums.ApplicationModeID.PickOrganization) {
-					// If the user said "pick organization" do not allow any other options.
-					// Perhaps in the future we could still allow an organization name, which would just set the list selection for the Pick form...
-					// TODO: Use the static constant strings to build Mode option in the the following messages???
-					if (organizationNameOption.ExplicitlySet)
-						throw new GeneralException(KB.K("Cannot use '/{0}' with '/Mode:PickOrganization'"), OrganizationNameCommandArgument);
-					if (serverNameOption.ExplicitlySet)
-						throw new GeneralException(KB.K("Cannot use '/{0}' with '/Mode:PickOrganization'"), DataBaseServerCommandArgument);
-					if (databaseNameOption.ExplicitlySet)
-						throw new GeneralException(KB.K("Cannot use '/{0}' with '/Mode:PickOrganization'"), DataBaseNameCommandArgument);
-					return null;
-				}
-				ConnectionDefinition connDef; // use common SavedOrganization resolution determination for the common options
-				try {
-					connDef = MB3Client.OptionSupport.ResolveSavedOrganization(organizationNameOption, serverNameOption, databaseNameOption, out orgName, ref organization);
-				}
-				catch (GeneralException e) {
-					throw new NoOrganizationException(e);
-				}
-				// Get the app mode
-				if (applicationOption.ExplicitlySet)
-					appId = MB3Client.OptionSupport.DecodeApplicationOptionValue(applicationOption.Value);
-				else if (organization != null)
-					appId = organization.ConnectionDefinition.ApplicationMode;
-				else if (applicationOption.HasValue)
-					appId = MB3Client.OptionSupport.DecodeApplicationOptionValue(applicationOption.Value);
-				else
-					throw new NoOrganizationException(null);
-
-				// Get the CompactBrowsers option
-				if (compactBrowsersOption.ExplicitlySet)
-					compact = compactBrowsersOption.Value;
-				else if (organization != null)
-					compact = organization.ConnectionDefinition.CompactBrowsers;
-				else if (compactBrowsersOption.HasValue)
-					compact = compactBrowsersOption.Value;
-				else
-					throw new NoOrganizationException(null);
-
-				// It is possible here, despite the earlier check, for the appId to be PickOrganization (either because that is the default for the
-				// option or because the saved Organization somehow specified that. Just to protect from this, we check here.
-				if (appId == DatabaseEnums.ApplicationModeID.PickOrganization)
-					return null;
-				// Finally, return a usable NamedOrganization
-				MBConnectionDefinition def = new MBConnectionDefinition(appId, compact, connDef.DBServer, connDef.DBName, connDef.DBCredentials);
-				if (organization != null)
-					return new NamedOrganization(organization.Id, orgName, def); // use the existing one
-				else
-					return new NamedOrganization(orgName, def); // make a new one
-			}
-			/// <summary>
-			/// Handle the options used to refer to an existing organization but with no support for any Application Mode settings.
-			/// Presumeably the calling App can only run in one mode or does not need a mode.
-			/// The organization may be one that is saved under the current user's
-			/// registry, in which case the saved organization provides defaults for all the other options. All the options should be created as
-			/// non-required, although they can be given default values which will apply if they are not explicitly speficied and also there is no
-			/// reference to a saved organization. The values in any saved organization are assumed to be valid. For each of the other options, the
-			/// priority is: (1) the explicit value specified in the options (2) the value from the organization if any (3) the default value from
-			/// the option.
-			/// </summary>
-			/// <param name="organizationNameOption"></param>
-			/// <param name="serverNameOption"></param>
-			/// <param name="databaseNameOption"></param>
-			///
-			/// <param name="organizationName">the name of the organization, as it was saved.
-			/// This can be null if the user did not name one and we also did not load any default organization.</param>
-			/// <returns></returns>
-
-			public static ConnectionDefinition ResolveSavedOrganization(
-				StringValueOption organizationNameOption,
-				StringValueOption serverNameOption,
-				StringValueOption databaseNameOption,
-				out string organizationName) {
-				NamedOrganization existingOrganization = null;
-				ConnectionDefinition connDef = ResolveSavedOrganization(organizationNameOption, serverNameOption, databaseNameOption, out organizationName, ref existingOrganization);
-				return connDef;
-			}
-
-			// internal version needs to keep the existing NamedOrganization if it was found
-			internal static ConnectionDefinition ResolveSavedOrganization(
-				StringValueOption organizationNameOption,
-				StringValueOption serverNameOption,
-				StringValueOption databaseNameOption,
-				out string organizationName,
-				ref NamedOrganization existingOrganization) {
-
-				NamedOrganization organization = null;
-				MainBossNamedOrganizationStorage organizations = new MainBossNamedOrganizationStorage(new SavedOrganizationSession.Connection());
-
-				string orgName = null;
-				string server;
-				string dbname;
-
-				// Command line arguments override any preferred Organization settings.
-				if (organizationNameOption.HasValue) {
-					var organizationIds = organizations.GetOrganizationNames(orgName = organizationNameOption.Value);
-#if DEBUG          // I don't see how this could ever happen, (It can now that old display names differing only in case can exist
-					if (organizationIds.Count >= 2)
-						throw new GeneralException(KB.K("There are multiple organizations with the name '{0}'"), orgName);
-#endif
-					if (organizationIds.Count >= 1)
-						organization = organizationIds[0];
-					// If we didn't find one the user wanted or an error quietly occurred loading it, complain
-					if (organization == null)
-						throw new GeneralException(KB.K("Cannot find organization '{0}'"), orgName);
-				}
-				else {
-					// If no organization name was specified, use the preferred one if any. If there is none we will charge on with a null OrganizationName anyway.
-					organization = organizations.Load(organizations.PreferredOrganizationId);
-					if (organization != null)
-						orgName = organization.DisplayName;
-				}
-
-				// Get the DB server
-				if (serverNameOption.ExplicitlySet) {
-					server = serverNameOption.Value;
-					// If the server is explicitly changed, only use the org name if it was explicitly named.
-					orgName = organizationNameOption.Value;
-				}
-				else if (organization != null)
-					server = organization.ConnectionDefinition.DBServer;
-				else if (serverNameOption.HasValue)
-					server = serverNameOption.Value;
-				else
-					throw new GeneralException(KB.K("No database server was specified"));
-
-				// Get the DB name
-				if (databaseNameOption.ExplicitlySet) {
-					dbname = databaseNameOption.Value;
-					// If the database name is explicitly changed, only use the org name if it was explicitly named.
-					orgName = organizationNameOption.Value;
-				}
-				else if (organization != null)
-					dbname = organization.ConnectionDefinition.DBName;
-				else if (databaseNameOption.HasValue)
-					dbname = databaseNameOption.Value;
-				else
-					throw new GeneralException(KB.K("No database name was specified"));
-
-				// Finally, summarize the results; need original NamedOrganization in case so we save to same record.
-				existingOrganization = organization;
-				organizationName = orgName;
-				return new ConnectionDefinition(server, dbname, organization?.ConnectionDefinition.DBCredentials);
-			}
 			/// <summary>
 			/// Handle the options used to refer to a possibly nonexistent organization with no support for handling the Organization name.
 			/// </summary>
@@ -410,24 +440,6 @@ namespace Thinkage.MainBoss.Database {
 				// or they should have defaults set. If the string options are unset there will be nulls in the MBConnectionDefinition. For the
 				// other options we would get a null deref trying to unbox the value in option.Value.
 				return new MBConnectionDefinition(DecodeApplicationOptionValue(applicationOption.Value), compactBrowsersOption.HasValue ? compactBrowsersOption.Value : false, serverNameOption.Value, databaseNameOption.Value, credentials);
-			}
-			/// <summary>
-			/// Handle the options used to refer to a possibly nonexistent organization with no support for handling the Organization name or
-			/// for any Application Mode settings. Presumeably the calling App can only run in one mode or does not need a mode.
-			/// </summary>
-			/// <param name="serverNameOption"></param>
-			/// <param name="databaseNameOption"></param>
-			///
-			/// <returns></returns>
-			public static ConnectionDefinition ResolveUnnamedAdHocOrganization(
-				StringValueOption serverNameOption,
-				StringValueOption databaseNameOption,
-				AuthenticationCredentials credentials) {
-
-				// The Option objects should have been created so as to force them to have values by this point, i.e. they should be required
-				// or they should have defaults set. If the string options are unset there will be nulls in the MBConnectionDefinition. For the
-				// other options we would get a null deref trying to unbox the value in option.Value.
-				return new ConnectionDefinition(serverNameOption.Value, databaseNameOption.Value, credentials);
 			}
 			/// <summary>
 			/// Handle the options used to refer to a possibly nonexistent organization.
@@ -450,25 +462,6 @@ namespace Thinkage.MainBoss.Database {
 
 				organizationName = organizationNameOption.Value;
 				return ResolveUnnamedAdHocOrganization(serverNameOption, databaseNameOption, applicationOption, compactBrowsersOption, credentials);
-			}
-			/// <summary>
-			/// Handle the options used to refer to a possibly nonexistent organization with no support for handling
-			/// any Application Mode settings. Presumeably the calling App can only run in one mode or does not need a mode.
-			/// </summary>
-			/// <param name="organizationNameOption"></param>
-			/// <param name="serverNameOption"></param>
-			/// <param name="databaseNameOption"></param>
-			/// <param name="organizationName"></param>
-			/// <returns></returns>
-			public static ConnectionDefinition ResolveNamedAdHocOrganization(
-				StringValueOption organizationNameOption,
-				StringValueOption serverNameOption,
-				StringValueOption databaseNameOption,
-				AuthenticationCredentials credentials,
-				out string organizationName) {
-
-				organizationName = organizationNameOption.Value;
-				return ResolveUnnamedAdHocOrganization(serverNameOption, databaseNameOption, credentials);
 			}
 			#endregion
 			#region static methods to format an option and its value appropriately to appear on a command line.

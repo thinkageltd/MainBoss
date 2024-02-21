@@ -12,9 +12,9 @@ namespace Thinkage.MainBoss.MBUtility
 		public class Definition : UtilityVerbWithDatabaseDefinition {
 			public Definition()
 				: base() {
-				Add(SchemaIdentification = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("SchemaIdentification"), KB.I("Identity of schema"), false));
-				Add(InputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("Input"), KB.I("File containing the import data"), true));
-				Add(ErrorOutputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("ErrorOutput"), KB.I("File containing the errors encountered during import."), false));
+				Optable.Add(SchemaIdentification = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("SchemaIdentification"), KB.I("Identity of schema"), false));
+				Optable.Add(InputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("Input"), KB.I("File containing the import data"), true));
+				Optable.Add(ErrorOutputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("ErrorOutput"), KB.I("File containing the errors encountered during import."), false));
 			}
 			public readonly StringValueOption SchemaIdentification;
 			public readonly StringValueOption InputFile;
@@ -43,8 +43,7 @@ namespace Thinkage.MainBoss.MBUtility
 			id.LoadDataSetFromXmlFile(Options.InputFile.Value, new System.Xml.Schema.ValidationEventHandler(xml_ValidationEventHandler));
 
 			// Get a connection to the database that we are importing to
-			string oName;
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = Options.ConnectionDefinition(out string oName);
 			DataImportExportHelper.SetupDatabaseAccess(oName, connect);
 			Thinkage.Libraries.DBAccess.XAFClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
 			DataSet errors;

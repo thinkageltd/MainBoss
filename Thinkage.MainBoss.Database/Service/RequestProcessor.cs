@@ -20,7 +20,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				dsMB.Schema.T.RequestStateHistory, dsMB.Schema.T.Request, dsMB.Schema.T.Contact,
 				dsMB.Schema.T.RequestAcknowledgement);
 		}
-		public static void DoAllRequestProcessing(IServiceLogging logger, MB3Client dbSession, bool traceActivities, bool traceDetails, bool allowOutgoingEmail = true) {
+		public static void DoAllRequestProcessing(IServiceLogging logger, MB3Client dbSession, bool traceActivities, bool traceDetails, bool allowOutgoingEmail, bool force) {
 			if (lastFlush + TimeSpan.FromDays(1) < DateTime.Today) {
 				RetrieveRequests.FlushIDs();
 				lastFlush = DateTime.Today;
@@ -33,7 +33,7 @@ namespace Thinkage.MainBoss.Database.Service {
 						logger.LogInfo(KB.K("Email cannot be processed because there is no incoming Mail User Name configured").Translate());
 					else {
 						logger.LogTrace(traceDetails, KB.K("Email requests processing started").Translate());
-						x.FetchAndProcessEmailRequests(traceActivities, traceDetails);
+						x.FetchAndProcessEmailRequests(traceActivities, traceDetails, force);
 						logger.LogTrace(traceDetails, KB.K("Email requests processing completed").Translate());
 					}
 				}
@@ -50,9 +50,9 @@ namespace Thinkage.MainBoss.Database.Service {
 		#endregion
 
 		#region FetchAndProcessEmailRequests
-		public void FetchAndProcessEmailRequests(bool traceActivities, bool traceDetails) {
+		public void FetchAndProcessEmailRequests(bool traceActivities, bool traceDetails, bool force) {
 			try {
-				using (var rr = new RetrieveRequests(Logger, DB))
+				using (var rr = new RetrieveRequests(Logger, DB, force))
 					rr.Run(traceDetails);
 				CreateRequestsFromEmail(traceActivities, traceDetails);
 			}

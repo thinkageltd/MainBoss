@@ -11,11 +11,11 @@ namespace Thinkage.MainBoss.MBUtility
 			public Definition()
 				: base()
 			{
-				Add(OutputPackageFilename = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("Output"), KB.I("Filename to receive the packaged dataset export data"), true));
-				Add(EmbedSchema = new BooleanOption(KB.I("EmbeddedSchema"), KB.I("Indicates if the output XML file should contain an embedded schema"), '+', false));
-				Add(ExcludeDeleted = new BooleanOption(KB.I("ExcludeDeleted"), KB.I("Exclude deleted records"), '+', false));
+				Optable.Add(OutputPackageFilename = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("Output"), KB.I("Filename to receive the packaged dataset export data"), true));
+				Optable.Add(EmbedSchema = new BooleanOption(KB.I("EmbeddedSchema"), KB.I("Indicates if the output XML file should contain an embedded schema"), '+', false));
+				Optable.Add(ExcludeDeleted = new BooleanOption(KB.I("ExcludeDeleted"), KB.I("Exclude deleted records"), '+', false));
 				EmbedSchema.Value = false;
-				MarkAsDefaults();
+				Optable.MarkAsDefaults();
 			}
 			public readonly StringValueOption OutputPackageFilename;
 			public readonly BooleanOption EmbedSchema;
@@ -43,8 +43,7 @@ namespace Thinkage.MainBoss.MBUtility
 			DataImportExportHelper.Setup();
 			Thinkage.MainBoss.Controls.DataImportExportPackage p = new Thinkage.MainBoss.Controls.DataImportExportPackage();
 			p.AddAllExports();
-			string oName;
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = Options.ConnectionDefinition(out string oName);
 			DataImportExportHelper.SetupDatabaseAccess(oName, connect);
 			// Get a connection to the database that we are exporting from
 			Thinkage.Libraries.DBAccess.XAFClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;

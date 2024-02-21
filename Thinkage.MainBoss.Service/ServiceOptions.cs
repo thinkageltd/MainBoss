@@ -70,8 +70,8 @@ namespace Thinkage.MainBoss.Service {
 			if (Environment.UserInteractive && MBVersion != null   )
 				throw new GeneralException(KB.K("{0} option can not be used in user interactive mode"), KB.I("/Version"));
 #endif
-			if (Force && !(CreateService || DeleteService ))
-				throw new GeneralException(KB.K("{0} can only be used with {1}"), KB.I("/Force"), KB.I("/CreateService | /DELeteService "));
+			if (Force && !(CreateService || DeleteService || ManuallyRun ))
+				throw new GeneralException(KB.K("{0} can only be used with {1}"), KB.I("/Force"), KB.I("/CreateService | /DELeteService | /ManuallyRun"));
 			var isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
 			if (!isAdmin && (DeleteService || CreateService || UpdateService))
 				throw new GeneralException(KB.K("{0} options all require the program to be run as an Administrator"), KB.I("/DELeteService /CreateService /UpdateService"));
@@ -256,18 +256,27 @@ namespace Thinkage.MainBoss.Service {
 		public BooleanOption DetailedHelp;
 		
 		public ServiceCommandOptable() {
+			// We don't do anything with saved organizations.
+			// The command line must include connect information (either DatabaseServer and DatabaseName or Connection) and can include authentication information
+			// (AUthentication+SQLUsername+SQLPassword or SecurityToken).
+			// The Connection and SecurityToken options are used in the service definition in the registry so there are not plaintext passwords there.
+			// I don't know if the Connection string can include authentication information, that depends on how the code handles all the option interactions.
+			// THis should really use MB3CLient.OptionSupport.DatabaseConnectionOptable but some of the option names are different (I don't think there is any
+			// problem changing them) and there is extra handling for Connection and SecurityToken.
+			Add(DatabaseServer		= new StringValueOption(KB.I("DataBaseServer"), KB.K("Name of the SQL Server that the database is on.").Translate(), false));
+			Add(DatabaseName		= new StringValueOption(KB.I("DataBaseName"), KB.K("Name of the Database.").Translate(), false));
+			Add(Authentication		= new StringValueOption(KB.I("Authentication"), KB.K("SQL Server authentication; default to 'Windows Authentication'.").Translate(), false));
+			Add(SQLUserid			= new StringValueOption(KB.I("SQLUsername"), KB.K("User name used to access the SQL Server; not used with 'Windows Authentication'.").Translate(), false));
+			Add(SQLPassword		    = new StringValueOption(KB.I("SQLPassword"), KB.K("Password for the SQL User Name; normally not used with 'Windows Authentication'.").Translate(), false));
+			Add(Connection			= new StringValueOption(KB.I("Connection"), KB.K("SQL Server Connection string.").Translate(), false));
+			// SecurityToken is the same as SQLPassword except the value is encoded the same way secure fields in the ServiceConfiguration record are encoded.
+			Add(SecurityToken		= new StringValueOption(KB.I("SecurityToken"), KB.K("Security Identification to the SQL Server. For internal use only.").Translate(), false));
+
 			Add(ServiceName			= new StringValueOption(KB.I(ServiceNameCommandArgument), KB.K("The service name identifier.").Translate(), false));
 			Add(MBVersion			= new StringValueOption(KB.I("Version"), KB.K("The version of MainBoss used to install the Windows Service for MainBoss.").Translate(), false));
 			Add(ServiceComputer		= new StringValueOption(KB.I("ServiceComputer"), KB.K("The computer where the Windows Service for MainBoss is installed.").Translate(), false));
-			Add(DatabaseName		= new StringValueOption(KB.I("DataBaseName"), KB.K("Name of the Database.").Translate(), false));
-			Add(DatabaseServer		= new StringValueOption(KB.I("DataBaseServer"), KB.K("Name of the SQL Server that the database is on.").Translate(), false));
 			Add(ServiceUserid		= new StringValueOption(KB.I("ServiceUsername"), KB.K("User name for the service to run as; normally not supplied, defaults to 'Network Service'.").Translate(), false));
 			Add(ServicePassword		= new StringValueOption(KB.I("ServicePassword"), KB.K("Password for the service User name; normally not supplied, not needed for 'Network Service'.").Translate(), false));
-			Add(SQLUserid			= new StringValueOption(KB.I("SQLUsername"), KB.K("User name used to access the SQL Server; not used with 'Windows Authentication'.").Translate(), false));
-			Add(SQLPassword		    = new StringValueOption(KB.I("SQLPassword"), KB.K("Password for the SQL User Name; normally not used with 'Windows Authentication'.").Translate(), false));
-			Add(SecurityToken		= new StringValueOption(KB.I("SecurityToken"), KB.K("Security Identification to the SQL Server. For internal use only.").Translate(), false));
-			Add(Authentication		= new StringValueOption(KB.I("Authentication"), KB.K("SQL Server authentication; not needed needed, default to 'Windows Authentication'.").Translate(), false));
-			Add(Connection			= new StringValueOption(KB.I("Connection"), KB.K("SQL Server Connection string.").Translate(), false));
 			Add(ManuallyRun			= new BooleanOption(KB.I("ManuallyRun"), KB.K("Manually run the MainBoss Service. May cause duplicate messages if Windows Service for MainBoss is running").Translate(), '+', false));
 			Add(TestConfiguration	= new BooleanOption(KB.I("TestConfiguration"), KB.K("Test the MainBoss Service configuration. May cause duplicate messages if Windows Service for MainBoss is running").Translate(), '+', false));
 			Add(DetailedHelp		= new BooleanOption(KB.I("DetailedHelp"), KB.K("Detailed Help on the options").Translate(), '+', false));

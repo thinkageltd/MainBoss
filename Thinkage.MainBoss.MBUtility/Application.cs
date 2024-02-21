@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 // A framework command for MB utility commands. Each command includes a class that implements UtilityVerbDefinition and an instance of
 // this class is passed to the Optable ctor in the MainApplication ctor. This means the verb Definitions are constucted after Application.Instance
 // is set so all the translation stuff works properly in the Definition derived ctors. Note that I am not sure of the timing of static initializations in the
@@ -17,21 +19,14 @@ namespace Thinkage.MainBoss.MBUtility {
 		}
 		void RunVerb();
 	}
-	public abstract class UtilityVerbWithDatabaseDefinition : Thinkage.Libraries.CommandLineParsing.Optable, UtilityVerbDefinition {
+	public abstract class UtilityVerbWithDatabaseDefinition : UtilityVerbDefinition {
 		public UtilityVerbWithDatabaseDefinition()
 			: base() {
-			Add(OrganizationName = MB3Client.OptionSupport.CreateOrganizationNameOption(false));
-			Add(DataBaseServer = MB3Client.OptionSupport.CreateServerNameOption(false));
-			Add(DataBaseName = MB3Client.OptionSupport.CreateDatabaseNameOption(false));
+			Optable = new MB3Client.OptionSupport.DatabaseConnectionOptable();
 		}
-		public readonly StringValueOption OrganizationName;
-		public readonly StringValueOption DataBaseName;
-		public readonly StringValueOption DataBaseServer;
-		public Optable Optable {
-			get {
-				return this;
-			}
-		}
+		public MB3Client.ConnectionDefinition ConnectionDefinition(out string oName) =>
+			((MB3Client.OptionSupport.DatabaseConnectionOptable)Optable).ResolveConnectionDefinition(out oName, out NamedOrganization _);
+		public Optable Optable {get; private set;}
 		public abstract string Verb { [return: Thinkage.Libraries.Translation.Invariant] get; }
 		public abstract void RunVerb();
 	}
@@ -84,12 +79,7 @@ namespace Thinkage.MainBoss.MBUtility {
 		private class Optable : Thinkage.Libraries.CommandLineParsing.Optable {
 			public Optable(params UtilityVerbDefinition[] subapps) {
 				Subapps = subapps;
-				object[] arg = new object[subapps.Length * 2];
-				for (int i = 0; i < subapps.Length; i++) {
-					arg[2 * i] = subapps[i].Verb;
-					arg[2 * i + 1] = subapps[i];
-				}
-				DefineVerbs(true, arg);
+				DefineVerbs(true, subapps.Select(svd => new KeyValuePair<string, Libraries.CommandLineParsing.Optable>(svd.Verb, svd.Optable)));
 			}
 			private readonly UtilityVerbDefinition[] Subapps;
 			public void RunVerb() {
@@ -119,7 +109,8 @@ namespace Thinkage.MainBoss.MBUtility {
 				new ImportAllVerb.Definition(),
 				new ImportCustomizationVerb.Definition(),
 				new ExportCustomizationVerb.Definition(),
-				new CreateMainBossBasicDatabaseVerb.Definition()
+				new CreateMainBossBasicDatabaseVerb.Definition(),
+				new EditServiceConfigurationVerb.Definition()
 //				new ImportPhysicalCountsVerb.Definition(),
 //				new PreparePhysicalCountsVerb.Definition()
 				//, new ScriptVerb.Definition()	Script verb removed for 3.1 release

@@ -115,7 +115,7 @@ namespace Thinkage.MainBoss.Controls {
 				try {
 					ipdo.Update(KB.K("Creating Requests from Email."), 1);
 					var log = new LogAndDatabaseAndError(DB.ConnectionInfo);
-					RequestProcessor.DoAllRequestProcessing(log, (MB3Client)DB, Trace, Trace, SendingEmailOk);
+					RequestProcessor.DoAllRequestProcessing(log, (MB3Client)DB, Trace, Trace, SendingEmailOk, force: false);
 					if (SendingEmailOk) {
 						ipdo.Update(KB.K("Notifying Requestors"), 2);
 						RequestorNotificationProcessor.DoAllRequestorNotifications(log, (MB3Client)DB, Trace, Trace);
@@ -213,7 +213,7 @@ namespace Thinkage.MainBoss.Controls {
 				KB.K("IMAP4S"),
 			},
 			new Key[] {
-				KB.K("Try all server types that spport the requested Encryption"),
+				KB.K("Try all server types that support the requested Encryption"),
 				KB.K("Post Office Protocol version 3"),
 				KB.K("Internet Message Access Protocol version 4 revision 1"),
 				KB.K("Post Office Protocol version 3 over SSL"),
@@ -893,58 +893,6 @@ namespace Thinkage.MainBoss.Controls {
 			);
 		}
 		#endregion
-		#region Helper Classes
-		private static Fmt.ICtorArg getPasswordCreatorAttribute() {
-			// This returns a password control using a special TypeEditTextHandler to encrypt/decrypt the password; the bound value is the encrypted password.
-			return Fmt.SetEditTextHandler((type) => new EncryptingEditTextHandler(type));
-		}
-		private class EncryptingEditTextHandler : TypeEditTextHandler {
-			public EncryptingEditTextHandler(TypeInfo tinfo) {
-				pTypeInfo = (BlobTypeInfo)tinfo;
-				// The byte lengths of the blob are 8*(1+floor(plaintextLen/4)).
-				// Thus plaintextLen = 4 * (bytelen/8 - 1) == 4*bytelen/8 - 4.
-				// The division by 8 should round up for the lower bounds, and down for the upper bounds.
-				int? minlen = 4 * (((int?)pTypeInfo.SizeType.NativeMinLimit(typeof(int?)) + 7) / 8) - 4;
-				if (minlen < 0)
-					minlen = 0;
-				int? maxlen = 4 * ((int?)pTypeInfo.SizeType.NativeMaxLimit(typeof(int?)) / 8) - 4;
-				innerHandler = new StringTypeInfo(minlen, maxlen, 0, pTypeInfo.AllowNull, true, true).GetTypeEditTextHandler(Thinkage.Libraries.Application.InstanceFormatCultureInfo);
-			}
-			private BlobTypeInfo pTypeInfo;
-			private TypeEditTextHandler innerHandler;
-
-			public string FormatForEdit(object val) {
-				if (val != null)
-					val = ServicePassword.Decode((Byte[])val);
-				return innerHandler.FormatForEdit(val);
-			}
-			public object ParseEditText(string str) {
-				object result = innerHandler.ParseEditText(str);
-				if (result != null)
-					result = ServicePassword.Encode((string)result);
-				return result;
-			}
-			public Thinkage.Libraries.TypeInfo.TypeInfo GetTypeInfo() {
-				return pTypeInfo;
-			}
-			public string Format(object val) {
-				if (val != null)
-					val = ServicePassword.Decode((Byte[])val);
-				return innerHandler.Format(val);
-			}
-			public System.Drawing.StringAlignment PreferredAlignment {
-				get {
-					return System.Drawing.StringAlignment.Near;
-				}
-			}
-			public SizingInformation SizingInformation {
-				get {
-					return innerHandler.SizingInformation;
-				}
-			}
-		}
-		public static string EmailViewer = null;
-		#endregion
 		#region MainBoss Service Configuration
 		private static Tbl MainBossServiceConfigurationBrowseTbl() {
 			return new CompositeTbl(dsMB.Schema.T.ServiceConfiguration, TId.MainBossServiceConfiguration,
@@ -993,12 +941,21 @@ namespace Thinkage.MainBoss.Controls {
 					new TblLayoutNodeArray()
 				);
 			});
-
+		private static StringTypeInfo PasswordPlaintextTypeInfo(TypeInfo tinfo) {
+			var sizeTinfo = ((BlobTypeInfo)tinfo).SizeType;
+			// The byte lengths of the blob are 8*(1+floor(plaintextLen/4)).
+			// Thus plaintextLen = 4 * (bytelen/8 - 1) == 4*bytelen/8 - 4.
+			// The division by 8 should round up for the lower bounds, and down for the upper bounds.
+			int? minlen = 4 * (((int?)sizeTinfo.NativeMinLimit(typeof(int?)) + 7) / 8) - 4;
+			if (minlen < 0)
+				minlen = 0;
+			int? maxlen = 4 * ((int?)sizeTinfo.NativeMaxLimit(typeof(int?)) / 8) - 4;
+			return new StringTypeInfo(minlen, maxlen, 0, tinfo.AllowNull, true, true);
+		}
 		private static Tbl MainBossServiceConfigurationEditTbl() {
 			// Here is where the length of theplaintext passwords is coded.
 			// The size of the blob fields must be calculated as 8*(1+floor(plaintextLen)/4) and coded into ServiceConfiguration.xafdb.
 			// For 256 characters that required 520 bytes of binary data.
-			var passwordType = new StringTypeInfo(1, 256, 0, allow_null: true, trim_leading: true, trim_trailing: true);
 			Libraries.DataFlow.TransformingNotifyingValue.SetTransform encryptor = (plaintext => plaintext == null ? null : ServicePassword.Encode((string)plaintext));
 			Libraries.DataFlow.TransformingNotifyingValue.GetTransform decryptor = (bytes => bytes == null ? bytes : ServicePassword.Decode((byte[])bytes));
 			return new Tbl(dsMB.Schema.T.ServiceConfiguration, TId.MainBossServiceConfiguration,
@@ -1044,12 +1001,12 @@ namespace Thinkage.MainBoss.Controls {
 					),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailAuthenticationType, DCol.Normal),
 					// Flip panel, page 1:
-					TblColumnNode.New(KB.K("Mail User's Password"), dsMB.Path.T.ServiceConfiguration.F.MailEncryptedPassword,
-						new ECol(getPasswordCreatorAttribute(), Fmt.SetId(MailEncryptedPasswordId))),
+					TblCustomTypedColumnNode.New(KB.K("Mail User's Password"), PasswordPlaintextTypeInfo(dsMB.Schema.T.ServiceConfiguration.F.MailEncryptedPassword.EffectiveType),
+						decryptor, encryptor, dsMB.Path.T.ServiceConfiguration.F.MailEncryptedPassword, 0, ECol.Normal, Fmt.SetId(MailEncryptedPasswordId)),
 					// Page 2: Client ID, Client Secret, Client Certificate Name
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailClientID, DCol.Normal, ECol.Normal, Fmt.SetId(MailClientIDId)),
-					TblColumnNode.New(KB.K("Mail Client Secret"), dsMB.Path.T.ServiceConfiguration.F.MailEncryptedClientSecret,
-						new ECol(getPasswordCreatorAttribute(), Fmt.SetId(MailEncryptedClientSecretId))),
+					TblCustomTypedColumnNode.New(KB.K("Mail Client Secret"), PasswordPlaintextTypeInfo(dsMB.Schema.T.ServiceConfiguration.F.MailEncryptedClientSecret.EffectiveType),
+						decryptor, encryptor, dsMB.Path.T.ServiceConfiguration.F.MailEncryptedClientSecret, 0, ECol.Normal, Fmt.SetId(MailEncryptedClientSecretId)),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailClientCertificateName, DCol.Normal, ECol.Normal, Fmt.SetId(MailClientCertificateNameId)),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.WakeUpInterval, DCol.Normal, ECol.Normal),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MaxMailSize, DCol.Normal, ECol.Normal),
@@ -1071,7 +1028,8 @@ namespace Thinkage.MainBoss.Controls {
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.SMTPCredentialType, DCol.Normal),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.SMTPUserDomain, DCol.Normal, new ECol(Fmt.SetId(OutgoingMailServerUserDomainId))),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.SMTPUserName, DCol.Normal, new ECol(Fmt.SetId(OutgoingMailServerUsernameId))),
-					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.SMTPEncryptedPassword, new ECol(getPasswordCreatorAttribute(), Fmt.SetId(OutgoingMailServerPasswordId)))
+					TblCustomTypedColumnNode.New(PasswordPlaintextTypeInfo(dsMB.Schema.T.ServiceConfiguration.F.SMTPEncryptedPassword.EffectiveType),
+						decryptor, encryptor, dsMB.Path.T.ServiceConfiguration.F.SMTPEncryptedPassword, 0, ECol.Normal, Fmt.SetId(OutgoingMailServerPasswordId))
 				),
 				TblTabNode.New(KB.TOc(TId.Message), KB.K("User custom text for email messages"), new TblLayoutNode.ICtorArg[] { new FeatureGroupArg(MainBossServiceAsWindowsServiceGroup), DCol.Normal, ECol.Normal },
 					TblColumnNode.NewBrowsette(TIGeneralMB3.UserMessageKeyPickerTblCreator, DCol.Normal, ECol.Normal, Fmt.SetBrowserFilter(BTbl.EqFilter(dsMB.Path.T.UserMessageKey.F.Context, KB.I("MainBossService"))))
@@ -1158,7 +1116,7 @@ namespace Thinkage.MainBoss.Controls {
 					).Operand1(IncomingMailAuthenticationTypeId)
 					.Operand2(MailClientIDId),
 				// Force exactly one of CLient Secret or Certificate Name if using OAuth2 (don't error-flag the auth type)
-				new Check3<int, byte[], string>(
+				new Check3<int, string, string>(
 					(authtype, secret, certname) => {
 						if (authtype != (int)DatabaseEnums.MailServerAuthentication.OAuth2 || (secret == null) != (certname == null))
 							return null;

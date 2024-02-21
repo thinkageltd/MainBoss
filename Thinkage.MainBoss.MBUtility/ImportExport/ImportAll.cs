@@ -14,10 +14,10 @@ namespace Thinkage.MainBoss.MBUtility
 			public Definition()
 				: base()
 			{
-				Add(InputPackageFilename = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("Input"), KB.I("File to read the packaged datasets from"), true));
-				Add(ErrorOutputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("ErrorOutput"), KB.I("File containing the errors encountered during import."), false));
+				Optable.Add(InputPackageFilename = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("Input"), KB.I("File to read the packaged datasets from"), true));
+				Optable.Add(ErrorOutputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("ErrorOutput"), KB.I("File containing the errors encountered during import."), false));
 
-				MarkAsDefaults();
+				Optable.MarkAsDefaults();
 			}
 			public readonly StringValueOption InputPackageFilename;
 			public readonly StringValueOption ErrorOutputFile;
@@ -43,8 +43,7 @@ namespace Thinkage.MainBoss.MBUtility
 		{
 			DataImportExportHelper.Setup();
 			Thinkage.MainBoss.Controls.DataImportExportPackage p = new Thinkage.MainBoss.Controls.DataImportExportPackage();
-			string oName;
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = Options.ConnectionDefinition(out string oName);
 			DataImportExportHelper.SetupDatabaseAccess(oName, connect);
 			// Get a connection to the database that we are exporting from
 			Thinkage.Libraries.DBAccess.XAFClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;

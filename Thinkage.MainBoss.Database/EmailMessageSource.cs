@@ -10,6 +10,7 @@ using Dart.Mail;
 using Thinkage.Libraries;
 using Thinkage.Libraries.Service;
 using Thinkage.Libraries.Translation;
+using Thinkage.MainBoss.Database.Service;
 
 namespace Thinkage.MainBoss.Database {
 	#region EMailMessageSource
@@ -233,14 +234,33 @@ namespace Thinkage.MainBoss.Database {
 			private readonly ServiceTypeIndices? ServiceTypeIndex;
 			public readonly int Port;
 			public readonly string User;
-			public readonly string AccessTokenOrPW;
-			public readonly bool UseOAuth2;
+			public readonly string PW;
+			public readonly OAuth2ManagerBase OAuth2Manager;
+			public readonly string ClientID;
+			public readonly string ClientSecret;
+			public readonly X509Certificate2 ClientCertificate;
 
+			public ConnectionInformation(string server, ServiceTypes serviceType, int port, string user, string pw) 
+				:this(server, serviceType, port, user) {
+				PW = pw;
+			}
+			public ConnectionInformation(string server, ServiceTypes serviceType, int port, string user, string clientID, string clientSecret)
+				: this(server, serviceType, port, user) {
+				ClientID = clientID;
+				ClientSecret = clientSecret;
+				OAuth2Manager = new OAuth2ManagerAzure(ClientID, User, ClientSecret);
+			}
+			public ConnectionInformation(string server, ServiceTypes serviceType, int port, string user, string clientID, X509Certificate2 clientCertificate)
+				: this(server, serviceType, port, user) {
+				ClientID = clientID;
+				ClientCertificate = clientCertificate;
+				OAuth2Manager = new OAuth2ManagerAzure(ClientID, User, ClientCertificate);
+			}
 			// TODO: Encapsulate the port==0 vs using int? for port when port is unspecified
 			// TODO: Encapsulate the emptry-string vs null-string duality. We should use null for don't know/unspecified as must as possible
 			// TODO: Have a property that provides exception context
 			// TODO: Roll the Protocol and useEncryption information into us as well, clean up the partial redundancy between Protocol and Port
-			public ConnectionInformation(string server, ServiceTypes serviceType, int port, string user, string accessTokenOrPW, bool useOAuth2) {
+			private ConnectionInformation(string server, ServiceTypes serviceType, int port, string user) {
 				Server = server;
 				// Check right away that the server DNS name can be resolved
 				try {
@@ -266,8 +286,11 @@ namespace Thinkage.MainBoss.Database {
 					Port = port;
 				}
 				User = user;
-				AccessTokenOrPW = accessTokenOrPW;
-				UseOAuth2 = useOAuth2;
+				PW = null;
+				OAuth2Manager = null;
+				ClientID = null;
+				ClientSecret = null;
+				ClientCertificate = null;
 			}
 			public ConnectionInformation(ConnectionInformation basis, ServiceTypes serviceType) {
 				Server = basis.Server;
@@ -289,9 +312,15 @@ namespace Thinkage.MainBoss.Database {
 					ServiceTypeIndex = null;
 				Port = basis.Port == 0 ? ServiceTypeToPort[(int)ServiceTypeIndex] : basis.Port;
 				User = basis.User;
-				AccessTokenOrPW = basis.AccessTokenOrPW;
-				UseOAuth2 = basis.UseOAuth2;
+				PW = basis.PW;
+				ClientID = basis.ClientID;
+				ClientSecret = basis.ClientSecret;
+				ClientCertificate = basis.ClientCertificate;
+				OAuth2Manager = basis.OAuth2Manager;
 			}
+
+			public bool UseOAuth2 => OAuth2Manager != null;
+			public string AccessTokenOrPW => UseOAuth2 ? OAuth2Manager.GetAccessToken() : PW;
 
 			public IPEndPoint IPEndPoint => new IPEndPoint(System.Net.Dns.GetHostAddresses(Server)[0], Port);
 
@@ -312,8 +341,10 @@ namespace Thinkage.MainBoss.Database {
 				// The tricky one is the port: If both ports are equal it is a match, but we can also have the default port for our protocol and other can be zero.
 				if (Server != pattern.Server
 					|| User != pattern.User
-					|| AccessTokenOrPW != pattern.AccessTokenOrPW
-					|| UseOAuth2 != pattern.UseOAuth2)
+					|| PW != pattern.PW
+					|| ClientID != pattern.ClientID
+					|| ClientSecret != pattern.ClientSecret
+					|| !object.Equals(ClientCertificate, pattern.ClientCertificate))
 					return false;
 				if ((ServiceType & ~pattern.ServiceType) != 0)
 					return false;
@@ -355,16 +386,12 @@ namespace Thinkage.MainBoss.Database {
 
 			TraceDetails = traceDetails;
 			Logger = logger;
-			// if the user want one type try that only
-			if (connectInfo.IsSpecific) {
-				tryOneMailSource(connectInfo, mailbox, requireCertificate, false, out bool _);
-				return;
-			}
-			// The user has not specified a connection type. If the current connection info matches the most recent
-			// succesful connection try that again.
+
+			// If the current connection info matches the most recent succesful connection try that again.
+			// This will allow cached OAuth2 Access Tokens to be reused.
 			if (LastConnectInfo.HasValue && LastConnectInfo.Value.Match(connectInfo))
 				try {
-					tryOneMailSource(LastConnectInfo.Value, mailbox, requireCertificate, false, out bool _);
+					tryOneMailSource(LastConnectInfo.Value, mailbox, requireCertificate, false, out ConnectionInformation.ServiceTypes _);
 					return;
 				}
 				catch (System.Exception) {
@@ -372,25 +399,31 @@ namespace Thinkage.MainBoss.Database {
 					// Note that this may not be true if it is a transient exception.
 				}
 
-			// Search from scratch through all server types
+			// Search from scratch through all server types (though there may only be one specified)
 			List<System.Exception> errors = new List<System.Exception>();
 
 			// try all the connection types in typesToTry.
 			// We only throw an exception if they all fail, otherwise we just log the successful one.
 			// If a site wants to diagnose why they are not getting a particular higher-priority protocol they can name it specifically and see what error occurs.
+			var typesToTry = (int)connectInfo.ServiceType;
+			var typesToSkip = (int)ConnectionInformation.ServiceTypes.None;
 			for (int index = (int)ConnectionInformation.ServiceTypeIndices.Count; --index >= 0;) {
-				if (((int)connectInfo.ServiceType & (1 << index)) == 0)
+				int thisType = 1 << index;
+				if ((typesToTry & thisType) == 0)
 					continue;
-				var specificConnectionInfo = new ConnectionInformation(connectInfo, (ConnectionInformation.ServiceTypes)(1 << index));
-				bool tryagain = true;
+				var specificConnectionInfo = new ConnectionInformation(connectInfo, (ConnectionInformation.ServiceTypes)thisType);
+				if ((typesToSkip & thisType) != 0) {
+					errors.Add(new GeneralException(KB.K("Protocol skipped because previous errors indicate it can not work either")).WithContext(specificConnectionInfo.ExceptionContext));
+					continue;
+				}
+				ConnectionInformation.ServiceTypes otherTypesToSkip = ConnectionInformation.ServiceTypes.None;
 				try {
-					tryOneMailSource(specificConnectionInfo, mailbox, requireCertificate, true, out tryagain);
+					tryOneMailSource(specificConnectionInfo, mailbox, requireCertificate, true, out otherTypesToSkip);
 					return;
 				}
 				catch (System.Exception ex) {
 					errors.Add(ex);
-					if (!tryagain)
-						break;
+					typesToSkip |= (int)otherTypesToSkip;
 					continue;
 				}
 			}
@@ -401,12 +434,12 @@ namespace Thinkage.MainBoss.Database {
 				err = err.WithContext(new Thinkage.Libraries.MessageExceptionContext(KB.T(Thinkage.Libraries.Exception.FullMessage(e))));
 			throw err;
 		}
-		private void tryOneMailSource(ConnectionInformation connectInfo, string mailbox, bool requireCertificate, bool traceSuccess, out bool tryAnotherProtocol) {
+		private void tryOneMailSource(ConnectionInformation connectInfo, string mailbox, bool requireCertificate, bool traceSuccess, out ConnectionInformation.ServiceTypes othersThatWontWork) {
 			// This always throws an exception on failure. For all expected exceptions we add the connect info context.
 			// Otherwise it sets Source and LastConnectInfo. The latter is static and is used on subsequent Email MessageSource ctor calls when a non-specific
 			// connectInfo is provided. It can also be used to get identification information for Source.
 			Source = null;
-			tryAnotherProtocol = false;
+			othersThatWontWork = ConnectionInformation.ServiceTypes.All;
 			try {
 				RemoteCertificateValidationCallback checker
 					= (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) => CheckCertificate(sender, certificate, chain, sslPolicyErrors, requireCertificate);
@@ -451,17 +484,28 @@ namespace Thinkage.MainBoss.Database {
 						Libraries.Exception.AddContext(te, TraceContext);
 				}
 				else {
-					tryAnotherProtocol = true;
+					othersThatWontWork = ConnectionInformation.ServiceTypes.None;
 					te = new GeneralException(e, KB.K("Cannot access Mail Server")).WithContext(connectInfo.ExceptionContext).WithContext(TraceContext);
 				}
 				throw te;
 			}
 			catch (System.Net.Sockets.SocketException e) {
+				// Just because we could not connect to this port does not mean we should not try other ports.
+				if ((connectInfo.ServiceType & ConnectionInformation.ServiceTypes.ExplicitlyEncrypted) != 0)
+					// We tried using TLS; a non-TLS of the same protocol will failt as well.
+					// TODO: Is sucks that we know to >> here, someonw (WHO??) should be able to map between plaintext, implicit-encrypt and explicit-encrypt values
+					othersThatWontWork = (ConnectionInformation.ServiceTypes)((int)connectInfo.ServiceType >> (int)ConnectionInformation.ServiceTypeIndices.ExplicitEncryptionOffset);
+				else if ((connectInfo.ServiceType & ConnectionInformation.ServiceTypes.ImplicitlyEncrypted) == 0)
+					// TODO: Is sucks that we know to << here, someonw (WHO??) should be able to map between plaintext, implicit-encrypt and explicit-encrypt values
+					// We tried using plaintext; a TLS of the same protocol will failt as well.
+					othersThatWontWork = (ConnectionInformation.ServiceTypes)((int)connectInfo.ServiceType << (int)ConnectionInformation.ServiceTypeIndices.ExplicitEncryptionOffset);
+				else
+					othersThatWontWork = ConnectionInformation.ServiceTypes.None;
 				Libraries.Exception ge = new GeneralException(e, KB.K("Cannot access Mail Server")).WithContext(connectInfo.ExceptionContext)
 					.WithContext(TraceContext);
 				if (TraceDetails)
 					Logger.LogTrace(true, Thinkage.Libraries.Exception.FullMessage(ge));
-				throw e;
+				throw ge;
 			}
 		}
 		#endregion

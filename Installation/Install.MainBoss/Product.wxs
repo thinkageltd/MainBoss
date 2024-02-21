@@ -22,7 +22,7 @@
 					Compressed="yes"
 					Description="!(loc.PACKAGEDESCRIPTION)"
 					Keywords="CMMS MainBoss"
-					Comments="(c) 2022 by $(var.COMPANY)"
+					Comments="(c) 2023 by $(var.COMPANY)"
 					InstallPrivileges="elevated"
 					Manufacturer="$(var.COMPANY)"
 					InstallScope="perMachine"/>

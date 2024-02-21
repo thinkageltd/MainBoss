@@ -2227,11 +2227,11 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
   <data name="Thinkage.MainBoss.Controls§History of work orders on selected units" xml:space="preserve">
     <value>Histoire des Ordres de Travail sur les unités sélectionnées</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Hourly Outside (with PO)" xml:space="preserve">
-    <value>En dehors horaire (avec BC)</value>
-  </data>
   <data name="Thinkage.MainBoss.Controls§Hourly Outside (no PO)" xml:space="preserve">
     <value>En dehors horaire</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Hourly Outside (with PO)" xml:space="preserve">
+    <value>En dehors horaire (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Hourly Purchase Line" xml:space="preserve">
     <value>Horaire Achat Ligne</value>
@@ -2391,6 +2391,9 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
   </data>
   <data name="Thinkage.MainBoss.Controls§Logging" xml:space="preserve">
     <value>Enregistrement</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Mail Client Secret" xml:space="preserve">
+    <value>Clé secrète du client de messagerie</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Mail Message Content" xml:space="preserve">
     <value>Contenu du message de courrier</value>
@@ -2620,6 +2623,15 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
   <data name="Thinkage.MainBoss.Controls§Number Sequence" xml:space="preserve">
     <value>Séquence numérique</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§OAuth2" xml:space="preserve">
+    <value>OAuth2</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§OAuth2 requires a Client ID" xml:space="preserve">
+    <value>OAuth2 nécessite un ID client</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§OAuth2 requires either a Client Secret or a Client Certificate Name, but not both" xml:space="preserve">
+    <value>OAuth2 nécessite soit un secret client, soit un nom de certificat client, mais pas les deux</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Obtain list of users and contacts from Active Directory" xml:space="preserve">
     <value>Obtenir une liste d'utilisateurs et de contacts à partir d'Active Directory</value>
   </data>
@@ -2803,6 +2815,9 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
   <data name="Thinkage.MainBoss.Controls§Open Attachment" xml:space="preserve">
     <value>Ouvrir le fichier joint</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Open Authentication 2.0" xml:space="preserve">
+    <value>Authentification ouverte 2.0</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Open the attachment using the system's default file association" xml:space="preserve">
     <value>Ouvrir le fichier joint en utilisant l'association de fichier par défaut du système</value>
   </data>
@@ -2857,11 +2872,11 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
   <data name="Thinkage.MainBoss.Controls§Pause the Windows Service for MainBoss. While the service is paused it will not do any processing" xml:space="preserve">
     <value>Mettre en pause le service Windows pour MainBoss. Alors que le service est suspendu, il ne fera pas de traitement</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Per Job Outside (with PO)" xml:space="preserve">
-    <value>Par emploi à l'extérieur (avec BC)</value>
-  </data>
   <data name="Thinkage.MainBoss.Controls§Per Job Outside (no PO)" xml:space="preserve">
     <value>Par emploi à l'extérieur</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Per Job Outside (with PO)" xml:space="preserve">
+    <value>Par emploi à l'extérieur (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Per Job Purchase Line" xml:space="preserve">
     <value>Par achat d'emploi Ligne</value>
@@ -2880,6 +2895,12 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
   </data>
   <data name="Thinkage.MainBoss.Controls§Physical Count" xml:space="preserve">
     <value>Dénombrement</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Plain" xml:space="preserve">
+    <value>Plaine</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Plain authentication using a password" xml:space="preserve">
+    <value>Authentification simple à l'aide d'un mot de passe</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§plus {0} more" xml:space="preserve">
     <value>plus {0} plus</value>
@@ -3090,6 +3111,9 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
   </data>
   <data name="Thinkage.MainBoss.Controls§Readonly because the Outgoing SMTP server authentication is not using the specified SMTP domain, username and password" xml:space="preserve">
     <value>Readonly parce que l'authentification sortant du serveur SMTP ne est pas en utilisant le domaine SMTP spécifié, le nom d'utilisateur et mot de passe</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Readonly because the selected Authentication Type does not use this value" xml:space="preserve">
+    <value>Lecture seule car le type d'authentification sélectionné n'utilise pas cette valeur</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Readonly because this state history record was generated by MainBoss" xml:space="preserve">
     <value>Aléatoire, car MainBoss a produit l'entrée de l'historique de la situation</value>
@@ -3348,6 +3372,9 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
   </data>
   <data name="Thinkage.MainBoss.Controls§Select from database users" xml:space="preserve">
     <value>Sélectionnez parmi les utilisateurs de la base de données</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Selected Server Type requires encryption" xml:space="preserve">
+    <value>Le type de serveur sélectionné nécessite un chiffrement</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Self Assign" xml:space="preserve">
     <value>Auto Assign</value>
@@ -3788,8 +3815,8 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
   <data name="Thinkage.MainBoss.Controls§Trace Notify Requestor" xml:space="preserve">
     <value>Trace prévenir demandeur</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Try in order POP3 with TLS, IMAP4 with TLS, POP3S, IMAP4S, POP3 and IMAP4" xml:space="preserve">
-    <value>Essayez d'installer POP3 avec TLS, IMAP4 avec TLS, POP3S, IMAP4S, POP3 et IMAP4</value>
+  <data name="Thinkage.MainBoss.Controls§Try all server types that support the requested Encryption" xml:space="preserve">
+    <value>Essayez tous les types de serveurs qui prennent en charge le chiffrement demandé</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Tuesday" xml:space="preserve">
     <value>Mardi</value>

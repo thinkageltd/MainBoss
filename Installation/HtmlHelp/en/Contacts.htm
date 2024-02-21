@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="copyright" content="2020 Thinkage Ltd." />
+<meta name="copyright" content="2023 Thinkage Ltd." />
 <link rel="stylesheet" type="text/css" href="mbmanual.css" />
 <title>MainBoss 4.2 Operating Reference Manual: Contacts</title>
 </head>
@@ -22,8 +22,7 @@
 
 <p>When you create a contact record, MainBoss can check Active Directory to see if the person is in your network's Active Directory. If so, MainBoss can obtain information from the Active Directory record and fill that information into the contact record. This helps you avoid typing in the information directly. It may also help you obtain more complete, more up-to-date information about the person.</p>
 
-<p>To create a contact record using Active Directory information, click <span class="CButton">Create from Active Directory</span> in <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Contacts</span>. For more information, see <a href="Browse.Contact.htm">Viewing Contacts</a>. You can also use <span class="CButton">Initialize all from Active Directory</span> in the contact record editor; for more information, see <a href="Edit.Contact.htm">Editing Contacts</a>.
-You can also use <span class="CButton">Update all from Active Directory</span> if you provide the email address of the user in the "<span class="CField">Email</span>" field to find the matching Active Directory user who has that email address.</p>
+<p>To create a contact record using Active Directory information, click <span class="CButton">Create from Active Directory</span> in <span class="CPanel">Coding Definitions</span> | <span class="CPanel">Contacts</span>. For more information, see <a href="Browse.Contact.htm">Viewing Contacts</a>. You can also use <span class="CButton">Initialize all from Active Directory</span> in the contact record editor; for more information, see <a href="Edit.Contact.htm">Editing Contacts</a>.</p>
 
 <p>When you create a contact record with information from Active Directory, the record's "<span class="CField">AD Reference</span>" field is filled in with an identification code from Active Directory. This code is unique; if, for example, you have two John Smiths in your organization, each will have a different ID code (technically called a GUID).</p>
 
@@ -37,6 +36,14 @@ You can also use <span class="CButton">Update all from Active Directory</span> i
 
 <p class="box"><span class="CInset">Note:</span> Active Directory runs on Windows systems. However, there are network services on other systems (e.g. Linux) which claim to be compatible with Active Directory. If they truly are compatible, then MainBoss should work with those services too.</p>
 <p></p>
+<p>Sometimes you may find that you have duplicate contact records, possibly created in error or by someone else. MainBoss provides an extra "<span class="CField">Merge to</span>" field and a <span class="CButton">Merge into Contact</span> button to correct this situation. You can use these to take a selected group of contacts and merge their values into a single Contact; MainBoss will then delete (not hide) those selected group of contacts permanently.</p>
+
+<p>Begin by setting "<span class="CField">Merge to</span>" to the contact record where the selected contacts information will be merged. Then select the contacts; typically, you would hold down the <span class="CKey">&lt;Ctrl&gt;</span> key, then click on each contact that you want to merge and delete. Finally, click the <span class="CButton">Merge into Contact</span> button; this will display a warning screen about the limitations of merging and ask you to confirm the operation.</p>
+
+<p><img src="image042.png" alt="MainBoss" /></p>
+<p></p>
+<p>Select "Yes" to continue with the merge.</p>
+
 <p>For information on viewing contacts, see <a href="Browse.Contact.htm">Viewing Contacts</a>. For information on creating and editing contacts, see <a href="Edit.Contact.htm">Editing Contacts</a>. For information on printing contact information, see <a href="Report.Contact.htm">Printing Contacts</a>.</p>
 
 

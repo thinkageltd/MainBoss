@@ -97,9 +97,6 @@
       <HintPath>.\Dart.Mail.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Identity.Client, Version=4.32.1.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Identity.Client.4.32.1\lib\net461\Microsoft.Identity.Client.dll</HintPath>
-    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -854,7 +851,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderCategory.xafdb" />
     <EmbeddedResource Include="Schema\Requests\RequestExtras.xafdb" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Schema\Inventory\ItemCountValueVoid.xafdb">
@@ -991,7 +987,14 @@
   <ItemGroup>
     <Content Include="Dart.Mail.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Identity.Client">
+      <Version>4.49.1</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.IdentityModel.Abstractions">
+      <Version>6.25.1</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>powershell -noprofile $(SolutionDir)GenerateProjectSolutionSettings.ps1 $(ProjectDir) "c#" $(ProjectName)</PreBuildEvent>

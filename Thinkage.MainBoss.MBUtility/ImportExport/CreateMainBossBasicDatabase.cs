@@ -18,10 +18,10 @@ namespace Thinkage.MainBoss.MBUtility
 			public Definition()
 				: base()
 			{
-				Add(BasicXMLInputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("Input"), KB.I("File containing the MainBoss Basic exported data"), true));
-				Add(ErrorOutputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("ErrorOutput"), KB.I("File containing the errors encountered during import."), false));
+				Optable.Add(BasicXMLInputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("Input"), KB.I("File containing the MainBoss Basic exported data"), true));
+				Optable.Add(ErrorOutputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("ErrorOutput"), KB.I("File containing the errors encountered during import."), false));
 
-				MarkAsDefaults();
+				Optable.MarkAsDefaults();
 			}
 			public readonly StringValueOption BasicXMLInputFile;
 			public readonly StringValueOption ErrorOutputFile;
@@ -47,8 +47,7 @@ namespace Thinkage.MainBoss.MBUtility
 		{
 			string separator = Strings.IFormat("*****************************************************************{0}", Environment.NewLine);
 			string xmlInput = Options.BasicXMLInputFile.Value;
-			string oName;
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = Options.ConnectionDefinition(out string _);
 
 			System.Exception processingException = null;
 			System.Text.StringBuilder HistoryLogText = new System.Text.StringBuilder();

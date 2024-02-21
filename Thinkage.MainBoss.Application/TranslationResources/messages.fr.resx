@@ -144,6 +144,9 @@
   <data name="Thinkage.MainBoss.Application§Cancel customization" xml:space="preserve">
     <value>Annuler personnalisation</value>
   </data>
+  <data name="Thinkage.MainBoss.Application§Cannot use '{0}' with '/Mode:PickOrganization'" xml:space="preserve">
+    <value>Impossible d'utiliser '{0}' avec '/Mode:PickOrganization'</value>
+  </data>
   <data name="Thinkage.MainBoss.Application§Change Active Filter" xml:space="preserve">
     <value>Changez Filtre Actif</value>
   </data>

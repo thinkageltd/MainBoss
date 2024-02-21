@@ -647,6 +647,7 @@ namespace Thinkage.MainBoss.Service {
 		}
 		#endregion
 		#region Service Commands
+		public readonly bool Force;
 		Task ServiceEnvironment = null;
 		ServiceOptions ServiceOptions;
 		MainBossServiceApplication MainBossServiceApplication;
@@ -748,8 +749,9 @@ namespace Thinkage.MainBoss.Service {
 		#endregion
 		#region Constructor
 
-		public MainBossService(Thinkage.Libraries.Service.Application appObject)
+		public MainBossService(Thinkage.Libraries.Service.Application appObject, bool force)
 			: base(appObject) {
+			Force = force;
 			AutoLog = false; // We do not want automatic logging from ServiceProcess.ServiceBase (nor can the ServiceBase write to a service with a custom log)
 		}
 		#endregion

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="copyright" content="2020 Thinkage Ltd." />
+<meta name="copyright" content="2023 Thinkage Ltd." />
 <link rel="stylesheet" type="text/css" href="mbmanual.css" />
 <title>MainBoss 4.2 Operating Reference Manual: Configuring MainBoss Service</title>
 </head>
@@ -94,9 +94,10 @@
 <p class="wi2"><span class="CButton">Process Requestor Incoming Email</span>: If this box is checkmarked, MainBoss Service will operate normally. If the box is blanked out, MainBoss Service will not process incoming requests. In general, this box should be checkmarked; however, if you're changing your configuration, you may wish to turn off request processing until you've completed reconfiguration. You may also want to blank out the box if you want MainBoss to stop receiving email requests.</p>
 <p class="wi2"><span class="CField">Mail Server Type</span>: Choose one of the options listed. If you choose <span class="CButton">Automatically Determine</span>, MainBoss will test each possibility in the following order: POP3 with encryption, IMAP4 with encryption, POP3S, IMAP4S, plain POP3 (no encryption), and plain IMAP4 (no encryption). In doing these tests, MainBoss only looks at the default port for each server type; if your mail server uses a different port than the default, you must mark a specific server type (e.g. IMAP4S) and specify the port number in "<span class="CField">Override Default Port</span>".</p>
 <p class="wi2"><span class="CField">Encryption</span>: Choose one of the options listed:</p>
-<p class="wi3"><span class="CButton">Require a Valid Certificate</span>: MainBoss will only deal with your mail server if it has a valid security certificate. This automatically implies that encryption will be used. You'll receive an error message if the server has an invalid certificate.</p>
+<p class="wi3"><span class="CButton">Require Encryption with a Valid Certificate</span>: MainBoss will only deal with your mail server if it has a valid security certificate. This automatically implies that encryption will be used. You'll receive an error message if the server has an invalid certificate.</p>
 <p class="wi3"><span class="CButton">Require Encryption</span>: MailBoss will only deal with your mail server using one of the encrypted techniques. You'll receive an error message if none of the techniques work. Note that this option requires that your mail server has a security certificate, but it accepts self-signed certificates; it also accepts certificates that are not technically valid.</p>
 <p class="wi3"><span class="CButton">When Available</span>: If you select this option, MainBoss still tries to use encryption when dealing with your mail server. However, if the server doesn't accept encryption, MainBoss will not issue an error message; it will simply communicate with the mail server using unencrypted data.</p>
+<p class="wi3"><span class="CButton">No Encryption</span>: No encryption will be enabled (not recommended).</p>
 <p class="wi2"><span class="CField">Mail Server</span>: The name of the computer that receives your incoming mail. For example, if you're running Microsoft Exchange, this is usually the name of your Exchange server. This machine must allow mail access through POP3 or IMAP4.</p>
 <p class="wi2"><span class="CField">Override Default Port</span>: Should only be filled in if your mail server uses a non-standard port. MainBoss considers the following to be the standard ports:</p>
 <ul class="b2"><li>For POP3 and TLS within POP3: 110</li>
@@ -109,7 +110,13 @@
 <p class="wi2"><span class="CField">Mail User Name</span>: The name of the email account to which requests will be sent. For example, if users send mail to <span class="CU">workreqs@yourcompany.com</span>, the <span class="CField">Mail User Name</span> would usually be <span class="CU">workreqs</span>.
 
 <br /><br /><span class="CInset">Important Note:</span> Different sites will have different mail packages handling POP3 and IMAP4 processing. Some packages issue an authentication error if "<span class="CField">Mail User Name</span>" includes the <span class="CU">@sitename</span> part of an email address&#8212;you must only give the user name, e.g <span class="CU">workreqs</span>. Other packages <span class="Emphasis">require</span> the <span class="CU">@sitename</span> part&#8212;you must specify the whole email address, e.g. <span class="CU">workreqs@yourcompany.com</span>. If you are getting authentication errors with a given user name, try changing the name to the other format to see if this corrects the problem.</p>
-<p class="wi2"><span class="CField">Mail Password</span>: The password (if any) for the specified <span class="CField">Mail User Name</span>. As a protection measure, MainBoss encrypts this password before storing it in MainBoss's database; therefore, when you type in the password, you'll only see "<span class="CU">*</span>" characters, the same as with most Windows passwords.</p>
+<p class="wi2"><span class="CField">Mail Authentication Type</span>: Choose one of the options listed:</p>
+<p class="wi3"><span class="CButton">Plain</span>: Straightforward use of the Mail Password to authenticate the Mail User Name</p>
+<p class="wi3"><span class="CButton">OAuth2</span>: Use OAuth 2.0 authentication for IMAP or POP connections with Microsoft Azure Active Directory</p>
+<p class="wi2"><span class="CField">Mail Password</span>: The password (if any) for the specified <span class="CField">Mail User Name</span>. As a protection measure, MainBoss encrypts this password before storing it in MainBoss's database; therefore, when you type in the password, you'll only see "<span class="CU">*</span>" characters, the same as with most Windows passwords. This is only used for the <span class="CButton">Plain </span><span class="CField">Mail Authentication Type</p>
+<p class="wi2"></span>M<span class="CField">ail Client ID: </span>The Application (client) ID as registered with the Microsoft identity platform in the Azure portal.</p>
+<p class="wi2"><span class="CField">Mail Client Secret:</span> The creditional used for OAuth authentication as defined in the application registration in the Azure portal. Sometimes referred to as an application password.</p>
+<p class="wi2"><span class="CField">Mail Client Certificate Name:</span> The identity used for a certificate file that has been uploaded as the creditional for the registered application. This is typically the base64Thumbprint associated with the certificate.</p>
 <p class="wi2"><span class="CField">Mailbox Name</span>: The name of the mailbox, if you're using any version of IMAP4. The default is <span class="CU">inbox</span>.
 
 <br /><br />Although the IMAP4 standard calls this the mailbox, most people would likely call this value a folder name. In general, the only time a value should be entered here is if incoming request emails somehow end up stored in a different folder from the default. (This can happen if you're using server-side rules to sort incoming mail into folders.)

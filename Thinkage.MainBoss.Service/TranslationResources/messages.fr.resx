@@ -396,8 +396,8 @@
   <data name="Thinkage.MainBoss.Service§SQL Server Administrative option to grant access to the MainBoss database by the Service User Name" xml:space="preserve">
     <value>L'option d'administration à accorder l'accès à la base de données MainBoss par le Service Nom d'utilisateur SQL Server</value>
   </data>
-  <data name="Thinkage.MainBoss.Service§SQL Server authentication; not needed needed, default to 'Windows Authentication'." xml:space="preserve">
-    <value>Authentification SQL Server; pas nécessaire, par défaut "Authentification Windows".</value>
+  <data name="Thinkage.MainBoss.Service§SQL Server authentication; default to 'Windows Authentication'." xml:space="preserve">
+    <value>Authentification SQL Server ; par défaut sur 'Authentification Windows'.</value>
   </data>
   <data name="Thinkage.MainBoss.Service§SQL Server Connection string." xml:space="preserve">
     <value>SQL Server Connection string.</value>

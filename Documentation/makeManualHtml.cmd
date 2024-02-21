@@ -1,14 +1,24 @@
 @echo on
-set WINWORD=%ProgramFiles(x86)%\Microsoft Office\root\Office16\WINWORD.EXE
+set WINWORD=%ProgramFiles%\Microsoft Office\root\Office16\WINWORD.EXE
 rd /s /q html\0000
 md html
 md html\0000
 copy manual\Resources\*.* html\0000
 copy manual\online42.docx print0000man.docx
-"%WINWORD%" /mConvertMBDocToHTMLCoverClose print0000man.docx
-"%WINWORD%" /mConvertMBDocToHTMLCoverClose2 html0000man.docx
-"%WINWORD%" /mBreakUpHTMLFile30Cover html0000man.docx
-"%WINWORD%" /mSaveWebPictures print0000man.docx
+rem make copy of macros in same directory as our working files so word might actually find it if on different drive letters.
+copy manual\online42.dotm online42.dotm
+echo Converting To HTML 1
+"%WINWORD%" /q /mConvertMBDocToHTMLCoverClose print0000man.docx
+echo Exit Code %errorlevel%
+echo Converting to HTML 2
+"%WINWORD%" /q /mConvertMBDocToHTMLCoverClose2 html0000man.docx
+echo Exit Code %errorlevel%
+echo Breakup HTML
+"%WINWORD%" /q /mBreakUpHTMLFile30Cover html0000man.docx
+echo Exit Code %errorlevel%
+echo Save Web Pictures
+"%WINWORD%" /q /mSaveWebPictures print0000man.docx
+echo Exit Code %errorlevel%
 copy print0000man_files\*.png html\0000
 del print0000man.htm
 rd /s /q print0000man_files

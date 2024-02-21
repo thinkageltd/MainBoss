@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Thinkage.MainBoss.MBUtility§/ClientID and /ClientSecret options must be used together" xml:space="preserve">
+    <value>/ClientID and /ClientSecret options must be used together</value>
+  </data>
   <data name="Thinkage.MainBoss.MBUtility§Access failed: {0}" xml:space="preserve">
     <value>Access failed: {0}</value>
   </data>
@@ -275,6 +278,12 @@
   </data>
   <data name="Thinkage.MainBoss.MBUtility§Specify the /ErrorOutput: option to record all error details" xml:space="preserve">
     <value>Specify the /ErrorOutput: option to record all error details</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify the Client ID (App Id of the App Registration in Azure AD)" xml:space="preserve">
+    <value>Specify the Client ID (App Id of the App Registration in Azure AD)</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify the Client Secret (password) required to authenticate with the Azure Application" xml:space="preserve">
+    <value>Specify the Client Secret (password) required to authenticate with the Azure Application</value>
   </data>
   <data name="Thinkage.MainBoss.MBUtility§Specify the name of the file containing the customizations to be imported" xml:space="preserve">
     <value>Specify the name of the file containing the customizations to be imported</value>

@@ -35,16 +35,16 @@ namespace Thinkage.MainBoss.MBUtility {
 		public class Definition : UtilityVerbWithDatabaseDefinition {
 			public Definition()
 				: base() {
-				Add(EmailAddresses = new StringValueOption("EmailAddresses", KB.K("The email addresses used to find the Active Directory entry for the contacts to be updated").Translate(), false));
-				Add(EmailAddressPattern = new StringValueOption("EmailAddressesPattern", KB.K("All contacts with Active Directory References whose primary email address matches this pattern will have their contacts updated from Active Directory").Translate(), false));
-				Add(ExcludeEmailAddressPattern = new StringValueOption("ExcludedEmailAddressesPattern", KB.K("Any contact whose primary email address matches this pattern will be excluded from being updated from Active Directory").Translate(), false));
-				Add(ExcludeEmailAddress = new StringValueOption("ExcludeEmailAddresses", KB.K("All contacts with Active Directory References excluding these email addresses will have their contacts updated from Active Directory").Translate(), false));
-				Add(FromEmailAddresses = new BooleanOption("FromEmailAddresses", KB.K("Use the primary email address in the contact as well as the Active Directory Reference to find the Active Directory entry").Translate()));
-				Add(DeleteContacts = new BooleanOption("DeleteContacts", KB.K("Contacts that do not have a valid Active Directory Reference are deleted").Translate()));
-				Add(RemoveLDAPReference = new BooleanOption("RemoveActiveDirectoryReference", KB.K("Clear the Active Directory Reference for any Contact that does not have a valid Active Directory Reference").Translate()));
-				Add(PreservePrimaryEmail = new BooleanOption("PreservePrimaryEmailAddress", KB.K("Preserve the Contact's primary email address if it exists; otherwise the Active Directory Mail address will be added to the Contacts Alternate email address").Translate()));
-				Add(Verbose = new BooleanOption("Verbose", KB.K("Provide additional information about changes that have occurred").Translate()));
-				Add(UpdateAll = new BooleanOption("UpdateAll", KB.K("Update all the contacts that have Active Directory References").Translate()));
+				Optable.Add(EmailAddresses = new StringValueOption("EmailAddresses", KB.K("The email addresses used to find the Active Directory entry for the contacts to be updated").Translate(), false));
+				Optable.Add(EmailAddressPattern = new StringValueOption("EmailAddressesPattern", KB.K("All contacts with Active Directory References whose primary email address matches this pattern will have their contacts updated from Active Directory").Translate(), false));
+				Optable.Add(ExcludeEmailAddressPattern = new StringValueOption("ExcludedEmailAddressesPattern", KB.K("Any contact whose primary email address matches this pattern will be excluded from being updated from Active Directory").Translate(), false));
+				Optable.Add(ExcludeEmailAddress = new StringValueOption("ExcludeEmailAddresses", KB.K("All contacts with Active Directory References excluding these email addresses will have their contacts updated from Active Directory").Translate(), false));
+				Optable.Add(FromEmailAddresses = new BooleanOption("FromEmailAddresses", KB.K("Use the primary email address in the contact as well as the Active Directory Reference to find the Active Directory entry").Translate()));
+				Optable.Add(DeleteContacts = new BooleanOption("DeleteContacts", KB.K("Contacts that do not have a valid Active Directory Reference are deleted").Translate()));
+				Optable.Add(RemoveLDAPReference = new BooleanOption("RemoveActiveDirectoryReference", KB.K("Clear the Active Directory Reference for any Contact that does not have a valid Active Directory Reference").Translate()));
+				Optable.Add(PreservePrimaryEmail = new BooleanOption("PreservePrimaryEmailAddress", KB.K("Preserve the Contact's primary email address if it exists; otherwise the Active Directory Mail address will be added to the Contacts Alternate email address").Translate()));
+				Optable.Add(Verbose = new BooleanOption("Verbose", KB.K("Provide additional information about changes that have occurred").Translate()));
+				Optable.Add(UpdateAll = new BooleanOption("UpdateAll", KB.K("Update all the contacts that have Active Directory References").Translate()));
 			}
 			public StringValueOption EmailAddresses;
 			public StringValueOption EmailAddressPattern;
@@ -72,7 +72,6 @@ namespace Thinkage.MainBoss.MBUtility {
 		private readonly Definition Options;
 
 		private void Run() {
-			string oName;
 			LDAPEntry.CheckActiveDirectory(KB.I("UpdateContactsfromactivedirectory"));
 			var EmailAddressPattern = Options.EmailAddressPattern.HasValue ? Options.EmailAddressPattern.Value : null;
 			var ExcludeEmailAddressPattern = Options.ExcludeEmailAddressPattern.HasValue ? Options.ExcludeEmailAddressPattern.Value : null;
@@ -109,7 +108,7 @@ namespace Thinkage.MainBoss.MBUtility {
 					throw new GeneralException(KB.K("The {0} could not be parsed"), KB.I("ExcludeEmailAddressPattern"));
 				}
 			System.Version minDBVersionForRolesTable = new System.Version(1, 0, 4, 38); // The roles table appeared in its current form at this version
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = Options.ConnectionDefinition(out string oName);
 			// Get a connection to the database that we are referencing
 			new ApplicationTblDefaultsNoEditing(Thinkage.Libraries.Application.Instance, new MainBossPermissionsManager(Root.Rights), Root.Rights.Table, Root.RightsSchema, Root.Rights.Action.Customize);
 			var dbapp = new ApplicationWithSingleDatabaseConnection(Thinkage.Libraries.Application.Instance);

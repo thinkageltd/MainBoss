@@ -70,6 +70,9 @@ get-childitem -recurse "." -include '*.exe' | foreach-object {
 get-childitem -recurse "." -include '*.dll' | foreach-object {
 	ThinkageCodeSign $_.FullName
 }
+get-childitem -recurse "." -include '*.ps1' | foreach-object {
+	ThinkageCodeSign $_.FullName
+}
 # copy the TeamViewer support executable NOW that we have signed all our stuff
 "Copying Teamviewer from $TEAMVIEWER to BuildDir" | out-host
 copy $TEAMVIEWER $TEAMVIEWER_FILE

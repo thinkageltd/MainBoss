@@ -29,7 +29,7 @@ namespace Thinkage.MainBoss.MBUtility {
 		public class Definition : UtilityVerbWithDatabaseDefinition {
 			public Definition()
 				: base() {
-				Add(EmailAddresses = new StringValueOption("Emailaddresses", KB.K("The email addresses used to find the Active Directory entry for the users").Translate(), false));
+				Optable.Add(EmailAddresses = new StringValueOption("Emailaddresses", KB.K("The email addresses used to find the Active Directory entry for the users").Translate(), false));
 			}
 			public StringValueOption EmailAddresses;
 			public override string Verb {
@@ -49,9 +49,8 @@ namespace Thinkage.MainBoss.MBUtility {
 
 		private void Run() {
 			LDAPEntry.CheckActiveDirectory(KB.I("AddContactfromactivedirectory"));
-			string oName;
 			System.Version minDBVersionForRolesTable = new System.Version(1, 0, 4, 38); // The roles table appeared in its current form at this version
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = Options.ConnectionDefinition(out string oName);
 			// Get a connection to the database that we are referencing
 			new ApplicationTblDefaultsNoEditing(Thinkage.Libraries.Application.Instance, new MainBossPermissionsManager(Root.Rights), Root.Rights.Table, Root.RightsSchema, Root.Rights.Action.Customize);
 			var dbapp = new ApplicationWithSingleDatabaseConnection(Thinkage.Libraries.Application.Instance);

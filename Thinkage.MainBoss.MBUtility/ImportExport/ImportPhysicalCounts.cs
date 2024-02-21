@@ -10,9 +10,9 @@ namespace Thinkage.MainBoss.MBUtility {
 		public class Definition : UtilityVerbWithDatabaseDefinition {
 			public Definition()
 				: base() {
-				Add(InputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("Input"), KB.I("File containing the import data"), true));
-				Add(ErrorOutputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("ErrorOutput"), KB.I("File containing the errors encountered during import."), false));
-				Add(AdjustmentCode = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("AdjustmentCode"), KB.I("The Adjustment Code to use for the physical count"), true));
+				Optable.Add(InputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("Input"), KB.I("File containing the import data"), true));
+				Optable.Add(ErrorOutputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("ErrorOutput"), KB.I("File containing the errors encountered during import."), false));
+				Optable.Add(AdjustmentCode = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("AdjustmentCode"), KB.I("The Adjustment Code to use for the physical count"), true));
 			}
 			public readonly StringValueOption InputFile;
 			public readonly StringValueOption ErrorOutputFile;
@@ -36,8 +36,7 @@ namespace Thinkage.MainBoss.MBUtility {
 			DataImportExportHelper.Setup();
 			try {
 				// Get a connection to the database that we are importing to
-				string oName;
-				MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+				MB3Client.ConnectionDefinition connect = Options.ConnectionDefinition(out string oName);
 				DataImportExportHelper.SetupDatabaseAccess(oName, connect);
 				Thinkage.Libraries.DBAccess.XAFClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
 				DataSet errors;

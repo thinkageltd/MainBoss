@@ -19,10 +19,11 @@ if (-not (test-path "$signtool")) {
 #signtoolvsix is built from github open source project separately and included as executable files in our Installation directory; see https://github.com/vcsjones/OpenOpcSignTool.git
 $signtoolvsix = join-path -path ".." -childpath (join-path -path 'OpenVsixSignTool' -childpath 'OpenVsixSignTool.exe')
 #following is the thumbprint of the current Thinkage Code Sign certificate (only way to provide identity to vsix signer)
-$signingCertificateThumbPrint = "2d94c4a70185fa788cf24b2b8389d41892878468" # old value "0072e09a760bfac04e5cd4f5a26abc34a1c0072b"
+$signingCertificateThumbPrint = "d8a8ceeb4adb1f044ec9378041ef0d7e4b12c70b" # Current signing requires the actual USB Sectigo key in the machine and this certificate is valid 1/21/2023 to 1/21/2026 and is expected to be in the CurrentUser Cert repository
 #$timestamperURL = "http://tsa.starfieldtech.com"
 $timestamperURL = "http://sha256timestamp.ws.symantec.com/sha256/timestamp"
-
+#get the certificate for Set-AuthenticodeSignature usage
+$CurrentCodeSignCertificate = (Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert) | Where-Object {$_.Thumbprint -eq "$signingCertificateThumbPrint"}
 
 # Sign one or more files specified on the command-line. This will retry the sign operation up to 10 times.
 # TODO: The purpose of retrying is to cover the case where a transient problem causes the timestamp fetch to fail, and this is really the only
@@ -46,8 +47,11 @@ function ThinkageCodeSign([parameter(Mandatory=$true, position=0)][string[]] $fi
 			if( $fileToSign.EndsWith("vsix")) {
 				$signErrors = (&$signtoolvsix sign $fileToSign --sha1 $signingCertificateThumbPrint --file-digest "sha256" --timestamp $timestamperURL 2>&1)
 			}
+			elseIf($fileToSign.EndsWith("ps1")) {
+				Set-AuthenticodeSignature -FilePath $fileToSign -Certificate $CurrentCodeSignCertificate
+			}
 			else{
-				$signErrors = (&$signtool sign /debug /sm /fd SHA256 /td SHA256 /tr $timestamperURL /n "Thinkage Ltd." /i "Go Daddy Secure Certificate Authority - G2"  $fileToSign 2>&1)
+				$signErrors = (&$signtool sign /debug /sm /fd SHA256 /td SHA256 /tr $timestamperURL /n "Thinkage LTD" /i "Sectigo Public Code Signing CA EV R36"  $fileToSign 2>&1)
 			}
 		} while ($LastExitCode -ne 0 -and $retriesLeft -gt 0)
 		if ($LastExitCode -ne 0) {

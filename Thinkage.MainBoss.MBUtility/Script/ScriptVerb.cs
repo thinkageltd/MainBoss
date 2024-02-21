@@ -25,7 +25,7 @@ namespace Thinkage.MainBoss.MBUtility {
 		public class Definition : UtilityVerbWithDatabaseDefinition {
 			public Definition()
 				: base() {
-				Add(ScriptName = new StringValueOption("Script", KB.K("Specify the name of the script file to be run").Translate(), true));
+				Optable.Add(ScriptName = new StringValueOption("Script", KB.K("Specify the name of the script file to be run").Translate(), true));
 			}
 			public readonly StringValueOption ScriptName;
 			public override string Verb {
@@ -140,8 +140,7 @@ namespace Thinkage.MainBoss.MBUtility {
 #endif
 
 			// Handle LicenseKey options from the command line based on what the script says.
-			string oName;
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = Options.ConnectionDefinition(out string _);
 		}
 		private XmlReaderSettings GetSchemaValidatingXmlReaderSettings() {
 			XmlSchemaSet schemaCollection = new XmlSchemaSet();

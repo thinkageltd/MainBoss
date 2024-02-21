@@ -74,6 +74,7 @@
     <Compile Include="Customization\ExportCustomization.cs" />
     <Compile Include="Customization\ImportCustomization.cs" />
     <Compile Include="DeleteOrganization\DeleteOrganizationVerb.cs" />
+    <Compile Include="EditServiceConfiguration\EditServiceConfiguration.cs" />
     <Compile Include="ImportExport\ApplicationImportExport.cs" />
     <Compile Include="ImportExport\CreateMainBossBasicDatabase.cs" />
     <Compile Include="ImportExport\ExportAll.cs" />
