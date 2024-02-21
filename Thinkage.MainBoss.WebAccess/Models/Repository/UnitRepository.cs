@@ -29,7 +29,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		/// <returns></returns>
 		public List<KeyValuePair<Guid, string>> Autocomplete(string term, string pattern) {
 			System.Text.RegularExpressions.Regex searchTerm = null;
-			if (pattern != null) {
+			if (!String.IsNullOrEmpty(pattern)) {
 				try {
 					searchTerm = new System.Text.RegularExpressions.Regex(pattern);
 				}
@@ -41,7 +41,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 
 			try {
 				var termMatches = (from unit in DataContext.Unit
-								   where unit.BaseRelativeLocation.Hidden == null && unit.BaseRelativeLocation.BaseLocation.Code.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0
+								   where unit.BaseRelativeLocation.Hidden == null && unit.BaseRelativeLocation.BaseLocation.Code.ToLower().Contains(term.ToLower())
 								   select new KeyValuePair<Guid, string>(unit.BaseRelativeLocation.LocationID, unit.BaseRelativeLocation.BaseLocation.Code)).ToList();
 
 				if (searchTerm == null)
