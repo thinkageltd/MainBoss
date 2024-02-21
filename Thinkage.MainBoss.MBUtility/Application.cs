@@ -38,7 +38,12 @@ namespace Thinkage.MainBoss.MBUtility {
 		// ->Applications.MB3.MainBoss.MainBossApplication
 		// The one we are most likely to have to steal from is MB3.WinControls.Application
 		static int Main(string[] args) {
-			StopConsoleFromDisappearing = Environment.UserInteractive && (System.Console.CursorLeft == 0 && System.Console.CursorTop == 0);
+			try	{  //if running under powershell ISE System.Console.CursorLeft faults, but it will not disappear any since it is inside of Powershell ISE
+				StopConsoleFromDisappearing = Environment.UserInteractive && (System.Console.CursorLeft == 0 && System.Console.CursorTop == 0);
+			}
+			catch (SystemException ) {
+				StopConsoleFromDisappearing = false;
+            }
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((o, a) => {
 				System.Exception e = (System.Exception)a.ExceptionObject;
 				GeneralException eg = e as GeneralException;
@@ -68,12 +73,15 @@ namespace Thinkage.MainBoss.MBUtility {
 		}
 		public static bool StopConsoleFromDisappearing = true;
 		static public void Exit(int status) {
-			if (System.Environment.UserInteractive && StopConsoleFromDisappearing) {
-				while (System.Console.KeyAvailable)
+			try	{
+				if (System.Environment.UserInteractive && StopConsoleFromDisappearing) {
+					while (System.Console.KeyAvailable)
+						System.Console.ReadKey(true);
+					System.Console.WriteLine(Strings.Format(KB.K("Press any key to end program")));
 					System.Console.ReadKey(true);
-				System.Console.WriteLine(Strings.Format(KB.K("Press any key to end program")));
-				System.Console.ReadKey(true);
+				}
 			}
+			catch( SystemException ) {  }
 			System.Environment.Exit(status);
 		}
 		private class Optable : Thinkage.Libraries.CommandLineParsing.Optable {
@@ -116,8 +124,7 @@ namespace Thinkage.MainBoss.MBUtility {
 				//, new ScriptVerb.Definition()	Script verb removed for 3.1 release
 				//, new GenerateWebApi.Definition()
 				);
-			try
-			{
+			try {
 				Ops.Parse(args);
 				Ops.CheckRequired();
 			}
