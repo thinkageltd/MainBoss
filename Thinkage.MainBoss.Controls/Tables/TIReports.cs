@@ -1094,15 +1094,19 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		#endregion
 		#region AccountingTransaction Columns
-		static ColumnBuilder AccountingTransactionColumns(dsMB.PathClass.PathToAccountingTransactionLink AccountingTransaction, FieldSelect effect = null, TblLayoutNode QuantityToShow = null) {
-			return ColumnBuilder.New(AccountingTransaction.PathToReferencedRow
-					, DateHHMMColumnNode(AccountingTransaction.F.EntryDate, effect.ShowIfOneOf(ShowAll))
-					, DateHHMMColumnNode(AccountingTransaction.F.EffectiveDate, effect.ShowIfOneOf(ShowXID, ShowAll))
-					, QuantityToShow
-					, TblColumnNode.New(AccountingTransaction.F.Cost, FooterAggregateCol.Sum(), FieldSelect.ShowAlways) // The only reason to be here is Cost so ALWAYS show
-					, CostCenterColumns(AccountingTransaction.F.FromCostCenterID)
-					, CostCenterColumns(AccountingTransaction.F.ToCostCenterID)
-					, TblColumnNode.New(AccountingTransaction.F.AccountingSystemTransactionID, effect.ShowIfOneOf(ShowAll))
+		static ColumnBuilder AccountingTransactionColumns(dsMB.PathClass.PathToAccountingTransactionLink accountingTransaction, FieldSelect effect = null, TblLayoutNode quantityToShow = null, TblLayoutNode costToShow = null) {
+			return AccountingTransactionColumns(accountingTransaction.PathToReferencedRow, effect, quantityToShow, costToShow);
+		}
+		static ColumnBuilder AccountingTransactionColumns(dsMB.PathClass.PathToAccountingTransactionRow accountingTransaction, FieldSelect effect = null, TblLayoutNode quantityToShow = null, TblLayoutNode costToShow = null) {
+			return ColumnBuilder.New(accountingTransaction
+					, DateHHMMColumnNode(accountingTransaction.F.EntryDate, effect.ShowIfOneOf(ShowAll))
+					, DateHHMMColumnNode(accountingTransaction.F.EffectiveDate, effect.ShowIfOneOf(ShowXID, ShowAll))
+					, quantityToShow
+					, costToShow ?? TblColumnNode.New(accountingTransaction.F.Cost, FooterAggregateCol.Sum(), FieldSelect.ShowAlways) // The only reason to be here is Cost so ALWAYS show
+					, CostCenterColumns(accountingTransaction.F.FromCostCenterID)
+					, CostCenterColumns(accountingTransaction.F.ToCostCenterID)
+					, TblColumnNode.New(accountingTransaction.F.Id.L.AccountingTransactionVariants.AccountingTransactionID.F.IsCorrection)
+					, TblColumnNode.New(accountingTransaction.F.AccountingSystemTransactionID, effect.ShowIfOneOf(ShowAll))
 			);
 		}
 
@@ -2977,7 +2981,7 @@ namespace Thinkage.MainBoss.Controls {
 								TblColumnNode.New(dsMB.Path.T.ScheduledWorkOrderReport.F.ScheduledWorkOrderID.F.ScheduleID.F.Code)
 							},
 							sortingValues: new TblQueryValue[] {
-								new TblQueryExpression(TIReports.WOTemplateReportResourceCategoryClassifier(dsMB.Path.T.ScheduledWorkOrderReport.F.DemandTemplateID.F).RecordTypeExpression),
+								new TblQueryExpression(TIReports.WOTemplateReportResourceDemandCategoryClassifier(dsMB.Path.T.ScheduledWorkOrderReport.F.DemandTemplateID.F).RecordTypeExpression),
 								resourceCodeQueryValue,
 								new TblQueryPath(dsMB.Path.T.ScheduledWorkOrderReport.F.DemandTemplateID.F.DemandItemTemplateID.F.ItemLocationID.F.LocationID.F.Code),
 								new TblQueryPath(dsMB.Path.T.ScheduledWorkOrderReport.F.DemandTemplateID.F.DemandItemTemplateID.F.ItemLocationID.F.LocationID),
@@ -3252,7 +3256,7 @@ namespace Thinkage.MainBoss.Controls {
 
 		// In the following, the derived DemandXxxID is sufficient for classifying the record, but does not really give a good label
 		// (the labels are all of the form "Demand Xxxx Yyyy"), so we extend the path to the actual resource being demanded.
-		public static RecordTypeClassifierByLinkages WOReportResourceCategoryClassifier(dsMB.PathClass.PathToDemandRow.FAccessor D) {
+		public static RecordTypeClassifierByLinkages WOReportResourceDemandCategoryClassifier(dsMB.PathClass.PathToDemandRow.FAccessor D) {
 			return new RecordTypeClassifierByLinkages(true,
 					D.DemandItemID.F.ItemLocationID.F.ItemID,
 					// We order by Inside/Outside before Labor/OtherWork because that is the way the records are divided in the WO resource browsettes.
@@ -3265,7 +3269,7 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		// In the following, the derived DemandXxxID is sufficient for classifying the record, but does not really give a good label
 		// (the labels are all of the form "Demand Xxxx Yyyy"), so we extend the path to the actual resource being demanded.
-		public static RecordTypeClassifierByLinkages WOTemplateReportResourceCategoryClassifier(dsMB.PathClass.PathToDemandTemplateRow.FAccessor D) {
+		public static RecordTypeClassifierByLinkages WOTemplateReportResourceDemandCategoryClassifier(dsMB.PathClass.PathToDemandTemplateRow.FAccessor D) {
 			return new RecordTypeClassifierByLinkages(true,
 					D.DemandItemTemplateID.F.ItemLocationID.F.ItemID,
 					// We order by Inside/Outside before Labor/OtherWork because that is the way the records are divided in the WO resource browsettes.
@@ -3274,6 +3278,21 @@ namespace Thinkage.MainBoss.Controls {
 					D.DemandLaborOutsideTemplateID.F.LaborOutsideID,
 					D.DemandOtherWorkOutsideTemplateID.F.OtherWorkOutsideID,
 					D.DemandMiscellaneousWorkOrderCostTemplateID.F.MiscellaneousWorkOrderCostID
+				);
+		}
+		// In the following, the derived ActualXxxID is sufficient for classifying the record, but does not really give a good label
+		// (the labels are all of the form "Actual Xxxx Yyyy"), so we extend the path to the actual resource being demanded.
+		public static RecordTypeClassifierByLinkages WOReportResourceActualCategoryClassifier(dsMB.PathClass.PathToAccountingTransactionRow.FAccessor TX) {
+			return new RecordTypeClassifierByLinkages(true,
+					TX.ActualItemID.F.DemandItemID.F.ItemLocationID.F.ItemID,
+					// We order by Inside/Outside before Labor/OtherWork because that is the way the records are divided in the WO resource browsettes.
+					TX.ActualLaborInsideID.F.DemandLaborInsideID.F.LaborInsideID,
+					TX.ActualOtherWorkInsideID.F.DemandOtherWorkInsideID.F.OtherWorkInsideID,
+					TX.ActualLaborOutsidePOID.F.POLineLaborID.F.DemandLaborOutsideID.F.LaborOutsideID,
+					TX.ActualLaborOutsideNonPOID.F.DemandLaborOutsideID.F.LaborOutsideID,
+					TX.ActualOtherWorkOutsidePOID.F.POLineOtherWorkID.F.DemandOtherWorkOutsideID.F.OtherWorkOutsideID,
+					TX.ActualOtherWorkOutsideNonPOID.F.DemandOtherWorkOutsideID.F.OtherWorkOutsideID,
+					TX.ActualMiscellaneousWorkOrderCostID.F.DemandMiscellaneousWorkOrderCostID.F.MiscellaneousWorkOrderCostID
 				);
 		}
 		public static EnumValueTextRepresentations WOTemplateRecordTypeNames =
@@ -3412,10 +3431,6 @@ namespace Thinkage.MainBoss.Controls {
 					new SqlExpression(WOFR.F.DemandID.F.DemandOtherWorkOutsideID.F.OtherWorkOutsideID.F.Desc),
 					new SqlExpression(WOFR.F.DemandID.F.DemandMiscellaneousWorkOrderCostID.F.MiscellaneousWorkOrderCostID.F.Desc)
 				));
-			var UoMNode = TIReports.UoMNodeForMixedQuantities(
-					new SqlExpression(WOFR.F.DemandID.F.DemandItemID),
-					SqlExpression.Coalesce(new SqlExpression(WOFR.F.DemandID.F.DemandLaborInsideID), new SqlExpression(WOFR.F.DemandID.F.DemandLaborOutsideID)),
-					WOFR.F.DemandID.F.DemandItemID.F.ItemLocationID.F.ItemID.F.UnitOfMeasureID.F.Code);
 			#endregion
 			#region Values for the "non-detail" rows
 			var demandTime = SqlExpression.Coalesce(
@@ -3558,7 +3573,7 @@ namespace Thinkage.MainBoss.Controls {
 					sortingValues: new TblQueryValue[] {
 			// Sort the child records amongst themselves.
 			// Because these are only for sorting, no label is necessary.
-						new TblQueryExpression(TIReports.WOReportResourceCategoryClassifier(WOFR.F.DemandID.F).RecordTypeExpression),
+						new TblQueryExpression(TIReports.WOReportResourceDemandCategoryClassifier(WOFR.F.DemandID.F).RecordTypeExpression),
 						resourceCodeQueryValue,
 						new TblQueryPath(WOFR.F.DemandID.F.DemandItemID.F.ItemLocationID.F.LocationID.F.Code),
 						new TblQueryPath(WOFR.F.DemandID.F.DemandItemID.F.ItemLocationID.F.LocationID),
@@ -3747,7 +3762,7 @@ namespace Thinkage.MainBoss.Controls {
 			TypeFormatter actualCountFormatter = actualCount.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
 			StringTypeInfo formattedActualQuantityType = new StringTypeInfo(Math.Min((int)actualTimeFormatter.SizingInformation.MinWidth, (int)actualCountFormatter.SizingInformation.MinWidth),
 																	Math.Max((int)actualTimeFormatter.SizingInformation.MaxWidth, (int)actualCountFormatter.SizingInformation.MaxWidth), 0, true, true, true);
-			RecordTypeClassifierByLinkages classifier = WOReportResourceCategoryClassifier(dsMB.Path.T.Demand.F);
+			RecordTypeClassifierByLinkages classifier = WOReportResourceDemandCategoryClassifier(dsMB.Path.T.Demand.F);
 			return new Tbl(dsMB.Schema.T.Demand,
 				TId.WorkOrderResourceDemand,
 				new Tbl.IAttr[] {
@@ -3780,12 +3795,11 @@ namespace Thinkage.MainBoss.Controls {
 																				new SqlExpression(dsMB.Path.T.Demand.F.DemandOtherWorkOutsideID.F.OtherWorkOutsideID.F.Hidden),
 																				new SqlExpression(dsMB.Path.T.Demand.F.DemandMiscellaneousWorkOrderCostID.F.MiscellaneousWorkOrderCostID.F.Hidden)
 																			), DefaultShowInDetailsCol.Show()),
+					CodeDescColumnBuilder.New(dsMB.Path.T.Demand.F.DemandItemID.F.ItemLocationID.F.ItemID.F.UnitOfMeasureID),
 					WorkOrderColumns(dsMB.Path.T.Demand.F.WorkOrderID, ShowXID),
-					TblColumnNode.New(dsMB.Path.T.Demand.F.WorkOrderExpenseCategoryID.F.Code, DefaultShowInDetailsCol.Show(), AccountingFeatureArg),
-					TblColumnNode.New(dsMB.Path.T.Demand.F.WorkOrderExpenseCategoryID.F.Desc, AccountingFeatureArg),
-					TblColumnNode.New(dsMB.Path.T.Demand.F.WorkOrderExpenseCategoryID.F.Comment, AccountingFeatureArg),
+					WorkOrderExpenseCategoryColumns(dsMB.Path.T.Demand.F.WorkOrderExpenseCategoryID, ShowXID),
 					// show the unified Demand quantity
-					TblQueryValueNode.New(KB.K("Demanded"), new TblQueryCalculation(
+					TblQueryValueNode.New(KB.K("Demanded Quantity"), new TblQueryCalculation(
 																							(values => values[0] != null ? estimatedTimeFormatter.Format(values[0]) : values[1] != null ? estimatedCountFormatter.Format(values[1]) : null),
 																							formattedEstimatedQuantityType,
 																							new TblQueryExpression(estimatedTime),
@@ -3794,10 +3808,10 @@ namespace Thinkage.MainBoss.Controls {
 																						DefaultShowInDetailsCol.Show(),
 																						Fmt.SetHorizontalAlignment(System.Drawing.StringAlignment.Far)
 													),
-					TblServerExprNode.New(KB.K("Estimated Time"), estimatedTime, DefaultShowInDetailsCol.Hide(), FooterAggregateCol.Sum()),
-					TblServerExprNode.New(KB.K("Estimated Count"), estimatedCount, DefaultShowInDetailsCol.Hide()),   // Sum makes no sense for non homogenous items
+					TblServerExprNode.New(KB.K("Demanded Time"), estimatedTime, DefaultShowInDetailsCol.Hide(), FooterAggregateCol.Sum()),
+					TblServerExprNode.New(KB.K("Demanded Count"), estimatedCount, DefaultShowInDetailsCol.Hide()),   // Sum makes no sense for non homogenous items
 					TblColumnNode.New(dsMB.Path.T.Demand.F.CostEstimate, FooterAggregateCol.Sum()),
-					TblQueryValueNode.New(KB.K("Actual"), new TblQueryCalculation(
+					TblQueryValueNode.New(KB.K("Actual Quantity"), new TblQueryCalculation(
 																							(values => values[0] != null ? actualTimeFormatter.Format(values[0]) : values[1] != null ? actualCountFormatter.Format(values[1]) : null),
 																							formattedActualQuantityType,
 																							new TblQueryExpression(actualTime),
@@ -3808,7 +3822,7 @@ namespace Thinkage.MainBoss.Controls {
 													),
 					TblServerExprNode.New(KB.K("Actual Time"), actualTime, DefaultShowInDetailsCol.Hide(), FooterAggregateCol.Sum()),
 					TblServerExprNode.New(KB.K("Actual Count"), actualCount, DefaultShowInDetailsCol.Hide()),     // Sum makes no sense for non homogenous items
-					TblColumnNode.New(dsMB.Path.T.Demand.F.ActualCost, FooterAggregateCol.Sum())
+					TblColumnNode.New(KB.K("Actual Cost"), dsMB.Path.T.Demand.F.ActualCost, FooterAggregateCol.Sum())
 				).LayoutArray()
 			);
 		});
@@ -3958,6 +3972,111 @@ namespace Thinkage.MainBoss.Controls {
 		#endregion
 		#endregion
 		#region -   WO Resource Actuals
+		#region -     WO Generic resources
+		public static DelayedCreateTbl WOResourceActual = new DelayedCreateTbl(delegate () {
+			SqlExpression estimatedTime = SqlExpression.Coalesce(
+														new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualLaborInsideID.F.DemandLaborInsideID.F.Quantity),
+														new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualLaborOutsidePOID.F.POLineLaborID.F.DemandLaborOutsideID.F.Quantity),
+														new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualLaborOutsideNonPOID.F.DemandLaborOutsideID.F.Quantity)
+													);
+			TypeFormatter estimatedTimeFormatter = estimatedTime.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
+			SqlExpression estimatedCount = SqlExpression.Coalesce(
+														new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualItemID.F.DemandItemID.F.Quantity),
+														new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualOtherWorkInsideID.F.DemandOtherWorkInsideID.F.Quantity),
+														new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualOtherWorkOutsidePOID.F.POLineOtherWorkID.F.DemandOtherWorkOutsideID.F.Quantity),
+														new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualOtherWorkOutsideNonPOID.F.DemandOtherWorkOutsideID.F.Quantity)
+													);
+			TypeFormatter estimatedCountFormatter = estimatedCount.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
+			StringTypeInfo formattedEstimatedQuantityType = new StringTypeInfo(Math.Min((int)estimatedTimeFormatter.SizingInformation.MinWidth, (int)estimatedCountFormatter.SizingInformation.MinWidth),
+																	Math.Max((int)estimatedTimeFormatter.SizingInformation.MaxWidth, (int)estimatedCountFormatter.SizingInformation.MaxWidth), 0, true, true, true);
+			SqlExpression actualTime = SqlExpression.Coalesce(
+														new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualLaborInsideID.F.Quantity),
+														new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualLaborOutsidePOID.F.Quantity),
+														new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualLaborOutsideNonPOID.F.Quantity)
+													);
+			TypeFormatter actualTimeFormatter = actualTime.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
+			SqlExpression actualCount = SqlExpression.Coalesce(
+														new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualItemID.F.Quantity),
+														new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualOtherWorkInsideID.F.Quantity),
+														new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualOtherWorkOutsidePOID.F.Quantity),
+														new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualOtherWorkOutsideNonPOID.F.Quantity)
+													);
+			TypeFormatter actualCountFormatter = actualCount.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
+			StringTypeInfo formattedActualQuantityType = new StringTypeInfo(Math.Min((int)actualTimeFormatter.SizingInformation.MinWidth, (int)actualCountFormatter.SizingInformation.MinWidth),
+																	Math.Max((int)actualTimeFormatter.SizingInformation.MaxWidth, (int)actualCountFormatter.SizingInformation.MaxWidth), 0, true, true, true);
+			RecordTypeClassifierByLinkages classifier = WOReportResourceActualCategoryClassifier(dsMB.Path.T.AccountingTransaction.F);
+			return new Tbl(dsMB.Schema.T.AccountingTransaction,
+				TId.WorkOrderResourceActual,
+				new Tbl.IAttr[] {
+					ItemResourcesGroup,
+					new MinimumDBVersionTbl(new Version(1, 1, 5, 5)),
+					CommonTblAttrs.ViewCostsDefinedBySchema,
+					TblDrivenReportRtbl(
+						RTblBase.SetAllowSummaryFormat(true),
+						RTblBase.SetDualLayoutDefault(true),
+						RTblBase.SetPreferWidePage(true),
+						RTblBase.SetNoSearchPrefixing()
+					)
+				},
+				ColumnBuilder.New(dsMB.Path.T.Demand,
+					// TODO: The enum text provider should make the column non-sortable.
+					// TODO: The enum text provider must be used for group labels (in group headers, footers, and doc map)
+					TblServerExprNode.New(KB.K("Resource Type"), classifier.RecordTypeExpression, Fmt.SetEnumText(classifier.EnumValueProvider), DefaultShowInDetailsCol.Show()),
+					TblServerExprNode.New(KB.K("Resource Code"), SqlExpression.Coalesce(
+																				new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualItemID.F.DemandItemID.F.ItemLocationID.F.Code),
+																				new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualLaborInsideID.F.DemandLaborInsideID.F.LaborInsideID.F.Code),
+																				new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualLaborOutsidePOID.F.POLineLaborID.F.DemandLaborOutsideID.F.LaborOutsideID.F.Code),
+																				new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualLaborOutsideNonPOID.F.DemandLaborOutsideID.F.LaborOutsideID.F.Code),
+																				new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualOtherWorkInsideID.F.DemandOtherWorkInsideID.F.OtherWorkInsideID.F.Code),
+																				new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualOtherWorkOutsidePOID.F.POLineOtherWorkID.F.DemandOtherWorkOutsideID.F.OtherWorkOutsideID.F.Code),
+																				new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualOtherWorkOutsideNonPOID.F.DemandOtherWorkOutsideID.F.OtherWorkOutsideID.F.Code),
+																				new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualMiscellaneousWorkOrderCostID.F.DemandMiscellaneousWorkOrderCostID.F.MiscellaneousWorkOrderCostID.F.Code)
+																			),
+																		 SqlExpression.Coalesce(
+																				new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualItemID.F.DemandItemID.F.ItemLocationID.F.Hidden),
+																				new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualLaborInsideID.F.DemandLaborInsideID.F.LaborInsideID.F.Hidden),
+																				new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualLaborOutsidePOID.F.POLineLaborID.F.DemandLaborOutsideID.F.LaborOutsideID.F.Hidden),
+																				new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualLaborOutsideNonPOID.F.DemandLaborOutsideID.F.LaborOutsideID.F.Hidden),
+																				new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualOtherWorkInsideID.F.DemandOtherWorkInsideID.F.OtherWorkInsideID.F.Hidden),
+																				new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualOtherWorkOutsidePOID.F.POLineOtherWorkID.F.DemandOtherWorkOutsideID.F.OtherWorkOutsideID.F.Hidden),
+																				new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualOtherWorkOutsideNonPOID.F.DemandOtherWorkOutsideID.F.OtherWorkOutsideID.F.Hidden),
+																				new SqlExpression(dsMB.Path.T.AccountingTransaction.F.ActualMiscellaneousWorkOrderCostID.F.DemandMiscellaneousWorkOrderCostID.F.MiscellaneousWorkOrderCostID.F.Hidden)
+																			), DefaultShowInDetailsCol.Show()),
+					CodeDescColumnBuilder.New(dsMB.Path.T.AccountingTransaction.F.ActualItemID.F.DemandItemID.F.ItemLocationID.F.ItemID.F.UnitOfMeasureID),
+					WorkOrderColumns(dsMB.Path.T.AccountingTransaction.F.Id.L.AccountingTransactionVariants.AccountingTransactionID.F.DemandID.F.WorkOrderID, ShowXID),
+					AccountingTransactionColumns(dsMB.Path.T.AccountingTransaction, ShowXID,
+						TblQueryValueNode.New(KB.K("Actual Quantity"),
+							new TblQueryCalculation(
+									(values => values[0] != null ? actualTimeFormatter.Format(values[0]) : values[1] != null ? actualCountFormatter.Format(values[1]) : null),
+									formattedActualQuantityType,
+									new TblQueryExpression(actualTime),
+									new TblQueryExpression(actualCount)
+								),
+								DefaultShowInDetailsCol.Show(),
+								Fmt.SetHorizontalAlignment(System.Drawing.StringAlignment.Far)
+							),
+						TblColumnNode.New(KB.K("Actual Cost"), dsMB.Path.T.AccountingTransaction.F.Cost, FooterAggregateCol.Sum())
+					),
+					WorkOrderExpenseCategoryColumns(dsMB.Path.T.AccountingTransaction.F.Id.L.AccountingTransactionVariants.AccountingTransactionID.F.DemandID.F.WorkOrderExpenseCategoryID, ShowXID),
+					// show the unified Demand quantity
+					TblQueryValueNode.New(KB.K("Demanded Quantity"), new TblQueryCalculation(
+																							(values => values[0] != null ? estimatedTimeFormatter.Format(values[0]) : values[1] != null ? estimatedCountFormatter.Format(values[1]) : null),
+																							formattedEstimatedQuantityType,
+																							new TblQueryExpression(estimatedTime),
+																							new TblQueryExpression(estimatedCount)
+																						),
+																						DefaultShowInDetailsCol.Show(),
+																						Fmt.SetHorizontalAlignment(System.Drawing.StringAlignment.Far)
+													),
+					TblServerExprNode.New(KB.K("Demanded Time"), estimatedTime, DefaultShowInDetailsCol.Hide()),	// Sum makes no sense because the same record can be repeated for multiple actuals.
+					TblServerExprNode.New(KB.K("Demanded Count"), estimatedCount, DefaultShowInDetailsCol.Hide()),   // Sum makes no sense for non homogenous items
+					TblColumnNode.New(dsMB.Path.T.AccountingTransaction.F.Id.L.AccountingTransactionVariants.AccountingTransactionID.F.DemandID.F.CostEstimate, FooterAggregateCol.Sum()),
+					TblServerExprNode.New(KB.K("Actual Time"), actualTime, DefaultShowInDetailsCol.Hide(), FooterAggregateCol.Sum()),
+					TblServerExprNode.New(KB.K("Actual Count"), actualCount, DefaultShowInDetailsCol.Hide())     // Sum makes no sense for non homogenous items
+				).LayoutArray()
+			);
+		});
+		#endregion
 		#region -     WO Items
 		public static Tbl WOActualItem = new Tbl(dsMB.Schema.T.ActualItem,
 			TId.WorkOrderItemActual,
@@ -4147,7 +4266,7 @@ namespace Thinkage.MainBoss.Controls {
 			var WOFR = dsMB.Path.T.WorkOrderFormReport.F;
 			var WO = WOFR.WorkOrderID;
 			var WOR = WOFR.WorkOrderID.L.WorkOrderExtras.WorkOrderID;
-			RecordTypeClassifierByLinkages classifier = WOReportResourceCategoryClassifier(WOFR.DemandID.F);
+			RecordTypeClassifierByLinkages classifier = WOReportResourceDemandCategoryClassifier(WOFR.DemandID.F);
 			List<Tbl.IAttr> iAttr = new List<Tbl.IAttr> {
 				governingFeatureGroup,
 				CommonTblAttrs.ViewCostsDefinedBySchema,
@@ -4202,7 +4321,7 @@ namespace Thinkage.MainBoss.Controls {
 		public static Tbl WOChartCosts = WOResourceCostChartBase(TId.WOChartCosts, TIGeneralMB3.AnyResourcesGroup, false, new SqlExpression(dsMB.Path.T.WorkOrderFormReport.F.DemandID).IsNotNull(),
 			null,
 			rights: new Right[] { Root.Rights.ViewCost.WorkOrderInside, Root.Rights.ViewCost.WorkOrderOutside, Root.Rights.ViewCost.WorkOrderItem, Root.Rights.ViewCost.WorkOrderMiscellaneous });
-		private static RecordTypeClassifierByLinkages ChartWOResourceClassifier = WOReportResourceCategoryClassifier(dsMB.Path.T.WorkOrderFormReport.F.DemandID.F);
+		private static RecordTypeClassifierByLinkages ChartWOResourceClassifier = WOReportResourceDemandCategoryClassifier(dsMB.Path.T.WorkOrderFormReport.F.DemandID.F);
 		public static Tbl WOChartCostsByResourceType = WOResourceCostChartBase(TId.WOChartCostsByResourceType, TIGeneralMB3.AnyResourcesGroup, true, new SqlExpression(dsMB.Path.T.WorkOrderFormReport.F.DemandID).IsNotNull(),
 			TblServerExprNode.New(KB.K("Resource Type"), ChartWOResourceClassifier.RecordTypeExpression, Fmt.SetEnumText(ChartWOResourceClassifier.EnumValueProvider)),
 			rights: new Right[] { Root.Rights.ViewCost.WorkOrderInside, Root.Rights.ViewCost.WorkOrderOutside, Root.Rights.ViewCost.WorkOrderItem, Root.Rights.ViewCost.WorkOrderMiscellaneous });

@@ -3309,6 +3309,9 @@
   <data name="Thinkage.MainBoss.Controls§Demanded Cost" xml:space="preserve">
     <value>Demanded Cost</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Demanded Count" xml:space="preserve">
+    <value>Demanded Count</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Demanded Hours" xml:space="preserve">
     <value>Demanded Hours</value>
   </data>
@@ -3522,14 +3525,8 @@
   <data name="Thinkage.MainBoss.Controls§Estimate total demanded cost when work order is created" xml:space="preserve">
     <value>Estimate total demanded cost when work order is created</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Estimated Count" xml:space="preserve">
-    <value>Estimated Count</value>
-  </data>
   <data name="Thinkage.MainBoss.Controls§Estimated duration" xml:space="preserve">
     <value>Estimated duration</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Estimated Time" xml:space="preserve">
-    <value>Estimated Time</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Evaluate Security As" xml:space="preserve">
     <value>Evaluate Security As</value>
@@ -5615,6 +5612,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Work Order Resource Costs" xml:space="preserve">
     <value>Work Order Resource Costs</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Work Order Resources actually used" xml:space="preserve">
+    <value>Work Order Resources actually used</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Work Order Resources with demanded and actual quantity and cost" xml:space="preserve">
     <value>Work Order Resources with demanded and actual quantity and cost</value>

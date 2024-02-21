@@ -181,6 +181,12 @@
 	  select newid() where 1 = 2
 	</extension>
   </table>
+  <table name="AccountingTransactionVariants" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
   <table name="ActualItemAndCorrections" defaults="false" log="false" id="Id">
 	<field name="Id" read="id(nonnull)" />
 	<extension name="query">

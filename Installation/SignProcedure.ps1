@@ -20,7 +20,8 @@ if (-not (test-path "$signtool")) {
 $signtoolvsix = join-path -path ".." -childpath (join-path -path 'OpenVsixSignTool' -childpath 'OpenVsixSignTool.exe')
 #following is the thumbprint of the current Thinkage Code Sign certificate (only way to provide identity to vsix signer)
 $signingCertificateThumbPrint = "0072e09a760bfac04e5cd4f5a26abc34a1c0072b"
-
+#$timestamperURL = "http://tsa.starfieldtech.com"
+$timestamperURL = "http://sha256timestamp.ws.symantec.com/sha256/timestamp"
 
 
 # Sign one or more files specified on the command-line. This will retry the sign operation up to 10 times.
@@ -40,10 +41,10 @@ function ThinkageCodeSign([parameter(Mandatory=$true, position=0)][string[]] $fi
 		do {
 			$retriesLeft -= 1
 			if( $fileToSign.EndsWith("vsix")) {
-				$signErrors = (&$signtoolvsix sign $fileToSign --sha1 $signingCertificateThumbPrint --file-digest "sha256" --timestamp http://tsa.starfieldtech.com 2>&1)
+				$signErrors = (&$signtoolvsix sign $fileToSign --sha1 $signingCertificateThumbPrint --file-digest "sha256" --timestamp $timestamperURL 2>&1)
 			}
 			else{
-				$signErrors = (&$signtool sign /fd SHA256 /t http://tsa.starfieldtech.com /n "Thinkage Ltd." /i "Go Daddy Secure Certificate Authority - G2"  $fileToSign 2>&1)
+				$signErrors = (&$signtool sign /fd SHA256 /tr $timestamperURL /n "Thinkage Ltd." /i "Go Daddy Secure Certificate Authority - G2"  $fileToSign 2>&1)
 			}
 		} while ($LastExitCode -ne 0 -and $retriesLeft -gt 0)
 		if ($LastExitCode -ne 0) {

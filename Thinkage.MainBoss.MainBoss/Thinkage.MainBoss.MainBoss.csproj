@@ -26,7 +26,7 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
     <ManifestCertificateThumbprint>0072E09A760BFAC04E5CD4F5A26ABC34A1C0072B</ManifestCertificateThumbprint>
     <ManifestKeyFile>
     </ManifestKeyFile>
@@ -34,7 +34,7 @@
     <Win32Resource>
     </Win32Resource>
     <OldToolsVersion>3.5</OldToolsVersion>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <GenerateManifests>true</GenerateManifests>
@@ -58,12 +58,12 @@
     <ProductName>MainBoss Advanced</ProductName>
     <PublisherName>Thinkage</PublisherName>
     <SuiteName>MainBoss</SuiteName>
-    <MinimumRequiredVersion>4.2.2.5</MinimumRequiredVersion>
+    <MinimumRequiredVersion>4.2.2.11</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>WebDeploy.htm</WebPage>
     <TrustUrlParameters>true</TrustUrlParameters>
-    <ApplicationRevision>5</ApplicationRevision>
-    <ApplicationVersion>4.2.2.5</ApplicationVersion>
+    <ApplicationRevision>11</ApplicationRevision>
+    <ApplicationVersion>4.2.2.11</ApplicationVersion>
     <UseApplicationTrust>true</UseApplicationTrust>
     <ExcludeDeploymentUrl>true</ExcludeDeploymentUrl>
     <PublishWizardCompleted>true</PublishWizardCompleted>

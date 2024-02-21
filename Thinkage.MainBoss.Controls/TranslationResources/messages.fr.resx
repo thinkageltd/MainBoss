@@ -1863,6 +1863,9 @@
   <data name="Thinkage.MainBoss.Controls§Demanded Cost" xml:space="preserve">
     <value>Coût estimatif</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Demanded Count" xml:space="preserve">
+    <value>Nombre demandé</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Demanded Hours" xml:space="preserve">
     <value>Durée prévue (heures)</value>
   </data>
@@ -2076,14 +2079,8 @@
   <data name="Thinkage.MainBoss.Controls§Estimate total demanded cost when work order is created" xml:space="preserve">
     <value>Estimer le coût total de la demande de ressources lors de la création du bon de travail</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Estimated Count" xml:space="preserve">
-    <value>Nombre estimatif</value>
-  </data>
   <data name="Thinkage.MainBoss.Controls§Estimated duration" xml:space="preserve">
     <value>Durée estimée</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Estimated Time" xml:space="preserve">
-    <value>Temps estimé</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Evaluate Security As" xml:space="preserve">
     <value>Évaluer la sécurité comme étant </value>
@@ -4170,6 +4167,9 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Work Order Resource Costs" xml:space="preserve">
     <value>Travailler l'ordonnance de frais de ressources</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Work Order Resources actually used" xml:space="preserve">
+    <value>Ordre de travail Ressources réellement utilisées</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Work Order Resources with demanded and actual quantity and cost" xml:space="preserve">
     <value>Ressources travailler Commander comme demandé et réelle quantité et le coût</value>

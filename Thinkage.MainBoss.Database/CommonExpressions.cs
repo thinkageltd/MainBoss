@@ -8,19 +8,33 @@ namespace Thinkage.MainBoss.Database {
 		public static SqlExpression OverdueWorkOrderExpression = new SqlExpression(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateID.F.FilterAsOpen).IsTrue()
 							.And(WOStatisticCalculation.Overdue(dsMB.Path.T.WorkOrder, dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID).IsNotNull());
 
-		public static SqlExpression IntervalDifferenceSqlExpression(SqlExpression original, SqlExpression revised) {
-			return revised.Minus(original).Cast((Libraries.TypeInfo.IntervalTypeInfo)dsMB.Schema.Types["DurationFine"].Type);
+		public static SqlExpression IntervalSumSqlExpression(SqlExpression term1, SqlExpression term2) {
+			// The cast is required because the addition doubles the range of the type (max - min) and so the uncast sum
+			// has too large a max and too small a min to be representable.
+			return term2.Plus(term1).Cast((Libraries.TypeInfo.IntervalTypeInfo)dsMB.Schema.Types["DurationFine"].Type);
 		}
-		public static SqlExpression RequestStateHistoryDuration(dsMB.PathClass.PathToRequestStateHistoryRow.FAccessor WOSH) {
-			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(WOSH.EffectiveDate), SqlExpression.Coalesce(new SqlExpression(WOSH.Id.L.RequestStateHistoryReport.PreviousRequestStateHistoryID.F.RequestStateHistoryID.F.EffectiveDate),
+		/// <summary>
+		/// Return the expression for minuend - subtrahend cast to be SQL-compatible
+		/// </summary>
+		public static SqlExpression IntervalDifferenceSqlExpression(SqlExpression subtrahend, SqlExpression minuend) {
+			// TODO: Why is this cast here? The epsilon of the type returned by Minus is the finer of that of the two
+			// operands. Part of the problem is that WorkOrderReport contains several fields called XxxxxDate but whose type
+			// is to the 100th of a second, and the expression result is expected to be in days.
+			// If the types of those values could be changed, most (if not all) callers to this method could just call Minus.
+			// Answer: Actually the cast is required because the subtraction doubles the range of the type (max - min) and so the uncast difference
+			// has too large a max and too small a min to be representable.
+			return minuend.Minus(subtrahend).Cast((Libraries.TypeInfo.IntervalTypeInfo)dsMB.Schema.Types["DurationFine"].Type);
+		}
+		public static SqlExpression RequestStateHistoryDuration(dsMB.PathClass.PathToRequestStateHistoryRow.FAccessor RSH) {
+			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(RSH.EffectiveDate), SqlExpression.Coalesce(new SqlExpression(RSH.Id.L.RequestStateHistoryReport.PreviousRequestStateHistoryID.F.RequestStateHistoryID.F.EffectiveDate),
 										SqlExpression.Now(dsMB.Schema.T.RequestStateHistory.F.EffectiveDate.EffectiveType)));
 		}
 		public static SqlExpression WorkOrderStateHistoryDuration(dsMB.PathClass.PathToWorkOrderStateHistoryRow.FAccessor WOSH) {
 			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(WOSH.EffectiveDate), SqlExpression.Coalesce(new SqlExpression(WOSH.Id.L.WorkOrderStateHistoryReport.PreviousWorkOrderStateHistoryID.F.WorkOrderStateHistoryID.F.EffectiveDate),
 										SqlExpression.Now(dsMB.Schema.T.WorkOrderStateHistory.F.EffectiveDate.EffectiveType)));
 		}
-		public static SqlExpression PurchaseOrderStateHistoryDuration(dsMB.PathClass.PathToPurchaseOrderStateHistoryRow.FAccessor WOSH) {
-			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(WOSH.EffectiveDate), SqlExpression.Coalesce(new SqlExpression(WOSH.Id.L.PurchaseOrderStateHistoryReport.PreviousPurchaseOrderStateHistoryID.F.PurchaseOrderStateHistoryID.F.EffectiveDate),
+		public static SqlExpression PurchaseOrderStateHistoryDuration(dsMB.PathClass.PathToPurchaseOrderStateHistoryRow.FAccessor POSH) {
+			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(POSH.EffectiveDate), SqlExpression.Coalesce(new SqlExpression(POSH.Id.L.PurchaseOrderStateHistoryReport.PreviousPurchaseOrderStateHistoryID.F.PurchaseOrderStateHistoryID.F.EffectiveDate),
 										SqlExpression.Now(dsMB.Schema.T.PurchaseOrderStateHistory.F.EffectiveDate.EffectiveType)));
 		}
 	}
@@ -97,13 +111,13 @@ namespace Thinkage.MainBoss.Database {
 		/// WorkOrder.EndDateEstimate - WorkOrder.StartDateEstimate + OneDay
 		/// </summary>
 		public static SqlExpression EstimatedDuration(dsMB.PathClass.PathToWorkOrderRow WO) {
-			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(WO.F.StartDateEstimate), new SqlExpression(WO.F.EndDateEstimate)).Plus(OneDayTimeSpan);
+			return CommonExpressions.IntervalSumSqlExpression(new SqlExpression(WO.F.EndDateEstimate).Minus(new SqlExpression(WO.F.StartDateEstimate)), OneDayTimeSpan);
 		}
-		public static SqlExpression MinimumDuration(dsMB.PathClass.PathToWorkOrderExtrasRow WOR) {
-			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(WOR.F.EarliestOpenDate), new SqlExpression(WOR.F.EarliestEndDate)).Plus(OneDayTimeSpan);
+		public static SqlExpression MinimumDuration(dsMB.PathClass.PathToWorkOrderExtrasRow WOXR) {
+			return CommonExpressions.IntervalSumSqlExpression(new SqlExpression(WOXR.F.EarliestEndDate).Minus(new SqlExpression(WOXR.F.EarliestOpenDate)), OneDayTimeSpan);
 		}
-		public static SqlExpression ActualDuration(dsMB.PathClass.PathToWorkOrderExtrasRow WOR) {
-			return CommonExpressions.IntervalDifferenceSqlExpression(new SqlExpression(WOR.F.FirstOpenedDate), new SqlExpression(WOR.F.EndedDateIfEnded)).Plus(OneDayTimeSpan);
+		public static SqlExpression ActualDuration(dsMB.PathClass.PathToWorkOrderExtrasRow WOXR) {
+			return CommonExpressions.IntervalSumSqlExpression(new SqlExpression(WOXR.F.EndedDateIfEnded).Minus(new SqlExpression(WOXR.F.FirstOpenedDate)), OneDayTimeSpan);
 		}
 		#endregion
 		#region Lifetime

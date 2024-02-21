@@ -166,7 +166,7 @@ namespace Thinkage.MainBoss.Controls {
 						, reportExplorer(62, TId.WorkOrderMiscellaneousExpense, TIReports.WODemandMiscellaneousWorkOrderCost, KB.K("Work Order Miscellaneous with demanded and actual cost"))
 						, reportExplorer(63, TId.ReceiptActivity, TIReports.ResourceReceiving, KB.K("Received items and services"))
 					)
-					, containerMenuItem(64, TId.WorkOrderResourceActual
+					, reportExplorer(64, TId.WorkOrderResourceActual, TIReports.WOResourceActual, KB.K("Work Order Resources actually used")
 						, reportExplorer(65, TId.WorkOrderItemActual, TIReports.WOActualItem, KB.K("Work Order Items actually used"))
 						, reportExplorer(66, TId.WorkOrderHourlyInsideActual, TIReports.WOActualHourlyInside, KB.K("Work Order Hourly Inside actually used"))
 						, reportExplorer(67, TId.WorkOrderPerJobInsideActual, TIReports.WOActualPerJobInside, KB.K("Work Order Per Job Inside actually used"))

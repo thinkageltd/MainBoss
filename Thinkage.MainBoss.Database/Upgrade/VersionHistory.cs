@@ -5765,6 +5765,10 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderExtras"),
 							new AddTableUpgradeStep("WorkOrderExtras"),
 							new AddTableUpgradeStep("MaintenanceForecastReport")
+						),
+						new UpgradeStepSequence(// 1.1.5.5 Add DemandID and POLineID to AccountingTransactionDerivations view
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AccountingTransactionVariants"),
+							new AddTableUpgradeStep("AccountingTransactionVariants")
 						)
 						#endregion
 					}
@@ -5773,7 +5777,7 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 			}
 		},
 		// The DEBUG check schema has CODE; update when Schema has changed and upgrade steps have been added
-		0X57693847b155c66cUL, dsMB.Schema);
+		0X9baba411b37bd9f6UL, dsMB.Schema);
 		#endregion
 	}
 }

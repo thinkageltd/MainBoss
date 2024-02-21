@@ -13,8 +13,10 @@
 	<field name="IsCorrection" type="Bool">
 	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIReports.IsCorrectionNames,Thinkage.MainBoss.Controls</extension>
 	</field>
+	<field name="DemandID" type="GUIDREF" link="Demand"/>
+	<field name="POLineID" type="GUIDREF" link="POLine"/>
 	<extension name="query">
-	  select AccountingTransactionID, AccountingTransactionID, ItemLocation.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 0, case when ActualItem.Id = CorrectionID then 0 else 1 end
+	  select AccountingTransactionID, AccountingTransactionID, ItemLocation.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 0, case when ActualItem.Id = CorrectionID then 0 else 1 end, Demand.ID, null
 		from ActualItem
 		  join DemandItem on DemandItem.Id = ActualItem.DemandItemID
 		  join ItemLocation on ItemLocation.Id = DemandItem.ItemLocationID
@@ -22,7 +24,7 @@
 		  join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
 		  join WorkOrderExpenseCategory on WorkOrderExpenseCategory.Id = Demand.WorkOrderExpenseCategoryID
 	  union all
-	  select AccountingTransactionID, AccountingTransactionID, LaborInside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 1, case when ActualLaborInside.Id = CorrectionID then 0 else 1 end
+	  select AccountingTransactionID, AccountingTransactionID, LaborInside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 1, case when ActualLaborInside.Id = CorrectionID then 0 else 1 end, Demand.ID, null
 		from ActualLaborInside
 		  join DemandLaborInside on DemandLaborInside.Id = ActualLaborInside.DemandLaborInsideID
 		  join LaborInside on LaborInside.Id = DemandLaborInside.LaborInsideID
@@ -30,7 +32,7 @@
 		  join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
 		  join WorkOrderExpenseCategory on WorkOrderExpenseCategory.Id = Demand.WorkOrderExpenseCategoryID
 	  union all
-	  select AccountingTransactionID, AccountingTransactionID, LaborOutside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 2, case when ActualLaborOutsideNonPO.Id = CorrectionID then 0 else 1 end
+	  select AccountingTransactionID, AccountingTransactionID, LaborOutside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 2, case when ActualLaborOutsideNonPO.Id = CorrectionID then 0 else 1 end, Demand.ID, null
 		from ActualLaborOutsideNonPO
 		  join DemandLaborOutside on DemandLaborOutside.Id = ActualLaborOutsideNonPO.DemandLaborOutsideID
 		  join LaborOutside on LaborOutside.Id = DemandLaborOutside.LaborOutsideID
@@ -38,7 +40,7 @@
 		  join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
 		  join WorkOrderExpenseCategory on WorkOrderExpenseCategory.Id = Demand.WorkOrderExpenseCategoryID
 	  union all
-	  select AccountingTransactionID, AccountingTransactionID, LaborOutside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 3, case when ActualLaborOutsidePO.Id = CorrectionID then 0 else 1 end
+	  select AccountingTransactionID, AccountingTransactionID, LaborOutside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 3, case when ActualLaborOutsidePO.Id = CorrectionID then 0 else 1 end, Demand.ID, POLineLabor.POLineID
 		from ActualLaborOutsidePO
 		  join POLineLabor on POLineLabor.Id = ActualLaborOutsidePO.POLineLaborID
 		  join DemandLaborOutside on DemandLaborOutside.Id = POLineLabor.DemandLaborOutsideID
@@ -47,7 +49,7 @@
 		  join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
 		  join WorkOrderExpenseCategory on WorkOrderExpenseCategory.Id = Demand.WorkOrderExpenseCategoryID
 	  union all
-	  select AccountingTransactionID, AccountingTransactionID, OtherWorkInside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 4, case when ActualOtherWorkInside.Id = CorrectionID then 0 else 1 end
+	  select AccountingTransactionID, AccountingTransactionID, OtherWorkInside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 4, case when ActualOtherWorkInside.Id = CorrectionID then 0 else 1 end, Demand.ID, null
 		from ActualOtherWorkInside
 		  join DemandOtherWorkInside on DemandOtherWorkInside.Id = ActualOtherWorkInside.DemandOtherWorkInsideID
 		  join OtherWorkInside on OtherWorkInside.Id = DemandOtherWorkInside.OtherWorkInsideID
@@ -55,7 +57,7 @@
 		  join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
 		  join WorkOrderExpenseCategory on WorkOrderExpenseCategory.Id = Demand.WorkOrderExpenseCategoryID
 	  union all
-	  select AccountingTransactionID, AccountingTransactionID, OtherWorkOutside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 5, case when ActualOtherWorkOutsideNonPO.Id = CorrectionID then 0 else 1 end
+	  select AccountingTransactionID, AccountingTransactionID, OtherWorkOutside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 5, case when ActualOtherWorkOutsideNonPO.Id = CorrectionID then 0 else 1 end, Demand.ID, null
 		from ActualOtherWorkOutsideNonPO
 		  join DemandOtherWorkOutside on DemandOtherWorkOutside.Id = ActualOtherWorkOutsideNonPO.DemandOtherWorkOutsideID
 		  join OtherWorkOutside on OtherWorkOutside.Id = DemandOtherWorkOutside.OtherWorkOutsideID
@@ -63,7 +65,7 @@
 		  join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
 		  join WorkOrderExpenseCategory on WorkOrderExpenseCategory.Id = Demand.WorkOrderExpenseCategoryID
 	  union all
-	  select AccountingTransactionID, AccountingTransactionID, OtherWorkOutside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 6, case when ActualOtherWorkOutsidePO.Id = CorrectionID then 0 else 1 end
+	  select AccountingTransactionID, AccountingTransactionID, OtherWorkOutside.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 6, case when ActualOtherWorkOutsidePO.Id = CorrectionID then 0 else 1 end, Demand.ID, POLineOtherWork.POLineID
 		from ActualOtherWorkOutsidePO
 		  join POLineOtherWork on POLineOtherWork.Id = ActualOtherWorkOutsidePO.POLineOtherWorkID
 		  join DemandOtherWorkOutside on DemandOtherWorkOutside.Id = POLineOtherWork.DemandOtherWorkOutsideID
@@ -72,7 +74,7 @@
 		  join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
 		  join WorkOrderExpenseCategory on WorkOrderExpenseCategory.Id = Demand.WorkOrderExpenseCategoryID
 	  union all
-	  select AccountingTransactionID, AccountingTransactionID, MiscellaneousWorkOrderCost.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 7, case when ActualMiscellaneousWorkOrderCost.Id = CorrectionID then 0 else 1 end
+	  select AccountingTransactionID, AccountingTransactionID, MiscellaneousWorkOrderCost.Code, WorkOrder.Number, WorkOrderExpenseCategory.Code, 7, case when ActualMiscellaneousWorkOrderCost.Id = CorrectionID then 0 else 1 end, Demand.ID, null
 		from ActualMiscellaneousWorkOrderCost
 		  join DemandMiscellaneousWorkOrderCost on DemandMiscellaneousWorkOrderCost.Id = ActualMiscellaneousWorkOrderCost.DemandMiscellaneousWorkOrderCostID
 		  join MiscellaneousWorkOrderCost on MiscellaneousWorkOrderCost.Id = DemandMiscellaneousWorkOrderCost.MiscellaneousWorkOrderCostID
@@ -80,37 +82,37 @@
 		  join WorkOrder on WorkOrder.ID = Demand.WorkOrderID
 		  join WorkOrderExpenseCategory on WorkOrderExpenseCategory.Id = Demand.WorkOrderExpenseCategoryID
 	  union all
-	  select AccountingTransactionID, AccountingTransactionID, ChargebackLineCategory.Code, Chargeback.Code, Contact.Code, 8, case when ChargebackLine.Id = CorrectionID then 0 else 1 end
+	  select AccountingTransactionID, AccountingTransactionID, ChargebackLineCategory.Code, Chargeback.Code, Contact.Code, 8, case when ChargebackLine.Id = CorrectionID then 0 else 1 end, null, null
 		from ChargebackLine
 		  join ChargebackLineCategory on ChargebackLineCategory.Id = CHargebackLine.ChargebackLineCategoryID
 		  join Chargeback on Chargeback.Id = ChargebackLine.ChargebackID
 		  join BillableRequestor on BillableRequestor.Id = ChargeBack.BillableRequestorID
 		  join Contact on Contact.Id = BillableRequestor.ContactID
 	  union all
-	  select AccountingTransactionID, AccountingTransactionID, ItemLocation.Code, ItemAdjustmentCode.Code, null, 9, 0
+	  select AccountingTransactionID, AccountingTransactionID, ItemLocation.Code, ItemAdjustmentCode.Code, null, 9, 0, null, null
 		from ItemAdjustment
 		  join ItemLocation on ItemLocation.Id = ItemAdjustment.ItemLocationID
 		  join ItemAdjustmentCode on ItemAdjustmentCode.Id = ItemAdjustment.ItemAdjustmentCodeID
 	  union all
-	  select AccountingTransactionID, AccountingTransactionID, ItemLocation.Code, ItemAdjustmentCode.Code, null, 10, 0
+	  select AccountingTransactionID, AccountingTransactionID, ItemLocation.Code, ItemAdjustmentCode.Code, null, 10, 0, null, null
 		from ItemCountValue
 		  join ItemLocation on ItemLocation.Id = ItemCountValue.ItemLocationID
 		  join ItemAdjustmentCode on ItemAdjustmentCode.Id = ItemCountValue.ItemAdjustmentCodeID
 	  union all
-	  select ItemCountValueVoid.AccountingTransactionID, ItemCountValueVoid.AccountingTransactionID, ItemLocation.Code, VoidCode.Code, null, 11, 0
+	  select ItemCountValueVoid.AccountingTransactionID, ItemCountValueVoid.AccountingTransactionID, ItemLocation.Code, VoidCode.Code, null, 11, 0, null, null
 		from ItemCountValueVoid
 		  join ItemCountValue on ItemCountValue.Id = ItemCountValueVoid.VoidedItemCountValueID
 		  join ItemLocation on ItemLocation.Id = ItemCountValue.ItemLocationID
 		  join VoidCode on VoidCode.Id = ItemCountValueVoid.VoidCodeID
 	  union all
-	  select AccountingTransactionID, AccountingTransactionID, ItemLocation.Code, ItemIssueCode.Code, Contact.Code, 12, case when ItemIssue.Id = CorrectionID then 0 else 1 end
+	  select AccountingTransactionID, AccountingTransactionID, ItemLocation.Code, ItemIssueCode.Code, Contact.Code, 12, case when ItemIssue.Id = CorrectionID then 0 else 1 end, null, null
 		from ItemIssue
 		  join ItemLocation on ItemLocation.Id = ItemIssue.ItemLocationID
 		  join ItemIssueCode on ItemIssueCode.Id = ItemIssue.ItemIssueCodeID
 		  left join Employee on Employee.Id = ItemIssue.EmployeeID
 		  left join Contact on Contact.Id = Employee.ContactID
 	  union all
-	  select AccountingTransactionID, AccountingTransactionID, FL.Code, Item.Code, TL.Code, 13, case when ItemTransfer.Id = CorrectionID then 0 else 1 end
+	  select AccountingTransactionID, AccountingTransactionID, FL.Code, Item.Code, TL.Code, 13, case when ItemTransfer.Id = CorrectionID then 0 else 1 end, null, null
 		from ItemTransfer
 		  join ItemLocation as FIL on FIL.Id = ItemTransfer.FromItemLocationID
 		  join Location as FL on FL.Id = FIL.LocationID
@@ -118,12 +120,12 @@
 		  join Location as TL on TL.Id = TIL.LocationID
 		  join Item on Item.Id = FIL.ItemID
 	  union all
-	  select AccountingTransactionID, AccountingTransactionID, Vendor.Code, null, ItemLocation.Code, 14, case when ReceiveItemNonPO.Id = CorrectionID then 0 else 1 end
+	  select AccountingTransactionID, AccountingTransactionID, Vendor.Code, null, ItemLocation.Code, 14, case when ReceiveItemNonPO.Id = CorrectionID then 0 else 1 end, null, null
 		from ReceiveItemNonPO
 		  join ItemLocation on ItemLocation.Id = ReceiveItemNonPO.ItemLocationID
 		  join Vendor on Vendor.Id = ReceiveItemNonPO.VendorID
 	  union all
-	  select AccountingTransactionID, AccountingTransactionID, Vendor.Code, PurchaseOrder.Number, ItemLocation.Code, 15, case when ReceiveItemPO.Id = CorrectionID then 0 else 1 end
+	  select AccountingTransactionID, AccountingTransactionID, Vendor.Code, PurchaseOrder.Number, ItemLocation.Code, 15, case when ReceiveItemPO.Id = CorrectionID then 0 else 1 end, null, POLineItem.POLineID
 		from ReceiveItemPO
 		  join ItemLocation on ItemLocation.Id = ReceiveItemPO.ItemLocationID
 		  join POLineItem on POLineItem.Id = ReceiveItemPO.POLineItemID
@@ -131,7 +133,7 @@
 		  join PurchaseOrder on PurchaseOrder.Id = POLine.PurchaseOrderID
 		  join Vendor on Vendor.Id = PurchaseOrder.VendorID
 	  union all
-	  select AccountingTransactionID, AccountingTransactionID, Vendor.Code, PurchaseOrder.Number, Miscellaneous.Code, 16, case when ReceiveMiscellaneousPO.Id = CorrectionID then 0 else 1 end
+	  select AccountingTransactionID, AccountingTransactionID, Vendor.Code, PurchaseOrder.Number, Miscellaneous.Code, 16, case when ReceiveMiscellaneousPO.Id = CorrectionID then 0 else 1 end, null, POLineMiscellaneous.POLineID
 		from ReceiveMiscellaneousPO
 		  join POLineMiscellaneous on POLineMiscellaneous.Id = ReceiveMiscellaneousPO.POLineMiscellaneousID
 		  join Miscellaneous on Miscellaneous.Id = POLineMiscellaneous.MiscellaneousID
