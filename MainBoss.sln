@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installation", "Installation", "{9E964703-0677-46DC-B2CF-7445B98ECC62}"
 	ProjectSection(SolutionItems) = preProject
@@ -50,6 +50,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		BuildAll.ps1 = BuildAll.ps1
 		GenerateProjectSolutionSettings.ps1 = GenerateProjectSolutionSettings.ps1
 		JQueryUIHelpers.snk = JQueryUIHelpers.snk
+		ProductGuidNotes.txt = ProductGuidNotes.txt
 		SolutionSettings.ps1 = SolutionSettings.ps1
 		ThinkageRuleSet.ruleset = ThinkageRuleSet.ruleset
 	EndProjectSection
@@ -978,6 +979,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DesktopApp", "DesktopApp", 
 		Installation\DesktopApp\BuildDesktopApp.ps1 = Installation\DesktopApp\BuildDesktopApp.ps1
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SqlUpgradePatch", "SqlUpgradePatch", "{210CD979-213A-4BC5-9ED1-F10C9DAD3A9F}"
+	ProjectSection(SolutionItems) = preProject
+		Installation\SqlUpgradePatch\IRatioFunctionUpgrade.xml = Installation\SqlUpgradePatch\IRatioFunctionUpgrade.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1267,6 +1273,7 @@ Global
 		{CC47BA94-4459-4535-B65F-324676F37CDA} = {66B03468-B88D-4B58-AA5E-281CB88A0350}
 		{5E6F1817-F864-4BD3-84A9-CC45AF095F24} = {CC47BA94-4459-4535-B65F-324676F37CDA}
 		{DBC00BD8-FC89-497D-834D-4E1A30374F32} = {9E964703-0677-46DC-B2CF-7445B98ECC62}
+		{210CD979-213A-4BC5-9ED1-F10C9DAD3A9F} = {9E964703-0677-46DC-B2CF-7445B98ECC62}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5B32EC15-87AB-4748-A6C7-797F3590DFB3}

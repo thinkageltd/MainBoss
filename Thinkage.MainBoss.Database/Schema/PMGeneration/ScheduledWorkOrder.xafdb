@@ -6,7 +6,7 @@
 	<doc>Time interval from current time over which workorders should be generated stored in format dddddd.00:00:00</doc>
   </variable>
 
-  <table name="ScheduledWorkOrder" defaults="true" log="false" id="Id" xid="UnitLocationID ScheduleID" labelkey="Unit Maintenance Plan">
+  <table name="ScheduledWorkOrder" defaults="true" log="false" id="Id" xid="UnitLocationID ScheduleID WorkOrderTemplateID" labelkey="Unit Maintenance Plan">
 	<doc>
 	  This record defines that a given Work Order Template (Task) should be generated for a given Unit on a given Schedule.
 	</doc>
@@ -20,7 +20,7 @@
 	<field name="ScheduleID" type="RequiredGUIDREF" link="Schedule" labelkey="Maintenance Timing">
 	  <doc>The schedule which determines how to generate future scheduling points based on the scheduling history</doc>
 	  <extension name="pickfrom">Schedule</extension>
-	  <extension name="linkage">captive</extension>
+	  <extension name="linkage">property</extension>
 	</field>
 	<field name="WorkOrderTemplateID" type="RequiredGUIDREF" link="WorkOrderTemplate">
 	  <doc>The ID of the Work Order Template (task definition) which defines what work constitutes the scheduled procedure</doc>

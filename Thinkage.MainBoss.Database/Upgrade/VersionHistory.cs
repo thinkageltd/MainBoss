@@ -5769,7 +5769,23 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 						new UpgradeStepSequence(// 1.1.5.5 Add DemandID and POLineID to AccountingTransactionDerivations view
 							new RemoveTableUpgradeStep(GetOriginalSchema, "AccountingTransactionVariants"),
 							new AddTableUpgradeStep("AccountingTransactionVariants")
-						)
+						),
+						new UpgradeStepSequence(// 1.1.5.6 Correct ticks per day
+							new BuiltinFunctionUpdateUpgradeStep("_IRatio"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "UnitReport"),
+							new AddTableUpgradeStep("UnitReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "ActiveRequestAgeHistogram"),
+							new AddTableUpgradeStep("ActiveRequestAgeHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedActiveRequestAgeHistogram"),
+							new AddTableUpgradeStep("AssignedActiveRequestAgeHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("WorkOrderEndDateHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedWorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("AssignedWorkOrderEndDateHistogram")
+						),
+						new UpgradeStepSequence(// 1.1.5.7 Correct _DClosestValue for dates on or before 1/jan/1900
+							new BuiltinFunctionUpdateUpgradeStep("_DClosestValue")
+						),
 						#endregion
 					}
 				}
@@ -5777,7 +5793,7 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 			}
 		},
 		// The DEBUG check schema has CODE; update when Schema has changed and upgrade steps have been added
-		0X9baba411b37bd9f6UL, dsMB.Schema);
+		0Xa040e46ad0c522daUL, dsMB.Schema);
 		#endregion
 	}
 }

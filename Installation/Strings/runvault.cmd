@@ -1,4 +1,4 @@
 @echo on
 setlocal
-"%VAULTCLIENT%" %1 -repository Thinkage -host vault.thinkage.ca -user kadorken -password "" %2
+"%VAULTCLIENT%" %1 -repository Thinkage -host admin.thinkage.ca -ssl -user kadorken -password "i376C29!vault" %2
 endlocal

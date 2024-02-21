@@ -19,7 +19,7 @@ if (-not (test-path "$signtool")) {
 #signtoolvsix is built from github open source project separately and included as executable files in our Installation directory; see https://github.com/vcsjones/OpenOpcSignTool.git
 $signtoolvsix = join-path -path ".." -childpath (join-path -path 'OpenVsixSignTool' -childpath 'OpenVsixSignTool.exe')
 #following is the thumbprint of the current Thinkage Code Sign certificate (only way to provide identity to vsix signer)
-$signingCertificateThumbPrint = "0072e09a760bfac04e5cd4f5a26abc34a1c0072b"
+$signingCertificateThumbPrint = "2d94c4a70185fa788cf24b2b8389d41892878468" # old value "0072e09a760bfac04e5cd4f5a26abc34a1c0072b"
 #$timestamperURL = "http://tsa.starfieldtech.com"
 $timestamperURL = "http://sha256timestamp.ws.symantec.com/sha256/timestamp"
 

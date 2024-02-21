@@ -1,6 +1,6 @@
 ﻿# adjust location of magetoolRoot as needed given microsoft shuffles it around constantly.
 $magetoolRoot = "C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v10.0A"
-$magetool = join-path -path "$magetoolRoot" -childpath (join-path -path 'bin' (join-path -path 'NETFX 4.6.1 Tools' -childpath 'mage.exe'))
+$magetool = join-path -path "$magetoolRoot" -childpath (join-path -path 'bin' (join-path -path 'NETFX 4.8 Tools' -childpath 'mage.exe'))
 . (resolve-path '..\SignProcedure.ps1')
 ################# FUNCTIONS ############################
 function SaveXML {
@@ -46,11 +46,7 @@ $microsoftSupportUrl = "$supportUrlBase/microsoft.htm"
 #Filenames we build & other properties
 $applicationManifestFileName = "$assemblyName.exe.manifest"
 $deploymentManifestFileName = "$assemblyName.application"
-#Old thumbprint for  Thinkage Certificate
-#$signingCertificateThumbPrint = "10b2896f51f68f2bd676e71eb6949e15b7df38f6"
-#GoDaddy Code Signing Certificate
-#$signingCertificateThumbPrint = "c254bb1717015f1fa38f174663f58ebda6c5b7c3"
-$signingCertificateThumbPrint = "0072e09a760bfac04e5cd4f5a26abc34a1c0072b"
+#signingCertificateThumbPrint is defined in SignProcedure.ps1
 #################################################################################################
 #Clean out previous build, and make new Package structure
 rd -r -force "Installation" -ErrorAction SilentlyContinue

@@ -18,7 +18,7 @@ CREATE TABLE <IDB/>.dbo.SrecTaskLinkage (
 		<!-- for determining whether SREC doesn't alter parent task values and should simply be the original TASK -->
 				COALESCE(S.[SUBJECT],S.[COSTCENTER],S.[PROJECT],S.[CLOSECODE],S.[ACCESSCODE],S.[WTYPE],S.[PRIORITY],NULL) IS NULL
 				AND COALESCE(S.[CLOSECOMM],S.[WDESC],NULL) IS NULL
-				AND S.[WONUM] IS NULL OR T.[WONUM] = S.[WONUM]
+				AND (S.[WONUM] IS NULL OR T.[WONUM] = S.[WONUM])
 				AND COALESCE(S.[WINTERVAL],0) = 0
 				AND (S.[DOWNTIME] IS NULL OR S.[DOWNTIME] = '000000')
 				AND (SELECT COUNT(*) FROM <IDB/>.dbo.Labor as L where L.[WOKEY] = S.[KEY]) = 0

@@ -586,7 +586,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				requestRow.F.Number = string.Empty; // default to empty string, we'll catch this below.
 				var subject = emailRequest.F.Subject;
 				var description = emailRequest.F.MailMessage;
-				var size = (int)(dsMB.Path.T.Request.F.Subject.Column.EffectiveType as StringTypeInfo).SizeType.NativeMaxLimit(typeof(int));
+				var subjectMaxSize = (int)(dsMB.Path.T.Request.F.Subject.Column.EffectiveType as StringTypeInfo).SizeType.NativeMaxLimit(typeof(int));
 				//
 				// email don't have to have subject and email subjects can be longer than MainBoss's Request Subjects
 				// if no email subject use the start of the desciption for the request
@@ -597,11 +597,17 @@ namespace Thinkage.MainBoss.Database.Service {
 				if (string.IsNullOrWhiteSpace(subject)) {
 					if (string.IsNullOrWhiteSpace(description))
 						throw new GeneralException(KB.K("No subject or description in email so no request generated"));
-					subject = emailRequest.F.MailMessage.Substring(0, size).Replace("\r", "").Replace('\n', ' ');
+					try {
+						var subsize = Math.Min(subjectMaxSize, description.Length);
+						subject = description.Substring(0, subsize).Replace("\r", "").Replace('\n', ' ');
+					}
+					catch {
+						subject = "-----"; // give up; just put something non-null in so that the request can be created.
+					}
 				}
-				else if (subject.Length > size) {
+				if (subject.Length > subjectMaxSize) {
 					description = Strings.IFormat("{0}\n\n{1}", subject, description);
-					subject = subject.Substring(0, size);
+					subject = subject.Substring(0, subjectMaxSize);
 				}
 				requestRow.F.Subject = subject;
 				requestRow.F.RequestorID = requestorID;

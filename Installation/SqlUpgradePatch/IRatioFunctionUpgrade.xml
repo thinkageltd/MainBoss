@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion" first="UpdateIRatioFunction" >
+  <!-- This 'patch' is intended to be run using the PickOrganization Run Script with this file as the input script and no input database specified.
+      It is to correct WO20190010 where the Unit Replacement Report failed to function properly
+  -->
+  <table name="UpdateIRatioFunction">
+    <data>
+	ALTER FUNCTION [dbo].[_IRatio]
+					(
+						@i1 XAFInterval,
+						@i2 XAFInterval
+					)
+					RETURNS FLOAT
+					AS
+					BEGIN
+					
+						RETURN (CONVERT(FLOAT, DATEDIFF(day, '1900-01-01T00:00:00.000', @i1)) * 24 * 60 * 60 * 1000 + DATEDIFF(millisecond, CONVERT(DATE, @i1), @i1))
+								/ (CONVERT(FLOAT, DATEDIFF(day, '1900-01-01T00:00:00.000', @i2)) * 24 * 60 * 60 * 1000 + DATEDIFF(millisecond, CONVERT(DATE, @i2), @i2))
+					END;
+	</data>
+  </table>
+</dbconversion>

@@ -12,7 +12,7 @@
 		"*" to generate new GUID every build and always replace same version with new version
 		without changing the version number
 	-->
-	<Product Id="2CFA72FB-A73F-4FB5-A7EF-13F4848387CF"
+	<Product Id="A2A29A82-E7AA-4054-A7FD-6C13259B4A3C"
 			 Name="$(var.PRODUCTNAME) $(var.VERSION).$(var.UPDATE)"
 			 Language="1033"
 			 Version="$(var.VERSION).$(var.UPDATE).$(var.BUILD)"
@@ -22,7 +22,7 @@
 					Compressed="yes"
 					Description="!(loc.PACKAGEDESCRIPTION)"
 					Keywords="CMMS MainBoss"
-					Comments="(c) 2019 by $(var.COMPANY)"
+					Comments="(c) 2020 by $(var.COMPANY)"
 					InstallPrivileges="elevated"
 					Manufacturer="$(var.COMPANY)"
 					InstallScope="perMachine"/>
