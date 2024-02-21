@@ -133,10 +133,9 @@ namespace Thinkage.MainBoss.Controls {
 				bool forLoginCredentials = securitySession.ForDatabaseLoginUsers;
 				Libraries.Collections.Set<AuthenticationMethod> permittedAuthenticationMethods = securitySession.Server.PermittedAuthenticationMethods(db.Session.ConnectionInformation, forLoginCredentials);
 
-				Thinkage.Libraries.TypeInfo.EnumTypeInfo AuthenticationSettingsTypeInfo = new Thinkage.Libraries.TypeInfo.EnumTypeInfo(typeof(AuthenticationMethod));
 				Dictionary<Key, object> authenticationMethodChoices = new Dictionary<Key, object>();
 				foreach (var am in permittedAuthenticationMethods)
-					authenticationMethodChoices.Add(AuthenticationCredentials.AuthenticationMethodProvider.GetLabel(am, AuthenticationSettingsTypeInfo), am);
+					authenticationMethodChoices.Add(AuthenticationCredentials.AuthenticationMethodProvider.GetLabel(am), am);
 				EnumValueTextRepresentations AuthenticationSettingsPermitted = new EnumValueTextRepresentations(authenticationMethodChoices.Keys.ToArray(), authenticationMethodChoices.Keys.ToArray(), authenticationMethodChoices.Values.ToArray(), 1);
 				object initialChoice = AuthenticationSettingsPermitted.Values[0];
 

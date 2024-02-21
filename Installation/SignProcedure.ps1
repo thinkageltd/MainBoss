@@ -20,10 +20,12 @@ if (-not (test-path "$signtool")) {
 $signtoolvsix = join-path -path ".." -childpath (join-path -path 'OpenVsixSignTool' -childpath 'OpenVsixSignTool.exe')
 #following is the thumbprint of the current Thinkage Code Sign certificate (only way to provide identity to vsix signer)
 $signingCertificateThumbPrint = "d8a8ceeb4adb1f044ec9378041ef0d7e4b12c70b" # Current signing requires the actual USB Sectigo key in the machine and this certificate is valid 1/21/2023 to 1/21/2026 and is expected to be in the CurrentUser Cert repository
+$signingCertificateIdentification = "Sectigo Public Code Signing CA EV R36"
 #$timestamperURL = "http://tsa.starfieldtech.com"
 $timestamperURL = "http://sha256timestamp.ws.symantec.com/sha256/timestamp"
 #get the certificate for Set-AuthenticodeSignature usage
 $CurrentCodeSignCertificate = (Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert) | Where-Object {$_.Thumbprint -eq "$signingCertificateThumbPrint"}
+
 
 # Sign one or more files specified on the command-line. This will retry the sign operation up to 10 times.
 # TODO: The purpose of retrying is to cover the case where a transient problem causes the timestamp fetch to fail, and this is really the only
@@ -40,26 +42,30 @@ $CurrentCodeSignCertificate = (Get-ChildItem -Path Cert:\CurrentUser\My -CodeSig
 # We retry ok now and sign the file but the outermost script still exits with code -1 (after completing all the PreBuild code). I think the output appears to contain
 # error messages (the above) which Studio is treating as errors.
 function ThinkageCodeSign([parameter(Mandatory=$true, position=0)][string[]] $filesToSign) {
-	foreach ($fileToSign in $filesToSign) {
-		$retriesLeft = 10
-		do {
-			$retriesLeft -= 1
-			if( $fileToSign.EndsWith("vsix")) {
-				$signErrors = (&$signtoolvsix sign $fileToSign --sha1 $signingCertificateThumbPrint --file-digest "sha256" --timestamp $timestamperURL 2>&1)
+	if ($CurrentCodeSignCertificate -eq $null) {
+		write-host $signingCertificateIdentification certificate is not present.
+	} else {
+		foreach ($fileToSign in $filesToSign) {
+			$retriesLeft = 10
+			do {
+				$retriesLeft -= 1
+				if( $fileToSign.EndsWith("vsix")) {
+					$signErrors = (&$signtoolvsix sign $fileToSign --sha1 $signingCertificateThumbPrint --file-digest "sha256" --timestamp $timestamperURL 2>&1)
+				}
+				elseIf($fileToSign.EndsWith("ps1")) {
+					Set-AuthenticodeSignature -FilePath $fileToSign -Certificate $CurrentCodeSignCertificate
+				}
+				else{
+					$signErrors = (&$signtool sign /debug /sm /fd SHA256 /td SHA256 /tr $timestamperURL /n "Thinkage LTD" /i "$signingCertificateIdentification"  $fileToSign 2>&1)
+				}
+			} while ($LastExitCode -ne 0 -and $retriesLeft -gt 0)
+			if ($LastExitCode -ne 0) {
+				[string]::Format("Error attempting to sign '{0}'", $fileToSign) | out-host
+				$signErrors | out-host
 			}
-			elseIf($fileToSign.EndsWith("ps1")) {
-				Set-AuthenticodeSignature -FilePath $fileToSign -Certificate $CurrentCodeSignCertificate
+			else {
+				[string]::Format("Signed '{0}'", $fileToSign) | out-host
 			}
-			else{
-				$signErrors = (&$signtool sign /debug /sm /fd SHA256 /td SHA256 /tr $timestamperURL /n "Thinkage LTD" /i "Sectigo Public Code Signing CA EV R36"  $fileToSign 2>&1)
-			}
-		} while ($LastExitCode -ne 0 -and $retriesLeft -gt 0)
-		if ($LastExitCode -ne 0) {
-			[string]::Format("Error attempting to sign '{0}'", $fileToSign) | out-host
-			$signErrors | out-host
-		}
-		else {
-			[string]::Format("Signed '{0}'", $fileToSign) | out-host
 		}
 	}
 }
