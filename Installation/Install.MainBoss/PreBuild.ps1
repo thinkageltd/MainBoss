@@ -4,10 +4,13 @@ $ScriptRoot = Split-path $MyInvocation.MyCommand.Path
 pushd $ScriptRoot
 
 $BuildDir="BuildDir"
+#Location to put Scripts after we sign them for inclusion on web site
+$ScriptDir=$null
 # Help files are named same as our projectName
 $SRCDIR=(join-path -path $SolutionDir -childpath (join-path -path $ProjectName -childpath (join-path -path "bin" -childpath $Configuration)))
 if ($Configuration -eq "Release"){
 	$packages = "$ProjectName", "Thinkage.MainBoss.Service", "Thinkage.MainBoss.MainBossServiceConfiguration", "Thinkage.MainBoss.MBUtility"
+	$ScriptDir="ScriptDir"
 }
 elseif( $Configuration -eq "Desktop"){
 	$packages = "$ProjectName"
@@ -38,6 +41,13 @@ if ((Test-Path $BuildDir -PathType Container)) {
 	remove-item $BuildDir -r -force | out-null
 }
 md $BuildDir | out-null
+
+if ($ScriptDir -ne $null) {
+	if ((Test-Path $ScriptDir -PathType Container)) {
+		remove-item $ScriptDir -r -force | out-null
+	}
+	md $ScriptDir | out-null
+}
 
 # Must Copy all the produced files in the target projects build directory, then prune out stuff we KNOW shouldn't be there. YECH
 foreach( $package in $packages ){
@@ -72,7 +82,12 @@ get-childitem -recurse "." -include '*.dll' | foreach-object {
 }
 get-childitem -recurse "." -include '*.ps1' | foreach-object {
 	ThinkageCodeSign $_.FullName
+	#Move the Script files from BuildDir to ScriptDir so they are not included in the installation, but available for the web site.
+	if ($ScriptDir -ne $null) {
+		move $_.FullName ../$ScriptDir
+	}
 }
+
 # copy the TeamViewer support executable NOW that we have signed all our stuff
 "Copying Teamviewer from $TEAMVIEWER to BuildDir" | out-host
 copy $TEAMVIEWER $TEAMVIEWER_FILE
