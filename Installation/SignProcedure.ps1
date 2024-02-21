@@ -6,7 +6,7 @@
 $signtoolRoot = $null
 if ($env:WINDOWSKIT10 -ne $null ) {
 	$signtoolRoot = $env:WINDOWSKIT10
-    $WIN10VERSION = "10.0.16299.0"
+    $WIN10VERSION = "10.0.18362.0"
 }
 else {
 	throw "WINDOWSKIT10  environment variable must be set to allow assembly signing"

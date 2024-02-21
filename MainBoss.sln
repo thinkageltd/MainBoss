@@ -977,6 +977,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DesktopApp", "DesktopApp", "{DBC00BD8-FC89-497D-834D-4E1A30374F32}"
 	ProjectSection(SolutionItems) = preProject
 		Installation\DesktopApp\BuildDesktopApp.ps1 = Installation\DesktopApp\BuildDesktopApp.ps1
+		Installation\DesktopApp\MainBoss_template.xml = Installation\DesktopApp\MainBoss_template.xml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SqlUpgradePatch", "SqlUpgradePatch", "{210CD979-213A-4BC5-9ED1-F10C9DAD3A9F}"
