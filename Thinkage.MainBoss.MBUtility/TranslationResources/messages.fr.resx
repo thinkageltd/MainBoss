@@ -117,8 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Thinkage.MainBoss.MBUtility§/ClientID and /ClientSecret options must be used only with OAuth2 enabled" xml:space="preserve">
+    <value>Les options /ClientID et /ClientSecret doivent être utilisées uniquement avec OAuth2 activé</value>
+  </data>
   <data name="Thinkage.MainBoss.MBUtility§/ClientID and /ClientSecret options must be used together" xml:space="preserve">
     <value>Les options /ClientID et /ClientSecret doivent être utilisées ensemble</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§/ClientID must have a non-empty value" xml:space="preserve">
+    <value>/ClientID doit avoir une valeur non vide</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§/ClientSecret must have a non-empty value" xml:space="preserve">
+    <value>/ClientSecret doit avoir une valeur non vide</value>
   </data>
   <data name="Thinkage.MainBoss.MBUtility§Access failed: {0}" xml:space="preserve">
     <value>Accès a échoué: {0}</value>
@@ -219,6 +228,9 @@
   <data name="Thinkage.MainBoss.MBUtility§No certificate issued to Thinkage Ltd. was found in the script &lt;Signature&gt; element" xml:space="preserve">
     <value>Aucun certificat délivré à Thinkage Ltd. n'a été trouvé dans l'élément &lt;Signature&gt; du script.</value>
   </data>
+  <data name="Thinkage.MainBoss.MBUtility§OAuth2 authentication can only be enabled if /ClientID and /ClientSecret are specified" xml:space="preserve">
+    <value>L'authentification OAuth2 ne peut être activée que si /ClientID et /ClientSecret sont spécifiés</value>
+  </data>
   <data name="Thinkage.MainBoss.MBUtility§Order the list by the Database Name" xml:space="preserve">
     <value>Trier la liste par la base de données Nom</value>
   </data>
@@ -302,6 +314,9 @@
   </data>
   <data name="Thinkage.MainBoss.MBUtility§Specify the SQL authentication credential of the MainBoss user" xml:space="preserve">
     <value>Spécifiez l'authentification d'authentification SQL de l'utilisateur MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.MBUtility§Specify whether the MainBoss service should use OAUth2 authentication" xml:space="preserve">
+    <value>Spécifiez si le service MainBoss doit utiliser l'authentification OAUth2</value>
   </data>
   <data name="Thinkage.MainBoss.MBUtility§Start" xml:space="preserve">
     <value>Début</value>

@@ -30,11 +30,29 @@
 	  <result hosting="cached">
 		cast(42 as Requiredcurrency)
 	  </result>
-	  <extension name="dependson">mbfn_DemandLaborOutside_ActualCost()</extension>
+	  <!-- <extension name="dependson">mbfn_DemandLaborOutside_ActualCost()</extension>
 	  <extension name="dependson">mbfn_DemandLaborInside_ActualCost()</extension>
 	  <extension name="dependson">mbfn_DemandItem_ActualCost()</extension>
 	  <extension name="dependson">mbfn_DemandOtherWorkInside_ActualCost()</extension>
 	  <extension name="dependson">mbfn_DemandOtherWorkOutside_ActualCost()</extension>
+	  <extension name="dependson">mbfn_DemandMiscellaneousWorkOrderCost_ActualCost()</extension> We replace this with its expansion so we can add conditions -->
+	  <!-- Because the Cost in a TX cannot be changed we don't need a dependency on it -->
+	  <extension name="dependson">ActualLaborInside.Id</extension>	  <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	  <extension name="dependson">ActualLaborInside@ActualLaborInside.DemandLaborInsideID.DemandID->Demand.Id</extension>
+	  <extension name="dependson">ActualLaborOutsidePO.Id</extension>	  <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	  <extension name="dependson">ActualLaborOutsidePO@ActualLaborOutsidePO.POLineLaborID.DemandLaborOutsideID.DemandID->Demand.Id</extension>
+	  <extension name="dependson">ActualLaborOutsideNonPO.Id</extension>	  <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	  <extension name="dependson">ActualLaborOutsideNonPO@ActualLaborOutsideNonPO.DemandLaborOutsideID.DemandID->Demand.Id</extension>
+	  <extension name="dependson">ActualOtherWorkInside.Id</extension>	  <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	  <extension name="dependson">ActualOtherWorkInside@ActualOtherWorkInside.DemandOtherWorkInsideID.DemandID->Demand.Id</extension>
+	  <extension name="dependson">ActualOtherWorkOutsidePO.Id</extension>	  <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	  <extension name="dependson">ActualOtherWorkOutsidePO@ActualOtherWorkOutsidePO.POLineOtherWorkID.DemandOtherWorkOutsideID.DemandID->Demand.Id</extension>
+	  <extension name="dependson">ActualOtherWorkOutsideNonPO.Id</extension>	  <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	  <extension name="dependson">ActualOtherWorkOutsideNonPO@ActualOtherWorkOutsideNonPO.DemandOtherWorkOutsideID.DemandID->Demand.Id</extension>
+	  <extension name="dependson">ActualItem.Id</extension>	  <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	  <extension name="dependson">ActualItem@ActualItem.DemandItemID.DemandID->Demand.Id</extension>
+	  <extension name="dependson">ActualMiscellaneousWorkOrderCost.Id</extension>	  <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	  <extension name="dependson">ActualMiscellaneousWorkOrderCost@ActualMiscellaneousWorkOrderCost.DemandMiscellaneousWorkOrderCostID.DemandID->Demand.Id</extension>
 	</field>
 	<extension name="costrights">WorkOrderItem</extension>
 	<extension name="costrights">WorkOrderInside</extension>
@@ -70,6 +88,11 @@
 	<field name="DerivedDemandID" type="GUID" labelkey=""/>
 	<field name="WorkOrderExpenseModelEntryID" type="GUIDREF" link="WorkOrderExpenseModelEntry">
 	  <doc>The link to the WOXME record associated with this demand, if any</doc>
+	  <extension name="dependson">WorkOrderExpenseModelEntry</extension>
+	  <extension name="dependson">WorkOrderExpenseModelEntry.WorkOrderExpenseModelID</extension>
+	  <extension name="dependson">WorkOrderExpenseModelEntry.WorkOrderExpenseCategoryID</extension>
+	  <extension name="dependson">WorkOrder.WorkOrderExpenseModelID</extension>
+	  <extension name="dependson">Demand.WorkOrderExpenseCategoryID</extension>
 	</field>
 	<extension name="query">
 	  select D.ID, DD.ID, WOXME.ID
@@ -96,23 +119,79 @@
 			on WOXME.WorkOrderExpenseModelID = WO.WorkOrderExpenseModelID
 			and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
 	</extension>
-	<extension name="dependson">Demand</extension>
+	<extension name="references">Demand</extension>
 	<extension name="dependson">DemandItem</extension>
 	<extension name="dependson">DemandLaborInside</extension>
 	<extension name="dependson">DemandOtherWorkInside</extension>
 	<extension name="dependson">DemandLaborOutside</extension>
 	<extension name="dependson">DemandOtherWorkOutside</extension>
-	<extension name="dependson">DemandItem</extension>
 	<extension name="dependson">DemandMiscellaneousWorkOrderCost</extension>
-	<extension name="dependson">WorkOrderExpenseModelEntry</extension>
+	<extension name="references">WorkOrderExpenseModelEntry</extension>
   </table>
   <table name="WorkOrderExpenseCategory"/>
-  <table name="WorkOrderExpenseModelEntry"/>
-  <table name="WorkOrder"/>
-  <table name="DemandItem"/>
-  <table name="DemandLaborInside"/>
-  <table name="DemandOtherWorkInside"/>
-  <table name="DemandLaborOutside"/>
-  <table name="DemandOtherWorkOutside"/>
-  <table name="DemandMiscellaneousWorkOrderCost"/>
+  <table name="WorkOrder">
+	<field name="WorkOrderExpenseModelID"/>
+  </table>
+  <table name="WorkOrderExpenseModelEntry">
+	<field name="WorkOrderExpenseCategoryID"/>
+	<field name="WorkOrderExpenseModelID"/>
+  </table>
+  <table name="DemandItem">
+	<field name="DemandID" />
+  </table>
+  <table name="DemandLaborInside">
+	<field name="DemandID" />
+  </table>
+  <table name="DemandOtherWorkInside">
+	<field name="DemandID" />
+  </table>
+  <table name="DemandLaborOutside">
+	<field name="DemandID" />
+  </table>
+  <table name="DemandOtherWorkOutside">
+	<field name="DemandID" />
+  </table>
+  <table name="DemandMiscellaneousWorkOrderCost">
+	<field name="DemandID" />
+  </table>
+  <table name="ActualItem">
+	<field name="Id"/>
+	<field name="DemandItemID" link="DemandItem"/>
+  </table>
+  <table name="ActualLaborInside">
+	<field name="Id"/>
+	<field name="DemandLaborInsideID" link="DemandLaborInside"/>
+  </table>
+  <table name="ActualLaborOutsidePO">
+	<field name="Id"/>
+	<field name="POLineLaborID" link="POLineLabor"/>
+  </table>
+  <table name="POLineLabor">
+	<field name="Id"/>
+	<field name="DemandLaborOutsideID" link="DemandLaborOutside"/>
+  </table>
+  <table name="ActualLaborOutsideNonPO">
+	<field name="Id"/>
+	<field name="DemandLaborOutsideID" link="DemandLaborOutside"/>
+  </table>
+  <table name="ActualOtherWorkInside">
+	<field name="Id"/>
+	<field name="DemandOtherWorkInsideID" link="DemandOtherWorkInside"/>
+  </table>
+  <table name="ActualOtherWorkOutsidePO">
+	<field name="Id"/>
+	<field name="POLineOtherWorkID" link="POLineOtherWork"/>
+  </table>
+  <table name="POLineOtherWork">
+	<field name="Id"/>
+	<field name="DemandOtherWorkOutsideID" link="DemandOtherWorkOutside"/>
+  </table>
+  <table name="ActualOtherWorkOutsideNonPO">
+	<field name="Id"/>
+	<field name="DemandOtherWorkOutsideID" link="DemandOtherWorkOutside"/>
+  </table>
+  <table name="ActualMiscellaneousWorkOrderCost">
+	<field name="Id"/>
+	<field name="DemandMiscellaneousWorkOrderCostID" link="DemandMiscellaneousWorkOrderCost"/>
+  </table>
 </database>

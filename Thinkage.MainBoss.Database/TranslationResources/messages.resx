@@ -3154,11 +3154,11 @@ Labor         __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§Interacts with your local mail system to send acknowledgments to requestors and to assignees of requests, work orders and purchase orders. If this service is disabled, all features that depend on it will be queued up until the service is enabled again." xml:space="preserve">
     <value>Interacts with your local mail system to send acknowledgments to requestors and to assignees of requests, work orders and purchase orders. If this service is disabled, all features that depend on it will be queued up until the service is enabled again.</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Invalid SQL Server connection string '{0}'" xml:space="preserve">
-    <value>Invalid SQL Server connection string '{0}'</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§Invalid SQL connection string '{0}'" xml:space="preserve">
     <value>Invalid SQL connection string '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Invalid SQL Server connection string '{0}'" xml:space="preserve">
+    <value>Invalid SQL Server connection string '{0}'</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Inventory is limited to {0} items." xml:space="preserve">
     <value>Inventory is limited to {0} items.</value>
@@ -3381,9 +3381,6 @@ Labor         __________________________ Material    __________________________<
   </data>
   <data name="Thinkage.MainBoss.Database§No MainBoss User record for '{0}'" xml:space="preserve">
     <value>No MainBoss User record for '{0}'</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§No organization name or database server was specified and you have no default organization" xml:space="preserve">
-    <value>No organization name or database server was specified and you have no default organization</value>
   </data>
   <data name="Thinkage.MainBoss.Database§No permissions for ({0}); no security role information: {1}" xml:space="preserve">
     <value>No permissions for ({0}); no security role information: {1}</value>

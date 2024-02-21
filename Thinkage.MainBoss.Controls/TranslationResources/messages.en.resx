@@ -4078,6 +4078,9 @@ If desired the SQL Database Login and SQL Database User may be manually deleted.
   <data name="Thinkage.MainBoss.Controls§OAuth2 requires either a Client Secret or a Client Certificate Name, but not both" xml:space="preserve">
     <value>OAuth2 requires either a Client Secret or a Client Certificate Name, but not both</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§OAuth2 Setup Help" xml:space="preserve">
+    <value>OAuth2 Setup Help</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Obtain list of users and contacts from Active Directory" xml:space="preserve">
     <value>Obtain list of users and contacts from Active Directory</value>
   </data>

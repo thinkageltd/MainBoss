@@ -3155,11 +3155,11 @@ Laboral       __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§Interacts with your local mail system to send acknowledgments to requestors and to assignees of requests, work orders and purchase orders. If this service is disabled, all features that depend on it will be queued up until the service is enabled again." xml:space="preserve">
     <value>Interactúa con el sistema de correo local para enviar agradecimientos a los solicitantes y cesionarios de las solicitudes, órdenes de trabajo y órdenes de compra. Si se deshabilita este servicio, todas las características que dependen de ella se pondrán en cola hasta que el servicio se activa de nuevo.</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Invalid SQL Server connection string '{0}'" xml:space="preserve">
-    <value>Cadena de conexión de SQL Server no válida '{0}'</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§Invalid SQL connection string '{0}'" xml:space="preserve">
     <value>Cadena de conexión SQL no válida '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Invalid SQL Server connection string '{0}'" xml:space="preserve">
+    <value>Cadena de conexión de SQL Server no válida '{0}'</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Inventory is limited to {0} items." xml:space="preserve">
     <value>El inventario es limitado a {0} artículos.</value>
@@ -3382,9 +3382,6 @@ Laboral       __________________________ Material    __________________________<
   </data>
   <data name="Thinkage.MainBoss.Database§No MainBoss User record for '{0}'" xml:space="preserve">
     <value>No MainBoss registro de usuarios para '{0}'</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§No organization name or database server was specified and you have no default organization" xml:space="preserve">
-    <value>El nombre de la organización o de la base de datos no ha sido especificado y no tiene organización predefinida</value>
   </data>
   <data name="Thinkage.MainBoss.Database§No permissions for ({0}); no security role information: {1}" xml:space="preserve">
     <value>Sin permisos para ({0}) la información, sin función de seguridad: {1}</value>

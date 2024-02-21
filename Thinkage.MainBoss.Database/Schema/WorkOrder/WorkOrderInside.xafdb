@@ -23,6 +23,11 @@
 	  <!-- This has to be here because the double-field join operation is not followable in XAF -->
 	  <doc>the Id of the WorkOrderExpenseModelEntry associated with a Demand record based on the WorkOrder's expense model which determines the C/C to actualize to.
 	  This will be null if there is no model entry (preventing actualization) and for all non-Demand and non-Actual record types.</doc>
+	  <extension name="dependson">WorkOrderExpenseModelEntry</extension>
+	  <extension name="dependson">WorkOrderExpenseModelEntry.WorkOrderExpenseModelID</extension>
+	  <extension name="dependson">WorkOrderExpenseModelEntry.WorkOrderExpenseCategoryID</extension>
+	  <extension name="dependson">WorkOrder.WorkOrderExpenseModelID</extension>
+	  <extension name="dependson">Demand.WorkOrderExpenseCategoryID</extension>
 	</field>
 	<!-- Other fields required for filtering/parentage -->
 	<field name="ParentID" type="GUIDREF" link="WorkOrderInside" labelkey="Work Order Inside">
@@ -74,11 +79,11 @@
 				and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
 	</extension>
 	<extension name="dependson">Trade</extension>
-	<extension name="dependson">Demand</extension>
+	<extension name="references">Demand</extension>
 	<extension name="dependson">DemandLaborInside</extension>
 	<extension name="dependson">DemandOtherWorkInside</extension>
-	<extension name="dependson">WorkOrder</extension>
-	<extension name="dependson">WorkOrderExpenseModelEntry</extension>
+	<extension name="references">WorkOrder</extension>
+	<extension name="references">WorkOrderExpenseModelEntry</extension>
 	<extension name="costrights">WorkOrderInside</extension>
   </table>
   <table name="WorkOrderInsideTreeView" defaults="false" log="false" id="Id" labelkey="Work Order Inside">
@@ -113,11 +118,18 @@
 	<extension name="dependson">DemandLaborInside</extension>
 	<extension name="dependson">DemandOtherWorkInside</extension>
   </table>
-  <table name="Demand"/>
   <table name="DemandLaborInside"/>
   <table name="DemandOtherWorkInside"/>
-  <table name="WorkOrder"/>
-  <table name="WorkOrderExpenseModelEntry"/>
+  <table name="Demand">
+	<field name="WorkOrderExpenseCategoryID"/>
+  </table>
+  <table name="WorkOrder">
+	<field name="WorkOrderExpenseModelID"/>
+  </table>
+  <table name="WorkOrderExpenseModelEntry">
+	<field name="WorkOrderExpenseCategoryID"/>
+	<field name="WorkOrderExpenseModelID"/>
+  </table>
   <table name="WorkOrderExpenseModel"/>
   <table name="LaborInside"/>
   <table name="OtherWorkInside"/>

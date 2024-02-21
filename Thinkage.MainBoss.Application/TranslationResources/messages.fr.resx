@@ -253,8 +253,17 @@
     <value>MainBoss nécessitera de nouvelles clés de licence après la mise à niveau.
 Voulez-vous poursuivre la mise à niveau?</value>
   </data>
+  <data name="Thinkage.MainBoss.Application§No application name was specified" xml:space="preserve">
+    <value>Aucune application n'a été précisée</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§No organization or database connection information was provided" xml:space="preserve">
+    <value>Aucune information sur l'organisation ou la connexion à la base de données n'a été fournie</value>
+  </data>
   <data name="Thinkage.MainBoss.Application§No unpublished form customizations exist" xml:space="preserve">
     <value>Aucun inédits personnalisations de formulaires existent</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§No value was specified for '{0}'" xml:space="preserve">
+    <value>Aucune valeur n'a été précisée pour '{0}'</value>
   </data>
   <data name="Thinkage.MainBoss.Application§Normal (*.xml)" xml:space="preserve">
     <value>Normal (* .xml)</value>

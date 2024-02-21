@@ -74,7 +74,7 @@ namespace Thinkage.MainBoss.Database {
 				/// <param name="existingOrganization"></param>
 				/// <returns></returns>
 				/// <exception cref="GeneralException"></exception>
-				public ConnectionDefinition ResolveConnectionDefinition(out string organizationName, out NamedOrganization existingOrganization) {
+				public ConnectionDefinition ResolveConnectionDefinition(out string organizationName, out NamedOrganization existingOrganization, bool required = true) {
 
 					NamedOrganization organization = null;
 					SqlConnectionStringBuilder connectionString = null;
@@ -113,6 +113,18 @@ namespace Thinkage.MainBoss.Database {
 						organization = organizations.Load(organizations.PreferredOrganizationId);
 						if (organization != null)
 							orgName = organization.DisplayName;
+						else if (!required
+							&& !DataBaseServer.ExplicitlySet
+							&& !DataBaseName.ExplicitlySet
+							&& !Username.ExplicitlySet
+							&& !Password.ExplicitlySet
+							&& !AuthenticationMethod.ExplicitlySet) {
+							// There is no organization specified, and no default organization, and no ad hoc connection information
+							// Since no connection information is required by the caller, just return null.
+							organizationName = null;
+							existingOrganization = null;
+							return null;
+						}
 					}
 
 					// Get the DB server
@@ -148,6 +160,27 @@ namespace Thinkage.MainBoss.Database {
 						throw new GeneralException(KB.K("No database name was specified"));
 
 					// Get the credentials
+					string userName = null;
+					if (Username.ExplicitlySet)
+						userName = Username.Value;
+					else if (connectionString != null && !string.IsNullOrEmpty(connectionString.UserID))
+						userName = connectionString.UserID;
+					else if (organization != null)
+						userName = organization.ConnectionDefinition.DBCredentials.Username;
+
+					string password = null;
+					if (Password.ExplicitlySet) {
+						if (EncodedPassword.ExplicitlySet)
+							throw new GeneralException(KB.K("'{0}' cannot be used with '{1}'"), Password.OptionName, EncodedPassword.OptionName);
+						password = Password.Value;
+					}
+					else if (EncodedPassword.ExplicitlySet)
+						password = Service.ServicePassword.Decode(Convert.FromBase64String(EncodedPassword.Value));
+					else if (connectionString != null && !string.IsNullOrEmpty(connectionString.UserID))
+						password = connectionString.Password;
+					else if (organization != null)
+						password = organization.ConnectionDefinition.DBCredentials.Password;
+
 					AuthenticationMethod method = AuthenticationCredentials.Default.Type;
 					if (AuthenticationMethod.ExplicitlySet)
 						method = (AuthenticationMethod)AuthenticationMethod.Value;
@@ -169,29 +202,10 @@ namespace Thinkage.MainBoss.Database {
 					}
 					else if (organization != null)
 						method = organization.ConnectionDefinition.DBCredentials.Type;
+					else if (!string.IsNullOrEmpty(password) || !string.IsNullOrEmpty(userName))
+						method = Libraries.DBILibrary.AuthenticationMethod.SQLPassword;
 					else
 						method = AuthenticationCredentials.Default.Type;
-
-					string userName = null;
-					if (Username.ExplicitlySet)
-						userName = Username.Value;
-					else if (connectionString != null && !string.IsNullOrEmpty(connectionString.UserID))
-						userName = connectionString.UserID;
-					else if (organization != null)
-						userName = organization.ConnectionDefinition.DBCredentials.Username;
-
-					string password = null;
-					if (Password.ExplicitlySet) {
-						if (EncodedPassword.ExplicitlySet)
-							throw new GeneralException(KB.K("'{0}' cannot be used with '{1}'"), Password.OptionName, EncodedPassword.OptionName);
-						password = Password.Value;
-					}
-					else if (EncodedPassword.ExplicitlySet)
-						password = Service.ServicePassword.Decode(Convert.FromBase64String(EncodedPassword.Value));
-					else if (connectionString != null && !string.IsNullOrEmpty(connectionString.UserID))
-						password = connectionString.Password;
-					else if (organization != null)
-						password = organization.ConnectionDefinition.DBCredentials.Password;
 
 					AuthenticationCredentials credentials;
 					switch (method) {
@@ -241,11 +255,6 @@ namespace Thinkage.MainBoss.Database {
 			}
 			#endregion
 
-			public class NoOrganizationException : GeneralException {
-				public NoOrganizationException(GeneralException inner)
-					: base(inner, KB.K("No organization name or database server was specified and you have no default organization")) {
-				}
-			}
 			// These strings serve as the (abbreviable) option name for the command line for MB,
 			// the @Requests Admin program, and some MBUtility verbs.
 			// Being option names these will also appear as labels on the OptableForm if one is built from an optable containing one of these options.

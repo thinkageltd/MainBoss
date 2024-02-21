@@ -20,6 +20,11 @@
 	</field>
 	<field name="WorkOrderExpenseModelEntryID" type="GUIDREF" link="WorkOrderExpenseModelEntry">
 	  <doc>the WorkOrderExpenseModelEntry that defines the paying cost centre for labor/other work PO lines</doc>
+	  <extension name="dependson">WorkOrderExpenseModelEntry</extension>
+	  <extension name="dependson">WorkOrderExpenseModelEntry.WorkOrderExpenseModelID</extension>
+	  <extension name="dependson">WorkOrderExpenseModelEntry.WorkOrderExpenseCategoryID</extension>
+	  <extension name="dependson">WorkOrder.WorkOrderExpenseModelID</extension>
+	  <extension name="dependson">Demand.WorkOrderExpenseCategoryID</extension>
 	</field>
 	<field name="ParentID" type="GUIDREF" link="PurchaseOrderLine" labelkey="Purchase Order Line"/>
 	<extension name="query">
@@ -147,12 +152,11 @@
 	<extension name="dependson">POLineMiscellaneous</extension>
 	<extension name="dependson">ReceiveMiscellaneousPO</extension>
 	<extension name="dependson">POLine</extension>
-	<extension name="dependson">PurchaseOrder</extension>
-	<extension name="dependson">WorkOrderExpenseModelEntry</extension>
-	<extension name="dependson">WorkOrder</extension>
-	<extension name="dependson">Demand</extension>
-	<extension name="dependson">DemandLaborOutside</extension>
-	<extension name="dependson">DemandOtherWorkOutside</extension>
+	<extension name="references">WorkOrderExpenseModelEntry</extension>
+	<extension name="references">WorkOrder</extension>
+	<extension name="references">Demand</extension>
+	<extension name="references">DemandLaborOutside</extension>
+	<extension name="references">DemandOtherWorkOutside</extension>
 	<extension name="costrights">PurchaseOrderItem,PurchaseOrderLabor,PurchaseOrderMiscellaneous</extension>
   </table>
   <table name="POLineItem"/>
@@ -166,9 +170,16 @@
   <table name="POLine"/>
   <table name="AccountingTransaction"/>
   <table name="PurchaseOrder"/>
-  <table name="WorkOrderExpenseModelEntry"/>
-  <table name="WorkOrder"/>
-  <table name="Demand"/>
+  <table name="Demand">
+	<field name="WorkOrderExpenseCategoryID"/>
+  </table>
+  <table name="WorkOrder">
+	<field name="WorkOrderExpenseModelID"/>
+  </table>
+  <table name="WorkOrderExpenseModelEntry">
+	<field name="WorkOrderExpenseCategoryID"/>
+	<field name="WorkOrderExpenseModelID"/>
+  </table>
   <table name="DemandLaborOutside"/>
   <table name="DemandOtherWorkOutside"/>  
 </database>

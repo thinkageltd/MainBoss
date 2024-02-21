@@ -21,6 +21,11 @@
 	  <!-- This has to be here because the double-field join operation is not followable in XAF -->
 	  <doc>the Id of the WorkOrderExpenseModelEntry associated with a DemandTemplate record based on the WorkOrderTemplate's expense model which determines the C/C to actualize to.
 	  This will be null if there is no model entry (preventing actualization) and for all non-Demand and non-Actual record types.</doc>
+	  <extension name="dependson">WorkOrderExpenseModelEntry</extension>
+	  <extension name="dependson">WorkOrderExpenseModelEntry.WorkOrderExpenseModelID</extension>
+	  <extension name="dependson">WorkOrderExpenseModelEntry.WorkOrderExpenseCategoryID</extension>
+	  <extension name="dependson">WorkOrderTemplate.WorkOrderExpenseModelID</extension>
+	  <extension name="dependson">DemandTemplate.WorkOrderExpenseCategoryID</extension>
 	</field>
 	<!-- Other fields required for filtering/parentage: None. Since only one variant has a non-null filter or parent the value can be represented
 	by just a path in the tbl.-->
@@ -42,7 +47,7 @@
 		</extension>
 	<extension name="dependson">Item</extension>
 	<extension name="dependson">DemandTemplate</extension>
-	<extension name="dependson">WorkOrderExpenseModelEntry</extension>
+	<extension name="references">WorkOrderExpenseModelEntry</extension>
 	<extension name="costrights">WorkOrderItem</extension>
   </table>
   <table name="WorkOrderTemplateItemsTreeView" defaults="false" log="false" id="Id"  labelkey="Task Demand Item">
@@ -166,14 +171,21 @@
 	<extension name="dependson">TemplateItemLocation</extension>
 	<extension name="dependson">ItemLocation</extension>
   </table>
-  <table name="DemandTemplate"/>
   <table name="DemandItemTemplate"/>
   <table name="ItemLocation"/>
   <table name="TemplateItemLocation"/>
   <table name="LocationContainment"/>
   <table name="TemplateTemporaryStorage"/>
-  <table name="WorkOrderTemplate"/>
-  <table name="WorkOrderExpenseModelEntry"/>
+  <table name="DemandTemplate">
+	<field name="WorkOrderExpenseCategoryID"/>
+  </table>
+  <table name="WorkOrderTemplate">
+	<field name="WorkOrderExpenseModelID"/>
+  </table>
+  <table name="WorkOrderExpenseModelEntry">
+	<field name="WorkOrderExpenseCategoryID"/>
+	<field name="WorkOrderExpenseModelID"/>
+  </table>
   <table name="Item"/>
   <table name="Location"/>
   <table name="PermanentStorage"/>

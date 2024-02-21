@@ -997,7 +997,12 @@ namespace Thinkage.MainBoss.Controls {
 					TblColumnNode.New(KB.K("Override Default MailBox"), dsMB.Path.T.ServiceConfiguration.F.MailboxName, DCol.Normal, ECol.Normal),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailUserName, DCol.Normal, ECol.Normal),
 					TblGroupNode.New(dsMB.Path.T.ServiceConfiguration.F.MailAuthenticationType, new TblLayoutNode.ICtorArg[] { ECol.Normal },
-						TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailAuthenticationType, new ECol(Fmt.SetId(IncomingMailAuthenticationTypeId)))
+						TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailAuthenticationType, new ECol(Fmt.SetId(IncomingMailAuthenticationTypeId))),
+						TblUnboundControlNode.New(KB.K("OAuth2 Setup Help"),
+							new StringTypeInfo(1, uint.MaxValue, 0, allow_null: false, trim_leading: false, trim_trailing: false),
+							new ECol(ECol.AllReadonlyAccess,
+								Fmt.SetUsage(DBI_Value.UsageType.ProtocolEncodedLink),
+								Fmt.SetInitialValue("https://www.mainboss.com/support/MB424/help/OAuth2Setup.htm")))
 					),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailAuthenticationType, DCol.Normal),
 					// Flip panel, page 1:

@@ -23,6 +23,11 @@
 	  <!-- This has to be here because the double-field join operation is not followable in XAF -->
 	  <doc>the Id of the WorkOrderExpenseModelEntry associated with a Demand record based on the WorkOrder's expense model which determines the C/C to actualize to.
 	  This will be null if there is no model entry (preventing actualization) and for all non-Demand and non-Actual record types.</doc>
+	  <extension name="dependson">WorkOrderExpenseModelEntry</extension>
+	  <extension name="dependson">WorkOrderExpenseModelEntry.WorkOrderExpenseModelID</extension>
+	  <extension name="dependson">WorkOrderExpenseModelEntry.WorkOrderExpenseCategoryID</extension>
+	  <extension name="dependson">WorkOrder.WorkOrderExpenseModelID</extension>
+	  <extension name="dependson">Demand.WorkOrderExpenseCategoryID</extension>
 	</field>
 	<field name="WorkOrderID" type="RequiredGUIDREF" link="WorkOrder">
 	  <!-- This must remain until we can put per-view filters on all the CompositeViews all with the same tag and target them as a group with
@@ -60,12 +65,12 @@
 		  join
 			DemandExt as D on D.ID = DM.DemandID
 	</extension>
-	<extension name="dependson">Demand</extension>
-	<extension name="dependson">DemandMiscellaneousWorkOrderCost</extension>
-	<extension name="dependson">WorkOrder</extension>
-	<extension name="dependson">WorkOrderExpenseModelEntry</extension>
-	<extension name="dependson">WorkOrderExpenseModel</extension>
+	<extension name="references">Demand</extension>
 	<extension name="dependson">MiscellaneousWorkOrderCost</extension>
+	<extension name="dependson">DemandMiscellaneousWorkOrderCost</extension>
+	<extension name="references">WorkOrder</extension>
+	<extension name="references">WorkOrderExpenseModelEntry</extension>
+	<extension name="references">WorkOrderExpenseModel</extension>
 	<extension name="costrights">WorkOrderMiscellaneous</extension>
   </table>
   <table name="WorkOrderMiscellaneousTreeView" defaults="false" log="false" id="Id" labelkey="Work Order Miscellaneous">
@@ -94,10 +99,17 @@
 	<extension name="dependson">DemandMiscellaneousWorkOrderCost</extension>
 	<extension name="costrights">WorkOrderMiscellaneous</extension>
   </table>
-  <table name="Demand"/>
   <table name="DemandMiscellaneousWorkOrderCost"/>
-  <table name="WorkOrder"/>
-  <table name="WorkOrderExpenseModelEntry"/>
+  <table name="Demand">
+	<field name="WorkOrderExpenseCategoryID"/>
+  </table>
+  <table name="WorkOrder">
+	<field name="WorkOrderExpenseModelID"/>
+  </table>
+  <table name="WorkOrderExpenseModelEntry">
+	<field name="WorkOrderExpenseCategoryID"/>
+	<field name="WorkOrderExpenseModelID"/>
+  </table>
   <table name="WorkOrderExpenseModel"/>
   <table name="MiscellaneousWorkOrderCost"/>
 </database>

@@ -26,6 +26,11 @@
 	  <!-- This has to be here because the double-field join operation is not followable in XAF -->
 	  <doc>the Id of the WorkOrderExpenseModelEntry associated with a Demand record based on the WorkOrder's expense model which determines the C/C to actualize to.
 	  This will be null if there is no model entry (preventing actualization) and for all non-Demand and non-Actual record types.</doc>
+	  <extension name="dependson">WorkOrderExpenseModelEntry</extension>
+	  <extension name="dependson">WorkOrderExpenseModelEntry.WorkOrderExpenseModelID</extension>
+	  <extension name="dependson">WorkOrderExpenseModelEntry.WorkOrderExpenseCategoryID</extension>
+	  <extension name="dependson">WorkOrder.WorkOrderExpenseModelID</extension>
+	  <extension name="dependson">Demand.WorkOrderExpenseCategoryID</extension>
 	</field>
 	<!-- Other fields required for filtering/parentage -->
 	<field name="ParentID" type="GUIDREF" link="WorkOrderOutside" labelkey="Work Order Outside">
@@ -112,11 +117,11 @@
 	<extension name="dependson">Demand</extension>
 	<extension name="dependson">DemandLaborOutside</extension>
 	<extension name="dependson">DemandOtherWorkOutside</extension>
-	<extension name="dependson">POLine</extension>
 	<extension name="dependson">POLineLabor</extension>
 	<extension name="dependson">POLineOtherWork</extension>
-	<extension name="dependson">WorkOrder</extension>
-	<extension name="dependson">WorkOrderExpenseModelEntry</extension>
+	<extension name="references">POLine</extension>
+	<extension name="references">WorkOrder</extension>
+	<extension name="references">WorkOrderExpenseModelEntry</extension>
 	<extension name="costrights">WorkOrderOutside</extension>
   </table>
   <table name="WorkOrderOutsideTreeView" defaults="false" log="false" id="Id" labelkey="Work Order Outside">
@@ -188,12 +193,19 @@
 	<extension name="dependson">POLineOtherWork</extension>
   </table>
   <table name="Trade"/>
-  <table name="Demand"/>
   <table name="POLine"/>
   <table name="DemandLaborOutside"/>
   <table name="DemandOtherWorkOutside"/>
-  <table name="WorkOrder"/>
-  <table name="WorkOrderExpenseModelEntry"/>
+  <table name="Demand">
+	<field name="WorkOrderExpenseCategoryID"/>
+  </table>
+  <table name="WorkOrder">
+	<field name="WorkOrderExpenseModelID"/>
+  </table>
+  <table name="WorkOrderExpenseModelEntry">
+	<field name="WorkOrderExpenseCategoryID"/>
+	<field name="WorkOrderExpenseModelID"/>
+  </table>
   <table name="WorkOrderExpenseModel"/>
   <table name="LaborOutside"/>
   <table name="OtherWorkOutside"/>

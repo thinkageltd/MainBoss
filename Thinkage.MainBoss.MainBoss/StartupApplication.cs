@@ -144,14 +144,10 @@ namespace Thinkage.MainBoss.MainBoss {
 				if( behavior != 0)
 					return new PickOrganizationApplication(behavior);
 
-				NamedOrganization o = Options.ResolvedSavedOrganization();
+				NamedOrganization o = Options.ResolveSavedOrganization();
 				Libraries.Application app;
 				if(o != null && (app = MainBossApplication.CreateMainBossApplication(o)) != null)
 					return app;
-			}
-			catch (MB3Client.OptionSupport.NoOrganizationException)
-			{
-				// Ignore this error and just goto PickOrganizationApplication()
 			}
 			catch (GeneralException ex)
 			{

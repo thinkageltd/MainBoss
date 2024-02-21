@@ -253,8 +253,17 @@
     <value>MainBoss will require new license keys after the upgrade.
 Do you want to continue with the upgrade?</value>
   </data>
+  <data name="Thinkage.MainBoss.Application§No application name was specified" xml:space="preserve">
+    <value>No application name was specified</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§No organization or database connection information was provided" xml:space="preserve">
+    <value>No organization or database connection information was provided</value>
+  </data>
   <data name="Thinkage.MainBoss.Application§No unpublished form customizations exist" xml:space="preserve">
     <value>No unpublished form customizations exist</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§No value was specified for '{0}'" xml:space="preserve">
+    <value>No value was specified for '{0}'</value>
   </data>
   <data name="Thinkage.MainBoss.Application§Normal (*.xml)" xml:space="preserve">
     <value>Normal (*.xml)</value>

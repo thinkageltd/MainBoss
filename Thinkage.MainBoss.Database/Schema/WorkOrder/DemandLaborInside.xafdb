@@ -66,7 +66,8 @@
 		)
 	  end
 	</extension>
-	<extension name="dependson">DemandLaborInside.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
+	<!-- Because the COst in a TX cannot be changed we don't need a sependency on it -->
+	<extension name="dependson">ActualLaborInside.Id</extension> <!-- Prevent inferral from dependency on table to dependency on all its fields. -->
 	<extension name="dependson">ActualLaborInside</extension>
   </object>
 </database>

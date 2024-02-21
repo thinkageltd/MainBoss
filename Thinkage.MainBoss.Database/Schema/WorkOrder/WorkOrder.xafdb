@@ -110,7 +110,9 @@
 	  <result hosting="cached">
 		cast(42 as RequiredCurrency)
 	  </result>
-	  <extension name="dependson">mbfn_WorkOrder_TotalDemand()</extension>
+	  <!-- <extension name="dependson">mbfn_WorkOrder_TotalDemand()</extension> We replace this with its expansion so we can add conditions -->
+	  <extension name="dependson">Demand@Demand.WorkOrderID->WorkOrder.Id</extension>
+	  <extension name="dependson">Demand.CostEstimate@Demand.WorkOrderID->WorkOrder.Id</extension>
 	</field>
 	<field name="TotalActual" read="RequiredCurrency">
 	  <doc>
@@ -119,7 +121,9 @@
 	  <result hosting="cached">
 		cast(42 as RequiredCurrency)
 	  </result>
-	  <extension name="dependson">mbfn_WorkOrder_TotalActual()</extension>
+	  <!-- <extension name="dependson">mbfn_WorkOrder_TotalActual()</extension> We replace this with its expansion so we can add conditions -->
+	  <!-- New Demand records have an ActualCost of zero so they don't affect the WO TotalActual cost -->
+	  <extension name="dependson">Demand.ActualCost@Demand.WorkOrderID->WorkOrder.Id</extension>
 	</field>
 	<field name="TemporaryStorageEmpty" read="RequiredBool">
 	  <doc>
@@ -189,6 +193,7 @@
 	  end
 	</extension>
 	<extension name="dependson">Demand</extension>
+	<extension name="dependson">Demand.CostEstimate</extension>
   </object>
   <object class="function" name="mbfn_WorkOrder_TotalActual">
 	<doc>
@@ -209,6 +214,7 @@
 	  end
 	</extension>
 	<extension name="dependson">Demand</extension>
+	<extension name="dependson">Demand.ActualCost</extension>
   </object>
   <object class="function" name="mbfn_WorkOrder_TemporaryStorageEmpty">
 	<doc>
@@ -276,5 +282,9 @@
   </table>
   <table name="ItemLocation"/>
   <table name="TemporaryStorage"/>
-  <table name="Demand"/>
+  <table name="Demand">
+	<field name="WorkOrderID"/>
+	<field name="CostEstimate"/>
+	<field name="ActualCost"/>
+  </table>
 </database>

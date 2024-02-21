@@ -2632,6 +2632,9 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
   <data name="Thinkage.MainBoss.Controls§OAuth2 requires either a Client Secret or a Client Certificate Name, but not both" xml:space="preserve">
     <value>OAuth2 nécessite soit un secret client, soit un nom de certificat client, mais pas les deux</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§OAuth2 Setup Help" xml:space="preserve">
+    <value>Aide à la configuration d'OAuth2</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Obtain list of users and contacts from Active Directory" xml:space="preserve">
     <value>Obtenir une liste d'utilisateurs et de contacts à partir d'Active Directory</value>
   </data>

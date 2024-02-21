@@ -3392,6 +3392,9 @@ Si lo desea, el inicio de sesión de la base de datos SQL y el usuario de la bas
   <data name="Thinkage.MainBoss.Controls§OAuth2 requires either a Client Secret or a Client Certificate Name, but not both" xml:space="preserve">
     <value>OAuth2 requiere un secreto de cliente o un nombre de certificado de cliente, pero no ambos.</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§OAuth2 Setup Help" xml:space="preserve">
+    <value>Ayuda de configuración de OAuth2</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Obtain list of users and contacts from Active Directory" xml:space="preserve">
     <value>Lista de usuarios y contactos de Active Directory Obtener</value>
   </data>

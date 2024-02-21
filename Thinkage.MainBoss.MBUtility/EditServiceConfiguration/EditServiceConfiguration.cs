@@ -16,9 +16,11 @@ namespace Thinkage.MainBoss.MBUtility {
 				// The options are however optional so you can call the command with no options to test permission to do this.
 				Optable.Add(ClientIDOption = new StringValueOption("ClientID", KB.K("Specify the Client ID (App Id of the App Registration in Azure AD)").Translate(), false));
 				Optable.Add(ClientSecretOption = new StringValueOption("ClientSecret", KB.K("Specify the Client Secret (password) required to authenticate with the Azure Application").Translate(), false));
+				Optable.Add(UseOAUth2Option = new BooleanOption("UseOAuth2", KB.K("Specify whether the MainBoss service should use OAUth2 authentication").Translate(), false));
 			}
 			public readonly StringValueOption ClientIDOption;
 			public readonly StringValueOption ClientSecretOption;
+			public readonly BooleanOption UseOAUth2Option;
 			public override string Verb {
 				[return: Thinkage.Libraries.Translation.Invariant]
 				get {
@@ -73,6 +75,12 @@ namespace Thinkage.MainBoss.MBUtility {
 			if (Options.ClientIDOption.ExplicitlySet || Options.ClientSecretOption.ExplicitlySet) {
 				if (!Options.ClientIDOption.ExplicitlySet || !Options.ClientSecretOption.ExplicitlySet)
 					throw new GeneralException(KB.K("/ClientID and /ClientSecret options must be used together"));
+				if (string.IsNullOrEmpty(Options.ClientIDOption.Value))
+					throw new GeneralException(KB.K("/ClientID must have a non-empty value"));
+				if (string.IsNullOrEmpty(Options.ClientSecretOption.Value))
+					throw new GeneralException(KB.K("/ClientSecret must have a non-empty value"));
+				if (Options.UseOAUth2Option.ExplicitlySet && !Options.UseOAUth2Option.Value)
+					throw new GeneralException(KB.K("/ClientID and /ClientSecret options must be used only with OAuth2 enabled"));
 				using (dsMB updateDs = new dsMB(db)) {
 					// There should only be one record, so we use a row select expression of 'true'.
 					// EditSingleRow comment claim it is an error if more than one row is found, but it is actually just an assertion failure.
@@ -81,6 +89,21 @@ namespace Thinkage.MainBoss.MBUtility {
 					scRow.F.MailClientID = Options.ClientIDOption.Value;
 					scRow.F.MailEncryptedClientSecret = ServicePassword.Encode(Options.ClientSecretOption.Value);
 					scRow.F.MailAuthenticationType = (int)DatabaseEnums.MailServerAuthentication.OAuth2;
+					scRow.F.MailClientCertificateName = null;
+					db.Update(updateDs);
+				}
+			}
+			else if (Options.UseOAUth2Option.ExplicitlySet) {
+				if (Options.UseOAUth2Option.Value)
+					throw new GeneralException(KB.K("OAuth2 authentication can only be enabled if /ClientID and /ClientSecret are specified"));
+				using (dsMB updateDs = new dsMB(db)) {
+					// There should only be one record, so we use a row select expression of 'true'.
+					// EditSingleRow comment claim it is an error if more than one row is found, but it is actually just an assertion failure.
+					// TODO: Fix that at some level.
+					var scRow = (dsMB.ServiceConfigurationRow)db.EditSingleRow(updateDs, dsMB.Schema.T.ServiceConfiguration, SqlExpression.Constant(true));
+					scRow.F.MailClientID = null;
+					scRow.F.MailEncryptedClientSecret = null;
+					scRow.F.MailAuthenticationType = (int)DatabaseEnums.MailServerAuthentication.Plain;
 					scRow.F.MailClientCertificateName = null;
 					db.Update(updateDs);
 				}
