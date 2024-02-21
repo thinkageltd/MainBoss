@@ -181,7 +181,7 @@
     <value>En dehors horaire réel</value>
   </data>
   <data name="TableObjects§Actual Hourly Outside (with PO)" xml:space="preserve">
-    <value>En dehors horaire réel (avec PO)</value>
+    <value>En dehors horaire réel (avec BC)</value>
   </data>
   <data name="TableObjects§Actual Item" xml:space="preserve">
     <value>Point réelle</value>
@@ -196,7 +196,7 @@
     <value>Réel par emploi à l'extérieur</value>
   </data>
   <data name="TableObjects§Actual Per Job Outside (with PO)" xml:space="preserve">
-    <value>Réel par emploi à l'extérieur (avec PO)</value>
+    <value>Réel par emploi à l'extérieur (avec BC)</value>
   </data>
   <data name="TableObjects§Administration" xml:space="preserve">
     <value>Administration</value>
@@ -283,7 +283,7 @@
     <value>Correction de l'extérieur horaire réel</value>
   </data>
   <data name="TableObjects§Correction of Actual Hourly Outside (with PO)" xml:space="preserve">
-    <value>Correction de l'extérieur horaire réel (avec PO)</value>
+    <value>Correction de l'extérieur horaire réel (avec BC)</value>
   </data>
   <data name="TableObjects§Correction of Actual Item" xml:space="preserve">
     <value>Correction du point réelles</value>
@@ -298,7 +298,7 @@
     <value>Correction du réel par emploi à l'extérieur</value>
   </data>
   <data name="TableObjects§Correction of Actual Per Job Outside (with PO)" xml:space="preserve">
-    <value>Correction du réel par emploi à l'extérieur (avec PO)</value>
+    <value>Correction du réel par emploi à l'extérieur (avec BC)</value>
   </data>
   <data name="TableObjects§Correction of Chargeback Activity" xml:space="preserve">
     <value>Correction de l'activité Rétrofacturation</value>
@@ -724,7 +724,7 @@
     <value>Recevez article</value>
   </data>
   <data name="TableObjects§Receive Item (with PO)" xml:space="preserve">
-    <value>Recevez Point (avec PO)</value>
+    <value>Recevez Point (avec BC)</value>
   </data>
   <data name="TableObjects§Receive Miscellaneous" xml:space="preserve">
     <value>Recevez Divers</value>
@@ -1069,13 +1069,13 @@
     <value>Ordre de Travail horaire à l'extérieur</value>
   </data>
   <data name="TableObjects§Work Order Hourly Outside (with PO)" xml:space="preserve">
-    <value>Ordre de Travail horaire à l'extérieur (avec PO)</value>
+    <value>Ordre de Travail horaire à l'extérieur (avec BC)</value>
   </data>
   <data name="TableObjects§Work Order Hourly Outside Actual (no PO)" xml:space="preserve">
     <value>Ordre de Travail horaire extérieur réel</value>
   </data>
   <data name="TableObjects§Work Order Hourly Outside Actual (with PO)" xml:space="preserve">
-    <value>Ordre de Travail horaire extérieur réel (avec PO)</value>
+    <value>Ordre de Travail horaire extérieur réel (avec BC)</value>
   </data>
   <data name="TableObjects§Work Order Inside" xml:space="preserve">
     <value>À l'intérieur</value>
@@ -1114,13 +1114,13 @@
     <value>Ordre de Travail par poste à l'extérieur</value>
   </data>
   <data name="TableObjects§Work Order Per Job Outside (with PO)" xml:space="preserve">
-    <value>Ordre de Travail par poste à l'extérieur (avec PO)</value>
+    <value>Ordre de Travail par poste à l'extérieur (avec BC)</value>
   </data>
   <data name="TableObjects§Work Order Per Job Outside Actual (no PO)" xml:space="preserve">
     <value>Ordre de Travail par emploi extérieur réel</value>
   </data>
   <data name="TableObjects§Work Order Per Job Outside Actual (with PO)" xml:space="preserve">
-    <value>Ordre de Travail par emploi extérieur réel (avec PO)</value>
+    <value>Ordre de Travail par emploi extérieur réel (avec BC)</value>
   </data>
   <data name="TableObjects§Work Order Priority" xml:space="preserve">
     <value>Ordre de Travail par de priorité</value>
@@ -1313,10 +1313,10 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
     <value>Durée réelle</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Actual Hourly (with PO)" xml:space="preserve">
-    <value>Actual horaire (avec PO)</value>
+    <value>Actual horaire (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Actual Per Job (with PO)" xml:space="preserve">
-    <value>Par réelles d'emploi (avec PO)</value>
+    <value>Par réelles d'emploi (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Actual Quantity" xml:space="preserve">
     <value>Quantité réelle</value>
@@ -1664,10 +1664,10 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
     <value>Correction</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Correction of Actual Hourly (with PO)" xml:space="preserve">
-    <value>Correction de réelles horaire (avec PO)</value>
+    <value>Correction de réelles horaire (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Correction of Actual Per Job (with PO)" xml:space="preserve">
-    <value>Correction du réel par emploi (avec PO)</value>
+    <value>Correction du réel par emploi (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Correction of Chargeback" xml:space="preserve">
     <value>Correction de la Rétrofacturation</value>
@@ -2226,6 +2226,12 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
   </data>
   <data name="Thinkage.MainBoss.Controls§History of work orders on selected units" xml:space="preserve">
     <value>Histoire des Ordres de Travail sur les unités sélectionnées</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Hourly Outside (with PO)" xml:space="preserve">
+    <value>En dehors horaire (avec BC)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Hourly Outside (no PO)" xml:space="preserve">
+    <value>En dehors horaire</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Hourly Purchase Line" xml:space="preserve">
     <value>Horaire Achat Ligne</value>
@@ -2851,6 +2857,12 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
   <data name="Thinkage.MainBoss.Controls§Pause the Windows Service for MainBoss. While the service is paused it will not do any processing" xml:space="preserve">
     <value>Mettre en pause le service Windows pour MainBoss. Alors que le service est suspendu, il ne fera pas de traitement</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Per Job Outside (with PO)" xml:space="preserve">
+    <value>Par emploi à l'extérieur (avec BC)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Per Job Outside (no PO)" xml:space="preserve">
+    <value>Par emploi à l'extérieur</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Per Job Purchase Line" xml:space="preserve">
     <value>Par achat d'emploi Ligne</value>
   </data>
@@ -2942,13 +2954,13 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
     <value>Précédent achat</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Previous Purchase (with PO)" xml:space="preserve">
-    <value>Achat précédent (avec PO)</value>
+    <value>Achat précédent (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Previous Purchase from Vendor (no PO)" xml:space="preserve">
     <value>Achat précédent auprès du vendeur</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Previous Purchase from Vendor (with PO)" xml:space="preserve">
-    <value>Achat précédent auprès du vendeur (avec PO)</value>
+    <value>Achat précédent auprès du vendeur (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Price Quote" xml:space="preserve">
     <value>Proposition de prix</value>
@@ -3680,8 +3692,8 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
   <data name="Thinkage.MainBoss.Controls§The Windows Service for MainBoss status cannot be determined." xml:space="preserve">
     <value>Le Statut du service Windows pour MainBoss ne peut être déterminée.</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§There are no contact records to create from" xml:space="preserve">
-    <value>Il n'y a pas les enregistrements de contact pour créer de</value>
+  <data name="Thinkage.MainBoss.Controls§There are no Active Directory records to create from" xml:space="preserve">
+    <value>Il n'y a pas les enregistrements d'Active Directory pour créer avec</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§There are no license records to update" xml:space="preserve">
     <value>Il n'y a pas de dossiers de permis de mettre à jour</value>
@@ -4140,7 +4152,7 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
     <value>Ordre de Travail horaire extérieur effectivement utilisé</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Work Order Hourly Outside actually used (with PO)" xml:space="preserve">
-    <value>Ordre de Travail horaire extérieur effectivement utilisé (avec PO)</value>
+    <value>Ordre de Travail horaire extérieur effectivement utilisé (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Work Order Hourly Outside with demanded and actual time and cost" xml:space="preserve">
     <value>Ordre horaire extérieur avec demandé et le temps réel et le coût de travail</value>
@@ -4173,7 +4185,7 @@ Si vous le souhaitez, la connexion à la base de données SQL et l'utilisateur d
     <value>Ordre de Travail par emploi En dehors de l'utilisation réelle</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Work Order Per Job Outside actually used (with PO)" xml:space="preserve">
-    <value>Ordre de Travail par emploi En dehors de l'utilisation réelle (avec PO)</value>
+    <value>Ordre de Travail par emploi En dehors de l'utilisation réelle (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Work Order Per Job Outside with demanded and actual quantity and cost" xml:space="preserve">
     <value>Bon de commande par emploi extérieur avec exigé et réelle quantité et le coût</value>

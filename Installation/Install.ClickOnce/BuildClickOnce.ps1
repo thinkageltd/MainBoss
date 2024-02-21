@@ -154,7 +154,6 @@ copy $deploymentManifest Installation
 $applicationUrl = $deploymentManifestFileName + "?/hmp:http://www.mainboss.com/english/manual/"+$productVersion+"/HtmlHelp"
 get-content Resources\DeployWebPage.htm | % {$_ -replace("PRODUCTNAME","$productName")} | % {$_ -replace("VERSION_TO_SUBSTITUTE","$version")} | % {$_ -replace("SUPPORT_URL","$supportUrl")} | % {$_ -replace("APPLICATION_URL_WITH_ARGUMENTS","$applicationURL")} | set-content Installation\default.htm
 copy Resources\logo.gif Installation
-Import-module Pscx
-write-zip Installation\* Install.MainBoss.ClickOnce.$version.zip
+compress-archive Installation\* -Force -DestinationPath Install.MainBoss.ClickOnce.$version.zip
 write-host 'BuildClickOnce Complete'
 pop-location

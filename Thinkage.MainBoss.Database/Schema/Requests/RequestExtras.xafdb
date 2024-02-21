@@ -64,7 +64,7 @@
 				where RequestState.FilterAsInProgress = 1 and Request.Id = RequestStateHistory.RequestID
 			)
 		  , case when RequestState.FilterAsClosed = 1 then RequestStateHistory.EffectiveDate end
-		  , dbo._DClosestValue(getdate(),2,100)
+		  , dbo._DClosestDivisions(getdate(), 100)
 		from Request
 		join RequestStateHistory on RequestStateHistory.Id = Request.CurrentRequestStateHistoryID
 		join RequestState on RequestState.Id = RequestStateHistory.RequestStateID

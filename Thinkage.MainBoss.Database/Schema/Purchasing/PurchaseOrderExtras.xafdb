@@ -93,7 +93,7 @@
 		  )
 		  , case when PurchaseOrderState.FilterAsClosed = 1 or PurchaseOrderState.FilterAsVoid = 1 then PurchaseOrderStateHistory.EffectiveDate end
 		  , RequiredByDate
-		  , dbo._DClosestValue(getdate(),2,100)
+		  , dbo._DClosestDivisions(getdate(), 100)
   		from PurchaseOrder
 		join PurchaseOrderStateHistory on PurchaseOrderStateHistory.Id = PurchaseOrder.CurrentPurchaseOrderStateHistoryID
 		join PurchaseOrderState on PurchaseOrderState.Id = PurchaseOrderStateHistory.PurchaseOrderStateID

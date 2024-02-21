@@ -111,24 +111,26 @@ namespace Thinkage.MainBoss.Controls
 				mobileSource = Browser.GetTblPathDisplaySource(dsUserPrincipal.Path.T.UserPrincipal.F.MobilePhone, 0);
 				preferredLanguageSource = Browser.GetTblPathDisplaySource(dsUserPrincipal.Path.T.UserPrincipal.F.PreferredLanguage, 0);
 
-				Disabler = new MultiDisablerIfAllEnabled();
-				ITblDrivenApplication app = Libraries.Application.Instance.GetInterface<ITblDrivenApplication>();
-				if (app.TableRights != null) { //rights are based on the Contact table
-					TableOperationRightsGroup rightsGroup = (TableOperationRightsGroup)app.TableRights.FindDirectChild(dsMB.Schema.T.Contact.MainTableName);
-					if (rightsGroup != null) {
-						Disabler.Add((IDisablerProperties)app.PermissionsManager.GetPermission(rightsGroup.GetTableOperationRight(TableOperationRightsGroup.TableOperation.Create)));
-						Disabler.Add((IDisablerProperties)app.PermissionsManager.GetPermission(rightsGroup.GetTableOperationRight(TableOperationRightsGroup.TableOperation.Edit)));
-						Disabler.Add((IDisablerProperties)app.PermissionsManager.GetPermission(rightsGroup.GetTableOperationRight(TableOperationRightsGroup.TableOperation.Delete)));
-					}
-				}
+				OverallDisabler = new MultiDisablerIfAllEnabled();
+
+				AnyRecordsEnabler = new SettableDisablerProperties(null, KB.K("There are no Active Directory records to create from"), false);
 				Browser.AugmentedCursors.Changed += new DataChanged(UpdateEnabling);
 				UpdateEnabling(DataChangedEvent.Reset, null);
+				OverallDisabler.Add(AnyRecordsEnabler);
+
+				ITblDrivenApplication app = Libraries.Application.Instance.GetInterface<ITblDrivenApplication>();
+				if (app.TableRights != null) { //rights are based on the Contact table
+					var rightsGroup = (TableOperationRightsGroup)app.TableRights.FindDirectChild(dsMB.Schema.T.Contact.MainTableName);
+					if (rightsGroup != null)
+						OverallDisabler.Add((IDisablerProperties)app.PermissionsManager.GetPermission(rightsGroup.GetTableOperationRight(TableOperationRightsGroup.TableOperation.Create)));
+				}
 			}
 			private readonly ContactFromDirectoryServiceBrowseLogic Browser;
 //			private RowContentChangedHandler Notification;
 			// The following arrays are all indexed by view index.
 			// The enablers that control whether deletion is allowed.
-			private readonly MultiDisablerIfAllEnabled Disabler;
+			private readonly MultiDisablerIfAllEnabled OverallDisabler;
+			private readonly SettableDisablerProperties AnyRecordsEnabler;
 			// The source in the browser for the ID of the row as the source of the new license record
 			private void UpdateEnabling(DataChangedEvent changeType, Position affectedRecord)
 			{
@@ -139,10 +141,12 @@ namespace Thinkage.MainBoss.Controls
 					enabled = true;
 					return false; // only need to find 1 so stop iterating now.
 				});
-				Enabled = enabled;
+				AnyRecordsEnabler.Enabled = enabled;
 			}
 			public void Execute()
 			{
+				if (!OverallDisabler.Enabled)
+					throw new GeneralException(OverallDisabler.Tip);
 				// Prohibit deletion if an editor is currently editing the record. Note that this check is done
 				// here but it should really be done using the Enabled property of the command. This would however remove the ability to activate the offending editor.
 				// This could be done via new ApplicationTblDefaultsUsingWindows.AlreadyBeingEditedDisabler(TblSchema) but then you must set the Id property of the disabler,
@@ -233,25 +237,17 @@ namespace Thinkage.MainBoss.Controls
 			{
 				get
 				{
-					return Enabled ? KB.K("Create the contacts") : KB.K("There are no contact records to create from");
+					return Enabled ? KB.K("Create the contacts") : OverallDisabler.Tip;
 				}
 			}
 			public bool Enabled
 			{
 				get
 				{
-					return pEnabled;
-				}
-				set
-				{
-					if (pEnabled != value) {
-						pEnabled = value;
-						EnabledChanged?.Invoke();
-					}
+					return OverallDisabler.Enabled;
 				}
 			}
-			private bool pEnabled;
-			public event IEnabledChangedEvent EnabledChanged;
+			public event IEnabledChangedEvent EnabledChanged { add { OverallDisabler.EnabledChanged += value; } remove { OverallDisabler.EnabledChanged -= value; } }
 		}
 		#endregion
 	}

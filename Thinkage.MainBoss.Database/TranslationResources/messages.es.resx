@@ -2455,7 +2455,7 @@
     <value>Actual Hora Exterior</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Actual Hourly Outside (with PO)" xml:space="preserve">
-    <value>Actual Hora Exterior (con PO)</value>
+    <value>Actual Hora Exterior (con OC)</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Actual Item" xml:space="preserve">
     <value>Actual Artículo</value>
@@ -2470,7 +2470,7 @@
     <value>Actual Per Trabajo Exterior</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Actual Per Job Outside (with PO)" xml:space="preserve">
-    <value>Actual Per Trabajo Exterior (con PO)</value>
+    <value>Actual Per Trabajo Exterior (con OC)</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Add a comment to this Purchase Order or change its Status without changing State" xml:space="preserve">
     <value>Añadir un comentario a esta Orden de Compra o cambiar su Estado sin cambiar de Estado</value>
@@ -3591,16 +3591,16 @@ Laboral       __________________________ Material    __________________________<
     <value>Recibe</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Receive (with PO)" xml:space="preserve">
-    <value>Recibe (con PO)</value>
+    <value>Recibe (con OC)</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Receive Item (no PO)" xml:space="preserve">
     <value>Recibe Artículo</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Receive Item (with PO)" xml:space="preserve">
-    <value>Recibe Artículo (con PO)</value>
+    <value>Recibe Artículo (con OC)</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Receive Miscellaneous (with PO)" xml:space="preserve">
-    <value>Recibe Varios (con PO)</value>
+    <value>Recibe Varios (con OC)</value>
   </data>
   <data name="Thinkage.MainBoss.Database§ReferenceWorkRequest_Comment" xml:space="preserve">
     <value>Referencia Trabajo Solicitar comentario</value>

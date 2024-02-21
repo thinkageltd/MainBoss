@@ -294,7 +294,7 @@ If desired the SQL Database Login and SQL Database User may be manually deleted.
 			private readonly string mergeSql = @"
 	begin transaction MergeContact
 		declare @work uniqueidentifier
-		declare @now datetime = dbo._DClosestValue(getdate(), 2, 100)
+		declare @now datetime = dbo._DClosestDivisions(getdate(), 100)
 		set @work = (select top 1 id from Requestor where ContactId = @keepContact or ContactId = @deleteContact 
 			order by (case when Hidden is null then 0 else 1 end ),(case when ContactID = @keepContact then 0 else 1 end),Hidden desc  )
 		update Requestor set ContactID   = @keepContact from Requestor where Id = @work and ContactId != @keepContact
@@ -581,10 +581,13 @@ If desired the SQL Database Login and SQL Database User may be manually deleted.
 							BTbl.ListColumn(dsMB.Path.T.Contact.F.MobilePhone, BTbl.ListColumnArg.Contexts.List|BTbl.ListColumnArg.Contexts.SearchAndFilter),
 							BTbl.AdditionalVerb(KB.K("Create from Active Directory"),
 								delegate(BrowseLogic browserLogic) {
-									return new CallDelegateCommand(
-										delegate() {
-											BrowseForm.NewBrowseForm(browserLogic.CommonUI.UIFactory, browserLogic.DB, contactCreatorFromDirectoryServiceTbl).ShowForm();
-										}
+									return new MultiCommandIfAllEnabled(
+										new CallDelegateCommand(
+											delegate() {
+												BrowseForm.NewBrowseForm(browserLogic.CommonUI.UIFactory, browserLogic.DB, contactCreatorFromDirectoryServiceTbl).ShowForm();
+											}
+										),
+										browserLogic.CompositeViews[0].EditTbl.GetPermissionBasedDisabler(browserLogic.DB.Session, TableOperationRightsGroup.TableOperation.Create)
 									);
 								}
 							)
@@ -656,10 +659,13 @@ If desired the SQL Database Login and SQL Database User may be manually deleted.
 							BTbl.ListColumn(dsMB.Path.T.Contact.F.MobilePhone, BTbl.ListColumnArg.Contexts.List|BTbl.ListColumnArg.Contexts.SearchAndFilter),
 							BTbl.AdditionalVerb(KB.K("Create from Active Directory"),
 								delegate(BrowseLogic browserLogic) {
-									return new CallDelegateCommand(
-										delegate() {
-											BrowseForm.NewBrowseForm(browserLogic.CommonUI.UIFactory, browserLogic.DB, contactCreatorFromDirectoryServiceTbl).ShowForm();
-										}
+									return new MultiCommandIfAllEnabled(
+										new CallDelegateCommand(
+											delegate() {
+												BrowseForm.NewBrowseForm(browserLogic.CommonUI.UIFactory, browserLogic.DB, contactCreatorFromDirectoryServiceTbl).ShowForm();
+											}
+										),
+										browserLogic.CompositeViews[0].EditTbl.GetPermissionBasedDisabler(browserLogic.DB.Session, TableOperationRightsGroup.TableOperation.Create)
 									);
 								}
 							),

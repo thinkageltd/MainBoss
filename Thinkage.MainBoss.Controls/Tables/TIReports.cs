@@ -370,7 +370,7 @@ namespace Thinkage.MainBoss.Controls {
 				var indices = new object[linkages.Length];
 				var selectExpressions = new SqlExpression[2 * linkages.Length - (useDefaultForLastEntry ? 1 : 0)];
 				for(int i = linkages.Length; --i >= 0;) {
-					keys[i] = linkages[i].Item2;
+					keys[i] = linkages[i].Item2 ?? linkages[i].Item1.ReferencedColumn.LabelKey;
 
 					indices[i] = i;
 					int exprIndex = 2 * i;
@@ -3285,16 +3285,16 @@ namespace Thinkage.MainBoss.Controls {
 		// (the labels are all of the form "Actual Xxxx Yyyy"), so we extend the path to the actual resource being demanded.
 		public static RecordTypeClassifierByLinkages WOReportResourceActualCategoryClassifier(dsMB.PathClass.PathToAccountingTransactionRow.FAccessor TX) {
 			return new RecordTypeClassifierByLinkages(true,
-					TX.ActualItemID.F.DemandItemID.F.ItemLocationID.F.ItemID,
-					// We order by Inside/Outside before Labor/OtherWork because that is the way the records are divided in the WO resource browsettes.
-					TX.ActualLaborInsideID.F.DemandLaborInsideID.F.LaborInsideID,
-					TX.ActualOtherWorkInsideID.F.DemandOtherWorkInsideID.F.OtherWorkInsideID,
-					TX.ActualLaborOutsidePOID.F.POLineLaborID.F.DemandLaborOutsideID.F.LaborOutsideID,
-					TX.ActualLaborOutsideNonPOID.F.DemandLaborOutsideID.F.LaborOutsideID,
-					TX.ActualOtherWorkOutsidePOID.F.POLineOtherWorkID.F.DemandOtherWorkOutsideID.F.OtherWorkOutsideID,
-					TX.ActualOtherWorkOutsideNonPOID.F.DemandOtherWorkOutsideID.F.OtherWorkOutsideID,
-					TX.ActualMiscellaneousWorkOrderCostID.F.DemandMiscellaneousWorkOrderCostID.F.MiscellaneousWorkOrderCostID
+					new Tuple<DBI_Path, Key>(TX.ActualItemID.F.DemandItemID.F.ItemLocationID.F.ItemID, null),
+					new Tuple<DBI_Path, Key>(TX.ActualLaborInsideID.F.DemandLaborInsideID.F.LaborInsideID, null),
+					new Tuple<DBI_Path, Key>(TX.ActualOtherWorkInsideID.F.DemandOtherWorkInsideID.F.OtherWorkInsideID, null),
+					new Tuple<DBI_Path, Key>(TX.ActualLaborOutsidePOID.F.POLineLaborID.F.DemandLaborOutsideID.F.LaborOutsideID, KB.K("Hourly Outside (with PO)")),
+					new Tuple<DBI_Path, Key>(TX.ActualLaborOutsideNonPOID.F.DemandLaborOutsideID.F.LaborOutsideID, KB.K("Hourly Outside (no PO)")),
+					new Tuple<DBI_Path, Key>(TX.ActualOtherWorkOutsidePOID.F.POLineOtherWorkID.F.DemandOtherWorkOutsideID.F.OtherWorkOutsideID, KB.K("Per Job Outside (with PO)")),
+					new Tuple<DBI_Path, Key>(TX.ActualOtherWorkOutsideNonPOID.F.DemandOtherWorkOutsideID.F.OtherWorkOutsideID, KB.K("Per Job Outside (no PO)")),
+					new Tuple<DBI_Path, Key>(TX.ActualMiscellaneousWorkOrderCostID.F.DemandMiscellaneousWorkOrderCostID.F.MiscellaneousWorkOrderCostID, null)
 				);
+			// We order by Inside/Outside before Labor/OtherWork because that is the way the records are divided in the WO resource browsettes.
 		}
 		public static EnumValueTextRepresentations WOTemplateRecordTypeNames =
 			new EnumValueTextRepresentations(

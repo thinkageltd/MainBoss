@@ -52,10 +52,10 @@
 							) as WOAsst(WorkOrderID, WorkOrderAssigneeId) on WOAsst.WorkOrderID = WO.ID
 						where WOS.FilterAsOpen = 1
 					union
-						select null, Id, dbo._DClosestValue(getdate(), 0, 864000000000), null, null
+						select null, Id, cast(cast(getdate() as date) as datetime), null, null
 							from WorkOrderAssignee
 					union
-						select null, Id, dbo._DClosestValue(getdate(), 0, 864000000000) + dbo._INew(1, 0, 0, 0, 0), null, null
+						select null, Id, dateadd(day, 1, cast(cast(getdate() as date) as datetime)), null, null
 							from WorkOrderAssignee
 					) as X(WorkOrderID, WorkOrderAssigneeId, EndDateEstimate, IsRequested, IsPM)
 				group by X.EndDateEstimate, X.WorkOrderAssigneeId

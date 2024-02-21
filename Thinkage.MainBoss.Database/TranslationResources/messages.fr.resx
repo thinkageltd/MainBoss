@@ -3587,16 +3587,16 @@ Main-d'œuvre         __________________________ Matériaux    _________________
     <value>Recevoir</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Receive (with PO)" xml:space="preserve">
-    <value>Recevoir (avec PO)</value>
+    <value>Recevoir (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Receive Item (no PO)" xml:space="preserve">
     <value>Recevez article</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Receive Item (with PO)" xml:space="preserve">
-    <value>Recevez Point (avec PO)</value>
+    <value>Recevez Point (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Receive Miscellaneous (with PO)" xml:space="preserve">
-    <value>Recevez Divers (avec PO)</value>
+    <value>Recevez Divers (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Database§ReferenceWorkRequest_Comment" xml:space="preserve">
     <value>Demande de travail de référence Commentaire</value>

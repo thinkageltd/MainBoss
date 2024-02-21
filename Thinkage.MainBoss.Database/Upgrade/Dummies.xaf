@@ -48,6 +48,8 @@
 	<field name="ANPurchaseOrderSubjectPrefix" type="string(minlength 1, 1073741823, lines 0, trim leading)" />
 	<field name="RequestorNotificationIntroduction" type="string(minlength 1, 1073741823, trim both)" />
 	<field name="RequestorNotificationSubjectPrefix" type="string(minlength 1, 1073741823, lines 0, trim leading)" />
+	<field name="MailEncryptedPassword" type="blob(minlength 8, maxlength 32, null)" />
+	<field name="SMTPEncryptedPassword" type="blob(minlength 8, maxlength 32, null)" />
   </table>
   <table name="Session" defaults="false" log="false" id="Id">
 	<field name="Id" read="id(nonnull)"/>
@@ -1156,6 +1158,12 @@
 		select newid() where 1 = 2
 	</extension>
   </table>
+  <table name="PurchaseOrderExtras" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
   <table name="PurchaseOrderFormReport" defaults="false" log="false" >
 	<field name="Id" read="id(nonnull)" />
 	<extension name="query">
@@ -1211,6 +1219,12 @@
 	</extension>
   </table>
   <table name="RequestReportX" defaults="false" log="false" >
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="RequestExtras" defaults="false" log="false" >
 	<field name="Id" read="id(nonnull)" />
 	<extension name="query">
 	  select newid() where 1 = 2

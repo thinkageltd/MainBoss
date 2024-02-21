@@ -9,6 +9,10 @@ using Thinkage.Libraries.XAF.UI.MSWindows;
 using Thinkage.MainBoss.Application;
 using Thinkage.MainBoss.Controls;
 using Thinkage.MainBoss.Database;
+#if DEBUG
+using Thinkage.Libraries.TypeInfo;
+using Thinkage.Libraries.DBILibrary;
+#endif
 
 namespace Thinkage.MainBoss.MainBoss {
 
@@ -105,6 +109,14 @@ namespace Thinkage.MainBoss.MainBoss {
 				delegate () {
 					return CreateMainForm((MB3Client)GetInterface<IApplicationWithSingleDatabaseConnection>().Session);
 				});
+#if DEBUG
+			MSWindowsDebugProvider.AddPushbutton(MSWindowsDebugProvider.GeneralCategory, "Test Relative Date control",
+				delegate (object sender, System.EventArgs e) {
+					new RelativeDateControlTestForm(GetInterface<UIFactory>()).ShowForm();
+					;
+				}
+			);
+#endif
 		}
 		internal static Thinkage.Libraries.Application CreateMainBossApplication(NamedOrganization o) {
 			ModeDefinition pAppModeDefinition = null;
@@ -217,4 +229,74 @@ namespace Thinkage.MainBoss.MainBoss {
 		}
 		#endregion
 	}
+#if DEBUG
+	#region Test form
+	public class RelativeDateControlTestForm : TblForm<UIPanel> {
+		public RelativeDateControlTestForm(UIFactory uiFactory)
+			: base(uiFactory, PanelHelper.NewCenterColumnPanel(uiFactory)) {
+			FormContents.Add(uiFactory.CreateLabel(KB.T("Test Input")));
+			InputControl = new RelativeDateControl(uiFactory, null, null, ValuePlaceholder);
+			FormContents.Add(InputControl);
+			FormContents.Add(uiFactory.CreateLabel(KB.T("Reinterpreted value")));
+			RedisplayControl = new RelativeDateControl(uiFactory, null, new SettableDisablerProperties(null, null, false), ValuePlaceholder);
+			FormContents.Add(RedisplayControl);
+			FormContents.Add(uiFactory.CreateLabel(KB.T("Expression")));
+			ExpressionControl = uiFactory.CreateTextDisplay(StringTypeInfo.Universe.GetTypeFormatter(Libraries.Application.Instance.FormatCultureInfo), null, textPreferences: new TextSizePreference() { MaxPreferredLineCount = 4, DefaultLineCount = 4 });
+			FormContents.Add(ExpressionControl);
+			FormContents.Add(uiFactory.CreateLabel(KB.T("Sample SQL expression")));
+			SQLExpressionControl = uiFactory.CreateTextDisplay(StringTypeInfo.Universe.GetTypeFormatter(Libraries.Application.Instance.FormatCultureInfo), null, textPreferences: new TextSizePreference() { MaxPreferredLineCount = 4, DefaultLineCount = 4 });
+			FormContents.Add(SQLExpressionControl);
+			FormContents.Add(uiFactory.CreateLabel(KB.T("If today were")));
+			TodayControl = uiFactory.CreateDateTimePicker(DateTimeTypeInfo.NullableOneDayEpsilon, null, null);
+			FormContents.Add(TodayControl);
+			FormContents.Add(uiFactory.CreateLabel(KB.T("Result would be")));
+			ResultControl = uiFactory.CreateTextDisplay(DateTimeTypeInfo.NullableOneDayEpsilon.GetTypeFormatter(Libraries.Application.Instance.FormatCultureInfo), null);
+			FormContents.Add(ResultControl);
+
+			InputControl.Notify += TextInputChange;
+			TodayControl.Notify += TodayChange;
+
+			// Handle the initial values of the input controls.
+			TextInputChange();
+		}
+		private readonly SqlExpression ValuePlaceholder = new SqlExpression(dsMB.Path.T.WorkOrder.F.WorkDueDate);
+		private readonly IDataControl InputControl;
+		private readonly IDataControl RedisplayControl;
+		private readonly UITextDisplay ExpressionControl;
+		private readonly UITextDisplay SQLExpressionControl;
+		private readonly IDataControl TodayControl;
+		private readonly IDataControl ResultControl;
+		private readonly Libraries.DBILibrary.MSSql.MSSqlUnparser Unparser = new Libraries.DBILibrary.MSSql.MSSqlUnparser(null);
+		private void TextInputChange() {
+			if (InputControl.ValueStatus != null) {
+				RedisplayControl.Value = null;
+				SQLExpressionControl.Value = Libraries.Exception.FullMessage(InputControl.ValueStatus);
+				ExpressionControl.Value = null;
+			}
+			else {
+				var expr = (SqlExpression)InputControl.Value;
+				RedisplayControl.Value = expr;
+				SQLExpressionControl.Value = Unparser.UnParseCondition(expr);
+				ExpressionControl.Value = expr.DebugText;
+			}
+
+			TodayChange();
+		}
+		private void TodayChange() {
+			if (InputControl.ValueStatus != null || TodayControl.ValueStatus != null)
+				ResultControl.Value = null;
+			else {
+				var expr = (SqlExpression)InputControl.Value;
+				var today = (DateTime?)TodayControl.Value;
+				if (expr == null || !today.HasValue)
+					ResultControl.Value = null;
+				else {
+					expr = expr.TraverseWithReplacement(((node, depth) => node.Op == SqlExpression.OpName.Now ? SqlExpression.Constant(today) : null), 0);
+					ResultControl.Value = expr.Evaluate();
+				}
+			}
+		}
+	}
+	#endregion
+#endif
 }

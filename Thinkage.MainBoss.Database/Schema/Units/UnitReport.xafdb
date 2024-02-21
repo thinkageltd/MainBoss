@@ -52,11 +52,11 @@
 			ID
 			, RelativeLocationID
 			, PurchaseDate
-			, CASE WHEN ReplacementCost is not null then COALESCE(ReplacementCostLastDate, dbo._DClosestValue(getdate(),2,100)) else COALESCE(PurchaseDate, dbo._DClosestValue(getdate(),2,100)) END
+			, CASE WHEN ReplacementCost is not null then COALESCE(ReplacementCostLastDate, dbo._DClosestDivisions(getdate(), 100)) else COALESCE(PurchaseDate, dbo._DClosestDivisions(getdate(), 100)) END
 			, COALESCE(Unit.ReplacementCost, Unit.OriginalCost)
 			, COALESCE(dbo._IDateDiff(PurchaseDate,ScrapDate), DateAdd(year, TypicalLife, '1900-01-01T00:00:00.000'))
 			, COALESCE(ScrapDate, DateAdd(year, TypicalLife, PurchaseDate))
-			, dbo._DClosestValue(getdate(), 0, 864000000000) <!-- TimeSpan.TicksPerDay -->
+			, cast(cast(getdate() as date) as datetime)
 		  from Unit
 		),
 		unitCalculations2(

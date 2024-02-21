@@ -63,8 +63,9 @@
 	<field name="MailboxName" type="VariableLengthString" >
 	  <doc>The name of the mailbox where @Requests' emails are stored (only used for IMAP4 accounts)</doc>
 	</field>
-	<field name="MailEncryptedPassword" type="blob(minlength 8, maxlength 32, null)" >
-	  <!-- encryption always produces 8-byte blocks -->
+	<field name="MailEncryptedPassword" type="blob(minlength 8, maxlength 520, null)" >
+	  <!-- encryption always produces 8-byte blocks, and the size required is 8*(1+floor(plaintextLen)/4) so for 256 plaintext characters we need 520 bytes.
+	  The plaintext length is encoded into the passwordType in function MainBossServiceConfigurationEditTbl in TIMainBossService.cs -->
 	  <doc>@Requests' Email account's password (encrypted)</doc>
 	  <extension name="usage">password</extension>
 	</field>
@@ -90,8 +91,9 @@
 	<field name="SMTPUserName" type="VariableLengthString" >
 	  <doc>@Requests' SMTP username</doc>
 	</field>
-	<field name="SMTPEncryptedPassword" type="blob(minlength 8, maxlength 32, null)" >
-	  <!-- encryption always produces 8-byte blocks -->
+	<field name="SMTPEncryptedPassword" type="blob(minlength 8, maxlength 520, null)" >
+	  <!-- encryption always produces 8-byte blocks, and the size required is 8*(1+floor(plaintextLen)/4) so for 256 plaintext characters we need 520 bytes.
+	  The plaintext length is encoded into the passwordType in function MainBossServiceConfigurationEditTbl in TIMainBossService.cs -->
 	  <doc>@Requests' SMTP password (encrypted)</doc>
 	  <extension name="usage">password</extension>
 	</field>

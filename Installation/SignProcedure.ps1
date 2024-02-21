@@ -6,7 +6,7 @@
 $signtoolRoot = $null
 if ($env:WINDOWSKIT10 -ne $null ) {
 	$signtoolRoot = $env:WINDOWSKIT10
-    $WIN10VERSION = "10.0.18362.0"
+    $WIN10VERSION = "10.0.22000.0"	#Windows 11 SDK is 10.0.22000.0
 }
 else {
 	throw "WINDOWSKIT10  environment variable must be set to allow assembly signing"
@@ -28,7 +28,7 @@ $timestamperURL = "http://sha256timestamp.ws.symantec.com/sha256/timestamp"
 # TODO: The purpose of retrying is to cover the case where a transient problem causes the timestamp fetch to fail, and this is really the only
 # case we want to retry. Ideally, other causes for failure (the most likely being that the user does not have the private key for the certificate installed)
 # note on certificate installation; the /sm option below uses the machine store so make sure you put the certificate in the Personal certificates for the machine, not the current
-# user. Also, you must ensure the user who is accessing the store has permissions to get the private key (To fix - open the certifacte management, find your certificate, right click -> Manage Private Keys and then in security on top be sure that your user is added and given permissions,)
+# user. Also, you must ensure the user who is accessing the store has permissions to get the private key (To fix - open the certificate management, find your certificate, right click -> Manage Private Keys and then in security on top be sure that your user is added and given permissions,)
 #
 # would not retry.
 # Conversely, failure to get a timestamp is treated by signtool as a "warning" so it may exit with zero status anyway.
@@ -47,7 +47,7 @@ function ThinkageCodeSign([parameter(Mandatory=$true, position=0)][string[]] $fi
 				$signErrors = (&$signtoolvsix sign $fileToSign --sha1 $signingCertificateThumbPrint --file-digest "sha256" --timestamp $timestamperURL 2>&1)
 			}
 			else{
-				$signErrors = (&$signtool sign /debug /sm /fd SHA256 /tr $timestamperURL /n "Thinkage Ltd." /i "Go Daddy Secure Certificate Authority - G2"  $fileToSign 2>&1)
+				$signErrors = (&$signtool sign /debug /sm /fd SHA256 /td SHA256 /tr $timestamperURL /n "Thinkage Ltd." /i "Go Daddy Secure Certificate Authority - G2"  $fileToSign 2>&1)
 			}
 		} while ($LastExitCode -ne 0 -and $retriesLeft -gt 0)
 		if ($LastExitCode -ne 0) {

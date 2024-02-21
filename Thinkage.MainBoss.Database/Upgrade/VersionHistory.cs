@@ -5800,6 +5800,80 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 						new UpgradeStepSequence(// 1.1.5.10 (originally 1.1.5.7) Correct _DClosestValue for dates on or before 1/jan/1900
 							new BuiltinFunctionUpdateUpgradeStep("_DClosestValue")
 						),
+						new UpgradeStepSequence(	// 1.1.5.11 Add schemabinding to date/time math functions and new fns
+							// Most of this is also in 1.1.6.20 for databases that were already in the Head chain whan this step was added.
+							new BuiltinFunctionCreateUpgradeStep("_DClosestDivisions"),
+							new BuiltinFunctionCreateUpgradeStep("_DClosestMonths"),
+							new BuiltinFunctionCreateUpgradeStep("_DClosestTicks"),
+							new BuiltinFunctionUpdateUpgradeStep("_DMinValue"),
+							new BuiltinFunctionUpdateUpgradeStep("_DClosestValue"),
+							new BuiltinFunctionUpdateUpgradeStep("_IIToSum"),
+							new BuiltinFunctionUpdateUpgradeStep("_IIToMilliseconds"),
+							new BuiltinFunctionUpdateUpgradeStep("_ISumToI"),
+							new BuiltinFunctionUpdateUpgradeStep("_IAdd"),
+							new BuiltinFunctionUpdateUpgradeStep("_ISubtract"),
+							new BuiltinFunctionUpdateUpgradeStep("_ISum"),
+							new BuiltinFunctionUpdateUpgradeStep("_IDiff"),
+							new BuiltinFunctionUpdateUpgradeStep("_INegate"),
+							new BuiltinFunctionUpdateUpgradeStep("_IScale"),
+							new BuiltinFunctionUpdateUpgradeStep("_IRatio"),
+							new BuiltinFunctionUpdateUpgradeStep("_INew"),
+							new BuiltinFunctionUpdateUpgradeStep("_IDateDiff")
+						),
+						new UpgradeStepSequence(	// 1.1.5.12 Update views to use new _DClosestXxxx functions
+							// This is a duplicate of 1.1.6.22
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedActiveRequestAgeHistogram"),
+							new AddTableUpgradeStep("AssignedActiveRequestAgeHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedWorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("AssignedWorkOrderEndDateHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "PurchaseOrderExtras"),
+							new AddTableUpgradeStep("PurchaseOrderExtras"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_RequestedWorkOrder_ManageRequest"),
+							new AddExtensionObjectUpgradeStep("mbtg_RequestedWorkOrder_ManageRequest"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "RequestExtras"),
+							new AddTableUpgradeStep("RequestExtras"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "RequestAssignmentReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "RequestReport"),
+							new AddTableUpgradeStep("RequestReport"),
+							new AddTableUpgradeStep("RequestAssignmentReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "UnitReport"),
+							new AddTableUpgradeStep("UnitReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("WorkOrderEndDateHistogram"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl"),
+							new AddExtensionObjectUpgradeStep("mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl")
+						),
+						new UpgradeStepSequence(	// 1.1.5.13 Update views to always return Sql DATETIME type for date columns
+							// This is a duplicate of 1.1.6.23
+							new RemoveTableUpgradeStep(GetOriginalSchema, "ActiveRequestAgeHistogram"),
+							new AddTableUpgradeStep("ActiveRequestAgeHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedActiveRequestAgeHistogram"),
+							new AddTableUpgradeStep("AssignedActiveRequestAgeHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedWorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("AssignedWorkOrderEndDateHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "UnitReport"),
+							new AddTableUpgradeStep("UnitReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("WorkOrderEndDateHistogram"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl"),
+							new AddExtensionObjectUpgradeStep("mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl")
+						),
+						new UpgradeStepSequence(	// 1.1.5.14 Widen encrypted password fields in service config record
+							// This is a duplicate of 1.1.6.24
+							// We don't preserve the values from the _D table because we have never let anyone put non-null default passwords in
+							new SqlUpgradeStep("alter table ServiceConfiguration add TempPassword varbinary(max)"),
+							new SqlUpgradeStep("update ServiceConfiguration set TempPassword = SMTPEncryptedPassword"),
+							new RemoveColumnUpgradeStep(GetOriginalSchema, "ServiceConfiguration.SMTPEncryptedPassword"),
+							new AddColumnUpgradeStep("ServiceConfiguration.SMTPEncryptedPassword"),
+							new SqlUpgradeStep("update ServiceConfiguration set SMTPEncryptedPassword = TempPassword, TempPassword = MailEncryptedPassword"),
+							new RemoveColumnUpgradeStep(GetOriginalSchema, "ServiceConfiguration.MailEncryptedPassword"),
+							new AddColumnUpgradeStep("ServiceConfiguration.MailEncryptedPassword"),
+							new SqlUpgradeStep(@"
+								update ServiceConfiguration set MailEncryptedPassword = TempPassword
+                                alter table ServiceConfiguration drop column TempPassword"),
+							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinMBAppVersion, new Version(4,2,4,9)),
+							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinAReqAppVersion, new Version(4,2,4,9))
+						)
 						#endregion
 					}
 				}
@@ -5807,7 +5881,7 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 			}
 		},
 		// The DEBUG check schema has CODE; update when Schema has changed and upgrade steps have been added
-		0Xa040e46ad0c522daUL, dsMB.Schema);
+		0Xc6fd6d2c208e955UL, dsMB.Schema);
 		#endregion
 	}
 }

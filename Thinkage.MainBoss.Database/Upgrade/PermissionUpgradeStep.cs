@@ -108,7 +108,7 @@ namespace Thinkage.MainBoss.Database {
 			foreach (DBI_Table t in schema.Tables)
 				if (t.SqlQueryText == null)
 					foreach (DBI_Column c in t.Columns) {
-						string closestValueConversion = SqlClient.SqlServer.DateTimeClosestValue(c.EffectiveType, SqlClient.SqlServer.SqlIdentifier(c));
+						string closestValueConversion = SqlClient.SqlServer.DateTimeClosestValue((SqlClient)session, c.EffectiveType, SqlClient.SqlServer.SqlIdentifier(c));
 						if (closestValueConversion != null)
 							session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat("UPDATE {0} SET {1} = {2}", SqlClient.SqlServer.SqlIdentifier(t), SqlClient.SqlServer.SqlIdentifier(c), closestValueConversion)));
 					}

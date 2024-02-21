@@ -3673,6 +3673,12 @@ If desired the SQL Database Login and SQL Database User may be manually deleted.
   <data name="Thinkage.MainBoss.Controls§History of work orders on selected units" xml:space="preserve">
     <value>History of work orders on selected units</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Hourly Outside (with PO)" xml:space="preserve">
+    <value>Hourly Outside (with PO)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Hourly Outside (no PO)" xml:space="preserve">
+    <value>Hourly Outside</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Hourly Purchase Line" xml:space="preserve">
     <value>Hourly Purchase Line</value>
   </data>
@@ -4296,6 +4302,12 @@ If desired the SQL Database Login and SQL Database User may be manually deleted.
   </data>
   <data name="Thinkage.MainBoss.Controls§Pause the Windows Service for MainBoss. While the service is paused it will not do any processing" xml:space="preserve">
     <value>Pause the Windows Service for MainBoss. While the service is paused it will not do any processing</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Per Job Outside (with PO)" xml:space="preserve">
+    <value>Per Job Outside (with PO)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Per Job Outside (no PO)" xml:space="preserve">
+    <value>Per Job Outside</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Per Job Purchase Line" xml:space="preserve">
     <value>Per Job Purchase Line</value>
@@ -5125,8 +5137,8 @@ If desired the SQL Database Login and SQL Database User may be manually deleted.
   <data name="Thinkage.MainBoss.Controls§The Windows Service for MainBoss status cannot be determined." xml:space="preserve">
     <value>The Windows Service for MainBoss status cannot be determined.</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§There are no contact records to create from" xml:space="preserve">
-    <value>There are no contact records to create from</value>
+  <data name="Thinkage.MainBoss.Controls§There are no Active Directory records to create from" xml:space="preserve">
+    <value>There are no Active Directory records to create from</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§There are no license records to update" xml:space="preserve">
     <value>There are no license records to update</value>

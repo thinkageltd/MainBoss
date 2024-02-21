@@ -57,7 +57,7 @@ namespace Thinkage.MainBoss.Database {
 			protected abstract FuzzyRType MakeFuzzyRType(RType expected, RType? min, RType? max, Key reasonForUncertainty, params object[] arguments);
 			private FuzzyRType PredictSingle(Guid meterID, KType key) {
 				KType keymax = AddKeyDelta(key);
-				MSSqlUnparser up = new MSSqlUnparser();
+				MSSqlUnparser up = new MSSqlUnparser(null);
 				SqlExpression belowFilter = new SqlExpression(KeyColumn).Lt(SqlExpression.Constant(key));
 				SqlExpression aboveFilter = new SqlExpression(KeyColumn).GEq(SqlExpression.Constant(keymax));
 				SqlExpression meterFilter = new SqlExpression(dsMB.Path.T.MeterReading.F.MeterID).Eq(SqlExpression.Constant(meterID)).And(new SqlExpression(dsMB.Path.T.MeterReading.F.Hidden).IsNull());

@@ -1807,13 +1807,13 @@
     <value>Orden de trabajo por puesto de trabajo fuera de</value>
   </data>
   <data name="TableObjects§Work Order Per Job Outside (with PO)" xml:space="preserve">
-    <value>Orden de trabajo por puesto de trabajo fuera de (con PO)</value>
+    <value>Orden de trabajo por puesto de trabajo fuera de (con OC)</value>
   </data>
   <data name="TableObjects§Work Order Per Job Outside Actual (no PO)" xml:space="preserve">
     <value>Orden de trabajo por puesto de trabajo fuera de real</value>
   </data>
   <data name="TableObjects§Work Order Per Job Outside Actual (with PO)" xml:space="preserve">
-    <value>Orden de trabajo por puesto de trabajo fuera de Real (con PO)</value>
+    <value>Orden de trabajo por puesto de trabajo fuera de Real (con OC)</value>
   </data>
   <data name="TableObjects§Work Order Priority§mplural" xml:space="preserve">
     <value>Prioridades de Orden de Trabajo</value>
@@ -2072,10 +2072,10 @@ Si lo desea, el inicio de sesión de la base de datos SQL y el usuario de la bas
     <value>Duración Real</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Actual Hourly (with PO)" xml:space="preserve">
-    <value>Actual por hora (con PO)</value>
+    <value>Actual por hora (con OC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Actual Per Job (with PO)" xml:space="preserve">
-    <value>Actual Per Trabajo (con PO)</value>
+    <value>Actual Per Trabajo (con OC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Actual Quantity" xml:space="preserve">
     <value>Cantidad Actual</value>
@@ -2424,10 +2424,10 @@ Si lo desea, el inicio de sesión de la base de datos SQL y el usuario de la bas
     <value>Corrección</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Correction of Actual Hourly (with PO)" xml:space="preserve">
-    <value>Corrección de real por hora (con PO)</value>
+    <value>Corrección de real por hora (con OC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Correction of Actual Per Job (with PO)" xml:space="preserve">
-    <value>Corrección de reales por Job (con PO)</value>
+    <value>Corrección de reales por Job (con OC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Correction of Chargeback" xml:space="preserve">
     <value>Corrección de Devolución</value>
@@ -2986,6 +2986,12 @@ Si lo desea, el inicio de sesión de la base de datos SQL y el usuario de la bas
   </data>
   <data name="Thinkage.MainBoss.Controls§History of work orders on selected units" xml:space="preserve">
     <value>Historia de las órdenes de trabajo en las unidades seleccionadas</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Hourly Outside (with PO)" xml:space="preserve">
+    <value>Horario Externo (con OC)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Hourly Outside (no PO)" xml:space="preserve">
+    <value>Horario Externo</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Hourly Purchase Line" xml:space="preserve">
     <value>Línea de la compra por hora</value>
@@ -3610,6 +3616,12 @@ Si lo desea, el inicio de sesión de la base de datos SQL y el usuario de la bas
   </data>
   <data name="Thinkage.MainBoss.Controls§Pause the Windows Service for MainBoss. While the service is paused it will not do any processing" xml:space="preserve">
     <value>Pausa el servicio de Windows para MainBoss. Mientras que el servicio está en pausa no va a hacer ningún procesamiento</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Per Job Outside (with PO)" xml:space="preserve">
+    <value>Puesto de Trabajo Externo (con OC)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Per Job Outside (no PO)" xml:space="preserve">
+    <value>Puesto de Trabajo Externo</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Per Job Purchase Line" xml:space="preserve">
     <value>Per Trabajo Línea de la compra</value>
@@ -4439,8 +4451,8 @@ Si lo desea, el inicio de sesión de la base de datos SQL y el usuario de la bas
   <data name="Thinkage.MainBoss.Controls§The Windows Service for MainBoss status cannot be determined." xml:space="preserve">
     <value>El servicio de Windows para MainBoss estado no se puede determinar.</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§There are no contact records to create from" xml:space="preserve">
-    <value>No hay registros de contactos para crear desde</value>
+  <data name="Thinkage.MainBoss.Controls§There are no Active Directory records to create from" xml:space="preserve">
+    <value>No hay registros de Active Directory para crear desde</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§There are no license records to update" xml:space="preserve">
     <value>No hay registros de licencia para actualizar</value>
@@ -4899,7 +4911,7 @@ Si lo desea, el inicio de sesión de la base de datos SQL y el usuario de la bas
     <value>Orden de Trabajo pedido por hora fuera utilizado</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Work Order Hourly Outside actually used (with PO)" xml:space="preserve">
-    <value>Orden de Trabajo pedido por hora fuera utilizado (con PO)</value>
+    <value>Orden de Trabajo pedido por hora fuera utilizado (con OC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Work Order Hourly Outside with demanded and actual time and cost" xml:space="preserve">
     <value>Orden de Trabajo por hora Fuera con el tiempo y el costo exigido y real</value>

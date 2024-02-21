@@ -368,6 +368,7 @@
     <Compile Include="SolutionSettings.cs" />
     <Compile Include="Translation.cs" />
     <Compile Include="DatabaseEnums.cs" />
+    <Compile Include="Upgrade\BuiltinFunctionCreateUpgradeStep.cs" />
     <Compile Include="Upgrade\BuiltinFunctionUpdateUpgradeStep.cs" />
     <Compile Include="Upgrade\DBVersionHandler30.cs" />
     <Compile Include="Upgrade\EmailMessageToPartsUpgradeStep.cs" />

@@ -36,7 +36,7 @@
 		, X1.RequestID
 		, X1.StartDate
 		, X2.StartDate
-		, dbo._DClosestValue(getdate(),2,100)
+		, dbo._DClosestDivisions(getdate(), 100)
 		from X as X1
 		join Request on Request.ID = X1.RequestID
 		join RequestStateHistory on RequestStateHistory.ID = Request.CurrentRequestStateHistoryID

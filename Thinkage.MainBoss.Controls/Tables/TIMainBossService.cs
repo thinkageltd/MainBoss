@@ -969,6 +969,12 @@ namespace Thinkage.MainBoss.Controls {
 			});
 
 		private static Tbl MainBossServiceConfigurationEditTbl() {
+			// Here is where the length of theplaintext passwords is coded.
+			// The size of the blob fields must be calculated as 8*(1+floor(plaintextLen)/4) and coded into ServiceConfiguration.xafdb.
+			// For 256 characters that required 520 bytes of binary data.
+			var passwordType = new StringTypeInfo(1, 256, 0, allow_null: true, trim_leading: true, trim_trailing: true);
+			Libraries.DataFlow.TransformingNotifyingValue.SetTransform encryptor = (plaintext => plaintext == null ? null : ServicePassword.Encode((string)plaintext));
+			Libraries.DataFlow.TransformingNotifyingValue.GetTransform decryptor = (bytes => bytes == null ? bytes : ServicePassword.Decode((byte[])bytes));
 			return new Tbl(dsMB.Schema.T.ServiceConfiguration, TId.MainBossServiceConfiguration,
 				new Tbl.IAttr[] {
 					MainBossServiceAdminGroup,
