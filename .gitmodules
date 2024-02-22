@@ -4,12 +4,6 @@
 [submodule "Thinkage.Libraries.DBAccess"]
 	path = Thinkage.Libraries.DBAccess
 	url = https://github.com/thinkageltd/Thinkage.Libraries.DBAccess
-[submodule "Thinkage.Libraries.DBILibrary"]
-	path = Thinkage.Libraries.DBILibrary
-	url = https://github.com/thinkageltd/Thinkage.Libraries.DBILibrary
-[submodule "Thinkage.Libraries.DBILibrary.MSSql"]
-	path = Thinkage.Libraries.DBILibrary.MSSql
-	url = https://github.com/thinkageltd/Thinkage.Libraries.DBILibrary.MSSql
 [submodule "Thinkage.Libraries.MVC"]
 	path = Thinkage.Libraries.MVC
 	url = https://github.com/thinkageltd/Thinkage.Libraries.MVC
