@@ -103,6 +103,7 @@
 	</field>
 	<field name="DisplayID" type="GUIDREF" link="WorkOrderPurchaseOrderView">
 	</field>
+	<!--TODO: delete this-->
 	<field name="IsPrimary" type="RequiredBool">
 	</field>
 	<extension name="query">
@@ -124,6 +125,7 @@
 	</field>
 	<field name="DisplayID" type="GUIDREF" link="WorkOrderPurchaseOrderView">
 	</field>
+	<!--TODO: delete this-->
 	<field name="IsPrimary" type="RequiredBool">
 	</field>
 	<extension name="query">

@@ -132,7 +132,7 @@
   </table>
   <table name="LocationContainment"/>
 
-  <!-- ItemLocationAndContainers -->
+  <!-- ItemLocationAndContainers TODO: Delete this-->
   <table name="ItemLocationAndContainers" defaults="false" log="false" id="Id" labelkey="">
 	<doc></doc>
 	<field name="Id" read="RequiredGUID"/>

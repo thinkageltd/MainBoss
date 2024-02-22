@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html lang="en">
 <head>
-<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
-<meta name="copyright" content="2016 Thinkage Ltd." />
+<meta charset="UTF-8" />
+<meta name="copyright" content="2018 Thinkage Ltd." />
 <link rel="stylesheet" type="text/css" href="mbmanual.css" />
-<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing User Records</title>
+<title>MainBoss Advanced 4.2 Operating Reference Manual: Editing MainBoss User Records</title>
 </head>
 <body>
 <table class="logohead">
 <tr><td class="logo"><a href="https://www.mainboss.com"><img src="AboutLogo.jpg" alt="MainBoss" /></a></td>
-<td class="pagehead"><h1 class="pagehead">Editing User Records</h1>
+<td class="pagehead"><h1 class="pagehead">Editing MainBoss User Records</h1>
 </td></tr></table>
 <!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
-<p><a href="Browse.User.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.SQL Database User.htm">Next section &gt;</a></p>
+<p><a href="Browse.MainBoss User.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.SQL Database User.htm">Next section &gt;</a></p>
 
-<p>You create or modify user records using the User editor. The usual way to open the editor is to click <span class="CButton">New User</span> or <span class="CButton">Edit</span> in the <span class="CButton">View</span> section of <span class="CPanel">Administration</span> | <span class="CPanel">Users</span>.</p>
+<p>You create or modify user records using the User editor. The usual way to open the editor is to click <span class="CButton">New User</span> or <span class="CButton">Edit</span> in the <span class="CButton">View</span> section of <span class="CPanel">Administration | MainBoss Users</span>.</p>
 
 <p class="box">Only someone with SQL Server Administration privileges can register new users with SQL Server. You will receive an error message if you try to add a new user but do not have appropriate permissions. The error occurs when you try to <span class="CButton">Save</span> the new user's record.</p>
 
@@ -36,9 +36,9 @@
 <br /><br />We recommend that you be generous in assigning people "summary" roles (e.g. <span class="CU">UnitSummary</span>) since these provide a small amount of information that is useful for people performing many different jobs within your organization.</p>
 <p class="box"><span class="CInset">Important:</span> If a user has no assigned security roles, that person will not be able to use MainBoss in any way. Therefore, you should normally assign at least one security role to each user.
 
-<br /><br />After you assign security roles to a user, MainBoss makes it easy to test the effects of those security roles. For more, see the description of <span class="CButton">Evaluate Security As</span> in <a href="Browse.User.htm">Viewing Users</a>.</p>
+<br /><br />After you assign security roles to a user, MainBoss makes it easy to test the effects of those security roles. For more, see the description of <span class="CButton">Evaluate Security As</span> in <a href="Browse.MainBoss User.htm">Viewing MainBoss Users</a>.</p>
 
-<p class="wi2"><span class="CButton">Assign Role</span>: Opens a window which lets you specify one or more roles for this user. For more information, see <a href="Edit.User Security Role.htm">Assigning Security Roles to Users</a>.</p>
+<p class="wi2"><span class="CButton">Assign Role</span>: Opens a window which lets you specify one or more roles for this user. For more information, see <a href="Edit.MainBoss-defined Security Role.htm">Assigning Security Roles to Users</a>.</p>
 <p class="wi2"><span class="CButton"><img src="Edit.png" alt="Edit" /></span>: This drop-down button offers several possible actions:</p>
 <p class="wi3"><span class="CButton">Edit</span>: Opens an editor window to let you edit the selected record.</p>
 <p class="wi3"><span class="CButton">View</span>: Opens an editor window where you can examine the selected record.</p>
@@ -47,26 +47,18 @@
 <p class="wi3"><span class="CButton">Find Next</span>: Uses the same search condition(s) as your most recent search and finds the next record in the table that matches the condition(s). If the search reaches the end of the table without finding a matching record, it goes to the start of the table and continues the search.</p>
 <p class="wi3"><span class="CButton">Find Previous</span>: Same as <span class="CButton">Find Next</span> except that it goes backward in the table. If the search reaches the start of the table without finding a matching record, it goes to the end of the table and continues the search.</p>
 <p class="wi2"><span class="CButton"><img src="Refresh.png" alt="Refresh" /></span>: Updates the list to reflect any recent changes.</p>
-<p class="wi"><span class="CButton">Advanced</span> section: Options for advanced users.</p>
-<p class="wi2"><span class="CField">Scope Name</span>: The name of the user's domain or computer. If your site uses trusted domains, you must fill in this field. Otherwise, we recommend that the field be left blank, in which case MainBoss accepts access under the given login name from any domain or computer.</p>
 <p class="wi"><span class="CButton">Save</span>: Saves the current record. The editor window stays open in case you want to make more changes to the same record.</p>
 <p class="wi"><span class="CButton">Save &amp; New</span>: Saves the current record and sets up the window for you to enter a new record. Fields in the new record will be blank or set to default values.</p>
 <p class="wi"><span class="CButton">Save &amp; Close</span>: Saves the current record and closes the editor window.</p>
 <p class="wi"><span class="CButton">Cancel</span>: Closes the window without saving any changes you've made to the record since the last time you saved. When you <span class="CButton">Save</span> the record, the <span class="CButton">Cancel</span> button changes to <span class="CButton">Close</span>, indicating that you can safely close the window without losing any changes.</p>
 <p class="wi"><span class="CButton">Close</span>: Closes the window. This button only appears after you've saved changes with <span class="CButton">Save</span> or before you've entered any data at all. Otherwise, the button is labeled <span class="CButton">Cancel</span>.</p>
+<ul class="b1"><li>
+</li></ul><p>Note that the names in MainBoss's <span class="CPanel">Users</span> list must be individual SQL Authentication credentials; they cannot be groups. In MainBoss, Authentication Credentials are associated with records in order to create an audit trail. This is why MainBoss itself doesn't accept group authorizations&#8212;an audit should record exactly who made a particular change, which means tracking the individual Authentication Credentials, not just a group name.</p>
 
-<p><span class="CInset">Scopes:</span> When creating a new user, you have the opportunity to specify a <span class="NewTerm">scope</span> for that person's login name.</p>
-
-<ul class="b1"><li>If your site uses <span class="NewTerm">trusted domains</span>, the scope should be the trusted domain to which the user belongs.</li>
-<li>If your site doesn't use trusted domains (or if you aren't sure whether you use them or not), <span class="BL">we strongly recommend leaving the</span> "<span class="CField">Scope Name</span>" <span class="BL">field blank</span>. A blank scope field means that the given login name is a valid account on the computer where SQL Server runs. SQL Server will then accept access from any other computer in your local network, provided that the login name and password on the other computer match the name and password on the Server computer.
-
-<br /><br />For example, suppose you authorize <span class="CU">jsmith</span> to use MainBoss and leave "<span class="CField">Scope Name</span>" blank. Then the Server computer must accept <span class="CU">jsmith</span> as a login name. SQL Server will accept access from any other <span class="CU">jsmith</span> in your local network, provided the password for <span class="CU">jsmith</span> on non-Server computers is the same as the password for <span class="CU">jsmith</span> on the Server computer.
-</li></ul><p>Note that the names in MainBoss's <span class="CPanel">Users</span> list must be individual login names; they can't be groups. In MainBoss, login names are associated with records in order to create an audit trail. This is why MainBoss itself doesn't accept group authorizations&#8212;an audit should record exactly who made a particular change, which means tracking the individual login name, not just a group name.</p>
-
-<p>For more on users and groups, see <a href="Users.htm">Users</a>. For more on viewing user/groups, see <a href="Browse.User.htm">Viewing Users</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
+<p>For more on users and groups, see <a href="Users.htm">Users</a>. For more on viewing user/groups, see <a href="Browse.MainBoss User.htm">Viewing MainBoss Users</a>. For more on editors in general, see <a href="UsingEditors.htm">Using Editors</a>.</p>
 
 
-<p><a href="Browse.User.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.SQL Database User.htm">Next section &gt;</a></p>
+<p><a href="Browse.MainBoss User.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Browse.SQL Database User.htm">Next section &gt;</a></p>
 </body>
 </html>
 

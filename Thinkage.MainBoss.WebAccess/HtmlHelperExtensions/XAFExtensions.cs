@@ -200,7 +200,7 @@ namespace Thinkage.Web.Mvc.Html
 			TagBuilder valueTag = new TagBuilder("td");
 			foreach( var s in cssClasses)
 				valueTag.AddCssClass(s);
-			string valueAsString = typeInfo.GetTypeFormatter(System.Globalization.CultureInfo.CurrentCulture).Format(value);
+			string valueAsString = typeInfo.GetTypeFormatter(Libraries.Application.InstanceFormatCultureInfo).Format(value);
 			if (valueIsHtml)
 				valueTag.InnerHtml = valueAsString;
 			else

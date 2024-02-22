@@ -54,7 +54,7 @@
 		</field>
 		<field name="DisplayID" link="UnitRelatedRecords" type="RequiredGUIDREF">
 		</field>
-		<!-- The remaining fields are required by the limitations of CompositeTbl or Tree-Structured Tbls -->
+		<!-- The remaining fields are required by the limitations of CompositeTbl or Tree-Structured Tbls TODO: Delete this-->
 		<field name="IsPrimary" type="RequiredBool">
 			<!-- ListControl needs this field directly and the Tbl.IAttr that specifies this only lets you name a DBI_Column not a DBI_Path -->
 		</field>

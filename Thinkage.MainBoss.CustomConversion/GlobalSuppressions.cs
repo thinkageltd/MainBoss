@@ -11,5 +11,5 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2229:ImplementSerializationConstructors", Scope = "type", Target = "Thinkage.MainBoss.MB29Conversion.MB29")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2240:ImplementISerializableCorrectly", Scope = "type", Target = "Thinkage.MainBoss.MB29Conversion.MB29")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Scope = "member", Target = "Thinkage.MainBoss.MB29Conversion.MB29.#.ctor()")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Scope = "member", Target = "Thinkage.MainBoss.MB29Conversion.MB29.#.ctor(Thinkage.Libraries.DBAccess.XAFClient)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Scope = "member", Target = "Thinkage.MainBoss.MB29Conversion.MB29.#.ctor(Thinkage.Libraries.DBAccess.DBClient)")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Scope = "member", Target = "Thinkage.MainBoss.MB29Conversion.MB29.#.ctor(Thinkage.Libraries.DBILibrary.IServer)")]

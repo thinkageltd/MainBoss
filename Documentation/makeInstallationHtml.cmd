@@ -3,7 +3,8 @@ set WINWORD=%ProgramFiles(x86)%\Microsoft Office\root\Office16\WINWORD.EXE
 rd /s /q install
 md install
 md install\0000
-copy manual\Resources\*.* install\0000
+copy manual\Resources\AboutLogo.jpg install\0000
+copy manual\Resources\mbmanual.css install\0000
 copy manual\install.docx print0000install.docx
 "%WINWORD%" /mConvertInstallToHTMLCoverClose print0000install.docx
 "%WINWORD%" /mBreakUpHTMLInstallCover html0000install.docx

@@ -6,7 +6,6 @@ call RightSetTranslations.cmd
 @echo on
 
 call helptopics.cmd "..\..\Thinkage.MainBoss.MainBoss\HelpTopics.xml"
-call helptopics.cmd "..\..\Thinkage.MainBoss.MainBossSolo\HelpTopics.xml"
 del %SRC%a\output\FormatQualifiers.*.xml /f /q
 
 call resxconversion.cmd "Thinkage.Libraries," "..\..\Thinkage.Libraries"
@@ -28,7 +27,6 @@ call resxconversion.cmd Thinkage.MainBoss.Application
 call resxconversion.cmd Thinkage.MainBoss.Controls
 call resxconversionWithRightSet.cmd Thinkage.MainBoss.Database
 call resxconversion.cmd "mainboss," "..\..\Thinkage.MainBoss.MainBoss"
-call resxconversion.cmd "mainbossSolo," "..\..\Thinkage.MainBoss.MainBossSolo"
 call resxconversion.cmd Thinkage.MainBoss.MainBossServiceConfiguration
 call resxconversion.cmd MBUtility "..\..\Thinkage.MainBoss.MBUtility"
 call resxconversion.cmd "Thinkage.MainBoss.Service," "..\..\Thinkage.MainBoss.Service"

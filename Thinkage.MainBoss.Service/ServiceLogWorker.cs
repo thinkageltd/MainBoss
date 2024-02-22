@@ -40,7 +40,7 @@ namespace Thinkage.MainBoss.Service {
 						var expiryDate = DateTime.Today - ExpiryInterval; // note: the calculation will give a time of 0:00:00 
 						if (lastrunDate == expiryDate) break;
 						batch = new CommandBatchSpecification();
-						batch.CreateNormalParameter(KB.I("ExpiryDate"), Thinkage.Libraries.XAF.Database.Service.MSSql.MSSqlServer.SqlDateTimeTypeInfo).Value = expiryDate;
+						batch.CreateNormalParameter(KB.I("ExpiryDate"), Thinkage.Libraries.XAF.Database.Service.MSSql.Server.SqlDateTimeTypeInfo).Value = expiryDate;
 						batch.Commands.Add(new MSSqlLiteralCommandSpecification("DELETE ServiceLog Where EntryDate < @ExpiryDate"));
 						DBSession.Session.ExecuteCommandBatch(batch);
 						ServiceLogging.LogInfo(Strings.Format(KB.K("Log truncation request processing completed, removed all entries older than {0}"), expiryDate));

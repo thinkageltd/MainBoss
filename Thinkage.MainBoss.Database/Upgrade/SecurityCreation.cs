@@ -21,7 +21,7 @@ namespace Thinkage.MainBoss.Database {
 		/// <param name="databaseCreatorId">Id of User table record to which creation roles apply (as defined in rightsetUri)</param>
 		/// <param name="rightsetUri"></param>
 		public static void CreateSecurityDataSet(dsMB updateDs, Guid? databaseCreatorId, [Invariant] string rightsetUri) {
-			XAFClient db = updateDs.DB;
+			DBClient db = updateDs.DB;
 			Security.RightSet securitySet = new Security.RightSet(dsMB.Schema, rightsetUri);
 
 			updateDs.EnsureDataTableExists(dsMB.Schema.T.User, dsMB.Schema.T.Contact, dsMB.Schema.T.Role, dsMB.Schema.T.Principal, dsMB.Schema.T.UserRole);
@@ -55,19 +55,18 @@ namespace Thinkage.MainBoss.Database {
 					// we don't put Rights in the Database at present
 					continue;
 				// Change the Id fields to KnownIds
-				Guid knownPrincipalId;
-				Guid knownRoleId = KnownIds.RoleAndPrincipalIDFromRoleRight(p.Role.Id, out knownPrincipalId);
+				Guid knownRoleId = KnownIds.RoleAndPrincipalIDFromRoleRight(p.Role.Id, out Guid knownPrincipalId);
 				dsMB.RoleRow row;
 				// locate an existing known role/principal
-				dsMB.PrincipalRow prow = (dsMB.PrincipalRow)updateDs.T.Principal.Rows.Find(knownPrincipalId);
+				dsMB.PrincipalRow prow = (dsMB.PrincipalRow)updateDs.T.Principal.RowFind(knownPrincipalId);
 				if (prow == null) {
 					// make a new role and set the linkage Ids to the known ids
 					row = (dsMB.RoleRow)db.AddNewRowAndBases(updateDs, dsMB.Schema.T.Role);
 					prow = row.PrincipalIDParentRow;
-					DBClient.SetReadOnlyColumn(row, dsMB.Schema.T.Role.F.Id, knownRoleId);
-					DBClient.SetReadOnlyColumn(prow, dsMB.Schema.T.Principal.F.Id, knownPrincipalId);
-					DBClient.SetReadOnlyColumn(prow, dsMB.Schema.T.Principal.F.RoleID, knownRoleId);
-					DBClient.SetReadOnlyColumn(row, dsMB.Schema.T.Role.F.PrincipalID, knownPrincipalId);
+					row.SetReadOnlyColumn(dsMB.Schema.T.Role.F.Id, knownRoleId);
+					prow.SetReadOnlyColumn(dsMB.Schema.T.Principal.F.Id, knownPrincipalId);
+					prow.SetReadOnlyColumn(dsMB.Schema.T.Principal.F.RoleID, knownRoleId);
+					row.SetReadOnlyColumn(dsMB.Schema.T.Role.F.PrincipalID, knownPrincipalId);
 				}
 				else {
 					// we are updating a known role; remove from deletion list
@@ -132,8 +131,7 @@ namespace Thinkage.MainBoss.Database {
 			// want to avoid duplicates in the database.
 			foreach (Security.RightSet.RoleAndPermission p in securitySet.RolesAndPermissionsFor(roleSet)) {
 				dsMB.UserRoleRow row;
-				Guid roleKnownPrincipalId;
-				Guid roleId = KnownIds.RoleAndPrincipalIDFromRoleRight(p.Role.Id, out roleKnownPrincipalId);
+				Guid roleId = KnownIds.RoleAndPrincipalIDFromRoleRight(p.Role.Id, out Guid roleKnownPrincipalId);
 				System.Data.DataRow[] hits = updateDs.T.UserRole.Select(
 					new ColumnExpressionUnparser().UnParse(
 						new SqlExpression(dsMB.Path.T.UserRole.F.UserID).Eq(SqlExpression.Constant(databaseCreatorId))
@@ -145,7 +143,7 @@ namespace Thinkage.MainBoss.Database {
 				row.F.PrincipalID = roleKnownPrincipalId;
 			}
 		}
-		private static void AddPermission(XAFClient db, dsMB updateDs, Guid principalId, string permission) {
+		private static void AddPermission(DBClient db, dsMB updateDs, Guid principalId, string permission) {
 			dsMB.PermissionRow prow = (dsMB.PermissionRow)db.AddNewRowAndBases(updateDs, dsMB.Schema.T.Permission);
 			prow.F.PermissionPathPattern = permission;
 			prow.F.PrincipalID = principalId;

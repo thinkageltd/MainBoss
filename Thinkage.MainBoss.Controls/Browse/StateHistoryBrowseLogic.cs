@@ -10,7 +10,7 @@ using Thinkage.Libraries.DataFlow;
 namespace Thinkage.MainBoss.Controls {
 	public class StateHistoryBrowseLogic : BrowseLogic {
 		private class CustomTblBuilder {
-			public CustomTblBuilder(XAFClient db, Tbl tbl) {
+			public CustomTblBuilder(DBClient db, Tbl tbl) {
 				Tbl = tbl;
 #if NEW_CODE_IS_FINISHED
 				MB3BTbl.StateHistoryLogicArg wha = (MB3BTbl.StateHistoryLogicArg)BTbl.Find(Tbl).BrowserLogicClassArg;
@@ -63,7 +63,7 @@ namespace Thinkage.MainBoss.Controls {
 						CompositeView.ExportNewVerb(true),
 						CompositeView.JoinedNewCommand(t.Name),
 						commandGroupArg,
-						CompositeView.IdentificationOverride(t.Name.Translate(null)),
+						CompositeView.IdentificationOverride(t.Name.Translate(CultureInfo.InvariantCulture)),
 						CompositeView.ContextFreeInit(new ConstantValue(t.NewState.ID), ActionManager.HistoryTable.HistToStatePath)
 					);
 					//     Add it to a list of additional new verbs
@@ -76,10 +76,10 @@ namespace Thinkage.MainBoss.Controls {
 #endif
 			}
 		}
-		public StateHistoryBrowseLogic(IBrowseUI control, XAFClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
+		public StateHistoryBrowseLogic(IBrowseUI control, DBClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
 			: this(control, db, takeDBCustody, new CustomTblBuilder(db, tbl), settingsContainer, structure) {
 		}
-		private StateHistoryBrowseLogic(IBrowseUI control, XAFClient db, bool takeDBCustody, CustomTblBuilder tblBuilder, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
+		private StateHistoryBrowseLogic(IBrowseUI control, DBClient db, bool takeDBCustody, CustomTblBuilder tblBuilder, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
 			: base(control, db, takeDBCustody, tblBuilder.GetTbl(), settingsContainer, structure) {
 		}
 	}

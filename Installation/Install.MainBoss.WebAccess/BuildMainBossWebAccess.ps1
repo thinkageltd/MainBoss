@@ -1,6 +1,7 @@
 #And we need the PLATFORMSDK bin directory in our path using the NETFX 4.0 tools
 $MSDOTNET =  join-path -path $env:WINDIR -childpath(join-path -path "Microsoft.Net" -childpath (join-path -path "Framework" -childpath "v4.0.30319"))
-$MSBUILD = join-path -path "${env:ProgramFiles(x86)}" -childpath(join-path -path "MSBuild" -childpath (join-path "14.0" -childpath(join-path "bin" -childpath  "msbuild.exe")))
+$VISUALSTUDIO = join-path -path "${env:ProgramFiles(x86)}" -childpath(join-path -path "Microsoft Visual Studio" -childpath (join-path -path "2017" -childpath "Enterprise"))
+$MSBUILD = join-path -path "$VISUALSTUDIO" -childpath(join-path -path "MSBuild" -childpath (join-path "15.0" -childpath(join-path "bin" -childpath  "msbuild.exe")))
 $ASPCOMPILER = join-path -path "$MSDOTNET" -childpath "aspnet_compiler.exe"
 ####################################################################
 $project = "Thinkage.MainBoss.WebAccess"
@@ -19,7 +20,7 @@ $outputdir = join-path -path (get-location) -childpath "installation"
 rd -r -force $outputdir
 md $outputdir | out-null
 
-$pdbdir = join-path -path (get-location) -childpath ("PDB"+$version)
+$pdbdir = join-path -path (get-location) -childpath ("PDB_WebAccess"+$version)
 rd -r -force $pdbdir 
 md $pdbdir | out-null
 

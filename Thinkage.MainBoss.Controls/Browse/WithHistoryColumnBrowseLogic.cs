@@ -8,7 +8,7 @@ using Thinkage.Libraries.XAF.UI;
 
 namespace Thinkage.MainBoss.Controls {
 	public class WithHistoryColumnBrowseLogic : BrowseLogic {
-		public WithHistoryColumnBrowseLogic(IBrowseUI control, XAFClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
+		public WithHistoryColumnBrowseLogic(IBrowseUI control, DBClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
 			: base(control, db, takeDBCustody, tbl, settingsContainer, structure) {
 		}
 		ApplicationTblDefaults.AlreadyBeingEditedDisabler AlreadyBeingEditedDisabler;

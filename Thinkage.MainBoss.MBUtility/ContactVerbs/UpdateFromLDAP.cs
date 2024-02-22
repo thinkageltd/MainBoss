@@ -50,12 +50,12 @@ namespace Thinkage.MainBoss.MBUtility {
 			public StringValueOption EmailAddressPattern;
 			public StringValueOption ExcludeEmailAddressPattern;
 			public StringValueOption ExcludeEmailAddress;
-			public BooleanOption     FromEmailAddresses;
-			public BooleanOption     DeleteContacts;
-			public BooleanOption     RemoveLDAPReference;
-			public BooleanOption     UpdateAll;
-			public BooleanOption     PreservePrimaryEmail;
-			public BooleanOption	 Verbose;
+			public BooleanOption FromEmailAddresses;
+			public BooleanOption DeleteContacts;
+			public BooleanOption RemoveLDAPReference;
+			public BooleanOption UpdateAll;
+			public BooleanOption PreservePrimaryEmail;
+			public BooleanOption Verbose;
 			public override string Verb {
 				[return: Thinkage.Libraries.Translation.Invariant]
 				get {
@@ -72,13 +72,11 @@ namespace Thinkage.MainBoss.MBUtility {
 		private readonly Definition Options;
 
 		private void Run() {
-			string oName;
-			if (!LDAPEntry.IsInDomain())
-				throw new GeneralException(KB.K("'{0}' can only work if the computer is in a domain; if you are in a domain, then the domain controller is currently inaccessible"), KB.I("UpdateContactsfromactivedirectory"));
+			LDAPEntry.CheckActiveDirectory(KB.I("UpdateContactsfromactivedirectory"));
 			var EmailAddressPattern = Options.EmailAddressPattern.HasValue ? Options.EmailAddressPattern.Value : null;
 			var ExcludeEmailAddressPattern = Options.ExcludeEmailAddressPattern.HasValue ? Options.ExcludeEmailAddressPattern.Value : null;
-			var deleteContacts =  Options.DeleteContacts.HasValue ? Options.DeleteContacts.Value : false ;
-			var removeLDAPReference =  Options.RemoveLDAPReference.HasValue ? Options.RemoveLDAPReference.Value : false;
+			var deleteContacts = Options.DeleteContacts.HasValue ? Options.DeleteContacts.Value : false;
+			var removeLDAPReference = Options.RemoveLDAPReference.HasValue ? Options.RemoveLDAPReference.Value : false;
 			var UpdateAll = Options.UpdateAll.HasValue ? Options.UpdateAll.Value : false;
 			var FromEmailAddresses = Options.FromEmailAddresses.HasValue ? Options.FromEmailAddresses.Value : false;
 			var PreservePrimaryEmail = Options.PreservePrimaryEmail.HasValue ? Options.PreservePrimaryEmail.Value : false;
@@ -89,13 +87,13 @@ namespace Thinkage.MainBoss.MBUtility {
 				throw new GeneralException(KB.K("Cannot have both '{0}' and '{1}'"), KB.I("FromEmailAddresses"), KB.I("EmailAddresses"));
 			if (deleteContacts && removeLDAPReference)
 				throw new GeneralException(KB.K("Cannot have both '{0}' and '{1}'"), KB.I("DeleteContacts"), KB.I("RemoveActiveDirrectoryReference"));
-			if( EmailAddressPattern != null && Options.EmailAddresses.HasValue )
+			if (EmailAddressPattern != null && Options.EmailAddresses.HasValue)
 				throw new GeneralException(KB.K("Cannot have both '{0}' and '{1}'"), KB.I("EmailAddressPattern"), KB.I("EmailAddresses"));
-			if ( ExcludeEmailAddressPattern != null && Options.EmailAddresses.HasValue)
+			if (ExcludeEmailAddressPattern != null && Options.EmailAddresses.HasValue)
 				throw new GeneralException(KB.K("Cannot have both '{0}' and '{1}'"), KB.I("ExcludeEmailAddressPattern"), KB.I("EmailAddresses"));
 			Regex EmailAddressRE = null;
 			Regex ExcludeEmailAddressRE = null;
-			if( !string.IsNullOrWhiteSpace(EmailAddressPattern) )
+			if (!string.IsNullOrWhiteSpace(EmailAddressPattern))
 				try {
 					EmailAddressRE = new Regex(EmailAddressPattern, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 				}
@@ -110,7 +108,7 @@ namespace Thinkage.MainBoss.MBUtility {
 					throw new GeneralException(KB.K("The {0} could not be parsed"), KB.I("ExcludeEmailAddressPattern"));
 				}
 			System.Version minDBVersionForRolesTable = new System.Version(1, 0, 4, 38); // The roles table appeared in its current form at this version
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out string oName);
 			// Get a connection to the database that we are referencing
 			new ApplicationTblDefaultsNoEditing(Thinkage.Libraries.Application.Instance, new MainBossPermissionsManager(Root.Rights), Root.Rights.Table, Root.RightsSchema, Root.Rights.Action.Customize);
 			var dbapp = new ApplicationWithSingleDatabaseConnection(Thinkage.Libraries.Application.Instance);
@@ -130,10 +128,10 @@ namespace Thinkage.MainBoss.MBUtility {
 			catch (System.Exception ex) {
 				dbapp.CloseDatabaseSession();
 				if (ex is GeneralException)
-					throw;			// message should be good
+					throw;          // message should be good
 				throw new GeneralException(ex, KB.K("There was a problem validating access to the database {0} on server {1}"), connect.DBName, connect.DBServer);
 			}
-			XAFClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
+			DBClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
 			IEnumerable<MailAddress> EmailAddresses = resolveEmailAddresses(Options.EmailAddresses);
 			IEnumerable<MailAddress> ExcludeEmailAddresses = resolveEmailAddresses(Options.ExcludeEmailAddress);
 			List<Guid> ContactIds = new List<Guid>();
@@ -155,19 +153,21 @@ namespace Thinkage.MainBoss.MBUtility {
 			}
 			else
 				throw new GeneralException(KB.K("Need a '{0}' or a '{1}' option to specify which Contacts to update"), KB.I("UpdateAll"), KB.I("EmailAddresses"));
-			if (EmailAddresses != null && ContactIds.Count == 0) return; // the email parsing will generate valid error messages.
+			if (EmailAddresses != null && ContactIds.Count == 0)
+				return; // the email parsing will generate valid error messages.
 			var errorCount = 0;
 			string originalCode = null;
 			dsMB.ContactRow row = null;
 			IEnumerable<LDAPEntry> ldapusers = null;
-			foreach(var contactid in ContactIds ) {
+			foreach (var contactid in ContactIds) {
 				using (dsMB ds = new dsMB(db)) {
 					ldapusers = null;
 					bool changed = false;
-					ds.EnsureDataTableExists(dsMB.Schema.T.Contact,dsMB.Schema.T.Requestor);
+					ds.EnsureDataTableExists(dsMB.Schema.T.Contact, dsMB.Schema.T.Requestor);
 					row = null;
 					row = (dsMB.ContactRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.Contact, new SqlExpression(dsMB.Path.T.Contact.F.Id).Eq(SqlExpression.Constant(contactid)));
-					if (row == null) continue;
+					if (row == null)
+						continue;
 					originalCode = row.F.Code;
 					try {
 						bool tryemail = false;
@@ -176,19 +176,19 @@ namespace Thinkage.MainBoss.MBUtility {
 							if (ldapusers.Count() == 1)
 								changed = LDAPEntry.SetContactValues(row, ldapusers.First(), PreservePrimaryEmail);
 							else {
-								if( deleteContacts ) {
+								if (deleteContacts) {
 									hideContacts(ds, row);
 									changed = true;
 								}
-								else if ( removeLDAPReference ) {
+								else if (removeLDAPReference) {
 									row.F.LDAPGuid = null;
 									changed = true;
 								}
-								else 
+								else
 									tryemail = true;
 							}
 						}
-						if (FromEmailAddresses &&( row.F.Email != null || row.F.AlternateEmail != null ) && ( row.F.LDAPGuid == null || tryemail) ) {
+						if (FromEmailAddresses && (row.F.Email != null || row.F.AlternateEmail != null) && (row.F.LDAPGuid == null || tryemail)) {
 							var emailAddresses = ServiceUtilities.AlternateEmailAddresses(row.F.AlternateEmail);
 							if (row.F.Email != null)
 								emailAddresses.Add(row.F.Email);
@@ -197,25 +197,25 @@ namespace Thinkage.MainBoss.MBUtility {
 								var ad = LDAPEntry.GetActiveDirectoryGivenEmail(ea);
 								ldapusers = ldapusers.Concat(ad);
 							}
-							if( ldapusers.Count() >= 1 && ldapusers.Select(e=>e.Guid).Distinct().Count() == 1 )
+							if (ldapusers.Count() >= 1 && ldapusers.Select(e => e.Guid).Distinct().Count() == 1)
 								changed = LDAPEntry.SetContactValues(row, ldapusers.First(), PreservePrimaryEmail);
-							else if( ldapusers.Count() > 1 )
+							else if (ldapusers.Count() > 1)
 								System.Console.WriteLine(Strings.Format(KB.K("Contact '{0}' email address is defined in multiple Active Directory Users {1}"), row.F.Code, string.Join(", ", ldapusers.Select(e => Strings.IFormat("'{0}'", e.DisplayName)))));
 						}
-						if( tryemail && !changed )
+						if (tryemail && !changed)
 							System.Console.WriteLine(Strings.Format(KB.K("Cannot get the Active Directory entry for Contact '{0}'"), row.F.Code));
 					}
-					catch(System.Exception ex ) {
+					catch (System.Exception ex) {
 						throw new GeneralException(ex, KB.K("Cannot get the Active Directory entry for Contact '{0}'"), row.F.Code);
 					}
 					try {
 						if (changed) {
 							db.Update(ds);
-							if( row.F.Hidden != null  )
+							if (row.F.Hidden != null)
 								System.Console.WriteLine(Strings.Format(KB.K("Contact '{0}' was deleted"), row.F.Code));
 							else if (originalCode != row.F.Code & verbose)
 								System.Console.WriteLine(Strings.Format(KB.K("Contact '{0}' was updated, and was changed to {1}"), originalCode, row.F.Code));
-							else if( verbose )
+							else if (verbose)
 								System.Console.WriteLine(Strings.Format(KB.K("Contact '{0}' was updated"), originalCode, row.F.Code));
 							changed = false;
 						}
@@ -229,11 +229,11 @@ namespace Thinkage.MainBoss.MBUtility {
 						}
 					}
 					try {
-						if ( originalCode != row.F.Code && changed) {
+						if (originalCode != row.F.Code && changed) {
 							var shouldbe = row.F.Code;
 							row.F.Code = originalCode; //put it back to the original code;
 							db.Update(ds);
-							if( verbose )
+							if (verbose)
 								System.Console.WriteLine(Strings.Format(KB.K("Contact '{0}' was updated, but was unable to change the Contact Code to {1}"), row.F.Code, shouldbe));
 						}
 					}
@@ -257,33 +257,33 @@ namespace Thinkage.MainBoss.MBUtility {
 			requestorRow.F.Hidden = now;
 		}
 
-		private List<Guid> AllContactsInLDAP(XAFClient db, bool FromEmailAddresses, IEnumerable<MailAddress> ExcludeEmailAddresses, Regex EmailAddressRE, Regex ExcludeEmailAddressRE) {
+		private List<Guid> AllContactsInLDAP(DBClient db, bool FromEmailAddresses, IEnumerable<MailAddress> ExcludeEmailAddresses, Regex EmailAddressRE, Regex ExcludeEmailAddressRE) {
 			List<Guid> contactIds = new List<Guid>();
 			using (dsMB ds = new dsMB(db)) {
 				ds.EnsureDataTableExists(dsMB.Schema.T.Contact);
 				SqlExpression test = new SqlExpression(dsMB.Path.T.Contact.F.LDAPGuid).IsNotNull();
-				if( FromEmailAddresses || ExcludeEmailAddresses != null || ExcludeEmailAddressRE != null || EmailAddressRE != null )
+				if (FromEmailAddresses || ExcludeEmailAddresses != null || ExcludeEmailAddressRE != null || EmailAddressRE != null)
 					test = test.Or(new SqlExpression(dsMB.Path.T.Contact.F.Email).IsNotNull()).Or(new SqlExpression(dsMB.Path.T.Contact.F.AlternateEmail).IsNotNull());
 				if (ExcludeEmailAddresses != null)
-					test = test.And(new SqlExpression(dsMB.Path.T.Contact.F.Email).In(SqlExpression.Constant(new HashSet<object>(ExcludeEmailAddresses.Select(e=>(object)e.Address)))).Not());
+					test = test.And(new SqlExpression(dsMB.Path.T.Contact.F.Email).In(SqlExpression.Constant(new HashSet<object>(ExcludeEmailAddresses.Select(e => (object)e.Address)))).Not());
 				test = test.And(new SqlExpression(dsMB.Path.T.Contact.F.Hidden).IsNull());
 				ds.DB.ViewAdditionalRows(ds, dsMB.Schema.T.Contact, test, null, null);
-				foreach (dsMB.ContactRow row in ds.T.Contact.Rows) {
+				foreach (dsMB.ContactRow row in ds.T.Contact) {
 					if (row.F.LDAPGuid != null) {
 						contactIds.Add(row.F.Id);
 						continue;
 					}
 					if (!FromEmailAddresses)
 						continue;
-					if (row.F.Email == null && row.F.AlternateEmail == null )
+					if (row.F.Email == null && row.F.AlternateEmail == null)
 						continue;
 					var emailAddresses = ServiceUtilities.AlternateEmailAddresses(row.F.AlternateEmail);
 					if (row.F.Email != null)
 						emailAddresses.Add(row.F.Email);
-					foreach (var a in emailAddresses) { 
-						if( ExcludeEmailAddresses != null && ExcludeEmailAddresses.Any(e=>string.Compare(e.Address,row.F.Email,true) == 0 ) )
+					foreach (var a in emailAddresses) {
+						if (ExcludeEmailAddresses != null && ExcludeEmailAddresses.Any(e => string.Compare(e.Address, row.F.Email, true) == 0))
 							continue;
-						if( EmailAddressRE != null && !EmailAddressRE.Match(row.F.Email).Success )
+						if (EmailAddressRE != null && !EmailAddressRE.Match(row.F.Email).Success)
 							continue;
 						if (ExcludeEmailAddressRE != null && ExcludeEmailAddressRE.Match(row.F.Email).Success)
 							continue;
@@ -296,17 +296,17 @@ namespace Thinkage.MainBoss.MBUtility {
 		}
 
 		private List<MailAddress> resolveEmailAddresses(StringValueOption option) {
-			if ( !option.HasValue )
+			if (!option.HasValue)
 				return null;
 			var el = option.Value.Split(new char[] { ' ', ',', ';' });
 			var l = new List<System.Net.Mail.MailAddress>();
-			foreach( var e in option.Value.Split(new char[] { ' ', ',', ';' }) )
-			try {
-				l.Add(Thinkage.Libraries.Mail.MailAddress(e));
-			}
-			catch (System.FormatException) {
-				System.Console.WriteLine(Strings.Format(KB.K("Error: '{0}' is not a valid email address"), e));
-			}
+			foreach (var e in option.Value.Split(new char[] { ' ', ',', ';' }))
+				try {
+					l.Add(Thinkage.Libraries.Mail.MailAddress(e));
+				}
+				catch (System.FormatException) {
+					System.Console.WriteLine(Strings.Format(KB.K("Error: '{0}' is not a valid email address"), e));
+				}
 			return l.Count == 0 ? null : l;
 		}
 		public void ObtainSession() {

@@ -140,9 +140,9 @@ namespace Thinkage.MainBoss.Controls {
 		// In case of known vendor and item, only display costs and purchase order text
 		public static readonly DelayedCreateTbl PermanentItemActivityBrowseTblCreator = null;
 		public static readonly DelayedCreateTbl TemporaryItemActivityBrowseTblCreator = null;
-		public static readonly DelayedCreateTbl ActiveTemporaryStorageTblCreator = null;
+		public static readonly DelayedCreateTbl ActiveTemporaryStorageEditTblCreator = null;
 		public static readonly DelayedCreateTbl ActiveTemporaryItemLocationTblCreator = null;
-		public static readonly DelayedCreateTbl AllTemporaryStorageTblCreator = null;
+		public static readonly DelayedCreateTbl AllTemporaryStorageEditTblCreator = null;
 		public static readonly DelayedCreateTbl AllTemporaryItemLocationTblCreator = null;
 		public static readonly DelayedCreateTbl ItemPriceTblCreator = null;
 		#endregion
@@ -194,13 +194,13 @@ namespace Thinkage.MainBoss.Controls {
 					new Tbl.IAttr[] {
 						CommonTblAttrs.ViewCostsDefinedBySchema,
 						new BTbl(BTbl.ListColumn(root.F.TableEnum),
-								BTbl.ListColumn(tx.F.EffectiveDate, BTbl.ListColumnArg.Contexts.SortInitialAscending),
-								BTbl.ListColumn(root.F.ItemLocationID.F.ItemID.F.Code),
-								BTbl.ListColumn(root.F.Quantity),
-								BTbl.ListColumn(root.F.UnitCost),
-								BTbl.ListColumn(root.F.Cost)
-						),
-						new TreeStructuredTbl(root.F.ParentID, 2)
+							BTbl.ListColumn(tx.F.EffectiveDate, BTbl.Contexts.SortInitialAscending),
+							BTbl.ListColumn(root.F.ItemLocationID.F.ItemID.F.Code),
+							BTbl.ListColumn(root.F.Quantity),
+							BTbl.ListColumn(root.F.UnitCost),
+							BTbl.ListColumn(root.F.Cost),
+							BTbl.SetTreeStructure(root.F.ParentID, 2)
+						)
 					},
 					root.F.TableEnum,
 					// TODO: As a policy we do not allow ActualizeItem and PO Receiving here because it is too difficult to control the filtering
@@ -386,13 +386,14 @@ namespace Thinkage.MainBoss.Controls {
 			List<BTbl.ICtorArg> btblArgs = new List<BTbl.ICtorArg>(passedBtblArgs);
 
 			btblArgs.AddRange(new BTbl.ICtorArg[] {
-					BTbl.ListColumn(dsMB.Path.T.ItemPrice.F.ItemID.F.Code, BTbl.ListColumnArg.Contexts.List|BTbl.ListColumnArg.Contexts.ClosedCombo|BTbl.ListColumnArg.Contexts.SearchAndFilter),
+					BTbl.ListColumn(dsMB.Path.T.ItemPrice.F.ItemID.F.Code, BTbl.Contexts.List|BTbl.Contexts.ClosedPicker|BTbl.Contexts.SearchAndFilter),
 					BTbl.ListColumn(dsMB.Path.T.ItemPrice.F.VendorID.F.Code), // Always show Vendor ID with Pricing
 					BTbl.ListColumn(dsMB.Path.T.ItemPrice.F.PurchaseOrderText, PurchasingGroup),
 					BTbl.ListColumn(dsMB.Path.T.ItemPrice.F.Quantity, NonPerViewColumn),
 					BTbl.ListColumn(dsMB.Path.T.ItemPrice.F.ItemID.F.UnitOfMeasureID.F.Code),
 					BTbl.ListColumn(dsMB.Path.T.ItemPrice.F.UnitCost),
-					BTbl.ListColumn(dsMB.Path.T.ItemPrice.F.Cost, NonPerViewColumn)
+					BTbl.ListColumn(dsMB.Path.T.ItemPrice.F.Cost, NonPerViewColumn),
+					BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ItemPricing))
 			});
 
 			return new Tbl(dsMB.Schema.T.ItemPrice, TId.ItemPricing,
@@ -400,8 +401,7 @@ namespace Thinkage.MainBoss.Controls {
 						ItemsDependentGroup,
 						CommonTblAttrs.ViewCostsDefinedBySchema,
 						new BTbl(btblArgs.ToArray()),
-						new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete)),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.ItemPricing; }))
+						new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete))
 				},
 				new TblLayoutNodeArray(
 					TblFixedRecordTypeNode.New(),
@@ -587,36 +587,29 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		#endregion
 		#region TemporaryStorageTbl
-		private static DelayedCreateTbl TemporaryStorageTbl(bool onlyActiveOnes) {
-			List<BTbl.ICtorArg> BTblAttrs = new List<BTbl.ICtorArg>();
-			if (onlyActiveOnes)
-				BTblAttrs.Add(BTbl.ExpressionFilter(new SqlExpression(dsMB.Path.T.TemporaryStorage.F.WorkOrderID.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateID.F.TemporaryStorageActive).IsTrue()));
-			BTblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.TemporaryStorage.F.LocationID.F.Code));
-			// We don't display anything for TIWorkOrder.WorkOrderResourceCodeColumn
-			BTblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.TemporaryStorage.F.LocationID.F.Desc, NonPerViewColumn));
-			BTblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.TemporaryStorage.F.WorkOrderID.F.Number));
+		private static DelayedCreateTbl TemporaryStorageEditTbl(bool onlyActiveOnes) {
 			return new DelayedCreateTbl(delegate() {
 				return new Tbl(dsMB.Schema.T.TemporaryStorage, TId.TemporaryStorage,
-				new Tbl.IAttr[] {
-					ItemResourcesGroup,
-					new BTbl(BTblAttrs.ToArray() ),
-					new ETbl(
-						ETbl.UseNewConcurrency(true),
-						ETbl.EditorAccess(false, EdtMode.UnDelete)),
-					TIReports.NewRemotePTbl(TIReports.TemporaryStorageReport)
-				},
-				new TblLayoutNodeArray(
-					DetailsTabNode.New(
-						TblFixedRecordTypeNode.New(),
-						TblColumnNode.New(dsMB.Path.T.TemporaryStorage.F.WorkOrderID, new NonDefaultCol(),
-							new DCol(Fmt.SetDisplayPath(dsMB.Path.T.WorkOrder.F.Number)),
-							new ECol(Fmt.SetPickFrom(TIWorkOrder.AllWorkOrderTemporaryStoragePickerTblCreator))),
-						TblColumnNode.New(dsMB.Path.T.TemporaryStorage.F.ContainingLocationID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.Location.F.Code)), ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.TemporaryStorage.F.LocationID.F.Desc, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.TemporaryStorage.F.LocationID.F.Comment, DCol.Normal, ECol.Normal)),
-					BrowsetteTabNode.New(TId.TemporaryStorageAssignment, TId.TemporaryStorage,
-						TblColumnNode.NewBrowsette(onlyActiveOnes ? TIItem.ActiveTemporaryItemLocationTblCreator : TIItem.AllTemporaryItemLocationTblCreator, dsMB.Path.T.TemporaryStorage.F.LocationID, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID, DCol.Normal, ECol.Normal))
-				));
+					new Tbl.IAttr[] {
+						ItemResourcesGroup,
+						new ETbl(
+							ETbl.UseNewConcurrency(true),
+							ETbl.EditorAccess(false, EdtMode.UnDelete)
+						)
+					},
+					new TblLayoutNodeArray(
+						DetailsTabNode.New(
+							TblFixedRecordTypeNode.New(),
+							TblColumnNode.New(dsMB.Path.T.TemporaryStorage.F.WorkOrderID, new NonDefaultCol(),
+								new DCol(Fmt.SetDisplayPath(dsMB.Path.T.WorkOrder.F.Number)),
+								new ECol(Fmt.SetPickFrom(TIWorkOrder.AllWorkOrderTemporaryStoragePickerTblCreator))),
+							TblColumnNode.New(dsMB.Path.T.TemporaryStorage.F.ContainingLocationID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.Location.F.Code)), ECol.Normal),
+							TblColumnNode.New(dsMB.Path.T.TemporaryStorage.F.LocationID.F.Desc, DCol.Normal, ECol.Normal),
+							TblColumnNode.New(dsMB.Path.T.TemporaryStorage.F.LocationID.F.Comment, DCol.Normal, ECol.Normal)),
+						BrowsetteTabNode.New(TId.TemporaryStorageAssignment, TId.TemporaryStorage,
+							TblColumnNode.NewBrowsette(onlyActiveOnes ? TIItem.ActiveTemporaryItemLocationTblCreator : TIItem.AllTemporaryItemLocationTblCreator, dsMB.Path.T.TemporaryStorage.F.LocationID, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID, DCol.Normal, ECol.Normal))
+					)
+				);
 			});
 		}
 		#endregion
@@ -699,7 +692,7 @@ namespace Thinkage.MainBoss.Controls {
 			List<BTbl.ICtorArg> btblArgs = new List<BTbl.ICtorArg>(passedBtblArgs);
 
 			btblArgs.AddRange(new BTbl.ICtorArg[] {
-							BTbl.ListColumn(dsMB.Path.T.ItemPricing.F.ItemID.F.Code, BTbl.ListColumnArg.Contexts.List|BTbl.ListColumnArg.Contexts.ClosedCombo|BTbl.ListColumnArg.Contexts.SearchAndFilter),
+							BTbl.ListColumn(dsMB.Path.T.ItemPricing.F.ItemID.F.Code, BTbl.Contexts.List|BTbl.Contexts.ClosedPicker|BTbl.Contexts.SearchAndFilter),
 							BTbl.ListColumn(dsMB.Path.T.ItemPricing.F.VendorID.F.Code), // Always show Vendor ID with Pricing
 							BTbl.ListColumn(dsMB.Path.T.ItemPricing.F.Quantity),
 							BTbl.ListColumn(dsMB.Path.T.ItemPricing.F.UnitCost),
@@ -730,7 +723,7 @@ namespace Thinkage.MainBoss.Controls {
 		private TIItem() {
 		}
 		static TIItem() {
-			ItemPriceTblCreator = new DelayedCreateTbl(delegate () { return ItemPriceTbl(); });
+			ItemPriceTblCreator = new DelayedCreateTbl(() => ItemPriceTbl());
 			#region ItemIssue Correction
 			ItemIssueCorrectionTblCreator = new DelayedCreateTbl(delegate() {
 				return ItemIssueTbl(true);
@@ -745,14 +738,14 @@ namespace Thinkage.MainBoss.Controls {
 			PermanentItemActivityBrowseTblCreator = ItemActivityTbl(true);
 			TemporaryItemActivityBrowseTblCreator = ItemActivityTbl(false);
 			#endregion
-			#region ActiveTemporaryStorageTblCreator
-			ActiveTemporaryStorageTblCreator = TemporaryStorageTbl(true);
+			#region ActiveTemporaryStorageEditTblCreator
+			ActiveTemporaryStorageEditTblCreator = TemporaryStorageEditTbl(true);
 			#endregion
 			#region ActiveTemporaryItemLocationTblCreator
 			ActiveTemporaryItemLocationTblCreator = TemporaryItemLocationTbl(true);
 			#endregion
-			#region AllTemporaryStorageTblCreator
-			AllTemporaryStorageTblCreator = TemporaryStorageTbl(false);
+			#region AllTemporaryStorageEditTblCreator
+			AllTemporaryStorageEditTblCreator = TemporaryStorageEditTbl(false);
 			#endregion
 			#region AllTemporaryItemLocationTblCreator
 			AllTemporaryItemLocationTblCreator = TemporaryItemLocationTbl(false);
@@ -772,11 +765,11 @@ namespace Thinkage.MainBoss.Controls {
 						new Tbl.IAttr[] {
 							CommonTblAttrs.ViewCostsDefinedBySchema,
 							new BTbl(BTbl.ListColumn(dsMB.Path.T.ItemReceiving.F.TableEnum),
-									BTbl.ListColumn(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.EffectiveDate, BTbl.ListColumnArg.Contexts.SortInitialAscending),
-									BTbl.PerViewListColumn(dsMB.Path.T.ReceiveItemPO.F.Quantity.Key(), quantityColumnId),
-									BTbl.ListColumn(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.Cost)
-							),
-							new TreeStructuredTbl(dsMB.Path.T.ItemReceiving.F.ParentID, 2)
+								BTbl.ListColumn(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.EffectiveDate, BTbl.Contexts.SortInitialAscending),
+								BTbl.PerViewListColumn(dsMB.Path.T.ReceiveItemPO.F.Quantity.Key(), quantityColumnId),
+								BTbl.ListColumn(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.Cost),
+								BTbl.SetTreeStructure(dsMB.Path.T.ItemReceiving.F.ParentID, 2)
+							)
 						},
 						dsMB.Path.T.ItemReceiving.F.TableEnum,
 						new CompositeView(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID,						// Table #0 - Permanent (with PO)
@@ -896,15 +889,15 @@ namespace Thinkage.MainBoss.Controls {
 				BTbl.ListColumn(dsMB.Path.T.Item.F.ItemCategoryID.F.Code),
 				BTbl.ListColumn(dsMB.Path.T.Item.F.OnHand, NonPerViewColumn, new BTbl.ListColumnArg.FeatureGroupArg(StoreroomGroup)),
 				BTbl.ListColumn(dsMB.Path.T.Item.F.UnitCost, NonPerViewColumn, new BTbl.ListColumnArg.FeatureGroupArg(StoreroomGroup)),
-				BTbl.ListColumn(dsMB.Path.T.Item.F.TotalCost, NonPerViewColumn, new BTbl.ListColumnArg.FeatureGroupArg(StoreroomGroup))
+				BTbl.ListColumn(dsMB.Path.T.Item.F.TotalCost, NonPerViewColumn, new BTbl.ListColumnArg.FeatureGroupArg(StoreroomGroup)),
+				BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ItemReport))
 			};
 			var ItemEditorTblCreator = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.Item, TId.Item,
 					new Tbl.IAttr[] {
 						ItemsDependentGroup,
 						CommonTblAttrs.ViewCostsDefinedBySchema,
-						new ETbl(),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.ItemReport; }))
+						new ETbl()
 				},
 				(TblLayoutNodeArray)itemNodes.Clone() + itemNodeBrowsettes
 				);
@@ -915,8 +908,7 @@ namespace Thinkage.MainBoss.Controls {
 					new Tbl.IAttr[] {
 						ItemsDependentGroup,
 						CommonTblAttrs.ViewCostsDefinedBySchema,
-						new BTbl((BTbl.ICtorArg[]) columnList.Clone()),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.ItemReport; }))
+						new BTbl((BTbl.ICtorArg[]) columnList.Clone())
 					},
 					null,
 					CompositeView.ChangeEditTbl(ItemEditorTblCreator),
@@ -950,9 +942,9 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.ItemAdjustmentCode, TId.ItemAdjustmentCode,
 				new Tbl.IAttr[] {
 					InventoryGroup | ItemResourcesGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.ItemAdjustmentCode.F.Code), BTbl.ListColumn(dsMB.Path.T.ItemAdjustmentCode.F.Desc)),
-					new ETbl(),
-					TIReports.NewRemotePTbl(TIReports.ItemAdjustmentCodeReport)
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.ItemAdjustmentCode.F.Code), BTbl.ListColumn(dsMB.Path.T.ItemAdjustmentCode.F.Desc),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ItemAdjustmentCodeReport))),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -973,9 +965,9 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.ItemCategory, TId.ItemCategory,
 				new Tbl.IAttr[] {
 					ItemsDependentGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.ItemCategory.F.Code), BTbl.ListColumn(dsMB.Path.T.ItemCategory.F.Desc)),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.ItemCategory.F.Code), BTbl.ListColumn(dsMB.Path.T.ItemCategory.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -1010,9 +1002,9 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.ItemIssueCode, TId.ItemIssueCode,
 				new Tbl.IAttr[] {
 					InventoryGroup | ItemResourcesGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.ItemIssueCode.F.Code), BTbl.ListColumn(dsMB.Path.T.ItemIssueCode.F.Desc)),
-					new ETbl(),
-					TIReports.NewRemotePTbl(TIReports.ItemIssueCodeReport)
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.ItemIssueCode.F.Code), BTbl.ListColumn(dsMB.Path.T.ItemIssueCode.F.Desc),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ItemIssueCodeReport))),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -1048,10 +1040,10 @@ namespace Thinkage.MainBoss.Controls {
 								BTbl.PerViewListColumn(dsMB.Path.T.ActualItemLocation.F.EffectiveMinimum.Key(), minimumColumnId),
 								BTbl.PerViewListColumn(dsMB.Path.T.ActualItemLocation.F.Available.Key(), quantityColumnId),
 								BTbl.PerViewListColumn(dsMB.Path.T.Item.F.UnitOfMeasureID.Key(), uomColumnId),
-								BTbl.PerViewListColumn(dsMB.Path.T.ActualItemLocation.F.UnitCost.Key(), unitCostColumnId)
-							),
-							TIReports.NewRemotePTbl(TIReports.InventoryRestocking),
-							new TreeStructuredTbl(dsMB.Path.T.ItemRestocking.F.ParentID, 3)
+								BTbl.PerViewListColumn(dsMB.Path.T.ActualItemLocation.F.UnitCost.Key(), unitCostColumnId),
+								BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.InventoryRestocking)),
+								BTbl.SetTreeStructure(dsMB.Path.T.ItemRestocking.F.ParentID, 3)
+							)
 						},
 						null,
 						// Items that need restocking
@@ -1074,12 +1066,14 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.PerViewColumnValue(unitCostColumnId, dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.UnitCost),
 							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemRestocking.F.ItemLocationID.F.ActualItemLocationID.F.Available).Lt(new SqlExpression(dsMB.Path.T.ItemRestocking.F.ItemLocationID.F.ActualItemLocationID.F.EffectiveMinimum)))
 						),
-						new CompositeView(ActiveTemporaryItemLocationTblCreator, dsMB.Path.T.ItemRestocking.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID,
+						// The driving view filters on Available < Minimum, which can only happen for *active* temporary locations, so we don't need the TemporaryStorageActive filtering that ActiveTemporaryItemLocationTblCreator provides.
+						// If the temp storage is not active it is because the WO is closed, and so Demands are also not active and so Available cannot be less than zero. Since Minimum == 0 for temp storage this means the Available < Minimum will filter out all such ILs
+						new CompositeView(AllTemporaryItemLocationTblCreator, dsMB.Path.T.ItemRestocking.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID,
 							CompositeView.RecognizeByValidEditLinkage(),
 							ReadonlyView,
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID.F.Code),
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.Available),
-						// For Temp IL's the Effective Minimum is always zero so we could in theory leave the field blank but it seems visually cleaner to be explicit.
+							// For Temp IL's the Effective Minimum is always zero so we could in theory leave the field blank but it seems visually cleaner to be explicit.
 							BTbl.PerViewColumnValue(minimumColumnId, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.EffectiveMinimum),
 							BTbl.PerViewColumnValue(unitCostColumnId, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.UnitCost),
 							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemRestocking.F.ItemLocationID.F.ActualItemLocationID.F.Available).Lt(new SqlExpression(dsMB.Path.T.ItemRestocking.F.ItemLocationID.F.ActualItemLocationID.F.EffectiveMinimum)))
@@ -1097,12 +1091,14 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.PerViewColumnValue(unitCostColumnId, dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.UnitCost),
 							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemRestocking.F.ItemLocationID.F.ActualItemLocationID.F.Available).Gt(new SqlExpression(dsMB.Path.T.ItemRestocking.F.ItemLocationID.F.ActualItemLocationID.F.EffectiveMinimum)))
 						),
-						new CompositeView(ActiveTemporaryItemLocationTblCreator, dsMB.Path.T.ItemRestocking.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID,
+						// The driving view filters on OnHand > 0, which can only happen for *active* temporary locations, so we don't need the TemporaryStorageActive filtering that ActiveTemporaryItemLocationTblCreator provides.
+						// If the temp storage is not active OnHand must be zero.
+						new CompositeView(AllTemporaryItemLocationTblCreator, dsMB.Path.T.ItemRestocking.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID,
 							CompositeView.RecognizeByValidEditLinkage(),
 							ReadonlyView,
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID.F.Code),
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.Available),
-						// For Temp IL's the Effective Minimum is always zero so we could in theory leave the field blank but it seems visually cleaner to be explicit.
+							// For Temp IL's the Effective Minimum is always zero so we could in theory leave the field blank but it seems visually cleaner to be explicit.
 							BTbl.PerViewColumnValue(minimumColumnId, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.EffectiveMinimum),
 							BTbl.PerViewColumnValue(unitCostColumnId, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.UnitCost),
 							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemRestocking.F.ItemLocationID.F.ActualItemLocationID.F.Available).Gt(new SqlExpression(dsMB.Path.T.ItemRestocking.F.ItemLocationID.F.ActualItemLocationID.F.EffectiveMinimum)))
@@ -1248,18 +1244,19 @@ namespace Thinkage.MainBoss.Controls {
 					StoreroomGroup,
 					new BTbl(
 						BTbl.ListColumn(dsMB.Path.T.PermanentStorage.F.RelativeLocationID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.PermanentStorage.F.RelativeLocationID.F.LocationID.F.Desc, NonPerViewColumn)
+						BTbl.ListColumn(dsMB.Path.T.PermanentStorage.F.RelativeLocationID.F.LocationID.F.Desc, NonPerViewColumn),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PermanentStorageReport))
 					),
 					new ETbl(
 						ETbl.UseNewConcurrency(true),
 						ETbl.CustomCommand(delegate(EditLogic editorLogic) {
 							var ShowOnMap = new EditLogic.CommandDeclaration(KB.K("Show on map"), new ShowOnMapCommand(editorLogic));
-							var ShowOnMapGroup = new EditLogic.MutuallyExclusiveCommandSetDeclaration();
-							ShowOnMapGroup.Add(ShowOnMap);
+							var ShowOnMapGroup = new EditLogic.MutuallyExclusiveCommandSetDeclaration{
+							ShowOnMap
+};
 							return ShowOnMapGroup;
 						})
-					),
-					TIReports.NewRemotePTbl(TIReports.PermanentStorageReport)
+					)
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -1308,10 +1305,10 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.ListColumn(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID.F.Desc, NonPerViewColumn),
 							BTbl.ListColumn(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID.F.RelativeLocationID.F.PermanentStorageID.F.RelativeLocationID.F.Code),
-							BTbl.ListColumn(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.OnHand)
+							BTbl.ListColumn(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.OnHand),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PermanentInventoryLocation))
 						),
-						new ETbl(),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.PermanentInventoryLocation; }))
+						new ETbl()
 					},
 					new TblLayoutNodeArray(
 						DetailsTabNode.New(
@@ -1386,12 +1383,12 @@ namespace Thinkage.MainBoss.Controls {
 					new Tbl.IAttr[] {
 						ItemResourcesGroup,
 						new BTbl(BTbl.PerViewListColumn(CommonCodeColumnKey, codeColumnId),
-								BTbl.PerViewListColumn(CommonDescColumnKey, descriptionColumnId)
-						),
-						new TreeStructuredTbl(dsMB.Path.T.ActiveTemporaryStorageWithItemAssignments.F.ParentID, 2)
+							BTbl.PerViewListColumn(CommonDescColumnKey, descriptionColumnId),
+							BTbl.SetTreeStructure(dsMB.Path.T.ActiveTemporaryStorageWithItemAssignments.F.ParentID, 2)
+						)
 					},
 					dsMB.Path.T.ActiveTemporaryStorageWithItemAssignments.F.TableEnum,
-					new CompositeView(TIItem.ActiveTemporaryStorageTblCreator, dsMB.Path.T.ActiveTemporaryStorageWithItemAssignments.F.LocationID.F.TemporaryStorageID,
+					new CompositeView(TIItem.ActiveTemporaryStorageEditTblCreator, dsMB.Path.T.ActiveTemporaryStorageWithItemAssignments.F.LocationID.F.TemporaryStorageID,
 						BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.TemporaryStorage.F.LocationID.F.Desc),
 						BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.TemporaryStorage.F.WorkOrderID.F.Number),
 						CompositeView.PathAlias(dsMB.Path.T.ActiveTemporaryStorageWithItemAssignments.F.ContainingLocationID,
@@ -1420,10 +1417,10 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.ListColumn(dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.ItemID.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.ItemID.F.Desc, NonPerViewColumn),
-							BTbl.ListColumn(dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.LocationID.F.Code)
+							BTbl.ListColumn(dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.LocationID.F.Code),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.TemplateInventoryLocation))
 						),
-						new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete)),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.TemplateInventoryLocation; }))
+						new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete))
 					},
 					new TblLayoutNodeArray(
 						TblFixedRecordTypeNode.New(),

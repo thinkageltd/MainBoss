@@ -16,22 +16,23 @@ namespace Thinkage.MainBoss.Controls
 	internal static class UserPrincipalFromDirectoryService {
 		public static Dictionary<string, DBI_Path> AttributeMapping;
 		static UserPrincipalFromDirectoryService() {
-			AttributeMapping = new Dictionary<string, DBI_Path>();
-			AttributeMapping.Add(KB.I("displayName"), dsUserPrincipal.Path.T.UserPrincipal.F.DisplayName);
-			AttributeMapping.Add(KB.I("mail"), dsUserPrincipal.Path.T.UserPrincipal.F.EmailAddress);
-			AttributeMapping.Add(KB.I("telephoneNumber"), dsUserPrincipal.Path.T.UserPrincipal.F.BusPhone);
-			AttributeMapping.Add(KB.I("mobile"), dsUserPrincipal.Path.T.UserPrincipal.F.MobilePhone);
-			AttributeMapping.Add(KB.I("facsimileTelephoneNumber"), dsUserPrincipal.Path.T.UserPrincipal.F.FaxPhone);
-			AttributeMapping.Add(KB.I("homePhone"), dsUserPrincipal.Path.T.UserPrincipal.F.HomePhone);
-			AttributeMapping.Add(KB.I("pager"), dsUserPrincipal.Path.T.UserPrincipal.F.PagerPhone);
-			AttributeMapping.Add(KB.I("wWWHomePage"), dsUserPrincipal.Path.T.UserPrincipal.F.WebURL);
-			AttributeMapping.Add(KB.I("preferredLanguage"), dsUserPrincipal.Path.T.UserPrincipal.F.PreferredLanguage);
-			// The following are not part of the contact record so are not relevant here but fetched anyway (but won't form part of contact record)
-			AttributeMapping.Add(KB.I("streetAddress"), dsUserPrincipal.Path.T.UserPrincipal.F.StreetAddress);
-			AttributeMapping.Add(KB.I("st"), dsUserPrincipal.Path.T.UserPrincipal.F.Territory); //State
-			AttributeMapping.Add(KB.I("L"), dsUserPrincipal.Path.T.UserPrincipal.F.City); // City
-			AttributeMapping.Add(KB.I("co"), dsUserPrincipal.Path.T.UserPrincipal.F.Country); // Country
-			AttributeMapping.Add(KB.I("postalCode"), dsUserPrincipal.Path.T.UserPrincipal.F.PostalCode);
+			AttributeMapping = new Dictionary<string, DBI_Path> {
+				{ KB.I("displayName"), dsUserPrincipal.Path.T.UserPrincipal.F.DisplayName },
+				{ KB.I("mail"), dsUserPrincipal.Path.T.UserPrincipal.F.EmailAddress },
+				{ KB.I("telephoneNumber"), dsUserPrincipal.Path.T.UserPrincipal.F.BusPhone },
+				{ KB.I("mobile"), dsUserPrincipal.Path.T.UserPrincipal.F.MobilePhone },
+				{ KB.I("facsimileTelephoneNumber"), dsUserPrincipal.Path.T.UserPrincipal.F.FaxPhone },
+				{ KB.I("homePhone"), dsUserPrincipal.Path.T.UserPrincipal.F.HomePhone },
+				{ KB.I("pager"), dsUserPrincipal.Path.T.UserPrincipal.F.PagerPhone },
+				{ KB.I("wWWHomePage"), dsUserPrincipal.Path.T.UserPrincipal.F.WebURL },
+				{ KB.I("preferredLanguage"), dsUserPrincipal.Path.T.UserPrincipal.F.PreferredLanguage },
+				// The following are not part of the contact record so are not relevant here but fetched anyway (but won't form part of contact record)
+				{ KB.I("streetAddress"), dsUserPrincipal.Path.T.UserPrincipal.F.StreetAddress },
+				{ KB.I("st"), dsUserPrincipal.Path.T.UserPrincipal.F.Territory }, //State
+				{ KB.I("L"), dsUserPrincipal.Path.T.UserPrincipal.F.City }, // City
+				{ KB.I("co"), dsUserPrincipal.Path.T.UserPrincipal.F.Country }, // Country
+				{ KB.I("postalCode"), dsUserPrincipal.Path.T.UserPrincipal.F.PostalCode }
+			};
 		}
 	}
 	#region ContactFromDirectoryServiceBrowseLogic
@@ -41,7 +42,7 @@ namespace Thinkage.MainBoss.Controls
 	class ContactFromDirectoryServiceBrowseLogic : BrowseLogic {
 		#region Construction
 		#region - Constructor
-		public ContactFromDirectoryServiceBrowseLogic(IBrowseUI control, XAFClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
+		public ContactFromDirectoryServiceBrowseLogic(IBrowseUI control, DBClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
 			: base(control, db, takeDBCustody, tbl, settingsContainer, structure)
 		{
 		}
@@ -165,13 +166,12 @@ namespace Thinkage.MainBoss.Controls
 //					}
 //				);
 
-				// Note our updates go to the Original existing XAFClient DB for the contact table.
-				using (XAFDataSet dsUpdate = XAFDataSet.New(dsMB.Schema.T.Contact.Database, Browser.Session.ExistingDB)) {
+				// Note our updates go to the Original existing DBClient DB for the contact table.
+				using (DBDataSet dsUpdate = DBDataSet.New(dsMB.Schema.T.Contact.Database, Browser.Session.ExistingDB)) {
 					dsUpdate.EnforceConstraints = false;
 					dsUpdate.DataSetName = KB.I("ContactFromDirectoryServiceBrowseLogic.dsUpdate");
 					// Change the UserDirectoryObject table dataset to reflect our changes and save to database
-					dsUpdate.EnsureDataTableExists(dsMB.Schema.T.Contact);
-					dsMB.ContactDataTable contactTable = (dsMB.ContactDataTable)dsMB.Schema.T.Contact.GetDataTable(dsUpdate);
+					dsMB.ContactDataTable contactTable = (dsMB.ContactDataTable)dsUpdate.GetDataTable(dsMB.Schema.T.Contact);
 					// Add the selected ones
 
 					Browser.IterateOverContextRecords(() =>
@@ -315,7 +315,7 @@ namespace Thinkage.MainBoss.Controls
 			: base(connection, server)
 		{
 		}
-		public UserFromDirectoryServiceSession(XAFClient existing)
+		public UserFromDirectoryServiceSession(DBClient existing)
 			: this(new Connection(), new UserFromDirectoryServiceServer())
 		{
 			ExistingDB = existing;
@@ -347,7 +347,7 @@ namespace Thinkage.MainBoss.Controls
 			get;
 			set;
 		}
-		public readonly XAFClient ExistingDB;
+		public readonly DBClient ExistingDB;
 		#endregion
 		#region Overrides to support base class abstraction
 		protected override UserDirectoryObject PrepareItemForRead(UserDirectoryObject item) { return item; }

@@ -124,7 +124,7 @@ namespace Thinkage.MainBoss.Application {
 						(System.IProgress<IProgressDisplay> rP, System.Threading.CancellationToken cT, object[] pList) =>
 						{
 							StepByStepProgressReport reportProgress = new StepByStepProgressReport(0, rP);
-							XAFClient upgradeDB = new XAFClient(Upgrader.BasicDBConnection, Upgrader.BasicDB.Session);
+							DBClient upgradeDB = new DBClient(Upgrader.BasicDBConnection, Upgrader.BasicDB.Session);
 							upgradeDB.PerformTransaction(false, delegate()
 							{
 								Upgrader.UpgradeToCurrentVersion(reportProgress, upgradeDB, cT);

@@ -33,19 +33,19 @@ namespace Thinkage.MainBoss.MB29Conversion {
 		/// <param name="dbserver"></param>
 		/// <param name="dbname"></param>
 		public void Load29XMLData(System.IO.Stream xmlInputReader, System.Xml.Schema.ValidationEventHandler eventHandler) {
-			XAFClient db;
+			DBClient db;
 			int tries = 10;
-			if(srcSqlConnection.DBName == null)
+			if (srcSqlConnection.DBName == null)
 				srcSqlConnection = srcSqlConnection.WithNewDBName(Strings.IFormat("{0}ImportData", ODBname));
 			else
 				tries = 0;
-			for(;;)
+			for (; ; )
 				try {
-					db = new XAFClient(new DBClient.Connection(srcSqlConnection, MB29.Schema), (SqlClient)ServerObject.CreateDatabase(srcSqlConnection, MB29.Schema));
+					db = new DBClient(new DBClient.Connection(srcSqlConnection, MB29.Schema), (SqlClient)ServerObject.CreateDatabase(srcSqlConnection, MB29.Schema));
 					break;
 				}
-				catch(InterpretedDbException e) {
-					if(e.InterpretedErrorCode != InterpretedDbExceptionCodes.DatabaseExists || --tries < 0)
+				catch (InterpretedDbException e) {
+					if (e.InterpretedErrorCode != InterpretedDbExceptionCodes.DatabaseExists || --tries < 0)
 						throw;
 					// Try another name.
 					srcSqlConnection = srcSqlConnection.WithNewDBName(Strings.IFormat("{0}{1}ImportData", ODBname, tries));
@@ -55,12 +55,12 @@ namespace Thinkage.MainBoss.MB29Conversion {
 			System.Xml.XmlReader reader = null;
 			externalXmlValidationEventHandler = eventHandler;
 			try {
-				using(MB29 dsMB29 = new MB29(db)) {
+				using (MB29 dsMB29 = new MB29(db)) {
 					dsMB29.Namespace = MB29SchemaNamespace; // must match the schema namespace otherwise ReadXML will NOT read in data since the XmlNodeMapping table will be built using the Namespace found in the dataset
 
 					// We must cause all the tables to be created since our typed data sets do not normally do this.
-					foreach(DBI_Table t in MB29.Schema.Tables)
-						t.EnsureDataTableExists(dsMB29);
+					foreach (DBI_Table t in MB29.Schema.Tables)
+						dsMB29.EnsureDataTableExists(t);
 
 					//TODO: need to address AuditTable assumptions in MB3 creation code when using MB29 dataset definition
 					// There seems to be no XmlReadMode that does what we want: Use the existing schema of the ds only,
@@ -73,59 +73,62 @@ namespace Thinkage.MainBoss.MB29Conversion {
 					schemaReaderSettings.XmlResolver = schema_resolver;
 					schemaReaderSettings.ValidationType = System.Xml.ValidationType.None;
 					schemaReaderSettings.ValidationFlags = System.Xml.Schema.XmlSchemaValidationFlags.ReportValidationWarnings | System.Xml.Schema.XmlSchemaValidationFlags.ProcessSchemaLocation;
-					schemaReaderSettings.ValidationEventHandler += new System.Xml.Schema.ValidationEventHandler(schemaReaderSettings_ValidationEventHandler);
+					schemaReaderSettings.ValidationEventHandler += new System.Xml.Schema.ValidationEventHandler(SchemaReaderSettings_ValidationEventHandler);
 
 					schemaReader = System.Xml.XmlReader.Create("manifest://localhost/Thinkage/MainBoss/MB29Conversion/MB296.Schema.xsd", schemaReaderSettings);
 
-					System.Xml.Schema.XmlSchemaSet cachedSchemaCollection = new System.Xml.Schema.XmlSchemaSet();
-					cachedSchemaCollection.XmlResolver = schema_resolver;
-					cachedSchemaCollection.ValidationEventHandler += new System.Xml.Schema.ValidationEventHandler(schemaReaderSettings_ValidationEventHandler);
+					System.Xml.Schema.XmlSchemaSet cachedSchemaCollection = new System.Xml.Schema.XmlSchemaSet {
+						XmlResolver = schema_resolver
+					};
+					cachedSchemaCollection.ValidationEventHandler += new System.Xml.Schema.ValidationEventHandler(SchemaReaderSettings_ValidationEventHandler);
 					cachedSchemaCollection.Add(null, schemaReader);
 
 					// Let the dataset read the schema we expect to see
 					dsMB29.ReadXmlSchema(schemaReader);
 					// Turn off checking during load data to possibly speed things up
-					foreach(DataTable t in dsMB29.Tables)
+					foreach (DataTable t in dsMB29.Tables)
 						t.BeginLoadData();
 
-					XmlReaderSettings readerSettings = new XmlReaderSettings();
-					readerSettings.ValidationFlags = System.Xml.Schema.XmlSchemaValidationFlags.None;
-					readerSettings.ValidationType = System.Xml.ValidationType.None;
+					XmlReaderSettings readerSettings = new XmlReaderSettings {
+						ValidationFlags = System.Xml.Schema.XmlSchemaValidationFlags.None,
+						ValidationType = System.Xml.ValidationType.None
+					};
 					reader = System.Xml.XmlReader.Create(xmlInputReader, readerSettings);
 					// Skip the inline schema without validation
 					reader.ReadToFollowing("schema", "http://www.w3.org/2001/XMLSchema");
 					string version = reader.GetAttribute("version");
-					if(version != Version)
+					if (version != Version)
 						throw new GeneralException(KB.T("Conversion can only use a MainBoss Version {0} exported XML file for input."), Thinkage.MainBoss.MB29Conversion.MBConverter.Version);
 					// Read to the instance data
 					reader.ReadToFollowing("MB29", MB29SchemaNamespace);
 					// Create a new reader that validates against our resource schema (for date checking etc.)
-					XmlReaderSettings validatingSettings = new XmlReaderSettings();
-					// need ProcessInlineSchema to actual read our instance data
-					validatingSettings.ValidationFlags = System.Xml.Schema.XmlSchemaValidationFlags.ReportValidationWarnings | System.Xml.Schema.XmlSchemaValidationFlags.ProcessInlineSchema;
-					validatingSettings.ValidationType = System.Xml.ValidationType.Schema;
+					XmlReaderSettings validatingSettings = new XmlReaderSettings {
+						// need ProcessInlineSchema to actual read our instance data
+						ValidationFlags = System.Xml.Schema.XmlSchemaValidationFlags.ReportValidationWarnings | System.Xml.Schema.XmlSchemaValidationFlags.ProcessInlineSchema,
+						ValidationType = System.Xml.ValidationType.Schema
+					};
 					validatingSettings.Schemas.Add(cachedSchemaCollection);
-					validatingSettings.ValidationEventHandler += new System.Xml.Schema.ValidationEventHandler(schemaReaderSettings_ValidationEventHandler);
+					validatingSettings.ValidationEventHandler += new System.Xml.Schema.ValidationEventHandler(SchemaReaderSettings_ValidationEventHandler);
 					reader = System.Xml.XmlReader.Create(reader, validatingSettings);
 					try {
 						// Now load the data from the current node (the instance data) we are positioned at
 						dsMB29.ReadXml(reader.ReadSubtree(), System.Data.XmlReadMode.IgnoreSchema);
 					}
-					catch(System.Exception ex) {
+					catch (System.Exception ex) {
 						throw new GeneralException(ex, KB.T("Import data contains validation errors"));
 					}
-					foreach(DataTable t in dsMB29.Tables)
+					foreach (DataTable t in dsMB29.Tables)
 						t.EndLoadData();
 #if DEBUG
 					// Assign GUIDs to all the ID fields in the dataset since they are PrimaryKey fields
 					// Our GUIDS will be the RECNOs of the original database for debugging
 					int tableNumber = 0;
-					foreach(DataTable dt in dsMB29.Tables) {
-						if((dt.Columns["ID"] as DataColumn) == null)
+					foreach (DataTable dt in dsMB29.Tables) {
+						if ((dt.Columns["ID"] as DataColumn) == null)
 							continue;
 
 						dt.Columns["ID"].ReadOnly = false;
-						foreach(DataRow dr in dt.Rows) {
+						foreach (DataRow dr in dt.Rows) {
 							int recno = (int)dr["RECNO"];
 							Guid AlteredGuid = new System.Guid("{" + tableNumber.ToString("000") + recno.ToString("00000") + "-0000-0000-0000-000000000000}");
 							dr["ID"] = AlteredGuid;
@@ -153,18 +156,18 @@ namespace Thinkage.MainBoss.MB29Conversion {
 					// Make sure all the data imported keeps to the XAFDB schema requirements. We do this by assigning
 					// each value of every field back to itself, processed through the XAF data converters.
 					// To save time, we only do the VariableStringTypeInfo (the comment fields from 2.9 tables)
-					foreach(DBI_Table tableSchema in MB29.Schema.Tables) {
+					foreach (DBI_Table tableSchema in MB29.Schema.Tables) {
 						System.Collections.Generic.List<DBI_Column> toConvert = new System.Collections.Generic.List<DBI_Column>();
-						foreach(DBI_Column columnSchema in tableSchema.Columns) {
-							if(columnSchema.IsWriteable && columnSchema.EffectiveType is StringTypeInfo)
+						foreach (DBI_Column columnSchema in tableSchema.Columns) {
+							if (columnSchema.IsWriteable && columnSchema.EffectiveType is StringTypeInfo)
 								toConvert.Add(columnSchema);
 						}
-						if(toConvert.Count > 0) {
-							DataTable t = tableSchema.GetDataTable(dsMB29);
-							for(int i = 0; i < t.Rows.Count; ++i) {
+						if (toConvert.Count > 0) {
+							DataTable t = dsMB29.GetDataTable(tableSchema);
+							for (int i = 0; i < t.Rows.Count; ++i) {
 								DataRow r = t.Rows[i];
-								foreach(DBI_Column columnSchema in toConvert) {
-									columnSchema[r] = columnSchema[r];
+								foreach (DBI_Column columnSchema in toConvert) {
+									r.ToDBIDataRow()[columnSchema] = r.ToDBIDataRow()[columnSchema];
 								}
 							}
 						}
@@ -178,9 +181,9 @@ namespace Thinkage.MainBoss.MB29Conversion {
 				throw;
 			}
 			finally {
-				if(reader != null)
+				if (reader != null)
 					reader.Close();
-				if(schemaReader != null)
+				if (schemaReader != null)
 					schemaReader.Close();
 				db.CloseDatabase();
 			}
@@ -191,7 +194,7 @@ namespace Thinkage.MainBoss.MB29Conversion {
 #endif
 		}
 
-		void schemaReaderSettings_ValidationEventHandler(object sender, System.Xml.Schema.ValidationEventArgs e) {
+		private void SchemaReaderSettings_ValidationEventHandler(object sender, System.Xml.Schema.ValidationEventArgs e) {
 			++XmlValidationEventCount;
 			externalXmlValidationEventHandler(sender, e);
 		}
@@ -203,7 +206,7 @@ namespace Thinkage.MainBoss.MB29Conversion {
 				Convert(srcSqlConnection.DBName, db, "manifest://localhost/Thinkage/MainBoss/MB29Conversion/dbconversion.xml", xmlResolver);
 			}
 			finally {
-				if(db != null)
+				if (db != null)
 					db.CloseDatabase();
 				DeleteSrcDB();
 			}

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Thinkage.Libraries;
 using Thinkage.Libraries.CommandLineParsing;
+using Thinkage.Libraries.DBILibrary.MSSql;
 using Thinkage.Libraries.Service;
 using Thinkage.MainBoss.Database;
 using Thinkage.MainBoss.Database.Service;
@@ -59,31 +60,31 @@ namespace Thinkage.MainBoss.Service {
 				OnReset();
 				return;
 			case ApplicationServiceRequests.TRACE_OFF:
-				loggingChanged |= setLogging(ref Logging.Activities, true);
-				loggingChanged |= setLogging(ref Logging.ReadEmailRequest, false);
-				loggingChanged |= setLogging(ref Logging.NotifyRequestor, false);
-				loggingChanged |= setLogging(ref Logging.NotifyAssignee, false);
+				loggingChanged |= SetLogging(ref Logging.Activities, true);
+				loggingChanged |= SetLogging(ref Logging.ReadEmailRequest, false);
+				loggingChanged |= SetLogging(ref Logging.NotifyRequestor, false);
+				loggingChanged |= SetLogging(ref Logging.NotifyAssignee, false);
 				break;
 			case ApplicationServiceRequests.TRACE_ALL:
-				loggingChanged |= setLogging(ref Logging.Activities, true);
-				loggingChanged |= setLogging(ref Logging.ReadEmailRequest, true);
-				loggingChanged |= setLogging(ref Logging.NotifyRequestor, true);
-				loggingChanged |= setLogging(ref Logging.NotifyAssignee, true);
+				loggingChanged |= SetLogging(ref Logging.Activities, true);
+				loggingChanged |= SetLogging(ref Logging.ReadEmailRequest, true);
+				loggingChanged |= SetLogging(ref Logging.NotifyRequestor, true);
+				loggingChanged |= SetLogging(ref Logging.NotifyAssignee, true);
 				break;
 			case ApplicationServiceRequests.TRACE_ACTIVITIES:
-				loggingChanged |= setLogging(ref Logging.Activities, true);
+				loggingChanged |= SetLogging(ref Logging.Activities, true);
 				break;
 			case ApplicationServiceRequests.TRACE_EMAIL_REQUESTS:
-				loggingChanged |= setLogging(ref Logging.Activities, true);
-				loggingChanged |= setLogging(ref Logging.ReadEmailRequest, true);
+				loggingChanged |= SetLogging(ref Logging.Activities, true);
+				loggingChanged |= SetLogging(ref Logging.ReadEmailRequest, true);
 				break;
 			case ApplicationServiceRequests.TRACE_NOTIFY_REQUESTOR:
-				loggingChanged |= setLogging(ref Logging.Activities, true);
-				loggingChanged |= setLogging(ref Logging.NotifyRequestor, true);
+				loggingChanged |= SetLogging(ref Logging.Activities, true);
+				loggingChanged |= SetLogging(ref Logging.NotifyRequestor, true);
 				break;
 			case ApplicationServiceRequests.TRACE_NOTIFY_ASSIGNEE:
-				loggingChanged |= setLogging(ref Logging.Activities, true);
-				loggingChanged |= setLogging(ref Logging.NotifyAssignee, true);
+				loggingChanged |= SetLogging(ref Logging.Activities, true);
+				loggingChanged |= SetLogging(ref Logging.NotifyAssignee, true);
 				break;
 			case ApplicationServiceRequests.PROCESS_ALL:
 				LogInfoIfAble(KB.K("'Process All' command received").Translate());
@@ -104,7 +105,7 @@ namespace Thinkage.MainBoss.Service {
 				return; // not ready yet
 			base.OnCustomCommand(command);
 		}
-		private bool setLogging(ref bool logit, bool v) {
+		private bool SetLogging(ref bool logit, bool v) {
 			bool r = logit != v;
 			if (r)
 				logit = v;
@@ -126,12 +127,13 @@ namespace Thinkage.MainBoss.Service {
 			// and the command line. The command line overrides the registry
 			// We will store the connection parameters in the registry as well
 
-			ServiceParms cmdParms = new ServiceParms();
-			cmdParms.ServiceCode = string.IsNullOrWhiteSpace(ServiceOptions.ServiceName) ? null : ServiceOptions.ServiceName;
-			cmdParms.MBVersion = string.IsNullOrWhiteSpace(ServiceOptions.MBVersion) ? null : ServiceOptions.MBVersion;
-			cmdParms.ServiceUserid = string.IsNullOrWhiteSpace(ServiceOptions.ServiceUserid) ? null : ServiceOptions.ServiceUserid;
-			cmdParms.ServicePassword = string.IsNullOrWhiteSpace(ServiceOptions.ServicePassword) ? null : ServiceOptions.ServicePassword;
-			cmdParms.ServiceComputer = string.IsNullOrWhiteSpace(ServiceOptions.ServiceComputer) ? DomainAndIP.MyDnsName : ServiceOptions.ServiceComputer;
+			ServiceParms cmdParms = new ServiceParms {
+				ServiceCode = string.IsNullOrWhiteSpace(ServiceOptions.ServiceName) ? null : ServiceOptions.ServiceName,
+				MBVersion = string.IsNullOrWhiteSpace(ServiceOptions.MBVersion) ? null : ServiceOptions.MBVersion,
+				ServiceUserid = string.IsNullOrWhiteSpace(ServiceOptions.ServiceUserid) ? null : ServiceOptions.ServiceUserid,
+				ServicePassword = string.IsNullOrWhiteSpace(ServiceOptions.ServicePassword) ? null : ServiceOptions.ServicePassword,
+				ServiceComputer = string.IsNullOrWhiteSpace(ServiceOptions.ServiceComputer) ? DomainAndIP.MyDnsName : ServiceOptions.ServiceComputer
+			};
 			//
 			// build a SQL Connection string for information supplied. Command line argument override information 
 			// directly supplied.
@@ -156,8 +158,8 @@ namespace Thinkage.MainBoss.Service {
 						builder.Password = ServiceOptions.SQLPassword;
 					if (!string.IsNullOrWhiteSpace(ServiceOptions.DatabaseServer))
 						builder.DataSource = ServiceOptions.DatabaseServer;
-					if (ServiceOptions.AuthenicationMethod != null)
-						builder.Authentication = ServiceOptions.AuthenicationMethod.Value;
+					if (ServiceOptions.AuthenticationMethod != null)
+						builder.Authentication = ServiceOptions.AuthenticationMethod.Value;
 					if (string.IsNullOrWhiteSpace(builder.DataSource) || builder.DataSource == ".")
 						builder.DataSource = DomainAndIP.MyDnsName;
 				}
@@ -166,7 +168,7 @@ namespace Thinkage.MainBoss.Service {
 				}
 				cmdParms.ConnectionInfo = new SQLConnectionInfo(builder);
 			}
-			else if (!string.IsNullOrWhiteSpace(ServiceOptions.SQLUserid) || ServiceOptions.AuthenicationMethod != null || !string.IsNullOrWhiteSpace(ServiceOptions.SQLPassword))
+			else if (!string.IsNullOrWhiteSpace(ServiceOptions.SQLUserid) || ServiceOptions.AuthenticationMethod != null || !string.IsNullOrWhiteSpace(ServiceOptions.SQLPassword))
 				throw new GeneralException(KB.K("Database connection information was not supplied"));
 			if (System.Threading.Thread.CurrentThread.Name == null)
 				System.Threading.Thread.CurrentThread.Name = cmdParms.ServiceCode ?? KB.I("MainBossService");
@@ -208,7 +210,7 @@ namespace Thinkage.MainBoss.Service {
 
 			if (cmdParms.ConnectionInfo != null) {
 				try {
-					DBConnection = cmdParms.ConnectionInfo.DefineConnection();
+					DBConnection = new MB3Client.ConnectionDefinition(cmdParms.ConnectionInfo.DatabaseServer, cmdParms.ConnectionInfo.DatabaseName, cmdParms.ConnectionInfo.Credentials);
 					ServiceLogging = ServiceUtilities.VerifyDatabaseAndAcquireLog(DBConnection, cmdParms.ServiceCode ?? KB.I("MainBoss Service"));
 					dbParms = ServiceUtilities.AcquireServiceRecordInfo(cmdParms.ConnectionInfo, DBConnection, cmdParms.ServiceCode, ServiceLogging ?? this);
 					cmdParms.UpdateWith(dbParms);
@@ -281,12 +283,12 @@ namespace Thinkage.MainBoss.Service {
 			// access the database
 			//
 			try {
-				DBConnection = cmdParms.ConnectionInfo.DefineConnection();
+				DBConnection = new MB3Client.ConnectionDefinition(cmdParms.ConnectionInfo.DatabaseServer, cmdParms.ConnectionInfo.DatabaseName, cmdParms.ConnectionInfo.Credentials);
 				ServiceLogging = ServiceUtilities.VerifyDatabaseAndAcquireLog(DBConnection, cmdParms.ServiceCode ?? KB.I("MainBoss Service"));
 				if (ServiceLogging == null)
 					Exit(-1); // there will have been an error
 			}
-			catch (SystemException ex) {
+			catch (System.Exception ex) {
 				LogErrorAndExit(1, Thinkage.Libraries.Exception.FullMessage(ex));
 			}
 			//
@@ -295,7 +297,7 @@ namespace Thinkage.MainBoss.Service {
 			try {
 				dbParms = ServiceUtilities.AcquireServiceRecordInfo(cmdParms.ConnectionInfo, DBConnection, cmdParms.ServiceCode, null);
 			}
-			catch (SystemException ex) {
+			catch (System.Exception ex) {
 				if (!ServiceOptions.DeleteService)  // no MainBoss Service record but a MainBoss Service may actually exist.
 					LogErrorAndExit(1, Thinkage.Libraries.Exception.FullMessage(ex));
 			}
@@ -331,7 +333,7 @@ namespace Thinkage.MainBoss.Service {
 				else if (!ServiceOptions.CreateService && !ServiceOptions.DeleteService && !ServiceOptions.UpdateService)
 					Console.WriteLine(Strings.Format(KB.K("Currently there is no Windows Service for MainBoss installed for {0}"), DBConnection.DisplayName));
 			}
-			catch (SystemException e) {
+			catch (System.Exception e) {
 				if (ServiceOptions.DeleteService && ServiceOptions.Force)
 					System.Console.WriteLine(Thinkage.Libraries.Exception.FullMessage(e));
 				else if (ServiceOptions.CreateService || ServiceOptions.UpdateService)
@@ -360,7 +362,7 @@ namespace Thinkage.MainBoss.Service {
 			}
 			try {
 				if (DBConnection == null)
-					DBConnection = cmdParms.ConnectionInfo.DefineConnection();
+					DBConnection = new MB3Client.ConnectionDefinition(cmdParms.ConnectionInfo.DatabaseServer, cmdParms.ConnectionInfo.DatabaseName, cmdParms.ConnectionInfo.Credentials);
 				if (ServiceLogging == null)
 					ServiceLogging = ServiceUtilities.VerifyDatabaseAndAcquireLog(DBConnection, cmdParms.ServiceCode);
 				if (ServiceLogging == null)
@@ -799,8 +801,7 @@ namespace Thinkage.MainBoss.Service {
 			catch (System.Exception) {; }
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((o, a) => {
 				System.Exception e = (System.Exception)a.ExceptionObject;
-				GeneralException eg = e as GeneralException;
-				if (eg != null)
+				if (e is GeneralException eg)
 					System.Console.WriteLine(Thinkage.Libraries.Exception.FullMessage(eg));
 				else
 					System.Console.WriteLine(Strings.Format(KB.K("Exception: {0}"), Thinkage.Libraries.Exception.FullMessage(e)));

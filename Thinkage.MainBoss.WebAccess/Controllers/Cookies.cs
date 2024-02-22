@@ -19,7 +19,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		}
 		public static string GetRequestorEmail(HttpRequestBase request) {
 			var cookie = request.Cookies["MainBossWebAccess"];
-			return cookie != null ? cookie["requestorEmail"] : null;
+			return cookie?["requestorEmail"];
 		}
 	}
 }

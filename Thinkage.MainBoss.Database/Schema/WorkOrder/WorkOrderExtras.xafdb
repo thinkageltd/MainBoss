@@ -51,17 +51,20 @@
 	  <extension name="dependson">WorkOrderAssignmentAll@WorkOrderAssignmentAll.WorkOrderID->WorkOrderExtras.WorkOrderID</extension>
 	  <extension name="dependson">WorkOrderAssignmentAll.WorkOrderAssigneeID@WorkOrderAssignmentAll.WorkOrderID->WorkOrderExtras.WorkOrderID</extension>
 	</field>
-	<field name="WorkOrderTemplateID" link="WorkOrderTemplate" type="GUIDREF">
-	  <!-- Apparent dependencies on PMGenerationDetail.WorkOrderID and PMGenerationDetail.ScheduledWorkOrderID are not coded because these fields cannot change -->
-	  <extension name="dependson">ScheduledWorkOrder.WorkOrderTemplateID</extension>
-	  <extension name="dependson">WorkOrderTemplate.Code</extension>
-	</field>
 	<field name="StateHistoryAsText" type="MultiLineUnlimited">
 	  <extension name="dependson">WorkOrderState.Code</extension>
 	  <extension name="dependson">WorkOrderStateHistoryStatus.Code</extension>
 	  <extension name="dependson">User.ContactID</extension>
 	  <extension name="dependson">Contact.Code</extension>
 	  <extension name="dependson">WorkOrderStateHistory@WorkOrderStateHistory.WorkOrderID->WorkOrderExtras.WorkOrderID</extension>
+	</field>
+	<field name="PMGenerationBatchID" type="GUIDREF" link="PMGenerationBatch">
+	  <!-- Apparent dependencies on PMGenerationDetail.WorkOrderID and PMGenerationDetail.ScheduledWorkOrderID are not coded because these fields cannot change -->
+	  <doc>For preventive maintenance generated workorders, the GenerationBatch reference this workorder belongs to</doc>
+	</field>
+	<field name="ScheduledWorkOrderID" type="GUIDREF" link="ScheduledWorkOrder">
+	  <!-- Apparent dependencies on PMGenerationDetail.WorkOrderID and PMGenerationDetail.ScheduledWorkOrderID are not coded because these fields cannot change -->
+	  <doc>For preventive maintenance generated workorders, the ScheduledWorkOrder (maintenance plan) reference this workorder was created from</doc>
 	</field>
 	<!-- A single view for reporting a listing of WorkOrders. -->
 	<extension name="query">
@@ -151,10 +154,6 @@
 				  ORDER BY Contact.Code
 				  for xml path(''), TYPE
 				).value('.','varchar(max)'), 1 , 2, '')
-			, (select TOP 1 WOT.Id from ScheduledWorkOrder as SWO	-- all WOT.Id's will be the same, we want quickest way to get that single value
-								join WorkOrderTemplate as WOT on SWO.WorkOrderTemplateID = WOT.Id
-								join PMGenerationDetail as PMGD on PMGD.ScheduledWorkOrderID = SWO.Id
-								where PMGD.WorkOrderID = WorkOrderCalculations3.Id)
 			, (select
 				  CAST(WorkOrderStateHistory.[EffectiveDate] as  nchar(24))
 				  +'§'
@@ -171,6 +170,10 @@
 					where WorkOrderStateHistory.WorkOrderID = WorkOrderCalculations3.Id
 					order by WorkOrderStateHistory.EffectiveDate
 					for xml path(''), TYPE).value('.','varchar(max)')
+			, (select TOP 1 PMGenerationBatchID from PMGenerationDetail -- all PMGenerationBatchID's will be the same, we want quickest way to get that single value
+								where WorkOrderID = WorkOrderCalculations3.Id)
+			, (select TOP 1 ScheduledWorkOrderID from PMGenerationDetail -- all ScheduledWorkOrderID's will be the same, we want quickest way to get that single value
+								where WorkOrderID = WorkOrderCalculations3.Id)
 		from WorkOrderCalculations3
 	</extension>
 	<extension name="dependson">WorkOrder@WorkOrder.Id->WorkOrderExtras.WorkOrderID</extension>
@@ -209,9 +212,8 @@
 	<field name="Code"/>
   </table>
   <table name="PMGenerationDetail"/>
-  <table name="ScheduledWorkOrder">
-	<field name="WorkOrderTemplateID"/>
-  </table>
+  <table name="ScheduledWorkOrder"/>
+  <table name="PMGenerationBatch"/>
   <table name="WorkOrderTemplate">
 	<field name="Code"/>
   </table>

@@ -13,7 +13,7 @@ namespace Thinkage.MainBoss.Controls
 	public class SpecificationEditLogic : EditLogic {
 		public static readonly Thinkage.Libraries.Translation.Key CustomFieldPlaceholderLabel = KB.T("Custom Fields Placeholder");
 		private class RowMapperClass {
-			public RowMapperClass(XAFClient db, Tbl tbl, EdtMode mode, object[][] rowIDs, List<TblActionNode>[] initLists) {
+			public RowMapperClass(DBClient db, Tbl tbl, EdtMode mode, object[][] rowIDs, List<TblActionNode>[] initLists) {
 				if (rowIDs.Length != 1)
 					throw new GeneralException(KB.T("Only one Specification can be edited at a time"));
 
@@ -74,9 +74,9 @@ namespace Thinkage.MainBoss.Controls
 							// In all modes relying on an existing specification record fetch the identified Specification record
 							// and extract the form ID from it. We ignore any init that might have been there
 							// TODO (debugging?) if there was an init it should match what is in the record. Not sure about this one.
-							DataRow r = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.Specification, SqlExpression.Constant(rowIDs[0][0]).Eq(new SqlExpression(dsMB.Path.T.Specification.F.Id)));
+							DBIDataRow r = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.Specification, SqlExpression.Constant(rowIDs[0][0]).Eq(new SqlExpression(dsMB.Path.T.Specification.F.Id))).ToDBIDataRow();
 							if (r != null)
-								formID = dsMB.Schema.T.Specification.F.SpecificationFormID[r];
+								formID = r[dsMB.Schema.T.Specification.F.SpecificationFormID];
 							else
 								throw new GeneralException(KB.K("Cannot find specification record"));
 						}
@@ -110,8 +110,8 @@ namespace Thinkage.MainBoss.Controls
 						using (DataView sorted = new DataView(ds.T.SpecificationFormField, null, dsMB.Schema.T.SpecificationFormField.F.FieldOrder.Name, DataViewRowState.OriginalRows)) {
 							for (int i = 0; i < sorted.Count; i++) {
 								int rs = SpecificatonFormFieldIDsByRecordSet.Count;
-								DataRow row = sorted[i].Row;
-								object formFieldID = dsMB.Schema.T.SpecificationFormField.F.Id[row];
+								DBIDataRow row = sorted[i].Row.ToDBIDataRow();
+								object formFieldID = row[dsMB.Schema.T.SpecificationFormField.F.Id];
 								SpecificatonFormFieldIDsByRecordSet.Add(formFieldID);
 
 								// TODO: allow types other than 1-line text.
@@ -120,8 +120,8 @@ namespace Thinkage.MainBoss.Controls
 								// the type of the bound value, and which also wraps the field with an encoder similar to the one used for Variables.
 								splitterColumnContents.Add(
 									TblCustomTypedColumnNode.New(
-										KB.T((string)dsMB.Schema.T.SpecificationFormField.F.EditLabel[row]),
-										new StringTypeInfo(0, Math.Min((int)dsMB.Schema.T.SpecificationFormField.F.FieldSize[row], 80), 0, false, false, false),
+										KB.T((string)row[dsMB.Schema.T.SpecificationFormField.F.EditLabel]),
+										new StringTypeInfo(0, Math.Min((int)row[dsMB.Schema.T.SpecificationFormField.F.FieldSize], 80), 0, false, false, false),
 											delegate(object o)
 											{
 												// nothing special needed for now
@@ -158,10 +158,10 @@ namespace Thinkage.MainBoss.Controls
 			public readonly List<object> SpecificatonFormFieldIDsByRecordSet;
 			public readonly Tbl CustomizedTbl;
 		}
-		public SpecificationEditLogic(IEditUI control, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+		public SpecificationEditLogic(IEditUI control, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 			: this(control, db, initialEditMode, initRowIDs, subsequentModeRestrictions, new RowMapperClass(db, tbl, initialEditMode, initRowIDs, initLists), settingsContainer) {
 		}
-		private SpecificationEditLogic(IEditUI control, XAFClient db, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, RowMapperClass rowMapper, Settings.Container settingsContainer)
+		private SpecificationEditLogic(IEditUI control, DBClient db, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, RowMapperClass rowMapper, Settings.Container settingsContainer)
 			: base(control, db, rowMapper.CustomizedTbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, rowMapper.ModifiedInitLists) {
 			RowMapper = rowMapper;
 		}
@@ -174,9 +174,9 @@ namespace Thinkage.MainBoss.Controls
 			object[] result = base.GetFullRowIDs();
 			using (dsMB ds = new dsMB(DB)) {
 				ds.DB.ViewAdditionalRows(ds, dsMB.Schema.T.SpecificationData, new SqlExpression(dsMB.Path.T.SpecificationData.F.SpecificationID).Eq(SqlExpression.Constant(result[0])));
-				foreach (DataRow r in ds.T.SpecificationData.Rows) {
-					object formFieldID = dsMB.Schema.T.SpecificationData.F.SpecificationFormFieldID[r];
-					object dataID = dsMB.Schema.T.SpecificationData.F.Id[r];
+				foreach (DBIDataRow r in ds.T.SpecificationData) {
+					object formFieldID = r[dsMB.Schema.T.SpecificationData.F.SpecificationFormFieldID];
+					object dataID = r[dsMB.Schema.T.SpecificationData.F.Id];
 					for (int i = RowMapper.SpecificatonFormFieldIDsByRecordSet.Count; --i >= 0; )
 						if (dsMB.Schema.T.SpecificationData.F.SpecificationFormFieldID.EffectiveType.GenericEquals(formFieldID, RowMapper.SpecificatonFormFieldIDsByRecordSet[i])) {
 							result[i] = dataID;

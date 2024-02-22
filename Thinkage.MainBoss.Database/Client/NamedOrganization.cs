@@ -45,9 +45,9 @@ namespace Thinkage.MainBoss.Database {
 		/// </summary>
 		public MainBossNamedOrganizationStorage(IConnectionInformation connection)
 			: base() {
-			Session = new XAFClient(new DBClient.Connection(connection, dsSavedOrganizations.Schema));
+			Session = new DBClient(new DBClient.Connection(connection, dsSavedOrganizations.Schema));
 		}
-		protected XAFClient Session;
+		protected DBClient Session;
 		/// <summary>
 		/// Return the saved connection for the given connection id, or null if none exists by that id.
 		/// Note that connectionName is the Guid identification of the organization.
@@ -116,7 +116,7 @@ namespace Thinkage.MainBoss.Database {
 			using(var ds = new dsSavedOrganizations(Session)) {
 				try {
 					ds.DB.ViewAdditionalRows(ds, dsSavedOrganizations.Schema.T.Organizations); //TODO: Use the filterByOrganizationName to do the view and eliminate our comparison below
-					foreach(dsSavedOrganizations.OrganizationsRow r in ds.T.Organizations.Rows) {
+					foreach(dsSavedOrganizations.OrganizationsRow r in ds.T.Organizations) {
 						NamedOrganization o = Load(r.F.Id);
 						if(filterByOrganizationName == null || string.Equals(filterByOrganizationName, o.DisplayName, StringComparison.InvariantCultureIgnoreCase))
 							list.Add(o);
@@ -149,10 +149,10 @@ namespace Thinkage.MainBoss.Database {
 					try {
 #if DEBUG
 						ds.DB.ViewAdditionalVariables(ds, dsSavedOrganizations.Schema.V.PreferredOrganizationDebug);
-						return ds.V.PreferredOrganizationDebug.IsNull ? (Guid?)null : ds.V.PreferredOrganizationDebug.Value;
+						return (Guid?)ds.V.PreferredOrganizationDebug.Value;
 #else
-					ds.DB.ViewAdditionalVariables(ds, dsSavedOrganizations.Schema.V.PreferredOrganization);
-					return ds.V.PreferredOrganization.IsNull ? (Guid?)null : ds.V.PreferredOrganization.Value;
+						ds.DB.ViewAdditionalVariables(ds, dsSavedOrganizations.Schema.V.PreferredOrganization);
+						return (Guid?)ds.V.PreferredOrganization.Value;
 #endif
 					}
 					catch { // any error means we do not know
@@ -165,18 +165,12 @@ namespace Thinkage.MainBoss.Database {
 					using(var ds = new dsSavedOrganizations(Session)) {
 #if DEBUG
 						ds.DB.EditVariable(ds, dsSavedOrganizations.Schema.V.PreferredOrganizationDebug);
-						if(value == null)
-							ds.V.PreferredOrganizationDebug.SetNull();
-						else
-							ds.V.PreferredOrganizationDebug.Value = value.Value;
+						ds.V.PreferredOrganizationDebug.Value = value;
 						ds.DB.Update(ds);
 #else
-					ds.DB.EditVariable(ds, dsSavedOrganizations.Schema.V.PreferredOrganization);
-					if (value == null)
-						ds.V.PreferredOrganization.SetNull();
-					else
-						ds.V.PreferredOrganization.Value =value.Value;
-					ds.DB.Update(ds);
+						ds.DB.EditVariable(ds, dsSavedOrganizations.Schema.V.PreferredOrganization);
+						ds.V.PreferredOrganization.Value = value;
+						ds.DB.Update(ds);
 #endif
 					}
 				}
@@ -191,9 +185,7 @@ namespace Thinkage.MainBoss.Database {
 		public new NamedOrganization Load([Invariant] Guid? id) {
 			using (var ds = new dsSavedOrganizations(Session)) {
 				ds.DB.ViewAdditionalVariables(ds, dsSavedOrganizations.Schema.V.SoloOrganization);
-				if (ds.V.SoloOrganization.IsNull)
-					return null;
-				return base.Load(ds.V.SoloOrganization.Value);
+				return base.Load((Guid?)ds.V.SoloOrganization.Value);
 			}
 		}
 		public new NamedOrganization Save(NamedOrganization o) {
@@ -209,7 +201,7 @@ namespace Thinkage.MainBoss.Database {
 			base.Delete(o);
 			using (var ds = new dsSavedOrganizations(Session)) {
 				ds.DB.EditVariable(ds, dsSavedOrganizations.Schema.V.SoloOrganization);
-				ds.V.SoloOrganization.SetNull();
+				ds.V.SoloOrganization.Value = null;
 				ds.DB.Update(ds);
 			}
 		}

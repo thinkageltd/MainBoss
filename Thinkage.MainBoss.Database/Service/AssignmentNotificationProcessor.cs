@@ -12,10 +12,11 @@ namespace Thinkage.MainBoss.Database.Service {
 	/// </summary>
 	public class AssignmentNotificationProcessor : EmailNotificationProcessor {
 		#region Constructor
-		public AssignmentNotificationProcessor(IServiceLogging logger, MB3Client dbSession)	: base(logger, dbSession) {	}
+		private AssignmentNotificationProcessor(IServiceLogging logger, MB3Client dbSession) : base(logger, dbSession, true) { }
 		public static void DoAllAssignmentNotifications(IServiceLogging logger, MB3Client dbSession, bool traceActivities, bool traceDetails) {
 			using (AssignmentNotificationProcessor x = new AssignmentNotificationProcessor(logger, dbSession)) {
-				if (x.Unavailable) return;
+				if (x.Unavailable)
+					return;
 				logger.LogTrace(traceDetails, KB.K("Assignment notifications started").Translate());
 				x.DoAssignmentNotifications(traceActivities, traceDetails);
 				logger.LogTrace(traceDetails, KB.K("Assignment notifications completed").Translate());
@@ -97,14 +98,14 @@ namespace Thinkage.MainBoss.Database.Service {
 				});
 				// check each work request record for changes.
 				if (dsmb.T.AssignmentNotification.Rows.Count == 0) {
-					if( traceActivities )
-						Logger.LogActivity( Strings.Format(KB.K("No Assignment Notifications found")));
+					if (traceActivities)
+						Logger.LogActivity(Strings.Format(KB.K("No Assignment Notifications found")));
 					return;
 				}
 				Logger.LogTrace(traceDetails, Strings.Format(KB.K("Processing {0} {0.IsOne ? {0} Notification : {0} Notifications }"), dsmb.T.AssignmentNotification.Rows.Count));
 				#region Processing Loop
 				#region RequestAssignments
-				foreach (dsMB.RequestAssignmentRow rarow in dsmb.T.RequestAssignment.Rows) {
+				foreach (dsMB.RequestAssignmentRow rarow in dsmb.T.RequestAssignment) {
 					// Ensure no history remains earlier iterations that may end up in someone else's notification
 					// we do it at the top to ensure it is done if we stop processing further down due to some error and end up doing a continue. The history
 					// wouldn't be cleared at the bottom of the loop.
@@ -128,15 +129,14 @@ namespace Thinkage.MainBoss.Database.Service {
 							new SortExpression(dsMB.Path.T.RequestStateHistory.F.EntryDate, SortExpression.SortOrder.Desc).ToDataExpressionString());
 
 					// The last aknowledgement date is the date of the last history record (which is the first in our list)
-					DateTime ackdate = (DateTime)dsMB.Schema.T.RequestStateHistory.F.EntryDate[rshrows[0]];
+					DateTime ackdate = ((dsMB.RequestStateHistoryRow)rshrows[0]).F.EntryDate;
 					// create some variables for convenience
 					dsMB.RequestRow requestRow = rarow.RequestIDParentRow;
 					dsMB.RequestAssigneeRow requestAssigneeRow = rarow.RequestAssigneeIDParentRow;
 					dsMB.ContactRow contactRow = requestAssigneeRow.ContactIDParentRow;
 
 					// If the contact has an email address and the contact assignee has notifications enabled, send notification
-					string noNotification = null;
-					MailAddress recipient = EmailHelper.EmailAddressFromContact(contactRow, out noNotification);
+					MailAddress recipient = EmailHelper.EmailAddressFromContact(contactRow, out string noNotification);
 					System.Globalization.CultureInfo preferredLanguage = Thinkage.Libraries.Translation.MessageBuilder.PreferredLanguage(contactRow.F.PreferredLanguage);
 
 					if (noNotification == null) { // Other validations
@@ -193,7 +193,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				#endregion
 
 				#region WorkOrderAssignments
-				foreach (dsMB.WorkOrderAssignmentNotificationRow rarow in dsmb.T.WorkOrderAssignmentNotification.Rows) {
+				foreach (dsMB.WorkOrderAssignmentNotificationRow rarow in dsmb.T.WorkOrderAssignmentNotification) {
 					// Ensure no history remains earlier iterations that may end up in someone else's notification
 					// we do it at the top to ensure it is done if we stop processing further down due to some error and end up doing a continue. The history
 					// wouldn't be cleared at the bottom of the loop.
@@ -213,7 +213,7 @@ namespace Thinkage.MainBoss.Database.Service {
 							new ColumnExpressionUnparser().UnParse(SqlExpression.Constant(true).Eq(SqlExpression.Constant(true))),
 							new SortExpression(dsMB.Path.T.WorkOrderStateHistory.F.EntryDate, SortExpression.SortOrder.Desc).ToDataExpressionString());
 					// The last aknowledgement date is the date of the last history record (which is the first in our list)
-					DateTime ackdate = (DateTime)dsMB.Schema.T.WorkOrderStateHistory.F.EntryDate[shrows[0]];
+					DateTime ackdate = ((dsMB.WorkOrderStateHistoryRow)shrows[0]).F.EntryDate;
 
 					// create some variables for convenience
 					dsMB.WorkOrderRow orderRow = rarow.WorkOrderIDParentRow;
@@ -221,8 +221,7 @@ namespace Thinkage.MainBoss.Database.Service {
 					dsMB.ContactRow contactRow = orderAssigneeRow.ContactIDParentRow;
 
 					// If the contact has an email address and the contact assignee has notifications enabled, send notification
-					string noNotification = null;
-					MailAddress recipient = EmailHelper.EmailAddressFromContact(contactRow, out noNotification);
+					MailAddress recipient = EmailHelper.EmailAddressFromContact(contactRow, out string noNotification);
 					System.Globalization.CultureInfo preferredLanguage = Thinkage.Libraries.Translation.MessageBuilder.PreferredLanguage(contactRow.F.PreferredLanguage);
 
 					if (noNotification == null) { // Other validations
@@ -263,7 +262,7 @@ namespace Thinkage.MainBoss.Database.Service {
 									Logger.LogError(Thinkage.Libraries.Exception.FullMessage(new GeneralException(se, KB.K("Could not contact SMTP server. Work Order Assignment Notifications will be deferred")).WithContext(smtp.SmtpServerContext)));
 									break;
 								}
-								else if ( er == EmailHelper.ErrorRecovery.RetryMessage ) {
+								else if (er == EmailHelper.ErrorRecovery.RetryMessage) {
 									Logger.LogWarning((Thinkage.Libraries.Exception.FullMessage(
 										new GeneralException(se, KB.K("Notification will be retried on work order {0} to '{1}' with email address '{2}'"), orderRow.F.Number, contactRow.F.Code, mm.To).WithContext(smtp.SmtpServerContext))));
 								}
@@ -279,9 +278,8 @@ namespace Thinkage.MainBoss.Database.Service {
 					DB.Update(dsmb);
 				}
 				#endregion
-
 				#region PurchaseOrderAssignments
-				foreach (dsMB.PurchaseOrderAssignmentRow rarow in dsmb.T.PurchaseOrderAssignment.Rows) {
+				foreach (dsMB.PurchaseOrderAssignmentRow rarow in dsmb.T.PurchaseOrderAssignment) {
 					// Ensure no history remains earlier iterations that may end up in someone else's notification
 					// we do it at the top to ensure it is done if we stop processing further down due to some error and end up doing a continue. The history
 					// wouldn't be cleared at the bottom of the loop.
@@ -301,7 +299,7 @@ namespace Thinkage.MainBoss.Database.Service {
 							new ColumnExpressionUnparser().UnParse(SqlExpression.Constant(true).Eq(SqlExpression.Constant(true))),
 							new SortExpression(dsMB.Path.T.PurchaseOrderStateHistory.F.EntryDate, SortExpression.SortOrder.Desc).ToDataExpressionString());
 					// The last aknowledgement date is the date of the last history record (which is the first in our list)
-					DateTime ackdate = (DateTime)dsMB.Schema.T.PurchaseOrderStateHistory.F.EntryDate[rshrows[0]];
+					DateTime ackdate = ((dsMB.PurchaseOrderStateHistoryRow)rshrows[0]).F.EntryDate;
 
 					// create some variables for convenience
 					dsMB.PurchaseOrderRow orderRow = rarow.PurchaseOrderIDParentRow;
@@ -309,8 +307,7 @@ namespace Thinkage.MainBoss.Database.Service {
 					dsMB.ContactRow contactRow = orderAssigneeRow.ContactIDParentRow;
 
 					// If the contact has an email address and the contact assignee has notifications enabled, send notification
-					string noNotification = null;
-					MailAddress recipient = EmailHelper.EmailAddressFromContact(contactRow, out noNotification);
+					MailAddress recipient = EmailHelper.EmailAddressFromContact(contactRow, out string noNotification);
 					System.Globalization.CultureInfo preferredLanguage = Thinkage.Libraries.Translation.MessageBuilder.PreferredLanguage(contactRow.F.PreferredLanguage);
 
 					if (noNotification == null) { // Other validations
@@ -385,7 +382,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			foreach (dsMB.RequestStateHistoryRow rshrow in historyRows) {
 				builder.StartViewHistoryItem();
 				builder.StartHistoryItemTitle();
-				builder.Append(dsMB.Schema.T.RequestStateHistory.F.EffectiveDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo).Format(rshrow.F.EffectiveDate));
+				builder.Append(dsMB.Schema.T.RequestStateHistory.F.EffectiveDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo).Format(rshrow.F.EffectiveDate));
 				if (rshrow.UserIDParentRow != null) {
 					builder.AppendBlank();
 					builder.Append(rshrow.UserIDParentRow.ContactIDParentRow.F.Code);
@@ -426,7 +423,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			foreach (dsMB.WorkOrderStateHistoryRow woshrow in historyRows) {
 				builder.StartViewHistoryItem();
 				builder.StartHistoryItemTitle();
-				builder.Append(dsMB.Schema.T.WorkOrderStateHistory.F.EffectiveDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo).Format(woshrow.F.EffectiveDate));
+				builder.Append(dsMB.Schema.T.WorkOrderStateHistory.F.EffectiveDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo).Format(woshrow.F.EffectiveDate));
 				if (woshrow.UserIDParentRow != null) {
 					builder.AppendBlank();
 					builder.Append(woshrow.UserIDParentRow.ContactIDParentRow.F.Code);
@@ -464,7 +461,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			foreach (dsMB.PurchaseOrderStateHistoryRow poshrow in historyRows) {
 				builder.StartViewHistoryItem();
 				builder.StartHistoryItemTitle();
-				builder.Append(dsMB.Schema.T.PurchaseOrderStateHistory.F.EffectiveDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo).Format(poshrow.F.EffectiveDate));
+				builder.Append(dsMB.Schema.T.PurchaseOrderStateHistory.F.EffectiveDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo).Format(poshrow.F.EffectiveDate));
 				if (poshrow.UserIDParentRow != null) {
 					builder.AppendBlank();
 					builder.Append(poshrow.UserIDParentRow.ContactIDParentRow.F.Code);

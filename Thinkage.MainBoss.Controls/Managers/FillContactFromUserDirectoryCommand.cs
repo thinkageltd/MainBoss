@@ -18,17 +18,18 @@ namespace Thinkage.MainBoss.Controls {
 	internal static class ContactFromDirectoryService {
 		public static Dictionary<string, DBI_Path> AttributeMapping;
 		static ContactFromDirectoryService() {
-			AttributeMapping = new Dictionary<string, DBI_Path>();
-			AttributeMapping.Add(KB.I("mail"), dsMB.Path.T.Contact.F.Email);
-			AttributeMapping.Add(KB.I("telephoneNumber"), dsMB.Path.T.Contact.F.BusinessPhone);
-			AttributeMapping.Add(KB.I("mobile"), dsMB.Path.T.Contact.F.MobilePhone);
-			AttributeMapping.Add(KB.I("facsimileTelephoneNumber"), dsMB.Path.T.Contact.F.FaxPhone);
-			AttributeMapping.Add(KB.I("homePhone"), dsMB.Path.T.Contact.F.HomePhone);
-			AttributeMapping.Add(KB.I("pager"), dsMB.Path.T.Contact.F.PagerPhone);
-			AttributeMapping.Add(KB.I("wWWHomePage"), dsMB.Path.T.Contact.F.WebURL);
-			AttributeMapping.Add(KB.I("preferredLanguage"), dsMB.Path.T.Contact.F.PreferredLanguage);
-			AttributeMapping.Add(KB.I("displayName"), dsMB.Path.T.Contact.F.Code);
-			AttributeMapping.Add(KB.I("userPrincipalName"), dsMB.Path.T.Contact.F.Code);
+			AttributeMapping = new Dictionary<string, DBI_Path> {
+				{ KB.I("mail"), dsMB.Path.T.Contact.F.Email },
+				{ KB.I("telephoneNumber"), dsMB.Path.T.Contact.F.BusinessPhone },
+				{ KB.I("mobile"), dsMB.Path.T.Contact.F.MobilePhone },
+				{ KB.I("facsimileTelephoneNumber"), dsMB.Path.T.Contact.F.FaxPhone },
+				{ KB.I("homePhone"), dsMB.Path.T.Contact.F.HomePhone },
+				{ KB.I("pager"), dsMB.Path.T.Contact.F.PagerPhone },
+				{ KB.I("wWWHomePage"), dsMB.Path.T.Contact.F.WebURL },
+				{ KB.I("preferredLanguage"), dsMB.Path.T.Contact.F.PreferredLanguage },
+				{ KB.I("displayName"), dsMB.Path.T.Contact.F.Code },
+				{ KB.I("userPrincipalName"), dsMB.Path.T.Contact.F.Code }
+			};
 			// The following are not part of the contact record so are not relevant here
 			//			AttributeMapping.Add("streetAddress", );
 			//			AttributeMapping.Add("st", ); //State
@@ -41,7 +42,7 @@ namespace Thinkage.MainBoss.Controls {
 		bool Update;
 		private delegate DBI_Path pathMapper(DBI_Path p);
 		private delegate Sink sinkPutter(DBI_Path p);
-		private FillContactFromUserDirectoryCommand(DBI_Table schema, sinkPutter putter, UIFactory uiFactory, XAFClient db)
+		private FillContactFromUserDirectoryCommand(DBI_Table schema, sinkPutter putter, UIFactory uiFactory, DBClient db)
 			: base(KB.K("Get user or contact information from Active Directory"), KB.K("There must be a valid email address"), false) {
 			DB = db;
 			UIFactory = uiFactory;
@@ -105,17 +106,18 @@ namespace Thinkage.MainBoss.Controls {
 			if (on == null || string.Compare(on, dn, true) == 0)
 				CommentSink.SetValue(Strings.IFormat("{0}\nValues set from Active Directory from Windows User {1} on {2}\n", CommentSource.GetValue(), pn, DateTime.Now));
 			else
-				CommentSink.SetValue(Strings.IFormat("{0}\nValues set from Active Directory from from Windows User {1} on {2}, The Contact's name changed from '{3}'\n", CommentSource.GetValue(), pn, DateTime.Now, on));
+				CommentSink.SetValue(Strings.IFormat("{0}\nValues set from Active Directory from Windows User {1} on {2}, The Contact's name changed from '{3}'\n", CommentSource.GetValue(), pn, DateTime.Now, on));
 
 		}
 		private void UpdateFromLDAP() {
 			//
 			// if there is a LDAPGUid use that 
 			// if not use the a LDAP user with match LDAP 'mail' value
-			// if not use the a LDAP user whose priciple name match
+			// if not use the a LDAP user whose principle name match
 			// if not use the a LDAP whose defines the email address matching the Contact.F.Email
 			// The Contact.F.AlternateEmail is not used.
 			//
+			LDAPEntry.CheckActiveDirectory();
 			IEnumerable<LDAPEntry> ades = null;
 			Guid? LDAPGuid = (Guid?)LDAPGuidSource?.GetValue();
 			var OriginalName = (string)NameSource?.GetValue();
@@ -129,14 +131,14 @@ namespace Thinkage.MainBoss.Controls {
 				throw new GeneralException(KB.K("Cannot update because the Active Directory Reference cannot be found and there is no email address to match"));
 			if (ades == null)
 				ades = LDAPEntry.GetActiveDirectoryGivenPrimaryEmail(Email);
-			if (ades.Count() == 0)
-				ades = LDAPEntry.GetActiveDirectoryGivenPricipalName(Email);
-			if (ades.Count() == 0)
+			if ( !ades.Any() && OriginalName != null)
+				ades = LDAPEntry.GetActiveDirectoryGivenPrincipalName(OriginalName);
+			if ( !ades.Any() )
 				ades = LDAPEntry.GetActiveDirectoryGivenEmail(Email);
-			if (ades.Count() == 0)
+			if ( !ades.Any() )
 				foreach (var a in ServiceUtilities.AlternateEmailAddresses(AlternateEmailString))
 					ades = ades.Concat(LDAPEntry.GetActiveDirectoryGivenEmail(a));
-			if (ades.Count() == 0)
+			if ( !ades.Any() )
 				throw new GeneralException(KB.K("Cannot update because Windows has no login names associated with any of the email addresses"));
 			if (ades.Count() > 1) {
 				var names = ades.Select(sr => sr.DisplayName);
@@ -211,7 +213,7 @@ namespace Thinkage.MainBoss.Controls {
 				{ KB.I("wWWHomePage"),                  new object[] { LDAPUser.WWWHomePage} },
 				{ KB.I("displayName"),                  new object[] { LDAPUser.DisplayName} },
 				{ KB.I("preferredLanguage"),            new object[] { LDAPUser.PreferredLanguage} },
-				{ KB.I("userPricipalName"),             new object[] { LDAPUser.UserPrincipalName} },
+				{ KB.I("userPrincipalName"),             new object[] { LDAPUser.UserPrincipalName} },
 			};
 			return new UserDirectoryObject(Code, LDAPGuid, null, Path, oa);
 		}
@@ -225,7 +227,7 @@ namespace Thinkage.MainBoss.Controls {
 		private Source CommentSource;
 		private NotifyingSource AlternateEmailSource;
 		private NotifyingSource EmailSource;
-		private readonly XAFClient DB;
+		private readonly DBClient DB;
 		private readonly UIFactory UIFactory;
 		private readonly Dictionary<string, Sink> OtherSinks;
 		private readonly Sink NameSink;
@@ -233,5 +235,7 @@ namespace Thinkage.MainBoss.Controls {
 		private readonly Sink CommentSink;
 		private readonly Sink EmailSink;
 		private readonly Sink AlternateEmailSink;
+
+		static SettableDisablerProperties IsNotDomainDisableer = new SettableDisablerProperties(null, KB.K("Only available on computer that is a member of a domain"),DomainAndIP.GetDomainName() != null);
 	}
 }

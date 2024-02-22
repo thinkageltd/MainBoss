@@ -277,7 +277,8 @@ namespace Thinkage.MainBoss.Controls {
 		public static readonly TId RequestorComment = new TId("Requestor Comment");
 		public static readonly TId ResourceGroup = new TId("Resource Group");
 		public static readonly TId SchedulingBasis = new TId("Scheduling Basis", Images.Folder);
-		public static readonly TId SecurityRole = new TId("MainBoss-defined Security Role", Images.SecurityRole);
+		public static readonly TId SecurityRole = new TId("Security Role", Images.SecurityRole);
+		public static readonly TId BuiltinSecurityRole = new TId("MainBoss-defined Security Role", Images.SecurityRole);
 		public static readonly TId CustomSecurityRole = new TId("Custom Security Role", Images.CustomSecurityRole);
 		public static readonly TId ServiceContract = new TId("Service Contract");
 		public static readonly TId ServiceLog = new TId("Service Log", Images.Error);

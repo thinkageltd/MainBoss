@@ -97,6 +97,10 @@
 	<field name="Id" read="id(nonnull)" />
 	<field name="LastNotificationDate" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
   </table>
+  <table name="WorkOrder" defaults="true" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<field name="PMGenerationBatchID" type="link(null)" link="PMGenerationBatch"/>
+  </table>
   <table name="WorkOrderAssignmentAll" defaults="false" log="false">
 	<field name="Id" read="id(nonnull)" />
 	<field name="WorkOrderAssignmentID" type="id(null)"/>
@@ -104,6 +108,12 @@
 	<field name="WorkOrderID" type="id(null)"/>
 	<extension name="query">
 		select newid(), newid(), newid(), newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderExtras" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+		select newid() where 1 = 2
 	</extension>
   </table>
   <table name="WorkOrderAssignmentReport" defaults="false" log="false">

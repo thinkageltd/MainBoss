@@ -10,14 +10,15 @@ namespace Thinkage.MainBoss.Database.Service {
 	/// Does the actual work for @Requests - retrieves mail, updates requests status and sends request acknowledgements.
 	/// </summary>
 	public class RequestorNotificationProcessor : EmailNotificationProcessor {
-		#region Constructors, Destructors
+		#region Constructors, Destructor
 
-		public RequestorNotificationProcessor(IServiceLogging logger, MB3Client dbSession)
-			: base(logger, dbSession) {
+		private RequestorNotificationProcessor(IServiceLogging logger, MB3Client dbSession)
+			: base(logger, dbSession, true) {
 		}
 		public static void DoAllRequestorNotifications(IServiceLogging logger, MB3Client dbSession, bool traceActivities, bool traceDetails) {
 			using (var x = new RequestorNotificationProcessor(logger, dbSession)) {
-				if (x.Unavailable) return;
+				if (x.Unavailable)
+					return;
 				logger.LogTrace(traceDetails, KB.K("Requestor notifications started").Translate());
 				x.DoRequestorNotifications(traceActivities, traceDetails);
 				logger.LogTrace(traceDetails, KB.K("Requestor notifications completed").Translate());
@@ -42,11 +43,11 @@ namespace Thinkage.MainBoss.Database.Service {
 				});
 				// check each work request record for changes.
 				if (dsmb.T.Request.Rows.Count == 0) {
-					Logger.LogActivity( Strings.Format(KB.K("No Requestor Notifications Found")));
+					Logger.LogActivity(Strings.Format(KB.K("No Requestor Notifications Found")));
 					return;
 				}
 				Logger.LogTrace(traceDetails, Strings.Format(KB.K("Processing {0} Requestor Notifications"), dsmb.T.Request.Rows.Count));
-				foreach (dsMB.RequestRow requestRow in dsmb.T.Request.Rows) {
+				foreach (dsMB.RequestRow requestRow in dsmb.T.Request) {
 					// Get the set of requeststatehistory entry that is to be included in this request's acknowledgement.
 					// There must be at least one requeststatehistory record, otherwise the request should have already been filtered out.
 
@@ -55,7 +56,7 @@ namespace Thinkage.MainBoss.Database.Service {
 						new SortExpression(dsMB.Path.T.RequestStateHistory.F.EntryDate, SortExpression.SortOrder.Desc).ToDataExpressionString());
 
 					// The last aknowledgement date is the date of the last history record (which is the first in our list)
-					DateTime ackdate = (DateTime)dsMB.Schema.T.RequestStateHistory.F.EntryDate[rshrows[0]];
+					DateTime ackdate = ((dsMB.RequestStateHistoryRow)rshrows[0]).F.EntryDate;
 					string lastAcknowledgementError = null;
 
 					// create some variables for convenience
@@ -65,8 +66,7 @@ namespace Thinkage.MainBoss.Database.Service {
 					// If the contact has an email address and the contact has permission to receive acknowledgements,
 					// then send acknowledgement to him/her conveying the message in the requeststatehistory record.
 
-					string noAcknowledgement = null;
-					MailAddress recipient = EmailHelper.EmailAddressFromContact(contactRow, out noAcknowledgement);
+					MailAddress recipient = EmailHelper.EmailAddressFromContact(contactRow, out string noAcknowledgement);
 					System.Globalization.CultureInfo preferredLanguage = Thinkage.Libraries.Translation.MessageBuilder.PreferredLanguage(contactRow.F.PreferredLanguage);
 
 					if (noAcknowledgement == null) { // Other validations
@@ -97,12 +97,12 @@ namespace Thinkage.MainBoss.Database.Service {
 							}
 							catch (System.Exception se) {
 								var er = EmailHelper.RetrySmtpException(se as SmtpException);
-								if ( er == EmailHelper.ErrorRecovery.StopProcessing ) {
+								if (er == EmailHelper.ErrorRecovery.StopProcessing) {
 									lastAcknowledgementError = Thinkage.Libraries.Exception.FullMessage(new GeneralException(se, KB.K("Could not contact SMTP server. Request acknowledgements will be deferred")).WithContext(smtp.SmtpServerContext));
 									Logger.LogError(lastAcknowledgementError);
 									break;
 								}
-								else if( er == EmailHelper.ErrorRecovery.RetryMessage ) {
+								else if (er == EmailHelper.ErrorRecovery.RetryMessage) {
 									lastAcknowledgementError = Thinkage.Libraries.Exception.FullMessage(new GeneralException(se, KB.K("Request acknowledgement will be retried on request {0} to '{1}' with email address '{2}'"), requestRow.F.Number, contactRow.F.Code, mm.To).WithContext(smtp.SmtpServerContext));
 									Logger.LogWarning(lastAcknowledgementError);
 								}
@@ -139,7 +139,7 @@ namespace Thinkage.MainBoss.Database.Service {
 
 			if (currentStateHistory.F.PredictedCloseDate.HasValue) {
 				builder.Append(UK.K("EstimatedCompletionDate").Translate(builder.PreferredLanguage));
-				builder.AppendLine(Strings.IFormat(" {0}", dsMB.Schema.T.RequestStateHistory.F.PredictedCloseDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo).Format(currentStateHistory.F.PredictedCloseDate)));
+				builder.AppendLine(Strings.IFormat(" {0}", dsMB.Schema.T.RequestStateHistory.F.PredictedCloseDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo).Format(currentStateHistory.F.PredictedCloseDate)));
 			}
 			if (ServiceConfiguration.MainBossRemoteURL != null && !currentState.F.FilterAsClosed) {
 				builder.AppendWebAccessLink(UK.K("RequestAddCommentPreamble").Translate(builder.PreferredLanguage), requestRow.F.Number,
@@ -152,7 +152,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				builder.StartHistoryItemTitle();
 				// Note we do not put the name of the commenter in this email; that is considered 'inside' information not typically communicated to external users.
 				// This differs from the Assignment notification whereby the information is deemed to come from an insider to an insider receiving the notification.
-				builder.Append(dsMB.Schema.T.RequestStateHistory.F.EffectiveDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo).Format(rshrow.F.EffectiveDate));
+				builder.Append(dsMB.Schema.T.RequestStateHistory.F.EffectiveDate.EffectiveType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo).Format(rshrow.F.EffectiveDate));
 				builder.AppendBlank();
 				builder.Append(rshrow.RequestStateIDParentRow.F.Desc.Translate(builder.PreferredLanguage));
 				builder.EndHistoryItemTitle();

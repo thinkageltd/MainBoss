@@ -59,7 +59,7 @@
   <table name="TemplateTemporaryStorage"/>
   <table name="TemporaryStorage"/>
   <table name="Unit"/>
-
+  <!-- TODO: Delete this-->
   <table name="LocationAndContainers" defaults="false" log="false" id="Id" labelkey="Location Derivations">
 	<doc></doc>
 	<field name="Id" read="RequiredGUID"/>

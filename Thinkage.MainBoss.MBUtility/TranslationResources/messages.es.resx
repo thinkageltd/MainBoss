@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Thinkage.MainBoss.MBUtility§'{0}' can only work if the computer is in a domain; if you are in a domain, then the domain controller is currently inaccessible" xml:space="preserve">
-    <value>'{0}' sólo puede funcionar si la computadora está en un dominio; si usted está en un dominio, a continuación, el controlador de dominio es actualmente inaccesible</value>
-  </data>
   <data name="Thinkage.MainBoss.MBUtility§Access failed: {0}" xml:space="preserve">
     <value>El acceso no: {0}</value>
   </data>

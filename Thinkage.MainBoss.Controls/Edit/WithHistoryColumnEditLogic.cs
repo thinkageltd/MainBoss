@@ -14,7 +14,7 @@ namespace Thinkage.MainBoss.Controls
 	/// </summary>
 	public class WithHistoryColumnEditLogic : EditLogic {
 		#region Constructors
-		public WithHistoryColumnEditLogic(IEditUI control, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+		public WithHistoryColumnEditLogic(IEditUI control, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 			: base(control, db, tbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, initLists) {
 		}
 		#endregion

@@ -25,23 +25,6 @@ namespace Thinkage.MainBoss.MainBoss {
 					var form = Libraries.Presentation.MSWindows.BrowseForm.NewBrowseForm(GetInterface<UIFactory>(), null, SavedOrganizationsBrowserTblCreator);
 					form.Menu = form.MainBrowseControl.UIFactory.CreateMainMenu(
 						form.MainBrowseControl.UIFactory.CreateSubMenu(KB.K("Session"), null,
-#if DEBUG
-						form.MainBrowseControl.UIFactory.CreateCommandMenuItem(KB.T("DEBUG: Start a SQLite instance"), new CallDelegateCommand(KB.K("Start a SQLite MainBoss instance"), new EventHandler(delegate (object sender, EventArgs args) {
-							var junk = new NamedOrganization(KB.I("MainBoss SQLite"), new MB3Client.MBConnectionDefinitionNoServer(DatabaseEnums.ApplicationModeID.Normal, false));
-							var app = MainBossApplication.CreateMainBossApplication(junk);
-							Thinkage.Libraries.Application.ReplaceActiveApplication(app);
-						}))),
-						form.MainBrowseControl.UIFactory.CreateCommandMenuItem(KB.T("DEBUG: Create a SQLite database"), new CallDelegateCommand(KB.K("Create a SQLite MainBoss database"), new EventHandler(delegate (object sender, EventArgs args) {
-							var junk = new MB3Client.MBConnectionDefinitionNoServer(DatabaseEnums.ApplicationModeID.Normal, false);
-							MB3Client.CreateDatabase(junk, KB.I("MainBoss SQLite"), delegate (MB3Client db) {
-								var licenses = new List<License>(new License[] {
-								new Thinkage.Libraries.Licensing.License("5muy5-x3cx9-qqp66-17ba1-rfg0f"), //  Named Users 1 licenses, LicenseID 1
-								new Thinkage.Libraries.Licensing.License("9gm8m-0ap7r-k8fw9-q5xm9-ggp0b") // Requests License 10 Requestors
-								});
-								DatabaseCreation.AddLicenses(db, licenses.ToArray());
-							}, null);
-						}))),
-#endif
 						form.MainBrowseControl.UIFactory.CreateCommandMenuItem(KB.K("Exit"), new CallDelegateCommand(KB.K("Close this window"),
 								delegate () {
 									form.CloseForm(UIDialogResult.Cancel);
@@ -94,7 +77,7 @@ namespace Thinkage.MainBoss.MainBoss {
 							if ((localAllUserRecordChanges & MB3Client.OptionSupport.LocalAllUserRecordUpdateBehaviors.AuthenticationCredentialsRequired) != 0) {
 								Thinkage.Libraries.Application.Instance.GetInterface<ITblDrivenApplication>().PerformMultiEdit(
 									form.MainBrowseControl.UIFactory,
-									new XAFClient(new DBClient.Connection(new SavedOrganizationSession.Connection(), dsSavedOrganizations.Schema)),
+									new DBClient(new DBClient.Connection(new SavedOrganizationSession.Connection(), dsSavedOrganizations.Schema)),
 									OrganizationEditorTblCreator(TId.Organization, typeof(NewOrganizationEditorLogic)),
 									EdtMode.Edit,
 									new object[][] { new object[] { KnownIds.OrganizationMasterRecordId } },
@@ -112,27 +95,21 @@ namespace Thinkage.MainBoss.MainBoss {
 			// Copy the help parameters from the app that is creating us.
 			HelpUsingFolderOfHtml.CopyFromOtherApplication(this, Instance);
 
-			bool netDeployed;
-			try {
-				WebInfoRoot = GetWebDeploymentLocation(out netDeployed);
-				if (!netDeployed) {
-					InitialStartupSettings.IsWebBrowserContextMenuEnabled = true;
-				}
-			}
-			catch (System.Exception e) {
-				Thinkage.Libraries.Exception.AddContext(e, new MessageExceptionContext(KB.K("Unable to determine ActivationURI from network deployment")));
-				throw;
-			}
+			InfoRoot = GetInfoLocation();
+			InitialStartupSettings.IsWebBrowserContextMenuEnabled = true;
 		}
 		protected override void CreateUIFactory() {
 #if DEBUG
-			new Libraries.Presentation.MSWindows.MSWindowsDebugProvider(this, KB.I("MainBoss Debug Form"));
+			new MSWindowsDebugProvider(this, KB.I("MainBoss Debug Form"));
 #endif
 			new StandardApplicationIdentification(this, "MainBoss", "MainBoss");
 			new GUIApplicationIdentification(this, "Thinkage.MainBoss.MainBoss.Resources.MainBoss400.ico");
 			new Thinkage.Libraries.XAF.UI.MSWindows.UserInterface(this);
 			new Thinkage.Libraries.Presentation.MSWindows.UserInterface(this);
-			new MSWindowsUIFactory(this);
+			var uiFactory = new MSWindowsUIFactory(this) {
+				FixedPitchControlFontFamily = Configuration.MonospaceFontFamilyForDisplay,
+				ProportionalControlFontFamily = Configuration.RegularFontFamilyForDisplay
+			};
 			// following attempted to use a permission Manager to govern access to Tbl's in the dsMB namespace (i.e. Restore Organization); however, our structure isn't really set up
 			// to permit PermissionManagers to be associated with different Tbl schemas (in this case the dsSavedOrganizations schema and the dsMB schema)
 			//			var permissionsManager = new MainBossPermissionsManager(Root.Rights);
@@ -170,7 +147,8 @@ namespace Thinkage.MainBoss.MainBoss {
 			LicenseInformationToSend.Add(KB.K("ProductName"), Thinkage.Libraries.VersionInfo.ProductName);
 			LicenseInformationToSend.Add(KB.K("ProductVersion"), Thinkage.Libraries.VersionInfo.ProductVersion.ToString());
 			LicenseInformationToSend.Add(KB.K("WindowsVersion"), Environment.OSVersion.VersionString);
-			LicenseInformationToSend.Add(KB.K("CultureInfo"), Thinkage.Libraries.Application.InstanceCultureInfo.Name);
+			LicenseInformationToSend.Add(KB.K("FormatCultureInfo"), Thinkage.Libraries.Application.InstanceFormatCultureInfo.Name);
+			LicenseInformationToSend.Add(KB.K("MessageCultureInfo"), Thinkage.Libraries.Application.InstanceMessageCultureInfo.Name);
 		}
 		#region -   Disablers
 		private class CanDropDatabaseDisabler : Thinkage.Libraries.Presentation.BrowseLogic.GeneralConditionDisabler {
@@ -182,8 +160,7 @@ namespace Thinkage.MainBoss.MainBoss {
 			public NeedRecognizableDBDisabler(BrowseLogic browser, Libraries.DataFlow.Source dbVersionSource)
 				: base(browser, KB.K("This is not a MainBoss DataBase"),
 				() => {
-					Version dbVersion;
-					return Version.TryParse((string)dbVersionSource.GetValue(), out dbVersion);
+					return Version.TryParse((string)dbVersionSource.GetValue(), out Version dbVersion);
 				}) {
 			}
 		}
@@ -191,8 +168,7 @@ namespace Thinkage.MainBoss.MainBoss {
 			public StartApplicationDBVersionDisabler(BrowseLogic browser, Libraries.DataFlow.Source dbVersionSource, Libraries.DataFlow.Source applicationIdSource)
 				: base(browser, KB.K("The default application requires a newer database version"),
 				() => {
-					Version dbVersion;
-					if (!Version.TryParse((string)dbVersionSource.GetValue(), out dbVersion))
+					if (!Version.TryParse((string)dbVersionSource.GetValue(), out Version dbVersion))
 						return true; // we have no idea what version the database is; we may have not had permissions to probe it; give benefit of doubt an allow user to try to start mainboss on it anyway.
 					try {
 						var appIdObject = applicationIdSource.GetValue();
@@ -207,8 +183,7 @@ namespace Thinkage.MainBoss.MainBoss {
 			public StartApplicationDBVersionDisabler(BrowseLogic browser, Libraries.DataFlow.Source dbVersionSource, int applicationId)
 				: base(browser, KB.K("This application requires a newer database version"),
 				() => {
-					Version dbVersion;
-					if (!Version.TryParse((string)dbVersionSource.GetValue(), out dbVersion))
+					if (!Version.TryParse((string)dbVersionSource.GetValue(), out Version dbVersion))
 						return false;
 					return applicationId < ExpectedMinDBVersion.Length ? dbVersion >= ExpectedMinDBVersion[applicationId] : false;
 				}) {
@@ -259,20 +234,20 @@ namespace Thinkage.MainBoss.MainBoss {
 		}
 		public static readonly DelayedCreateTbl SavedOrganizationsBrowserTblCreator = new DelayedCreateTbl(
 			delegate () {
-				var btblAttrs = new List<BTbl.ICtorArg>();
-				//				btblAttrs.Add(BTbl.SetShowBrowserPanel(false));
-				btblAttrs.Add(BTbl.SetDeleteCommandIdentification(null, KB.K("Remove from list"), KB.K("Remove the organization from the list of saved organizations. The underlying database is NOT deleted.")));
-				btblAttrs.Add(BTbl.SetCloseExitCommandIdentification(null, KB.K("Exit"), KB.K("Exit this application")));
-				// Add the list columns
-				btblAttrs.Add(BTbl.ListColumn(dsSavedOrganizations.Path.T.Organizations.F.OrganizationName));
-				btblAttrs.Add(BTbl.ListColumn(dsSavedOrganizations.Path.T.Organizations.F.DataBaseServer));
-				btblAttrs.Add(BTbl.ListColumn(dsSavedOrganizations.Path.T.Organizations.F.DataBaseName));
-				btblAttrs.Add(BTbl.ListColumn(dsSavedOrganizations.Path.T.Organizations.F.DBVersion));
-				btblAttrs.Add(BTbl.ListColumn(dsSavedOrganizations.Path.T.Organizations.F.Access));
-				btblAttrs.Add(BTbl.ListColumn(KB.K("Hide Panels"), dsSavedOrganizations.Path.T.Organizations.F.CompactBrowsers));
-				btblAttrs.Add(BTbl.ListColumn(dsSavedOrganizations.Path.T.Organizations.F.PreferredApplicationMode));
-				btblAttrs.Add(BTbl.ListColumn(dsSavedOrganizations.Path.T.Organizations.F.Status));
-				btblAttrs.Add(BTbl.AdditionalVerb(null,
+				var btblAttrs = new List<BTbl.ICtorArg> {
+					//				btblAttrs.Add(BTbl.SetShowBrowserPanel(false));
+					BTbl.SetDeleteCommandIdentification(null, KB.K("Remove from list"), KB.K("Remove the organization from the list of saved organizations. The underlying database is NOT deleted.")),
+					BTbl.SetCloseExitCommandIdentification(null, KB.K("Exit"), KB.K("Exit this application")),
+					// Add the list columns
+					BTbl.ListColumn(dsSavedOrganizations.Path.T.Organizations.F.OrganizationName),
+					BTbl.ListColumn(dsSavedOrganizations.Path.T.Organizations.F.DataBaseServer),
+					BTbl.ListColumn(dsSavedOrganizations.Path.T.Organizations.F.DataBaseName),
+					BTbl.ListColumn(dsSavedOrganizations.Path.T.Organizations.F.DBVersion),
+					BTbl.ListColumn(dsSavedOrganizations.Path.T.Organizations.F.Access),
+					BTbl.ListColumn(KB.K("Hide Panels"), dsSavedOrganizations.Path.T.Organizations.F.CompactBrowsers),
+					BTbl.ListColumn(dsSavedOrganizations.Path.T.Organizations.F.PreferredApplicationMode),
+					BTbl.ListColumn(dsSavedOrganizations.Path.T.Organizations.F.Status),
+					BTbl.AdditionalVerb(null,
 					delegate (BrowseLogic browserLogic) {
 						Libraries.DataFlow.Source organizationNameSource = browserLogic.GetTblPathDisplaySource(dsSavedOrganizations.Path.T.Organizations.F.OrganizationName, -1);
 						Libraries.DataFlow.Source dbSqlServerCanDropDatabase = browserLogic.GetTblPathDisplaySource(dsSavedOrganizations.Path.T.Organizations.F.CanDropDatabase, -1);
@@ -386,10 +361,10 @@ namespace Thinkage.MainBoss.MainBoss {
 								using (dsSavedOrganizations ds = new dsSavedOrganizations(browserLogic.DB)) {
 #if DEBUG
 									browserLogic.DB.EditVariable(ds, dsSavedOrganizations.Schema.V.PreferredOrganizationDebug);
-									ds.V.PreferredOrganizationDebug.SetNull();
+									ds.V.PreferredOrganizationDebug.Value = null;
 #else
 									browserLogic.DB.EditVariable(ds, dsSavedOrganizations.Schema.V.PreferredOrganization);
-									ds.V.PreferredOrganization.SetNull();
+									ds.V.PreferredOrganization.Value = null;
 #endif
 									browserLogic.DB.Update(ds);
 								}
@@ -398,19 +373,20 @@ namespace Thinkage.MainBoss.MainBoss {
 						defaultNode.AddCommand(KB.K("Clear Default"), null, cmd, cmd);
 						#endregion
 						return null;
-					}));
-				btblAttrs.Add(BTbl.SetDummyBrowserPanelControl(new TblLayoutNodeArray(
+					}),
+					BTbl.SetDummyBrowserPanelControl(new TblLayoutNodeArray(
 					TblUnboundControlNode.New(Libraries.TypeInfo.StringTypeInfo.Universe, DCol.Normal,
 						Fmt.SetUsage(DBI_Value.UsageType.Html),
 						Fmt.SetHtmlDisplaySettings(((PickOrganizationApplication)Thinkage.Libraries.Application.Instance).GetHtmlSettings())
 					)
-				)));
+				))
+				};
 
 				return new CompositeTbl(dsSavedOrganizations.Schema.T.Organizations, TId.Organization,
 					new Tbl.IAttr[] {
 						new BTbl(btblAttrs.ToArray()),
 						new CustomSessionTbl(
-							delegate(XAFClient existingDatabaseAccess, DBI_Database newSchema) {
+							delegate(DBClient existingDatabaseAccess, DBI_Database newSchema) {
 								return new SavedOrganizationSession.Connection();
 							}
 						)
@@ -439,13 +415,10 @@ namespace Thinkage.MainBoss.MainBoss {
 								FilenameTypeInfo,
 								ECol.ReadonlyInUpdate,
 								Fmt.SetId(InputFileId),
-								Fmt.SetCreator(
-									delegate (CommonLogic logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer) {
+								Fmt.SetCreator((CommonLogicBase logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer)
 										// TODO: Backup file must be accessible to the SQL server
-										// TODO: "SQL backup from MainBoss Advanced (*.bak)|*.bak|All Files (*.*)|*.*"
-										return logicObject.CommonUI.UIFactory.CreateNamePicker(FilenameTypeInfo, enabledDisabler, writeableDisabler, UINamePickerOptions.ClassExistingFile | UINamePickerOptions.FormatFilePath);
-									}
-								)
+										// TODO: "SQL backup from MainBoss (*.bak)|*.bak|All Files (*.*)|*.*"
+										=> logicObject.CommonUI.UIFactory.CreateNamePicker(FilenameTypeInfo, enabledDisabler, writeableDisabler, UINamePickerOptions.ClassExistingFile | UINamePickerOptions.FormatFilePath))
 							),
 							TblUnboundControlNode.New(KB.K("Backup Set number"),
 								new Libraries.TypeInfo.IntegralTypeInfo(true, 1, int.MaxValue),
@@ -461,11 +434,10 @@ namespace Thinkage.MainBoss.MainBoss {
 								FilenameTypeInfo,
 								ECol.ReadonlyInUpdate,
 								Fmt.SetId(InputFileId),
-								Fmt.SetCreator(
-									delegate (CommonLogic logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer) {
+								Fmt.SetCreator((CommonLogicBase logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer)
 										// TODO: "Xml export data from MB2.9 (*.XML)|*.XML|Xml export data from MB2.9 (*.*)|*.*"
-										return logicObject.CommonUI.UIFactory.CreateNamePicker(FilenameTypeInfo, enabledDisabler, writeableDisabler, UINamePickerOptions.ClassExistingFile | UINamePickerOptions.FormatFilePath);
-									}))
+										=> logicObject.CommonUI.UIFactory.CreateNamePicker(FilenameTypeInfo, enabledDisabler, writeableDisabler, UINamePickerOptions.ClassExistingFile | UINamePickerOptions.FormatFilePath))
+							)
 						), CompositeView.JoinedNewCommand(KB.K("Create New Organization using MainBoss Basic 2.9 export file")),
 						CompositeView.NewCommandGroup(newGroupKey))
 				#endregion
@@ -475,7 +447,7 @@ namespace Thinkage.MainBoss.MainBoss {
 		#endregion
 		#region RunScriptTblCreator
 		public class RunScriptEditLogic : EditLogic {
-			public RunScriptEditLogic(IEditUI editUI, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+			public RunScriptEditLogic(IEditUI editUI, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 				: base(editUI, db, tbl, settingsContainer, initialEditMode, initRowIDs, ModifySubsequentModeRestrictions(subsequentModeRestrictions), initLists) {
 			}
 			private static bool[] ModifySubsequentModeRestrictions(bool[] subsequentModeRestrictions) {
@@ -518,24 +490,25 @@ namespace Thinkage.MainBoss.MainBoss {
 			}
 			protected override void SetupCommands() {
 				base.SetupCommands();
-				MutuallyExclusiveCommandSetDeclaration cgd = new MutuallyExclusiveCommandSetDeclaration();
-				cgd.Add(new CommandDeclaration(KB.K("Run Script"), StateTransitionCommand.NewSingleTargetState(this, KB.K("Run a script against the organization database"),
+				MutuallyExclusiveCommandSetDeclaration cgd = new MutuallyExclusiveCommandSetDeclaration {
+					new CommandDeclaration(KB.K("Run Script"), StateTransitionCommand.NewSingleTargetState(this, KB.K("Run a script against the organization database"),
 					delegate () {
 						RunScript();
 					},
 					StateParametersUnchanged,
 					StateParametersChanged,
 					StateParametersUnchanged
-					)));
+					))
+				};
 				CommandGroupDeclarationsInOrder.Insert(0, cgd);
 			}
 			public static Tbl RunScriptTblCreator() {
-				var layoutNodes = new List<TblLayoutNode>();
-				// We are using View Mode so all ECol.Normal will be readonly anyway
-				layoutNodes.Add(TblColumnNode.New(dsSavedOrganizations.Path.T.Organizations.F.OrganizationName, ECol.Normal, Fmt.SetId(OrganizationNameId)));
-				layoutNodes.Add(TblColumnNode.New(dsSavedOrganizations.Path.T.Organizations.F.DataBaseServer, ECol.Normal, Fmt.SetId(ServerNameId)));
-				layoutNodes.Add(TblColumnNode.New(dsSavedOrganizations.Path.T.Organizations.F.DataBaseName, ECol.Normal, Fmt.SetId(DatabaseNameId)));
-				layoutNodes.Add(TblGroupNode.New(KB.K("Credentials"), new TblLayoutNode.ICtorArg[] { ECol.Normal },
+				var layoutNodes = new List<TblLayoutNode> {
+					// We are using View Mode so all ECol.Normal will be readonly anyway
+					TblColumnNode.New(dsSavedOrganizations.Path.T.Organizations.F.OrganizationName, ECol.Normal, Fmt.SetId(OrganizationNameId)),
+					TblColumnNode.New(dsSavedOrganizations.Path.T.Organizations.F.DataBaseServer, ECol.Normal, Fmt.SetId(ServerNameId)),
+					TblColumnNode.New(dsSavedOrganizations.Path.T.Organizations.F.DataBaseName, ECol.Normal, Fmt.SetId(DatabaseNameId)),
+					TblGroupNode.New(KB.K("Credentials"), new TblLayoutNode.ICtorArg[] { ECol.Normal },
 					TblColumnNode.New(dsSavedOrganizations.Path.T.Organizations.F.CredentialsAuthenticationMethod, ECol.Normal, Fmt.SetId(CredentialsAuthenticationMethodId)),
 					TblColumnNode.New(dsSavedOrganizations.Path.T.Organizations.F.CredentialsUsername, ECol.Normal, Fmt.SetId(CredentialsUsernameId)),
 					//								TblColumnNode.New(dsSavedOrganizations.Path.T.Organizations.F.CredentialsPassword, new ECol(getPasswordCreatorAttribute()), Fmt.SetId(CredentialsPasswordId))
@@ -558,9 +531,8 @@ namespace Thinkage.MainBoss.MainBoss {
 							ECol.AllReadonly,
 							Fmt.SetId(CredentialsPasswordId)
 						)
-					)
-				);
-				layoutNodes.Add(TblUnboundControlNode.New(KB.K("Source Database Name"),
+					),
+					TblUnboundControlNode.New(KB.K("Source Database Name"),
 					new Libraries.TypeInfo.StringTypeInfo(1, 128, 0, true, true, true),
 					ECol.AllWriteable,
 					Fmt.SetId(InputDatabaseNameId),
@@ -592,15 +564,15 @@ namespace Thinkage.MainBoss.MainBoss {
 									);
 						}
 					)
-				));
-				layoutNodes.Add(TblUnboundControlNode.New(KB.K("Script file"),
+				),
+					TblUnboundControlNode.New(KB.K("Script file"),
 					FilenameTypeInfo,
 					ECol.AllWriteable,
 					Fmt.SetId(ScriptFileId),
-					Fmt.SetCreator(
-						delegate (CommonLogic logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer) {
-							return logicObject.CommonUI.UIFactory.CreateNamePicker(FilenameTypeInfo, enabledDisabler, writeableDisabler, UINamePickerOptions.ClassExistingFile | UINamePickerOptions.FormatFilePath);
-						})));
+					Fmt.SetCreator((CommonLogicBase logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer)
+							=> logicObject.CommonUI.UIFactory.CreateNamePicker(FilenameTypeInfo, enabledDisabler, writeableDisabler, UINamePickerOptions.ClassExistingFile | UINamePickerOptions.FormatFilePath))
+					)
+				};
 				return new Tbl(
 					dsSavedOrganizations.Schema.T.Organizations,
 					TId.Organization,
@@ -747,10 +719,11 @@ namespace Thinkage.MainBoss.MainBoss {
 			return displayText.ToString();
 		};
 		private static DelayedCreateTbl OrganizationEditorTblCreator(Tbl.TblIdentification identification, System.Type EL, params TblLayoutNode[] additionalInputs) {
-			var etblAttrs = new List<ETbl.ICtorArg>();
-			etblAttrs.Add(ETbl.EditorAccess(false, EdtMode.UnDelete, EdtMode.View, EdtMode.ViewDefault, EdtMode.EditDefault, EdtMode.ViewDefault));
-			etblAttrs.Add(ETbl.LogicClass(EL));
-			etblAttrs.Add(ETbl.SetAllowMultiRecordEditing(false));
+			var etblAttrs = new List<ETbl.ICtorArg> {
+				ETbl.EditorAccess(false, EdtMode.UnDelete, EdtMode.View, EdtMode.ViewDefault, EdtMode.EditDefault, EdtMode.ViewDefault),
+				ETbl.LogicClass(EL),
+				ETbl.SetAllowMultiRecordEditing(false)
+			};
 			return new DelayedCreateTbl(
 				delegate () {
 					return new Tbl(dsSavedOrganizations.Schema.T.Organizations, identification,
@@ -761,7 +734,7 @@ namespace Thinkage.MainBoss.MainBoss {
 							TblColumnNode.New(dsSavedOrganizations.Path.T.Organizations.F.DataBaseServer, Fmt.SetId(ServerNameId),
 								new ECol(ECol.NormalAccess,
 									Fmt.SetCreator(
-										delegate (CommonLogic logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer) {
+										delegate (CommonLogicBase logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer) {
 											return logicObject.CommonUI.UIFactory.CreateTextEditWithPickButton((Libraries.TypeInfo.StringTypeInfo)leafNode.ReferencedType, enabledDisabler, writeableDisabler, KB.K("Select from available database servers"),
 												delegate (IInputControl control) {
 													Libraries.Presentation.MSWindows.SelectValueForm.NewSelectValueForm(logicObject.CommonUI.UIFactory, null, SelectServerTbl, new BrowserPathValue(dsSqlServers.Path.T.SqlServers.F.Name),
@@ -921,7 +894,7 @@ namespace Thinkage.MainBoss.MainBoss {
 		#region New Organization Editor Logic
 		private class NewOrganizationEditorLogic : EditLogic {
 			private IBasicDataControl existingNamesControl;
-			public NewOrganizationEditorLogic(IEditUI control, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+			public NewOrganizationEditorLogic(IEditUI control, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 				: base(control, db, tbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, initLists) {
 				EditStateChanged += delegate () {
 					FillExistingOrganizationsNamesList();
@@ -949,7 +922,7 @@ namespace Thinkage.MainBoss.MainBoss {
 		#endregion
 		#region Create Organization (base)
 		private abstract class CreateOrganizationEditorLogic : NewOrganizationEditorLogic {
-			public CreateOrganizationEditorLogic(IEditUI control, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+			public CreateOrganizationEditorLogic(IEditUI control, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 				: base(control, db, tbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, initLists) {
 			}
 			protected virtual void PostCloseEditorAction() {
@@ -1017,7 +990,7 @@ namespace Thinkage.MainBoss.MainBoss {
 		#endregion
 		#region New Organization (Empty)
 		private class NewCreateDatabaseWithLicensesOrganizationEditorLogic : CreateOrganizationEditorLogic {
-			public NewCreateDatabaseWithLicensesOrganizationEditorLogic(IEditUI control, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+			public NewCreateDatabaseWithLicensesOrganizationEditorLogic(IEditUI control, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 				: base(control, db, tbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, initLists) {
 			}
 			protected override Key CreateCommandCaption {
@@ -1044,7 +1017,6 @@ namespace Thinkage.MainBoss.MainBoss {
 						if (matches.Count != 1)
 							throw new GeneralException(KB.T(licenseHtml));
 						licenses.AddRange(Thinkage.Libraries.Licensing.License.FindLicensesInText(licenseHtml));
-						break;
 					}
 					catch (GeneralException e) {
 						switch (Ask.AbortRetryIgnore(Thinkage.Libraries.Exception.FullMessage(e))) {
@@ -1056,6 +1028,7 @@ namespace Thinkage.MainBoss.MainBoss {
 							break;
 						}
 					}
+					break;
 				}
 				try {
 					ipd = CommonUI.UIFactory.CreateProgressDisplay(ProgressCaption(), -1);
@@ -1095,12 +1068,13 @@ namespace Thinkage.MainBoss.MainBoss {
 					}
 
 					System.Text.StringBuilder queryString = new System.Text.StringBuilder();
-					var parameters = new Dictionary<string, string>();
-					parameters.Add(EmailAddressLabel.IdentifyingName, (string)emailAddress.GetValue());
-					parameters.Add(LicensesToRequestLabel.IdentifyingName, (string)licenseType.GetValue());
-					parameters.Add(dsSavedOrganizations.Path.T.Organizations.F.OrganizationName.Key().IdentifyingName, (string)organization.GetValue());
-					parameters.Add(dsSavedOrganizations.Path.T.Organizations.F.DataBaseServer.Key().IdentifyingName, dbserver);
-					parameters.Add(dsSavedOrganizations.Path.T.Organizations.F.DataBaseName.Key().IdentifyingName, (string)dbname.GetValue());
+					var parameters = new Dictionary<string, string> {
+						{ EmailAddressLabel.IdentifyingName, (string)emailAddress.GetValue() },
+						{ LicensesToRequestLabel.IdentifyingName, (string)licenseType.GetValue() },
+						{ dsSavedOrganizations.Path.T.Organizations.F.OrganizationName.Key().IdentifyingName, (string)organization.GetValue() },
+						{ dsSavedOrganizations.Path.T.Organizations.F.DataBaseServer.Key().IdentifyingName, dbserver },
+						{ dsSavedOrganizations.Path.T.Organizations.F.DataBaseName.Key().IdentifyingName, (string)dbname.GetValue() }
+					};
 					LicenseInformationToSend.ToList().ForEach(x => parameters.Add(x.Key.IdentifyingName, x.Value));
 					string format = "?{0}={1}";
 					foreach (var r in parameters) {
@@ -1108,10 +1082,11 @@ namespace Thinkage.MainBoss.MainBoss {
 						format = "&{0}={1}";
 					}
 					try {
-						webFetch = new System.Net.WebClient();
-						webFetch.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
+						webFetch = new System.Net.WebClient {
+							CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore)
+						};
 						// TODO: Convert the dictionary of other information to query parameters ....
-						var uri = new Uri(Strings.IFormat("https://www.mainboss.com/GetLicense.shtml{0}", queryString.ToString()));
+						var uri = new Uri(Strings.IFormat("https://mainboss.com/GetLicense.htm{0}", queryString.ToString()));
 						licenseHtml = webFetch.DownloadString(uri);
 						if (String.IsNullOrEmpty(licenseHtml))
 							throw new GeneralException(KB.K("The license provider returned an empty response"));
@@ -1126,7 +1101,7 @@ namespace Thinkage.MainBoss.MainBoss {
 		#endregion
 		#region NewOrganization From Backup EditorLogic
 		private class NewOrganizationFromBackupEditorLogic : CreateOrganizationEditorLogic {
-			public NewOrganizationFromBackupEditorLogic(IEditUI control, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+			public NewOrganizationFromBackupEditorLogic(IEditUI control, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 				: base(control, db, tbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, initLists) {
 			}
 			protected override Key CreateCommandCaption {
@@ -1155,7 +1130,7 @@ namespace Thinkage.MainBoss.MainBoss {
 		#endregion
 		#region NewOrganization From29Data EditorLogic
 		private class NewOrganizationFrom29DataEditorLogic : CreateOrganizationEditorLogic {
-			public NewOrganizationFrom29DataEditorLogic(IEditUI control, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+			public NewOrganizationFrom29DataEditorLogic(IEditUI control, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 				: base(control, db, tbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, initLists) {
 			}
 			protected override Key CreateCommandCaption {
@@ -1261,7 +1236,7 @@ namespace Thinkage.MainBoss.MainBoss {
 		#region SelectServerTbl
 		private static Tbl SelectServerTbl = new Tbl(dsSqlServers.Schema.T.SqlServers, TId.SQLServer,
 			new Tbl.IAttr[] {
-				new CustomSessionTbl(delegate(XAFClient existingDBAccess, DBI_Database newSchema) { return new SqlServersSession.Connection(); }),
+				new CustomSessionTbl(delegate(DBClient existingDBAccess, DBI_Database newSchema) { return new SqlServersSession.Connection(); }),
 				new BTbl(
 					BTbl.ListColumn(dsSqlServers.Path.T.SqlServers.F.Name),
 					BTbl.ListColumn(dsSqlServers.Path.T.SqlServers.F.Version)
@@ -1273,7 +1248,7 @@ namespace Thinkage.MainBoss.MainBoss {
 		#region SelectDatabaseTbl
 		private static Tbl SelectDatabaseTbl = new Tbl(dsDatabasesOnServer.Schema.T.DatabasesOnServer, TId.SQLDatabase,
 			new Tbl.IAttr[] {
-				new CustomSessionTbl(delegate(XAFClient existingDBAccess, DBI_Database newSchema) { return new DatabasesOnServerSession.Connection(); }),
+				new CustomSessionTbl(delegate(DBClient existingDBAccess, DBI_Database newSchema) { return new DatabasesOnServerSession.Connection(); }),
 				new BTbl(
 					BTbl.SetShowBrowserPanel(false),
 					BTbl.ListColumn(dsDatabasesOnServer.Path.T.DatabasesOnServer.F.ServerName),
@@ -1293,35 +1268,17 @@ namespace Thinkage.MainBoss.MainBoss {
 		#region Web Panel Support
 		HtmlDisplaySettings GetHtmlSettings() {
 			// Determine the initial URL to display to the user
-			string defaultURL = Strings.IFormat("{0}/{1}", WebInfoRoot, "default.htm");
+			string defaultURL = Strings.IFormat("{0}/{1}", InfoRoot, "default.htm");
 			var uri = new System.Uri(defaultURL);
 			return new HtmlDisplaySettings(uri) { ValueIsURI = true, SuppressScriptErrors = true, IsWebBrowserContextMenuEnabled = InitialStartupSettings.IsWebBrowserContextMenuEnabled };
 		}
-		private string WebInfoRoot;
+		private string InfoRoot;
 		private HtmlDisplaySettings InitialStartupSettings = new HtmlDisplaySettings();
-		#region GetWebDeployment
-		public static string GetWebDeploymentLocation(out bool isnetDeployed) {
-			string version = Strings.IFormat("{0}.{1}.{2}", Thinkage.Libraries.VersionInfo.ProductVersion.Major, Thinkage.Libraries.VersionInfo.ProductVersion.Minor, Thinkage.Libraries.VersionInfo.ProductVersion.Build);
-			string webRoot;
-			try {
-				if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed) {
-					// Determine the root of our application from the UpdateLocation Uri (where our .application is stored)
-					webRoot = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.UpdateLocation.GetLeftPart(System.UriPartial.Path).Replace(KB.I("/mainboss.application"), "");
-					isnetDeployed = true;
-				}
-				else {
-					webRoot = Strings.IFormat("file://{0}/www", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
-					version = "version";
-					isnetDeployed = false;
-				}
-			}
-			catch (System.Exception) {
-				isnetDeployed = true;
-				throw;
-			}
-			return Strings.IFormat("{0}/{1}/{2}", webRoot, version, System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+		public static string GetInfoLocation() {
+			string infoRoot;
+			infoRoot = Strings.IFormat("file://{0}/www/version", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+			return Strings.IFormat("{0}/{1}", infoRoot, System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
 		}
-		#endregion
 		#endregion
 	}
 }

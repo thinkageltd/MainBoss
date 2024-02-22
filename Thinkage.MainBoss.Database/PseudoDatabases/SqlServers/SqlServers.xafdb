@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database labelcontext="dsSqlServersLabel" name="http://thinkage.ca/MB3/dsSqlServers.xsd:dsSqlServers" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<table name="SqlServers" defaults="false" log="false" id="Id" xid="Name" xunique="true" labelkey="SQL Servers">
+		<field name="Id" read="blob(minlength 1, 2147483647, nonnull)" />
+		<field name="Name" type="string(minlength 1, 1073741823, lines 0, trim both, nonnull)">
+			<doc>The full qualified name for the SQL server</doc>
+		</field>
+		<field name="Server" type="string(minlength 1, 1073741823, lines 0, trim both, nonnull)">
+			<doc>The name of the computer system hosting the SQL server</doc>
+		</field>
+		<field name="Instance" type="string(minlength 1, 1073741823, lines 0, trim both, null)">
+			<doc>The instance name for this server (null if this is the default instance for the server system)</doc>
+		</field>
+		<field name="Version" type="string(minlength 1, 23, lines 0, null)">
+			<doc>The version of this SQL server</doc>
+		</field>
+		<field name="IsClustered" type="bool(nonnull)">
+			<doc>Indicates if this is a clustered server</doc>
+		</field>
+	</table>
+</database>

@@ -149,7 +149,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 			// return to the now 'new' current statehistory comment so Requestor can see what they added, and maybe add another. The 
 			// comment is placed into the RequestorComment field.
 			return RedirectToAction("AddComment", "Requestor", new {
-				parentID = parentID,
+				 parentID,
 				currentStateHistoryID = newStateHistoryID
 			});
 		}

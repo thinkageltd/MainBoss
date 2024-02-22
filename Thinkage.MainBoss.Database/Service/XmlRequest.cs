@@ -40,9 +40,9 @@ namespace Thinkage.MainBoss.Database {
 				object newValue = getValue(lookupDs, this, v);
 				if (newValue == null)
 					return;
-				if (targetColumn[rrow] != null)
+				if (rrow[targetColumn] != null)
 					throw new GeneralException(KB.K("XML Request: The request element {0} cannot be used; the request field {1} has already been set by another element"), tagName, targetColumn.Name);
-				targetColumn[rrow] = newValue;
+				rrow[targetColumn] = newValue;
 			}
 		};
 		private static ValueGetter StringGetter = delegate (dsMB lookupDs, XmlRequestMapping mapping, string val) {
@@ -88,7 +88,7 @@ namespace Thinkage.MainBoss.Database {
 		/// <param name="rrow">the request row that will receive the request information</param>
 		/// <param name="xml">the xml encoded request information</param>
 		/// <returns>true if xml is properly formatted</returns>
-		public static bool SetRequest(XAFClient DB, dsMB.RequestRow rrow, string xml) {
+		public static bool SetRequest(DBClient DB, dsMB.RequestRow rrow, string xml) {
 			if (xml.StartsWith(KB.I("<?xml")) || xml.StartsWith(KB.I("<?XML"))) {
 				try {
 					TXmlDocument xdoc = new Thinkage.Libraries.Xml.TXmlDocument();

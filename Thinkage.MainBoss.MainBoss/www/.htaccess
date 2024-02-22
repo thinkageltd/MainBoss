@@ -1,3 +1,0 @@
-AddType application/x-ms-application .application
-AddType application/manifest .manifest
-AddType application/octet-stream .deploy

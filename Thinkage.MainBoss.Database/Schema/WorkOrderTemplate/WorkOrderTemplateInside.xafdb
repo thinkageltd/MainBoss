@@ -68,6 +68,7 @@
 	</field>
 	<field name="DisplayID" type="GUIDREF" link="WorkOrderTemplateInside">
 	</field>
+	<!--TODO: delete this-->
 	<field name="IsPrimary" type="RequiredBool">
 	</field>
 	<extension name="query">

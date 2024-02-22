@@ -23,7 +23,7 @@ namespace Thinkage.MainBoss.MBUtility {
 		public static void SetupDatabaseAccess(string oName, DBClient.Connection c)
 		{
 			MB3Client.ConnectionDefinition connect = (MB3Client.ConnectionDefinition)c;
-			System.Version MinDBVersion = new System.Version(1, 1, 5, 2); // MB 4.2
+			System.Version MinDBVersion = new System.Version(1, 1, 5, 5); // MB 4.2
 			LicenseEnabledFeatureGroups[] FeatureGroups = new LicenseEnabledFeatureGroups[] {
 					new LicenseEnabledFeatureGroups(TIGeneralMB3.ImportExportModeGroup, TIGeneralMB3.CoreLicenseGroup),
 					// all feature groups are enabled if the database has at least a NamedUser license for import/export purposes

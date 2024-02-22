@@ -50,14 +50,12 @@ namespace Thinkage.MainBoss.Database {
 			")));
 			foreach (int i in adminroles) {
 				Guid roleId;
-				Guid principalId;
-				roleId = KnownIds.RoleAndPrincipalIDFromRoleRight(i, out principalId);
+				roleId = KnownIds.RoleAndPrincipalIDFromRoleRight(i, out Guid principalId);
 				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat("INSERT INTO ##adminroles (nroleid, nprincipalid, code) VALUES ('{0}', '{1}', '{2}')", roleId.ToString("D"), principalId.ToString("D"), i.ToString())));
 			}
 			foreach (int i in nonadminroles) {
 				Guid roleId;
-				Guid principalId;
-				roleId = KnownIds.RoleAndPrincipalIDFromRoleRight(i, out principalId);
+				roleId = KnownIds.RoleAndPrincipalIDFromRoleRight(i, out Guid principalId);
 				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat("INSERT INTO ##nonadminroles (nroleid, nprincipalid, code) VALUES ('{0}', '{1}', '{2}')", roleId.ToString("D"), principalId.ToString("D"), i.ToString())));
 			}
 			session.ExecuteCommand(new MSSqlLiteralCommandSpecification(KB.I("INSERT INTO Principal (ID) SELECT nPrincipalId from ##adminroles union select nPrincipalID from ##nonadminroles")));
@@ -94,11 +92,11 @@ namespace Thinkage.MainBoss.Database {
 		}
 		public override void Perform(Version startingVersion, ISession session, DBI_Database schema, DBVersionHandler handler) {
 			if (How == Method.Alter)
-				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(SqlClient.BuiltinDatabaseFunctions.Alter(Name)));
+				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(SqlClient.BuiltinDatabaseFunctions.Update(Name)));
 			else if (How == Method.Create)
-				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(SqlClient.BuiltinDatabaseFunctions.CreateCommand(Name)));
+				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(SqlClient.BuiltinDatabaseFunctions.Create(Name)));
 			else if (How == Method.Drop)
-				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(SqlClient.BuiltinDatabaseFunctions.Drop(Name)));
+				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(SqlClient.BuiltinDatabaseFunctions.Delete(Name)));
 		}
 	}
 	#endregion
@@ -152,8 +150,8 @@ namespace Thinkage.MainBoss.Database {
 							ALTER TABLE {2} DROP COLUMN {3}
 						end
 					",
-					SqlClient.SqlServer.SqlLiteral(baseTable.Default.Name), SqlClient.SqlServer.SqlLiteral(baseTable.VariantDerivedRecordIDColumns[t].Name),
-					SqlClient.SqlServer.SqlIdentifier(baseTable.Default.Name), SqlClient.SqlServer.SqlIdentifier(baseTable.VariantDerivedRecordIDColumns[t].Name))));
+					Libraries.Sql.SqlUtilities.SqlLiteral(baseTable.Default.Name), Libraries.Sql.SqlUtilities.SqlLiteral(baseTable.VariantDerivedRecordIDColumns[t].Name),
+					Libraries.Sql.SqlUtilities.SqlIdentifier(baseTable.Default.Name), Libraries.Sql.SqlUtilities.SqlIdentifier(baseTable.VariantDerivedRecordIDColumns[t].Name))));
 			}
 		}
 	}
@@ -171,7 +169,7 @@ namespace Thinkage.MainBoss.Database {
 		public override void Perform(Version startingVersion, ISession session, DBI_Database schema, DBVersionHandler handler) {
 			DBI_Database completedSchema = new DBI_Database();
 			handler.CompleteDBIForSchemaOperations(completedSchema, schema);
-			XAFClient db = new XAFClient(new DBClient.Connection(session.ConnectionInformation, completedSchema), session);
+			DBClient db = new DBClient(new DBClient.Connection(session.ConnectionInformation, completedSchema), session);
 
 			// determine if any RelativeLocation records have a duplicate ExternalTag
 			System.Data.DataSet rlDuplicates = session.ExecuteCommandReturningTable(new MSSqlLiteralCommandSpecification(KB.I(@"
@@ -260,17 +258,17 @@ namespace Thinkage.MainBoss.Database {
 				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat(
 					@"INSERT into WorkOrderStateTransition (Id, Operation, OperationHint, CanTransitionWithoutUI, CopyStatusFromPrevious, FromStateID, ToStateID, Rank, RightName)
 						select newid(), 'Thinkage.MainBoss.Database§Add Work Order Comment', 'Thinkage.MainBoss.Database§Add a comment to this Work Order or change its Status without changing State',
-								0, 1, {0}, {0}, 0, 'Table.WorkOrderStateHistory.Create'", SqlClient.SqlServer.SqlLiteral(stateId.ToString()))));
+								0, 1, {0}, {0}, 0, 'Table.WorkOrderStateHistory.Create'", Libraries.Sql.SqlUtilities.SqlLiteral(stateId.ToString()))));
 			foreach (Guid stateId in POStates)
 				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat(
 					@"INSERT into PurchaseOrderStateTransition (Id, Operation, OperationHint, CanTransitionWithoutUI, CopyStatusFromPrevious, FromStateID, ToStateID, Rank, RightName)
 						select newid(), 'Thinkage.MainBoss.Database§Add Purchase Order Comment', 'Thinkage.MainBoss.Database§Add a comment to this Purchase Order or change its Status without changing State',
-								0, 1, {0}, {0}, 0, 'Table.PurchaseOrderStateHistory.Create'", SqlClient.SqlServer.SqlLiteral(stateId.ToString()))));
+								0, 1, {0}, {0}, 0, 'Table.PurchaseOrderStateHistory.Create'", Libraries.Sql.SqlUtilities.SqlLiteral(stateId.ToString()))));
 			foreach (Guid stateId in RequestStates)
 				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat(
 					@"INSERT into RequestStateTransition (Id, Operation, OperationHint, CanTransitionWithoutUI, CopyStatusFromPrevious, FromStateID, ToStateID, Rank, RightName)
 						select newid(), 'Thinkage.MainBoss.Database§New Requestor Comment', 'Thinkage.MainBoss.Database§Add a comment to this Request or change its Status without changing State',
-								0, 1, {0}, {0}, 0, 'Table.RequestStateHistory.Create'", SqlClient.SqlServer.SqlLiteral(stateId.ToString()))));
+								0, 1, {0}, {0}, 0, 'Table.RequestStateHistory.Create'", Libraries.Sql.SqlUtilities.SqlLiteral(stateId.ToString()))));
 		}
 	}
 	#endregion

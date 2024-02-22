@@ -4,21 +4,17 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 
-namespace Thinkage.MainBoss.WebAccess
-{
-	public class MvcApplication : Thinkage.MainBoss.WebCommon.HttpApplication<Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication>
-	{
-		protected override MainBossWebAccessApplication CreateNewApplicationObject(System.Globalization.CultureInfo ci)
-		{
-			return MainBossWebAccessApplication.CreateNewApplicationObject(ci);
+namespace Thinkage.MainBoss.WebAccess {
+	public class MvcApplication : Thinkage.MainBoss.WebCommon.HttpApplication<Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication> {
+		protected override MainBossWebAccessApplication CreateNewApplicationObject(System.Globalization.CultureInfo formatCultureInfo, System.Globalization.CultureInfo messageCultureInfo) {
+			return MainBossWebAccessApplication.CreateNewApplicationObject(formatCultureInfo, messageCultureInfo);
 		}
-		protected override void Application_Start()
-		{
+		protected override void Application_Start() {
 			base.Application_Start();
 
 			// speed things up and remove the WebForm viewengine
 			var webformViewEngine = ViewEngines.Engines.OfType<WebFormViewEngine>().FirstOrDefault();
-			if( webformViewEngine != null)
+			if (webformViewEngine != null)
 				ViewEngines.Engines.Remove(webformViewEngine);
 
 			AreaRegistration.RegisterAllAreas();

@@ -26,13 +26,15 @@ namespace Thinkage.MainBoss.Database {
 	public class DartPopMessages : IMailMessageSource {
 		Pop DartPop;
 		public DartPopMessages(Encrypt tryingEncryption, RemoteCertificateValidationCallback CheckCertificate, string server, int port, string user, string pw) {
-			DartPop = new Pop();
-			DartPop.Session = new MailSession();
+			DartPop = new Pop {
+				Session = new MailSession()
+			};
 			DartPop.Session.Username = user;
 			DartPop.Session.Password = pw;
-			DartPop.Session.Security = new MailSecurity();
-			DartPop.Session.Security.TargetHost = server;
-			DartPop.Session.Security.Encrypt = tryingEncryption;
+			DartPop.Session.Security = new MailSecurity {
+				TargetHost = server,
+				Encrypt = tryingEncryption
+			};
 			DartPop.Session.Security.ValidationCallback += CheckCertificate;
 			try {
 				DartPop.Session.RemoteEndPoint = new IPEndPoint(System.Net.Dns.GetHostAddresses(server)[0], port);
@@ -66,11 +68,11 @@ namespace Thinkage.MainBoss.Database {
 				case Encrypt.Implicit:
 					return "POP3S";
 				case Encrypt.Explicit:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceCultureInfo, KB.K("{0} with {1}"), KB.I("POP3"), KB.I("TLS"));
+					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} with {1}"), KB.I("POP3"), KB.I("TLS"));
 				case Encrypt.None:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceCultureInfo, KB.K("{0} plain text"), KB.I("POP3"));
+					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} plain text"), KB.I("POP3"));
 				default:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceCultureInfo, KB.K("{0} with unknown security"), KB.I("POP3"));
+					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} with unknown security"), KB.I("POP3"));
 				}
 			}
 		}
@@ -94,13 +96,16 @@ namespace Thinkage.MainBoss.Database {
 	public class DartImapMessages : IMailMessageSource {
 		Imap DartImap;
 		public DartImapMessages(Encrypt tryingEncryption, RemoteCertificateValidationCallback CheckCertificate, string server, int port, string user, string pw, string mailbox) {
-			DartImap = new Imap();
-			DartImap.Session = new ImapSession();
-			DartImap.Session.Username = user;
-			DartImap.Session.Password = pw;
-			DartImap.Session.Security = new MailSecurity();
-			DartImap.Session.Security.TargetHost = server;
-			DartImap.Session.Security.Encrypt = tryingEncryption;
+			DartImap = new Imap {
+				Session = new ImapSession {
+					Username = user,
+					Password = pw,
+					Security = new MailSecurity {
+						TargetHost = server,
+						Encrypt = tryingEncryption
+					}
+				}
+			};
 			DartImap.Session.Security.ValidationCallback += CheckCertificate;
 			try {
 				DartImap.Session.RemoteEndPoint = new IPEndPoint(System.Net.Dns.GetHostAddresses(server)[0], port);
@@ -114,12 +119,12 @@ namespace Thinkage.MainBoss.Database {
 			if (mailbox != null) {
 				DartImap.SelectedMailbox = DartImap.Mailboxes[mailbox];
 				if (DartImap.SelectedMailbox == null)
-					throw new GeneralException(KB.K("Mailbox '{0}' does not exist on server '{1}' on port {2} using {3}"), mailbox, server, port, Protocol);
+					throw Libraries.Exception.AddContext(new GeneralException(KB.K("Mailbox '{0}' does not exist on server '{1}' on port {2} using {3}"), mailbox, server, port, Protocol), new MessageExceptionContext(KB.K("Available Mailboxes: {0}"), string.Join(", ", DartImap.Mailboxes.Select(e => e.Name))));
 			}
 			else {
-				DartImap.SelectedMailbox = DartImap.Mailboxes["MBOX"] ?? DartImap.Mailboxes["INBOX"];
+				DartImap.SelectedMailbox = DartImap.Mailboxes["MBOX"] ?? DartImap.Mailboxes["INBOX"] ?? DartImap.Mailboxes["Inbox"];
 				if (DartImap.SelectedMailbox == null)
-					throw new GeneralException(KB.K("No incoming Mailbox found on server '{0}' on port {1} using {2}, tried 'MBOX' and 'INBOX'"), server, port, Protocol);
+					throw Libraries.Exception.AddContext(new GeneralException(KB.K("No incoming Mailbox found on server '{0}' on port {1} using {2}, tried 'MBOX', 'INBOX' and 'Inbox'"), server, port, Protocol), new MessageExceptionContext(KB.K("Available Mailboxes: {0}"), string.Join(", ", DartImap.Mailboxes.Select(e => e.Name))));
 			}
 		}
 		IEnumerable<EmailMessage> pMessages = null;
@@ -145,11 +150,11 @@ namespace Thinkage.MainBoss.Database {
 				case Encrypt.Implicit:
 					return "IMAP4S";
 				case Encrypt.Explicit:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceCultureInfo, KB.K("{0} with {1}"), KB.I("IMAP4"), KB.I("TLS"));
+					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} with {1}"), KB.I("IMAP4"), KB.I("TLS"));
 				case Encrypt.None:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceCultureInfo, KB.K("{0} plain text"), KB.I("IMAP4"));
+					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} plain text"), KB.I("IMAP4"));
 				default:
-					return Strings.Format(Thinkage.Libraries.Application.InstanceCultureInfo, KB.K("{0} with unknown security"), KB.I("IMAP4"));
+					return Strings.Format(Thinkage.Libraries.Application.InstanceMessageCultureInfo, KB.K("{0} with unknown security"), KB.I("IMAP4"));
 				}
 			}
 		}
@@ -205,10 +210,10 @@ namespace Thinkage.MainBoss.Database {
 				if (port == 0)
 					port = ServiceTypeToPort[serviceType];
 				bool encrypt = requestedEncryption == DatabaseEnums.MailServerEncryption.None ? false : true;
-				bool tryagain = tryOneMailSource(encrypt, serviceType, server, port, user, pw, mailbox);
+				bool tryagain = TryOneMailSource(encrypt, serviceType, server, port, user, pw, mailbox);
 				if (tryagain && requestedEncryption == DatabaseEnums.MailServerEncryption.AnyAvailable && (serviceType == DatabaseEnums.MailServerType.POP3 || serviceType == DatabaseEnums.MailServerType.IMAP4)) {
 					encrypt = false;
-					tryOneMailSource(encrypt, serviceType, server, port, user, pw, mailbox);
+					TryOneMailSource(encrypt, serviceType, server, port, user, pw, mailbox);
 				}
 				if (Source == null)
 					throw Error ?? (string.IsNullOrWhiteSpace(mailbox) ? new GeneralException(KB.K("Cannot access mail messages using {0} on server '{1}' on port {2}"), serviceType, server, port).WithContext(TraceContext(this))
@@ -222,7 +227,7 @@ namespace Thinkage.MainBoss.Database {
 				&& (port == 0 || LastPort == port)
 				&& (this.ServiceType == DatabaseEnums.MailServerType.Any || this.ServiceType == LastServiceType)
 				&& (LastRequestedEncryption == requestedEncryption)) {
-				tryOneMailSource(LastEncrypt, LastServiceType, server, LastPort, user, pw, mailbox);
+				TryOneMailSource(LastEncrypt, LastServiceType, server, LastPort, user, pw, mailbox);
 				if (Source != null)
 					return;
 			}
@@ -256,7 +261,7 @@ namespace Thinkage.MainBoss.Database {
 				serviceUsed = s;
 				tryPort = port != 0 ? port : ServiceTypeToPort[s];
 				Error = null;
-				tryagain = tryOneMailSource(usingEncryption, s, server, tryPort, user, pw, mailbox);
+				tryagain = TryOneMailSource(usingEncryption, s, server, tryPort, user, pw, mailbox);
 				if (Error != null)
 					errors.Add(Error);
 				if (Source != null || !tryagain)
@@ -270,7 +275,7 @@ namespace Thinkage.MainBoss.Database {
 					serviceUsed = s;
 					tryPort = port != 0 ? port : ServiceTypeToPort[s];
 					Error = null;
-					tryagain = tryOneMailSource(usingEncryption, s, server, tryPort, user, pw, mailbox);
+					tryagain = TryOneMailSource(usingEncryption, s, server, tryPort, user, pw, mailbox);
 					if (Error != null)
 						errors.Add(Error);
 					if (Source != null || !tryagain)
@@ -292,7 +297,7 @@ namespace Thinkage.MainBoss.Database {
 			Error = err;
 			throw Error;
 		}
-		private bool tryOneMailSource(bool usingEncryption, DatabaseEnums.MailServerType serviceType, string server, int port, string user, string pw, string mailbox) {
+		private bool TryOneMailSource(bool usingEncryption, DatabaseEnums.MailServerType serviceType, string server, int port, string user, string pw, string mailbox) {
 			Source = null;
 			Encrypt encryption = usingEncryption ? ServiceTypeToEncypt[serviceType] : Encrypt.None;
 			try {
@@ -389,23 +394,23 @@ namespace Thinkage.MainBoss.Database {
 			CertificateCache = newCertificateAsString;
 			if (sslPolicyErrors == SslPolicyErrors.None) {
 				if (newCertificate)
-					Logger.LogTrace(TraceDetails, certificateMessage(KB.K("Valid Certificate '{0}' found"), certificate.Subject, sslPolicyErrors, CertificateCache));
+					Logger.LogTrace(TraceDetails, CertificateMessage(KB.K("Valid Certificate '{0}' found"), certificate.Subject, sslPolicyErrors, CertificateCache));
 				return true;
 			}
 			if (RequestedEncryption == DatabaseEnums.MailServerEncryption.RequireValidCertificate) {
 				if (newCertificate)
-					Logger.LogError(certificateMessage(KB.K("Certificate '{0}' had error {1}"), certificate.Subject, sslPolicyErrors, CertificateCache));
+					Logger.LogError(CertificateMessage(KB.K("Certificate '{0}' had error {1}"), certificate.Subject, sslPolicyErrors, CertificateCache));
 				return false;
 			}
 			if (newCertificate)
 				if (TraceDetails)
-					Logger.LogInfo(certificateMessage(KB.K("Certificate '{0}' had error {1}"), certificate.Subject, sslPolicyErrors, CertificateCache));
+					Logger.LogInfo(CertificateMessage(KB.K("Certificate '{0}' had error {1}"), certificate.Subject, sslPolicyErrors, CertificateCache));
 				else
 					Logger.LogInfo(Strings.Format(KB.K("Certificate '{0}' had error {1}"), certificate.Subject, sslPolicyErrors));
 			return true;
 		}
 
-		private string certificateMessage(Key format, string subject, SslPolicyErrors policyErrors, string certificateText) {
+		private string CertificateMessage(Key format, string subject, SslPolicyErrors policyErrors, string certificateText) {
 			var s = new StringBuilder();
 			s.AppendLine(Strings.Format(format, subject, policyErrors.ToString()));
 			s.AppendLine(Strings.Format(KB.K("Details:")));

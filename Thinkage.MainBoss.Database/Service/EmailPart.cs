@@ -18,33 +18,27 @@ namespace Thinkage.MainBoss.Database {
 		}
 		public string Text {
 			get {
-				var t = Part as Textpart;
-				if (t != null)
+				if (Part is Textpart t)
 					return t.Content;
-				var h = Part as Htmlpart;
-				if (h != null)
+				if (Part is Htmlpart h)
 					return EmailMessage.StripHTML(h.Content);
 				return null;
 			}
 		}
 		public string ContentDisposition {
 			get {
-				var t = Part as Textpart;
-				if (t != null && t.ContentDisposition != null)
+				if (Part is Textpart t && t.ContentDisposition != null)
 					return t.ContentDisposition.DispositionType;
-				var h = Part as Htmlpart;
-				if (h != null && h.ContentDisposition != null)
+				if (Part is Htmlpart h && h.ContentDisposition != null)
 					return h.ContentDisposition.DispositionType;
 				return null;
 			}
 		}
 		public byte[] Content {
 			get {
-				var a = Part as Attachment;
-				if (a != null)
+				if (Part is Attachment a)
 					return System.IO.File.ReadAllBytes(a.Content.FullName);
-				var r = Part as Resource;
-				if (r != null && r.Length != 0)
+				if (Part is Resource r && r.Length != 0)
 					return r.Content;
 				return null;
 			}
@@ -73,12 +67,11 @@ namespace Thinkage.MainBoss.Database {
 				index++;
 				var ep = new EmailPart(p, parent,  parent+index);
 				parts.Add(ep);
-				var mp = p as Multipart;
-				if (mp != null) {
+				if (p is Multipart mp) {
 					var subParts = Linear(mp.Parts, parent + index);
 					index += subParts.Count;
 					parts.AddRange(subParts);
-                }
+				}
 			}
 			return parts;
 		}

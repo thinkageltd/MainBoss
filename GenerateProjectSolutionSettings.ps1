@@ -26,7 +26,7 @@ foreach($ProjectType in $ProjectTypes ){
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
-	<SupportUrl>http://www.mainboss.com/info/support.shtml%3fversion=$version</SupportUrl>
+	<SupportUrl>http://www.mainboss.com/info/support.htm%3fversion=$version</SupportUrl>
 	<ApplicationRevision>$Build</ApplicationRevision>
 	<ApplicationVersion>$Version.$Update.$Build</ApplicationVersion>
     <MinimumRequiredVersion>$Version.$Update.$Build</MinimumRequiredVersion>

@@ -13,7 +13,7 @@ namespace Thinkage.MainBoss.Controls {
 		// However, if logic.TInfo is a default table, all our other paths must start with the default table instead of the normal one.
 		private delegate DBI_Path pathMapper(DBI_Path p);
 		private delegate Source sourceGetter(DBI_Path p);
-		private ShowOnMapCommand(DBI_Table schema, sourceGetter getter, XAFClient db)
+		private ShowOnMapCommand(DBI_Table schema, sourceGetter getter, DBClient db)
 			: base(KB.K("Show this location on a map")) {
 			DB = db;
 			pathMapper mapper;
@@ -109,7 +109,7 @@ namespace Thinkage.MainBoss.Controls {
 				postalCode = (string)PostalCodeValueSource.GetValue();
 			}
 			else
-				using (XAFDataSet ds = XAFDataSet.New(dsMB.Schema, DB)) {
+				using (DBDataSet ds = DBDataSet.New(dsMB.Schema, DB)) {
 					object containingLocationID = ContainingLocationIDValueSource.GetValue();
 					dsMB.PostalAddressRow postalInfo = null;
 					if (containingLocationID != null)
@@ -158,6 +158,6 @@ namespace Thinkage.MainBoss.Controls {
 		private readonly Source TerritoryValueSource;
 		private readonly Source CountryValueSource;
 		private readonly Source PostalCodeValueSource;
-		private readonly XAFClient DB;
+		private readonly DBClient DB;
 	}
 }

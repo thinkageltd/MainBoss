@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -28,7 +28,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
   </PropertyGroup>
@@ -54,7 +54,6 @@
     <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -79,18 +78,18 @@
     <DebugType>pdbonly</DebugType>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>..\ThinkageRuleSet.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Installation|AnyCPU' ">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Desktop|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Installation\</OutputPath>
+    <OutputPath>bin\Desktop\</OutputPath>
     <DefineConstants>TRACE;IMPLICIT_FULL_PERMISSIONS</DefineConstants>
     <BaseAddress>285212672</BaseAddress>
     <Optimize>true</Optimize>
+    <FileAlignment>4096</FileAlignment>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>..\ThinkageRuleSet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Dart.Mail, Version=4.2.3.1, Culture=neutral, PublicKeyToken=5966291b8955e4bb, processorArchitecture=MSIL">
@@ -106,6 +105,7 @@
     <Reference Include="System.Data">
       <Name>System.Data</Name>
     </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Security" />
@@ -322,7 +322,24 @@
     <Compile Include="ProductInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="PseudoDatabases\DatabasesOnServer\DatabasesOnServer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DatabasesOnServer.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="PseudoDatabases\DatabasesOnServer\DatabasesOnServerSession.cs" />
+    <Compile Include="PseudoDatabases\SqlServers\SqlServers.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SqlServers.xafdb</DependentUpon>
+    </Compile>
+    <Compile Include="PseudoDatabases\SqlServers\SqlServersSession.cs" />
     <Compile Include="Restrictions.cs" />
+    <Compile Include="Client\SavedOrganizations_0_0_0_0_to_1000_1_0_0.cs">
+      <DependentUpon>SavedOrganizations_0_0_0_0_to_1000_1_0_0.xafdb</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Schema\MainBoss.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -844,6 +861,22 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderCategory.xafdb" />
     <EmbeddedResource Include="Schema\Requests\RequestExtras.xafdb" />
+    <EmbeddedResource Include="PseudoDatabases\DatabasesOnServer\DatabasesOnServer.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>DatabasesOnServer.cs</LastGenOutput>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PseudoDatabases\SqlServers\SqlServers.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>SqlServers.cs</LastGenOutput>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Client\SavedOrganizations_0_0_0_0_to_1000_1_0_0.xafdb">
+      <Generator>XAFDataSetGenerator</Generator>
+      <LastGenOutput>SavedOrganizations_0_0_0_0_to_1000_1_0_0.cs</LastGenOutput>
+      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Schema\Inventory\ItemCountValueVoid.xafdb">

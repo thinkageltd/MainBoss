@@ -13,7 +13,7 @@ namespace Thinkage.MainBoss.Database.Service {
 	// It would be nice to use AccountManagement.UserPrincipal rather than directly using DirectoryServices.ActiveDirectory
 	// UserPrincipal does not have any method of searching that will match any email address associated with the user
 	// The only suggestion I can find is access them all and check each one.
-	// That would not be viable for each incomming email message on a large site.
+	// That would not be viable for each incoming email message on a large site.
 	// There also does not seem to be any method of going from ActiveDirectory.SearchResult back to a UserPrincipal
 	// 
 	public class LDAPEntry {
@@ -78,9 +78,9 @@ namespace Thinkage.MainBoss.Database.Service {
 			return ret;
 		}
 		public static List<LDAPEntry> GetActiveDirectoryFiltered([Invariant]string command, [Invariant]string filter) {
+			// see the comments with 'GetActiveDirectoryGivenGuid'
 			List<LDAPEntry> ret = new List<LDAPEntry>();
-			if (!IsInDomain())
-				return null;
+			CheckActiveDirectory();
 			try {
 				using (DirectoryEntry gc = new DirectoryEntry(command)) {
 					foreach (DirectoryEntry z in gc.Children) {
@@ -132,21 +132,28 @@ namespace Thinkage.MainBoss.Database.Service {
 				test.AppendFormat(KB.I("(mail={0})"), a);
 			return GetActiveDirectoryFiltered("LDAP:", Strings.IFormat("(|{0}))", test));
 		}
-		public static List<LDAPEntry> GetActiveDirectoryGivenPricipalName([Invariant]string aPrincipalName) {
+		public static List<LDAPEntry> GetActiveDirectoryGivenPrincipalName([Invariant]string aPrincipalName) {
 			return GetActiveDirectoryFiltered("LDAP:", Strings.IFormat("(userPrincipalName={0})", aPrincipalName));
 		}
 		public static List<LDAPEntry> GetActiveDirectoryGivenGuid(Guid aGuid) { // will return disabled accounts
 																				// there should on by one entry for each guid
 																				// but the search by guid seems to return one for each path
 																				// so we only take the first one.
-																				// findone seems to fault if it doesn't find the guid or giving the same error if active directory is not available.
-
+																				// depending on which version of Windows
+																				// findone seems to fault if it doesn't find the guid
+																				// and may or may not give an error if active directory is not available.
+																				// Windows 10 seems to return values from the local computer if
+																				// active directory is not available, but does not seem to give any errors.
+																				// For the purposes of MainBoss the local users do not contain any information
+																				// to be added to contacts.
+																				// so for a none domain computer we return an empty list.
 			//
-			if (!IsInDomain())
-				return null;
 			var ret = new List<LDAPEntry>();
+			CheckActiveDirectory();
+
 			try {
 				using (var user = new DirectoryEntry(Strings.IFormat("LDAP://<GUID={0}>", aGuid))) {
+					user.RefreshCache();
 					using (DirectorySearcher searcher = new DirectorySearcher(user, null, activeDirectoryAttributes)) {
 						searcher.ReferralChasing = ReferralChasingOption.All;
 						SearchResult r = searcher.FindOne();
@@ -162,21 +169,23 @@ namespace Thinkage.MainBoss.Database.Service {
 				throw;
 			}
 		}
-		static bool? inDomain = null;
 		readonly static string[] activeDirectoryAttributes = new string[] {"userPrincipalName", "proxyAddresses", "objectGuid", "displayName",
 																			"distinguishedName", "mail", "telephoneNumber", "mobile", "facsimileTelephoneNumber",
 																			"homePhone", "pager", "wWWHomePage", "userAccountControl", "language", "preferredLanguage"};
-		public static bool IsInDomain() {
-			if (inDomain == null) {
-				try {
-					System.DirectoryServices.ActiveDirectory.Domain.GetComputerDomain();  // faults if not in a domain
-					inDomain = true;
-				}
-				catch (ActiveDirectoryObjectNotFoundException) {
-					inDomain = false; //not in a domain, no point of looking in active directory.
-				}
+		public static void CheckActiveDirectory(string k = null) {
+			if (DomainAndIP.GetDomainName() == null) {
+				if (k != null)
+					throw new GeneralException(KB.K("'{0}' can only work if the computer is a member of a domain"), k);
+				throw new GeneralException(KB.K("This computer is not a member of a domain"));
 			}
-			return inDomain.Value;
+			try {
+				System.DirectoryServices.ActiveDirectory.Domain.GetComputerDomain();  // faults if not in a domain
+			}
+			catch (ActiveDirectoryObjectNotFoundException e) {
+				if( k == null)
+					throw new GeneralException(e,KB.K("The domain controller for the domain '{0}' is currently inaccessible"), DomainAndIP.GetDomainName());
+				throw new GeneralException(e, KB.K("'{0}' requires access to the domain controller for the domain '{1}' which is currently inaccessible"), k, DomainAndIP.GetDomainName() );
+			}
 		}
 		public static bool SetContactValues(dsMB.ContactRow contactRow, LDAPEntry LDAPUser, bool preservePrimaryEmail = false) {
 			bool changed = false;

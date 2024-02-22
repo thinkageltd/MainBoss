@@ -62,12 +62,18 @@ namespace Thinkage.MainBoss.Database {
 			// for establishing the proper credentials for the users.
 		}
 		#endregion
-		protected virtual object GetVariableValue(DBClient db, XAFDataSet ds, DBI_Variable v) {
+		protected virtual object GetVariableValue(DBClient db, DBDataSet ds, DBI_Variable v) {
 			// This is only called for DBVersion, and any MinAppVersion variables that may exist.
 			// Because we only have a DBClient we cannot use View(..., DBI_Variable) to get at the variables.
-			ds.EnsureDataVariableExists(v);
-			db.ViewAdditionalRows(ds, ds.DBISchema.VariablesTable, new SqlExpression(new DBI_Path(ds.DBISchema.VariablesTable.F.Name)).Eq(v.Name));
-			return ds.DataVariables[v.Name].Value;
+			db.ViewAdditionalVariables(ds, v);
+			return ds[v].Value;
+		}
+		protected virtual void SetVariableValue(DBClient db, DBDataSet ds, DBI_Variable v, object value) {
+			// This is only called for DBVersion, and any MinAppVersion variables that may exist.
+			// Because we only have a DBClient we cannot use View(..., DBI_Variable) to get at the variables.
+			db.ViewAdditionalVariables(ds, v);
+			ds[v].Value = value;
+			db.Update(ds);
 		}
 		public override Version LoadDBVersion(DBClient db) {
 			// TODO: A custom DS which only contains the DBVersion variable
@@ -78,35 +84,27 @@ namespace Thinkage.MainBoss.Database {
 		public override void StoreDBVersion(DBClient db, Version versionToStore) {
 			// TODO: A custom DS which only contains the DBVersion variable (same as LoadDBVersion uses)
 			using(dsDBVersion_1_0_8_2 ds = new dsDBVersion_1_0_8_2(db.Session.Server)) {
-				db.ViewAdditionalRows(ds, dsDBVersion_1_0_8_2.Schema.VariablesTable,
-					new SqlExpression(new DBI_Path(dsDBVersion_1_0_8_2.Schema.VariablesTable.F.Name)).Eq(dsDBVersion_1_0_8_2.Schema.V.DBVersion.Name));
-				ds.V.DBVersion.Value = versionToStore.ToString();
-				db.Update(ds);
+				SetVariableValue(db, ds, dsDBVersion_1_0_8_2.Schema.V.DBVersion, versionToStore.ToString());
 			}
 		}
 		public override Version GetDBServerVersion(DBClient db) {
 			using(dsDBVersion_1_0_8_2 ds = new dsDBVersion_1_0_8_2(db.Session.Server)) {
-				ds.EnsureDataVariableExists(dsDBVersion_1_0_8_2.Schema.V.DBServerVersion);
-				db.ViewAdditionalRows(ds, dsDBVersion_1_0_8_2.Schema.VariablesTable, new SqlExpression(new DBI_Path(dsDBVersion_1_0_8_2.Schema.VariablesTable.F.Name)).Eq(dsDBVersion_1_0_8_2.Schema.V.DBServerVersion.Name));
-				return new Version((string)ds.DataVariables[dsDBVersion_1_0_8_2.Schema.V.DBServerVersion.Name].Value);
+				return new Version((string)GetVariableValue(db, ds, dsDBVersion_1_0_8_2.Schema.V.DBServerVersion));
 			}
 		}
 		public override void StoreDBServerVersion(DBClient db, Version serverVersion) {
 			using(dsDBVersion_1_0_8_2 ds = new dsDBVersion_1_0_8_2(db.Session.Server)) {
-				db.ViewAdditionalRows(ds, dsDBVersion_1_0_8_2.Schema.VariablesTable,
-					new SqlExpression(new DBI_Path(dsDBVersion_1_0_8_2.Schema.VariablesTable.F.Name)).Eq(dsDBVersion_1_0_8_2.Schema.V.DBServerVersion.Name));
-				ds.V.DBServerVersion.Value = serverVersion.ToString();
-				db.Update(ds);
+				SetVariableValue(db, ds, dsDBVersion_1_0_8_2.Schema.V.DBServerVersion, serverVersion.ToString());
 			}
 		}
 		public override List<License> GetLicenses(DBClient db) {
 			List<License> result = new List<License>();
 			using(dsLicense_1_1_4_2 ds = new dsLicense_1_1_4_2(db.Session.Server)) {
 				db.ViewAdditionalRows(ds, dsLicense_1_1_4_2.Schema.T.License);
-				foreach(dsLicense_1_1_4_2.LicenseRow dr in ds.T.License.Rows) {
+				foreach(dsLicense_1_1_4_2.LicenseRow dr in ds.T.License) {
 					License fromKey = new License(dr.F.License);
 					License fromDecoded = new License(dr.F.ApplicationID,
-						(DateTime?)dsLicense_1_1_4_2.Schema.T.License.F.Expiry[dr],
+						dr.F.Expiry,
 						(License.ExpiryModels)dr.F.ExpiryModel,
 						checked((uint)dr.F.LicenseCount),
 						(License.LicenseModels)dr.F.LicenseModel,
@@ -128,7 +126,7 @@ namespace Thinkage.MainBoss.Database {
 			// itself a DB version change requiring a new hndler.
 			if(minAppVersionVariable == null)
 				return new Version(0, 0, 0, 0);
-			// Any XAFDataSet will work for the following as we just need to get to the Variables table that exists in ALL XAFDataSets
+			// Any DBDataSet will work for the following as we just need to get to the Variables table that exists in ALL XAFDataSets
 			using(dsDBVersion_1_0_0_1_To_1_0_8_1 ds = new dsDBVersion_1_0_0_1_To_1_0_8_1(db.Session.Server)) {
 				return new Version((string)GetVariableValue(db, ds, minAppVersionVariable));
 			}
@@ -151,7 +149,7 @@ namespace Thinkage.MainBoss.Database {
 				dsPerms.DataSetName = KB.I("Security.LoadPermissions.dsPerms");
 				db.ViewAdditionalRows(dsPerms, dsPermission_1_1_4_2.Schema.T.UserPermission, new SqlExpression(dsPermission_1_1_4_2.Path.T.UserPermission.F.UserID).Eq(currentUserID));
 				// Because we only grant (and never revoke) rights it does not matter what order we process the permission records in.
-				foreach(dsPermission_1_1_4_2.UserPermissionRow row in dsPerms.T.UserPermission.Rows)
+				foreach(dsPermission_1_1_4_2.UserPermissionRow row in dsPerms.T.UserPermission)
 					handler(row.F.PermissionPathPattern.ToLower(), true);
 			}
 		}
@@ -168,11 +166,10 @@ namespace Thinkage.MainBoss.Database {
 		}
 		public override void LogHistory(DBClient db, [Thinkage.Libraries.Translation.Translated] string subject, [Thinkage.Libraries.Translation.Translated] string text) {
 			using(dsDatabaseHistory_1_0_0_337 ds = new dsDatabaseHistory_1_0_0_337(db.Session.Server)) {
-				System.Data.DataRow row = db.AddNewRowAndBases(ds, dsDatabaseHistory_1_0_0_337.Schema.T.DatabaseHistory);
-				dsDatabaseHistory_1_0_0_337.Schema.T.DatabaseHistory.F.Subject[row] = subject;
+				dsDatabaseHistory_1_0_0_337.DatabaseHistoryRow row = (dsDatabaseHistory_1_0_0_337.DatabaseHistoryRow)db.AddNewRowAndBases(ds, dsDatabaseHistory_1_0_0_337.Schema.T.DatabaseHistory);
+				row.F.Subject = subject;
 				if(text != null)
-					dsDatabaseHistory_1_0_0_337.Schema.T.DatabaseHistory.F.Description[row] = text;
-
+					row.F.Description = text;
 				row.EndEdit();
 				db.Update(ds);
 			}
@@ -186,10 +183,8 @@ namespace Thinkage.MainBoss.Database {
 			: base() {
 		}
 		public override Guid? IdentifyUser(DBClient db) {
-			string userName;
-			string userRealm;
-			DatabaseCreation.ParseUserIdentification(db.Session.ConnectionInformation.UserIdentification, out userName, out userRealm);
-			using(dsUser_1_0_4_14_To_1_1_4_1 dsUser = new dsUser_1_0_4_14_To_1_1_4_1(db.Session.Server)) {
+			DatabaseCreation.ParseUserIdentification(db.Session.ConnectionInformation.UserIdentification, out string userName, out string userRealm);
+			using (dsUser_1_0_4_14_To_1_1_4_1 dsUser = new dsUser_1_0_4_14_To_1_1_4_1(db.Session.Server)) {
 				dsUser.DataSetName = KB.I("DBVersionHandler30.IdentifyUser.dsUser");
 
 				db.ViewAdditionalRows(dsUser, dsUser_1_0_4_14_To_1_1_4_1.Schema.T.User, new SqlExpression(dsUser_1_0_4_14_To_1_1_4_1.Path.T.User.F.Hidden).IsNull()
@@ -228,7 +223,7 @@ namespace Thinkage.MainBoss.Database {
 				//client.PerformTransaction(true,
 				//	delegate() {
 				client.ViewOnlyRows(ds, dsUser_1_0_4_14_To_1_1_4_1.Schema.T.User, new SqlExpression(dsUser_1_0_4_14_To_1_1_4_1.Path.T.User.F.Hidden).IsNull(), null, null);
-				foreach(dsUser_1_0_4_14_To_1_1_4_1.UserRow r in ds.T.User.Rows)
+				foreach(dsUser_1_0_4_14_To_1_1_4_1.UserRow r in ds.T.User)
 					r.F.Hidden = now;
 				// TODO: As of db version 1.0.10.21 there is no longer a trigger causing an error when the last user is deleted. At some point we should make a new
 				// version of UpdateAfterRestores that skips the disable/enable trigger used here but it is pretty harmless to leave it in.
@@ -245,7 +240,7 @@ namespace Thinkage.MainBoss.Database {
 				// (e.g. the scope/user has no matching real user name), the whole thing will fail.
 				// We want it to charge on, and leave the unfixable ones hidden.
 				// So we do this part one at a time, and report to the user the ones we could not fix.
-				foreach(dsUser_1_0_4_14_To_1_1_4_1.UserRow r in ds.T.User.Rows) {
+				foreach(dsUser_1_0_4_14_To_1_1_4_1.UserRow r in ds.T.User) {
 					r.F.Hidden = null;
 					try {
 						client.Update(ds);
@@ -255,8 +250,7 @@ namespace Thinkage.MainBoss.Database {
 					catch(System.Exception ex) {
 						r.RejectChanges();
 						var errorEntry = new UserPermissionsRefreshError(r.F.ScopeName, r.F.UserName, ex);
-						List<UserPermissionsRefreshError> onSameKey;
-						if(!errorList.TryGetValue(errorEntry.KeyText, out onSameKey))
+						if (!errorList.TryGetValue(errorEntry.KeyText, out List<UserPermissionsRefreshError> onSameKey))
 							errorList.Add(errorEntry.KeyText, onSameKey = new List<UserPermissionsRefreshError>());
 						onSameKey.Add(errorEntry);
 					}
@@ -313,10 +307,10 @@ namespace Thinkage.MainBoss.Database {
 			List<License> result = new List<License>();
 			using(dsLicense_1_0_0_1_To_1_0_4_13 ds = new dsLicense_1_0_0_1_To_1_0_4_13(db.Session.Server)) {
 				db.ViewAdditionalRows(ds, dsLicense_1_0_0_1_To_1_0_4_13.Schema.T.License);
-				foreach(dsLicense_1_0_0_1_To_1_0_4_13.LicenseRow dr in ds.T.License.Rows) {
+				foreach(dsLicense_1_0_0_1_To_1_0_4_13.LicenseRow dr in ds.T.License) {
 					License fromKey = new License(dr.F.License);
 					License fromDecoded = new License(dr.F.ApplicationID,
-						(DateTime?)dsLicense_1_0_0_1_To_1_0_4_13.Schema.T.License.F.Expiry[dr],
+						dr.F.Expiry,
 						(License.ExpiryModels)dr.F.ExpiryModel,
 						checked((uint)dr.F.LicenseCount),
 						(License.LicenseModels)dr.F.LicenseModel,
@@ -342,11 +336,8 @@ namespace Thinkage.MainBoss.Database {
 			// We must fish the ServiceParameters required from the variables for our service configuration
 			Thinkage.Libraries.Service.StaticServiceConfiguration config;
 			using (dsMainBossService_1_0_0_1_To_1_0_8_28 ds = new dsMainBossService_1_0_0_1_To_1_0_8_28(db.Session.Server)) {
-				ds.EnsureDataVariableExists(dsMainBossService_1_0_0_1_To_1_0_8_28.Schema.V.ATRServiceMachineName, dsMainBossService_1_0_0_1_To_1_0_8_28.Schema.V.ATRServiceName);
-				// Because we only have a DBClient we cannot use View(..., DBI_Variable) to get at the variables.
-				db.ViewAdditionalRows(ds, dsMainBossService_1_0_0_1_To_1_0_8_28.Schema.VariablesTable, new SqlExpression(new DBI_Path(dsMainBossService_1_0_0_1_To_1_0_8_28.Schema.VariablesTable.F.Name)).Eq(dsMainBossService_1_0_0_1_To_1_0_8_28.Schema.V.ATRServiceMachineName.Name));
-				db.ViewAdditionalRows(ds, dsMainBossService_1_0_0_1_To_1_0_8_28.Schema.VariablesTable, new SqlExpression(new DBI_Path(dsMainBossService_1_0_0_1_To_1_0_8_28.Schema.VariablesTable.F.Name)).Eq(dsMainBossService_1_0_0_1_To_1_0_8_28.Schema.V.ATRServiceName.Name));
-				config = new Libraries.Service.StaticServiceConfiguration((string)ds.DataVariables[dsMainBossService_1_0_0_1_To_1_0_8_28.Schema.V.ATRServiceMachineName.Name].Value, (string)ds.DataVariables[dsMainBossService_1_0_0_1_To_1_0_8_28.Schema.V.ATRServiceName.Name].Value);
+				db.ViewAdditionalVariables(ds, dsMainBossService_1_0_0_1_To_1_0_8_28.Schema.V.ATRServiceMachineName, dsMainBossService_1_0_0_1_To_1_0_8_28.Schema.V.ATRServiceName);
+				config = new Libraries.Service.StaticServiceConfiguration((string)ds[dsMainBossService_1_0_0_1_To_1_0_8_28.Schema.V.ATRServiceMachineName].Value, (string)ds[dsMainBossService_1_0_0_1_To_1_0_8_28.Schema.V.ATRServiceName].Value);
 			}
 			return new StopService(config);
 		}
@@ -402,7 +393,7 @@ namespace Thinkage.MainBoss.Database {
 				handler(KB.I("Table.*.*").ToLower(), true);
 				handler(KB.I("Action.*").ToLower(), true);
 				handler(KB.I("Action.Administration").ToLower(), DefaultAdministrationPermission);
-				foreach (dsPermission_1_0_0_1_To_1_0_4_13.UserRow userRow in dsPerms.T.User.Rows)
+				foreach (dsPermission_1_0_0_1_To_1_0_4_13.UserRow userRow in dsPerms.T.User)
 					if (Thinkage.Libraries.Application.LoggedInUserActsAs(userRow.F.ScopeName + '\\' + userRow.F.UserName))
 						LoadUserPermissions(dsPerms, userRow.F.Id, handler);
 
@@ -490,7 +481,7 @@ namespace Thinkage.MainBoss.Database {
 				//client.PerformTransaction(true,
 				//	delegate() {
 				client.ViewOnlyRows(ds, dsUser_1_0_0_1_To_1_0_4_13.Schema.T.User, new SqlExpression(dsUser_1_0_0_1_To_1_0_4_13.Path.T.User.F.Hidden).IsNull(), null, null);
-				foreach (dsUser_1_0_0_1_To_1_0_4_13.UserRow r in ds.T.User.Rows)
+				foreach (dsUser_1_0_0_1_To_1_0_4_13.UserRow r in ds.T.User)
 					r.F.Hidden = now;
 				try {
 					db.ExecuteCommand(new MSSqlLiteralCommandSpecification("disable trigger all on [user]"));
@@ -505,7 +496,7 @@ namespace Thinkage.MainBoss.Database {
 				// (e.g. the scope/user has no matching real user name), the whole thing will fail.
 				// We want it to charge on, and leave the unfixable ones hidden.
 				// So we do this part one at a time, and report to the user the ones we could not fix.
-				foreach (dsUser_1_0_0_1_To_1_0_4_13.UserRow r in ds.T.User.Rows) {
+				foreach (dsUser_1_0_0_1_To_1_0_4_13.UserRow r in ds.T.User) {
 					r.F.Hidden = null;
 					try {
 						client.Update(ds);
@@ -515,8 +506,7 @@ namespace Thinkage.MainBoss.Database {
 					catch (System.Exception ex) {
 						r.RejectChanges();
 						var errorEntry = new UserPermissionsRefreshError(r.F.ScopeName, r.F.UserName, ex);
-						List<UserPermissionsRefreshError> onSameKey;
-						if (!errorList.TryGetValue(errorEntry.KeyText, out onSameKey))
+						if (!errorList.TryGetValue(errorEntry.KeyText, out List<UserPermissionsRefreshError> onSameKey))
 							errorList.Add(errorEntry.KeyText, onSameKey = new List<UserPermissionsRefreshError>());
 						onSameKey.Add(errorEntry);
 					}

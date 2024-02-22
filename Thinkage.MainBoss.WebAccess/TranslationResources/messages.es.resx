@@ -322,8 +322,7 @@
     <value>Costo Exigido</value>
   </data>
   <data name="dsMBLabel§DemandItem" type="" mimetype="">
-    <value>Demand Item</value>
-    <comment>New!</comment>
+    <value>La demanda de artículos</value>
   </data>
   <data name="dsMBLabel§DemandLaborOutside" xml:space="preserve">
     <value>Demand Labor Outside</value>
@@ -407,8 +406,7 @@
     <value>De Estado</value>
   </data>
   <data name="dsMBLabel§GeneralLedgerAccount" type="" mimetype="">
-    <value>GeneralLedgerAccount</value>
-    <comment>New!</comment>
+    <value>Cuenta General Ledger</value>
   </data>
   <data name="dsMBLabel§GISLocation" xml:space="preserve">
     <value>GIS Ubicación</value>
@@ -603,8 +601,7 @@
     <value>Conteo Físico</value>
   </data>
   <data name="dsMBLabel§Physical Count Sheet Rank" type="" mimetype="">
-    <value>Physical Count Sheet Rank</value>
-    <comment>New!</comment>
+    <value>Hoja de Cuenta Física</value>
   </data>
   <data name="dsMBLabel§Physical Count Void" xml:space="preserve">
     <value>Vacío Conteo Físico</value>
@@ -620,10 +617,6 @@
   </data>
   <data name="dsMBLabel§Postal Address" xml:space="preserve">
     <value>Dirección Postal</value>
-  </data>
-  <data name="dsMBLabel§PostalAddress" type="" mimetype="">
-    <value>PostalAddress</value>
-    <comment>New!</comment>
   </data>
   <data name="dsMBLabel§PostalCode" xml:space="preserve">
     <value>Código Postal</value>
@@ -1434,15 +1427,13 @@
     <value>No se puede añadir una observación a la solicitud en su estado actual</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§You cannot change the request to Closed from its current state" type="" mimetype="">
-    <value>You cannot change the request to Closed from its current state</value>
-    <comment>New!</comment>
+    <value>No puede cambiar la solicitud a Cerrado desde su estado actual</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§You cannot change the request to In Progress from its current state" type="" mimetype="">
     <value>No se puede cambiar la petición a En Progreso de su estado actual</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§You cannot change the work order to Closed from its current state" type="" mimetype="">
-    <value>You cannot change the work order to Closed from its current state</value>
-    <comment>New!</comment>
+    <value>No puede cambiar la orden de trabajo a Cerrado desde su estado actual</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§You cannot change the work order to Open from its current state" type="" mimetype="">
     <value>No se puede cambiar el orden de trabajo para abrir desde su estado actual</value>

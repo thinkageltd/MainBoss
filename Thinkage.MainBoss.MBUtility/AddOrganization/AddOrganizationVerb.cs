@@ -78,9 +78,8 @@ namespace Thinkage.MainBoss.MBUtility {
 			if(Options.AuthenticationMethodOption.HasValue && (AuthenticationMethod)Options.AuthenticationMethodOption.Value != AuthenticationCredentials.Default.Type) {
 				credentials = new AuthenticationCredentials((AuthenticationMethod)Options.AuthenticationMethodOption.Value, Options.CredentialsAuthenticationUsernameOption.Value, Options.CredentialsAuthenticationPasswordOption.Value);
 			}
-			string organizationName;
 			MB3Client.MBConnectionDefinition conn = MB3Client.OptionSupport.ResolveNamedAdHocOrganization(
-				Options.OrganizationNameOption, Options.ServerNameOption, Options.DatabaseNameOption, Options.ModeOption, Options.CompactBrowsersOption, credentials, out organizationName);
+				Options.OrganizationNameOption, Options.ServerNameOption, Options.DatabaseNameOption, Options.ModeOption, Options.CompactBrowsersOption, credentials, out string organizationName);
 
 			List<NamedOrganization> existingOrganizations;
 			if((existingOrganizations = connections.GetOrganizationNames(Options.AllUsersOption.Value ? null : organizationName)).Count > 0) {

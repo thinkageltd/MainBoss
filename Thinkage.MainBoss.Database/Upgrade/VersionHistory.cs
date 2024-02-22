@@ -9,10 +9,9 @@ namespace Thinkage.MainBoss.Database {
 	public class MBUpgrader {
 #if DEBUG
 		public static void CheckUpgradeSteps() {
-			int stepCount;
 			System.Diagnostics.Debug.WriteLine("Verifying upgrade steps");
 			System.Diagnostics.Debug.Indent();
-			DBUpgrader.RollbackSchema(UpgradeInformation, new Version(1, 0, 1, 0), null, out stepCount);
+			DBUpgrader.RollbackSchema(UpgradeInformation, new Version(1, 0, 1, 0), null, out int stepCount);
 			System.Diagnostics.Debug.Unindent();
 			Thinkage.Libraries.Diagnostics.Debug.WriteFormattedLine(null, "Done: {0} steps", stepCount);
 		}
@@ -5744,6 +5743,29 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinAReqAppVersion, new Version(4,2,0,7)),
 							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinMBRemoteAppVersion, new Version(4,2,0,7))
 						),
+						new UpgradeStepSequence( //1.1.5.3 Use WorkOrderExtras to find PMGBatch and Maintenance Plan
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderEndDateHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedWorkOrderEndDateHistogram"),
+							new RemoveColumnUpgradeStep(GetOriginalSchema, "WorkOrder.PMGenerationBatchID"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "MaintenanceForecastReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderExtras"),
+							new AddTableUpgradeStep("WorkOrderExtras"),
+							new AddTableUpgradeStep("MaintenanceForecastReport"),
+							new AddTableUpgradeStep("AssignedWorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("WorkOrderEndDateHistogram")
+						),
+						new UpgradeStepSequence(new Version(1, 1, 5, 3), //1.1.5.4 Correct improper in-house 1.1.5.3 upgrade. Only run if (broken) 1.1.5.3 had been run.
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderEndDateHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedWorkOrderEndDateHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "MaintenanceForecastReport"),
+							new AddTableUpgradeStep("MaintenanceForecastReport"),
+							new AddTableUpgradeStep("AssignedWorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("WorkOrderEndDateHistogram")
+						),
+						new UpgradeStepSequence(new Version(1, 1, 5, 4), //1.1.5.5 Correct improper in-house 1.1.5.4 upgrade. Only run if (broken) 1.1.5.4 had been run.
+							new RemoveTableUpgradeStep(GetOriginalSchema, "MaintenanceForecastReport"),
+							new AddTableUpgradeStep("MaintenanceForecastReport")
+						),
 						#endregion
 					}
 				}
@@ -5751,7 +5773,7 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 			}
 		},
 		// The DEBUG check schema has CODE; update when Schema has changed and upgrade steps have been added
-		0X15d43e90fb147649UL, dsMB.Schema);
+		0X1bacb67f5511456aUL, dsMB.Schema);
 		#endregion
 	}
 }

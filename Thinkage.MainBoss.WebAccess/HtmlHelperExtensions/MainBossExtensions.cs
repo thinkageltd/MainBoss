@@ -44,8 +44,9 @@
 				phoneTag.AddCssClass("Deleted");
 				emailTag.AddCssClass("Deleted");
 			}
-			TagBuilder requestorRow = new TagBuilder("tr");
-			requestorRow.InnerHtml = nameTag.ToString() + phoneTag.ToString() + emailTag.ToString();
+			TagBuilder requestorRow = new TagBuilder("tr") {
+				InnerHtml = nameTag.ToString() + phoneTag.ToString() + emailTag.ToString()
+			};
 
 			TagBuilder requestorTag = new TagBuilder("table");
 			requestorTag.GenerateId("contactPanel");
@@ -54,41 +55,26 @@
 		}
 		public static MvcHtmlString CodeValue(this HtmlHelper htmlHelper, object instance)
 		{
-			string code;
-			string desc;
-			object hidden;
-			GetCodeHiddenMembers(instance, out code, out desc, out hidden);
+			GetCodeHiddenMembers(instance, out string code, out string desc, out object hidden);
 			return htmlHelper.ValueOnly(StringTypeInfo.Universe, code, hidden != null);
 		}
 		public static MvcHtmlString CodeDescValue(this HtmlHelper htmlHelper, object instance)
 		{
-			string code;
-			string desc;
-			object hidden;
-			GetCodeHiddenMembers(instance, out code, out desc, out hidden);
+			GetCodeHiddenMembers(instance, out string code, out string desc, out object hidden);
 			return htmlHelper.ValueOnly(StringTypeInfo.Universe, code, desc, hidden != null);
 		}
 		public static MvcHtmlString CodeLabelValue(this HtmlHelper htmlHelper, [Translated]string label, object instance)
 		{
-			string code;
-			string desc;
-			object hidden;
-			GetCodeHiddenMembers(instance, out code, out desc, out hidden);
+			GetCodeHiddenMembers(instance, out string code, out string desc, out object hidden);
 			return htmlHelper.LabelValue(label, StringTypeInfo.Universe, code, hidden != null);
 		}
 		public static MvcHtmlString CodeDescLabelValue(this HtmlHelper htmlHelper, DBI_Path path, object instance) {
-			string code;
-			string desc;
-			object hidden;
-			GetCodeHiddenMembers(instance, out code, out desc, out hidden);
+			GetCodeHiddenMembers(instance, out string code, out string desc, out object hidden);
 			return htmlHelper.LabelValue(path.Key().Translate(), StringTypeInfo.Universe, code, desc, hidden != null);
 		}
 		public static MvcHtmlString CodeDescLabelValue(this HtmlHelper htmlHelper, [Translated]string label, object instance)
 		{
-			string code;
-			string desc;
-			object hidden;
-			GetCodeHiddenMembers(instance, out code, out desc, out hidden);
+			GetCodeHiddenMembers(instance, out string code, out string desc, out object hidden);
 			return htmlHelper.LabelValue(label, StringTypeInfo.Universe, code, desc, hidden != null);
 		}
 		/// <summary>
@@ -101,10 +87,7 @@
 		/// <returns></returns>
 		public static MvcHtmlString CodeLabelValue(this HtmlHelper htmlHelper, [Translated]string label, object instance, bool explicitDeleted)
 		{
-			string code;
-			string desc;
-			object hidden;
-			GetCodeHiddenMembers(instance, out code, out desc, out hidden);
+			GetCodeHiddenMembers(instance, out string code, out string desc, out object hidden);
 			return htmlHelper.LabelValue(label, StringTypeInfo.Universe, code, desc, hidden != null || explicitDeleted);
 		}
 		private static void GetCodeHiddenMembers(object instance, out string code, out string desc, out object hidden)
@@ -213,10 +196,6 @@
 			if (emailAddress == null) {
 				throw new ArgumentNullException("emailAddress"); // TODO: Resource message
 			}
-			if (linkText == null) {
-				throw new ArgumentNullException("linkText"); // TODO: Resource message
-			}
-
 
 			string mailToUrl = "mailto:" + emailAddress;
 
@@ -253,7 +232,7 @@
 			TagBuilder mailtoAnchor = new TagBuilder("a");
 			mailtoAnchor.MergeAttribute("href", mailToUrl);
 			mailtoAnchor.MergeAttributes(htmlAttributes, true);
-			mailtoAnchor.InnerHtml = linkText;
+			mailtoAnchor.InnerHtml = linkText ?? throw new ArgumentNullException("linkText");
 			return MvcHtmlString.Create(mailtoAnchor.ToString());
 		}
 	}

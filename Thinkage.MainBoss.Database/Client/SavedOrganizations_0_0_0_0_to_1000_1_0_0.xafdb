@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database name="http://thinkage.ca/MB3/dsSavedOrganizations_0_0_0_0_to_1000_1_0_0.xsd:dsSavedOrganizations_0_0_0_0_to_1000_1_0_0" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <variable name="LastSelectedOrganization" type="link(Organizations, null)"/>
+  <variable name="LastSelectedOrganizationDebug" type="link(Organizations, null)"/>
+  <table name="Organizations"/>
+</database>

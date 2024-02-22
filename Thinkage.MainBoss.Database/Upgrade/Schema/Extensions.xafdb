@@ -3,5 +3,5 @@
 	<extension name="SqlDefaultLockName">MainBossSession</extension>
 	<extension name="SqlLockingPrincipal">MainBoss</extension>
 	<extension name="VariableStorageType">blob(minlength 0, maxlength 2147483647)</extension>
-	<extension name="VariableEncoderProvider">Thinkage.Libraries.XAF.Database.Service.MSSql.MSSqlServer,Thinkage.Libraries.XAF.Database.Service.MSSql</extension>
+	<extension name="VariableEncoderProvider">Thinkage.Libraries.XAF.Database.Service.MSSql.Server,Thinkage.Libraries.XAF.Database.Service.MSSql</extension>
 </database>

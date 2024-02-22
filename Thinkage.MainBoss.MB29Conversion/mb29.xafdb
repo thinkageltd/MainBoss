@@ -10,7 +10,6 @@
   <type name="AutoNumber" type="string(minlength 1, 20, lines 0, trim both)" />
   <type name="Code" type="string(minlength 1, 50, lines 0, trim both)" />
   <type name="Comment" type="string(minlength 1, 1073741823, trim both)" />
-  <type name="CultureInfo" type="string(minlength 1, 4, lines 0, trim both)" />
   <type name="Currency" type="currency(min -922337203685477.5808, max 922337203685477.5807, by 0.01)" />
   <type name="Date" type="datetime(min 1/1/1753, max 12/31/9999, by 1.00:00:00)" />
   <type name="DateTime" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)" />

@@ -184,7 +184,7 @@ namespace Thinkage.MainBoss.Controls {
 		internal static BTbl.ListColumnArg.IAttr WorkOrderResourceActivityDateAsCodeWrapper() {
 			return BTbl.ListColumnArg.WrapSource(delegate (Source originalSource) {
 				if (sortableDateCultureInfo == null) {
-					sortableDateCultureInfo = (System.Globalization.CultureInfo)Thinkage.Libraries.Application.InstanceCultureInfo.Clone();
+					sortableDateCultureInfo = (System.Globalization.CultureInfo)Thinkage.Libraries.Application.InstanceFormatCultureInfo.Clone();
 					System.Globalization.DateTimeFormatInfo dtfi = (System.Globalization.DateTimeFormatInfo)System.Globalization.DateTimeFormatInfo.InvariantInfo.Clone();
 					dtfi.FullDateTimePattern = KB.I("yyyy/MM/dd HH:mm:ss.fff");
 					sortableDateCultureInfo.DateTimeFormat = dtfi;
@@ -428,8 +428,7 @@ namespace Thinkage.MainBoss.Controls {
 		private static DelayedCreateTbl DemandLaborOutsideDefaultEditorTblCreator;
 		private static DelayedCreateTbl DemandOtherWorkInsideDefaultEditorTblCreator;
 		private static DelayedCreateTbl DemandOtherWorkOutsideDefaultEditorTblCreator;
-		private static DelayedCreateTbl DemandMiscellaneousWorkOrderCostTblCreator;
-
+		private static DelayedCreateTbl DemandMiscellaneousWorkOrderCostDefaultEditorTblCreator;
 
 		private static readonly DelayedCreateTbl AssociatedPurchaseOrdersTbl;
 		private static readonly DelayedCreateTbl AssociatedPurchaseOrderTemplatesTbl;
@@ -451,22 +450,22 @@ namespace Thinkage.MainBoss.Controls {
 		#region WorkOrder browser Tbl attributes
 		private static BTbl.ICtorArg WorkOrderNumberListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.Number);
 		private static BTbl.ICtorArg WorkOrderSubjectListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.Subject);
-		private static BTbl.ICtorArg WorkOrderUnitListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.UnitLocationID.F.Code, BTbl.ListColumnArg.Contexts.ClosedCombo | BTbl.ListColumnArg.Contexts.OpenCombo | BTbl.ListColumnArg.Contexts.SearchAndFilter);
+		private static BTbl.ICtorArg WorkOrderUnitListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.UnitLocationID.F.Code, BTbl.Contexts.ClosedPicker | BTbl.Contexts.OpenPicker | BTbl.Contexts.SearchAndFilter);
 		private static BTbl.ICtorArg WorkOrderStatusListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateHistoryStatusID.F.Code);
 		private static BTbl.ICtorArg WorkOrderStateListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateID.F.Code, Fmt.SetDynamicSizing());
-		private static BTbl.ICtorArg WorkOrderClosingCodeListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CloseCodeID.F.Code, BTbl.ListColumnArg.Contexts.List | BTbl.ListColumnArg.Contexts.SearchAndFilter);
-		private static BTbl.ICtorArg WorkOrderStateAuthorListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.UserID.F.ContactID.F.Code, BTbl.ListColumnArg.Contexts.SearchAndFilter);
-		private static BTbl.ICtorArg WorkOrderCurrentStateHistoryEffectiveDateListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.EffectiveDate, BTbl.ListColumnArg.Contexts.SortInitialDescending);
-		private static BTbl.ICtorArg WorkOrderOverdueListColumn = BTbl.ListColumn(KB.K("Overdue"), new TblQueryExpression(WOStatisticCalculation.Overdue(dsMB.Path.T.WorkOrder, dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID)), null, BTbl.ListColumnArg.Contexts.SortInitialDescending, Fmt.SetUsage(DBI_Value.UsageType.IntervalDays), Fmt.SetColor(System.Drawing.Color.Red));
+		private static BTbl.ICtorArg WorkOrderClosingCodeListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CloseCodeID.F.Code, BTbl.Contexts.List | BTbl.Contexts.SearchAndFilter);
+		private static BTbl.ICtorArg WorkOrderStateAuthorListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.UserID.F.ContactID.F.Code, BTbl.Contexts.SearchAndFilter);
+		private static BTbl.ICtorArg WorkOrderCurrentStateHistoryEffectiveDateListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.EffectiveDate, BTbl.Contexts.SortInitialDescending);
+		private static BTbl.ICtorArg WorkOrderOverdueListColumn = BTbl.ListColumn(KB.K("Overdue"), new TblQueryExpression(WOStatisticCalculation.Overdue(dsMB.Path.T.WorkOrder, dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID)), null, BTbl.Contexts.SortInitialDescending, Fmt.SetUsage(DBI_Value.UsageType.IntervalDays), Fmt.SetColor(System.Drawing.Color.Red));
 
 		// The priority column uses an alternative sort key which biases the non-null values:
 		// null -> int.MaxValue, int.MinValue -> null, and all others -> value-1
 		// This causes null to sort as lower-than-lowest (because a big ranking number means low priority), and also that the default ascending sort puts highest priority at the top of the list.
-		private static BTbl.ICtorArg WorkOrderPriorityListColumnSortValue = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Code.Key(), dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Rank, BTbl.ListColumnArg.Contexts.TaggedValueProvider | BTbl.ListColumnArg.Contexts.SortNormal,
+		private static BTbl.ICtorArg WorkOrderPriorityListColumnSortValue = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Code.Key(), dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Rank, BTbl.Contexts.TaggedValueProvider,
 			BTbl.ListColumnArg.WrapSource((originalSource) => new ConvertingSource<int?, int?>(originalSource, dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Rank.ReferencedColumn.EffectiveType,
 				(value) => (value.HasValue ? value.Value == int.MinValue ? null : value - 1 : int.MaxValue))),
 				new CustomizationOptions(CustomizationOptions.HidingOptions.HideableButNoUI)); // NoHideUi on the SortValue column since the Code value column is also listed; only provide one opportunity to hide the listcolumn
-		private static BTbl.ICtorArg WorkOrderPriorityListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Code, BTbl.ListColumnArg.Contexts.List | BTbl.ListColumnArg.Contexts.SearchAndFilter | BTbl.ListColumnArg.Contexts.SortAlternativeValue);
+		private static BTbl.ICtorArg WorkOrderPriorityListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Code, BTbl.Contexts.List | BTbl.Contexts.SearchAndFilter | BTbl.Contexts.SortAlternativeValue);
 		/// <summary>
 		/// Return a WO browse/pick tbl
 		/// </summary>
@@ -493,15 +492,16 @@ namespace Thinkage.MainBoss.Controls {
 			var btblArgs = new List<BTbl.ICtorArg>(listColumns);
 			btblArgs.Add(MB3BTbl.HasStateHistory(WorkOrderHistoryTable));
 #if SearchIsOneOf  // Enable this to give a testbed for checked combos etc.
-			btblArgs.Add(BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.UnitLocationID, BTbl.ListColumnArg.Contexts.SearchAndFilter));
+			btblArgs.Add(BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.UnitLocationID, BTbl.Contexts.SearchAndFilter));
 #endif
 			if (extraBTblAttributes != null)
 				btblArgs.AddRange(extraBTblAttributes);
-
-			var tblAttrs = new List<Tbl.IAttr>();
-			tblAttrs.Add(new BTbl(btblArgs.ToArray()));
 			if (reportTblCreatorDelegate != null)
-				tblAttrs.Add(TIReports.NewRemotePTbl(new DelayedCreateTbl(reportTblCreatorDelegate)));
+				btblArgs.Add(BTbl.SetReportTbl(new DelayedCreateTbl(reportTblCreatorDelegate)));
+
+			var tblAttrs = new List<Tbl.IAttr> {
+				new BTbl(btblArgs.ToArray())
+			};
 			if (featureGroup != null)
 				tblAttrs.Add(featureGroup);
 			if (tableNameForPermissions != null)
@@ -545,7 +545,7 @@ namespace Thinkage.MainBoss.Controls {
 				views.Add(CompositeView.AdditionalEditDefault(DemandLaborOutsideDefaultEditorTblCreator, CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
 				views.Add(CompositeView.AdditionalEditDefault(DemandOtherWorkInsideDefaultEditorTblCreator, CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
 				views.Add(CompositeView.AdditionalEditDefault(DemandOtherWorkOutsideDefaultEditorTblCreator, CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
-				views.Add(CompositeView.AdditionalEditDefault(DemandMiscellaneousWorkOrderCostTblCreator, CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
+				views.Add(CompositeView.AdditionalEditDefault(DemandMiscellaneousWorkOrderCostDefaultEditorTblCreator, CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
 				views.Add(CompositeView.AdditionalEditDefault(FindDelayedEditTbl(dsMB.Schema.T.WorkOrderStateHistory)));
 			}
 
@@ -567,8 +567,9 @@ namespace Thinkage.MainBoss.Controls {
 		private static List<IDisablerProperties> SelfAssignDisablers() {
 			ITblDrivenApplication app = Application.Instance.GetInterface<ITblDrivenApplication>();
 			TableOperationRightsGroup rightsGroup = (TableOperationRightsGroup)app.TableRights.FindDirectChild("UnassignedWorkOrder");
-			var list = new List<IDisablerProperties>();
-			list.Add((IDisablerProperties)app.PermissionsManager.GetPermission(rightsGroup.GetTableOperationRight(TableOperationRightsGroup.TableOperation.Create)));
+			var list = new List<IDisablerProperties> {
+				(IDisablerProperties)app.PermissionsManager.GetPermission(rightsGroup.GetTableOperationRight(TableOperationRightsGroup.TableOperation.Create))
+			};
 			rightsGroup = (TableOperationRightsGroup)app.TableRights.FindDirectChild(dsMB.Schema.T.WorkOrderStateHistory.Name);
 			list.Add((IDisablerProperties)app.PermissionsManager.GetPermission(rightsGroup.GetTableOperationRight(TableOperationRightsGroup.TableOperation.Create)));
 			return list;
@@ -587,13 +588,14 @@ namespace Thinkage.MainBoss.Controls {
 					throw new GeneralException(KB.K("You are not registered as a Work Order Assignee"));
 				requestAssigneeID = ((dsMB.WorkOrderAssigneeRow)row).F.Id;
 			}
-			var initList = new List<TblActionNode>();
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderID, new ConstantValue(requestID)));
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderStateID, new ConstantValue(KnownIds.WorkOrderStateOpenId)));
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderStateHistoryStatusID, new EditorPathValue(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderID.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateHistoryStatusID)));
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.WorkOrderStateHistory.F.Comment, new ConstantValue(Strings.Format(KB.K("Self assigned")))));
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.WorkOrderAssignment.F.WorkOrderID, 1, new EditorPathValue(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderID)));
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.WorkOrderAssignment.F.WorkOrderAssigneeID, 1, new ConstantValue(requestAssigneeID)));
+			var initList = new List<TblActionNode> {
+				Init.OnLoadNew(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderID, new ConstantValue(requestID)),
+				Init.OnLoadNew(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderStateID, new ConstantValue(KnownIds.WorkOrderStateOpenId)),
+				Init.OnLoadNew(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderStateHistoryStatusID, new EditorPathValue(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderID.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateHistoryStatusID)),
+				Init.OnLoadNew(dsMB.Path.T.WorkOrderStateHistory.F.Comment, new ConstantValue(Strings.Format(KB.K("Self assigned")))),
+				Init.OnLoadNew(dsMB.Path.T.WorkOrderAssignment.F.WorkOrderID, 1, new EditorPathValue(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderID)),
+				Init.OnLoadNew(dsMB.Path.T.WorkOrderAssignment.F.WorkOrderAssigneeID, 1, new ConstantValue(requestAssigneeID))
+			};
 			Libraries.Application.Instance.GetInterface<ITblDrivenApplication>().GetInterface<ITblDrivenApplication>().PerformMultiEdit(el.CommonUI.UIFactory, el.DB, TblRegistry.FindDelayedEditTbl(dsMB.Schema.T.WorkOrderStateHistory),
 				EdtMode.New,
 				new[] { new object[] { } },
@@ -615,14 +617,17 @@ namespace Thinkage.MainBoss.Controls {
 						dsMB.Path.T.WorkOrderStateHistory.F.EffectiveDate,
 						dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderStateID.F.Code,
 						dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderStateHistoryStatusID.F.Code),
-					TblColumnNode.New(dsMB.Path.T.WorkOrder.F.PMGenerationBatchID, new NonDefaultCol(), ECol.AllReadonly),
+					TblColumnNode.New(dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID.F.ScheduledWorkOrderID, new NonDefaultCol(), ECol.AllReadonly),
+					TblColumnNode.New(dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID.F.PMGenerationBatchID, new NonDefaultCol(), ECol.AllReadonly),
 					TblMultiColumnNode.New(
-						new TblLayoutNode.ICtorArg[] { DCol.Normal },
-						new Key[] { KB.K("Type"), dsMB.Path.T.PMGenerationBatch.F.EndDate.Key(), dsMB.Path.T.PMGenerationBatch.F.EntryDate.Key() },
+						new TblLayoutNode.ICtorArg[] { DCol.Normal, new FeatureGroupArg(SchedulingGroup) },
+						new Key[] { KB.K("Type"), dsMB.Path.T.ScheduledWorkOrder.F.WorkOrderTemplateID.Key(), dsMB.Path.T.ScheduledWorkOrder.F.ScheduleID.Key(), dsMB.Path.T.PMGenerationBatch.F.EndDate.Key(), dsMB.Path.T.PMGenerationBatch.F.EntryDate.Key() },
 						TblRowNode.New(KB.K("Maintenance"), new TblLayoutNode.ICtorArg[] { DCol.Normal },
 							IsPreventiveValueNodeBuilder(dsMB.Path.T.WorkOrder, new NonDefaultCol(), DCol.Normal),
-							TblColumnNode.New(dsMB.Path.T.WorkOrder.F.PMGenerationBatchID.F.EndDate, new NonDefaultCol(), DCol.Normal),
-							TblColumnNode.New(dsMB.Path.T.WorkOrder.F.PMGenerationBatchID.F.EntryDate, new NonDefaultCol(), DCol.Normal)
+							TblColumnNode.New(dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID.F.ScheduledWorkOrderID.F.WorkOrderTemplateID.F.Code, new NonDefaultCol(), DCol.Normal),
+							TblColumnNode.New(dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID.F.ScheduledWorkOrderID.F.ScheduleID.F.Code, new NonDefaultCol(), DCol.Normal),
+							TblColumnNode.New(dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID.F.PMGenerationBatchID.F.EndDate, new NonDefaultCol(), DCol.Normal),
+							TblColumnNode.New(dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID.F.PMGenerationBatchID.F.EntryDate, new NonDefaultCol(), DCol.Normal)
 						)
 					),
 					// No value is provided when editing so commented out for now					IsPreventiveValueNodeBuilder(dsMB.Path.T.WorkOrder, new NonDefaultCol(), ECol.AllReadonly),
@@ -712,16 +717,17 @@ namespace Thinkage.MainBoss.Controls {
 		#endregion
 		private static DelayedCreateTbl WorkOrderEditTbl(FeatureGroup featureGroup, bool includeAssignToSelfCommand = false) {
 			return new DelayedCreateTbl(delegate () {
-				List<ETbl.ICtorArg> etblArgs = new List<ETbl.ICtorArg>();
-				etblArgs.Add(MB3ETbl.HasStateHistoryAndSequenceCounter(dsMB.Path.T.WorkOrder.F.Number, dsMB.Schema.T.WorkOrderSequenceCounter, dsMB.Schema.V.WOSequence, dsMB.Schema.V.WOSequenceFormat, WorkOrderHistoryTable));
-				etblArgs.Add(ETbl.EditorDefaultAccess(false));
-				etblArgs.Add(ETbl.EditorAccess(true, EdtMode.Edit, EdtMode.View, EdtMode.Clone, EdtMode.EditDefault, EdtMode.ViewDefault, EdtMode.New));
-				etblArgs.Add(ETbl.Print(TIReports.SingleWorkOrderFormReport, dsMB.Path.T.WorkOrderFormReport.F.NoLabelWorkOrderID));
+				List<ETbl.ICtorArg> etblArgs = new List<ETbl.ICtorArg> {
+					MB3ETbl.HasStateHistoryAndSequenceCounter(dsMB.Path.T.WorkOrder.F.Number, dsMB.Schema.T.WorkOrderSequenceCounter, dsMB.Schema.V.WOSequence, dsMB.Schema.V.WOSequenceFormat, WorkOrderHistoryTable),
+					ETbl.EditorDefaultAccess(false),
+					ETbl.EditorAccess(true, EdtMode.Edit, EdtMode.View, EdtMode.Clone, EdtMode.EditDefault, EdtMode.ViewDefault, EdtMode.New),
+					ETbl.Print(TIReports.SingleWorkOrderFormReport, dsMB.Path.T.WorkOrderFormReport.F.NoLabelWorkOrderID)
+				};
 				if (includeAssignToSelfCommand) {
 					etblArgs.Add(ETbl.CustomCommand(
 							delegate (EditLogic el) {
-								var group = new EditLogic.MutuallyExclusiveCommandSetDeclaration();
-								group.Add(new EditLogic.CommandDeclaration(
+								var group = new EditLogic.MutuallyExclusiveCommandSetDeclaration {
+									new EditLogic.CommandDeclaration(
 									SelfAssignCommand,
 									new MultiCommandIfAllEnabled(
 										EditLogic.StateTransitionCommand.NewSameTargetState(el,
@@ -731,7 +737,8 @@ namespace Thinkage.MainBoss.Controls {
 											},
 											el.AllStatesWithExistingRecord.ToArray()),
 										SelfAssignDisablers().ToArray())
-									));
+									)
+								};
 								return group;
 							}
 					));
@@ -740,8 +747,7 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.WorkOrder, TId.WorkOrder,
 					new Tbl.IAttr[] {
 						featureGroup,
-						new ETbl(etblArgs.ToArray()),
-						TIReports.NewRemotePTbl(TIReports.WorkOrderFormReport)
+						new ETbl(etblArgs.ToArray())
 					},
 					WorkOrderNodes(),
 					Init.LinkRecordSets(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderID, 1, dsMB.Path.T.WorkOrder.F.Id, 0),
@@ -1336,31 +1342,33 @@ namespace Thinkage.MainBoss.Controls {
 					DetailColumns.Add(TblColumnNode.New(QuantityPath, ECol.Normal));
 				else {
 					CreateSuggestedQuantitySelectorControl(null);
-					var threeColumnNodes = new List<TblRowNode>();
-					threeColumnNodes.Add(TblRowNode.New(DemandedColumnKey, new TblLayoutNode.ICtorArg[] { ECol.Normal },
+					var threeColumnNodes = new List<TblRowNode> {
+						TblRowNode.New(DemandedColumnKey, new TblLayoutNode.ICtorArg[] { ECol.Normal },
 						TblColumnNode.New(QuantityPath, new ECol(Fmt.SetId(ThisQuantityId))),
 						TblColumnNode.EmptyECol(),
 						TblColumnNode.EmptyECol()
-					));
-					threeColumnNodes.Add(TblRowNode.New(AlreadyUsed, new TblLayoutNode.ICtorArg[] { ECol.Normal },
+					),
+						TblRowNode.New(AlreadyUsed, new TblLayoutNode.ICtorArg[] { ECol.Normal },
 						TblColumnNode.New(ActualQuantityPath, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(AlreadyUsedQuantityId))),
 						CreateUnitCostEditDisplay(AlreadyUsedUnitCostId),
 						TblColumnNode.New(dsMB.Path.T.Demand.F.ActualCost.ReOrientFromRelatedTable(MostDerivedTable), new ECol(ECol.AllReadonlyAccess, Fmt.SetId(AlreadyUsedValueId)))
-					));
-					threeColumnNodes.Add(TblRowNode.New(Remaining, new TblLayoutNode.ICtorArg[] { ECol.Normal },
+					),
+						TblRowNode.New(Remaining, new TblLayoutNode.ICtorArg[] { ECol.Normal },
 						TblUnboundControlNode.New(QuantityTypeInfo, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(RemainingQuantityId))),
 						TblColumnNode.EmptyECol(),
 						TblColumnNode.EmptyECol()
-					));
+					)
+					};
 					threeColumnNodes.AddRange(entryNodes);
 					threeColumnNodes.Add(TblRowNode.New(CalculatedCost, new TblLayoutNode.ICtorArg[] { ECol.Normal },
 						TblLayoutNode.EmptyECol(),
 						CreateUnitCostEditDisplay(CalculatedUnitCostId),
 						TblUnboundControlNode.New(CostPath.ReferencedColumn.EffectiveType, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(CalculatedCost)))
 					));
-					List<TblLayoutNode.ICtorArg> withViewCostAttrs = new List<TblLayoutNode.ICtorArg>();
-					withViewCostAttrs.Add(new ECol(Fmt.SetId(UseCalculatedCost), Fmt.SetIsSetting(true), ECol.RestrictPerGivenPath(CostPath, 0)));
-					withViewCostAttrs.Add(new NonDefaultCol());
+					List<TblLayoutNode.ICtorArg> withViewCostAttrs = new List<TblLayoutNode.ICtorArg> {
+						new ECol(Fmt.SetId(UseCalculatedCost), Fmt.SetIsSetting(true), ECol.RestrictPerGivenPath(CostPath, 0)),
+						new NonDefaultCol()
+					};
 					withViewCostAttrs.AddRange(AddSchemaCostTblLayoutNodeAttributesTbl.PermissionAttributesFromSchema(CostPath.Table));
 					threeColumnNodes.Add(TblRowNode.New(null, new TblLayoutNode.ICtorArg[] { ECol.Normal },
 
@@ -1682,8 +1690,8 @@ namespace Thinkage.MainBoss.Controls {
 				creator.AddBTblAttributes(BTbl.ExpressionFilter(new SqlExpression(dsMB.Path.T.DemandLaborOutside.F.DemandID.F.WorkOrderID.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateID.F.DemandCountsActive).IsTrue()));
 
 			if (forPOLine) {
-				creator.AddBTblAttributes(BTbl.ListColumn(dsMB.Path.T.DemandLaborOutside.F.LaborOutsideID.F.PurchaseOrderText, BTbl.ListColumnArg.Contexts.OpenCombo | BTbl.ListColumnArg.Contexts.SearchAndFilter, PurchasingGroup));
-				creator.AddBTblAttributes(BTbl.ListColumn(dsMB.Path.T.DemandLaborOutside.F.OrderQuantity, BTbl.ListColumnArg.Contexts.OpenCombo | BTbl.ListColumnArg.Contexts.SearchAndFilter));
+				creator.AddBTblAttributes(BTbl.ListColumn(dsMB.Path.T.DemandLaborOutside.F.LaborOutsideID.F.PurchaseOrderText, BTbl.Contexts.OpenPicker | BTbl.Contexts.SearchAndFilter, PurchasingGroup));
+				creator.AddBTblAttributes(BTbl.ListColumn(dsMB.Path.T.DemandLaborOutside.F.OrderQuantity, BTbl.Contexts.OpenPicker | BTbl.Contexts.SearchAndFilter));
 			}
 			if (alreadyUsed)
 				creator.AddBTblAttributes(BTbl.ListColumn(dsMB.Path.T.DemandLaborOutside.F.ActualQuantity));
@@ -1748,11 +1756,11 @@ namespace Thinkage.MainBoss.Controls {
 				creator.AddBTblAttributes(BTbl.ExpressionFilter(new SqlExpression(dsMB.Path.T.DemandOtherWorkOutside.F.DemandID.F.WorkOrderID.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateID.F.DemandCountsActive).IsTrue()));
 
 			if (forPOLine) {
-				creator.AddBTblAttributes(BTbl.ListColumn(dsMB.Path.T.DemandOtherWorkOutside.F.OtherWorkOutsideID.F.PurchaseOrderText, BTbl.ListColumnArg.Contexts.OpenCombo | BTbl.ListColumnArg.Contexts.SearchAndFilter, PurchasingGroup));
-				creator.AddBTblAttributes(BTbl.ListColumn(dsMB.Path.T.DemandOtherWorkOutside.F.OrderQuantity, BTbl.ListColumnArg.Contexts.OpenCombo | BTbl.ListColumnArg.Contexts.SearchAndFilter, PurchasingGroup));
+				creator.AddBTblAttributes(BTbl.ListColumn(dsMB.Path.T.DemandOtherWorkOutside.F.OtherWorkOutsideID.F.PurchaseOrderText, BTbl.Contexts.OpenPicker | BTbl.Contexts.SearchAndFilter, PurchasingGroup));
+				creator.AddBTblAttributes(BTbl.ListColumn(dsMB.Path.T.DemandOtherWorkOutside.F.OrderQuantity, BTbl.Contexts.OpenPicker | BTbl.Contexts.SearchAndFilter, PurchasingGroup));
 			}
 			if (alreadyUsed)
-				creator.AddBTblAttributes(BTbl.ListColumn(dsMB.Path.T.DemandOtherWorkOutside.F.ActualQuantity, BTbl.ListColumnArg.Contexts.OpenCombo | BTbl.ListColumnArg.Contexts.SearchAndFilter));
+				creator.AddBTblAttributes(BTbl.ListColumn(dsMB.Path.T.DemandOtherWorkOutside.F.ActualQuantity, BTbl.Contexts.OpenPicker | BTbl.Contexts.SearchAndFilter));
 			creator.BuildActualsBrowsette(FindDelayedBrowseTbl(dsMB.Schema.T.DemandOtherWorkOutsideActivity), dsMB.Path.T.DemandOtherWorkOutsideActivity.F.DemandOtherWorkOutsideID);
 
 			return creator.GetTbl(
@@ -1846,11 +1854,11 @@ namespace Thinkage.MainBoss.Controls {
 						BTbl.ListColumn(dsMB.Path.T.OtherWorkOutside.F.Desc, NonPerViewColumn),
 						BTbl.ListColumn(dsMB.Path.T.OtherWorkOutside.F.VendorID.F.Code), // part of XID
 						BTbl.ListColumn(dsMB.Path.T.OtherWorkOutside.F.TradeID.F.Code), // uncomment when field is added to OtherWorkOutside to match LaborOutside
-						BTbl.ListColumn(dsMB.Path.T.OtherWorkOutside.F.PurchaseOrderText, BTbl.ListColumnArg.Contexts.ClosedCombo | BTbl.ListColumnArg.Contexts.OpenCombo | BTbl.ListColumnArg.Contexts.SearchAndFilter, PurchasingGroup),
-						BTbl.ListColumn(dsMB.Path.T.OtherWorkOutside.F.Cost, NonPerViewColumn)
+						BTbl.ListColumn(dsMB.Path.T.OtherWorkOutside.F.PurchaseOrderText, BTbl.Contexts.ClosedPicker | BTbl.Contexts.OpenPicker | BTbl.Contexts.SearchAndFilter, PurchasingGroup),
+						BTbl.ListColumn(dsMB.Path.T.OtherWorkOutside.F.Cost, NonPerViewColumn),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.OtherWorkOutsideReport))
 					),
-					new ETbl(),
-					TIReports.NewRemotePTbl(TIReports.OtherWorkOutsideReport)
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -1890,7 +1898,7 @@ namespace Thinkage.MainBoss.Controls {
 			public void BuildCommonDemandTemplateHeaderControls() {
 				DetailColumns.Add(TblFixedRecordTypeNode.New());
 				DetailColumns.Add(TblColumnNode.New(dsMB.Path.T.DemandTemplate.F.WorkOrderTemplateID.ReOrientFromRelatedTable(MostDerivedTable),
-					new DCol(Fmt.SetDisplayPath(dsMB.Path.T.WorkOrderTemplate.F.Code)), ECol.Normal));
+						new DCol(Fmt.SetDisplayPath(dsMB.Path.T.WorkOrderTemplate.F.Code)), new NonDefaultCol(), ECol.Normal));
 			}
 			#endregion
 
@@ -2137,7 +2145,7 @@ namespace Thinkage.MainBoss.Controls {
 			});
 
 			if (forPOLine) {
-				creator.AddBTblAttributes(BTbl.ListColumn(dsMB.Path.T.DemandLaborOutsideTemplate.F.LaborOutsideID.F.PurchaseOrderText, BTbl.ListColumnArg.Contexts.OpenCombo | BTbl.ListColumnArg.Contexts.SearchAndFilter, PurchasingGroup));
+				creator.AddBTblAttributes(BTbl.ListColumn(dsMB.Path.T.DemandLaborOutsideTemplate.F.LaborOutsideID.F.PurchaseOrderText, BTbl.Contexts.OpenPicker | BTbl.Contexts.SearchAndFilter, PurchasingGroup));
 			}
 			creator.BuildPOTemplateLinesBrowsette(dsMB.Schema.T.POLineLaborTemplate.LabelKey, FindDelayedBrowseTbl(dsMB.Schema.T.POLineLaborTemplate), dsMB.Path.T.POLineLaborTemplate.F.DemandLaborOutsideTemplateID);
 			return creator.GetTbl(
@@ -2193,7 +2201,7 @@ namespace Thinkage.MainBoss.Controls {
 			});
 
 			if (forPOLine) {
-				creator.AddBTblAttributes(BTbl.ListColumn(dsMB.Path.T.DemandOtherWorkOutsideTemplate.F.OtherWorkOutsideID.F.PurchaseOrderText, BTbl.ListColumnArg.Contexts.OpenCombo | BTbl.ListColumnArg.Contexts.SearchAndFilter, PurchasingGroup));
+				creator.AddBTblAttributes(BTbl.ListColumn(dsMB.Path.T.DemandOtherWorkOutsideTemplate.F.OtherWorkOutsideID.F.PurchaseOrderText, BTbl.Contexts.OpenPicker | BTbl.Contexts.SearchAndFilter, PurchasingGroup));
 			}
 			creator.BuildPOTemplateLinesBrowsette(dsMB.Schema.T.POLineOtherWorkTemplate.LabelKey, FindDelayedBrowseTbl(dsMB.Schema.T.POLineOtherWorkTemplate), dsMB.Path.T.POLineOtherWorkTemplate.F.DemandOtherWorkOutsideTemplateID);
 			return creator.GetTbl(
@@ -2231,8 +2239,7 @@ namespace Thinkage.MainBoss.Controls {
 				new Tbl.IAttr[] {
 					WorkOrdersGroup,
 					CommonTblAttrs.ViewCostsDefinedBySchema,
-					new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete, EdtMode.Delete), ETbl.Print(TIReports.SingleChargebackFormReport, dsMB.Path.T.ChargebackFormReport.F.ChargebackID)),
-					TIReports.NewRemotePTbl(TIReports.ChargebackFormReport)
+					new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete, EdtMode.Delete), ETbl.Print(TIReports.SingleChargebackFormReport, dsMB.Path.T.ChargebackFormReport.F.ChargebackID))
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -2256,9 +2263,16 @@ namespace Thinkage.MainBoss.Controls {
 		public static DelayedCreateTbl WorkOrderPurchaseOrderLinkageTbl(bool showPurchaseOrders) {
 			List<BTbl.ICtorArg> BTblAttrs = new List<BTbl.ICtorArg>();
 			return new DelayedCreateTbl(delegate () {
-				DBI_Path parentPath = showPurchaseOrders
-										? (DBI_Path)dsMB.Path.T.WorkOrderPurchaseOrderView.F.LinkedPurchaseOrderID
-										: (DBI_Path)dsMB.Path.T.WorkOrderPurchaseOrderView.F.LinkedWorkOrderID;
+				DBI_Path parentPath;
+				DBI_Table containmentTable;
+				if (showPurchaseOrders) {
+					containmentTable = dsMB.Schema.T.WorkOrderLinkedPurchaseOrdersTreeview;
+					parentPath = dsMB.Path.T.WorkOrderPurchaseOrderView.F.LinkedPurchaseOrderID;
+				}
+				else {
+					containmentTable = dsMB.Schema.T.PurchaseOrderLinkedWorkOrdersTreeview;
+					parentPath = dsMB.Path.T.WorkOrderPurchaseOrderView.F.LinkedWorkOrderID;
+				}
 				object codeColumnId = KB.I("WOTemplatePOTemplateCodeColumnId");
 				object descColumnId = KB.I("WOTemplatePOTemplateDescColumnId");
 				return new CompositeTbl(dsMB.Schema.T.WorkOrderPurchaseOrderView, showPurchaseOrders ? TId.WorkOrder : TId.PurchaseOrder,
@@ -2266,9 +2280,9 @@ namespace Thinkage.MainBoss.Controls {
 							PurchasingGroup,
 							new BTbl(
 								BTbl.PerViewListColumn(dsMB.LabelKeyBuilder.K("Number"), codeColumnId),
-								BTbl.PerViewListColumn(CommonDescColumnKey, descColumnId)
-							),
-							new FilteredTreeStructuredTbl(parentPath, showPurchaseOrders ? (DBI_Table)dsMB.Schema.T.WorkOrderLinkedPurchaseOrdersTreeview : (DBI_Table)dsMB.Schema.T.PurchaseOrderLinkedWorkOrdersTreeview, 2, 2)
+								BTbl.PerViewListColumn(CommonDescColumnKey, descColumnId),
+								BTbl.SetTreeStructure(parentPath, 2, 2, containmentTable)
+							)
 						},
 					dsMB.Path.T.WorkOrderPurchaseOrderView.F.TableEnum,
 					new CompositeView(TIWorkOrder.WorkOrderEditTblCreator, dsMB.Path.T.WorkOrderPurchaseOrderView.F.WorkOrderID,
@@ -2298,9 +2312,17 @@ namespace Thinkage.MainBoss.Controls {
 		public static DelayedCreateTbl WorkOrderTemplatePurchaseOrderTemplateLinkageTbl(bool showPurchaseOrderTemplates) {
 			List<BTbl.ICtorArg> BTblAttrs = new List<BTbl.ICtorArg>();
 			return new DelayedCreateTbl(delegate () {
-				DBI_Path parentPath = showPurchaseOrderTemplates
-										? (DBI_Path)dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.LinkedPurchaseOrderTemplateID
-										: (DBI_Path)dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.LinkedWorkOrderTemplateID;
+				DBI_Path parentPath;
+				DBI_Table containmentTable;
+				if (showPurchaseOrderTemplates) {
+					containmentTable = dsMB.Schema.T.WorkOrderTemplateLinkedPurchaseOrderTemplatesTreeview;
+					parentPath = dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.LinkedPurchaseOrderTemplateID;
+				}
+				else {
+					containmentTable = dsMB.Schema.T.PurchaseOrderTemplateLinkedWorkOrderTemplatesTreeview;
+					parentPath = dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.LinkedWorkOrderTemplateID;
+				}
+
 				object codeColumnId = KB.I("WOTemplatePOTemplateCodeColumnId");
 				object descColumnId = KB.I("WOTemplatePOTemplateDescColumnId");
 				return new CompositeTbl(dsMB.Schema.T.WorkOrderTemplatePurchaseOrderTemplateView, showPurchaseOrderTemplates ? TId.Task : TId.PurchaseOrderTemplate,
@@ -2308,9 +2330,9 @@ namespace Thinkage.MainBoss.Controls {
 							PurchasingGroup,
 							new BTbl(
 								BTbl.PerViewListColumn(CommonCodeColumnKey, codeColumnId),
-								BTbl.PerViewListColumn(CommonDescColumnKey, descColumnId)
-							),
-							new FilteredTreeStructuredTbl(parentPath, dsMB.Schema.T.WorkOrderTemplateLinkedPurchaseOrderTemplatesTreeview, 2, 2)
+								BTbl.PerViewListColumn(CommonDescColumnKey, descColumnId),
+								BTbl.SetTreeStructure(parentPath, 2, 2, containmentTable)
+							)
 						},
 					dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.TableEnum,
 					new CompositeView(TIWorkOrder.WorkOrderTemplateEditTbl, dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.WorkOrderTemplateID,
@@ -2334,31 +2356,40 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		#endregion
 		#region Task Browsers
-		private static Tbl TaskBrowserTbl(bool includeMakeWO) {
-			var views = new List<CompositeView>();
-			// Table #0 (WorkOrderTemplate)
-			views.Add(new CompositeView(WorkOrderTemplateEditTbl, dsMB.Path.T.WorkOrderTemplate.F.Id));
-			// Table #1 (WorkOrderTemplate SupplementalTask -- this record type never occurs in the dataset)
-			views.Add(CompositeView.ExtraNewVerb(TIWorkOrder.WorkOrderTemplateSpecializationEditTbl,
+		private static Tbl TaskBrowserTbl(bool includeMakeWO, bool includeDefaultViews) {
+			var views = new List<CompositeView> {
+				// Table #0 (WorkOrderTemplate)
+				new CompositeView(WorkOrderTemplateEditTbl, dsMB.Path.T.WorkOrderTemplate.F.Id),
+				// Table #1 (WorkOrderTemplate SupplementalTask -- this record type never occurs in the dataset)
+				CompositeView.ExtraNewVerb(TIWorkOrder.WorkOrderTemplateSpecializationEditTbl,
 						NoNewMode,
 						CompositeView.ContextualInit(0, dsMB.Path.T.WorkOrderTemplate.F.Id, dsMB.Path.T.WorkOrderTemplate.F.ContainingWorkOrderTemplateID),
-						CompositeView.EditorAccess(false, EdtMode.EditDefault, EdtMode.ViewDefault)));
+						CompositeView.EditorAccess(false, EdtMode.EditDefault, EdtMode.ViewDefault))
+			};
 			if (includeMakeWO)
 				// Table #2 (Make WorkOrder -- this record type never occurs in the dataset)
 				views.Add(CompositeView.ExtraNewVerb(WorkOrderFromTemplateEditLogic.WorkOrderFromTemplateTbl,
 						CompositeView.IdentificationOverride(TId.WorkOrderFromTask),
 						NoNewMode,
 						CompositeView.ContextualInit(0, new CompositeView.Init(new ControlTarget(WorkOrderFromTemplateEditLogic.TemplateControlId), dsMB.Path.T.WorkOrderTemplate.F.Id))));
-
+			if (includeDefaultViews) {
+				Key GroupDefaultDemands = TId.TaskResource.Compose(Tbl.TblIdentification.TablePhrase_DefaultsFor);
+				views.Add(CompositeView.AdditionalEditDefault(FindDelayedEditTbl(dsMB.Schema.T.DemandItemTemplate), CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
+				views.Add(CompositeView.AdditionalEditDefault(FindDelayedEditTbl(dsMB.Schema.T.DemandLaborInsideTemplate), CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
+				views.Add(CompositeView.AdditionalEditDefault(FindDelayedEditTbl(dsMB.Schema.T.DemandLaborOutsideTemplate), CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
+				views.Add(CompositeView.AdditionalEditDefault(FindDelayedEditTbl(dsMB.Schema.T.DemandOtherWorkInsideTemplate), CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
+				views.Add(CompositeView.AdditionalEditDefault(FindDelayedEditTbl(dsMB.Schema.T.DemandOtherWorkOutsideTemplate), CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
+				views.Add(CompositeView.AdditionalEditDefault(FindDelayedEditTbl(dsMB.Schema.T.DemandMiscellaneousWorkOrderCostTemplate), CompositeView.AdditionalEditDefaultsGroupKey(GroupDefaultDemands)));
+			}
 			return new CompositeTbl(dsMB.Schema.T.WorkOrderTemplate, TId.Task,
 				new Tbl.IAttr[] {
 						SchedulingGroup,
 						new BTbl(
-								BTbl.ListColumn(dsMB.Path.T.WorkOrderTemplate.F.Code),
-								BTbl.ListColumn(dsMB.Path.T.WorkOrderTemplate.F.Desc)
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl(delegate() { return TIReports.WorkOrderTemplateReport;})),
-						new FilteredTreeStructuredTbl(dsMB.Path.T.WorkOrderTemplate.F.ContainingWorkOrderTemplateID, dsMB.Schema.T.WorkOrderTemplateWithContainers, dsMB.Schema.T.WorkOrderTemplateWithContainers.F.BaseWorkOrderTemplateID, dsMB.Schema.T.WorkOrderTemplateWithContainers.F.WorkOrderTemplateID, 4, uint.MaxValue, treatAllRecordsAsPrimary: false)
+							BTbl.ListColumn(dsMB.Path.T.WorkOrderTemplate.F.Code),
+							BTbl.ListColumn(dsMB.Path.T.WorkOrderTemplate.F.Desc),
+							BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderTemplate.F.ContainingWorkOrderTemplateID, 4, uint.MaxValue, dsMB.Schema.T.WorkOrderTemplateContainment.F.ContainedWorkOrderTemplateID, dsMB.Schema.T.WorkOrderTemplateContainment.F.ContainingWorkOrderTemplateID),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.WorkOrderTemplateReport))
+						)
 				},
 				null,   // All records in query are type 0.
 				views.ToArray()
@@ -2372,11 +2403,12 @@ namespace Thinkage.MainBoss.Controls {
 		// a customized edit tbl to include filtering on the picker for the "other" record
 		private static DelayedCreateTbl WorkOrderAssignmentAllBrowsetteTbl(bool fixedWorkOrder) {
 			return new DelayedCreateTbl(delegate () {
-				List<BTbl.ICtorArg> BTblAttrs = new List<BTbl.ICtorArg>();
-				BTblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.WorkOrderAssignmentAll.F.WorkOrderID.F.Number));
-				BTblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.WorkOrderAssignmentAll.F.WorkOrderID.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateID.F.Code));
-				BTblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.WorkOrderAssignmentAll.F.WorkOrderID.F.Subject));
-				BTblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.WorkOrderAssignmentAll.F.WorkOrderAssigneeID.F.ContactID.F.Code));
+				List<BTbl.ICtorArg> BTblAttrs = new List<BTbl.ICtorArg> {
+					BTbl.ListColumn(dsMB.Path.T.WorkOrderAssignmentAll.F.WorkOrderID.F.Number),
+					BTbl.ListColumn(dsMB.Path.T.WorkOrderAssignmentAll.F.WorkOrderID.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateID.F.Code),
+					BTbl.ListColumn(dsMB.Path.T.WorkOrderAssignmentAll.F.WorkOrderID.F.Subject),
+					BTbl.ListColumn(dsMB.Path.T.WorkOrderAssignmentAll.F.WorkOrderAssigneeID.F.ContactID.F.Code)
+				};
 
 				// For implied assignees, rather than showing the DemandLaborInside or DemandOtherWorkInside, we show the "other" record (WO or Assignee) in the panel
 				// and allow no editing.
@@ -2553,11 +2585,12 @@ namespace Thinkage.MainBoss.Controls {
 		private TIWorkOrder() { }
 		// Common TblQueryExpression
 		public static TblQueryValueNode IsPreventiveValueNodeBuilder(dsMB.PathClass.PathToWorkOrderRow WO, params TblLayoutNode.ICtorArg[] attrs) {
-			List<TblLayoutNode.ICtorArg> newAttrs = new List<TblLayoutNode.ICtorArg>();
-			newAttrs.Add(Fmt.SetEnumText(ViewRecordTypes.IsPreventiveEnumText));
+			List<TblLayoutNode.ICtorArg> newAttrs = new List<TblLayoutNode.ICtorArg> {
+				Fmt.SetEnumText(ViewRecordTypes.IsPreventiveEnumText)
+			};
 			newAttrs.AddRange(attrs);
 			return TblQueryValueNode.New(KB.K("Maintenance Type"),
-				new TblQueryExpression(new SqlExpression(WO.F.PMGenerationBatchID).IsNotNull()), newAttrs.ToArray());
+				new TblQueryExpression(new SqlExpression(WO.F.Id.L.WorkOrderExtras.WorkOrderID.F.PMGenerationBatchID).IsNotNull()), newAttrs.ToArray());
 		}
 		static TIWorkOrder() {
 			#region Demand Pickers
@@ -2595,9 +2628,9 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.ListColumn(dsMB.Path.T.ActualItem.F.Quantity),
 							BTbl.ListColumn(dsMB.Path.T.ActualItem.F.AccountingTransactionID.F.Cost),
 							BTbl.ListColumn(dsMB.Path.T.ActualItem.F.CorrectedQuantity),
-							BTbl.ListColumn(dsMB.Path.T.ActualItem.F.CorrectedCost)
-						),
-						new TreeStructuredTbl(null, 2)
+							BTbl.ListColumn(dsMB.Path.T.ActualItem.F.CorrectedCost),
+							BTbl.SetTreeStructure(null, 2)
+						)
 					},
 					null,
 					CompositeView.ChangeEditTbl(TblRegistry.FindDelayedEditTbl(dsMB.Schema.T.ActualItem),
@@ -2624,9 +2657,9 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.ListColumn(dsMB.Path.T.ActualLaborInside.F.Quantity),
 							BTbl.ListColumn(dsMB.Path.T.ActualLaborInside.F.AccountingTransactionID.F.Cost),
 							BTbl.ListColumn(dsMB.Path.T.ActualLaborInside.F.CorrectedQuantity),
-							BTbl.ListColumn(dsMB.Path.T.ActualLaborInside.F.CorrectedCost)
-						),
-						new TreeStructuredTbl(null, 2)
+							BTbl.ListColumn(dsMB.Path.T.ActualLaborInside.F.CorrectedCost),
+							BTbl.SetTreeStructure(null, 2)
+						)
 					},
 					null,
 					CompositeView.ChangeEditTbl(TblRegistry.FindDelayedEditTbl(dsMB.Schema.T.ActualLaborInside),
@@ -2653,9 +2686,9 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.ListColumn(dsMB.Path.T.ActualOtherWorkInside.F.Quantity),
 							BTbl.ListColumn(dsMB.Path.T.ActualOtherWorkInside.F.AccountingTransactionID.F.Cost),
 							BTbl.ListColumn(dsMB.Path.T.ActualOtherWorkInside.F.CorrectedQuantity),
-							BTbl.ListColumn(dsMB.Path.T.ActualOtherWorkInside.F.CorrectedCost)
-						),
-						new TreeStructuredTbl(null, 2)
+							BTbl.ListColumn(dsMB.Path.T.ActualOtherWorkInside.F.CorrectedCost),
+							BTbl.SetTreeStructure(null, 2)
+						)
 					},
 					null,
 					CompositeView.ChangeEditTbl(TblRegistry.FindDelayedEditTbl(dsMB.Schema.T.ActualOtherWorkInside),
@@ -2680,9 +2713,9 @@ namespace Thinkage.MainBoss.Controls {
 						new BTbl(
 							BTbl.ListColumn(dsMB.Path.T.ActualMiscellaneousWorkOrderCost.F.AccountingTransactionID.F.EffectiveDate, TIWorkOrder.WorkOrderResourceActivityDateAsCodeWrapper()),
 							BTbl.ListColumn(dsMB.Path.T.ActualMiscellaneousWorkOrderCost.F.AccountingTransactionID.F.Cost),
-							BTbl.ListColumn(dsMB.Path.T.ActualMiscellaneousWorkOrderCost.F.CorrectedCost)
-						),
-						new TreeStructuredTbl(null, 2)
+							BTbl.ListColumn(dsMB.Path.T.ActualMiscellaneousWorkOrderCost.F.CorrectedCost),
+							BTbl.SetTreeStructure(null, 2)
+						)
 					},
 					null,
 					CompositeView.ChangeEditTbl(TblRegistry.FindDelayedEditTbl(dsMB.Schema.T.ActualMiscellaneousWorkOrderCost),
@@ -2746,7 +2779,7 @@ namespace Thinkage.MainBoss.Controls {
 			DemandOtherWorkOutsideDefaultEditorTblCreator = new DelayedCreateTbl(delegate () {
 				return DemandOtherWorkOutsideTbl(false, false, false, false, true);
 			});
-			DemandMiscellaneousWorkOrderCostTblCreator = new DelayedCreateTbl(delegate () {
+			DemandMiscellaneousWorkOrderCostDefaultEditorTblCreator = new DelayedCreateTbl(delegate () {
 				return DemandMiscellaneousWorkOrderCostTbl(false, true);
 			});
 			#endregion
@@ -2756,7 +2789,7 @@ namespace Thinkage.MainBoss.Controls {
 			#endregion
 			#region Task Picker Tbl Creators
 			TaskPickerTblCreator = new DelayedCreateTbl(delegate () {
-				return TaskBrowserTbl(false);
+				return TaskBrowserTbl(false, false);
 			});
 			#endregion
 			#region Chargeback
@@ -2770,9 +2803,9 @@ namespace Thinkage.MainBoss.Controls {
 						BTbl.ListColumn(dsMB.Path.T.Chargeback.F.WorkOrderID.F.Number),
 						BTbl.ListColumn(dsMB.Path.T.Chargeback.F.Code),
 						BTbl.ListColumn(dsMB.Path.T.Chargeback.F.BillableRequestorID.F.ContactID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.Chargeback.F.TotalCost)
-					),
-					TIReports.NewRemotePTbl(TIReports.ChargebackFormReport)
+						BTbl.ListColumn(dsMB.Path.T.Chargeback.F.TotalCost),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ChargebackFormReport))
+					)
 				},
 				null,
 				CompositeView.ChangeEditTbl(ChargebackEditorTblCreator),
@@ -2799,8 +2832,7 @@ namespace Thinkage.MainBoss.Controls {
 			#endregion
 			#region - State History editor used for Close Work Order with comments
 			CloseWorkOrderEditTblCreator = new DelayedCreateTbl(delegate () {
-				TblLayoutNodeArray extraNodes;
-				List<TblActionNode> inits = StateHistoryInits(MB3Client.WorkOrderHistoryTable, out extraNodes);
+				List<TblActionNode> inits = StateHistoryInits(MB3Client.WorkOrderHistoryTable, out TblLayoutNodeArray extraNodes);
 				inits.Add(StartEndDurationCalculator(WorkOrderStartDateEstimateId, WorkOrderDurationEstimateId, WorkOrderEndDateEstimateId));
 
 				return new Tbl(dsMB.Schema.T.WorkOrderStateHistory, TId.WorkOrderStateHistory,
@@ -2832,8 +2864,7 @@ namespace Thinkage.MainBoss.Controls {
 			#endregion
 			#region - Normal Tbl for state history
 			DefineEditTbl(dsMB.Schema.T.WorkOrderStateHistory, new DelayedCreateTbl(delegate () {
-				TblLayoutNodeArray extraNodes;
-				List<TblActionNode> inits = StateHistoryInits(MB3Client.WorkOrderHistoryTable, out extraNodes);
+				List<TblActionNode> inits = StateHistoryInits(MB3Client.WorkOrderHistoryTable, out TblLayoutNodeArray extraNodes);
 				return new Tbl(dsMB.Schema.T.WorkOrderStateHistory, TId.WorkOrderStateHistory,
 					new Tbl.IAttr[] {
 						WorkOrdersGroup,
@@ -2852,15 +2883,14 @@ namespace Thinkage.MainBoss.Controls {
 				);
 			}));
 			DefineBrowseTbl(dsMB.Schema.T.WorkOrderStateHistory, new DelayedCreateTbl(delegate () {
-				TblLayoutNodeArray extraNodes;
-				List<TblActionNode> inits = StateHistoryInits(MB3Client.WorkOrderHistoryTable, out extraNodes);
+				List<TblActionNode> inits = StateHistoryInits(MB3Client.WorkOrderHistoryTable, out TblLayoutNodeArray extraNodes);
 				return new CompositeTbl(dsMB.Schema.T.WorkOrderStateHistory, TId.WorkOrderStateHistory,
 					new Tbl.IAttr[] {
 						WorkOrdersGroup,
 						new BTbl(
 							MB3BTbl.IsStateHistoryTbl(WorkOrderHistoryTable),
 							BTbl.ListColumn(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderID.F.Number),
-							BTbl.ListColumn(dsMB.Path.T.WorkOrderStateHistory.F.EffectiveDate, BTbl.ListColumnArg.Contexts.SortInitialDescending),
+							BTbl.ListColumn(dsMB.Path.T.WorkOrderStateHistory.F.EffectiveDate, BTbl.Contexts.SortInitialDescending),
 							BTbl.ListColumn(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderStateID.F.Code, Fmt.SetDynamicSizing()),
 							BTbl.ListColumn(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderStateHistoryStatusID.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.WorkOrderStateHistory.F.Comment)
@@ -2887,10 +2917,10 @@ namespace Thinkage.MainBoss.Controls {
 						BTbl.ListColumn(dsMB.Path.T.WorkOrderAssignee.F.ContactID.F.BusinessPhone, NonPerViewColumn),
 						BTbl.ListColumn(dsMB.Path.T.WorkOrderAssignee.F.ContactID.F.MobilePhone, NonPerViewColumn),
 						BTbl.ListColumn(dsMB.Path.T.WorkOrderAssignee.F.Id.L.WorkOrderAssigneeStatistics.WorkOrderAssigneeID.F.NumNew, NonPerViewColumn),
-						BTbl.ListColumn(dsMB.Path.T.WorkOrderAssignee.F.Id.L.WorkOrderAssigneeStatistics.WorkOrderAssigneeID.F.NumInProgress, NonPerViewColumn)
+						BTbl.ListColumn(dsMB.Path.T.WorkOrderAssignee.F.Id.L.WorkOrderAssigneeStatistics.WorkOrderAssigneeID.F.NumInProgress, NonPerViewColumn),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.WorkOrderAssigneeReport))
 					),
-					new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete)),
-					TIReports.NewRemotePTbl(TIReports.WorkOrderAssigneeReport)
+					new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete))
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -2926,10 +2956,10 @@ namespace Thinkage.MainBoss.Controls {
 						new BTbl(
 							BTbl.PerViewListColumn(KB.K("Assigned to"), assignedToColumnID),
 							BTbl.ListColumn(dsMB.Path.T.WorkOrderAssignmentByAssignee.F.WorkOrderID.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateID.F.Code),
-							BTbl.ListColumn(dsMB.Path.T.WorkOrderAssignmentByAssignee.F.WorkOrderID.F.Subject)
-						),
-						new TreeStructuredTbl(null, 2),
-						TIReports.NewRemotePTbl(TIReports.WorkOrderByAssigneeFormReport),
+							BTbl.ListColumn(dsMB.Path.T.WorkOrderAssignmentByAssignee.F.WorkOrderID.F.Subject),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.WorkOrderByAssigneeFormReport)),
+							BTbl.SetTreeStructure(null, 2)
+						)
 					},
 					null,
 					// The fake contact row for unassigned work orders; This displays because the XAFDB file specifies a text provider for its own ID field.
@@ -3037,11 +3067,11 @@ namespace Thinkage.MainBoss.Controls {
 				new Tbl.IAttr[] {
 				WorkOrdersGroup,
 				new BTbl(BTbl.ListColumn(dsMB.Path.T.BillableRequestor.F.ContactID.F.Code),
-					BTbl.ListColumn(dsMB.Path.T.BillableRequestor.F.ContactID.F.BusinessPhone, BTbl.ListColumnArg.Contexts.List|BTbl.ListColumnArg.Contexts.SearchAndFilter),
-					BTbl.ListColumn(dsMB.Path.T.BillableRequestor.F.ContactID.F.MobilePhone, BTbl.ListColumnArg.Contexts.List|BTbl.ListColumnArg.Contexts.SearchAndFilter)
+					BTbl.ListColumn(dsMB.Path.T.BillableRequestor.F.ContactID.F.BusinessPhone, BTbl.Contexts.List|BTbl.Contexts.SearchAndFilter),
+					BTbl.ListColumn(dsMB.Path.T.BillableRequestor.F.ContactID.F.MobilePhone, BTbl.Contexts.List|BTbl.Contexts.SearchAndFilter),
+					BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.BillableRequestorReport))
 				),
-				new ETbl(),
-				TIReports.NewRemotePTbl(TIReports.BillableRequestorReport)
+				new ETbl()
 			},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -3063,9 +3093,11 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.ChargebackLineCategory, TId.ChargebackCategory,
 				new Tbl.IAttr[] {
 					WorkOrdersGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.ChargebackLineCategory.F.Code), BTbl.ListColumn(dsMB.Path.T.ChargebackLineCategory.F.Desc)),
-					new ETbl(),
-					TIReports.NewRemotePTbl(TIReports.ChargebackLineCategoryReport)
+					new BTbl(
+						BTbl.ListColumn(dsMB.Path.T.ChargebackLineCategory.F.Code),
+						BTbl.ListColumn(dsMB.Path.T.ChargebackLineCategory.F.Desc),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ChargebackLineCategoryReport))),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					TblColumnNode.New(dsMB.Path.T.ChargebackLineCategory.F.Code, DCol.Normal, ECol.Normal),
@@ -3087,9 +3119,9 @@ namespace Thinkage.MainBoss.Controls {
 							new BTbl(
 								BTbl.ListColumn(root.F.AccountingTransactionID.F.ChargebackLineID.F.ChargebackLineCategoryID.F.Code),
 								BTbl.ListColumn(root.F.AccountingTransactionID.F.Cost),
-								BTbl.PerViewListColumn(KB.K("Corrected Cost"), correctedCostColumnId)
-							),
-							new TreeStructuredTbl(root.F.ParentID, 2)
+								BTbl.PerViewListColumn(KB.K("Corrected Cost"), correctedCostColumnId),
+								BTbl.SetTreeStructure(root.F.ParentID, 2)
+							)
 						},
 						root.F.TableEnum,
 						// TODO: Since both record variants have a valid root.F.AccountingTransactionID.F.ChargebackLineID.F.ChargebackID the unified column
@@ -3129,9 +3161,9 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.CloseCode, TId.ClosingCode,
 				new Tbl.IAttr[] {
 					WorkOrdersGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.CloseCode.F.Code), BTbl.ListColumn(dsMB.Path.T.CloseCode.F.Desc)),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.CloseCode.F.Code), BTbl.ListColumn(dsMB.Path.T.CloseCode.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -3200,9 +3232,9 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.PerViewListColumn(quantityColumnId, quantityColumnId),
 							BTbl.PerViewListColumn(costColumnId, costColumnId),
 							BTbl.PerViewListColumn(correctedQuantityColumnId, correctedQuantityColumnId),
-							BTbl.PerViewListColumn(correctedCostColumnId, correctedCostColumnId)
-						),
-						new TreeStructuredTbl(null, 3)
+							BTbl.PerViewListColumn(correctedCostColumnId, correctedCostColumnId),
+							BTbl.SetTreeStructure(null, 3)
+						)
 					},
 					null,
 					// ActualLaborOutsideNonPO
@@ -3303,9 +3335,9 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.PerViewListColumn(quantityColumnId, quantityColumnId),
 							BTbl.PerViewListColumn(costColumnId, costColumnId),
 							BTbl.PerViewListColumn(correctedQuantityColumnId, correctedQuantityColumnId),
-							BTbl.PerViewListColumn(correctedCostColumnId, correctedCostColumnId)
-						),
-						new TreeStructuredTbl(null, 3)
+							BTbl.PerViewListColumn(correctedCostColumnId, correctedCostColumnId),
+							BTbl.SetTreeStructure(null, 3)
+						)
 					},
 					null,
 					// ActualOtherWorkOutsideNonPO
@@ -3463,10 +3495,10 @@ namespace Thinkage.MainBoss.Controls {
 					LaborResourcesGroup,
 					new BTbl(
 						BTbl.ListColumn(dsMB.Path.T.Employee.F.ContactID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.Employee.F.Desc)
+						BTbl.ListColumn(dsMB.Path.T.Employee.F.Desc),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.EmployeeReport))
 					),
-					new ETbl(),
-					TIReports.NewRemotePTbl(TIReports.EmployeeReport)
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -3499,10 +3531,10 @@ namespace Thinkage.MainBoss.Controls {
 						BTbl.ListColumn(dsMB.Path.T.LaborInside.F.Desc, NonPerViewColumn),
 						BTbl.ListColumn(dsMB.Path.T.LaborInside.F.EmployeeID.F.ContactID.F.Code),
 						BTbl.ListColumn(dsMB.Path.T.LaborInside.F.TradeID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.LaborInside.F.Cost, NonPerViewColumn)
+						BTbl.ListColumn(dsMB.Path.T.LaborInside.F.Cost, NonPerViewColumn),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.LaborInsideReport))
 					),
-					new ETbl(),
-					TIReports.NewRemotePTbl(TIReports.LaborInsideReport)
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -3532,11 +3564,11 @@ namespace Thinkage.MainBoss.Controls {
 						BTbl.ListColumn(dsMB.Path.T.LaborOutside.F.Desc, NonPerViewColumn),
 						BTbl.ListColumn(dsMB.Path.T.LaborOutside.F.VendorID.F.Code),
 						BTbl.ListColumn(dsMB.Path.T.LaborOutside.F.TradeID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.LaborOutside.F.PurchaseOrderText, BTbl.ListColumnArg.Contexts.ClosedCombo|BTbl.ListColumnArg.Contexts.OpenCombo|BTbl.ListColumnArg.Contexts.SearchAndFilter, PurchasingGroup),
-						BTbl.ListColumn(dsMB.Path.T.LaborOutside.F.Cost, NonPerViewColumn)
+						BTbl.ListColumn(dsMB.Path.T.LaborOutside.F.PurchaseOrderText, BTbl.Contexts.ClosedPicker|BTbl.Contexts.OpenPicker|BTbl.Contexts.SearchAndFilter, PurchasingGroup),
+						BTbl.ListColumn(dsMB.Path.T.LaborOutside.F.Cost, NonPerViewColumn),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.LaborOutsideReport))
 					),
-					new ETbl(),
-					TIReports.NewRemotePTbl(TIReports.LaborOutsideReport)
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -3568,10 +3600,10 @@ namespace Thinkage.MainBoss.Controls {
 						BTbl.ListColumn(dsMB.Path.T.OtherWorkInside.F.Desc, NonPerViewColumn),
 						BTbl.ListColumn(dsMB.Path.T.OtherWorkInside.F.EmployeeID.F.ContactID.F.Code),
 						BTbl.ListColumn(dsMB.Path.T.OtherWorkInside.F.TradeID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.OtherWorkInside.F.Cost, NonPerViewColumn)
+						BTbl.ListColumn(dsMB.Path.T.OtherWorkInside.F.Cost, NonPerViewColumn),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.OtherWorkInsideReport))
 					),
-					new ETbl(),
-					TIReports.NewRemotePTbl(TIReports.OtherWorkInsideReport)
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -3605,10 +3637,10 @@ namespace Thinkage.MainBoss.Controls {
 					new BTbl(
 						BTbl.ListColumn(dsMB.Path.T.MiscellaneousWorkOrderCost.F.Code),
 						BTbl.ListColumn(dsMB.Path.T.MiscellaneousWorkOrderCost.F.Desc, NonPerViewColumn),
-						BTbl.ListColumn(dsMB.Path.T.MiscellaneousWorkOrderCost.F.Cost, NonPerViewColumn)
+						BTbl.ListColumn(dsMB.Path.T.MiscellaneousWorkOrderCost.F.Cost, NonPerViewColumn),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.MiscellaneousWorkOrderCostReport))
 					),
-					new ETbl(),
-					TIReports.NewRemotePTbl(TIReports.MiscellaneousWorkOrderCostReport)
+					new ETbl()
 				},
 					new TblLayoutNodeArray(
 						DetailsTabNode.New(
@@ -3630,9 +3662,9 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.Project, TId.Project,
 				new Tbl.IAttr[] {
 					WorkOrdersGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.Project.F.Code), BTbl.ListColumn(dsMB.Path.T.Project.F.Desc)),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.Project.F.Code), BTbl.ListColumn(dsMB.Path.T.Project.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -3656,9 +3688,9 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.Trade, TId.Trade,
 				new Tbl.IAttr[] {
 					LaborResourcesGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.Trade.F.Code), BTbl.ListColumn(dsMB.Path.T.Trade.F.Desc)),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.Trade.F.Code), BTbl.ListColumn(dsMB.Path.T.Trade.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -3683,9 +3715,9 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.WorkCategory, TId.WorkCategory,
 				new Tbl.IAttr[] {
 					WorkOrdersGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.WorkCategory.F.Code), BTbl.ListColumn(dsMB.Path.T.WorkCategory.F.Desc)),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.WorkCategory.F.Code), BTbl.ListColumn(dsMB.Path.T.WorkCategory.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -3706,8 +3738,11 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.WorkOrderState, TId.WorkOrderState,
 				new Tbl.IAttr[] {
 					WorkOrdersGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.WorkOrderState.F.Code, Fmt.SetDynamicSizing()), BTbl.ListColumn(dsMB.Path.T.WorkOrderState.F.Desc)),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(
+						BTbl.ListColumn(dsMB.Path.T.WorkOrderState.F.Code, Fmt.SetDynamicSizing()),
+						BTbl.ListColumn(dsMB.Path.T.WorkOrderState.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()
+					)
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -3739,9 +3774,9 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.WorkOrderStateHistoryStatus, TId.WorkOrderStatus,
 				new Tbl.IAttr[] {
 					WorkOrdersGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.WorkOrderStateHistoryStatus.F.Code), BTbl.ListColumn(dsMB.Path.T.WorkOrderStateHistoryStatus.F.Desc)),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.WorkOrderStateHistoryStatus.F.Code), BTbl.ListColumn(dsMB.Path.T.WorkOrderStateHistoryStatus.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -3771,8 +3806,7 @@ namespace Thinkage.MainBoss.Controls {
 							MB3ETbl.HasStateHistoryAndSequenceCounter(dsMB.Path.T.WorkOrder.F.Number, dsMB.Schema.T.WorkOrderSequenceCounter, dsMB.Schema.V.WOSequence, dsMB.Schema.V.WOSequenceFormat, WorkOrderHistoryTable),
 							ETbl.EditorAccess(false, EdtMode.UnDelete, EdtMode.Delete),
 							ETbl.Print(TIReports.SingleWorkOrderFormReport, dsMB.Path.T.WorkOrderFormReport.F.NoLabelWorkOrderID)
-						),
-						TIReports.NewRemotePTbl(TIReports.WorkOrderFormReport)
+						)
 					},
 					WorkOrderNodes(),
 					Init.OnLoadNew(new ControlTarget(WorkOrderDurationEstimateId), new VariableValue(dsMB.Schema.V.WODefaultDuration)),
@@ -3959,9 +3993,10 @@ namespace Thinkage.MainBoss.Controls {
 						AccountingGroup,
 						new BTbl(
 							BTbl.ListColumn(dsMB.Path.T.WorkOrderExpenseCategory.F.Code),
-							BTbl.ListColumn(dsMB.Path.T.WorkOrderExpenseCategory.F.Desc)),
+							BTbl.ListColumn(dsMB.Path.T.WorkOrderExpenseCategory.F.Desc),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ExpenseCategoryReport))
+						),
 						new ETbl(),
-						TIReports.NewRemotePTbl(TIReports.ExpenseCategoryReport),
 					},
 					new TblLayoutNodeArray(
 						DetailsTabNode.New(
@@ -3996,9 +4031,9 @@ namespace Thinkage.MainBoss.Controls {
 						new BTbl(
 							BTbl.LogicClass(typeof(FilteredWorkOrderExpenseCategoryBrowseLogic)),
 							BTbl.ListColumn(dsMB.Path.T.WorkOrderExpenseCategory.F.Code),
-							BTbl.ListColumn(dsMB.Path.T.WorkOrderExpenseCategory.F.Desc)
+							BTbl.ListColumn(dsMB.Path.T.WorkOrderExpenseCategory.F.Desc),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ExpenseCategoryReport))
 						),
-						TIReports.NewRemotePTbl(TIReports.ExpenseCategoryReport),
 					},
 					null,
 					CompositeView.ChangeEditTbl(TIGeneralMB3.FindDelayedEditTbl(dsMB.Schema.T.WorkOrderExpenseCategory)),
@@ -4020,9 +4055,12 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.WorkOrderExpenseModel, TId.ExpenseModel,
 					new Tbl.IAttr[] {
 						AccountingGroup,
-						new BTbl(BTbl.ListColumn(dsMB.Path.T.WorkOrderExpenseModel.F.Code), BTbl.ListColumn(dsMB.Path.T.WorkOrderExpenseModel.F.Desc)),
-						new ETbl(),
-						TIReports.NewRemotePTbl(TIReports.ExpenseModelReport),
+						new BTbl(
+							BTbl.ListColumn(dsMB.Path.T.WorkOrderExpenseModel.F.Code),
+							BTbl.ListColumn(dsMB.Path.T.WorkOrderExpenseModel.F.Desc),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ExpenseModelReport))
+						),
+						new ETbl()
 					},
 					new TblLayoutNodeArray(
 						DetailsTabNode.New(
@@ -4143,12 +4181,13 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.WorkOrderPriority, TId.WorkOrderPriority,
 				new Tbl.IAttr[] {
 					WorkOrdersGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.WorkOrderPriority.F.Code),
-							BTbl.ListColumn(dsMB.Path.T.WorkOrderPriority.F.Desc),
-							BTbl.ListColumn(dsMB.Path.T.WorkOrderPriority.F.Rank, BTbl.ListColumnArg.Contexts.SortInitialAscending|NonPerViewColumn)
+					new BTbl(
+						BTbl.ListColumn(dsMB.Path.T.WorkOrderPriority.F.Code),
+						BTbl.ListColumn(dsMB.Path.T.WorkOrderPriority.F.Desc),
+						BTbl.ListColumn(dsMB.Path.T.WorkOrderPriority.F.Rank, BTbl.Contexts.SortInitialAscending|NonPerViewColumn),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()
 					),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -4215,10 +4254,9 @@ namespace Thinkage.MainBoss.Controls {
 								BTbl.ListColumn(DemandedColumnKey, dsMB.Path.T.WorkOrderItems.F.DemandID.F.DemandItemID.F.Quantity),
 								BTbl.ListColumn(DemandedCostColumnKey, dsMB.Path.T.WorkOrderItems.F.DemandID.F.CostEstimate),
 								BTbl.ListColumn(ActualColumnKey, dsMB.Path.T.WorkOrderItems.F.DemandID.F.DemandItemID.F.ActualQuantity),
-								BTbl.ListColumn(ActualCostColumnKey, dsMB.Path.T.WorkOrderItems.F.DemandID.F.ActualCost)
-							),
-							new FilteredTreeStructuredTbl(dsMB.Path.T.WorkOrderItems.F.DemandID.F.DemandItemID.F.ItemLocationID.F.ItemID,
-								dsMB.Schema.T.WorkOrderItemsTreeView, 2, 2)
+								BTbl.ListColumn(ActualCostColumnKey, dsMB.Path.T.WorkOrderItems.F.DemandID.F.ActualCost),
+								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderItems.F.DemandID.F.DemandItemID.F.ItemLocationID.F.ItemID, 2, 2, dsMB.Schema.T.WorkOrderItemsTreeView)
+							)
 						},
 						dsMB.Path.T.WorkOrderItems.F.TableEnum,
 						new CompositeView(dsMB.Path.T.WorkOrderItems.F.ItemID,
@@ -4301,10 +4339,9 @@ namespace Thinkage.MainBoss.Controls {
 								BTbl.PerViewListColumn(DemandedColumnKey, demandQuantityColumnId),
 								BTbl.PerViewListColumn(DemandedCostColumnKey, demandCostColumnId),
 								BTbl.PerViewListColumn(ActualColumnKey, actualQuantityColumnId),
-								BTbl.PerViewListColumn(ActualCostColumnKey, actualCostColumnId)
-							),
-							new FilteredTreeStructuredTbl(dsMB.Path.T.WorkOrderInside.F.ParentID,
-								dsMB.Schema.T.WorkOrderInsideTreeView, 2, 2)
+								BTbl.PerViewListColumn(ActualCostColumnKey, actualCostColumnId),
+								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderInside.F.ParentID, 2, 2, dsMB.Schema.T.WorkOrderInsideTreeView)
+							)
 						},
 						dsMB.Path.T.WorkOrderInside.F.TableEnum,
 						new CompositeView(resourceGroupTbl, dsMB.Path.T.WorkOrderInside.F.Id, ReadonlyView, CompositeView.ForceNotPrimary(), CompositeView.IdentificationOverride(TId.Trade),
@@ -4404,10 +4441,9 @@ namespace Thinkage.MainBoss.Controls {
 								BTbl.PerViewListColumn(OrderedQuantityColumnKey, OrderedQuantityId),
 // TODO: when OrderedCost exists in DemandxxOutside records 								BTbl.CompositeViewMatchingIdColumn(KB.K("Ordered Cost"), OrderedCostId),
 								BTbl.PerViewListColumn(ActualColumnKey, actualQuantityColumnId),
-								BTbl.PerViewListColumn(ActualCostColumnKey, actualCostColumnId)
-							),
-							new FilteredTreeStructuredTbl(dsMB.Path.T.WorkOrderOutside.F.ParentID,
-								dsMB.Schema.T.WorkOrderOutsideTreeView, 2, 2)
+								BTbl.PerViewListColumn(ActualCostColumnKey, actualCostColumnId),
+								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderOutside.F.ParentID, 2, 2, dsMB.Schema.T.WorkOrderOutsideTreeView)
+							)
 						},
 						dsMB.Path.T.WorkOrderOutside.F.TableEnum,
 						new CompositeView(resourceGroupTbl, dsMB.Path.T.WorkOrderOutside.F.Id, ReadonlyView, CompositeView.ForceNotPrimary(), CompositeView.IdentificationOverride(TId.Trade),
@@ -4529,9 +4565,9 @@ namespace Thinkage.MainBoss.Controls {
 							new BTbl(
 								BTbl.PerViewListColumn(CommonCodeColumnKey, miscellaneousCodeColumnId),
 								BTbl.PerViewListColumn(DemandedCostColumnKey, demandCostColumnId),
-								BTbl.PerViewListColumn(ActualCostColumnKey, actualCostColumnId)
-							),
-							new FilteredTreeStructuredTbl(dsMB.Path.T.WorkOrderMiscellaneous.F.ParentID, dsMB.Schema.T.WorkOrderMiscellaneousTreeView, 2, 2)
+								BTbl.PerViewListColumn(ActualCostColumnKey, actualCostColumnId),
+								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderMiscellaneous.F.ParentID, 2, 2, dsMB.Schema.T.WorkOrderMiscellaneousTreeView)
+							)
 						},
 						dsMB.Path.T.WorkOrderMiscellaneous.F.TableEnum,
 						new CompositeView(dsMB.Path.T.WorkOrderMiscellaneous.F.MiscellaneousWorkOrderCostID, ReadonlyView, CompositeView.ForceNotPrimary(),
@@ -4577,16 +4613,16 @@ namespace Thinkage.MainBoss.Controls {
 							new BTbl(
 								BTbl.PerViewListColumn(CommonCodeColumnKey, codeId),
 								BTbl.ListColumn(dsMB.Path.T.WorkOrderTemporaryStorage.F.ItemLocationID.F.ActualItemLocationID.F.OnHand),
-								BTbl.ListColumn(dsMB.Path.T.WorkOrderTemporaryStorage.F.ItemLocationID.F.ActualItemLocationID.F.Available)
-							),
-							new FilteredTreeStructuredTbl(dsMB.Path.T.WorkOrderTemporaryStorage.F.ParentID, dsMB.Schema.T.WorkOrderTemporaryStorageTreeView, 4, 4)
+								BTbl.ListColumn(dsMB.Path.T.WorkOrderTemporaryStorage.F.ItemLocationID.F.ActualItemLocationID.F.Available),
+								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderTemporaryStorage.F.ParentID, 4, 4, dsMB.Schema.T.WorkOrderTemporaryStorageTreeView)
+							)
 						},
 						dsMB.Path.T.WorkOrderTemporaryStorage.F.TableEnum,
 						// Postal address
 						new CompositeView(dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID.F.PostalAddressID, ReadonlyView, CompositeView.ForceNotPrimary(),
 							BTbl.PerViewColumnValue(codeId, dsMB.Path.T.PostalAddress.F.Code)),
 						// Temporary Storage
-						new CompositeView(TIItem.AllTemporaryStorageTblCreator, dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID.F.TemporaryStorageID,
+						new CompositeView(TIItem.AllTemporaryStorageEditTblCreator, dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID.F.TemporaryStorageID,
 							// not sure what to show in the list column
 							CompositeView.PathAlias(dsMB.Path.T.WorkOrderTemporaryStorage.F.WorkOrderID, dsMB.Path.T.TemporaryStorage.F.WorkOrderID),
 							CompositeView.ContextualInit(
@@ -4666,18 +4702,18 @@ namespace Thinkage.MainBoss.Controls {
 				TblMultiColumnNode.New(new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
 					new Key[] { KB.K("Work Duration"), KB.K("Generate Lead Time") },
 					TblRowNode.New(KB.K("This Task"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-						TblColumnNode.New(dsMB.Path.T.WorkOrderTemplate.F.Duration, DCol.Normal, ECol.Normal, Fmt.SetId(LocalWorkDurationId)),
-						TblColumnNode.New(dsMB.Path.T.WorkOrderTemplate.F.GenerateLeadTime, DCol.Normal, ECol.Normal, Fmt.SetId(LocalGenerateLeadTimeId))
+						TblColumnNode.New(dsMB.Path.T.WorkOrderTemplate.F.Duration, DCol.Normal, new ECol(ECol.NormalAccess, Fmt.SetId(LocalWorkDurationId))),
+						TblColumnNode.New(dsMB.Path.T.WorkOrderTemplate.F.GenerateLeadTime, DCol.Normal, new ECol(ECol.NormalAccess, Fmt.SetId(LocalGenerateLeadTimeId)))
 					),
 					TblRowNode.New(KB.K("Basis Task"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-						TblColumnNode.New(dsMB.Path.T.WorkOrderTemplate.F.ContainingWorkOrderTemplateID.L.ResolvedWorkOrderTemplate.WorkOrderTemplateID.F.Duration, DCol.Normal, new ECol(ECol.AllReadonlyAccess, ECol.OptionalValue()), Fmt.SetId(BasisWorkDurationId)),
-						TblColumnNode.New(dsMB.Path.T.WorkOrderTemplate.F.ContainingWorkOrderTemplateID.L.ResolvedWorkOrderTemplate.WorkOrderTemplateID.F.GenerateLeadTime, DCol.Normal, new ECol(ECol.AllReadonlyAccess, ECol.OptionalValue()), Fmt.SetId(BasisGenerateLeadTimeId))
+						TblColumnNode.New(dsMB.Path.T.WorkOrderTemplate.F.ContainingWorkOrderTemplateID.L.ResolvedWorkOrderTemplate.WorkOrderTemplateID.F.Duration, DCol.Normal, new ECol(ECol.AllReadonlyAccess, ECol.OptionalValue(), Fmt.SetId(BasisWorkDurationId))),
+						TblColumnNode.New(dsMB.Path.T.WorkOrderTemplate.F.ContainingWorkOrderTemplateID.L.ResolvedWorkOrderTemplate.WorkOrderTemplateID.F.GenerateLeadTime, DCol.Normal, new ECol(ECol.AllReadonlyAccess, ECol.OptionalValue(), Fmt.SetId(BasisGenerateLeadTimeId)))
 					),
 					TblRowNode.New(KB.K("Effective Values"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
 						TblColumnNode.New(dsMB.Path.T.WorkOrderTemplate.F.Id.L.ResolvedWorkOrderTemplate.WorkOrderTemplateID.F.Duration, DCol.Normal),
-						TblUnboundControlNode.New(KB.K("Work Duration"), dsMB.Schema.T.WorkOrderTemplate.F.Duration.EffectiveType, Fmt.SetId(NetWorkDurationId), ECol.AllReadonly),
+						TblUnboundControlNode.New(KB.K("Work Duration"), dsMB.Schema.T.WorkOrderTemplate.F.Duration.EffectiveType, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(NetWorkDurationId))),
 						TblColumnNode.New(dsMB.Path.T.WorkOrderTemplate.F.Id.L.ResolvedWorkOrderTemplate.WorkOrderTemplateID.F.GenerateLeadTime, DCol.Normal),
-						TblUnboundControlNode.New(KB.K("Generate Lead Time"), dsMB.Schema.T.WorkOrderTemplate.F.GenerateLeadTime.EffectiveType, Fmt.SetId(NetGenerateLeadTimeId), ECol.AllReadonly)
+						TblUnboundControlNode.New(KB.K("Generate Lead Time"), dsMB.Schema.T.WorkOrderTemplate.F.GenerateLeadTime.EffectiveType, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(NetGenerateLeadTimeId)))
 					)
 				),
 				TblColumnNode.New(dsMB.Path.T.WorkOrderTemplate.F.WorkCategoryID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.WorkCategory.F.Code)), ECol.Normal),
@@ -4724,15 +4760,15 @@ namespace Thinkage.MainBoss.Controls {
 			});
 
 			WorkOrderTemplateEditTbl = new DelayedCreateTbl(delegate () {
-				var allTabs = new List<TblTabNode>();
-				allTabs.Add(DetailsTabNode.New(detailsNodes.ToArray()));
+				var allTabs = new List<TblTabNode> {
+					DetailsTabNode.New(detailsNodes.ToArray())
+				};
 				allTabs.AddRange(browsetteTabs);
 				return new Tbl(dsMB.Schema.T.WorkOrderTemplate,
 					TId.Task,
 					new Tbl.IAttr[] {
 						SchedulingGroup,
-						new ETbl(),
-						TIReports.NewRemotePTbl(TIReports.WorkOrderTemplateReport)
+						new ETbl()
 					},
 					(TblLayoutNodeArray)new TblLayoutNodeArray(allTabs.ToArray()).Clone(),
 					new List<TblActionNode>(commonActions)
@@ -4742,8 +4778,9 @@ namespace Thinkage.MainBoss.Controls {
 			// This Tbl is used in New mode only from the Browser when you select New Sub Task
 			// It has an additonal set of Inits that set all fields subject to accumulation to the "no-op" values.
 			WorkOrderTemplateSpecializationEditTbl = new DelayedCreateTbl(delegate () {
-				var allTabs = new List<TblTabNode>();
-				allTabs.Add(DetailsTabNode.New(detailsNodes.ToArray()));
+				var allTabs = new List<TblTabNode> {
+					DetailsTabNode.New(detailsNodes.ToArray())
+				};
 				allTabs.AddRange(browsetteTabs);
 				var actions = new List<TblActionNode>(commonActions);
 				foreach (DBI_Column c in dsMB.Schema.T.WorkOrderTemplate.Columns) {
@@ -4780,7 +4817,7 @@ namespace Thinkage.MainBoss.Controls {
 				);
 			});
 			DefineBrowseTbl(dsMB.Schema.T.WorkOrderTemplate, delegate () {
-				return TaskBrowserTbl(true);
+				return TaskBrowserTbl(true, includeDefaultViews: true);
 			});
 			#region WorkOrder Template From WorkOrder EditTbl
 			WorkOrderTemplateFromWorkOrderEditTbl = new DelayedCreateTbl(delegate () {
@@ -4793,27 +4830,29 @@ namespace Thinkage.MainBoss.Controls {
 				// TODO: To ensure there is a WO selection the WO browsers use NoContextFreeInit, which means the Task from WO editor cannot have a Save & New operation.
 				// TODO: Because the wo picker does not notify until idle time of changes within the selected record, the editor comes up in "new/changed" mode so you must Cancel before you can Next/Previous.
 				customDetailsNodes.Insert(0, TblUnboundControlNode.New(KB.K("from Work Order"), dsMB.Schema.T.Demand.F.WorkOrderID.EffectiveType, Fmt.SetId(SourceWorkOrderPickerId), ECol.AllReadonly));
-				var allTabs = new List<TblTabNode>();
-				allTabs.Add(DetailsTabNode.New(customDetailsNodes.ToArray()));
+				var allTabs = new List<TblTabNode> {
+					DetailsTabNode.New(customDetailsNodes.ToArray())
+				};
 				allTabs.AddRange(browsetteTabs);
 				// Add actions that init all the WO Template fields from the WO in the picker. These all use InSubBrowserValue
-				var actions = new List<TblActionNode>(commonActions);
-				actions.Add(Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.AccessCodeID, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.AccessCodeID))));
-				actions.Add(Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.CloseCodeID, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.CloseCodeID))));
-				actions.Add(Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.ClosingComment, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.ClosingComment))));
-				actions.Add(Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.Description, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.Description))));
-				actions.Add(Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.Downtime, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.Downtime))));
-				actions.Add(Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.Duration, new InSubBrowserValue(SourceWorkOrderPickerId,
+				var actions = new List<TblActionNode>(commonActions) {
+					Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.AccessCodeID, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.AccessCodeID))),
+					Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.CloseCodeID, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.CloseCodeID))),
+					Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.ClosingComment, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.ClosingComment))),
+					Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.Description, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.Description))),
+					Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.Downtime, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.Downtime))),
+					Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.Duration, new InSubBrowserValue(SourceWorkOrderPickerId,
 					new BrowserCalculatedInitValue(dsMB.Schema.T.WorkOrderTemplate.F.Duration.EffectiveType,
 						(object[] inputs) => (inputs[0] == null || inputs[1] == null) ? null : (object)((DateTime)inputs[1] - (DateTime)inputs[0] + Extensions.TimeSpan.OneDay),
 						new BrowserPathValue(dsMB.Path.T.WorkOrder.F.StartDateEstimate),
-						new BrowserPathValue(dsMB.Path.T.WorkOrder.F.EndDateEstimate)))));
-				actions.Add(Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.ProjectID, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.ProjectID))));
-				actions.Add(Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.SelectPrintFlag, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.SelectPrintFlag))));
-				actions.Add(Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.Subject, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.Subject))));
-				actions.Add(Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.WorkCategoryID, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.WorkCategoryID))));
-				actions.Add(Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.WorkOrderExpenseModelID, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.WorkOrderExpenseModelID))));
-				actions.Add(Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.WorkOrderPriorityID, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID))));
+						new BrowserPathValue(dsMB.Path.T.WorkOrder.F.EndDateEstimate)))),
+					Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.ProjectID, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.ProjectID))),
+					Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.SelectPrintFlag, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.SelectPrintFlag))),
+					Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.Subject, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.Subject))),
+					Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.WorkCategoryID, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.WorkCategoryID))),
+					Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.WorkOrderExpenseModelID, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.WorkOrderExpenseModelID))),
+					Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.WorkOrderPriorityID, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID)))
+				};
 				// We have a custom EditLogic which clones the child records (resources, temp storage and assignments, maybe linked PO's) as part of the Save cycle in New mode.
 				return new Tbl(dsMB.Schema.T.WorkOrderTemplate, TId.TaskFromWorkOrder,
 					new Tbl.IAttr[] {
@@ -4822,9 +4861,8 @@ namespace Thinkage.MainBoss.Controls {
 							ETbl.LogicClass(typeof(TemplateFromWorkOrderEditLogic)),
 							ETbl.EditorDefaultAccess(false), ETbl.EditorAccess(true, EdtMode.New, EdtMode.Edit, EdtMode.View),
 							ETbl.CreateCustomDataSet(true),
-							ETbl.SetMultiSelectNewModeBehaviour(ETbl.MultiSelectNewModeBehaviours.Single)	// Disallow multiple selection to avoid checkpoint/rollback complications on child records during save cycle
-						),
-						TIReports.NewRemotePTbl(TIReports.WorkOrderTemplateReport)
+							ETbl.SetMultiSelectNewModeBehaviour(ETbl.MultiSelectNewModeBehaviours.Single)	// Disallow multiple selection to avoid checkpoint/rollback complications on child records during save cycle,
+						)
 					},
 					new TblLayoutNodeArray(allTabs.ToArray()),
 					actions
@@ -4866,10 +4904,9 @@ namespace Thinkage.MainBoss.Controls {
 							SchedulingAndItemResourcesGroup,
 							new BTbl(
 								BTbl.PerViewListColumn(CommonCodeColumnKey, codeColumnId),
-								BTbl.PerViewListColumn(DemandedColumnKey, quantityColumnId)
-							),
-							new FilteredTreeStructuredTbl(dsMB.Path.T.WorkOrderTemplateItems.F.DemandTemplateID.F.DemandItemTemplateID.F.ItemLocationID.F.ItemID,
-								dsMB.Schema.T.WorkOrderTemplateItemsTreeView, 2, 2)
+								BTbl.PerViewListColumn(DemandedColumnKey, quantityColumnId),
+								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderTemplateItems.F.DemandTemplateID.F.DemandItemTemplateID.F.ItemLocationID.F.ItemID, 2, 2, dsMB.Schema.T.WorkOrderTemplateItemsTreeView)
+							)
 						},
 						dsMB.Path.T.WorkOrderTemplateItems.F.TableEnum,
 						new CompositeView(dsMB.Path.T.WorkOrderTemplateItems.F.ItemID,
@@ -4916,10 +4953,9 @@ namespace Thinkage.MainBoss.Controls {
 							SchedulingAndLaborResourcesGroup,
 							new BTbl(
 								BTbl.PerViewListColumn(CommonCodeColumnKey, codeColumnId),
-								BTbl.PerViewListColumn(DemandedColumnKey, demandQuantityColumnId)
-							),
-							new FilteredTreeStructuredTbl(dsMB.Path.T.WorkOrderTemplateInside.F.ParentID,
-								dsMB.Schema.T.WorkOrderTemplateInsideTreeView, 2, 2)
+								BTbl.PerViewListColumn(DemandedColumnKey, demandQuantityColumnId),
+								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderTemplateInside.F.ParentID, 2, 2, dsMB.Schema.T.WorkOrderTemplateInsideTreeView)
+							)
 						},
 						dsMB.Path.T.WorkOrderTemplateInside.F.TableEnum,
 						new CompositeView(resourceGroupTbl, dsMB.Path.T.WorkOrderTemplateInside.F.Id, ReadonlyView, CompositeView.ForceNotPrimary(), CompositeView.IdentificationOverride(TId.Trade),
@@ -4974,10 +5010,9 @@ namespace Thinkage.MainBoss.Controls {
 							SchedulingAndLaborResourcesGroup,
 							new BTbl(
 								BTbl.PerViewListColumn(CommonCodeColumnKey, codeColumnId),
-								BTbl.PerViewListColumn(DemandedColumnKey, demandQuantityColumnId)
-							),
-							new FilteredTreeStructuredTbl(dsMB.Path.T.WorkOrderTemplateOutside.F.ParentID,
-								dsMB.Schema.T.WorkOrderTemplateOutsideTreeView, 2, 2)
+								BTbl.PerViewListColumn(DemandedColumnKey, demandQuantityColumnId),
+								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderTemplateOutside.F.ParentID, 2, 2, dsMB.Schema.T.WorkOrderTemplateOutsideTreeView)
+							)
 						},
 						dsMB.Path.T.WorkOrderTemplateOutside.F.TableEnum,
 						new CompositeView(resourceGroupTbl, dsMB.Path.T.WorkOrderTemplateOutside.F.Id, ReadonlyView, CompositeView.ForceNotPrimary(), CompositeView.IdentificationOverride(TId.Trade),
@@ -5020,9 +5055,9 @@ namespace Thinkage.MainBoss.Controls {
 							CommonTblAttrs.ViewCostsDefinedBySchema,
 							new BTbl(
 								BTbl.PerViewListColumn(CommonCodeColumnKey, miscellaneousCodeColumnId),
-								BTbl.ListColumn(dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.MiscellaneousWorkOrderCostID.F.Cost)
-							),
-							new FilteredTreeStructuredTbl(dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.ParentID, dsMB.Schema.T.WorkOrderTemplateMiscellaneousTreeView, 2, 2)
+								BTbl.ListColumn(dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.MiscellaneousWorkOrderCostID.F.Cost),
+								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.ParentID, 2, 2, dsMB.Schema.T.WorkOrderTemplateMiscellaneousTreeView)
+							)
 						},
 						dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.TableEnum,
 						new CompositeView(dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.MiscellaneousWorkOrderCostID, ReadonlyView, CompositeView.ForceNotPrimary(),
@@ -5055,9 +5090,9 @@ namespace Thinkage.MainBoss.Controls {
 						new Tbl.IAttr[] {
 							SchedulingAndItemResourcesGroup,
 							new BTbl(
-								BTbl.PerViewListColumn(CommonCodeColumnKey, codeId)
-							),
-							new FilteredTreeStructuredTbl(dsMB.Path.T.WorkOrderTemplateStorage.F.ParentID, dsMB.Schema.T.WorkOrderTemplateStorageTreeView, 4, 4)
+								BTbl.PerViewListColumn(CommonCodeColumnKey, codeId),
+								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderTemplateStorage.F.ParentID, 4, 4, dsMB.Schema.T.WorkOrderTemplateStorageTreeView)
+							)
 						},
 						dsMB.Path.T.WorkOrderTemplateStorage.F.TableEnum,
 						// Postal address

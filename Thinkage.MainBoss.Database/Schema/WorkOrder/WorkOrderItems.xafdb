@@ -52,6 +52,7 @@
 	</field>
 	<field name="DisplayID" type="GUIDREF" link="WorkOrderItems">
 	</field>
+	<!--TODO: delete this-->
 	<field name="IsPrimary" type="RequiredBool">
 	</field>
 	<extension name="query">
@@ -141,6 +142,7 @@
 	</field>
 	<field name="DisplayID" type="GUIDREF" link="WorkOrderTemporaryStorage">
 	</field>
+	<!--TODO: delete this-->
 	<field name="IsPrimary" type="RequiredBool">
 	</field>
 	<extension name="query">

@@ -22,10 +22,6 @@
 	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.UnitBrowseTblCreator,Thinkage.MainBoss.Controls</extension>
 	  <extension name="linkage">property</extension>
 	</field>
-	<field name="PMGenerationBatchID" type="GUIDREF" link="PMGenerationBatch">
-	  <doc>For preventive maintenance generated workorders, the GenerationBatch reference this workorder belongs to</doc>
-	  <extension name="linkage">captive</extension>
-	</field>
 	<field name="CurrentWorkOrderStateHistoryID" read="RequiredGUIDREF"  link="WorkOrderStateHistory" labelkey="Current State History">
 	  <doc>Calculated link to the current WorkOrderStateHistory record</doc>
 	  <result hosting="cached">

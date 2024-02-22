@@ -29,15 +29,15 @@
 
 		<Icon Id="icon.ico" SourceFile="..\Bitmaps\MainBossInstall.ico"/>
 		<Property Id="ARPPRODUCTICON" Value="icon.ico" />
-		<Property Id="ARPHELPLINK" Value="http://www.mainboss.com/info/support.shtml?version=$(var.VERSION)"/>
+		<Property Id="ARPHELPLINK" Value="http://www.mainboss.com/info/support.htm?version=$(var.VERSION)"/>
 		<Property Id="ARPHELPTELEPHONE" Value="(519) 895 1860"/>
 		<Property Id="ARPCOMMENTS" Value="!(loc.PACKAGEDESCRIPTION)"/>
 		<Property Id="ARPURLINFOABOUT" Value="http://www.thinkage.ca"/>
 		<SetProperty Id="ARPINSTALLLOCATION" Value="[INSTALLDIR]" After="CostFinalize"/>
 
-		<PropertyRef Id="NETFRAMEWORK45"/>
-		<Condition Message="!(loc.DOTNET45REQUIRED)">
-			<![CDATA[Installed OR NETFRAMEWORK45]]>
+		<PropertyRef Id="WIX_IS_NETFRAMEWORK_461_OR_LATER_INSTALLED"/>
+		<Condition Message="!(loc.DOTNET461REQUIRED)">
+			<![CDATA[Installed OR WIX_IS_NETFRAMEWORK_461_OR_LATER_INSTALLED]]>
 		</Condition>
 		<!-- GUID should match one in Product UpgradeCode -->
 		<Upgrade Id="$(var.Property_UpgradeCode)">

@@ -16,9 +16,10 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		}
 		#endregion
 		public Models.Assignment GetAssignment(Guid UserId) {
-			var m = new Assignment();
-			m.AttentionStatus = DataContext.AttentionStatus.Single<AssignmentEntities.AttentionStatus>(d => d.UserID == UserId);
-			m.DatabaseStatus = DataContext.DatabaseStatus.Single<AssignmentEntities.DatabaseStatus>();
+			var m = new Assignment {
+				AttentionStatus = DataContext.AttentionStatus.Single<AssignmentEntities.AttentionStatus>(d => d.UserID == UserId),
+				DatabaseStatus = DataContext.DatabaseStatus.Single<AssignmentEntities.DatabaseStatus>()
+			};
 			return m;
 		}
 	}

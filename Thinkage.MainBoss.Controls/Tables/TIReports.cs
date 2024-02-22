@@ -30,17 +30,17 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		private static T GetAttr<T>(Tbl.IAttr[] attributes) where T : class, Tbl.IAttr {
 			foreach(Tbl.IAttr a in attributes) {
-				T result = a as T;
-				if(result != null)
+				if (a is T result)
 					return result;
 			}
 			return null;
 		}
 		private static Tbl.IAttr[] CodeDescAttributes(Tbl.IAttr[] attributes) {
 			Tbl.IAttr featureGroup = GetAttr<FeatureGroup>(attributes);
-			List<Tbl.IAttr> newAttrs = new List<Tbl.IAttr>();
-			newAttrs.Add(TIReports.TblDrivenReportRtbl(RTblBase.SetAllowSummaryFormat(false), RTblBase.SetDualLayoutDefault(defaultInColumns: true)));
-			if(featureGroup != null)
+			List<Tbl.IAttr> newAttrs = new List<Tbl.IAttr> {
+				TIReports.TblDrivenReportRtbl(RTblBase.SetAllowSummaryFormat(false), RTblBase.SetDualLayoutDefault(defaultInColumns: true))
+			};
+			if (featureGroup != null)
 				newAttrs.Add(featureGroup);
 			return newAttrs.ToArray();
 		}
@@ -66,12 +66,12 @@ namespace Thinkage.MainBoss.Controls {
 		static Key StateHistoryKey = KB.K("State History");
 		#region DateTime Precision Reduction Helper
 		static TblLeafNode DateHHMMColumnNode(DBI_Path p, params TblLayoutNode.ICtorArg[] attrs) {
-			List<TblLayoutNode.ICtorArg> newAttrs = new List<TblLayoutNode.ICtorArg>(attrs);
-			newAttrs.Add(RDLReport.DateHHMMFmt);
+			List<TblLayoutNode.ICtorArg> newAttrs = new List<TblLayoutNode.ICtorArg>(attrs) {
+				RDLReport.DateHHMMFmt
+			};
 			return TblColumnNode.New(p, newAttrs.ToArray());
 		}
 		#endregion
-
 		#region SameKeyContextAs
 		public sealed class SameKeyContextAs {
 			private readonly Key calculatedContext;
@@ -249,12 +249,13 @@ namespace Thinkage.MainBoss.Controls {
 		public static TblLeafNode QuantityNodeForMixedQuantities(Key label, SqlExpression longQuantityExpression, SqlExpression timeQuantityExpression, params TblLeafNode.ICtorArg[] attribs) {
 			// TODO: This decides what to format based on which value is non-null. If both are non-null, the long value is formatted.
 			// This may require refinement???????
-			var allAttribs = new List<TblLeafNode.ICtorArg>(attribs);
-			allAttribs.Add(Fmt.SetHorizontalAlignment(System.Drawing.StringAlignment.Far));
-			TypeFormatter longFormatter = longQuantityExpression.ResultType.GetTypeFormatter(Application.InstanceCultureInfo);
-			TypeFormatter timeFormatter = timeQuantityExpression.ResultType.GetTypeFormatter(Application.InstanceCultureInfo);
+			var allAttribs = new List<TblLeafNode.ICtorArg>(attribs) {
+				Fmt.SetHorizontalAlignment(System.Drawing.StringAlignment.Far)
+			};
+			TypeFormatter longFormatter = longQuantityExpression.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
+			TypeFormatter timeFormatter = timeQuantityExpression.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
 			StringTypeInfo resultType = new StringTypeInfo(1, Math.Max((int)longFormatter.SizingInformation.MaxWidth, (int)timeFormatter.SizingInformation.MaxWidth), 0, longQuantityExpression.ResultType.AllowNull || timeQuantityExpression.ResultType.AllowNull, true, true);
-			return TblQueryValueNode.New(label, new TblQueryCalculation(
+			return TblQueryValueNode.New(label, TblQueryCalculation.New(
 					(values =>
 						values[0] != null
 							? longFormatter.Format(values[0])
@@ -281,12 +282,13 @@ namespace Thinkage.MainBoss.Controls {
 		/// <returns></returns>
 		public static TblLeafNode UnitCostNodeForMixedValues(Key label, SqlExpression longQuantityExpression, SqlExpression timeQuantityExpression, TblQueryExpression costCalculation, params TblLeafNode.ICtorArg[] attribs) {
 			// Client-side calculation of and formatting of the Unit Cost. We want different formatting for time-rates and unit-rates. Formatted text is fine because it never makes sense to total or otherwise summarize this.
-			var unitCostFormatter = TIGeneralMB3.ItemUnitCostTypeOnServer.GetTypeFormatter(System.Globalization.CultureInfo.CurrentCulture);
-			var hourlyCostFormatter = TIGeneralMB3.HourlyCostTypeOnServer.UnionCompatible(TIGeneralMB3.ItemUnitCostTypeOnServer).GetTypeFormatter(System.Globalization.CultureInfo.CurrentCulture);
-			var allAttribs = new List<TblLeafNode.ICtorArg>(attribs);
-			allAttribs.Add(Fmt.SetHorizontalAlignment(System.Drawing.StringAlignment.Far));
+			var unitCostFormatter = TIGeneralMB3.ItemUnitCostTypeOnServer.GetTypeFormatter(Application.InstanceFormatCultureInfo);
+			var hourlyCostFormatter = TIGeneralMB3.HourlyCostTypeOnServer.UnionCompatible(TIGeneralMB3.ItemUnitCostTypeOnServer).GetTypeFormatter(Application.InstanceFormatCultureInfo);
+			var allAttribs = new List<TblLeafNode.ICtorArg>(attribs) {
+				Fmt.SetHorizontalAlignment(System.Drawing.StringAlignment.Far)
+			};
 
-			return TblQueryValueNode.New(label, new TblQueryCalculation(
+			return TblQueryValueNode.New(label, TblQueryCalculation.New(
 				delegate (object[] values) {
 					if(values[0] == null)
 						// There is no cost to format
@@ -325,7 +327,7 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		public static TblQueryCalculation LocationDetailExpression(DBI_PathToRow pathToLocationRow, bool includeCode = false) {
 			return
-				new TblQueryCalculation(
+				TblQueryCalculation.New(
 					delegate (object[] values) {
 						var sb = new System.Text.StringBuilder();
 						if(includeCode && values[0] != null)
@@ -344,7 +346,7 @@ namespace Thinkage.MainBoss.Controls {
 						}
 						return sb.Length == 0 ? null : sb.ToString().TrimEnd();
 					},
-					new Libraries.TypeInfo.StringTypeInfo(0, Libraries.XAF.Database.Service.MSSql.MSSqlServer.NVARCHAR_MAX_SIZE, 8, true, true, true),  // TODO: Length is limited by server text field limit but perhaps should not be.
+					new Libraries.TypeInfo.StringTypeInfo(0, Libraries.XAF.Database.Service.MSSql.Server.NVARCHAR_MAX_SIZE, 8, true, true, true),  // TODO: Length is limited by server text field limit but perhaps should not be.
 					new TblQueryPath(new DBI_Path(pathToLocationRow, dsMB.Path.T.Location.F.Code)),
 					new TblQueryPath(new DBI_Path(pathToLocationRow, dsMB.Path.T.Location.F.Desc)),
 					new TblQueryPath(new DBI_Path(pathToLocationRow, dsMB.Path.T.Location.F.PostalAddressID)),
@@ -397,21 +399,6 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		#endregion
 		#endregion
-		#region PTbl generators
-		public static IPTbl NewRemotePTbl(DelayedCreateTbl tblCreator) {
-			return new DelayedCreatePTbl(tblCreator);
-		}
-		public static IPTbl NewRemotePTbl(Tbl tbl) {
-			return new SpecificPTbl(tbl);
-		}
-		public static IPTbl NewCodeDescPTbl() {
-#if NEW_REPORTS
-			return new SelfPTblRTbl(RTbl.LogicClass(typeof(NewReportViewLogic)));
-#else
-			return new TblClassPTbl(typeof(CodeDescReportTbl));
-#endif
-		}
-		#endregion
 		#region RTbl generators
 		internal static RTbl TblDrivenReportRtbl(params RTblBase.ICtorArg[] controls) {
 #if TRANSITION_REPORTS
@@ -429,13 +416,12 @@ namespace Thinkage.MainBoss.Controls {
 			return KB.TOi(t);
 		}
 		#endregion
-
 		private TIReports() {
 		}
 		#region TblReportColumnNode query-column-provider for barcode columns
 		// This takes a path referring to text, and generates a Blob column whose value is an image of the bar code.
 		internal static TblQueryCalculation ValueAsBarcode(DBI_Path textPath, bool includeCodeInDisplay = false) {
-			return new TblQueryCalculation(
+			return TblQueryCalculation.NewT(
 				delegate (ReportViewLogic rl) {
 					BarCode bcConverter = new BarCode((BarCodeSymbology)(rl.BarCodeSymbologyNodeInfo == null ? BarCodeSymbology.None : (rl.BarCodeSymbologyNodeInfo.CheckedControl.Value ?? BarCodeSymbology.None)), includeCodeInDisplay);
 					return (inputs => bcConverter.ImageFromString((string)inputs[0]));
@@ -814,9 +800,10 @@ namespace Thinkage.MainBoss.Controls {
 						, TblQueryValueNode.New(ourContext.K(KB.K("Actual Duration")), actualDuration, RDLReport.DHMFmt, FooterAggregateCol.Sum(), FooterAggregateCol.Average(), effect.ShowIfOneOf(ShowForWorkOrder, ShowForMaintenanceHistory))
 						, TblQueryValueNode.New(ourContext.K(KB.K("Minimum Duration")), minimumDuration, RDLReport.DHMFmt, FooterAggregateCol.Sum(), FooterAggregateCol.Average(), effect.ShowIfOneOf(ShowForWorkOrderSummary))
 						, TblQueryValueNode.New(ourContext.K(KB.K("Minimum Lifetime")), minimumLifetime, RDLReport.DHMFmt, FieldSelect.ShowNever)
-						, TaskColumns(WOR.F.WorkOrderTemplateID, effect.XIDIfOneOf(ShowForWorkOrder))
-						, DateHHMMColumnNode(WO.F.PMGenerationBatchID.F.EntryDate, FieldSelect.ShowNever)
-						, DateHHMMColumnNode(WO.F.PMGenerationBatchID.F.EndDate, FieldSelect.ShowNever)
+						, TaskColumns(WOR.F.ScheduledWorkOrderID.F.WorkOrderTemplateID, effect.XIDIfOneOf(ShowForWorkOrder))
+						, ScheduleColumns(WOR.F.ScheduledWorkOrderID.F.ScheduleID, effect.XIDIfOneOf(ShowForWorkOrder))
+						, DateHHMMColumnNode(WOR.F.PMGenerationBatchID.F.EntryDate, FieldSelect.ShowNever)
+						, DateHHMMColumnNode(WOR.F.PMGenerationBatchID.F.EndDate, FieldSelect.ShowNever)
 						, ContactColumns(WO.F.RequestorID.F.ContactID, effect.XIDIfOneOf(ShowForWorkOrder))
 						, TblColumnNode.New(WOR.F.WorkOrderAssigneesAsText, effect.ShowIfOneOf(ShowForWorkOrder))
 						, TblColumnNode.New(WO.F.TotalActual, FooterAggregateCol.Sum(), FooterAggregateCol.Average(), FieldSelect.ShowNever)
@@ -995,11 +982,9 @@ namespace Thinkage.MainBoss.Controls {
 		// grouping is the grouping to use for the Code of the Location of the storage assignment.
 		// NOTE: ShowXID does not include the Item even though it should. Currently callers to ActualItemLocationColumns tend to call ItemColumns themselves.
 		static ColumnBuilder ActualItemLocationColumns(dsMB.PathClass.PathToActualItemLocationLink actualItemLocation, FieldSelect effect = null) {
-			return ColumnBuilder.New(actualItemLocation.PathToReferencedRow
-				, ActualItemLocationCountColumns(actualItemLocation.PathToReferencedRow, effect)
-			);
+			return ActualItemLocationColumns(actualItemLocation.PathToReferencedRow, effect);
 		}
-		static ColumnBuilder ActualItemLocationCountColumns(dsMB.PathClass.PathToActualItemLocationRow actualItemLocation, FieldSelect effect = null) {
+		static ColumnBuilder ActualItemLocationColumns(dsMB.PathClass.PathToActualItemLocationRow actualItemLocation, FieldSelect effect = null) {
 			return ColumnBuilder.New(actualItemLocation
 				, ItemLocationColumns(actualItemLocation.F.ItemLocationID, effect)
 				, TblColumnNode.New(actualItemLocation.F.EffectiveMinimum, effect.ShowIfOneOf(ShowAll))
@@ -1246,7 +1231,7 @@ namespace Thinkage.MainBoss.Controls {
 			var AllowFriday = new TblQueryExpression(new SqlExpression(Schedule.F.EnableFriday));
 			var AllowSaturday = new TblQueryExpression(new SqlExpression(Schedule.F.EnableSaturday));
 			var AllowSunday = new TblQueryExpression(new SqlExpression(Schedule.F.EnableSunday));
-			var AllowDays = new TblQueryCalculation(values => new string(values.Zip(DayLetter, (a, b) => (bool)a ? b : '_').ToArray()),
+			var AllowDays = TblQueryCalculation.New(values => new string(values.Zip(DayLetter, (a, b) => (bool)a ? b : '_').ToArray()),
 				new Libraries.TypeInfo.StringTypeInfo(7, 7, 0, true, true, false),
 				AllowMonday, AllowTuesday, AllowWednesday, AllowThursday, AllowFriday, AllowSaturday, AllowSunday);
 
@@ -1285,11 +1270,12 @@ namespace Thinkage.MainBoss.Controls {
 
 		#region common Tbl generation
 		static Tbl GenericChartBase(DBI_Table rootTable, FeatureGroup featureGroup, Tbl.TblIdentification title, RTbl.BuildReportObjectDelegate reportBuilder, TblLayoutNodeArray resourceFilters, params RTblBase.ICtorArg[] additionalRTblAttrs) {
-			var rTblAttr = new List<RTblBase.ICtorArg>(additionalRTblAttrs);
-			// TODO: No Fields tab (they are hardwired into the report) and no Suppress Costs (because right now none of these reports show costs)
-			rTblAttr.Add(RTblBase.SetPreferWidePage(true));
-			rTblAttr.Add(RTblBase.SetNoUserFieldSelectionAllowed());
-			rTblAttr.Add(RTblBase.SetNoUserSortingAllowed());
+			var rTblAttr = new List<RTblBase.ICtorArg>(additionalRTblAttrs) {
+				// TODO: No Fields tab (they are hardwired into the report) and no Suppress Costs (because right now none of these reports show costs)
+				RTblBase.SetPreferWidePage(true),
+				RTblBase.SetNoUserFieldSelectionAllowed(),
+				RTblBase.SetNoUserSortingAllowed()
+			};
 			return new Tbl(rootTable, title,
 				new Tbl.IAttr[] {
 					featureGroup,
@@ -1326,7 +1312,7 @@ namespace Thinkage.MainBoss.Controls {
 					TblQueryValueNode.New(null, new TblQueryPath(R.F.Number))),
 				RTbl.IncludeBarCodeSymbologyControl(),
 				RTblBase.SetAllowSummaryFormat(false),
-				RTblBase.SetPrimaryRecord(R, R.F.Number),
+				RTblBase.SetPrimaryRecordHeaderNode(R.F.Number),
 				RequestStateHistoryChildDefinition(RFR.F.RequestStateHistoryID.PathToReferencedRow,
 					assignee != null ?
 						new TblLeafNode[] {
@@ -1357,6 +1343,7 @@ namespace Thinkage.MainBoss.Controls {
 			}
 			List<Tbl.IAttr> iAttr = new List<Tbl.IAttr> {
 				RequestsGroup,
+				new PrimaryRecordArg(R),
 				CommonTblAttrs.ViewCostsDefinedBySchema
 			};
 			if(formLayout)
@@ -1504,9 +1491,10 @@ namespace Thinkage.MainBoss.Controls {
 			new Tbl.IAttr[] {
 				RequestsGroup,
 				CommonTblAttrs.ViewCostsDefinedBySchema,
+				new PrimaryRecordArg(dsMB.Path.T.RequestStateHistory.F.RequestID.PathToReferencedRow),
 				new RTbl(typeof(TblDrivenDynamicColumnsReport), typeof(ReportViewerControl),
 					RTblBase.SetAllowSummaryFormat(false),
-					RTblBase.SetPrimaryRecord(dsMB.Path.T.RequestStateHistory.F.RequestID.PathToReferencedRow, dsMB.Path.T.RequestStateHistory.F.RequestID.F.Number),
+					RTblBase.SetPrimaryRecordHeaderNode(dsMB.Path.T.RequestStateHistory.F.RequestID.F.Number),
 					// Set No Search Prefixing because the primary path (and the root of all paths in this report) include a labelled reference to the WO from the WOSH record.
 					RTblBase.SetNoSearchPrefixing(),
 					RequestStateHistoryChildDefinition(dsMB.Path.T.RequestStateHistory)
@@ -1684,7 +1672,7 @@ namespace Thinkage.MainBoss.Controls {
 			string CoverParts = KB.TOc(TId.Part).Translate();
 			string CoverLabor = KB.TOi(TId.Labor).Translate();
 			StringTypeInfo resultType = new StringTypeInfo(0, CoverParts.Length + CoverLabor.Length + 1, 0, true, true, true);
-			var coverage = TblQueryValueNode.New(SameKeyContextAs.K(KB.K("Coverage"), ServiceContract), new TblQueryCalculation(
+			var coverage = TblQueryValueNode.New(SameKeyContextAs.K(KB.K("Coverage"), ServiceContract), TblQueryCalculation.New(
 								(values =>
 								{
 									System.Text.StringBuilder result = new System.Text.StringBuilder();
@@ -1725,8 +1713,9 @@ namespace Thinkage.MainBoss.Controls {
 			new Tbl.IAttr[] {
 				UnitValueAndServiceGroup,
 				CommonTblAttrs.ViewCostsDefinedBySchema,
+				new PrimaryRecordArg(dsMB.Path.T.UnitServiceContract.F.ServiceContractID.PathToReferencedRow),
 				new RTbl(typeof(TblDrivenDynamicColumnsReport), typeof(ReportViewerControl),
-					RTblBase.SetPrimaryRecord(dsMB.Path.T.UnitServiceContract.F.ServiceContractID.PathToReferencedRow, dsMB.Path.T.UnitServiceContract.F.ServiceContractID.F.Code),
+					RTblBase.SetPrimaryRecordHeaderNode(dsMB.Path.T.UnitServiceContract.F.ServiceContractID.F.Code),
 					// All the paths traverse dsMB.Path.T.UnitServiceContract.F.ServiceContractID which supplies root record searching.
 					RTblBase.SetNoSearchPrefixing(),
 					RTblBase.SetAllowSummaryFormat(false),
@@ -1776,10 +1765,11 @@ namespace Thinkage.MainBoss.Controls {
 			TId.SpecificationForm,
 			new Tbl.IAttr[] {
 				UnitsDependentGroup,
+				new PrimaryRecordArg(dsMB.Path.T.SpecificationFormField.F.SpecificationFormID.PathToReferencedRow),
 				new RTbl(typeof(TblDrivenDynamicColumnsReport), typeof(ReportViewerControl),
 					RTblBase.SetAllowSummaryFormat(false),
 					RTblBase.SetNoUserGroupingAllowed(),
-					RTblBase.SetPrimaryRecord(dsMB.Path.T.SpecificationFormField.F.SpecificationFormID.PathToReferencedRow, dsMB.Path.T.SpecificationFormField.F.SpecificationFormID.F.Code),
+					RTblBase.SetPrimaryRecordHeaderNode(dsMB.Path.T.SpecificationFormField.F.SpecificationFormID.F.Code),
 					RTblBase.SetParentChildInformation(KB.K("Show Form Fields"),
 						// TODO: Because this report is improperly driven by the SpecificationFormField table, which is essentially the child row, it will appear as a join with assured children.
 						// However, specification forms with no fields will not appear in the report.
@@ -1918,7 +1908,7 @@ namespace Thinkage.MainBoss.Controls {
 				new SqlExpression(POFR.F.POLineID.F.POLineLaborID.F.Quantity)
 			);
 
-			var descriptionColumn = TblQueryValueNode.New(POFR.F.POLineID.F.PurchaseOrderText.Key(), new TblQueryCalculation(
+			var descriptionColumn = TblQueryValueNode.New(POFR.F.POLineID.F.PurchaseOrderText.Key(), TblQueryCalculation.New(
 				delegate (object[] values) {
 					if(values[1] != null)
 						// it is a receiving line, show the effective date, but we format it here so the expression has a consistent type.
@@ -1954,7 +1944,7 @@ namespace Thinkage.MainBoss.Controls {
 					TblQueryValueNode.New(null, new TblQueryPath(PO.F.Number))),
 				RTbl.IncludeBarCodeSymbologyControl(),
 				RTblBase.SetAllowSummaryFormat(false),
-				RTblBase.SetPrimaryRecord(PO, PO.F.Number),
+				RTblBase.SetPrimaryRecordHeaderNode(PO.F.Number),
 				RTblBase.SetParentChildInformation(KB.K("Purchase Lines"),
 					RTblBase.ColumnsRowType.UnionWithChildren,
 					POFR.F.POLineID,
@@ -2043,6 +2033,7 @@ namespace Thinkage.MainBoss.Controls {
 			}
 			List<Tbl.IAttr> iAttr = new List<Tbl.IAttr> {
 				PurchasingGroup,
+				new PrimaryRecordArg(PO),
 				CommonTblAttrs.ViewCostsDefinedBySchema
 			};
 			if(formLayout)
@@ -2066,9 +2057,9 @@ namespace Thinkage.MainBoss.Controls {
 			return new Tbl(PO.Table, title, iAttr.ToArray(), layout.LayoutArray(), extraNodes.ToArray());
 		}
 		public static Tbl PurchaseOrderFormReport = POHistoryOrFormTbl(TId.PurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport);
-		public static Tbl PurchaseOrderDraftFormReport = POHistoryOrFormTbl(TId.DraftPurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter: new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsDraft).IsTrue());
-		public static Tbl PurchaseOrderIssuedFormReport = POHistoryOrFormTbl(TId.IssuedPurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter: new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsIssued).IsTrue());
-		public static Tbl PurchaseOrderIssuedAndAssignedFormReport = POHistoryOrFormTbl(TId.IssuedPurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter:
+		public static Tbl PurchaseOrderDraftFormReport = POHistoryOrFormTbl(TId.PurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter: new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsDraft).IsTrue());
+		public static Tbl PurchaseOrderIssuedFormReport = POHistoryOrFormTbl(TId.PurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter: new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsIssued).IsTrue());
+		public static Tbl PurchaseOrderIssuedAndAssignedFormReport = POHistoryOrFormTbl(TId.PurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter:
 				new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID)
 									.In(new SelectSpecification(
 										null,
@@ -2076,8 +2067,8 @@ namespace Thinkage.MainBoss.Controls {
 										new SqlExpression(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderAssigneeID.F.ContactID.L.User.ContactID.F.Id).Eq(new SqlExpression(new UserIDSource()))
 												.And(new SqlExpression(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsIssued).IsTrue()),
 												null).SetDistinct(true)));
-		public static Tbl PurchaseOrderClosedFormReport = POHistoryOrFormTbl(TId.ClosedPurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter: new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsClosed).IsTrue());
-		public static Tbl PurchaseOrderVoidFormReport = POHistoryOrFormTbl(TId.VoidPurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter: new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsVoid).IsTrue());
+		public static Tbl PurchaseOrderClosedFormReport = POHistoryOrFormTbl(TId.PurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter: new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsClosed).IsTrue());
+		public static Tbl PurchaseOrderVoidFormReport = POHistoryOrFormTbl(TId.PurchaseOrder, true, dsMB.Path.T.PurchaseOrderFormReport, filter: new SqlExpression(dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsVoid).IsTrue());
 
 		public static Tbl SinglePurchaseOrderFormReport = POHistoryOrFormTbl(TId.PurchaseOrder.ReportSingle, true, dsMB.Path.T.PurchaseOrderFormReport, singleRecord: true);
 		public static Tbl PurchaseOrderByAssigneeFormReport = POHistoryOrFormTbl(TId.PurchaseOrder.ReportByAssignee, true, dsMB.Path.T.PurchaseOrderAssignmentReport.F.PurchaseOrderFormReportID.PathToReferencedRow,
@@ -2092,7 +2083,6 @@ namespace Thinkage.MainBoss.Controls {
 				RTblBase.SetAllowSummaryFormat(true),
 				RTblBase.SetDualLayoutDefault(defaultInColumns: true),
 				RTblBase.SetPreferWidePage(true),
-				RTblBase.SetPrimaryRecord(PO),
 				assignee != null ? RTblBase.SetGrouping(assignee.F.ContactID) : null
 			};
 			if(assignee != null) {
@@ -2165,10 +2155,11 @@ namespace Thinkage.MainBoss.Controls {
 			TId.PurchaseOrderTemplate,
 			new Tbl.IAttr[] {
 				PurchasingGroup,
+				new PrimaryRecordArg(dsMB.Path.T.PurchaseOrderTemplateReport.F.PurchaseOrderTemplateID.PathToReferencedRow),
 				new RTbl(typeof(TblDrivenDynamicColumnsReport), typeof(ReportViewerControl),
 					RTblBase.SetPageBreakDefault(true),
 					RTblBase.SetAllowSummaryFormat(false),
-					RTblBase.SetPrimaryRecord(dsMB.Path.T.PurchaseOrderTemplateReport.F.PurchaseOrderTemplateID.PathToReferencedRow, dsMB.Path.T.PurchaseOrderTemplateReport.F.PurchaseOrderTemplateID.F.Code),
+					RTblBase.SetPrimaryRecordHeaderNode(dsMB.Path.T.PurchaseOrderTemplateReport.F.PurchaseOrderTemplateID.F.Code),
 					RTblBase.SetParentChildInformation(KB.K("Order Lines"),
 						RTblBase.ColumnsRowType.JoinWithChildren,
 						dsMB.Path.T.PurchaseOrderTemplateReport.F.POLineTemplateID,
@@ -2333,10 +2324,11 @@ namespace Thinkage.MainBoss.Controls {
 				TId.Receipt,
 				new Tbl.IAttr[] {
 					PurchasingGroup,
+					new PrimaryRecordArg(dsMB.Path.T.ReceiptReport.F.ReceiptID.PathToReferencedRow),
 					CommonTblAttrs.ViewCostsDefinedBySchema,
 					new RTbl(typeof(TblDrivenDynamicColumnsReport), typeof(ReportViewerControl),
 						RTblBase.SetPageBreakDefault(true),
-						RTblBase.SetPrimaryRecord(dsMB.Path.T.ReceiptReport.F.ReceiptID.PathToReferencedRow, dsMB.Path.T.ReceiptReport.F.ReceiptID.F.Waybill),
+						RTblBase.SetPrimaryRecordHeaderNode(dsMB.Path.T.ReceiptReport.F.ReceiptID.F.Waybill),
 						RTblBase.SetAllowSummaryFormat(false),
 						RTblBase.SetPreferWidePage(false),
 						RTblBase.SetParentChildInformation(KB.TOi(TId.ReceiptActivity),
@@ -2345,8 +2337,11 @@ namespace Thinkage.MainBoss.Controls {
 							ColumnBuilder.New(dsMB.Path.T.ReceiptReport.F.ReceiptID.PathToReferencedRow
 								, TblColumnNode.New(ReceivingReport.F.Code, DefaultShowInDetailsCol.Show())
 								, ItemColumns(ReceivingReport.F.ItemLocationID.F.ItemID)
-								, WorkOrderColumns(ReceivingReport.F.WorkOrderID)
 								, TblColumnNode.New(ReceivingReport.F.ItemLocationID.F.LocationID.F.Code, DefaultShowInDetailsCol.Hide())
+								, LaborOutsideColumns(ReceivingReport.F.LaborOutsideID)
+								, OtherWorkOutsideColumns(ReceivingReport.F.OtherWorkOutsideID)
+								, MiscellaneousColumns(ReceivingReport.F.MiscellaneousID)
+								, WorkOrderColumns(ReceivingReport.F.WorkOrderID)
 								, OQIHNode
 								, QIHNode
 								, UOMNode
@@ -2409,10 +2404,11 @@ namespace Thinkage.MainBoss.Controls {
 			TId.PurchaseOrderStateHistory,
 			new Tbl.IAttr[] {
 				PurchasingGroup,
+				new PrimaryRecordArg(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderID.PathToReferencedRow),
 				CommonTblAttrs.ViewCostsDefinedBySchema,
 				new RTbl(typeof(TblDrivenDynamicColumnsReport), typeof(ReportViewerControl),
 					RTblBase.SetAllowSummaryFormat(false),
-					RTblBase.SetPrimaryRecord(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderID.PathToReferencedRow, dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderID.F.Number),
+					RTblBase.SetPrimaryRecordHeaderNode(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderID.F.Number),
 					// Set No Search Prefixing because the primary path (and the root of all paths in this report) include a labelled reference to the WO from the WOSH record.
 					RTblBase.SetNoSearchPrefixing(),
 					PurchaseOrderStateHistoryChildDefinition(dsMB.Path.T.PurchaseOrderStateHistory)
@@ -2525,7 +2521,7 @@ namespace Thinkage.MainBoss.Controls {
 				ItemColumns(dsMB.Path.T.ActualItemLocation.F.ItemLocationID.F.ItemID, ShowXIDAndUOM),
 				TblColumnNode.New(dsMB.Path.T.ActualItemLocation.F.ItemLocationID.F.LocationID.F.Code, new MapSortCol(RDLReport.LocationSort), DefaultShowInDetailsCol.Show()),
 				TblColumnNode.New(dsMB.Path.T.ActualItemLocation.F.ItemLocationID.F.LocationID, Fmt.SetPickFrom(TILocations.AllStorageBrowseTblCreator), new AllowShowInDetailsChangeCol(false), DefaultShowInDetailsCol.Hide()),
-				ActualItemLocationCountColumns(dsMB.Path.T.ActualItemLocation, ShowXIDAndOnHand),
+				ActualItemLocationColumns(dsMB.Path.T.ActualItemLocation, ShowXIDAndOnHand),
 				TblColumnNode.New(dsMB.Path.T.ActualItemLocation.F.Id.L.ItemLocationReport.ActualItemLocationID.F.SuggestedRestockingQTY, DefaultShowInDetailsCol.Show()),
 				TblServerExprNode.New(KB.K("Physical Count"), SqlExpression.Constant("______"))   // Instead we should have a null value, and use Fmt attributes to force minimum width and underlining or a box (giving more vertical space)
 			).LayoutArray()
@@ -2563,14 +2559,14 @@ namespace Thinkage.MainBoss.Controls {
 				, DateHHMMColumnNode(dsMB.Path.T.ItemActivityReport.F.AccountingTransactionID.F.EntryDate)
 				, TblColumnNode.New(dsMB.Path.T.ItemActivityReport.F.QuantityChange, DefaultShowInDetailsCol.Show())    // TODO: Total if homogeneous Item
 				, TblQueryValueNode.New(KB.K("Unit Cost of Change"),
-					new TblQueryCalculation(UnitCostClientCalculation, ItemUnitCostTypeOnServer,
+					TblQueryCalculation.New(UnitCostClientCalculation, ItemUnitCostTypeOnServer,
 						new TblQueryPath(dsMB.Path.T.ItemActivityReport.F.QuantityChange),
 						new TblQueryPath(dsMB.Path.T.ItemActivityReport.F.CostChange)
 					))
 				, TblColumnNode.New(dsMB.Path.T.ItemActivityReport.F.CostChange, DefaultShowInDetailsCol.Show(), FooterAggregateCol.Sum())
 				, TblColumnNode.New(dsMB.Path.T.ItemActivityReport.F.ResultingQuantity, DefaultShowInDetailsCol.Show())
 				, TblQueryValueNode.New(KB.K("Resulting Unit Cost"),
-					new TblQueryCalculation(UnitCostClientCalculation, ItemUnitCostTypeOnServer,
+					TblQueryCalculation.New(UnitCostClientCalculation, ItemUnitCostTypeOnServer,
 						new TblQueryPath(dsMB.Path.T.ItemActivityReport.F.ResultingQuantity),
 						new TblQueryPath(dsMB.Path.T.ItemActivityReport.F.ResultingCost)
 					))
@@ -2629,6 +2625,7 @@ namespace Thinkage.MainBoss.Controls {
 								// This would add complexity to the main-record filter definitions, to handle all 3 cases in which this report is visible (and in fact the defaults may not be possible to express because they depend on
 								// which feature groups are present. Only if both InventoryGroup and ResourcesGroup are enabled do we need to show any checkboxes. Otherwise they are both hidden and the one whose feature group is enabled
 								// must default to not apply the filter.
+				new PrimaryRecordArg(dsMB.Path.T.ItemRestockingReport.F.ShortStockedItemLocationID.PathToReferencedRow),
 				CommonTblAttrs.ViewCostsDefinedBySchema,
 				new RTbl(typeof(TblDrivenDynamicColumnsReport), typeof(ReportViewerControl),
 					RTblBase.SetPreferWidePage(true),
@@ -2649,7 +2646,7 @@ namespace Thinkage.MainBoss.Controls {
 					RTblBase.SetChildClassFilter(new SqlExpression(dsMB.Path.T.ItemRestockingReport.F.AccountingTransactionID.F.ReceiveItemPOID).IsNull(), KB.K("Previous Purchase (with PO)"), false, PurchasingAndInventoryGroup, true), 
 					// TODO: Hidden/Inactive filter on child records
 					RTblBase.SetGrouping(dsMB.Path.T.ItemRestockingReport.F.ShortStockedItemLocationID.F.ItemID),
-					RTblBase.SetPrimaryRecord(dsMB.Path.T.ItemRestockingReport.F.ShortStockedItemLocationID.PathToReferencedRow, dsMB.Path.T.ItemRestockingReport.F.ShortStockedItemLocationID.F.LocationID.F.Code),
+					RTblBase.SetPrimaryRecordHeaderNode(dsMB.Path.T.ItemRestockingReport.F.ShortStockedItemLocationID.F.LocationID.F.Code),
 					RTblBase.SetParentChildInformation(KB.K("Potential Restocking Sources"),
 						RTblBase.ColumnsRowType.UnionWithChildren,
 						new TblQueryExpression(SqlExpression.Coalesce(
@@ -2731,7 +2728,7 @@ namespace Thinkage.MainBoss.Controls {
 			ColumnBuilder.New(dsMB.Path.T.TemporaryItemLocation,
 				ItemColumns(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID, ShowXIDAndUOM),
 				TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID.F.Code, new MapSortCol(RDLReport.LocationSort)),
-				ActualItemLocationCountColumns(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.PathToReferencedRow, ShowXIDAndOnHand),
+				ActualItemLocationColumns(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.PathToReferencedRow, ShowXIDAndOnHand),
 				TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemPriceID.F.UnitCost),
 				WorkOrderColumns(dsMB.Path.T.TemporaryItemLocation.F.WorkOrderID, ShowXID)
 			).LayoutArray()
@@ -2754,15 +2751,12 @@ namespace Thinkage.MainBoss.Controls {
 			},
 			ColumnBuilder.New(dsMB.Path.T.PermanentItemLocation,
 				ItemColumns(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID, ShowXIDAndUOM),
-				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID.F.Code, new MapSortCol(RDLReport.LocationSort), DefaultShowInDetailsCol.Show()),
-				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID, Fmt.SetPickFrom(TILocations.PermanentStorageBrowseTblCreator), new AllowShowInDetailsChangeCol(false), DefaultShowInDetailsCol.Hide()),
-				//				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemPriceID.F. need this in a columnbuilder based on item price
 				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ExternalTag),
 				TblQueryValueNode.New(KB.K("External Tag Bar Code"), ValueAsBarcode(dsMB.Path.T.PermanentItemLocation.F.ExternalTag), Fmt.SetUsage(DBI_Value.UsageType.Image)),
 				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.Minimum, DefaultShowInDetailsCol.Show()),
 				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.Maximum, DefaultShowInDetailsCol.Show()),
 				TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID.L.LocationReport.LocationID.F.OrderByRank, DefaultShowInDetailsCol.Hide()),
-				ActualItemLocationCountColumns(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.PathToReferencedRow, ShowXIDAndOnHand),
+				ActualItemLocationColumns(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.PathToReferencedRow, ShowXIDAndOnHand),
 				TblServerExprNode.New(KB.K("Physical Count"), SqlExpression.Constant("______"))   // Instead we should have a null value, and use Fmt attributes to force minimum width and underlining or a box (giving more vertical space)
 			).LayoutArray()
 		);
@@ -2858,8 +2852,9 @@ namespace Thinkage.MainBoss.Controls {
 				TId.MaintenanceTiming,
 				new Tbl.IAttr[] {
 					SchedulingGroup,
+					new PrimaryRecordArg(dsMB.Path.T.MaintenanceTimingReport.F.ScheduleID.PathToReferencedRow),
 					new RTbl(typeof(TblDrivenDynamicColumnsReport), typeof(ReportViewerControl),
-						RTblBase.SetPrimaryRecord(dsMB.Path.T.MaintenanceTimingReport.F.ScheduleID.PathToReferencedRow, dsMB.Path.T.MaintenanceTimingReport.F.ScheduleID.F.Code),
+						RTblBase.SetPrimaryRecordHeaderNode(dsMB.Path.T.MaintenanceTimingReport.F.ScheduleID.F.Code),
 						RTblBase.SetParentChildInformation(KB.TOc(TId.Period),
 							RTblBase.ColumnsRowType.UnionWithChildren,
 							dsMB.Path.T.MaintenanceTimingReport.F.PeriodicityID,
@@ -2951,13 +2946,14 @@ namespace Thinkage.MainBoss.Controls {
 				TId.UnitMaintenancePlan,
 				new Tbl.IAttr[] {
 					SchedulingGroup,
+					new PrimaryRecordArg(dsMB.Path.T.ScheduledWorkOrderReport.F.ScheduledWorkOrderID.PathToReferencedRow),
 					CommonTblAttrs.ViewCostsDefinedBySchema,
 					new RTbl((r, logic) => new TblDrivenDynamicColumnsReport(r, logic), typeof(ReportViewerControl),
 						RTblBase.SetPageBreakDefault(true),
 						RTblBase.SetAllowSummaryFormat(false),
 						// TODO: We want several identifying values in the header since several maintenance plans can name the same task.
 						// There is redundancy between these and the mainRecordGroupings.
-						RTblBase.SetPrimaryRecord(dsMB.Path.T.ScheduledWorkOrderReport.F.ScheduledWorkOrderID.PathToReferencedRow, dsMB.Path.T.ScheduledWorkOrderReport.F.ScheduledWorkOrderID.F.WorkOrderTemplateID.F.Code),
+						RTblBase.SetPrimaryRecordHeaderNode(dsMB.Path.T.ScheduledWorkOrderReport.F.ScheduledWorkOrderID.F.WorkOrderTemplateID.F.Code),
 						RTblBase.SetParentChildInformation(KB.K("Resource Demands"),
 							RTblBase.ColumnsRowType.UnionWithChildren,
 							dsMB.Path.T.ScheduledWorkOrderReport.F.DemandTemplateID,
@@ -3320,7 +3316,7 @@ namespace Thinkage.MainBoss.Controls {
 			// We would like to assume that the pitch of the regular and bold fonts match, and in most cases they do but not for Lucida Console (but they do for Lucida Console Typewriter).
 			// The widths in the format insertions correspond to the widths mbfn_WorkOrder_History_As_String uses for the data. The exception is the State column which is 44 wide and which
 			// we replace with maxStateLength characters.
-			var p = Strings.IFormat(Application.InstanceCultureInfo, "{0,-14} {1,-8} {2} {3,-25} {4}", StateHistoryKey, KB.K("Date"), KB.K("State").Translate().PadRight(maxStateLength), KB.K("User"), KB.K("Status"));
+			var p = Strings.IFormat(Application.InstanceFormatCultureInfo, "{0,-14} {1,-8} {2} {3,-25} {4}", StateHistoryKey, KB.K("Date"), KB.K("State").Translate().PadRight(maxStateLength), KB.K("User"), KB.K("Status"));
 			//			Textbox t = report.ValueTextbox(p);	// NOTE (W20130015): Should call LabelTextbox instead to get bold but we can't assume bold and non-bold pitches match (thanks, MS)
 			//			t.Style.FontFamily = report.Logic.FixedPitchFaceName;
 			//			t.Style.FontSize = new Size(report.Logic.FixedTextSizePoints, Size.Units.Points);
@@ -3335,7 +3331,7 @@ namespace Thinkage.MainBoss.Controls {
 			//			t.Style.FontSize = new Size(report.Logic.FixedTextSizePoints, Size.Units.Points);
 			//			new TableRow(where, new TablixCell(t, -1));
 			return TblRowNode.New(null, new TblLayoutNode.ICtorArg[0],
-				TblQueryValueNode.New(KB.T(p), new TblQueryCalculation(
+				TblQueryValueNode.New(KB.T(p), TblQueryCalculation.New(
 						delegate (object[] values) {
 							var rawValue = (string)values[0];
 							if(rawValue == null)
@@ -3511,7 +3507,7 @@ namespace Thinkage.MainBoss.Controls {
 					TblQueryValueNode.New(null, new TblQueryPath(WO.F.Number))),
 				RTbl.IncludeBarCodeSymbologyControl(),
 				RTblBase.SetAllowSummaryFormat(false),
-				RTblBase.SetPrimaryRecord(WO, WO.F.Number),
+				RTblBase.SetPrimaryRecordHeaderNode(WO.F.Number),
 				showResourceDetails, showDemandNumber, showDemandTime, showActualQuantity, showDemandCost, showActualCost,
 				RTblBase.SetParentChildInformation(KB.K("Resources"),
 					RTblBase.ColumnsRowType.JoinWithChildren,
@@ -3600,6 +3596,7 @@ namespace Thinkage.MainBoss.Controls {
 			}
 			List<Tbl.IAttr> iAttr = new List<Tbl.IAttr> {
 				WorkOrdersGroup,
+				new PrimaryRecordArg(WO),
 				CommonTblAttrs.ViewCostsDefinedBySchema
 			};
 			if(formLayout)
@@ -3651,7 +3648,6 @@ namespace Thinkage.MainBoss.Controls {
 				RTblBase.SetAllowSummaryFormat(true),
 				RTblBase.SetDualLayoutDefault(true),
 				RTblBase.SetPreferWidePage(true),
-				RTblBase.SetPrimaryRecord(WO),
 				fieldSelect == ShowForMaintenanceHistory ? RTblBase.SetGrouping(WO.F.UnitLocationID.F.RelativeLocationID.F.UnitID.F.Id) : null,
 				fieldSelect == ShowForMaintenanceHistory ? RTblBase.SetFilter(new SqlExpression(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateID.F.FilterAsClosed)) : null,
 				fieldSelect == ShowForOverdueWorkOrder ? RTblBase.SetSortingGrouping(new SortingGrouping(SqlExpression.CustomLeafNode(OverdueLabelKey, ObjectTypeInfo.Universe), SortingGrouping.Orderings.Descending)) : null,
@@ -3730,26 +3726,26 @@ namespace Thinkage.MainBoss.Controls {
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandLaborInsideID.F.Quantity),
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandLaborOutsideID.F.Quantity)
 													);
-			TypeFormatter estimatedTimeFormatter = estimatedTime.ResultType.GetTypeFormatter(System.Globalization.CultureInfo.CurrentCulture);
+			TypeFormatter estimatedTimeFormatter = estimatedTime.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
 			SqlExpression estimatedCount = SqlExpression.Coalesce(
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandItemID.F.Quantity),
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandOtherWorkInsideID.F.Quantity),
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandOtherWorkOutsideID.F.Quantity)
 													);
-			TypeFormatter estimatedCountFormatter = estimatedCount.ResultType.GetTypeFormatter(System.Globalization.CultureInfo.CurrentCulture);
+			TypeFormatter estimatedCountFormatter = estimatedCount.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
 			StringTypeInfo formattedEstimatedQuantityType = new StringTypeInfo(Math.Min((int)estimatedTimeFormatter.SizingInformation.MinWidth, (int)estimatedCountFormatter.SizingInformation.MinWidth),
 																	Math.Max((int)estimatedTimeFormatter.SizingInformation.MaxWidth, (int)estimatedCountFormatter.SizingInformation.MaxWidth), 0, true, true, true);
 			SqlExpression actualTime = SqlExpression.Coalesce(
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandLaborInsideID.F.ActualQuantity),
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandLaborOutsideID.F.ActualQuantity)
 													);
-			TypeFormatter actualTimeFormatter = actualTime.ResultType.GetTypeFormatter(System.Globalization.CultureInfo.CurrentCulture);
+			TypeFormatter actualTimeFormatter = actualTime.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
 			SqlExpression actualCount = SqlExpression.Coalesce(
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandItemID.F.ActualQuantity),
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandOtherWorkInsideID.F.ActualQuantity),
 														new SqlExpression(dsMB.Path.T.Demand.F.DemandOtherWorkOutsideID.F.ActualQuantity)
 													);
-			TypeFormatter actualCountFormatter = actualCount.ResultType.GetTypeFormatter(System.Globalization.CultureInfo.CurrentCulture);
+			TypeFormatter actualCountFormatter = actualCount.ResultType.GetTypeFormatter(Application.InstanceFormatCultureInfo);
 			StringTypeInfo formattedActualQuantityType = new StringTypeInfo(Math.Min((int)actualTimeFormatter.SizingInformation.MinWidth, (int)actualCountFormatter.SizingInformation.MinWidth),
 																	Math.Max((int)actualTimeFormatter.SizingInformation.MaxWidth, (int)actualCountFormatter.SizingInformation.MaxWidth), 0, true, true, true);
 			RecordTypeClassifierByLinkages classifier = WOReportResourceCategoryClassifier(dsMB.Path.T.Demand.F);
@@ -3790,7 +3786,7 @@ namespace Thinkage.MainBoss.Controls {
 					TblColumnNode.New(dsMB.Path.T.Demand.F.WorkOrderExpenseCategoryID.F.Desc, AccountingFeatureArg),
 					TblColumnNode.New(dsMB.Path.T.Demand.F.WorkOrderExpenseCategoryID.F.Comment, AccountingFeatureArg),
 					// show the unified Demand quantity
-					TblQueryValueNode.New(KB.K("Demanded"), new TblQueryCalculation(
+					TblQueryValueNode.New(KB.K("Demanded"), TblQueryCalculation.New(
 																							(values => values[0] != null ? estimatedTimeFormatter.Format(values[0]) : values[1] != null ? estimatedCountFormatter.Format(values[1]) : null),
 																							formattedEstimatedQuantityType,
 																							new TblQueryExpression(estimatedTime),
@@ -3802,7 +3798,7 @@ namespace Thinkage.MainBoss.Controls {
 					TblServerExprNode.New(KB.K("Estimated Time"), estimatedTime, DefaultShowInDetailsCol.Hide(), FooterAggregateCol.Sum()),
 					TblServerExprNode.New(KB.K("Estimated Count"), estimatedCount, DefaultShowInDetailsCol.Hide()),   // Sum makes no sense for non homogenous items
 					TblColumnNode.New(dsMB.Path.T.Demand.F.CostEstimate, FooterAggregateCol.Sum()),
-					TblQueryValueNode.New(KB.K("Actual"), new TblQueryCalculation(
+					TblQueryValueNode.New(KB.K("Actual"), TblQueryCalculation.New(
 																							(values => values[0] != null ? actualTimeFormatter.Format(values[0]) : values[1] != null ? actualCountFormatter.Format(values[1]) : null),
 																							formattedActualQuantityType,
 																							new TblQueryExpression(actualTime),
@@ -4166,8 +4162,9 @@ namespace Thinkage.MainBoss.Controls {
 				foreach(var right in rights)
 					iAttr.Add(new ViewCostPermissionImpliesTablePermissionsTbl(right, new TableOperationRightsGroup.TableOperation[] { TableOperationRightsGroup.TableOperation.Report }));
 
-			var layout = new List<TblLayoutNode>();
-			layout.Add(WorkOrderColumns(WO).AsTblGroup());
+			var layout = new List<TblLayoutNode> {
+				WorkOrderColumns(WO).AsTblGroup()
+			};
 
 			var filters = new List<TblLayoutNode>();
 			if(resourceFilter != null)
@@ -4294,10 +4291,11 @@ namespace Thinkage.MainBoss.Controls {
 			TId.WorkOrderStateHistory,
 			new Tbl.IAttr[] {
 				WorkOrdersGroup,
+				new PrimaryRecordArg(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderID.PathToReferencedRow),
 				CommonTblAttrs.ViewCostsDefinedBySchema,
 				new RTbl(typeof(TblDrivenDynamicColumnsReport), typeof(ReportViewerControl),
 					RTblBase.SetAllowSummaryFormat(false),
-					RTblBase.SetPrimaryRecord(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderID.PathToReferencedRow, dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderID.F.Number),
+					RTblBase.SetPrimaryRecordHeaderNode(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderID.F.Number),
 					// Set No Search Prefixing because the primary path (and the root of all paths in this report) include a labelled reference to the WO from the WOSH record.
 					RTblBase.SetNoSearchPrefixing(),
 					WorkOrderStateHistoryChildDefinition(dsMB.Path.T.WorkOrderStateHistory)
@@ -4449,10 +4447,11 @@ namespace Thinkage.MainBoss.Controls {
 			new Tbl.IAttr[] {
 				SchedulingGroup,
 				CommonTblAttrs.ViewCostsDefinedBySchema,
+				new PrimaryRecordArg(dsMB.Path.T.WorkOrderTemplateReport.F.WorkOrderTemplateID.PathToReferencedRow),
 				new RTbl(typeof(TblDrivenDynamicColumnsReport), typeof(ReportViewerControl),
 					RTblBase.SetPageBreakDefault(true),
 					RTblBase.SetAllowSummaryFormat(false),
-					RTblBase.SetPrimaryRecord(dsMB.Path.T.WorkOrderTemplateReport.F.WorkOrderTemplateID.PathToReferencedRow, dsMB.Path.T.WorkOrderTemplateReport.F.WorkOrderTemplateID.F.Code),
+					RTblBase.SetPrimaryRecordHeaderNode(dsMB.Path.T.WorkOrderTemplateReport.F.WorkOrderTemplateID.F.Code),
 					RTblBase.SetParentChildInformation(KB.TOc(TId.TaskResource),
 									RTblBase.ColumnsRowType.JoinWithChildren,
 									dsMB.Path.T.WorkOrderTemplateReport.F.Resource,
@@ -4714,7 +4713,7 @@ namespace Thinkage.MainBoss.Controls {
 				RTblBase.SetReportTitle(TId.Chargeback.Compose(FormReportTitle)),
 				RTblBase.SetAllowSummaryFormat(false),
 				RTblBase.SetNoUserGroupingAllowed(),
-				RTblBase.SetPrimaryRecord(dsMB.Path.T.ChargebackFormReport.F.ChargebackID.PathToReferencedRow, dsMB.Path.T.ChargebackFormReport.F.ChargebackID.F.Code),
+				RTblBase.SetPrimaryRecordHeaderNode(dsMB.Path.T.ChargebackFormReport.F.ChargebackID.F.Code),
 				RTblBase.SetParentChildInformation(KB.TOi(TId.ChargebackActivity),
 					RTblBase.ColumnsRowType.JoinWithChildren,
 					dsMB.Path.T.ChargebackFormReport.F.ChargebackLineID,
@@ -4736,6 +4735,7 @@ namespace Thinkage.MainBoss.Controls {
 				singleRecord ? TId.Chargeback.ReportSingle : TId.Chargeback,
 				new Tbl.IAttr[] {
 					WorkOrdersGroup,
+					new PrimaryRecordArg(dsMB.Path.T.ChargebackFormReport.F.ChargebackID.PathToReferencedRow),
 					CommonTblAttrs.ViewCostsDefinedBySchema,
 					new RTbl(typeof(Thinkage.MainBoss.Controls.Reports.MainBossFormReport), typeof(ReportViewerControl), rtblArgs.ToArray())
 				},
@@ -4752,11 +4752,12 @@ namespace Thinkage.MainBoss.Controls {
 			TId.Chargeback.ReportHistory,
 			new Tbl.IAttr[] {
 				WorkOrdersGroup,
+				new PrimaryRecordArg(dsMB.Path.T.ChargebackFormReport.F.ChargebackID.PathToReferencedRow),
 				CommonTblAttrs.ViewCostsDefinedBySchema,
 				new RTbl(typeof(TblDrivenDynamicColumnsReport), typeof(ReportViewerControl),
 					RTblBase.SetPageBreakDefault(true),
 					RTblBase.SetAllowSummaryFormat(false),
-					RTblBase.SetPrimaryRecord(dsMB.Path.T.ChargebackFormReport.F.ChargebackID.PathToReferencedRow, dsMB.Path.T.ChargebackFormReport.F.ChargebackID.F.Code),
+					RTblBase.SetPrimaryRecordHeaderNode(dsMB.Path.T.ChargebackFormReport.F.ChargebackID.F.Code),
 					RTblBase.SetParentChildInformation(KB.TOi(TId.ChargebackActivity),
 						RTblBase.ColumnsRowType.JoinWithChildren,
 						dsMB.Path.T.ChargebackFormReport.F.ChargebackLineID,
@@ -5036,7 +5037,7 @@ namespace Thinkage.MainBoss.Controls {
 				);
 		}
 		public static TblQueryValueNode CustomOrBuiltinRoleValue(DBI_Path custom, DBI_Path builtin, params TblLayoutNode.ICtorArg[] args) {
-			return TblQueryValueNode.New(builtin.Key(), new TblQueryCalculation(
+			return TblQueryValueNode.New(builtin.Key(), TblQueryCalculation.New(
 							(values =>
 								values[0] != null
 									? (string)Libraries.TypeInfo.StringTypeInfo.AsNativeType(values[0], typeof(string))
@@ -5067,9 +5068,10 @@ namespace Thinkage.MainBoss.Controls {
 			new Tbl.IAttr[] {
 				SecurityGroup,
 				new MinimumDBVersionTbl(new Version(1, 0, 10, 42)),
+				new PrimaryRecordArg(dsMB.Path.T.SecurityRoleAndUserRoleReport.F.RolePrincipalID.PathToReferencedRow),
 				new RTbl(typeof(TblDrivenDynamicColumnsReport), typeof(ReportViewerControl),
 					RTblBase.SetAllowSummaryFormat(false),
-					RTblBase.SetPrimaryRecord(dsMB.Path.T.SecurityRoleAndUserRoleReport.F.RolePrincipalID.PathToReferencedRow, TIReports.CustomOrBuiltinRoleValue(dsMB.Path.T.SecurityRoleAndUserRoleReport.F.RolePrincipalID.F.CustomRoleID.F.Code, dsMB.Path.T.SecurityRoleAndUserRoleReport.F.RolePrincipalID.F.RoleID.F.RoleName)),
+					RTblBase.SetPrimaryRecordHeaderNode(TIReports.CustomOrBuiltinRoleValue(dsMB.Path.T.SecurityRoleAndUserRoleReport.F.RolePrincipalID.F.CustomRoleID.F.Code, dsMB.Path.T.SecurityRoleAndUserRoleReport.F.RolePrincipalID.F.RoleID.F.RoleName)),
 					RTblBase.SetParentChildInformation(KB.K("Show assigned Users"), RTblBase.ColumnsRowType.JoinWithChildren,
 						dsMB.Path.T.SecurityRoleAndUserRoleReport.F.UserID,
 						new TblLayoutNodeArray(
@@ -5154,7 +5156,6 @@ namespace Thinkage.MainBoss.Controls {
 				TblDrivenReportRtbl( RTblBase.SetAllowSummaryFormat(false),
 					RTblBase.SetDualLayoutDefault(defaultInColumns: true),
 					RTblBase.SetPreferWidePage(true),
-					RTbl.SetPrimaryRecord(dsMB.Path.T.WorkOrderExpenseModelEntry),
 					RTblBase.SetGrouping(dsMB.Path.T.WorkOrderExpenseModelEntry.F.WorkOrderExpenseModelID)
 				)
 			},

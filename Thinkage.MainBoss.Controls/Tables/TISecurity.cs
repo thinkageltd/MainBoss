@@ -20,27 +20,12 @@ namespace Thinkage.MainBoss.Controls {
 	/// Register Tbl and/or DelayedCreateTbl objects for Security.
 	/// </summary>
 	public class TISecurity : TIGeneralMB3 {
-		#region RoleClasses
-		private static readonly Key[] SecurityRoleClassLabels = new Key[]
-			{
-			KB.K("Right"),
-			KB.K("Security Role"),
-			KB.K("Table")
-			};
-		private static readonly object[] SecurityRoleClasses = new object[]
-			{
-				(int)DatabaseEnums.SecurityRoleClass.Right,
-				(int)DatabaseEnums.SecurityRoleClass.Role,
-				(int)DatabaseEnums.SecurityRoleClass.Table
-			};
-		public static Thinkage.Libraries.EnumValueTextRepresentations SecurityRoleClassProvider = new Thinkage.Libraries.EnumValueTextRepresentations(SecurityRoleClassLabels, null, SecurityRoleClasses, 2);
-		#endregion
 		public static DelayedCreateTbl UserPickerTblCreator;
 		public static DelayedCreateTbl ManageDatabaseCredentialTblCreator;
 		public static DelayedCreateTbl ManageDatabaseLoginTblCreator;
 
 		public static DelayedCreateTbl RoleBrowserTblCreator;
-		public static DelayedCreateTbl RoleEditTblCreator;
+		public static DelayedCreateTbl BuiltinRoleEditTblCreator;
 		public static DelayedCreateTbl CustomRoleEditTblCreator;
 
 		public static DelayedCreateTbl UserRoleBrowserTblCreator;
@@ -80,10 +65,10 @@ namespace Thinkage.MainBoss.Controls {
 		private TISecurity() {
 		}
 		static TISecurity() {
-			PermissionForRoleTblCreator = new DelayedCreateTbl(delegate () {return CreatePermissionEditor(false);});
-			PermissionForCustomRoleTblCreator = new DelayedCreateTbl(delegate () {return CreatePermissionEditor(true);});
-			ManageDatabaseLoginTblCreator = new DelayedCreateTbl(delegate () {return ManageDatabaseLoginTbl;});
-			ManageDatabaseCredentialTblCreator = new DelayedCreateTbl(delegate () { return ManageDatabaseCredentialTbl; });
+			PermissionForRoleTblCreator = new DelayedCreateTbl(() => CreatePermissionEditor(false));
+			PermissionForCustomRoleTblCreator = new DelayedCreateTbl(() => CreatePermissionEditor(true));
+			ManageDatabaseLoginTblCreator = new DelayedCreateTbl(() => ManageDatabaseLoginTbl);
+			ManageDatabaseCredentialTblCreator = new DelayedCreateTbl(() => ManageDatabaseCredentialTbl);
 		}
 
 		#region ManageDatabaseCredentialTbl
@@ -97,7 +82,7 @@ namespace Thinkage.MainBoss.Controls {
 						return new SettableDisablerProperties(null, KB.K("You require SQL Database User Administration permissions for this operation"), session.CanManageUserCredentials());
 					return null;
 				}),
-				new CustomSessionTbl(delegate(XAFClient existingDBAccess, DBI_Database newSchema) { return new MainBoss.SecurityOnServerSession.Connection(existingDBAccess, forLogins:false); }),
+				new CustomSessionTbl(delegate(DBClient existingDBAccess, DBI_Database newSchema) { return new MainBoss.SecurityOnServerSession.Connection(existingDBAccess, forLogins:false); }),
 				new BTbl(
 					BTbl.ListColumn(dsSecurityOnServer.Path.T.SecurityOnServer.F.DBUserName),
 					BTbl.ListColumn(dsSecurityOnServer.Path.T.SecurityOnServer.F.LoginName),
@@ -143,7 +128,7 @@ namespace Thinkage.MainBoss.Controls {
 			static object dbusernameControlId = KB.I("dbusernameControlId");
 			static object dbloginnameControlId = KB.I("dbloginnameControlId");
 
-			public Tbl CustomTbl(XAFClient db) {
+			public Tbl CustomTbl(DBClient db) {
 				var securitySession = db.Session as MainBoss.SecurityOnServerSession;
 				bool forLoginCredentials = securitySession.ForDatabaseLoginUsers;
 				Libraries.Collections.Set<AuthenticationMethod> permittedAuthenticationMethods = securitySession.Server.PermittedAuthenticationMethods(db.Session.ConnectionInformation, forLoginCredentials);
@@ -156,7 +141,7 @@ namespace Thinkage.MainBoss.Controls {
 				object initialChoice = AuthenticationSettingsPermitted.Values[0];
 
 				bool needLoginChoices = permittedAuthenticationMethods.Contains(AuthenticationMethod.WindowsAuthentication);
-				bool needPassword = !needLoginChoices && permittedAuthenticationMethods.Contains(AuthenticationMethod.SQLPassword) || permittedAuthenticationMethods.Contains(AuthenticationMethod.ActiveDirectoryPassword);
+				bool needPassword = permittedAuthenticationMethods.Contains(AuthenticationMethod.SQLPassword) || permittedAuthenticationMethods.Contains(AuthenticationMethod.ActiveDirectoryPassword);
 
 				List<TblLayoutNode> nodes = new List<TblLayoutNode>();
 				if (forLoginCredentials) {
@@ -192,13 +177,16 @@ namespace Thinkage.MainBoss.Controls {
 					if (needPassword)
 						nodes.Add(TblColumnNode.New(dsSecurityOnServer.Path.T.SecurityOnServer.F.Password, ECol.Normal, Fmt.SetId(passwordControlId), Fmt.SetUsage(DBI_Value.UsageType.Password)));
 				}
-				nodes.Add(TblColumnNode.New(dsSecurityOnServer.Path.T.SecurityOnServer.F.CredentialAuthenticationMethod,
-					new ECol(
-						Fmt.SetEnumText(AuthenticationSettingsPermitted),
-						Fmt.SetId(methodControlId)
-					)));
-				var tblInits = new List<TblActionNode>();
-				tblInits.Add(Init.OnLoadNew(dsSecurityOnServer.Path.T.SecurityOnServer.F.CredentialAuthenticationMethod, new ConstantValue(initialChoice)));
+				bool offerMethodChoice = forLoginCredentials || needPassword;
+				if (offerMethodChoice)
+					nodes.Add(TblColumnNode.New(dsSecurityOnServer.Path.T.SecurityOnServer.F.CredentialAuthenticationMethod,
+						new ECol(
+							Fmt.SetEnumText(AuthenticationSettingsPermitted),
+							Fmt.SetId(methodControlId)
+						)));
+				var tblInits = new List<TblActionNode> {
+					Init.OnLoadNew(dsSecurityOnServer.Path.T.SecurityOnServer.F.CredentialAuthenticationMethod, new ConstantValue(initialChoice))
+				};
 				if (needLoginChoices && !forLoginCredentials) {
 					pInitLists[0].Add(Init.Continuous(new PathTarget(dsSecurityOnServer.Path.T.SecurityOnServer.F.DBUserName), new Libraries.Presentation.ControlValue(dbloginnameControlId)));
 				}
@@ -231,7 +219,7 @@ namespace Thinkage.MainBoss.Controls {
 								else
 									return new SettableDisablerProperties(null, KB.K("You require SQL Database User Administration permissions for this operation"), session.CanManageUserCredentials());
 							}),
-							new CustomSessionTbl(delegate(XAFClient existingDBAccess, DBI_Database newSchema) { return new MainBoss.SecurityOnServerSession.Connection(existingDBAccess, forLoginCredentials); }),
+							new CustomSessionTbl(delegate(DBClient existingDBAccess, DBI_Database newSchema) { return new MainBoss.SecurityOnServerSession.Connection(existingDBAccess, forLoginCredentials); }),
 							new ETbl(ETbl.EditorDefaultAccess(false), ETbl.EditorAccess(true, EdtMode.New, EdtMode.Delete))
 					},
 					new TblLayoutNodeArray(
@@ -247,10 +235,10 @@ namespace Thinkage.MainBoss.Controls {
 			}
 		}
 		private class ManageDatabaseCredentialEditLogic : DynamicEditLogic<ManageDatabaseCredentialEditTbl> {
-			public ManageDatabaseCredentialEditLogic(IEditUI control, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+			public ManageDatabaseCredentialEditLogic(IEditUI control, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 			: this(control, db, initialEditMode, initRowIDs, subsequentModeRestrictions, new ManageDatabaseCredentialEditTbl(), settingsContainer) {
 			}
-			private ManageDatabaseCredentialEditLogic(IEditUI control, XAFClient db, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, IDynamicCustomTbl customBuilder, Settings.Container settingsContainer)
+			private ManageDatabaseCredentialEditLogic(IEditUI control, DBClient db, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, IDynamicCustomTbl customBuilder, Settings.Container settingsContainer)
 			: base(control, db, customBuilder.CustomTbl(db), settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, customBuilder.InitLists) {
 			}
 			protected override void SetupCommands() {
@@ -258,7 +246,7 @@ namespace Thinkage.MainBoss.Controls {
 			}
 		}
 		private class ManageDatabaseCredentialBrowseLogic : BrowseLogic {
-			public ManageDatabaseCredentialBrowseLogic(IBrowseUI control, XAFClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
+			public ManageDatabaseCredentialBrowseLogic(IBrowseUI control, DBClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
 				: base(control, db, takeDBCustody, tbl, settingsContainer, structure) {
 			}
 			SettableDisablerProperties GetDisabler() {
@@ -282,7 +270,7 @@ namespace Thinkage.MainBoss.Controls {
 				new DynamicPermissionTbl(delegate(ISession session, TableOperationRightsGroup.TableOperation operation) {
 					return new SettableDisablerProperties(null, KB.K("You require SQL Database Login Administration permissions for this operation"), session.CanManageUserLogins());
 				}),
-				new CustomSessionTbl(delegate(XAFClient existingDBAccess, DBI_Database newSchema) { return new MainBoss.SecurityOnServerSession.Connection(existingDBAccess, forLogins:true); }),
+				new CustomSessionTbl(delegate(DBClient existingDBAccess, DBI_Database newSchema) { return new MainBoss.SecurityOnServerSession.Connection(existingDBAccess, forLogins:true); }),
 				new BTbl(
 					BTbl.ListColumn(dsSecurityOnServer.Path.T.SecurityOnServer.F.LoginName),
 					BTbl.ListColumn(dsSecurityOnServer.Path.T.SecurityOnServer.F.CredentialAuthenticationMethod),
@@ -352,9 +340,9 @@ namespace Thinkage.MainBoss.Controls {
 							new BTbl(
 								BTbl.ListColumn(dsMB.Path.T.User.F.AuthenticationCredential),
 								BTbl.ListColumn(dsMB.Path.T.User.F.ContactID.F.Code),
-								BTbl.ListColumn(dsMB.Path.T.User.F.Desc)
-							),
-							TIReports.NewRemotePTbl(TIReports.UserReport)
+								BTbl.ListColumn(dsMB.Path.T.User.F.Desc),
+								BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.UserReport))
+							)
 						},
 						null,
 						new CompositeView(UserEditTblCreator, dsMB.Path.T.User.F.Id,
@@ -381,11 +369,11 @@ namespace Thinkage.MainBoss.Controls {
 			);
 			DefineBrowseTbl(dsMB.Schema.T.User, UserBrowserTblCreator);
 			#region Role
-			RoleEditTblCreator = new DelayedCreateTbl(delegate () {
-				return new Tbl(dsMB.Schema.T.Role, TId.SecurityRole,
+			BuiltinRoleEditTblCreator = new DelayedCreateTbl(delegate () {
+				return new Tbl(dsMB.Schema.T.Role, TId.BuiltinSecurityRole,
 					new Tbl.IAttr[] {
 						SecurityGroup,
-						new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete, EdtMode.EditDefault, EdtMode.ViewDefault, EdtMode.New, EdtMode.Delete, EdtMode.Clone))
+						new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete, EdtMode.EditDefault, EdtMode.ViewDefault, EdtMode.Edit, EdtMode.New, EdtMode.Delete, EdtMode.Clone))
 					},
 					new TblLayoutNodeArray(
 						DetailsTabNode.New(
@@ -400,7 +388,7 @@ namespace Thinkage.MainBoss.Controls {
 					)
 				);
 			});
-			DefineEditTbl(dsMB.Schema.T.Role, RoleEditTblCreator);
+			DefineEditTbl(dsMB.Schema.T.Role, BuiltinRoleEditTblCreator);
 			CustomRoleEditTblCreator = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.CustomRole, TId.CustomSecurityRole,
 					new Tbl.IAttr[] {
@@ -431,9 +419,9 @@ namespace Thinkage.MainBoss.Controls {
 						new BTbl(
 							BTbl.PerViewListColumn(CommonCodeColumnKey, NameID),
 							BTbl.PerViewListColumn(CommonDescColumnKey, DescID),
-							BTbl.ExpressionFilter(new SqlExpression(dsMB.Path.T.Principal.F.RoleID).IsNotNull().Or(new SqlExpression(dsMB.Path.T.Principal.F.CustomRoleID).IsNotNull()))
-						),
-						TIReports.NewRemotePTbl(TIReports.RoleReport)
+							BTbl.ExpressionFilter(new SqlExpression(dsMB.Path.T.Principal.F.RoleID).IsNotNull().Or(new SqlExpression(dsMB.Path.T.Principal.F.CustomRoleID).IsNotNull())),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.RoleReport))
+						)
 					},
 					null,
 					new CompositeView(dsMB.Path.T.Principal.F.RoleID, CompositeView.RecognizeByValidEditLinkage(),

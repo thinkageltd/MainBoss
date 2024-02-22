@@ -788,6 +788,11 @@ namespace Thinkage.MainBoss.Database {
 			/// Could not create A contact  since the was more already a contact with this code
 			/// /// </summary>
 			RejectAmbiguousContact,
+			/// <summary>
+			/// The message was identified as requireing manual review to be processed. This may be something like it contained an AutoSubmitted field flag as other than 'no',
+			/// so we do not make a request out of it but hold it for user to decide what to do.
+			/// </summary>
+			HoldRequiresManualReview
 		};
 		/// <summary>
 		/// The type of mail server that @Requests will attempt to connect to.

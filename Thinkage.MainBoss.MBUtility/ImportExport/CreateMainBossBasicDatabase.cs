@@ -47,8 +47,7 @@ namespace Thinkage.MainBoss.MBUtility
 		{
 			string separator = Strings.IFormat("*****************************************************************{0}", Environment.NewLine);
 			string xmlInput = Options.BasicXMLInputFile.Value;
-			string oName;
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out string oName);
 
 			System.Exception processingException = null;
 			System.Text.StringBuilder HistoryLogText = new System.Text.StringBuilder();

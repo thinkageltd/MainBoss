@@ -187,12 +187,12 @@ namespace Thinkage.MainBoss.Controls
 						new Tbl.IAttr[] {
 							CommonTblAttrs.ViewCostsDefinedBySchema,
 							new BTbl(
-									BTbl.ListColumn(dsMB.Path.T.ReceiptActivity.F.POLineID.F.PurchaseOrderText),
-									BTbl.PerViewListColumn(quantityColumnId, quantityColumnId),
-									BTbl.PerViewListColumn(uomColumnId, uomColumnId),
-									BTbl.PerViewListColumn(costColumnId, costColumnId)
-							),
-							new TreeStructuredTbl(dsMB.Path.T.ReceiptActivity.F.ParentID, 2)
+								BTbl.ListColumn(dsMB.Path.T.ReceiptActivity.F.POLineID.F.PurchaseOrderText),
+								BTbl.PerViewListColumn(quantityColumnId, quantityColumnId),
+								BTbl.PerViewListColumn(uomColumnId, uomColumnId),
+								BTbl.PerViewListColumn(costColumnId, costColumnId),
+								BTbl.SetTreeStructure(dsMB.Path.T.ReceiptActivity.F.ParentID, 2)
+							)
 						},
 						dsMB.Path.T.ReceiptActivity.F.TableEnum,
 						new CompositeView(dsMB.Path.T.ReceiptActivity.F.POLineID.F.POLineItemID,								// ViewRecordTypes.ReceiptActivity.POLineItem
@@ -320,11 +320,11 @@ namespace Thinkage.MainBoss.Controls
 							BTbl.ListColumn(dsMB.Path.T.Receipt.F.PurchaseOrderID.F.Number),
 							BTbl.ListColumn(dsMB.Path.T.Receipt.F.PurchaseOrderID.F.VendorID.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.Receipt.F.Waybill),
-							BTbl.ListColumn(dsMB.Path.T.Receipt.F.Desc, BTbl.ListColumnArg.Contexts.List|BTbl.ListColumnArg.Contexts.SearchAndFilter),
+							BTbl.ListColumn(dsMB.Path.T.Receipt.F.Desc, BTbl.Contexts.List|BTbl.Contexts.SearchAndFilter),
 							BTbl.ListColumn(dsMB.Path.T.Receipt.F.TotalReceive)
-						),
-						new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete)),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.ReceiptReport; }))
+						,
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ReceiptReport))),
+						new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete))
 					},
 					new TblLayoutNodeArray(
 						DetailsTabNode.New(

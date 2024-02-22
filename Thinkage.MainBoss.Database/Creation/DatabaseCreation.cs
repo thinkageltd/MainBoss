@@ -484,122 +484,121 @@ namespace Thinkage.MainBoss.Database {
 				ds.DisableUpdatePropagation();
 
 				ds.DB.Edit(ds, dsMB.Schema.T.ActualItemLocation.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.ActualItemLocation.Default.GetDataTable(ds).Rows) {
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ActualItemLocation.F.EffectiveMinimum, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ActualItemLocation.F.EffectiveMaximum, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ActualItemLocation.F.OnHand, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ActualItemLocation.F.OnOrder, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ActualItemLocation.F.OnReserve, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ActualItemLocation.F.TotalCost, 0m);
+				foreach (dsMB.ActualItemLocationRow r in ds.DT.ActualItemLocation) {
+					r.SetReadOnlyColumn(dsMB.Schema.T.ActualItemLocation.F.EffectiveMinimum, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.ActualItemLocation.F.EffectiveMaximum, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.ActualItemLocation.F.OnHand, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.ActualItemLocation.F.OnOrder, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.ActualItemLocation.F.OnReserve, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.ActualItemLocation.F.TotalCost, 0m);
 				}
 				ds.DB.Edit(ds, dsMB.Schema.T.ItemAdjustment.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.ItemAdjustment.Default.GetDataTable(ds).Rows) {
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ItemAdjustment.F.TotalQuantity, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ItemAdjustment.F.TotalCost, 0m);
+				foreach (dsMB.ItemAdjustmentRow r in ds.DT.ItemAdjustment) {
+					r.SetReadOnlyColumn(dsMB.Schema.T.ItemAdjustment.F.TotalQuantity, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.ItemAdjustment.F.TotalCost, 0m);
 				}
 				ds.DB.Edit(ds, dsMB.Schema.T.ItemIssue.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.ItemIssue.Default.GetDataTable(ds).Rows) {
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ItemIssue.F.TotalQuantity, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ItemIssue.F.TotalCost, 0m);
+				foreach (dsMB.ItemIssueRow r in ds.DT.ItemIssue) {
+					r.SetReadOnlyColumn(dsMB.Schema.T.ItemIssue.F.TotalQuantity, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.ItemIssue.F.TotalCost, 0m);
 				}
 				ds.DB.Edit(ds, dsMB.Schema.T.ItemTransfer.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.ItemTransfer.Default.GetDataTable(ds).Rows) {
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ItemTransfer.F.ToTotalQuantity, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ItemTransfer.F.ToTotalCost, 0m);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ItemTransfer.F.FromTotalQuantity, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ItemTransfer.F.FromTotalCost, 0m);
+				foreach (dsMB.ItemTransferRow r in ds.DT.ItemTransfer) {
+					r.SetReadOnlyColumn(dsMB.Schema.T.ItemTransfer.F.ToTotalQuantity, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.ItemTransfer.F.ToTotalCost, 0m);
+					r.SetReadOnlyColumn(dsMB.Schema.T.ItemTransfer.F.FromTotalQuantity, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.ItemTransfer.F.FromTotalCost, 0m);
 				}
 				ds.DB.Edit(ds, dsMB.Schema.T.ReceiveItemPO.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.ReceiveItemPO.Default.GetDataTable(ds).Rows) {
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ReceiveItemPO.F.TotalQuantity, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ReceiveItemPO.F.TotalCost, 0m);
+				foreach (dsMB.ReceiveItemPORow r in ds.DT.ReceiveItemPO) {
+					r.SetReadOnlyColumn(dsMB.Schema.T.ReceiveItemPO.F.TotalQuantity, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.ReceiveItemPO.F.TotalCost, 0m);
 				}
 				ds.DB.Edit(ds, dsMB.Schema.T.ReceiveItemNonPO.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.ReceiveItemNonPO.Default.GetDataTable(ds).Rows) {
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ReceiveItemNonPO.F.TotalQuantity, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ReceiveItemNonPO.F.TotalCost, 0m);
+				foreach (dsMB.ReceiveItemNonPORow r in ds.DT.ReceiveItemNonPO) {
+					r.SetReadOnlyColumn(dsMB.Schema.T.ReceiveItemNonPO.F.TotalQuantity, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.ReceiveItemNonPO.F.TotalCost, 0m);
 				}
 				ds.DB.Edit(ds, dsMB.Schema.T.ActualItem.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.ActualItem.Default.GetDataTable(ds).Rows) {
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ActualItem.F.TotalQuantity, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.ActualItem.F.TotalCost, 0m);
+				foreach (dsMB.ActualItemRow r in ds.DT.ActualItem) {
+					r.SetReadOnlyColumn(dsMB.Schema.T.ActualItem.F.TotalQuantity, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.ActualItem.F.TotalCost, 0m);
 				}
 				ds.DB.Edit(ds, dsMB.Schema.T.Chargeback.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.Chargeback.Default.GetDataTable(ds).Rows)
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.Chargeback.F.TotalCost, 0m);
+				foreach (dsMB.ChargebackRow r in ds.DT.Chargeback)
+					r.SetReadOnlyColumn(dsMB.Schema.T.Chargeback.F.TotalCost, 0m);
 				ds.DB.Edit(ds, dsMB.Schema.T.Demand.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.Demand.Default.GetDataTable(ds).Rows)
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.Demand.F.ActualCost, 0m);
+				foreach (dsMB.DemandRow r in ds.DT.Demand)
+					r.SetReadOnlyColumn(dsMB.Schema.T.Demand.F.ActualCost, 0m);
 				ds.DB.Edit(ds, dsMB.Schema.T.DemandItem.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.DemandItem.Default.GetDataTable(ds).Rows)
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.DemandItem.F.ActualQuantity, 0);
+				foreach (dsMB.DemandItemRow r in ds.DT.DemandItem)
+					r.SetReadOnlyColumn(dsMB.Schema.T.DemandItem.F.ActualQuantity, 0);
 				ds.DB.Edit(ds, dsMB.Schema.T.DemandLaborInside.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.DemandLaborInside.Default.GetDataTable(ds).Rows)
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.DemandLaborInside.F.ActualQuantity, TimeSpan.Zero);
+				foreach (dsMB.DemandLaborInsideRow r in ds.DT.DemandLaborInside)
+					r.SetReadOnlyColumn(dsMB.Schema.T.DemandLaborInside.F.ActualQuantity, TimeSpan.Zero);
 				ds.DB.Edit(ds, dsMB.Schema.T.DemandLaborOutside.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.DemandLaborOutside.Default.GetDataTable(ds).Rows) {
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.DemandLaborOutside.F.ActualQuantity, TimeSpan.Zero);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.DemandLaborOutside.F.OrderQuantity, TimeSpan.Zero);
+				foreach (dsMB.DemandLaborOutsideRow r in ds.DT.DemandLaborOutside) {
+					r.SetReadOnlyColumn(dsMB.Schema.T.DemandLaborOutside.F.ActualQuantity, TimeSpan.Zero);
+					r.SetReadOnlyColumn(dsMB.Schema.T.DemandLaborOutside.F.OrderQuantity, TimeSpan.Zero);
 				}
 				ds.DB.Edit(ds, dsMB.Schema.T.DemandLaborOutsideTemplate.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.DemandLaborOutsideTemplate.Default.GetDataTable(ds).Rows)
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.DemandLaborOutsideTemplate.F.OrderQuantity, TimeSpan.Zero);
+				foreach (dsMB.DemandLaborOutsideTemplateRow r in ds.DT.DemandLaborOutsideTemplate)
+					r.SetReadOnlyColumn(dsMB.Schema.T.DemandLaborOutsideTemplate.F.OrderQuantity, TimeSpan.Zero);
 				ds.DB.Edit(ds, dsMB.Schema.T.DemandOtherWorkInside.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.DemandOtherWorkInside.Default.GetDataTable(ds).Rows)
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.DemandOtherWorkInside.F.ActualQuantity, 0);
+				foreach (dsMB.DemandOtherWorkInsideRow r in ds.DT.DemandOtherWorkInside)
+					r.SetReadOnlyColumn(dsMB.Schema.T.DemandOtherWorkInside.F.ActualQuantity, 0);
 				ds.DB.Edit(ds, dsMB.Schema.T.DemandOtherWorkOutside.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.DemandOtherWorkOutside.Default.GetDataTable(ds).Rows) {
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.DemandOtherWorkOutside.F.ActualQuantity, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.DemandOtherWorkOutside.F.OrderQuantity, 0);
+				foreach (dsMB.DemandOtherWorkOutsideRow r in ds.DT.DemandOtherWorkOutside) {
+					r.SetReadOnlyColumn(dsMB.Schema.T.DemandOtherWorkOutside.F.ActualQuantity, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.DemandOtherWorkOutside.F.OrderQuantity, 0);
 				}
 				ds.DB.Edit(ds, dsMB.Schema.T.DemandOtherWorkOutsideTemplate.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.DemandOtherWorkOutsideTemplate.Default.GetDataTable(ds).Rows)
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.DemandOtherWorkOutsideTemplate.F.OrderQuantity, 0);
+				foreach (dsMB.DemandOtherWorkOutsideTemplateRow r in ds.DT.DemandOtherWorkOutsideTemplate)
+					r.SetReadOnlyColumn(dsMB.Schema.T.DemandOtherWorkOutsideTemplate.F.OrderQuantity, 0);
 				ds.DB.Edit(ds, dsMB.Schema.T.Item.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.Item.Default.GetDataTable(ds).Rows) {
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.Item.F.Available, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.Item.F.OnHand, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.Item.F.OnOrder, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.Item.F.OnReserve, 0);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.Item.F.TotalCost, 0m);
+				foreach (dsMB.ItemRow r in ds.DT.Item) {
+					r.SetReadOnlyColumn(dsMB.Schema.T.Item.F.Available, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.Item.F.OnHand, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.Item.F.OnOrder, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.Item.F.OnReserve, 0);
+					r.SetReadOnlyColumn(dsMB.Schema.T.Item.F.TotalCost, 0m);
 				}
 				ds.DB.Edit(ds, dsMB.Schema.T.POLine.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.POLine.Default.GetDataTable(ds).Rows)
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.POLine.F.ReceiveCost, 0m);
+				foreach (dsMB.POLineRow r in ds.DT.POLine)
+					r.SetReadOnlyColumn(dsMB.Schema.T.POLine.F.ReceiveCost, 0m);
 				ds.DB.Edit(ds, dsMB.Schema.T.POLineItem.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.POLineItem.Default.GetDataTable(ds).Rows)
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.POLineItem.F.ReceiveQuantity, 0);
+				foreach (dsMB.POLineItemRow r in ds.DT.POLineItem)
+					r.SetReadOnlyColumn(dsMB.Schema.T.POLineItem.F.ReceiveQuantity, 0);
 				ds.DB.Edit(ds, dsMB.Schema.T.POLineLabor.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.POLineLabor.Default.GetDataTable(ds).Rows)
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.POLineLabor.F.ReceiveQuantity, TimeSpan.Zero);
+				foreach (dsMB.POLineLaborRow r in ds.DT.POLineLabor)
+					r.SetReadOnlyColumn(dsMB.Schema.T.POLineLabor.F.ReceiveQuantity, TimeSpan.Zero);
 				ds.DB.Edit(ds, dsMB.Schema.T.POLineMiscellaneous.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.POLineMiscellaneous.Default.GetDataTable(ds).Rows)
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.POLineMiscellaneous.F.ReceiveQuantity, 0);
+				foreach (dsMB.POLineMiscellaneousRow r in ds.DT.POLineMiscellaneous)
+					r.SetReadOnlyColumn(dsMB.Schema.T.POLineMiscellaneous.F.ReceiveQuantity, 0);
 				ds.DB.Edit(ds, dsMB.Schema.T.POLineOtherWork.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.POLineOtherWork.Default.GetDataTable(ds).Rows)
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.POLineOtherWork.F.ReceiveQuantity, 0);
+				foreach (dsMB.POLineOtherWorkRow r in ds.DT.POLineOtherWork)
+					r.SetReadOnlyColumn(dsMB.Schema.T.POLineOtherWork.F.ReceiveQuantity, 0);
 				ds.DB.Edit(ds, dsMB.Schema.T.PurchaseOrder.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.PurchaseOrder.Default.GetDataTable(ds).Rows) {
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.PurchaseOrder.F.HasReceiving, false);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.PurchaseOrder.F.TotalPurchase, 0m);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.PurchaseOrder.F.TotalReceive, 0m);
+				foreach (dsMB.PurchaseOrderRow r in ds.DT.PurchaseOrder) {
+					r.SetReadOnlyColumn(dsMB.Schema.T.PurchaseOrder.F.HasReceiving, false);
+					r.SetReadOnlyColumn(dsMB.Schema.T.PurchaseOrder.F.TotalPurchase, 0m);
+					r.SetReadOnlyColumn(dsMB.Schema.T.PurchaseOrder.F.TotalReceive, 0m);
 				}
 				ds.DB.Edit(ds, dsMB.Schema.T.Receipt.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.Receipt.Default.GetDataTable(ds).Rows)
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.Receipt.F.TotalReceive, 0m);
+				foreach (dsMB.ReceiptRow r in ds.DT.Receipt)
+					r.SetReadOnlyColumn(dsMB.Schema.T.Receipt.F.TotalReceive, 0m);
 				ds.DB.Edit(ds, dsMB.Schema.T.WorkOrder.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.WorkOrder.Default.GetDataTable(ds).Rows) {
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.WorkOrder.F.TemporaryStorageEmpty, true);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.WorkOrder.F.TotalActual, 0m);
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.WorkOrder.F.TotalDemand, 0m);
+				foreach (dsMB.WorkOrderRow r in ds.DT.WorkOrder) {
+					r.SetReadOnlyColumn(dsMB.Schema.T.WorkOrder.F.TemporaryStorageEmpty, true);
+					r.SetReadOnlyColumn(dsMB.Schema.T.WorkOrder.F.TotalActual, 0m);
+					r.SetReadOnlyColumn(dsMB.Schema.T.WorkOrder.F.TotalDemand, 0m);
 				}
 				ds.DB.Edit(ds, dsMB.Schema.T.WorkOrderTemplate.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.WorkOrderTemplate.Default.GetDataTable(ds).Rows)
-					DBClient.SetReadOnlyColumn(r, dsMB.Schema.T.WorkOrderTemplate.F.DemandCount, 0);
+				foreach (dsMB.WorkOrderTemplateRow r in ds.DT.WorkOrderTemplate)
+					r.SetReadOnlyColumn(dsMB.Schema.T.WorkOrderTemplate.F.DemandCount, 0);
 
-				DataRow defaultMeterReadingRow;
-				defaultMeterReadingRow = ds.DB.EditSingleRow(ds, dsMB.Schema.T.MeterReading.Default, null);
-				DBClient.SetReadOnlyColumn(defaultMeterReadingRow, dsMB.Schema.T.MeterReading.F.EffectiveReading, 0);
+				dsMB.MeterReadingRow defaultMeterReadingRow = (dsMB.MeterReadingRow)ds.DB.EditSingleRow(ds, dsMB.Schema.T.MeterReading.Default, null);
+				defaultMeterReadingRow.SetReadOnlyColumn(dsMB.Schema.T.MeterReading.F.EffectiveReading, 0);
 
 				ds.DB.Update(ds, Thinkage.Libraries.DBILibrary.Server.UpdateOptions.InitialDefaults);
 			}
@@ -613,12 +612,12 @@ namespace Thinkage.MainBoss.Database {
 				ds.V.DBVersion.Value = MBUpgrader.UpgradeInformation.LatestDBVersion.ToString();
 				ds.V.DBServerVersion.Value = mb3db.Session.EffectiveDBServerVersion.ToString();
 				ds.V.ActiveFilterInterval.Value = new TimeSpan(500, 0, 0, 0); // default ActiveFilter interval is a year and a half
-				ds.V.ActiveFilterSinceDate.SetNull();                               // and no Since date
+				ds.V.ActiveFilterSinceDate.Value = null;                               // and no Since date
 				ds.V.MinMBAppVersion.Value = MBUpgrader.UpgradeInformation.LastestAppVersion(dsMB.Schema.V.MinMBAppVersion).ToString();
 				ds.V.MinAReqAppVersion.Value = MBUpgrader.UpgradeInformation.LastestAppVersion(dsMB.Schema.V.MinAReqAppVersion).ToString();
 				ds.V.MinMBRemoteAppVersion.Value = MBUpgrader.UpgradeInformation.LastestAppVersion(dsMB.Schema.V.MinMBRemoteAppVersion).ToString();
 				// Demo logo variable
-				Creation.Resources.Images.Culture = Thinkage.Libraries.Application.InstanceCultureInfo;
+				Creation.Resources.Images.Culture = Thinkage.Libraries.Application.InstanceMessageCultureInfo;
 				System.Drawing.Bitmap logo = Creation.Resources.Images.DemoLogo;
 				using (System.IO.MemoryStream ms = new MemoryStream()) {
 					logo.Save(ms, logo.RawFormat);
@@ -647,28 +646,28 @@ namespace Thinkage.MainBoss.Database {
 				// Other configuration variables (non Service)
 				#endregion
 				#region MainBoss Service Default record
-				DataRow defaultServiceConfiguration = ds.DB.EditSingleRow(ds, dsMB.Schema.T.ServiceConfiguration.Default, null);
-				dsMB.Schema.T.ServiceConfiguration.F.WakeUpInterval[defaultServiceConfiguration] = new TimeSpan(0, 30, 0);
-				dsMB.Schema.T.ServiceConfiguration.F.SMTPServer[defaultServiceConfiguration] = null;
-				dsMB.Schema.T.ServiceConfiguration.F.SMTPPort[defaultServiceConfiguration] = 25;
-				dsMB.Schema.T.ServiceConfiguration.F.SMTPUseSSL[defaultServiceConfiguration] = false;
-				dsMB.Schema.T.ServiceConfiguration.F.SMTPCredentialType[defaultServiceConfiguration] = (sbyte)DatabaseEnums.SMTPCredentialType.ANONYMOUS;
-				dsMB.Schema.T.ServiceConfiguration.F.SMTPUserDomain[defaultServiceConfiguration] = null;
-				dsMB.Schema.T.ServiceConfiguration.F.SMTPUserName[defaultServiceConfiguration] = null;
-				dsMB.Schema.T.ServiceConfiguration.F.SMTPEncryptedPassword[defaultServiceConfiguration] = null;
-				dsMB.Schema.T.ServiceConfiguration.F.MailServer[defaultServiceConfiguration] = null;
-				dsMB.Schema.T.ServiceConfiguration.F.MailServerType[defaultServiceConfiguration] = (sbyte)DatabaseEnums.MailServerType.POP3;
-				dsMB.Schema.T.ServiceConfiguration.F.MailPort[defaultServiceConfiguration] = 110;   // POP3 Port
-				dsMB.Schema.T.ServiceConfiguration.F.MailUserName[defaultServiceConfiguration] = null;
-				dsMB.Schema.T.ServiceConfiguration.F.MailEncryptedPassword[defaultServiceConfiguration] = null;
-				dsMB.Schema.T.ServiceConfiguration.F.MailboxName[defaultServiceConfiguration] = null;
-				dsMB.Schema.T.ServiceConfiguration.F.AutomaticallyCreateRequestors[defaultServiceConfiguration] = true;
-				dsMB.Schema.T.ServiceConfiguration.F.ReturnEmailAddress[defaultServiceConfiguration] = null;
-				dsMB.Schema.T.ServiceConfiguration.F.ReturnEmailDisplayName[defaultServiceConfiguration] = KB.I("MainBoss Service");
-				dsMB.Schema.T.ServiceConfiguration.F.HtmlEmailNotification[defaultServiceConfiguration] = true;
-				dsMB.Schema.T.ServiceConfiguration.F.NotificationInterval[defaultServiceConfiguration] = new TimeSpan(0, 10, 0);
-				dsMB.Schema.T.ServiceConfiguration.F.ProcessNotificationEmail[defaultServiceConfiguration] = true;
-				dsMB.Schema.T.ServiceConfiguration.F.ProcessRequestorIncomingEmail[defaultServiceConfiguration] = true;
+				dsMB.ServiceConfigurationRow defaultServiceConfiguration = (dsMB.ServiceConfigurationRow)ds.DB.EditSingleRow(ds, dsMB.Schema.T.ServiceConfiguration.Default, null);
+				defaultServiceConfiguration.F.WakeUpInterval = new TimeSpan(0, 30, 0);
+				defaultServiceConfiguration.F.SMTPServer = null;
+				defaultServiceConfiguration.F.SMTPPort = 25;
+				defaultServiceConfiguration.F.SMTPUseSSL = false;
+				defaultServiceConfiguration.F.SMTPCredentialType = (sbyte)DatabaseEnums.SMTPCredentialType.ANONYMOUS;
+				defaultServiceConfiguration.F.SMTPUserDomain = null;
+				defaultServiceConfiguration.F.SMTPUserName = null;
+				defaultServiceConfiguration.F.SMTPEncryptedPassword = null;
+				defaultServiceConfiguration.F.MailServer = null;
+				defaultServiceConfiguration.F.MailServerType = (sbyte)DatabaseEnums.MailServerType.POP3;
+				defaultServiceConfiguration.F.MailPort = 110;   // POP3 Port
+				defaultServiceConfiguration.F.MailUserName = null;
+				defaultServiceConfiguration.F.MailEncryptedPassword = null;
+				defaultServiceConfiguration.F.MailboxName = null;
+				defaultServiceConfiguration.F.AutomaticallyCreateRequestors = true;
+				defaultServiceConfiguration.F.ReturnEmailAddress = null;
+				defaultServiceConfiguration.F.ReturnEmailDisplayName = KB.I("MainBoss Service");
+				defaultServiceConfiguration.F.HtmlEmailNotification = true;
+				defaultServiceConfiguration.F.NotificationInterval = new TimeSpan(0, 10, 0);
+				defaultServiceConfiguration.F.ProcessNotificationEmail = true;
+				defaultServiceConfiguration.F.ProcessRequestorIncomingEmail = true;
 
 				#region MainBoss Service UserMessageKeys
 				/// Define the MainBoss Service UserMessageTranslation keys (invariant ONLY provided)
@@ -720,17 +719,20 @@ namespace Thinkage.MainBoss.Database {
 				#endregion
 
 				#region DatabaseHistory entry
-				DataRow databaseHistoryRow = ds.DB.AddNewRowAndBases(ds, dsMB.Schema.T.DatabaseHistory);
-				dsMB.Schema.T.DatabaseHistory.F.Subject[databaseHistoryRow] = Strings.Format(KB.K("Database version {0} created"), MBUpgrader.UpgradeInformation.LatestDBVersion.ToString());
+				dsMB.DatabaseHistoryRow databaseHistoryRow = (dsMB.DatabaseHistoryRow)ds.DB.AddNewRowAndBases(ds, dsMB.Schema.T.DatabaseHistory);
+				databaseHistoryRow.F.Subject = Strings.Format(KB.K("Database version {0} created"), MBUpgrader.UpgradeInformation.LatestDBVersion.ToString());
 				System.Text.StringBuilder description = new StringBuilder();
 				description.AppendLine(Strings.Format(KB.K("SQL Version {0}"), ds.DB.DatabaseServerProductIdentification));
-				description.AppendLine(Strings.Format(KB.K("Culture {0} ({1})"), Thinkage.Libraries.Application.InstanceCultureInfo.NativeName, Thinkage.Libraries.Application.InstanceCultureInfo.Name));
+				description.AppendLine(Strings.Format(KB.K("Formats {0} ({1}/{2:X4})"), Thinkage.Libraries.Application.InstanceFormatCultureInfo.NativeName, Thinkage.Libraries.Application.InstanceFormatCultureInfo.Name, Thinkage.Libraries.Application.InstanceFormatCultureInfo.LCID));
+				description.AppendLine(Strings.Format(KB.K("Messages {0} ({1}/{2:X4})"), Thinkage.Libraries.Application.InstanceMessageCultureInfo.NativeName, Thinkage.Libraries.Application.InstanceMessageCultureInfo.Name, Thinkage.Libraries.Application.InstanceMessageCultureInfo.LCID));
+				description.AppendLine(Strings.Format(KB.K("Installed as {0} ({1}/{2:X4})"), System.Globalization.CultureInfo.InstalledUICulture.NativeName, System.Globalization.CultureInfo.InstalledUICulture.Name, System.Globalization.CultureInfo.InstalledUICulture.LCID));
+
 				Application.IUserInformation uInfo = Application.Instance.QueryInterface<Application.IUserInformation>();
 				if (uInfo != null) {
 					description.AppendLine(Strings.Format(KB.K("By user {0}"), ds.DB.Session.ConnectionInformation.UserIdentification));
 					description.AppendLine(Strings.Format(KB.K("On machine {0}"), uInfo.WorkstationName));
 				}
-				dsMB.Schema.T.DatabaseHistory.F.Description[databaseHistoryRow] = description.ToString();
+				databaseHistoryRow.F.Description = description.ToString();
 				#endregion
 
 				#region General Defaults
@@ -739,34 +741,32 @@ namespace Thinkage.MainBoss.Database {
 				// Set the Meter default offset to zero. This is a required field in the Meter record and will almost
 				// always be zero anyway. Perhaps this should be handled as a general case: any numeric field that is
 				// required should have zero in the its default value ...????
-				DataRow defaultMeterRow;
-				defaultMeterRow = ds.DB.EditSingleRow(ds, dsMB.Schema.T.Meter.Default, null);
-				dsMB.Schema.T.Meter.F.MeterReadingOffset[defaultMeterRow] = 0;
+				dsMB.MeterRow defaultMeterRow = (dsMB.MeterRow)ds.DB.EditSingleRow(ds, dsMB.Schema.T.Meter.Default, null);
+				defaultMeterRow.F.MeterReadingOffset = 0;
 
 				ds.DB.Edit(ds, dsMB.Schema.T.Requestor.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.Requestor.Default.GetDataTable(ds).Rows) {
-					dsMB.Schema.T.Requestor.F.ReceiveAcknowledgement[r] = true;
+				foreach (dsMB.RequestorRow r in ds.DT.Requestor) {
+					r.F.ReceiveAcknowledgement = true;
 				}
 
 				//Assignment Notification defaults are all on.
-				DataRow rarow = ds.DB.EditSingleRow(ds, dsMB.Schema.T.RequestAssignee.Default, null);
-				dsMB.Schema.T.RequestAssignee.F.ReceiveNotification[rarow] = true;
-				DataRow worow = ds.DB.EditSingleRow(ds, dsMB.Schema.T.WorkOrderAssignee.Default, null);
-				dsMB.Schema.T.WorkOrderAssignee.F.ReceiveNotification[worow] = true;
-				DataRow porow = ds.DB.EditSingleRow(ds, dsMB.Schema.T.PurchaseOrderAssignee.Default, null);
-				dsMB.Schema.T.PurchaseOrderAssignee.F.ReceiveNotification[porow] = true;
+				dsMB.RequestAssigneeRow rarow = (dsMB.RequestAssigneeRow)ds.DB.EditSingleRow(ds, dsMB.Schema.T.RequestAssignee.Default, null);
+				rarow.F.ReceiveNotification = true;
+				dsMB.WorkOrderAssigneeRow worow = (dsMB.WorkOrderAssigneeRow)ds.DB.EditSingleRow(ds, dsMB.Schema.T.WorkOrderAssignee.Default, null);
+				worow.F.ReceiveNotification = true;
+				dsMB.PurchaseOrderAssigneeRow porow = (dsMB.PurchaseOrderAssigneeRow)ds.DB.EditSingleRow(ds, dsMB.Schema.T.PurchaseOrderAssignee.Default, null);
+				porow.F.ReceiveNotification = true;
 
-				DataRow defaultServiceContractRow = ds.DB.EditSingleRow(ds, dsMB.Schema.T.ServiceContract.Default, null);
-				dsMB.Schema.T.ServiceContract.F.Parts[defaultServiceContractRow] = true;
-				dsMB.Schema.T.ServiceContract.F.Labor[defaultServiceContractRow] = true;
+				dsMB.ServiceContractRow defaultServiceContractRow = (dsMB.ServiceContractRow)ds.DB.EditSingleRow(ds, dsMB.Schema.T.ServiceContract.Default, null);
+				defaultServiceContractRow.F.Parts = true;
+				defaultServiceContractRow.F.Labor = true;
 
 				#region SelectPrintFlag
 				// The interim SelectPrintFlag on Purchase Orders, and Requests defaults to True for New records. WorkOrder will be set with other workorder default values below
-				DataRow defaultSelectPrintRow;
-				defaultSelectPrintRow = ds.DB.EditSingleRow(ds, dsMB.Schema.T.Request.Default, null);
-				dsMB.Schema.T.Request.F.SelectPrintFlag[defaultSelectPrintRow] = true;
-				defaultSelectPrintRow = ds.DB.EditSingleRow(ds, dsMB.Schema.T.PurchaseOrder.Default, null);
-				dsMB.Schema.T.PurchaseOrder.F.SelectPrintFlag[defaultSelectPrintRow] = true;
+				dsMB.RequestRow defaultRequestSelectPrintRow = (dsMB.RequestRow)ds.DB.EditSingleRow(ds, dsMB.Schema.T.Request.Default, null);
+				defaultRequestSelectPrintRow.F.SelectPrintFlag = true;
+				dsMB.PurchaseOrderRow defaultPurchaseOrderSelectPrintRow = (dsMB.PurchaseOrderRow)ds.DB.EditSingleRow(ds, dsMB.Schema.T.PurchaseOrder.Default, null);
+				defaultPurchaseOrderSelectPrintRow.F.SelectPrintFlag = true;
 				#endregion
 
 				#endregion
@@ -774,10 +774,8 @@ namespace Thinkage.MainBoss.Database {
 				#region Users and permissions
 
 				// User
-				string userName;
-				string userRealm;
 				string system_user = DatabaseCreation.GetDatabaseSystemUser(ds.DB);
-				DatabaseCreation.ParseUserIdentification(system_user, out userName, out userRealm);
+				DatabaseCreation.ParseUserIdentification(system_user, out string userName, out string userRealm);
 
 				ds.EnsureDataTableExists(dsMB.Schema.T.User, dsMB.Schema.T.Contact, dsMB.Schema.T.UserRole);
 
@@ -806,7 +804,7 @@ namespace Thinkage.MainBoss.Database {
 				ds.EnsureDataTableExists(dsMB.Schema.T.RequestState);
 
 				requeststaterow = ds.T.RequestState.AddNewRequestStateRow();
-				DBClient.SetReadOnlyColumn(requeststaterow, dsMB.Schema.T.RequestState.F.Id, KnownIds.RequestStateNewId);
+				requeststaterow.SetReadOnlyColumn(dsMB.Schema.T.RequestState.F.Id, KnownIds.RequestStateNewId);
 				requeststaterow.F.Code = StateContext.NewCode;
 				requeststaterow.F.Desc = StateContext.DescK("New Request");
 				requeststaterow.F.Hidden = null;
@@ -815,7 +813,7 @@ namespace Thinkage.MainBoss.Database {
 				requeststaterow.F.FilterAsInProgress = false;
 
 				requeststaterow = ds.T.RequestState.AddNewRequestStateRow();
-				DBClient.SetReadOnlyColumn(requeststaterow, dsMB.Schema.T.RequestState.F.Id, KnownIds.RequestStateInProgressId);
+				requeststaterow.SetReadOnlyColumn(dsMB.Schema.T.RequestState.F.Id, KnownIds.RequestStateInProgressId);
 				requeststaterow.F.Code = StateContext.InProgressCode;
 				requeststaterow.F.Desc = StateContext.DescK("Request work in progress");
 				requeststaterow.F.Hidden = null;
@@ -824,7 +822,7 @@ namespace Thinkage.MainBoss.Database {
 				requeststaterow.F.FilterAsInProgress = true;
 
 				requeststaterow = ds.T.RequestState.AddNewRequestStateRow();
-				DBClient.SetReadOnlyColumn(requeststaterow, dsMB.Schema.T.RequestState.F.Id, KnownIds.RequestStateClosedId);
+				requeststaterow.SetReadOnlyColumn(dsMB.Schema.T.RequestState.F.Id, KnownIds.RequestStateClosedId);
 				requeststaterow.F.Code = StateContext.ClosedCode;
 				requeststaterow.F.Desc = StateContext.DescK("Request has been completed");
 				requeststaterow.F.Hidden = null;
@@ -836,14 +834,12 @@ namespace Thinkage.MainBoss.Database {
 				// TODO: This should be table-driven to make the code more compact to read.
 				ds.EnsureDataTableExists(dsMB.Schema.T.RequestStateTransition);
 				foreach (MB3Client.StateHistoryTransition t in RequestStateTransitions)
-					MB3Client.RequestHistoryTable.Value.StateHistoryTransitionToRow(t, ds.DB.AddNewRowAndBases(ds, dsMB.Schema.T.RequestStateTransition));
+					MB3Client.RequestHistoryTable.Value.StateHistoryTransitionToRow(t, ds.DB.AddNewRowAndBases(ds, dsMB.Schema.T.RequestStateTransition).ToDBIDataRow());
 
 				// Set the Default RequestStateHistory initial state for Requests to 'New'
-				DataRow defaultRequestStateHistoryRow;
-				defaultRequestStateHistoryRow = ds.DB.EditSingleRow(ds, dsMB.Schema.T.RequestStateHistory.Default, null);
-				dsMB.Schema.T.RequestStateHistory.F.RequestStateID[defaultRequestStateHistoryRow] = KnownIds.RequestStateNewId;
-				dsMB.Schema.T.RequestStateHistory.F.EffectiveDateReadonly[defaultRequestStateHistoryRow] = false;
-
+				dsMB.RequestStateHistoryRow defaultRequestStateHistoryRow = (dsMB.RequestStateHistoryRow)ds.DB.EditSingleRow(ds, dsMB.Schema.T.RequestStateHistory.Default, null);
+				defaultRequestStateHistoryRow.F.RequestStateID = KnownIds.RequestStateNewId;
+				defaultRequestStateHistoryRow.F.EffectiveDateReadonly = false;
 
 				#endregion
 				#region WorkOrderState
@@ -855,7 +851,7 @@ namespace Thinkage.MainBoss.Database {
 
 				workorderstaterow = ds.T.WorkOrderState.AddNewWorkOrderStateRow();
 				WODraftStateID = KnownIds.WorkOrderStateDraftId;
-				DBClient.SetReadOnlyColumn(workorderstaterow, dsMB.Schema.T.WorkOrderState.F.Id, WODraftStateID);
+				workorderstaterow.SetReadOnlyColumn(dsMB.Schema.T.WorkOrderState.F.Id, WODraftStateID);
 				workorderstaterow.F.Code = StateContext.DraftCode;
 				workorderstaterow.F.Desc = StateContext.DescK("Work Order being drafted");
 				workorderstaterow.F.Hidden = null;
@@ -878,7 +874,7 @@ namespace Thinkage.MainBoss.Database {
 
 				workorderstaterow = ds.T.WorkOrderState.AddNewWorkOrderStateRow();
 				WOOpenStateID = KnownIds.WorkOrderStateOpenId;
-				DBClient.SetReadOnlyColumn(workorderstaterow, dsMB.Schema.T.WorkOrderState.F.Id, WOOpenStateID);
+				workorderstaterow.SetReadOnlyColumn(dsMB.Schema.T.WorkOrderState.F.Id, WOOpenStateID);
 
 				workorderstaterow.F.Code = StateContext.OpenCode;
 				workorderstaterow.F.Desc = StateContext.DescK("Work Order waiting");
@@ -901,7 +897,7 @@ namespace Thinkage.MainBoss.Database {
 
 				workorderstaterow = ds.T.WorkOrderState.AddNewWorkOrderStateRow();
 				WOClosedStateID = KnownIds.WorkOrderStateClosedId;
-				DBClient.SetReadOnlyColumn(workorderstaterow, dsMB.Schema.T.WorkOrderState.F.Id, WOClosedStateID);
+				workorderstaterow.SetReadOnlyColumn(dsMB.Schema.T.WorkOrderState.F.Id, WOClosedStateID);
 				workorderstaterow.F.Code = StateContext.ClosedCode;
 				workorderstaterow.F.Desc = StateContext.DescK("Work Order completed");
 				workorderstaterow.F.Hidden = null;
@@ -922,7 +918,7 @@ namespace Thinkage.MainBoss.Database {
 
 				workorderstaterow = ds.T.WorkOrderState.AddNewWorkOrderStateRow();
 				WOVoidStateID = KnownIds.WorkOrderStateVoidId;
-				DBClient.SetReadOnlyColumn(workorderstaterow, dsMB.Schema.T.WorkOrderState.F.Id, WOVoidStateID);
+				workorderstaterow.SetReadOnlyColumn(dsMB.Schema.T.WorkOrderState.F.Id, WOVoidStateID);
 				workorderstaterow.F.Hidden = null;
 				workorderstaterow.F.Code = StateContext.VoidedCode;
 				workorderstaterow.F.Desc = StateContext.DescK("Work Order voided");
@@ -944,13 +940,12 @@ namespace Thinkage.MainBoss.Database {
 				// Set the StateTransition table for WorkOrders
 				ds.EnsureDataTableExists(dsMB.Schema.T.WorkOrderStateTransition);
 				foreach (MB3Client.StateHistoryTransition t in WorkOrderStateTransitions)
-					MB3Client.WorkOrderHistoryTable.Value.StateHistoryTransitionToRow(t, ds.DB.AddNewRowAndBases(ds, dsMB.Schema.T.WorkOrderStateTransition));
+					MB3Client.WorkOrderHistoryTable.Value.StateHistoryTransitionToRow(t, ds.DB.AddNewRowAndBases(ds, dsMB.Schema.T.WorkOrderStateTransition).ToDBIDataRow());
 
 				// Set the Default WorkOrderStateHistory initial state for WorkOrders to 'Draft'
-				DataRow defaultWorkOrderStateHistoryRow;
-				defaultWorkOrderStateHistoryRow = ds.DB.EditSingleRow(ds, dsMB.Schema.T.WorkOrderStateHistory.Default, null);
-				dsMB.Schema.T.WorkOrderStateHistory.F.WorkOrderStateID[defaultWorkOrderStateHistoryRow] = WODraftStateID;
-				dsMB.Schema.T.WorkOrderStateHistory.F.EffectiveDateReadonly[defaultWorkOrderStateHistoryRow] = false;
+				dsMB.WorkOrderStateHistoryRow defaultWorkOrderStateHistoryRow = (dsMB.WorkOrderStateHistoryRow)ds.DB.EditSingleRow(ds, dsMB.Schema.T.WorkOrderStateHistory.Default, null);
+				defaultWorkOrderStateHistoryRow.F.WorkOrderStateID = WODraftStateID;
+				defaultWorkOrderStateHistoryRow.F.EffectiveDateReadonly = false;
 
 				#endregion
 				#region ManageRequestTransition
@@ -1019,7 +1014,7 @@ namespace Thinkage.MainBoss.Database {
 
 				purchaseorderstaterow = ds.T.PurchaseOrderState.AddNewPurchaseOrderStateRow();
 				PODraftStateID = KnownIds.PurchaseOrderStateDraftId;
-				DBClient.SetReadOnlyColumn(purchaseorderstaterow, dsMB.Schema.T.PurchaseOrderState.F.Id, PODraftStateID);
+				purchaseorderstaterow.SetReadOnlyColumn(dsMB.Schema.T.PurchaseOrderState.F.Id, PODraftStateID);
 				purchaseorderstaterow.F.Hidden = null;
 				purchaseorderstaterow.F.Code = StateContext.DraftCode;
 				purchaseorderstaterow.F.Desc = StateContext.DescK("Purchase Order being drafted");
@@ -1034,7 +1029,7 @@ namespace Thinkage.MainBoss.Database {
 
 				purchaseorderstaterow = ds.T.PurchaseOrderState.AddNewPurchaseOrderStateRow();
 				POIssuedStateID = KnownIds.PurchaseOrderStateIssuedId;
-				DBClient.SetReadOnlyColumn(purchaseorderstaterow, dsMB.Schema.T.PurchaseOrderState.F.Id, POIssuedStateID);
+				purchaseorderstaterow.SetReadOnlyColumn(dsMB.Schema.T.PurchaseOrderState.F.Id, POIssuedStateID);
 				purchaseorderstaterow.F.Hidden = null;
 				purchaseorderstaterow.F.Code = StateContext.IssuedCode;
 				purchaseorderstaterow.F.Desc = StateContext.DescK("Purchase Order issued to vendor");
@@ -1049,7 +1044,7 @@ namespace Thinkage.MainBoss.Database {
 
 				purchaseorderstaterow = ds.T.PurchaseOrderState.AddNewPurchaseOrderStateRow();
 				POClosedStateID = KnownIds.PurchaseOrderStateClosedId;
-				DBClient.SetReadOnlyColumn(purchaseorderstaterow, dsMB.Schema.T.PurchaseOrderState.F.Id, POClosedStateID);
+				purchaseorderstaterow.SetReadOnlyColumn(dsMB.Schema.T.PurchaseOrderState.F.Id, POClosedStateID);
 				purchaseorderstaterow.F.Hidden = null;
 				purchaseorderstaterow.F.Code = StateContext.ClosedCode;
 				purchaseorderstaterow.F.Desc = StateContext.DescK("Purchase Order completed");
@@ -1064,7 +1059,7 @@ namespace Thinkage.MainBoss.Database {
 
 				purchaseorderstaterow = ds.T.PurchaseOrderState.AddNewPurchaseOrderStateRow();
 				POVoidStateID = KnownIds.PurchaseOrderStateVoidId;
-				DBClient.SetReadOnlyColumn(purchaseorderstaterow, dsMB.Schema.T.PurchaseOrderState.F.Id, POVoidStateID);
+				purchaseorderstaterow.SetReadOnlyColumn(dsMB.Schema.T.PurchaseOrderState.F.Id, POVoidStateID);
 				purchaseorderstaterow.F.Hidden = null;
 				purchaseorderstaterow.F.Code = StateContext.VoidedCode;
 				purchaseorderstaterow.F.Desc = StateContext.DescK("Purchase Order voided");
@@ -1080,13 +1075,12 @@ namespace Thinkage.MainBoss.Database {
 				// Set the StateTransition table for PurchaseOrders
 				ds.EnsureDataTableExists(dsMB.Schema.T.PurchaseOrderStateTransition);
 				foreach (MB3Client.StateHistoryTransition t in PurchaseOrderStateTransitions)
-					MB3Client.PurchaseOrderHistoryTable.Value.StateHistoryTransitionToRow(t, ds.DB.AddNewRowAndBases(ds, dsMB.Schema.T.PurchaseOrderStateTransition));
+					MB3Client.PurchaseOrderHistoryTable.Value.StateHistoryTransitionToRow(t, ds.DB.AddNewRowAndBases(ds, dsMB.Schema.T.PurchaseOrderStateTransition).ToDBIDataRow());
 
 				// Set the Default PurchaseOrderStateHistory initial state for PurchaseOrders to 'Draft'
-				DataRow defaultPurchaseOrderStateHistoryRow;
-				defaultPurchaseOrderStateHistoryRow = ds.DB.EditSingleRow(ds, dsMB.Schema.T.PurchaseOrderStateHistory.Default, null);
-				dsMB.Schema.T.PurchaseOrderStateHistory.F.PurchaseOrderStateID[defaultPurchaseOrderStateHistoryRow] = PODraftStateID;
-				dsMB.Schema.T.PurchaseOrderStateHistory.F.EffectiveDateReadonly[defaultPurchaseOrderStateHistoryRow] = false;
+				dsMB.PurchaseOrderStateHistoryRow defaultPurchaseOrderStateHistoryRow = (dsMB.PurchaseOrderStateHistoryRow)ds.DB.EditSingleRow(ds, dsMB.Schema.T.PurchaseOrderStateHistory.Default, null);
+				defaultPurchaseOrderStateHistoryRow.F.PurchaseOrderStateID = PODraftStateID;
+				defaultPurchaseOrderStateHistoryRow.F.EffectiveDateReadonly = false;
 
 				#endregion
 
@@ -1106,15 +1100,15 @@ namespace Thinkage.MainBoss.Database {
 				dsMB.WorkOrderExpenseCategoryRow workOrderExpenseCategoryRow;
 				ds.EnsureDataTableExists(dsMB.Schema.T.WorkOrderExpenseCategory);
 
-				DataRow WorkOrderExpenseCategoryDefaultRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.WorkOrderExpenseCategory.Default, null);
-				dsMB.Schema.T.WorkOrderExpenseCategory.F.FilterAsItem[WorkOrderExpenseCategoryDefaultRow] = false;
-				dsMB.Schema.T.WorkOrderExpenseCategory.F.FilterAsLabor[WorkOrderExpenseCategoryDefaultRow] = false;
-				dsMB.Schema.T.WorkOrderExpenseCategory.F.FilterAsMiscellaneous[WorkOrderExpenseCategoryDefaultRow] = false;
+				dsMB.WorkOrderExpenseCategoryRow WorkOrderExpenseCategoryDefaultRow = (dsMB.WorkOrderExpenseCategoryRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.WorkOrderExpenseCategory.Default, null);
+				WorkOrderExpenseCategoryDefaultRow.F.FilterAsItem = false;
+				WorkOrderExpenseCategoryDefaultRow.F.FilterAsLabor = false;
+				WorkOrderExpenseCategoryDefaultRow.F.FilterAsMiscellaneous = false;
 
 				workOrderExpenseCategoryRow = ds.T.WorkOrderExpenseCategory.AddNewWorkOrderExpenseCategoryRow();
 				workOrderExpenseCategoryRow.F.Hidden = null;
-				workOrderExpenseCategoryRow.F.Code = DatabaseLayoutK("Default Expense Category").Translate(null);
-				workOrderExpenseCategoryRow.F.Desc = DatabaseLayoutK("Default Expense Category").Translate(null);
+				workOrderExpenseCategoryRow.F.Code = DatabaseLayoutK("Default Expense Category").Translate(System.Globalization.CultureInfo.InvariantCulture);
+				workOrderExpenseCategoryRow.F.Desc = DatabaseLayoutK("Default Expense Category").Translate(System.Globalization.CultureInfo.InvariantCulture);
 				workOrderExpenseCategoryRow.F.FilterAsItem = true;
 				workOrderExpenseCategoryRow.F.FilterAsLabor = true;
 				workOrderExpenseCategoryRow.F.FilterAsMiscellaneous = true;
@@ -1122,21 +1116,21 @@ namespace Thinkage.MainBoss.Database {
 				// Set the default expenseCategory for all demand types, and all template demand types
 				// Also set the default costing calculation to Current Value calculation.
 				ds.DB.Edit(ds, dsMB.Schema.T.Demand.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.Demand.Default.GetDataTable(ds).Rows) {
-					dsMB.Schema.T.Demand.F.WorkOrderExpenseCategoryID[r] = workOrderExpenseCategoryRow.F.Id;
-					dsMB.Schema.T.Demand.F.DemandActualCalculationInitValue[r] = DatabaseEnums.DemandActualCalculationInitValues.UseCurrentSourceInformationValue;
+				foreach (dsMB.DemandRow r in ds.DT.Demand) {
+					r.F.WorkOrderExpenseCategoryID = workOrderExpenseCategoryRow.F.Id;
+					r.F.DemandActualCalculationInitValue = (sbyte)DatabaseEnums.DemandActualCalculationInitValues.UseCurrentSourceInformationValue;
 				}
 				ds.DB.Edit(ds, dsMB.Schema.T.DemandTemplate.Default, null);
-				foreach (DataRow r in dsMB.Schema.T.DemandTemplate.Default.GetDataTable(ds).Rows) {
-					dsMB.Schema.T.DemandTemplate.F.WorkOrderExpenseCategoryID[r] = null; // DemandTemplates typically have no overriding ExpenseCategory
-					dsMB.Schema.T.DemandTemplate.F.EstimateCost[r] = true;
-					dsMB.Schema.T.DemandTemplate.F.DemandActualCalculationInitValue[r] = DatabaseEnums.DemandActualCalculationInitValues.UseCurrentSourceInformationValue;
+				foreach (dsMB.DemandTemplateRow r in ds.DT.DemandTemplate) {
+					r.F.WorkOrderExpenseCategoryID = null; // DemandTemplates typically have no overriding ExpenseCategory
+					r.F.EstimateCost = true;
+					r.F.DemandActualCalculationInitValue = (sbyte)DatabaseEnums.DemandActualCalculationInitValues.UseCurrentSourceInformationValue;
 				}
 
 				// WorkOrderExpenseModel defaults
-				costCenterRow = newCostCenterRow(ds, "Default Non Stock Item Holding Costs");
-				DataRow WorkOrderExpenseModelDefaultRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.WorkOrderExpenseModel.Default, null);
-				dsMB.Schema.T.WorkOrderExpenseModel.F.NonStockItemHoldingCostCenterID[WorkOrderExpenseModelDefaultRow] = costCenterRow.F.Id;
+				costCenterRow = NewCostCenterRow(ds, "Default Non Stock Item Holding Costs");
+				dsMB.WorkOrderExpenseModelRow WorkOrderExpenseModelDefaultRow = (dsMB.WorkOrderExpenseModelRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.WorkOrderExpenseModel.Default, null);
+				WorkOrderExpenseModelDefaultRow.F.NonStockItemHoldingCostCenterID = costCenterRow.F.Id;
 
 				// WorkOrderExpenseModel definitions
 				dsMB.WorkOrderExpenseModelRow workOrderExpenseModelRow;
@@ -1144,31 +1138,28 @@ namespace Thinkage.MainBoss.Database {
 
 				workOrderExpenseModelRow = ds.T.WorkOrderExpenseModel.AddNewWorkOrderExpenseModelRow();
 				workOrderExpenseModelRow.F.Hidden = null;
-				workOrderExpenseModelRow.F.Code = DatabaseLayoutK("Default Expense Model").Translate(null);
-				workOrderExpenseModelRow.F.Desc = DatabaseLayoutK("Default Expense Model").Translate(null);
+				workOrderExpenseModelRow.F.Code = DatabaseLayoutK("Default Expense Model").Translate(System.Globalization.CultureInfo.InvariantCulture);
+				workOrderExpenseModelRow.F.Desc = DatabaseLayoutK("Default Expense Model").Translate(System.Globalization.CultureInfo.InvariantCulture);
 				workOrderExpenseModelRow.F.NonStockItemHoldingCostCenterID = costCenterRow.F.Id;
 				// Later we will set the defaults for categories but they involve a circular reference so we must save the Expense Model Entry row first.
 
-				DataRow defaultWorkOrderRow;
-				defaultWorkOrderRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.WorkOrder.Default, null);
-				dsMB.Schema.T.WorkOrder.F.WorkOrderExpenseModelID[defaultWorkOrderRow] = workOrderExpenseModelRow.F.Id;
-				dsMB.Schema.T.WorkOrder.F.SelectPrintFlag[defaultWorkOrderRow] = true;
+				dsMB.WorkOrderRow wor = (dsMB.WorkOrderRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.WorkOrder.Default, null);
+				wor.F.WorkOrderExpenseModelID = workOrderExpenseModelRow.F.Id;
+				wor.F.SelectPrintFlag = true;
 
-				DataRow defaultWorkOrderTemplateRow;
-				defaultWorkOrderTemplateRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.WorkOrderTemplate.Default, null);
-				dsMB.Schema.T.WorkOrderTemplate.F.WorkOrderExpenseModelID[defaultWorkOrderTemplateRow] = workOrderExpenseModelRow.F.Id;
-				dsMB.Schema.T.WorkOrderTemplate.F.Duration[defaultWorkOrderTemplateRow] = new TimeSpan(1, 0, 0, 0, 0); // default duration for new Tasks is 1 day ala MainBoss 2.9
-				dsMB.Schema.T.WorkOrderTemplate.F.GenerateLeadTime[defaultWorkOrderTemplateRow] = new TimeSpan(0, 0, 0, 0, 0); // default is no lead time on a task
-				dsMB.Schema.T.WorkOrderTemplate.F.SelectPrintFlag[defaultWorkOrderTemplateRow] = true; // default SelectPrintFlag on for top level Tasks
+				dsMB.WorkOrderTemplateRow defaultWorkOrderTemplateRow = (dsMB.WorkOrderTemplateRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.WorkOrderTemplate.Default, null);
+				defaultWorkOrderTemplateRow.F.WorkOrderExpenseModelID = workOrderExpenseModelRow.F.Id;
+				defaultWorkOrderTemplateRow.F.Duration = new TimeSpan(1, 0, 0, 0, 0); // default duration for new Tasks is 1 day ala MainBoss 2.9
+				defaultWorkOrderTemplateRow.F.GenerateLeadTime = new TimeSpan(0, 0, 0, 0, 0); // default is no lead time on a task
+				defaultWorkOrderTemplateRow.F.SelectPrintFlag = true; // default SelectPrintFlag on for top level Tasks
 
-				DataRow defaultUnitRow;
-				defaultUnitRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.Unit.Default, null);
-				dsMB.Schema.T.Unit.F.WorkOrderExpenseModelID[defaultUnitRow] = workOrderExpenseModelRow.F.Id;
+				dsMB.UnitRow defaultUnitRow = (dsMB.UnitRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.Unit.Default, null);
+				defaultUnitRow.F.WorkOrderExpenseModelID = workOrderExpenseModelRow.F.Id;
 
 				// WorkOrderExpenseModelEntry defaults
-				costCenterRow = newCostCenterRow(ds, "Default Work Order Costs");
-				DataRow workOrderExpenseModelEntryDefaultRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.WorkOrderExpenseModelEntry.Default, null);
-				dsMB.Schema.T.WorkOrderExpenseModelEntry.F.CostCenterID[workOrderExpenseModelEntryDefaultRow] = costCenterRow.F.Id;
+				costCenterRow = NewCostCenterRow(ds, "Default Work Order Costs");
+				dsMB.WorkOrderExpenseModelEntryRow workOrderExpenseModelEntryDefaultRow = (dsMB.WorkOrderExpenseModelEntryRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.WorkOrderExpenseModelEntry.Default, null);
+				workOrderExpenseModelEntryDefaultRow.F.CostCenterID = costCenterRow.F.Id;
 
 				// WorkOrderExpenseModelEntry definitions
 				dsMB.WorkOrderExpenseModelEntryRow workOrderExpenseModelEntryRow;
@@ -1180,95 +1171,83 @@ namespace Thinkage.MainBoss.Database {
 				workOrderExpenseModelEntryRow.F.CostCenterID = costCenterRow.F.Id;
 
 				// LaborInside
-				costCenterRow = newCostCenterRow(ds, "Default Hourly Inside Costs");
+				costCenterRow = NewCostCenterRow(ds, "Default Hourly Inside Costs");
 
-				DataRow defaultInsideLaborRow;
-				defaultInsideLaborRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.LaborInside.Default, null);
-				dsMB.Schema.T.LaborInside.F.CostCenterID[defaultInsideLaborRow] = costCenterRow.F.Id;
+				dsMB.LaborInsideRow defaultInsideLaborRow = (dsMB.LaborInsideRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.LaborInside.Default, null);
+				defaultInsideLaborRow.F.CostCenterID = costCenterRow.F.Id;
 
 				// OtherWorkInside
-				costCenterRow = newCostCenterRow(ds, "Default Per Job Inside Costs");
+				costCenterRow = NewCostCenterRow(ds, "Default Per Job Inside Costs");
 
-				DataRow defaultInsideOtherWorkRow;
-				defaultInsideOtherWorkRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.OtherWorkInside.Default, null);
-				dsMB.Schema.T.OtherWorkInside.F.CostCenterID[defaultInsideOtherWorkRow] = costCenterRow.F.Id;
+				dsMB.OtherWorkInsideRow defaultInsideOtherWorkRow = (dsMB.OtherWorkInsideRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.OtherWorkInside.Default, null);
+				defaultInsideOtherWorkRow.F.CostCenterID = costCenterRow.F.Id;
 
 				// MiscellaneousWorkOrderCost
-				costCenterRow = newCostCenterRow(ds, "Default Miscellaneous Work Order Costs");
+				costCenterRow = NewCostCenterRow(ds, "Default Miscellaneous Work Order Costs");
 
-				DataRow defaultMiscellaneousRow;
-				defaultMiscellaneousRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.MiscellaneousWorkOrderCost.Default, null);
-				dsMB.Schema.T.MiscellaneousWorkOrderCost.F.CostCenterID[defaultMiscellaneousRow] = costCenterRow.F.Id;
+				dsMB.MiscellaneousWorkOrderCostRow defaultMiscellaneousRow = (dsMB.MiscellaneousWorkOrderCostRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.MiscellaneousWorkOrderCost.Default, null);
+				defaultMiscellaneousRow.F.CostCenterID = costCenterRow.F.Id;
 
 				#endregion
 
 				#region Purchase Order related accounting info
 
-				DataRow defaultPurchaseOrderTemplateRow;
-				defaultPurchaseOrderTemplateRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.PurchaseOrderTemplate.Default, null);
-				dsMB.Schema.T.PurchaseOrderTemplate.F.RequiredByInterval[defaultPurchaseOrderTemplateRow] = new TimeSpan(0, 0, 0, 0, 0); // i.e. NOW !
-				dsMB.Schema.T.PurchaseOrderTemplate.F.SelectPrintFlag[defaultPurchaseOrderTemplateRow] = true; // SelectPrintFlag on for new Purchase order templates
+				dsMB.PurchaseOrderTemplateRow defaultPurchaseOrderTemplateRow = (dsMB.PurchaseOrderTemplateRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.PurchaseOrderTemplate.Default, null);
+				defaultPurchaseOrderTemplateRow.F.RequiredByInterval = new TimeSpan(0, 0, 0, 0, 0); // i.e. NOW !
+				defaultPurchaseOrderTemplateRow.F.SelectPrintFlag = true; // SelectPrintFlag on for new Purchase order templates
 
 				// Miscellaneous purchase items
-				costCenterRow = newCostCenterRow(ds, "Default Miscellaneous Costs");
+				costCenterRow = NewCostCenterRow(ds, "Default Miscellaneous Costs");
 
-				DataRow defaultMiscRow;
-				defaultMiscRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.Miscellaneous.Default, null);
-				dsMB.Schema.T.Miscellaneous.F.CostCenterID[defaultMiscRow] = costCenterRow.F.Id;
+				dsMB.MiscellaneousRow defaultMiscRow = (dsMB.MiscellaneousRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.Miscellaneous.Default, null);
+				defaultMiscRow.F.CostCenterID = costCenterRow.F.Id;
 
 				#endregion
 
 				#region Item related accounting info
 
 				// Items
-				costCenterRow = newCostCenterRow(ds, "Default Item Costs");
-				DataRow defaultActualItemLocationRow;
-				DataRow defaultPermanentItemLocationRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.PermanentItemLocation.Default, null);
-				defaultActualItemLocationRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.ActualItemLocation.Default,
-					new SqlExpression(dsMB.Schema.T.ActualItemLocation.Default.InternalId).Eq((Guid)dsMB.Schema.T.PermanentItemLocation.F.ActualItemLocationID[defaultPermanentItemLocationRow]));
-				dsMB.Schema.T.ActualItemLocation.F.CostCenterID[defaultActualItemLocationRow] = costCenterRow.F.Id;
+				costCenterRow = NewCostCenterRow(ds, "Default Item Costs");
+				dsMB.PermanentItemLocationRow defaultPermanentItemLocationRow = (dsMB.PermanentItemLocationRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.PermanentItemLocation.Default, null);
+				dsMB.ActualItemLocationRow defaultActualItemLocationRow = (dsMB.ActualItemLocationRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.ActualItemLocation.Default,
+					new SqlExpression(dsMB.Schema.T.ActualItemLocation.Default.InternalId).Eq((Guid)defaultPermanentItemLocationRow.F.ActualItemLocationID));
+				defaultActualItemLocationRow.F.CostCenterID = costCenterRow.F.Id;
 
-				DataRow defaultTemporaryItemLocationRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.TemporaryItemLocation.Default, null);
-				defaultActualItemLocationRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.ActualItemLocation.Default,
-					new SqlExpression(dsMB.Schema.T.ActualItemLocation.Default.InternalId).Eq((Guid)dsMB.Schema.T.TemporaryItemLocation.F.ActualItemLocationID[defaultTemporaryItemLocationRow]));
-				dsMB.Schema.T.ActualItemLocation.F.CostCenterID[defaultActualItemLocationRow] = costCenterRow.F.Id;
+				dsMB.TemporaryItemLocationRow defaultTemporaryItemLocationRow = (dsMB.TemporaryItemLocationRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.TemporaryItemLocation.Default, null);
+				defaultActualItemLocationRow = (dsMB.ActualItemLocationRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.ActualItemLocation.Default,
+					new SqlExpression(dsMB.Schema.T.ActualItemLocation.Default.InternalId).Eq((Guid)defaultTemporaryItemLocationRow.F.ActualItemLocationID));
+				defaultActualItemLocationRow.F.CostCenterID = costCenterRow.F.Id;
 
 				// Adjustments
-				costCenterRow = newCostCenterRow(ds, "Default Adjustment Costs");
+				costCenterRow = NewCostCenterRow(ds, "Default Adjustment Costs");
 
-				DataRow defaultItemAdjustmentCodeRow;
-				defaultItemAdjustmentCodeRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.ItemAdjustmentCode.Default, null);
-				dsMB.Schema.T.ItemAdjustmentCode.F.CostCenterID[defaultItemAdjustmentCodeRow] = costCenterRow.F.Id;
+				dsMB.ItemAdjustmentCodeRow defaultItemAdjustmentCodeRow = (dsMB.ItemAdjustmentCodeRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.ItemAdjustmentCode.Default, null);
+				defaultItemAdjustmentCodeRow.F.CostCenterID = costCenterRow.F.Id;
 
 				// Issues
-				costCenterRow = newCostCenterRow(ds, "Default Issue Costs");
+				costCenterRow = NewCostCenterRow(ds, "Default Issue Costs");
 
-				DataRow defaultItemIssueCodeRow;
-				defaultItemIssueCodeRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.ItemIssueCode.Default, null);
-				dsMB.Schema.T.ItemIssueCode.F.CostCenterID[defaultItemIssueCodeRow] = costCenterRow.F.Id;
+				dsMB.ItemIssueCodeRow defaultItemIssueCodeRow = (dsMB.ItemIssueCodeRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.ItemIssueCode.Default, null);
+				defaultItemIssueCodeRow.F.CostCenterID = costCenterRow.F.Id;
 
 				#endregion
 
 				#region A/R & A/P
 
-				costCenterRow = newCostCenterRow(ds, "Default Accounts Payable Costs");
+				costCenterRow = NewCostCenterRow(ds, "Default Accounts Payable Costs");
 
-				DataRow defaultVendorRow;
-				defaultVendorRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.Vendor.Default, null);
-				dsMB.Schema.T.Vendor.F.AccountsPayableCostCenterID[defaultVendorRow] = costCenterRow.F.Id;
+				dsMB.VendorRow defaultVendorRow = (dsMB.VendorRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.Vendor.Default, null);
+				defaultVendorRow.F.AccountsPayableCostCenterID = costCenterRow.F.Id;
 
-				costCenterRow = newCostCenterRow(ds, "Default Accounts Receivable Costs");
+				costCenterRow = NewCostCenterRow(ds, "Default Accounts Receivable Costs");
 
-				DataRow defaultBillableRequestorRow;
-				defaultBillableRequestorRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.BillableRequestor.Default, null);
-				dsMB.Schema.T.BillableRequestor.F.AccountsReceivableCostCenterID[defaultBillableRequestorRow]
-					= costCenterRow.F.Id;
+				dsMB.BillableRequestorRow defaultBillableRequestorRow = (dsMB.BillableRequestorRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.BillableRequestor.Default, null);
+				defaultBillableRequestorRow.F.AccountsReceivableCostCenterID= costCenterRow.F.Id;
 
-				costCenterRow = newCostCenterRow(ds, "Default Chargeback Costs");
+				costCenterRow = NewCostCenterRow(ds, "Default Chargeback Costs");
 
-				DataRow defaultChargebackLineCategoryRow;
-				defaultChargebackLineCategoryRow = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.ChargebackLineCategory.Default, null);
-				dsMB.Schema.T.ChargebackLineCategory.F.CostCenterID[defaultChargebackLineCategoryRow] = costCenterRow.F.Id;
+				dsMB.ChargebackLineCategoryRow defaultChargebackLineCategoryRow = (dsMB.ChargebackLineCategoryRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.ChargebackLineCategory.Default, null);
+				defaultChargebackLineCategoryRow.F.CostCenterID = costCenterRow.F.Id;
 
 				#endregion
 
@@ -1280,33 +1259,33 @@ namespace Thinkage.MainBoss.Database {
 				ds.DB.Edit(ds, dsMB.Schema.T.Schedule.Default, null);
 				// Enable by default all the week days for schedules.
 				// Set other required bool fields to
-				foreach (DataRow r in dsMB.Schema.T.Schedule.Default.GetDataTable(ds).Rows) {
-					dsMB.Schema.T.Schedule.F.EnableMonday[r] = true;
-					dsMB.Schema.T.Schedule.F.EnableTuesday[r] = true;
-					dsMB.Schema.T.Schedule.F.EnableWednesday[r] = true;
-					dsMB.Schema.T.Schedule.F.EnableThursday[r] = true;
-					dsMB.Schema.T.Schedule.F.EnableFriday[r] = true;
-					dsMB.Schema.T.Schedule.F.EnableSaturday[r] = false;
-					dsMB.Schema.T.Schedule.F.EnableSunday[r] = false;
+				foreach (dsMB.ScheduleRow r in ds.DT.Schedule) {
+					r.F.EnableMonday = true;
+					r.F.EnableTuesday = true;
+					r.F.EnableWednesday = true;
+					r.F.EnableThursday = true;
+					r.F.EnableFriday = true;
+					r.F.EnableSaturday = false;
+					r.F.EnableSunday = false;
 
-					dsMB.Schema.T.Schedule.F.InhibitIfOverdue[r] = false;
-					dsMB.Schema.T.Schedule.F.InhibitSeason[r] = false;
-					dsMB.Schema.T.Schedule.F.InhibitWeek[r] = false;
+					r.F.InhibitIfOverdue = false;
+					r.F.InhibitSeason = false;
+					r.F.InhibitWeek = false;
 				}
 
 				ds.DB.Edit(ds, dsMB.Schema.T.ScheduledWorkOrder.Default, null);
 				// Enable by default any new Unit Maintenance Plans
-				foreach (DataRow r in dsMB.Schema.T.ScheduledWorkOrder.Default.GetDataTable(ds).Rows) {
-					dsMB.Schema.T.ScheduledWorkOrder.F.Inhibit[r] = false;
-					dsMB.Schema.T.ScheduledWorkOrder.F.RescheduleBasisAlgorithm[r] = (int)DatabaseEnums.RescheduleBasisAlgorithm.FromScheduleBasis;
+				foreach (dsMB.ScheduledWorkOrderRow r in ds.DT.ScheduledWorkOrder) {
+					r.F.Inhibit = false;
+					r.F.RescheduleBasisAlgorithm = (int)DatabaseEnums.RescheduleBasisAlgorithm.FromScheduleBasis;
 				}
 
 				ds.DB.Edit(ds, dsMB.Schema.T.PMGenerationBatch.Default, null);
 				// Set RequiredBool to reasonable defaults
-				foreach (DataRow r in dsMB.Schema.T.PMGenerationBatch.Default.GetDataTable(ds).Rows) {
-					dsMB.Schema.T.PMGenerationBatch.F.SinglePurchaseOrders[r] = false;
-					dsMB.Schema.T.PMGenerationBatch.F.AccessCodeUnitTaskPriority[r] = (int)DatabaseEnums.TaskUnitPriority.PreferUnitValue;
-					dsMB.Schema.T.PMGenerationBatch.F.WorkOrderExpenseModelUnitTaskPriority[r] = (int)DatabaseEnums.TaskUnitPriority.PreferUnitValue;
+				foreach (dsMB.PMGenerationBatchRow r in ds.DT.PMGenerationBatch) {
+					r.F.SinglePurchaseOrders = false;
+					r.F.AccessCodeUnitTaskPriority = (int)DatabaseEnums.TaskUnitPriority.PreferUnitValue;
+					r.F.WorkOrderExpenseModelUnitTaskPriority = (int)DatabaseEnums.TaskUnitPriority.PreferUnitValue;
 				}
 
 				#endregion
@@ -1364,12 +1343,12 @@ namespace Thinkage.MainBoss.Database {
 		/// <param name="ds"></param>
 		/// <param name="code"></param>
 		/// <returns></returns>
-		private static dsMB.CostCenterRow newCostCenterRow(dsMB ds, [Context(Level = 1)] string code) {
+		private static dsMB.CostCenterRow NewCostCenterRow(dsMB ds, [Context(Level = 1)] string code) {
 			dsMB.CostCenterRow costCenterRow;
 			costCenterRow = ds.T.CostCenter.AddNewCostCenterRow();
 			costCenterRow.F.Hidden = null;
-			costCenterRow.F.Code = DatabaseLayoutK(code).Translate(null);
-			costCenterRow.F.Desc = DatabaseLayoutK(code).Translate(null);   // same desc as code for created items.
+			costCenterRow.F.Code = DatabaseLayoutK(code).Translate(System.Globalization.CultureInfo.InvariantCulture);
+			costCenterRow.F.Desc = DatabaseLayoutK(code).Translate(System.Globalization.CultureInfo.InvariantCulture);   // same desc as code for created items.
 			return costCenterRow;
 		}
 		#endregion

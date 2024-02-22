@@ -87,8 +87,7 @@ namespace Thinkage.MainBoss.Database {
 	/// A direct ITranslator that looks up translations directly in the UserMessageTranslation table
 	/// </summary>
 	// marked sealed to eliminate CA1063 code analysis warnings about non-standard model of implementing Dispose
-	public sealed class UserMessageTranslator : ITranslator, IDisposable
-	{
+	public sealed class UserMessageTranslator : ITranslator, IDisposable {
 		private dsMB umtDs;
 		private readonly SortingPositioner Positioner;
 		private readonly PopulatingCursorManager Cursor;
@@ -100,8 +99,7 @@ namespace Thinkage.MainBoss.Database {
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		// bufferManager Dispose responsibility of CursorManager
-		public UserMessageTranslator(Thinkage.Libraries.DBAccess.XAFClient db)
-		{
+		public UserMessageTranslator(Thinkage.Libraries.DBAccess.DBClient db) {
 			Libraries.DBAccess.DBVersionHandler vh = MBUpgrader.UpgradeInformation.CreateCurrentVersionHandler(db);
 			if (vh.CurrentVersion >= new Version(1, 0, 10, 6)) {
 				umtDs = new dsMB(db);
@@ -118,8 +116,7 @@ namespace Thinkage.MainBoss.Database {
 		}
 
 		#region ITranslator Members
-		private bool FindTranslation(string context, string localKey, int lcid, out string translated)
-		{
+		private bool FindTranslation(string context, string localKey, int lcid, out string translated) {
 			if (Positioner != null) {
 				Position pos = Positioner.PositionOfFirstGreaterOrEqual(new object[] { context, localKey, lcid });
 				if (!pos.IsEnd) {
@@ -136,9 +133,8 @@ namespace Thinkage.MainBoss.Database {
 			return false;
 		}
 		public override string Translate(string context, string localKey, CultureInfo culture, string[] implicitTags, ref int penalty, Set<string> qualifiers) {
-			string translated;
 			do
-				if (FindTranslation(context, localKey, culture.LCID, out translated)) {
+				if (FindTranslation(context, localKey, culture.LCID, out string translated)) {
 					if (implicitTags != null) {
 						var tset = new Set<string>(implicitTags);
 						penalty = 1000 * qualifiers.Count + tset.Count;
@@ -163,8 +159,7 @@ namespace Thinkage.MainBoss.Database {
 
 		#endregion
 		#region IDisposable Members
-		public void Dispose()
-		{
+		public void Dispose() {
 			if (umtDs != null) {
 				umtDs.Dispose();
 				umtDs = null;
@@ -183,15 +178,15 @@ namespace Thinkage.MainBoss.Database {
 				SimpleTranslator = new SimpleTranslator(); // contains nothing but the calls will succeed
 		}
 		public void RefreshTranslations(MB3Client.ConnectionDefinition dbConnect) {
-			if (dbConnect == null) return;
+			if (dbConnect == null)
+				return;
 			try {
 				var db = new MB3Client(dbConnect);
 				var t = new SimpleTranslator();
 				using (dsMB ds = new dsMB(db)) {
 					ds.EnsureDataTableExists(dsMB.Schema.T.UserMessageTranslation, dsMB.Schema.T.UserMessageKey);
-					db.ViewAdditionalRows(ds, dsMB.Schema.T.UserMessageTranslation, null, null, new DBI_PathToRow[] {dsMB.Path.T.UserMessageTranslation.F.UserMessageKeyID.PathToReferencedRow });
-					var rows = dsMB.Schema.T.UserMessageTranslation.GetDataTable(ds).Rows;
-					foreach (dsMB.UserMessageTranslationRow r in dsMB.Schema.T.UserMessageTranslation.GetDataTable(ds).Rows) {
+					db.ViewAdditionalRows(ds, dsMB.Schema.T.UserMessageTranslation, null, null, new DBI_PathToRow[] { dsMB.Path.T.UserMessageTranslation.F.UserMessageKeyID.PathToReferencedRow });
+					foreach (dsMB.UserMessageTranslationRow r in ds.GetDataTable(dsMB.Schema.T.UserMessageTranslation)) {
 						var key = new SimpleKey(ContextReference.New(r.UserMessageKeyIDParentRow.F.Context), r.UserMessageKeyIDParentRow.F.Key);
 						t.Add(key, new CultureInfo(r.F.LanguageLCID), r.F.Translation);
 					}

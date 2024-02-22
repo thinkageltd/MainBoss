@@ -37,12 +37,13 @@ namespace Thinkage.MainBoss.Controls {
 			}
 		}
 		#endregion
-		public ServiceConfigurationBrowseLogic(IBrowseUI control, XAFClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
+		public ServiceConfigurationBrowseLogic(IBrowseUI control, DBClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
 			: base(control, db, takeDBCustody, tbl, settingsContainer, structure) {
 		}
 		public override void CreateLocalNewCommands(bool includeCommandsMarkedExportable, EditLogic.SavedEventHandler savedHandler, params IDisablerProperties[] extraDisablers) {
-			List<IDisablerProperties> myDisablers = new List<IDisablerProperties>(extraDisablers);
-			myDisablers.Add(new OnlyOneRecordDisablerClass(this));
+			List<IDisablerProperties> myDisablers = new List<IDisablerProperties>(extraDisablers) {
+				new OnlyOneRecordDisablerClass(this)
+			};
 			base.CreateLocalNewCommands(includeCommandsMarkedExportable, savedHandler, myDisablers.ToArray());
 		}
 	}

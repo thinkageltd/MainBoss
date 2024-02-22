@@ -105,9 +105,9 @@ namespace Thinkage.MainBoss.Database.Service {
 		/// A predefined prefix on all MainBoss services so we can find them in the service configuration.
 		/// </summary>
 		public static readonly string MainBossServiceTag = KB.I("MainBossService");
-		private XAFClient DB;
+		private DBClient DB;
 		static Dictionary<string,MainBossServiceConfiguration > configs = new Dictionary<string,MainBossServiceConfiguration>();
-		public MainBossServiceConfiguration(XAFClient db, [Invariant] string serviceCode = null, [Invariant] string machineName = null) {
+		public MainBossServiceConfiguration(DBClient db, [Invariant] string serviceCode = null, [Invariant] string machineName = null) {
 			DB = db;
 			if (serviceCode != null)
 				ServiceName = serviceCode;
@@ -120,7 +120,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				Application.Instance.DisplayError(e);
 			}
 		}
-		static public MainBossServiceConfiguration GetConfiguration(XAFClient db, [Invariant] string serviceCode = null) {
+		static public MainBossServiceConfiguration GetConfiguration(DBClient db, [Invariant] string serviceCode = null) {
 			if (db == null)
 				throw new GeneralException(KB.K("Cannot get service configuration because no database connection is available"));
 			lock (configs) {
@@ -175,16 +175,16 @@ namespace Thinkage.MainBoss.Database.Service {
 		static public void Reset() {
 			configs = new Dictionary<string, MainBossServiceConfiguration>();
 		}
-		private dsMB.ServiceConfigurationRow getServiceConfigurationRow(XAFClient db) {
+		private dsMB.ServiceConfigurationRow getServiceConfigurationRow(DBClient db) {
 			dsMB.ServiceConfigurationRow sRow = null;
 			using (var ds = new dsMB(db)) {
 				ds.EnsureDataTableExists(dsMB.Schema.T.ServiceConfiguration);
 				ds.DB.ViewAdditionalRows(ds, dsMB.Schema.T.ServiceConfiguration);
-				dsMB.ServiceConfigurationDataTable dt = (dsMB.ServiceConfigurationDataTable)dsMB.Schema.T.ServiceConfiguration.GetDataTable(ds);
+				dsMB.ServiceConfigurationDataTable dt = ds.T.ServiceConfiguration;
 				if (dt.Rows.Count == 0)
 					sRow = null;
 				else if (dt.Rows.Count > 1 )
-					throw new GeneralException(KB.K("More than one service configuration is not currently support, please remove all except for one"));
+					throw new GeneralException(KB.K("More than one service configuration is not currently supported, please remove all except for one"));
 				else {
 					// if more than one and we asked for nothing by name, just take the first one !
 					sRow = (dsMB.ServiceConfigurationRow)dt.Rows[0];

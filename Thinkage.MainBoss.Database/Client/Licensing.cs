@@ -10,7 +10,7 @@ namespace Thinkage.MainBoss.Database
 	public static partial class Licensing
 	{
 		private class MBLicensedObject : ILicensedObject {
-			public MBLicensedObject(MBLicenseDefinition definition, XAFClient licenseSession) {
+			public MBLicensedObject(MBLicenseDefinition definition, DBClient licenseSession) {
 				pDefinition = definition;
 				Session = licenseSession;
 			}
@@ -34,20 +34,19 @@ namespace Thinkage.MainBoss.Database
 					Session.RegisterTableRowCountLimit(pDefinition.TableToCount, limit, Definition.LicenseOriginText, pDefinition.CountedItemsName, pDefinition.AllowCountingError);
 			}
 			private readonly MBLicenseDefinition pDefinition;
-			private readonly XAFClient Session;
+			private readonly DBClient Session;
 		}
 		public class MBLicensedObjectSet : ILicensedObjectSet {
 			static MBLicensedObjectSet() {
 				foreach (LicenseDefinition ld in AllMainbossLicenses)
 					AllMainbossLicensesByAppId.Add(ld.LicensingApplicationID, (MBLicenseDefinition)ld);
 			}
-			public MBLicensedObjectSet(XAFClient licenseSession) {
+			public MBLicensedObjectSet(DBClient licenseSession) {
 				LicenseSession = licenseSession;
 			}
-			private readonly XAFClient LicenseSession;
+			private readonly DBClient LicenseSession;
 			public ILicensedObject GetLicensedObject(int licensingApplicationID) {
-				MBLicenseDefinition ld;
-				if (AllMainbossLicensesByAppId.TryGetValue(licensingApplicationID, out ld))
+				if (AllMainbossLicensesByAppId.TryGetValue(licensingApplicationID, out MBLicenseDefinition ld))
 					return new MBLicensedObject(ld, LicenseSession);
 				return null;
 			}

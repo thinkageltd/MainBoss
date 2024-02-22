@@ -48,11 +48,9 @@ namespace Thinkage.MainBoss.MBUtility {
 		private readonly Definition Options;
 
 		private void Run() {
-			if (!LDAPEntry.IsInDomain())
-				throw new GeneralException(KB.K("'{0}' can only work if the computer is in a domain; if you are in a domain, then the domain controller is currently inaccessible"), KB.I("AddRequestorfromactivedirectory"));
-			string oName;
+			LDAPEntry.CheckActiveDirectory(KB.I("AddRequestorfromactivedirectory"));
 			System.Version minDBVersionForRolesTable = new System.Version(1, 0, 4, 38); // The roles table appeared in its current form at this version
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out string oName);
 			// Get a connection to the database that we are referencing
 			new ApplicationTblDefaultsNoEditing(Thinkage.Libraries.Application.Instance, new MainBossPermissionsManager(Root.Rights), Root.Rights.Table, Root.RightsSchema, Root.Rights.Action.Customize);
 			var dbapp = new ApplicationWithSingleDatabaseConnection(Thinkage.Libraries.Application.Instance);
@@ -75,7 +73,7 @@ namespace Thinkage.MainBoss.MBUtility {
 					throw;			// message should be good
 				throw new GeneralException(ex, KB.K("There was a problem validating access to the database {0} on server {1}"), connect.DBName, connect.DBServer);
 			}
-			XAFClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
+			DBClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
 			var EmailAddresses = Options.EmailAddresses.Value.Split(new char[] { ' ', ',', ';' });
 			System.Net.Mail.MailAddress se = null;
 			foreach (var EmailAddress in EmailAddresses) {

@@ -288,9 +288,6 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		private MenuDef definitionNode() {
 			MenuDef sortedMenu = containerMenuItem(161, "Coding Definitions"
-				// Following are used for testing only and are not part of product.
-				//				,embeddedBrowseMenuItem("All Locations", dsMB.Schema.T.LocationAndContainers)
-				//				,embeddedBrowseMenuItem("All Locations Except Temporary", TIComposites.PermanentLocationPickerTblCreator)
 				, browseExplorer(162, TId.Location, TILocations.LocationBrowseTblCreator
 					, browseExplorer(163, "Organize", TILocations.LocationOrganizerBrowseTblCreator))
 				, browseExplorer(164, TId.Contact, dsMB.Schema.T.Contact)

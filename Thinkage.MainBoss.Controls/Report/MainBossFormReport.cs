@@ -20,8 +20,8 @@ namespace Thinkage.MainBoss.Controls.Reports {
 			get {
 				using (dsMB tempds = new dsMB(Logic.DB)) {
 					Logic.DB.ViewAdditionalVariables(tempds, dsMB.Schema.V.CompanyLogo);
-					if (!tempds.V.CompanyLogo.IsNull)
-						using (var stream = new System.IO.MemoryStream(tempds.V.CompanyLogo.Value)) {
+					if (tempds.V.CompanyLogo.Value != null)
+						using (var stream = new System.IO.MemoryStream((byte[])tempds.V.CompanyLogo.Value)) {
 							return System.Drawing.Image.FromStream(stream);
 						}
 				}
@@ -32,7 +32,7 @@ namespace Thinkage.MainBoss.Controls.Reports {
 			get {
 				using (dsMB tempds = new dsMB(Logic.DB)) {
 					Logic.DB.ViewAdditionalVariables(tempds, dsMB.Schema.V.CompanyLocationID);
-					if (!tempds.V.CompanyLocationID.IsNull) {
+					if (tempds.V.CompanyLocationID.Value != null) {
 						tempds.DB.ViewAdditionalRows(tempds, dsMB.Schema.T.LocationReport, new SqlExpression(dsMB.Path.T.LocationReport.F.LocationID).Eq(SqlExpression.Constant(tempds.V.CompanyLocationID.Value)));
 						if (tempds.T.LocationReport.Rows.Count > 0) {
 							dsMB.LocationReportRow locrow = (dsMB.LocationReportRow)tempds.T.LocationReport.Rows[0];

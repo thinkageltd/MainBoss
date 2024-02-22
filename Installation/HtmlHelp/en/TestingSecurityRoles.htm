@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html lang="en">
 <head>
-<meta http-equiv="Content-type" content="text/html;charset=iso-8859-1" />
-<meta name="copyright" content="2016 Thinkage Ltd." />
+<meta charset="UTF-8" />
+<meta name="copyright" content="2018 Thinkage Ltd." />
 <link rel="stylesheet" type="text/css" href="mbmanual.css" />
 <title>MainBoss Advanced 4.2 Operating Reference Manual: Testing Security Roles</title>
 </head>
@@ -14,13 +14,13 @@
 <!--  <?php include($_SERVER['DOCUMENT_ROOT']."/php/isuptodate.php") ?> -->
 <p><a href="CostRelatedSecurityRoles.htm">&lt; Previous section</a>&nbsp; | &nbsp;<a href="TableOfContents.htm">Table of Contents</a>&nbsp; | &nbsp;<a href="Index.htm">Index</a>&nbsp; | &nbsp;<a href="Assignments.htm">Next section &gt;</a></p>
 
-<p>It can be difficult to figure out the effects of various security roles, especially when a user has several different roles combined. To test what a particular user can and can't do, you can use the <span class="CButton">Evaluate Security As</span> button in <span class="CPanel">Administration</span> | <span class="CPanel">Users</span>. (You must have the <span class="CU">Administration</span> security role to use <span class="CButton">Evaluate Security As</span>.)</p>
+<p>It can be difficult to figure out the effects of various security roles, especially when a user has several different roles combined. To test what a particular user can and can't do, you can use the <span class="CButton">Evaluate Security As</span> button in <span class="CPanel">Administration | MainBoss Users</span>. (You must have the <span class="CU">Administration</span> security role to use <span class="CButton">Evaluate Security As</span>.)</p>
 
 <p>If you select a user in the Users table, then click <span class="CButton">Evaluate Security As</span>, your MainBoss session changes to have the same security roles as the selected user. If certain types of data are invisible to that user, they'll become invisible to you too; if certain buttons are disabled, they'll be disabled for you too.</p>
 
 <p>In this way, <span class="CButton">Evaluate Security As</span> lets you see all the consequences of a user's security roles. Once you've examined what the user can and can't do, you can return to your own security roles by going to the <span class="CMenu">Session</span> menu and clicking <span class="CMenu">Reset to user YOURNAME security</span>.</p>
 
-<p class="box"><span class="CInset">Note:</span> If you use <span class="CButton">Evaluate Security As</span> to evaluate the security roles of someone who doesn't have <span class="CU">Administration</span> or <span class="CU">AdministrationView</span>, the first thing that will happen is that you lose permission to see <span class="CPanel">Administration</span> | <span class="CPanel">Users</span> and you may receive an error message. This may look as if you're being told that you don't have permission to use <span class="CButton">Evaluate Security As</span>; however, it really means that the person you're evaluating doesn't have that permission.</p>
+<p class="box"><span class="CInset">Note:</span> If you use <span class="CButton">Evaluate Security As</span> to evaluate the security roles of someone who doesn't have <span class="CU">Administration</span> or <span class="CU">AdministrationView</span>, the first thing that will happen is that you lose permission to see <span class="CPanel">Administration | MainBoss Users</span> and you may receive an error message. This may look as if you're being told that you don't have permission to use <span class="CButton">Evaluate Security As</span>; however, it really means that the person you're evaluating doesn't have that permission.</p>
 
 <p><span class="CButton">Evaluate Security As</span> gives you the same security roles as the selected user, but it does <span class="Emphasis">not</span> change who you are. In particular, you keep your own set of assigned requests, work orders and purchase orders. It also doesn't give you SQL Server permissions if you don't already have them. This can lead to unusual error messages if you try to do certain operations. Since you're partly one user and partly another, we recommend that you avoid doing significant work while using <span class="CButton">Evaluate Security As</span>; it can lead to confusion.</p>
 

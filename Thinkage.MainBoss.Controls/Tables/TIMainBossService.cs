@@ -63,13 +63,13 @@ namespace Thinkage.MainBoss.Controls {
 					throw;
 				}
 			}
-			static protected string BuildSqlConnectString(XAFClient db) {
+			static protected string BuildSqlConnectString(DBClient db) {
 				var ci = ((MB3Client)db).ConnectionInfo;
 				var cs = new SqlConnectionStringBuilder();
 				try {
 					cs.DataSource = ci.DBServer;
 					cs.InitialCatalog = ci.DBName;
-					cs.Authentication = (SqlAuthenticationMethod)ci.DBCredentials.Type;
+					cs.Authentication = (SqlAuthenticationMethod)ci.DBCredentials.Type; //TODO: This ASSUMES the AuthenticationCredential enum values are the SAME as the SqlAuthenticationMethod enum values; This mapping should be somewhere in one of our MSSql assemblies, NOT referenced here directly. Even the SqlConnectionStringBuilder should not be used in this assembly....
 					if (ci.DBCredentials.Type != AuthenticationMethod.WindowsAuthentication) {
 						cs.UserID = ci.DBCredentials.Username;
 						cs.Password = ci.DBCredentials.Password;
@@ -83,28 +83,28 @@ namespace Thinkage.MainBoss.Controls {
 
 		}
 		internal class ServiceCommand : ServiceConfigurationApplicationCommand {
-			public ServiceCommand([Invariant]string command, [Invariant]string serviceName, XAFClient db) :
-				base(KB.I("Thinkage.MainBoss.MainBossServiceConfiguration.exe"), Strings.IFormat("{0} /ServiceCode:\"{1}\" /Connection:{2}"
+			public ServiceCommand([Invariant]string command, [Invariant]string serviceName, DBClient db) :
+				base(KB.I(ServiceCommonBrowseLogic.ServiceConfigurationCommand), Strings.IFormat("{0} /ServiceCode:\"{1}\" /Connection:{2}"
 					, command, serviceName, ServiceConfiguration.EscapeArg(BuildSqlConnectString(db)))) {
 			}
 		}
 		internal class ClearEventLog : ServiceConfigurationApplicationCommand {
 			public ClearEventLog(string serviceName) :
-				base(KB.I("Thinkage.MainBoss.MainBossServiceConfiguration.exe"), "/ClearEventLog") {
+				base(KB.I(ServiceCommonBrowseLogic.ServiceConfigurationCommand), "/ClearEventLog") {
 			}
 		}
 		internal class ManualServiceExecution : ServiceConfigurationApplicationCommand {
-			public ManualServiceExecution([Invariant]string command, [Invariant]string serviceName, XAFClient db) :
+			public ManualServiceExecution([Invariant]string command, [Invariant]string serviceName, DBClient db) :
 				base(KB.I("Thinkage.MainBoss.Service.exe"), Strings.IFormat("/{0}  /ServiceCode:\"{1}\" /Connection:{2}"
 					, command, serviceName, ServiceConfiguration.EscapeArg(BuildSqlConnectString(db)))) {
 			}
 		}
 		public class ProcessEmailServiceCommand {
 			private readonly UIFactory UIFactory;
-			private readonly XAFClient DB;
+			private readonly DBClient DB;
 			private readonly bool Trace;
 			private readonly bool SendingEmailOk;
-			public ProcessEmailServiceCommand(UIFactory uiFactory, XAFClient db, bool trace, bool sendRejections) {
+			public ProcessEmailServiceCommand(UIFactory uiFactory, DBClient db, bool trace, bool sendRejections) {
 				UIFactory = uiFactory;
 				DB = db;
 				Trace = trace;
@@ -127,14 +127,6 @@ namespace Thinkage.MainBoss.Controls {
 				finally {
 					ipdo.Complete();
 				}
-
-				// var log = new LogAndDatabaseAndError(DB.ConnectionInfo);
-				//RequestProcessor.DoAllRequestProcessing(log, (MB3Client)DB, Trace, Trace, SendingEmailOk);
-				//if (SendingEmailOk) {
-				//	AssignmentNotificationProcessor.DoAllAssignmentNotifications(log, (MB3Client)DB, Trace, Trace);
-				//	RequestorNotificationProcessor.DoAllRequestorNotifications(log, (MB3Client)DB, Trace, Trace);
-				//}
-				//	log.LogClose(KB.K("Retrieving Email completed").Translate());
 			}
 		}
 
@@ -177,6 +169,7 @@ namespace Thinkage.MainBoss.Controls {
 				KB.K("Email rejected: Senders Contact could not be created since another Contact exists with the same code"),
 				KB.K("Email to be rejected by a MainBoss user"),
 				KB.K("Email was rejected by a MainBoss user"),
+				KB.K("Email held for review: is stale dated or originated as an auto response")
 			},
 			null,
 			new object[] {
@@ -195,6 +188,7 @@ namespace Thinkage.MainBoss.Controls {
 				(int)DatabaseEnums.EmailRequestState.RejectAmbiguousContactCreation,
 				(int)DatabaseEnums.EmailRequestState.ToBeRejected,
 				(int)DatabaseEnums.EmailRequestState.RejectManual,
+				(int)DatabaseEnums.EmailRequestState.HoldRequiresManualReview
 			}
 		);
 
@@ -328,17 +322,12 @@ namespace Thinkage.MainBoss.Controls {
 									delegate() {
 										try {
 											var message = EmailMessage.EmailRequestToRFC822(browserLogic.DB, true, (Guid)emailRequestId.GetValue());
-											using (var saveFile = new System.Windows.Forms.SaveFileDialog()) {
-												saveFile.RestoreDirectory = true;
-												saveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-												saveFile.DefaultExt = ".eml";
-												saveFile.Filter =  "Mail Messages (*.eml)|*.eml|All files (*.*)|*.*";
-												saveFile.FilterIndex = 0;
-												saveFile.AddExtension = true;
-												if (saveFile.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-													System.IO.File.WriteAllText(saveFile.FileName, message );
-												}
-											}
+											UIFileSelectorPattern[] saveErrorFilter = new UIFileSelectorPattern[] {
+												new UIFileSelectorPattern(KB.K("Mail Messages (*.eml)"), KB.I("*.eml")),
+												new UIFileSelectorPattern(KB.K("All files (*.*)"), KB.I("*.*")) };
+											var saveFile = browserLogic.CommonUI.UIFactory.SelectFileToSaveTo(null, saveErrorFilter);
+											if (saveFile != null)
+												System.IO.File.WriteAllText(saveFile.Value.Pathname, message);
 										}
 										catch( System.Exception e) {
 											throw new GeneralException(e, KB.K("Cannot save Email Message to specified file"));
@@ -349,20 +338,16 @@ namespace Thinkage.MainBoss.Controls {
 								group.AddCommand(KB.K("Import Email Message"), null, new MultiCommandIfAllEnabled(new CallDelegateCommand(KB.K("Insert a new Email Message from a file"),
 									delegate() {
 										try {
-											using (var openfile = new System.Windows.Forms.OpenFileDialog()) {
-												openfile.RestoreDirectory = true;
-												openfile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-												openfile.DefaultExt = ".eml";
-												openfile.Filter =  "Mail Messages (*.eml)|*.eml|All files (*.*)|*.*";
-												openfile.FilterIndex = 0;
-												openfile.AddExtension = true;
-												if (openfile.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-													var message = System.IO.File.ReadAllText(openfile.FileName);
-													var id = ServiceUtilities.EmailRequestFromEmail(browserLogic.DB, message, openfile.FileName);
+											UIFileSelectorPattern[] openFileFilter = new UIFileSelectorPattern[] {
+												new UIFileSelectorPattern(KB.K("Mail Messages (*.eml)"), KB.I("*.eml")),
+												new UIFileSelectorPattern(KB.K("All files (*.*)"), KB.I("*.*")) };
+											var openFile = browserLogic.CommonUI.UIFactory.SelectFileToOpen(null, openFileFilter);
+											if (openFile != null) {
+												var message = System.IO.File.ReadAllText(openFile.Value.Pathname);
+												var id = ServiceUtilities.EmailRequestFromEmail(browserLogic.DB, message, openFile.Value.Pathname);
 #if DEBUG
-													ServiceUtilities.DebugEmailMessage(browserLogic.DB, false, (Guid)emailRequestId.GetValue());
+												ServiceUtilities.DebugEmailMessage(browserLogic.DB, false, (Guid)emailRequestId.GetValue());
 #endif
-												}
 											}
 										}
 										catch( System.Exception e) {
@@ -414,9 +399,9 @@ namespace Thinkage.MainBoss.Controls {
 									new IsProcessedDisabler(browserLogic, emailRequestState)
 								);
 							}
-						)
-					),
-					TIReports.NewRemotePTbl(TIReports.EmailRequestReport)
+						),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.EmailRequestReport))
+					)
 				},
 				null,
 				CompositeView.ChangeEditTbl(editTbl),
@@ -613,10 +598,11 @@ namespace Thinkage.MainBoss.Controls {
 				new Tbl.IAttr[] {
 					MainBossServiceGroup,
 					new BTbl(
-						BTbl.ListColumn(dsMB.Path.T.EmailPart.F.Order, BTbl.ListColumnArg.Contexts.SortInitialAscending),
+						BTbl.ListColumn(dsMB.Path.T.EmailPart.F.Order, BTbl.Contexts.SortInitialAscending),
 						BTbl.ListColumn(dsMB.Path.T.EmailPart.F.ContentType),
 						BTbl.ListColumn(dsMB.Path.T.EmailPart.F.ContentLength),
 						BTbl.ListColumn(dsMB.Path.T.EmailPart.F.Name),
+						BTbl.SetTreeStructure(dsMB.Path.T.EmailPart.F.ParentID, 3, uint.MaxValue),
 						BTbl.AdditionalVerb(KB.K("Save Email Part to a file"),
 							delegate(BrowseLogic browserLogic) {
 								Libraries.DataFlow.Source emailPartContent = browserLogic.GetTblPathDisplaySource(dsMB.Path.T.EmailPart.F.Content, -1);
@@ -675,42 +661,36 @@ namespace Thinkage.MainBoss.Controls {
 								group.AddCommand( KB.K("Save Email Part"), null,new MultiCommandIfAllEnabled( new CallDelegateCommand(
 									delegate() {
 										try {
-											using (var saveFile = new System.Windows.Forms.SaveFileDialog()) {
-												saveFile.FileName = ((string)emailPartFileName.GetValue())??(string)emailPartName.GetValue();
-												saveFile.RestoreDirectory = true;
-												saveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-												var type = (string) emailPartType.GetValue();
-												// will save as text (unless we know better)
-												saveFile.DefaultExt = ".txt";
-												saveFile.AddExtension = true;
-												saveFile.Filter =  "Mail Messages (*.eml)|*.eml|All files (*.*)|*.*";
-												saveFile.FilterIndex = 0;
-												if( type == "text/html") {
-													saveFile.DefaultExt = ".htm";
-													saveFile.AddExtension = true;
-												}
-												else if( type == "message/rfc822") {
-													saveFile.DefaultExt = ".eml";
-													saveFile.AddExtension = true;
-												}
-												else if( !string.IsNullOrWhiteSpace(saveFile.FileName) ) {
-													var l = saveFile.FileName.LastIndexOf('.');
-													if( l >= 0 && l < saveFile.FileName.Length-1) {
-														saveFile.DefaultExt = saveFile.FileName.Substring(l);
-														saveFile.AddExtension = true;
-													}
-												}
-												if (saveFile.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-													if( type == "text/plain" || type == "text/html") {
-														var b = EmailMessage.ContentEncoding((string)emailPartEncoding.GetValue()).GetString((byte[])emailPartContent.GetValue());
-														System.IO.File.WriteAllText(saveFile.FileName, b);
-													}
-													else
-														System.IO.File.WriteAllBytes(saveFile.FileName,(byte[])emailPartContent.GetValue() );
+											var type = (string) emailPartType.GetValue();
+											var defaultFileName = ((string)emailPartFileName.GetValue())??(string)emailPartName.GetValue();
+											var defaultExtension = KB.I(".txt");
+											System.Collections.Generic.List<UIFileSelectorPattern> patterns = new System.Collections.Generic.List<UIFileSelectorPattern>{
+											new UIFileSelectorPattern(KB.K("Mail Messages (*.eml)"), KB.I("*.eml")),
+											new UIFileSelectorPattern(KB.K("All files (*.*)"), KB.I("*.*"))
+};
+											// will save as text (unless we know better)
+
+											if( type == KB.I("text/html"))
+												defaultExtension = KB.I(".htm");
+											else if( type == KB.I("message/rfc822"))
+												defaultExtension = KB.I(".eml");
+											else if( !string.IsNullOrWhiteSpace(defaultFileName) ) {
+												var l = defaultFileName.LastIndexOf('.');
+												if( l >= 0 && l < defaultFileName.Length-1) {
+													defaultExtension = defaultFileName.Substring(l);
 												}
 											}
+											var saveFile = browserLogic.CommonUI.UIFactory.SelectFileToSaveTo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), patterns.ToArray(), defaultFileName, defaultExtension);
+											if (saveFile != null) {
+												if( type == KB.I("text/plain") || type == KB.I("text/html")) {
+													var b = EmailMessage.ContentEncoding((string)emailPartEncoding.GetValue()).GetString((byte[])emailPartContent.GetValue());
+													System.IO.File.WriteAllText(saveFile.Value.Pathname, b);
+												}
+												else
+													System.IO.File.WriteAllBytes(saveFile.Value.Pathname,(byte[])emailPartContent.GetValue() );
+												}
 										}
-										catch( System.Exception e) {
+										catch ( System.Exception e) {
 											throw new GeneralException(e, KB.K("Cannot save Email Part to a file"));
 										}
 									}),
@@ -733,8 +713,7 @@ namespace Thinkage.MainBoss.Controls {
 								return null;
 							}
 						)
-			),
-					new TreeStructuredTbl(dsMB.Path.T.EmailPart.F.ParentID, 3, uint.MaxValue)
+					)
 				},
 				null,
 				// The order of the Composite Views matter; The recognition conditions are searched from the END of the list of views to the beginning, so any 'default' recognition condition should be FIRST in the list
@@ -785,8 +764,8 @@ namespace Thinkage.MainBoss.Controls {
 								return a;
 							},
 							new BrowserPathValue(dsMB.Path.T.ServiceLog.F.EntryDate), new BrowserPathValue(dsMB.Path.T.ServiceLog.F.EntryVersion)
-							),null,BTbl.ListColumnArg.Contexts.TaggedValueProvider | BTbl.ListColumnArg.Contexts.SortNormal),
-						BTbl.ListColumn(dsMB.Path.T.ServiceLog.F.EntryDate.Key(), dsMB.Path.T.ServiceLog.F.EntryDate, BTbl.ListColumnArg.Contexts.SortAlternativeValue | BTbl.ListColumnArg.Contexts.SortInitialMask | BTbl.ListColumnArg.Contexts.SortDescendingMask),
+							),null,BTbl.Contexts.TaggedValueProvider),
+						BTbl.ListColumn(dsMB.Path.T.ServiceLog.F.EntryDate.Key(), dsMB.Path.T.ServiceLog.F.EntryDate, BTbl.Contexts.SortAlternativeValue | BTbl.Contexts.SortInitialMask | BTbl.Contexts.SortDescendingMask),
 						BTbl.ListColumn(dsMB.Path.T.ServiceLog.F.EntryType),
 						BTbl.ListColumn(dsMB.Path.T.ServiceLog.F.Message)
 						)
@@ -842,7 +821,7 @@ namespace Thinkage.MainBoss.Controls {
 								new TblLayoutNode.ICtorArg[] { DCol.Normal },
 								TblUnboundControlNode.New(null,
 									DCol.Normal,
-									Fmt.SetCreator((CommonLogic logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer) =>
+									Fmt.SetCreator((CommonLogicBase logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer) =>
 										logicObject.CommonUI.UIFactory.CreateLabel(KB.K("You must create a MainBoss Service Configuration record.  Expand this control panel and use the Configuration control panel to create the MainBoss Service Configuration Record."))),
 									Fmt.SetBorder(UIBorders.Solid),
 									Fmt.SetHorizontalAlignment(System.Drawing.StringAlignment.Center)
@@ -860,7 +839,7 @@ namespace Thinkage.MainBoss.Controls {
 
 #if DEBUG
 				TblColumnNode.New(KB.T("DEBUG: Version"), dsMB.Path.T.ServiceConfiguration.F.InstalledServiceVersion, DCol.Normal),
-#endif 
+#endif
 				TblUnboundControlNode.New(KB.K("Status"), new StringTypeInfo(0, 1024, 3, true, true, true),
 					new DCol(Fmt.SetCreatedT<ServiceCommonBrowseLogic>(delegate (ServiceCommonBrowseLogic browseLogic, IBasicDataControl ctrl) {
 						ctrl.Value = Strings.Format(KB.K("Status Pending"));
@@ -890,7 +869,7 @@ namespace Thinkage.MainBoss.Controls {
 					System.Diagnostics.Debug.Assert((int)maxlen % 2 == 0);
 					maxlen = (int)maxlen / 2;
 				}
-				innerHandler = new StringTypeInfo(minlen, maxlen, 0, pTypeInfo.AllowNull, true, true).GetTypeEditTextHandler(Thinkage.Libraries.Application.InstanceCultureInfo);
+				innerHandler = new StringTypeInfo(minlen, maxlen, 0, pTypeInfo.AllowNull, true, true).GetTypeEditTextHandler(Thinkage.Libraries.Application.InstanceFormatCultureInfo);
 			}
 			private BlobTypeInfo pTypeInfo;
 			private TypeEditTextHandler innerHandler;
@@ -945,7 +924,7 @@ namespace Thinkage.MainBoss.Controls {
 								new TblLayoutNode.ICtorArg[] { DCol.Normal },
 								TblUnboundControlNode.New(null,
 									DCol.Normal,
-									Fmt.SetCreator((CommonLogic logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer) =>
+									Fmt.SetCreator((CommonLogicBase logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer) =>
 										logicObject.CommonUI.UIFactory.CreateLabel(KB.K("You must create or select a MainBoss Service Configuration record."))),
 									Fmt.SetBorder(UIBorders.Solid),
 									Fmt.SetHorizontalAlignment(System.Drawing.StringAlignment.Center)
@@ -1000,7 +979,7 @@ namespace Thinkage.MainBoss.Controls {
 				),
 				TblTabNode.New(KB.K("Incoming Mail"), KB.K("Settings for retrieving mail from a server"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.ProcessRequestorIncomingEmail, DCol.Normal, ECol.Normal),
-					TblGroupNode.New(dsMB.Path.T.ServiceConfiguration.F.MailServerType, new TblLayoutNode.ICtorArg[] {ECol.Normal },
+					TblGroupNode.New(dsMB.Path.T.ServiceConfiguration.F.MailServerType, new TblLayoutNode.ICtorArg[] { ECol.Normal },
 						TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailServerType, new ECol(Fmt.SetId(IncomingMailServerTypeId)))
 					),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailServerType, DCol.Normal),
@@ -1101,8 +1080,8 @@ namespace Thinkage.MainBoss.Controls {
 		#endregion
 		// TODO: Expand the following 5 Tbl-creator functions in-line as they are only called here and their names are just pollution.
 		static TIMainBossService() {
-			MainBossServiceManageTblCreator = new DelayedCreateTbl(delegate () { return MainBossServiceManageTbl(); });
-			MainBossServiceConfigurationEditTblCreator = new DelayedCreateTbl(delegate () { return MainBossServiceConfigurationEditTbl(); });
+			MainBossServiceManageTblCreator = new DelayedCreateTbl(() => MainBossServiceManageTbl());
+			MainBossServiceConfigurationEditTblCreator = new DelayedCreateTbl(() => MainBossServiceConfigurationEditTbl());
 		}
 		internal static void DefineTblEntries() {
 			DefineBrowseTbl(dsMB.Schema.T.EmailPart, delegate () {

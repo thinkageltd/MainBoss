@@ -17,14 +17,14 @@ namespace Thinkage.MainBoss.Database
 		}
 		public override void Perform(Version startingVersion, ISession session, DBI_Database schema, DBVersionHandler handler)
 		{
-			XAFClient db = new XAFClient(new DBClient.Connection(session.ConnectionInformation, dsEmailRequest.Schema), session);
+			DBClient db = new DBClient(new DBClient.Connection(session.ConnectionInformation, dsEmailRequest.Schema), session);
 			using (dsEmailRequest dsEmail = new dsEmailRequest(db)) {
 				dsEmail.EnsureDataTableExists(dsEmailRequest.Schema.T.EmailPart, dsEmailRequest.Schema.T.EmailRequest);
 				// Get all the RowIds of all the current rows in the table and put them in a list (this is to avoid reading the entire table into memory at one time; these are mail messages with possible large attachments embedded in them)
 				dsEmail.DB.ViewAdditionalRows(dsEmail, dsEmailRequest.Schema.T.EmailRequest, null, new SqlExpression[] { new SqlExpression(dsEmailRequest.Path.T.EmailRequest.F.Id) }, null);
-				dsEmailRequest.EmailRequestDataTable t = (dsEmailRequest.EmailRequestDataTable)dsEmailRequest.Schema.T.EmailRequest.GetDataTable(dsEmail);
+				dsEmailRequest.EmailRequestDataTable t = dsEmail.T.EmailRequest;
 				List<Guid> ids = new List<Guid>(t.Rows.Count);
-				foreach (dsEmailRequest.EmailRequestRow r in t.Rows)
+				foreach (dsEmailRequest.EmailRequestRow r in t)
 					ids.Add(r.F.Id);
 
 				foreach (Guid id in ids) {

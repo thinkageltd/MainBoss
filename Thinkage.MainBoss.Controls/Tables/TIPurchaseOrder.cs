@@ -140,8 +140,9 @@ namespace Thinkage.MainBoss.Controls
 		private static List<IDisablerProperties> SelfAssignDisablers() {
 			ITblDrivenApplication app = Application.Instance.GetInterface<ITblDrivenApplication>();
 			TableOperationRightsGroup rightsGroup = (TableOperationRightsGroup)app.TableRights.FindDirectChild("UnassignedPurchaseOrder");
-			var list = new List<IDisablerProperties>();
-			list.Add((IDisablerProperties)app.PermissionsManager.GetPermission(rightsGroup.GetTableOperationRight(TableOperationRightsGroup.TableOperation.Create)));
+			var list = new List<IDisablerProperties> {
+				(IDisablerProperties)app.PermissionsManager.GetPermission(rightsGroup.GetTableOperationRight(TableOperationRightsGroup.TableOperation.Create))
+			};
 			rightsGroup = (TableOperationRightsGroup)app.TableRights.FindDirectChild(dsMB.Schema.T.PurchaseOrderStateHistory.Name);
 			list.Add((IDisablerProperties)app.PermissionsManager.GetPermission(rightsGroup.GetTableOperationRight(TableOperationRightsGroup.TableOperation.Create)));
 			return list;
@@ -160,13 +161,14 @@ namespace Thinkage.MainBoss.Controls
 					throw new GeneralException(KB.K("You are not registered as a Purchase Order Assignee"));
 				requestAssigneeID = ((dsMB.PurchaseOrderAssigneeRow)row).F.Id;
 			}
-			var initList = new List<TblActionNode>();
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderID, new ConstantValue(requestID)));
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderStateID, new ConstantValue(KnownIds.PurchaseOrderStateIssuedId)));
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderStateHistoryStatusID, new EditorPathValue(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateHistoryStatusID)));
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.PurchaseOrderStateHistory.F.Comment, new ConstantValue(Strings.Format(KB.K("Self assigned")))));
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID, 1, new EditorPathValue(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderID)));
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderAssigneeID, 1, new ConstantValue(requestAssigneeID)));
+			var initList = new List<TblActionNode> {
+				Init.OnLoadNew(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderID, new ConstantValue(requestID)),
+				Init.OnLoadNew(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderStateID, new ConstantValue(KnownIds.PurchaseOrderStateIssuedId)),
+				Init.OnLoadNew(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderStateHistoryStatusID, new EditorPathValue(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateHistoryStatusID)),
+				Init.OnLoadNew(dsMB.Path.T.PurchaseOrderStateHistory.F.Comment, new ConstantValue(Strings.Format(KB.K("Self assigned")))),
+				Init.OnLoadNew(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID, 1, new EditorPathValue(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderID)),
+				Init.OnLoadNew(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderAssigneeID, 1, new ConstantValue(requestAssigneeID))
+			};
 			Libraries.Application.Instance.GetInterface<ITblDrivenApplication>().GetInterface<ITblDrivenApplication>().PerformMultiEdit(el.CommonUI.UIFactory, el.DB, TblRegistry.FindDelayedEditTbl(dsMB.Schema.T.PurchaseOrderStateHistory),
 				EdtMode.New,
 				new[] { new object[] { } },
@@ -179,28 +181,29 @@ namespace Thinkage.MainBoss.Controls
 		private static DelayedCreateTbl PurchaseOrderEditTbl(TblLayoutNodeArray nodes, FeatureGroup featureGroup, bool AssignToSelf) {
 			return new DelayedCreateTbl(delegate()
 			{
-				List<ETbl.ICtorArg> etblArgs = new List<ETbl.ICtorArg>();
-				etblArgs.Add(MB3ETbl.HasStateHistoryAndSequenceCounter(dsMB.Path.T.PurchaseOrder.F.Number, dsMB.Schema.T.PurchaseOrderSequenceCounter, dsMB.Schema.V.POSequence, dsMB.Schema.V.POSequenceFormat, PurchaseOrderHistoryTable));
-				etblArgs.Add(ETbl.EditorDefaultAccess(false));
-				etblArgs.Add(ETbl.EditorAccess(true, EdtMode.Edit, EdtMode.View, EdtMode.Clone, EdtMode.EditDefault, EdtMode.ViewDefault, EdtMode.New));
-				etblArgs.Add(ETbl.Print(TIReports.SinglePurchaseOrderFormReport, dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID));
+				List<ETbl.ICtorArg> etblArgs = new List<ETbl.ICtorArg> {
+					MB3ETbl.HasStateHistoryAndSequenceCounter(dsMB.Path.T.PurchaseOrder.F.Number, dsMB.Schema.T.PurchaseOrderSequenceCounter, dsMB.Schema.V.POSequence, dsMB.Schema.V.POSequenceFormat, PurchaseOrderHistoryTable),
+					ETbl.EditorDefaultAccess(false),
+					ETbl.EditorAccess(true, EdtMode.Edit, EdtMode.View, EdtMode.Clone, EdtMode.EditDefault, EdtMode.ViewDefault, EdtMode.New),
+					ETbl.Print(TIReports.SinglePurchaseOrderFormReport, dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID)
+				};
 				if (AssignToSelf) {
 					etblArgs.Add(ETbl.CustomCommand(
 							delegate(EditLogic el)
 							{
-								var group = new EditLogic.MutuallyExclusiveCommandSetDeclaration();
-								group.Add(new EditLogic.CommandDeclaration(
+								var group = new EditLogic.MutuallyExclusiveCommandSetDeclaration {
+									new EditLogic.CommandDeclaration(
 									SelfAssignCommand,
 									new MultiCommandIfAllEnabled(
 										EditLogic.StateTransitionCommand.NewSameTargetState(el,
 											SelfAssignTip,
-											delegate()
-											{
+											delegate () {
 												SelfAssignmentEditor(el, el.RootRowIDs[0]);
 											},
 											el.AllStatesWithExistingRecord.ToArray()),
 										SelfAssignDisablers().ToArray())
-									));
+									)
+								};
 								return group;
 							}
 					));
@@ -209,8 +212,7 @@ namespace Thinkage.MainBoss.Controls
 					new Tbl.IAttr[] {
 						CommonTblAttrs.ViewCostsDefinedBySchema,
 						featureGroup,
-						new ETbl(etblArgs.ToArray()),
-						TIReports.NewRemotePTbl(TIReports.PurchaseOrderFormReport)
+						new ETbl(etblArgs.ToArray())
 					},
 					(TblLayoutNodeArray)nodes.Clone(),
 					Init.LinkRecordSets(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderID, 1, dsMB.Path.T.PurchaseOrder.F.Id, 0),
@@ -379,7 +381,7 @@ namespace Thinkage.MainBoss.Controls
 							BTbl.ListColumn(dsMB.Path.T.POLineLabor.F.POLineID.F.LineNumber),
 							BTbl.ListColumn(dsMB.Path.T.POLineLabor.F.DemandLaborOutsideID.F.LaborOutsideID.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.POLineLabor.F.Quantity, NonPerViewColumn),
-							BTbl.ListColumn(dsMB.Path.T.POLineLabor.F.DemandLaborOutsideID.F.ActualQuantity, BTbl.ListColumnArg.Contexts.OpenCombo | BTbl.ListColumnArg.Contexts.SearchAndFilter)
+							BTbl.ListColumn(dsMB.Path.T.POLineLabor.F.DemandLaborOutsideID.F.ActualQuantity, BTbl.Contexts.OpenPicker | BTbl.Contexts.SearchAndFilter)
 						)
 					);
 				}
@@ -425,7 +427,7 @@ namespace Thinkage.MainBoss.Controls
 							BTbl.ListColumn(dsMB.Path.T.POLineOtherWork.F.POLineID.F.LineNumber),
 							BTbl.ListColumn(dsMB.Path.T.POLineOtherWork.F.DemandOtherWorkOutsideID.F.OtherWorkOutsideID.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.POLineOtherWork.F.Quantity, NonPerViewColumn),
-							BTbl.ListColumn(dsMB.Path.T.POLineOtherWork.F.DemandOtherWorkOutsideID.F.ActualQuantity, BTbl.ListColumnArg.Contexts.OpenCombo | BTbl.ListColumnArg.Contexts.SearchAndFilter)
+							BTbl.ListColumn(dsMB.Path.T.POLineOtherWork.F.DemandOtherWorkOutsideID.F.ActualQuantity, BTbl.Contexts.OpenPicker | BTbl.Contexts.SearchAndFilter)
 						)
 					);
 				}
@@ -800,11 +802,12 @@ namespace Thinkage.MainBoss.Controls
 		private static DelayedCreateTbl PurchaseOrderAssignmentBrowseTbl(bool fixedPurchaseOrder) {
 			return new DelayedCreateTbl(
 				delegate() {
-					List<BTbl.ICtorArg> BTblAttrs = new List<BTbl.ICtorArg>();
-					BTblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID.F.Number));
-					BTblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.Code));
-					BTblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID.F.Subject));
-					BTblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderAssigneeID.F.ContactID.F.Code));
+					List<BTbl.ICtorArg> BTblAttrs = new List<BTbl.ICtorArg> {
+						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID.F.Number),
+						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.Code),
+						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID.F.Subject),
+						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderAssigneeID.F.ContactID.F.Code)
+					};
 
 					return new CompositeTbl(dsMB.Schema.T.PurchaseOrderAssignment, TId.PurchaseOrderAssignment,
 						new Tbl.IAttr[] {
@@ -927,8 +930,8 @@ namespace Thinkage.MainBoss.Controls
 		private TIPurchaseOrder() {}
 		static TIPurchaseOrder() {
 			#region TblCreators
-			POLineItemTblCreator = new DelayedCreateTbl(delegate () { return POLineItemsBrowseTbl(); });
-			POLineItemTemplateTblCreator = new DelayedCreateTbl(delegate () { return POLineItemsTemplateTbl(); });
+			POLineItemTblCreator = new DelayedCreateTbl(() => POLineItemsBrowseTbl());
+			POLineItemTemplateTblCreator = new DelayedCreateTbl(() => POLineItemsTemplateTbl());
 			AssociatedWorkOrdersTbl = TIWorkOrder.WorkOrderPurchaseOrderLinkageTbl(false);
 			AssociatedWorkOrderTemplatesTbl = TIWorkOrder.WorkOrderTemplatePurchaseOrderTemplateLinkageTbl(false);
 
@@ -959,10 +962,10 @@ namespace Thinkage.MainBoss.Controls
 						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignee.F.ContactID.F.BusinessPhone, NonPerViewColumn),
 						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignee.F.ContactID.F.MobilePhone, NonPerViewColumn),
 						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignee.F.Id.L.PurchaseOrderAssigneeStatistics.Id.F.NumNew, NonPerViewColumn),
-						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignee.F.Id.L.PurchaseOrderAssigneeStatistics.Id.F.NumInProgress, NonPerViewColumn)
+						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignee.F.Id.L.PurchaseOrderAssigneeStatistics.Id.F.NumInProgress, NonPerViewColumn),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderAssigneeReport))
 					),
-					new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete)),
-					TIReports.NewRemotePTbl(TIReports.PurchaseOrderAssigneeReport)
+					new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete))
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -998,10 +1001,10 @@ namespace Thinkage.MainBoss.Controls
 						new BTbl(
 							BTbl.PerViewListColumn(KB.K("Assigned to"), assignedToColumnID),
 							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignmentByAssignee.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.Code),
-							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignmentByAssignee.F.PurchaseOrderID.F.Subject)
-						),
-						new TreeStructuredTbl(null, 2),
-						TIReports.NewRemotePTbl(TIReports.PurchaseOrderByAssigneeFormReport),
+							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignmentByAssignee.F.PurchaseOrderID.F.Subject),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderByAssigneeFormReport)),
+							BTbl.SetTreeStructure(null, 2)
+						)
 					},
 					null,
 					// The fake contact row for unassigned work orders; This displays because the XAFDB file specifies a text provider for its own ID field.
@@ -1081,9 +1084,9 @@ namespace Thinkage.MainBoss.Controls
 				return new Tbl(dsMB.Schema.T.PaymentTerm, TId.PaymentTerm,
 				new Tbl.IAttr[] {
 					PurchasingGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.PaymentTerm.F.Code), BTbl.ListColumn(dsMB.Path.T.PaymentTerm.F.Desc)),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.PaymentTerm.F.Code), BTbl.ListColumn(dsMB.Path.T.PaymentTerm.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -1115,15 +1118,14 @@ namespace Thinkage.MainBoss.Controls
 				DefineBrowseTbl(dsMB.Schema.T.PurchaseOrderLine, delegate()
 				{
 					return new CompositeTbl(dsMB.Schema.T.PurchaseOrderLine, TId.PurchaseOrderLine,
-					new Tbl.IAttr[]
-					{
+					new Tbl.IAttr[]	{
 						new BTbl(
 							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.PurchaseOrderText),
 							BTbl.PerViewListColumn(quantityColumnId, quantityColumnId),
 							BTbl.PerViewListColumn(uomColumnId, uomColumnId),
-							BTbl.PerViewListColumn(costColumnId, costColumnId)
-						),
-						new TreeStructuredTbl(dsMB.Path.T.PurchaseOrderLine.F.ParentID, 2)
+							BTbl.PerViewListColumn(costColumnId, costColumnId),
+							BTbl.SetTreeStructure(dsMB.Path.T.PurchaseOrderLine.F.ParentID, 2)
+						)
 					},
 					dsMB.Path.T.PurchaseOrderLine.F.TableEnum,
 						// TODO: This browser tries to but fails to allow receiving (actualization) of labor & other work because it does not supply an init for the To C/C;
@@ -1254,8 +1256,11 @@ namespace Thinkage.MainBoss.Controls
 				return new Tbl(dsMB.Schema.T.PurchaseOrderState, TId.PurchaseOrderState,
 				new Tbl.IAttr[] {
 					PurchasingGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.PurchaseOrderState.F.Code), BTbl.ListColumn(dsMB.Path.T.PurchaseOrderState.F.Desc)),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(
+						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderState.F.Code),
+						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderState.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()
+					)
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -1282,9 +1287,9 @@ namespace Thinkage.MainBoss.Controls
 				return new Tbl(dsMB.Schema.T.PurchaseOrderStateHistoryStatus, TId.PurchaseOrderStatus,
 				new Tbl.IAttr[] {
 					PurchasingGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.PurchaseOrderStateHistoryStatus.F.Code), BTbl.ListColumn(dsMB.Path.T.PurchaseOrderStateHistoryStatus.F.Desc)),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.PurchaseOrderStateHistoryStatus.F.Code), BTbl.ListColumn(dsMB.Path.T.PurchaseOrderStateHistoryStatus.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -1298,8 +1303,7 @@ namespace Thinkage.MainBoss.Controls
 			#endregion
 			#region PurchaseOrderStateHistory
 			DefineEditTbl(dsMB.Schema.T.PurchaseOrderStateHistory, new DelayedCreateTbl(delegate () {
-				TblLayoutNodeArray extraNodes;
-				List<TblActionNode> inits = StateHistoryInits(MB3Client.PurchaseOrderHistoryTable, out extraNodes);
+				List<TblActionNode> inits = StateHistoryInits(MB3Client.PurchaseOrderHistoryTable, out TblLayoutNodeArray extraNodes);
 				TblLayoutNodeArray PurchaseOrderStateHistoryNodes = new TblLayoutNodeArray(
 					TblGroupNode.New(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderID, new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
 						TblColumnNode.New(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderID.F.Number, DCol.Normal, ECol.AllReadonly),
@@ -1337,7 +1341,7 @@ namespace Thinkage.MainBoss.Controls
 						new BTbl(
 							MB3BTbl.IsStateHistoryTbl(PurchaseOrderHistoryTable),
 							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderID.F.Number),
-							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderStateHistory.F.EffectiveDate, BTbl.ListColumnArg.Contexts.SortInitialDescending),
+							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderStateHistory.F.EffectiveDate, BTbl.Contexts.SortInitialDescending),
 							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderStateID.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderStateHistoryStatusID.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderStateHistory.F.Comment)
@@ -1353,7 +1357,7 @@ namespace Thinkage.MainBoss.Controls
 			BTbl.ICtorArg PurchaseOrderVendorListColumn = BTbl.ListColumn(dsMB.Path.T.PurchaseOrder.F.VendorID.F.Code);
 			BTbl.ICtorArg PurchaseOrderSummaryListColumn = BTbl.ListColumn(dsMB.Path.T.PurchaseOrder.F.Subject, NonPerViewColumn);
 			BTbl.ICtorArg PurchaseOrderStatusListColumn = BTbl.ListColumn(dsMB.Path.T.PurchaseOrder.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateHistoryStatusID.F.Code);
-			BTbl.ICtorArg PurchaseOrderStateAuthorListColumn = BTbl.ListColumn(dsMB.Path.T.PurchaseOrder.F.CurrentPurchaseOrderStateHistoryID.F.UserID.F.ContactID.F.Code, BTbl.ListColumnArg.Contexts.SearchAndFilter);
+			BTbl.ICtorArg PurchaseOrderStateAuthorListColumn = BTbl.ListColumn(dsMB.Path.T.PurchaseOrder.F.CurrentPurchaseOrderStateHistoryID.F.UserID.F.ContactID.F.Code, BTbl.Contexts.SearchAndFilter);
 
 			TblLayoutNodeArray PurchaseOrderNodes = new TblLayoutNodeArray(
 				DetailsTabNode.New(
@@ -1429,8 +1433,7 @@ namespace Thinkage.MainBoss.Controls
 							ETbl.EditorDefaultAccess(false),
 							ETbl.EditorAccess(true, EdtMode.Edit, EdtMode.View, EdtMode.Clone, EdtMode.EditDefault, EdtMode.ViewDefault, EdtMode.New),
 							ETbl.Print(TIReports.SinglePurchaseOrderFormReport, dsMB.Path.T.PurchaseOrderFormReport.F.PurchaseOrderID)
-						),
-						TIReports.NewRemotePTbl(TIReports.PurchaseOrderFormReport)
+						)
 					},
 					PurchaseOrderNodes + new TblLayoutNodeArray(
 						TblUnboundControlNode.StoredEditorValue(POLinePricingBasisQuantity, dsMB.Schema.T.POLineItem.F.Quantity.EffectiveType),
@@ -1458,9 +1461,9 @@ namespace Thinkage.MainBoss.Controls
 							PurchaseOrderVendorListColumn,
 							PurchaseOrderStatusListColumn,
 							PurchaseOrderSummaryListColumn,
-							PurchaseOrderStateAuthorListColumn
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() {return TIReports.PurchaseOrderFormReport;}))
+							PurchaseOrderStateAuthorListColumn,
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderFormReport))
+						)
 				},
 				null,	// no record type
 					CompositeView.ChangeEditTbl(PurchaseOrderEditTblCreator, CompositeView.JoinedNewCommand(NewPurchaseOrder),
@@ -1500,9 +1503,9 @@ namespace Thinkage.MainBoss.Controls
 							PurchaseOrderVendorListColumn,
 							PurchaseOrderStatusListColumn,
 							PurchaseOrderSummaryListColumn,
-							PurchaseOrderStateAuthorListColumn
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() {return TIReports.PurchaseOrderDraftFormReport;}))
+							PurchaseOrderStateAuthorListColumn,
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderDraftFormReport))
+						)
 					},
 					null,	// no record type
 					CompositeView.ChangeEditTbl(PurchaseOrderEditTblCreator)
@@ -1520,9 +1523,9 @@ namespace Thinkage.MainBoss.Controls
 							PurchaseOrderVendorListColumn,
 							PurchaseOrderStatusListColumn,
 							PurchaseOrderSummaryListColumn,
-							PurchaseOrderStateAuthorListColumn
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() {return TIReports.PurchaseOrderIssuedFormReport;}))
+							PurchaseOrderStateAuthorListColumn,
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderIssuedFormReport))
+						)
 					},
 					null,	// no record type
 					CompositeView.ChangeEditTbl(PurchaseOrderEditTblCreator, OnlyViewEdit)
@@ -1551,9 +1554,9 @@ namespace Thinkage.MainBoss.Controls
 							PurchaseOrderVendorListColumn,
 							PurchaseOrderStatusListColumn,
 							PurchaseOrderSummaryListColumn,
-							PurchaseOrderStateAuthorListColumn
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() {return TIReports.PurchaseOrderIssuedAndAssignedFormReport; }))
+							PurchaseOrderStateAuthorListColumn,
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderIssuedAndAssignedFormReport))
+						)
 					},
 					null,	// no record type
 					CompositeView.ChangeEditTbl(PurchaseOrderAssignedToEditorTblCreator, OnlyViewEdit)
@@ -1624,9 +1627,9 @@ namespace Thinkage.MainBoss.Controls
 							PurchaseOrderNumberListColumn,
 							PurchaseOrderVendorListColumn,
 							PurchaseOrderSummaryListColumn,
-							PurchaseOrderStateAuthorListColumn
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() {return TIReports.PurchaseOrderClosedFormReport;}))
+							PurchaseOrderStateAuthorListColumn,
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderClosedFormReport))
+						)
 					},
 					null,	// no record type
 					CompositeView.ChangeEditTbl(PurchaseOrderEditTblCreator, OnlyViewEdit)
@@ -1642,9 +1645,9 @@ namespace Thinkage.MainBoss.Controls
 							BTbl.EqFilter(dsMB.Path.T.PurchaseOrder.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsVoid, true),
 							PurchaseOrderNumberListColumn,
 							PurchaseOrderSummaryListColumn,
-							PurchaseOrderStateAuthorListColumn
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() {return TIReports.PurchaseOrderVoidFormReport;}))
+							PurchaseOrderStateAuthorListColumn,
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderVoidFormReport))
+						)
 					},
 					null,	// no record type
 					CompositeView.ChangeEditTbl(PurchaseOrderEditTblCreator, OnlyViewEdit)
@@ -1662,11 +1665,11 @@ namespace Thinkage.MainBoss.Controls
 					new BTbl(
 						BTbl.ListColumn(dsMB.Path.T.Miscellaneous.F.Code),
 						BTbl.ListColumn(dsMB.Path.T.Miscellaneous.F.Desc, NonPerViewColumn),
-						BTbl.ListColumn(dsMB.Path.T.Miscellaneous.F.PurchaseOrderText, BTbl.ListColumnArg.Contexts.OpenCombo|BTbl.ListColumnArg.Contexts.ClosedCombo|BTbl.ListColumnArg.Contexts.SearchAndFilter),
-						BTbl.ListColumn(dsMB.Path.T.Miscellaneous.F.Cost, NonPerViewColumn)
+						BTbl.ListColumn(dsMB.Path.T.Miscellaneous.F.PurchaseOrderText, BTbl.Contexts.OpenPicker|BTbl.Contexts.ClosedPicker|BTbl.Contexts.SearchAndFilter),
+						BTbl.ListColumn(dsMB.Path.T.Miscellaneous.F.Cost, NonPerViewColumn),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.MiscellaneousReport))
 					),
-					new ETbl(),
-					TIReports.NewRemotePTbl(TIReports.MiscellaneousReport)
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -1696,11 +1699,6 @@ namespace Thinkage.MainBoss.Controls
 			#endregion
 
 			#region PurchaseOrderTemplate
-			BTbl.ICtorArg[] PurchaseOrderTemplateListColumns = {
-				BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.Code, NonPerViewColumn),
-				BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.VendorID.F.Code),
-				BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.Subject, NonPerViewColumn)
-			};
 			TblLayoutNodeArray PurchaseOrderTemplateNodes = new TblLayoutNodeArray(
 					DetailsTabNode.New(
 						TblColumnNode.New(dsMB.Path.T.PurchaseOrderTemplate.F.Code, DCol.Normal, ECol.Normal),
@@ -1728,9 +1726,12 @@ namespace Thinkage.MainBoss.Controls
 				return new Tbl(dsMB.Schema.T.PurchaseOrderTemplate, TId.PurchaseOrderTemplate,
 					new Tbl.IAttr[] {
 						SchedulingAndPurchasingGroup,
-						new BTbl(PurchaseOrderTemplateListColumns),
-						new ETbl(),
-						TIReports.NewRemotePTbl(TIReports.PurchaseOrderTemplateReport)
+						new BTbl(
+							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.Code, NonPerViewColumn),
+							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.VendorID.F.Code),
+							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.Subject, NonPerViewColumn),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderTemplateReport))),
+						new ETbl()
 					},
 					(TblLayoutNodeArray)PurchaseOrderTemplateNodes.Clone()
 				);
@@ -1740,11 +1741,12 @@ namespace Thinkage.MainBoss.Controls
 			{
 				return new CompositeTbl(dsMB.Schema.T.PurchaseOrderTemplate, TId.PurchaseOrderTemplate,
 				new Tbl.IAttr[] {
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.Code),
-							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.Desc),
-							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.Subject, BTbl.ListColumnArg.Contexts.OpenCombo|BTbl.ListColumnArg.Contexts.SearchAndFilter)
-					),
-					TIReports.NewRemotePTbl(TIReports.PurchaseOrderTemplateReport)
+					new BTbl(
+						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.Code),
+						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.Desc),
+						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.Subject, BTbl.Contexts.OpenPicker|BTbl.Contexts.SearchAndFilter),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderTemplateReport))
+					)
 				},
 				null,	// no record type
 				CompositeView.ChangeEditTbl(PurchaseOrderTemplateEditTbl)
@@ -1757,9 +1759,9 @@ namespace Thinkage.MainBoss.Controls
 				return new Tbl(dsMB.Schema.T.PurchaseOrderCategory, TId.PurchaseOrderCategory,
 				new Tbl.IAttr[] {
 					PurchasingGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.PurchaseOrderCategory.F.Code), BTbl.ListColumn(dsMB.Path.T.PurchaseOrderCategory.F.Desc)),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.PurchaseOrderCategory.F.Code), BTbl.ListColumn(dsMB.Path.T.PurchaseOrderCategory.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -1792,9 +1794,9 @@ namespace Thinkage.MainBoss.Controls
 				return new Tbl(dsMB.Schema.T.ShippingMode, TId.ShippingMode,
 				new Tbl.IAttr[] {
 					PurchasingGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.ShippingMode.F.Code), BTbl.ListColumn(dsMB.Path.T.ShippingMode.F.Desc)),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.ShippingMode.F.Code), BTbl.ListColumn(dsMB.Path.T.ShippingMode.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -1808,9 +1810,10 @@ namespace Thinkage.MainBoss.Controls
 			RegisterExistingForImportExport(TId.ShippingMode, dsMB.Schema.T.ShippingMode);
 			#endregion
 			#region Vendor
-			BTbl.ICtorArg[] VendorListColumns = {
+			BTbl.ICtorArg[] VendorBTblArgs = {
 				BTbl.ListColumn(dsMB.Path.T.Vendor.F.Code),
-				BTbl.ListColumn(dsMB.Path.T.Vendor.F.Desc)
+				BTbl.ListColumn(dsMB.Path.T.Vendor.F.Desc),
+				BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.VendorReport))
 			};
 			TblLayoutNodeArray vendorNodes = new TblLayoutNodeArray(
 				DetailsTabNode.New(
@@ -1851,9 +1854,8 @@ namespace Thinkage.MainBoss.Controls
 				return new Tbl(dsMB.Schema.T.Vendor, TId.Vendor,
 					new Tbl.IAttr[] {
 						VendorsDependentGroup,
-						new BTbl(VendorListColumns),
-						new ETbl(),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.VendorReport; }))
+						new BTbl(VendorBTblArgs),
+						new ETbl()
 					},
 					(TblLayoutNodeArray)vendorNodes.Clone()
 				);
@@ -1864,9 +1866,8 @@ namespace Thinkage.MainBoss.Controls
 				return new Tbl(dsMB.Schema.T.Vendor, TId.Vendor,
 					new Tbl.IAttr[] {
 						PurchasingGroup,
-						new BTbl(VendorListColumns),
-						new ETbl(),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.VendorReport; }))
+						new BTbl(VendorBTblArgs),
+						new ETbl()
 					},
 					(TblLayoutNodeArray)vendorNodes.Clone()
 				);
@@ -1881,9 +1882,9 @@ namespace Thinkage.MainBoss.Controls
 				return new Tbl(dsMB.Schema.T.VendorCategory, TId.VendorCategory,
 				new Tbl.IAttr[] {
 					VendorsDependentGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.VendorCategory.F.Code), BTbl.ListColumn(dsMB.Path.T.VendorCategory.F.Desc)),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.VendorCategory.F.Code), BTbl.ListColumn(dsMB.Path.T.VendorCategory.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(

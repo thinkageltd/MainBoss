@@ -34,8 +34,7 @@ namespace Thinkage.MainBoss.MBUtility
 		private readonly Definition Options;
 		private void Run()
 		{
-			string oName;
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out string oName);
 			// Get a connection to the database that we are referencing to check our permissions to access it and licensing restrictions.
 			// First make sure we have a security manager for security checking
 			new ApplicationTblDefaultsNoEditing(Thinkage.Libraries.Application.Instance, new MainBossPermissionsManager(Root.Rights), Root.Rights.Table, Root.RightsSchema, Root.Rights.Action.Customize);

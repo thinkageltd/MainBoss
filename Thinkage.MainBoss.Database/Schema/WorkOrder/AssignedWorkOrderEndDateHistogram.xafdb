@@ -25,10 +25,14 @@
 						coalesce(sum(case when X.IsPM = 0 and X.IsRequested != 0 then 1 else 0 end), 0)
 				from
 					<!-- TODO: We should only count it as PM if the batch was schedule-generated; not sure it is possible to tell -->
-					(select WO.ID, WOAsst.WorkOrderAssigneeId, WO.EndDateEstimate, case when RWO.WorkOrderID is null then 0 else 1 end, case when WO.PMGenerationBatchID is null then 0 else 1 end
+					(select
+					  WO.ID,
+					  WOAsst.WorkOrderAssigneeId,
+					  WO.EndDateEstimate,
+					  case when exists(select * from RequestedWorkOrder where WorkOrderID = WO.Id) then 0 else 1 end,
+					  case when exists(select * from PMGenerationDetail where WorkOrderID = WO.Id) then 0 else 1 end
 						from
 							WorkOrder as WO
-							left join (select distinct WorkOrderID from RequestedWorkOrder) as RWO(WorkOrderID) on RWO.WorkOrderID = WO.ID
 							join WorkOrderStateHistory as WOSH on WOSH.[ID] = WO.CurrentWorkOrderStateHistoryID
 							join WorkOrderState as WOS on WOS.[ID] = WOSH.WorkOrderStateID
 							join (
@@ -64,6 +68,7 @@
 		<extension name="dependson">WorkOrderStateHistory</extension>
 		<extension name="dependson">WorkOrderState</extension>
 		<extension name="dependson">RequestedWorkOrder</extension>
+		<extension name="dependson">PMGenerationDetail</extension>
 		<extension name="dependson">WorkOrderAssignment</extension>
 		<extension name="dependson">WorkOrderAssignee</extension>
 		<extension name="dependson">DemandLaborInside</extension>
@@ -77,6 +82,7 @@
 	<table name="WorkOrderState"/>
 	<table name="WorkOrderStateHistory"/>
 	<table name="RequestedWorkOrder"/>
+	<table name="PMGenerationDetail"/>
 	<table name="WorkOrderAssignment"/>
 	<table name="WorkOrderAssignee"/>
 	<table name="DemandLaborInside"/>

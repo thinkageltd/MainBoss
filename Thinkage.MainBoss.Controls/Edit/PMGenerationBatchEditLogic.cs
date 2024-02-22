@@ -16,7 +16,7 @@ namespace Thinkage.MainBoss.Controls {
 	/// Common base for generating workorders and/or setting schedule basis. All involve creating/editing PMGenerationBatch records
 	/// </summary>
 	public class SchedulingBaseEditLogic : EditLogic {
-		public SchedulingBaseEditLogic(IEditUI editUI, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+		public SchedulingBaseEditLogic(IEditUI editUI, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 			: base(editUI, db, tbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, initLists) {
 			if (!WillBeEditingDefaults)
 				BatchRowBeingEditedAccessor = RecordManager.GetDirectRowAccessor(dsMB.Path.T.PMGenerationBatch.F.Id, 0, true);
@@ -33,7 +33,7 @@ namespace Thinkage.MainBoss.Controls {
 	#endregion
 	#region Automatically scheduled PM work order batch (PMGenerationBatchEditControl/PMGenerationBatchEditLogic)
 	public class PMGenerationBatchBaseEditLogic : SchedulingBaseEditLogic {
-		public PMGenerationBatchBaseEditLogic(IEditUI editUI, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+		public PMGenerationBatchBaseEditLogic(IEditUI editUI, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 			: base(editUI, db, tbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, initLists) {
 		}
 		protected override void SetupDataset() {
@@ -75,7 +75,7 @@ namespace Thinkage.MainBoss.Controls {
 	public class PMGenerationBatchEditLogic : PMGenerationBatchBaseEditLogic {
 		#region Construction
 		#region - Constructor
-		public PMGenerationBatchEditLogic(IEditUI editUI, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+		public PMGenerationBatchEditLogic(IEditUI editUI, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 			: base(editUI, db, tbl, settingsContainer, initialEditMode, initRowIDs, ModifySubsequentModeRestrictions(subsequentModeRestrictions), initLists) {
 		}
 		// The sequence Generate-Commit-New-Generate-Close-Ok(discard batch) causes errors because the deletions seem to try to 
@@ -98,7 +98,7 @@ namespace Thinkage.MainBoss.Controls {
 				DB.ViewAdditionalVariables(DataSet, dsMB.Schema.V.PmGenerateInterval);
 				int default_end = 1;
 				if (((dsMB)DataSet).V.PmGenerateInterval.Value != null)
-					default_end = ((dsMB)DataSet).V.PmGenerateInterval.Value.Days;
+					default_end = ((TimeSpan)((dsMB)DataSet).V.PmGenerateInterval.Value).Days;
 				InitList.Add(Init.OnLoadNew(dsMB.Path.T.PMGenerationBatch.F.EndDate, new ConstantValue(DateTime.Today.AddDays(default_end))));
 
 				SessionIdSource = RecordManager.GetPathNotifyingSource(dsMB.Path.T.PMGenerationBatch.F.SessionID, 0);
@@ -153,9 +153,9 @@ namespace Thinkage.MainBoss.Controls {
 			// they would have to Cancel first, then Change Scheduling Parameters.
 			// The argument that Generate and Commit should not be on the same button to prevent accidental double-click problems is somewhat silly and
 			// should really be cured by looking at *why* people might intentionally click more than once
-			MutuallyExclusiveCommandSetDeclaration cgd = new MutuallyExclusiveCommandSetDeclaration();
-			cgd.Add(new CommandDeclaration(KB.K("Generate"), StateTransitionCommand.NewSingleTargetState(this, KB.K("Calculate the Work Order scheduled dates based on the Unit Maintenance Plans"),
-					delegate() {
+			MutuallyExclusiveCommandSetDeclaration cgd = new MutuallyExclusiveCommandSetDeclaration {
+				new CommandDeclaration(KB.K("Generate"), StateTransitionCommand.NewSingleTargetState(this, KB.K("Calculate the Work Order scheduled dates based on the Unit Maintenance Plans"),
+					delegate () {
 						// If the user wants to change the parameters after a Generate, essentially the record saved here is deleted and a fresh New onde is created.
 						// We must remember the current slot contents for the EditingHistory so that too can be reset.
 						PreGenerateEditingHistoryEntry = EditingHistory[CurrentEditingHistoryIndex];
@@ -183,9 +183,9 @@ namespace Thinkage.MainBoss.Controls {
 					},
 					StateUnCommittedUnchanged,
 					StateParametersChanged,
-					StateParametersUnchanged)));
-			cgd.Add(new CommandDeclaration(KB.K("Change Scheduling Parameters"), StateTransitionCommand.NewSingleTargetState(this, KB.K("Discard current generated scheduling and alter scheduling parameters"),
-					delegate() {
+					StateParametersUnchanged)),
+				new CommandDeclaration(KB.K("Change Scheduling Parameters"), StateTransitionCommand.NewSingleTargetState(this, KB.K("Discard current generated scheduling and alter scheduling parameters"),
+					delegate () {
 						// We save the contents of the batch record, delete it and all details using DeleteUncommittedSet), tell the edit control
 						// to make a new record, then restore all the batch record contents.
 						object[] savedValues = BatchRowBeingEdited.ItemArray;
@@ -198,9 +198,10 @@ namespace Thinkage.MainBoss.Controls {
 						BatchRowBeingEdited.ItemArray = savedValues;
 					},
 					StateParametersUnchanged,
-					StateTransition.DisallowedModeHandling.AllowInitialState,	// Even if re-entry to New mode is disallowed we still want to be able to do this.
+					StateTransition.DisallowedModeHandling.AllowInitialState,   // Even if re-entry to New mode is disallowed we still want to be able to do this.
 					StateUnCommittedUnchanged,
-					StateUnCommittedChanged)));
+					StateUnCommittedChanged))
+			};
 			CommandGroupDeclarationsInOrder.Insert(0, cgd);
 
 			SaveCommandGroup.Add(new CommandDeclaration(KB.K("Commit"), StateTransitionCommand.NewSingleTargetState(this, KB.K("Create the scheduled Work Orders"),
@@ -311,7 +312,7 @@ namespace Thinkage.MainBoss.Controls {
 	#region Manually scheduled PM work order (PMGenerationManualScheduledWorkOrderEditControl/PMGenerationManualScheduledWorkOrderEditLogic)
 	public class PMGenerationManualScheduledWorkOrderEditLogic : PMGenerationBatchBaseEditLogic {
 		#region Constructor
-		public PMGenerationManualScheduledWorkOrderEditLogic(IEditUI editUI, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+		public PMGenerationManualScheduledWorkOrderEditLogic(IEditUI editUI, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 			: base(editUI, db, tbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, initLists) {
 		}
 		#endregion
@@ -377,7 +378,7 @@ namespace Thinkage.MainBoss.Controls {
 		// The normal multiple-save-new code would generate a new batch for each SWO we reschedule.
 		#region Construction
 		#region - Constructor
-		public ScheduleBasisEditLogic(IEditUI editUI, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+		public ScheduleBasisEditLogic(IEditUI editUI, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 			: base(editUI, db, tbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, initLists) {
 		}
 		#endregion

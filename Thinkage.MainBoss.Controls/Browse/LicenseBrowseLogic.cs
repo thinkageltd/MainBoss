@@ -17,7 +17,7 @@ namespace Thinkage.MainBoss.Controls
 	class LicenseUpdaterBrowseLogic : BrowseLogic {
 		#region Construction
 		#region - Constructor
-		public LicenseUpdaterBrowseLogic(IBrowseUI control, XAFClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
+		public LicenseUpdaterBrowseLogic(IBrowseUI control, DBClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
 			: base(control, db, takeDBCustody, tbl, settingsContainer, structure)
 		{
 		}
@@ -176,8 +176,8 @@ namespace Thinkage.MainBoss.Controls
 				if (newNamedUserLicense != null && !allLicensesPresent.All<License>(l => l.LicenseID == newNamedUserLicense.LicenseID))
 					throw new Thinkage.Libraries.GeneralException(KB.K("At least one of the selected licenses has a License Id different from the new Named User License {0}"), newNamedUserLicense.LicenseStr);
 
-				// Note our updates go to the Original existing XAFClient DB for the license table.
-				using (XAFDataSet dsUpdate = XAFDataSet.New(dsMB.Schema.T.License.Database, Browser.Session.ExistingDB)) {
+				// Note our updates go to the Original existing DBClient DB for the license table.
+				using (DBDataSet dsUpdate = DBDataSet.New(dsMB.Schema.T.License.Database, Browser.Session.ExistingDB)) {
 					dsUpdate.EnforceConstraints = false;
 					dsUpdate.DataSetName = KB.I("LicenseUpdaterBrowseLogic.dsUpdate");
 					// Build a list of the current licenses to prepare to make decision on resolution. Since the licenses are unique we can use them for 'ids' in locating records later
@@ -187,7 +187,7 @@ namespace Thinkage.MainBoss.Controls
 					List<License> AddThese = new List<License>();
 					// get the existing licenses in the database
 					dsUpdate.DB.ViewAdditionalRows(dsUpdate, dsMB.Schema.T.License); // fetch all the current licenses
-					foreach (dsMB.LicenseRow lr in dsMB.Schema.T.License.GetDataTable(dsUpdate).Rows) {
+					foreach (dsMB.LicenseRow lr in dsUpdate.GetDataTable(dsMB.Schema.T.License)) {
 						try {
 							existingLicenses.Add(new License(lr.F.License));
 						}
@@ -306,8 +306,8 @@ namespace Thinkage.MainBoss.Controls
 					if (Thinkage.Libraries.Ask.Question(askMsg.ToString()) != Thinkage.Libraries.Ask.Result.Yes)
 						return;
 					// Change the License table dataset to reflect our changes and save to database
-					dsMB.LicenseDataTable licTable = (dsMB.LicenseDataTable) dsMB.Schema.T.License.GetDataTable(dsUpdate);
-					foreach (dsMB.LicenseRow rowToDelete in licTable.Rows) {
+					dsMB.LicenseDataTable licTable = (dsMB.LicenseDataTable)dsUpdate.GetDataTable(dsMB.Schema.T.License);
+					foreach (dsMB.LicenseRow rowToDelete in licTable) {
 						if (DeleteThese.Any<License>(l => l.LicenseStr.Equals(rowToDelete.F.License,StringComparison.InvariantCultureIgnoreCase)))
 							rowToDelete.Delete();
 					}
@@ -446,7 +446,7 @@ namespace Thinkage.MainBoss.Controls
 			: base(connection, server)
 		{
 		}
-		public LicenseUpdateSession(XAFClient existing, string initialText) : this(new Connection(), existing.Session.Server)
+		public LicenseUpdateSession(DBClient existing, string initialText) : this(new Connection(), existing.Session.Server)
 		{
 			ExistingDB = existing;
 			TextSource = initialText;
@@ -479,7 +479,7 @@ namespace Thinkage.MainBoss.Controls
 			get;
 			set;
 		}
-		public readonly XAFClient ExistingDB;
+		public readonly DBClient ExistingDB;
 		#endregion
 		#region Overrides to support base class abstraction
 		protected override License PrepareItemForRead(License item) { return item; }

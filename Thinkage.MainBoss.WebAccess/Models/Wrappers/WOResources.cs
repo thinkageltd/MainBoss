@@ -136,7 +136,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			if (String.IsNullOrEmpty(qty))
 				QuantityToActualize = null;
 			else {
-				object v = QuantityType.GetTypeEditTextHandler(System.Globalization.CultureInfo.CurrentUICulture).ParseEditText(qty);
+				object v = QuantityType.GetTypeEditTextHandler(Libraries.Application.InstanceFormatCultureInfo).ParseEditText(qty);
 				QuantityToActualize = (T)QuantityType.ClosestValueTo(v);
 			}
 			System.Exception check = QuantityType.CheckMembership(QuantityToActualize);
@@ -162,9 +162,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		/// </summary>
 		public bool CanBeActualized {
 			get {
-				decimal totalCost;
-				T? quantity;
-				return GetCostBasis(out totalCost, out quantity);
+				return GetCostBasis(out decimal totalCost, out T? quantity);
 			}
 		}
 		abstract public bool GetDemandEstimateCostBasis(out decimal TotalCost, out T? quantity);
@@ -191,7 +189,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		protected string FormatQuantity(object v) {
 			if (v == null)
 				return "";
-			return QuantityType.GetTypeFormatter(System.Globalization.CultureInfo.CurrentUICulture).Format(v);
+			return QuantityType.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo).Format(v);
 		}
 	}
 	#endregion
@@ -268,9 +266,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			arow.F.Cost = ComputeCost();
 		}
 		protected virtual decimal ComputeCost() {
-			decimal totalCost;
-			T? quantity;
-			if (!GetCostBasis(out totalCost, out quantity))
+			if (!GetCostBasis(out decimal totalCost, out T? quantity))
 				throw new GeneralException(KB.K("No Cost Basis for calculating total cost"));
 			var result = Compute.TotalFromQuantityAndBasisCost<T>(QuantityToActualize, quantity, totalCost);
 			if (!result.HasValue)

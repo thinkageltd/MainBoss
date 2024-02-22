@@ -27,7 +27,7 @@ namespace Thinkage.MainBoss.Database {
 		public EmailMessage(ImapMessage imapM) {
 			ImapMessage = imapM;
 		}
-		void messageGet() {
+		void MessageGet() {
 			if (pError != null || Message != null)
 				return;
 			if (PopMessage != null) {
@@ -37,8 +37,7 @@ namespace Thinkage.MainBoss.Database {
 					return;
 				}
 				catch (System.Exception e) {
-					var se = e as System.Net.Sockets.SocketException;
-					if (se != null && (uint)se.HResult == 0x80004005)
+					if (e is System.Net.Sockets.SocketException se && (uint)se.HResult == 0x80004005)
 						throw new GeneralException(e, KB.K("Connection to {0} has been closed. Retry will occur because of earlier errors."), KB.I("POP"));
 					pError = new GeneralException(e, KB.K("Error retrieving {0} message {1}. The problem may be transient and will be retried again later, but manual intervention may be necessary"), KB.I("POP"), PopMessage.Uid);
 					return;
@@ -51,8 +50,7 @@ namespace Thinkage.MainBoss.Database {
 					return;
 				}
 				catch (System.Exception e) {
-					var se = e as System.Net.Sockets.SocketException;
-					if (se != null && (uint)se.HResult == 0x80004005)
+					if (e is System.Net.Sockets.SocketException se && (uint)se.HResult == 0x80004005)
 						throw new GeneralException(e, KB.K("Connection to {0} has been closed. Retry will occur because of earlier errors."), KB.I("IMAP"));
 					pError = new GeneralException(e, KB.K("Error retrieving {0} message {1}. The problem may be transient and will be retried again later, but manual intervention may be necessary"), KB.I("IMAP"), ImapMessage.Uid);
 					return;
@@ -61,9 +59,8 @@ namespace Thinkage.MainBoss.Database {
 			pError = new GeneralException(KB.K("No email message available to be examined."));
 		}
 		private HeaderField Header([Invariant]string key) {
-			messageGet();
-			HeaderField property;
-			if (Message.Headers.TryGetValue(key, out property))
+			MessageGet();
+			if (Message.Headers.TryGetValue(key, out HeaderField property))
 				return property;
 			return null;
 		}
@@ -181,7 +178,7 @@ namespace Thinkage.MainBoss.Database {
 			get {
 				if (pMessageId != null)
 					return pMessageId;
-				var property = Header("Message-ID");
+				var property = Header(HeaderKey.MessageID);
 				if (property == null)
 					return null;
 				pMessageId = property.Value;
@@ -193,7 +190,7 @@ namespace Thinkage.MainBoss.Database {
 			get {
 				if (isAlternative.HasValue)
 					return isAlternative.Value;
-				var property = Header("Content-Type");
+				var property = Header(HeaderKey.ContentType);
 				if (property == null)
 					return false;
 				isAlternative = property.Value.IndexOf(KB.I("multipart/alternative"), StringComparison.OrdinalIgnoreCase) >= 0;
@@ -205,7 +202,7 @@ namespace Thinkage.MainBoss.Database {
 			get {
 				if (pSentAsString != null)
 					return pSentAsString;
-				var property = Header("Date");
+				var property = Header(HeaderKey.Date);
 				pSentAsString = property?.Value;
 				return pSentAsString;
 			}
@@ -215,7 +212,7 @@ namespace Thinkage.MainBoss.Database {
 		public string ToNames {
 			get {
 				if (!foundFrom)
-					emailAddressParts();
+					EmailAddressParts();
 				return pToNames;
 			}
 		}
@@ -223,7 +220,7 @@ namespace Thinkage.MainBoss.Database {
 		string pSubject;
 		public string Subject {
 			get {
-				messageGet();
+				MessageGet();
 				if (pSubject == null)
 					pSubject = Message.Subject;
 				return pSubject;
@@ -234,7 +231,7 @@ namespace Thinkage.MainBoss.Database {
 		public string FromAddress {
 			get {
 				if (!foundFrom)
-					emailAddressParts();
+					EmailAddressParts();
 				return pFromAdddress;
 			}
 		}
@@ -242,15 +239,15 @@ namespace Thinkage.MainBoss.Database {
 		public string FromName {
 			get {
 				if (!foundFrom)
-					emailAddressParts();
+					EmailAddressParts();
 				return pFromName;
 			}
 		}
-		void emailAddressParts() {
+		void EmailAddressParts() {
 			foundFrom = true;
 			pFromAdddress = null;
 			pFromName = null;
-			messageGet();
+			MessageGet();
 			pToNames = Message.To;
 			if (!string.IsNullOrWhiteSpace(Message.From)) {
 				try {
@@ -266,13 +263,13 @@ namespace Thinkage.MainBoss.Database {
 
 		public DateTime Sent {
 			get {
-				messageGet();
+				MessageGet();
 				return Message.Date;
 			}
 		}
 		public string Body {
 			get {
-				messageGet();
+				MessageGet();
 				if (!string.IsNullOrWhiteSpace(Message.Text))
 					return Message.Text;
 				else if (!string.IsNullOrWhiteSpace(Message.Html))
@@ -282,7 +279,7 @@ namespace Thinkage.MainBoss.Database {
 		}
 		public string HeaderText {
 			get {
-				messageGet();
+				MessageGet();
 				return string.Join(Environment.NewLine, Message.Headers.Select(h => h.Value));
 			}
 		}
@@ -305,7 +302,7 @@ namespace Thinkage.MainBoss.Database {
 				if (hadLanguage)
 					return pPreferredLanguage;
 				hadLanguage = true;
-				var language = Header("Accept-Language");
+				var language = Header(HeaderKey.AcceptLanguage);
 				if (language != null && !String.IsNullOrWhiteSpace(language.Value)) {
 					string[] acceptableLanguages = language.Value.Split(',');
 					foreach (string l in acceptableLanguages) {
@@ -320,18 +317,27 @@ namespace Thinkage.MainBoss.Database {
 				return pPreferredLanguage;
 			}
 		}
+		/// <summary>
+		/// See if this message was AutoSubmitted such as out of office reply, or some other auto means. Note we only look for auto-replied to be ignored.
+		/// </summary>
+		public bool AutoSubmitted {
+			get {
+				var autosubmit = Header(HeaderKey.AutoSubmitted);
+				return autosubmit != null && autosubmit.Value == KB.I("auto-replied");
+			}
+		}
 		GeneralException pError = null;
 		public GeneralException Error {
 			get {
 				if (Message != null || pError != null)
 					return pError;
-				messageGet();
+				MessageGet();
 				return pError;
 			}
 		}
 		public MultipartContent Parts {
 			get {
-				messageGet();
+				MessageGet();
 				return Message.Parts;
 			}
 		}
@@ -358,7 +364,7 @@ namespace Thinkage.MainBoss.Database {
 			}
 		}
 #endregion
-		static public string EmailRequestToRFC822(XAFClient DB, bool encode, Guid EmailRequestId) {
+		static public string EmailRequestToRFC822(DBClient DB, bool encode, Guid EmailRequestId) {
 			using (dsMB ds = new dsMB(DB)) {
 				ds.EnsureDataTableExists(dsMB.Schema.T.EmailRequest, dsMB.Schema.T.EmailPart);
 				var emailRequest = (dsMB.EmailRequestRow)DB.ViewAdditionalRow(ds, dsMB.Schema.T.EmailRequest, new SqlExpression(dsMB.Path.T.EmailRequest.F.Id).Eq(EmailRequestId));
@@ -368,7 +374,7 @@ namespace Thinkage.MainBoss.Database {
 					foreach (var h in headers)
 						mailMessage.Headers.Add(h);
 					List<dsMB.EmailPartRow> parts = new List<dsMB.EmailPartRow>();
-					foreach (dsMB.EmailPartRow r in ds.T.EmailPart.Rows)
+					foreach (dsMB.EmailPartRow r in ds.T.EmailPart)
 						parts.Add(r);
 					if (parts.Count() == 0) {
 						mailMessage.Text = emailRequest.F.MailMessage;
@@ -398,7 +404,7 @@ namespace Thinkage.MainBoss.Database {
 							if (groups.ContainsKey(l.F.Id))
 								m.Parts.Add(groups[l.F.Id]);
 							else
-								m.Parts.Add(makePart(l));
+								m.Parts.Add(MakePart(l));
 					}
 					var pm = new MultipartContent();
 					if (headers.Any(e => e.StartsWith(KB.I("Content-Type:"), true, System.Globalization.CultureInfo.InvariantCulture) && e.IndexOf(KB.I("multipart/alternative"), StringComparison.OrdinalIgnoreCase) >= 0))
@@ -408,12 +414,12 @@ namespace Thinkage.MainBoss.Database {
 						if (groups.ContainsKey(l.F.Id))
 							pm.Add(groups[l.F.Id]);
 						else
-							pm.Add(makePart(l));
+							pm.Add(MakePart(l));
 					return mailMessage.ToString(encode, true, null);
 				}
 			}
 		}
-		static Part makePart(dsMB.EmailPartRow partRow) {
+		static Part MakePart(dsMB.EmailPartRow partRow) {
 			Part p = null;
 			var Headers = partRow.F.Header.Replace("\r", "").Split('\n');
 			if (partRow.F.FileName != null) {
@@ -435,7 +441,7 @@ namespace Thinkage.MainBoss.Database {
 			return p;
 		}
 		public string MessageAsText(bool full) {
-			messageGet();
+			MessageGet();
 			if (full)
 				return Message.ToString(true, true, null);
 			var m = new StringBuilder();

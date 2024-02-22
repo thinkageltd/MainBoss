@@ -1,13 +1,11 @@
 ﻿using System;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Security.Principal;
 using Thinkage.Libraries;
-using Thinkage.Libraries.Service;
-using Thinkage.Libraries.DBILibrary;
 using Thinkage.Libraries.CommandLineParsing;
-using Thinkage.Libraries.Translation;
-using System.Data.SqlClient;
-using Thinkage.MainBoss.Database;
+using Thinkage.Libraries.DBILibrary.MSSql;
+using Thinkage.Libraries.Service;
 using Thinkage.MainBoss.Database.Service;
 
 namespace Thinkage.MainBoss.Service {
@@ -93,16 +91,16 @@ namespace Thinkage.MainBoss.Service {
 			if ( !string.IsNullOrWhiteSpace(sqlPass) )
 				SQLPassword = sqlPass;
 			if ( !string.IsNullOrWhiteSpace(authenicationName) )
-				AuthenicationMethod = (new SQLAuthenticationFromName(authenicationName)).Method;
-			if (AuthenicationMethod == null && SQLPassword != null && SQLUserid != null)
-				AuthenicationMethod = SqlAuthenticationMethod.SqlPassword;
-			if ((AuthenicationMethod == null || AuthenicationMethod == SqlAuthenticationMethod.NotSpecified) && (SQLPassword != null || SQLUserid != null) )
+				AuthenticationMethod = (new SQLAuthenticationFromName(authenicationName)).Method;
+			if (AuthenticationMethod == null && SQLPassword != null && SQLUserid != null)
+				AuthenticationMethod = SqlAuthenticationMethod.SqlPassword;
+			if ((AuthenticationMethod == null || AuthenticationMethod == SqlAuthenticationMethod.NotSpecified) && (SQLPassword != null || SQLUserid != null) )
 				throw new GeneralException(KB.K("{0} and {1} should not be supplied without specifying a {2}"), KB.I("/SQLUsernane"), KB.I("/SQLPassword"), KB.I("/Authentication"));
-			if ((AuthenicationMethod == SqlAuthenticationMethod.ActiveDirectoryPassword || AuthenicationMethod == SqlAuthenticationMethod.ActiveDirectoryPassword) && SQLPassword == null)
+			if ((AuthenticationMethod == SqlAuthenticationMethod.ActiveDirectoryPassword || AuthenticationMethod == SqlAuthenticationMethod.ActiveDirectoryPassword) && SQLPassword == null)
 				throw new GeneralException(KB.K("A {0} is needed with {1} or {2}"), KB.I("/SQLPassword"), KB.I("/Authentication:SQLAuthentication"), KB.I("/Authentication:ActiveDirectoryPassword"));
-			else if ((AuthenicationMethod ?? SqlAuthenticationMethod.NotSpecified) != SqlAuthenticationMethod.NotSpecified && SQLUserid == null )
+			else if ((AuthenticationMethod ?? SqlAuthenticationMethod.NotSpecified) != SqlAuthenticationMethod.NotSpecified && SQLUserid == null )
 				throw new GeneralException(KB.K("A {0} is needed with {1} or {2} or {3}"), KB.I("/SQLUsername"), KB.I("/Authentication:SQLAuthentication"), KB.I("/Authentication:ActiveDirectoryPassword"),KB.I("/Authentication:ActiveDirectoryIntegrated"));
-			else if ((AuthenicationMethod != null && AuthenicationMethod != SqlAuthenticationMethod.NotSpecified) && (SQLPassword == null || SQLUserid == null))
+			else if ((AuthenticationMethod != null && AuthenticationMethod != SqlAuthenticationMethod.NotSpecified) && (SQLPassword == null || SQLUserid == null))
 				throw new GeneralException(KB.K("{0} and {1} are required with all authentication methods other than {0}=\"{1}\""), KB.I("/SQLUsername"), KB.I("/SQLPassword"), KB.I("/Authentication=WindowsAuthentication"));
 			if (!DomainAndIP.IsThisComputer(ServiceComputer) && (ManuallyRun || TestConfiguration))
 				throw new GeneralException(KB.K("{0} can not be used on a remote computer"), KB.I("/TestConfiguration"));
@@ -211,7 +209,7 @@ namespace Thinkage.MainBoss.Service {
 		public string ServicePassword { get; set; }
 		public string SQLUserid { get; set; }
 		public string SQLPassword { get; set; }
-		public SqlAuthenticationMethod? AuthenicationMethod { get; set; }
+		public SqlAuthenticationMethod? AuthenticationMethod { get; set; }
 		public string Connection { get; set; }
 		public bool ManuallyRun { get; set; }
 		public bool TestConfiguration { get; set; }

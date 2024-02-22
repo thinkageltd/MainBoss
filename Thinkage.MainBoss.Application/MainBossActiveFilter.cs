@@ -20,7 +20,7 @@ namespace Thinkage.MainBoss.Application
 			public IBasicDataControl ActiveFilterSinceDateControl;
 			public IBasicDataControl ActiveFilterIntervalControl;
 
-			public ActiveFilterEditLogic(IEditUI editUI, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+			public ActiveFilterEditLogic(IEditUI editUI, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 				: base(editUI, db, tbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, initLists) {
 			}
 			protected override object[] SaveRecord(Libraries.DBILibrary.Server.UpdateOptions updateOptions) {
@@ -114,7 +114,7 @@ namespace Thinkage.MainBoss.Application
 			}
 			return retExpr;
 		}
-		public void CreateEditor(UIFactory uiFactory, UIForm parentForm, XAFClient session)
+		public void CreateEditor(UIFactory uiFactory, UIForm parentForm, DBClient session)
 		{
 			// TODO: EditLogic should now behave with no Client object, so get rid of all this junk passing it around.
 			ITblDrivenApplication appInstance = Libraries.Application.Instance.GetInterface<ITblDrivenApplication>();

@@ -161,7 +161,7 @@ namespace Thinkage.MainBoss.Controls {
 			public readonly PermissionDisabler ControllingActionPermission;
 			private PathToSourceMapperDelegate PathMapper;
 
-			public Transition(HistoryActionManager manager, DataRow row, Dictionary<Guid, State> stateMap, bool effectiveDateEditable, DelayedCreateTbl editTblToUseByDefault, DelayedCreateTbl editTblToUseWhenCustomFlagGoesFalse) {
+			public Transition(HistoryActionManager manager, DBIDataRow row, Dictionary<Guid, State> stateMap, bool effectiveDateEditable, DelayedCreateTbl editTblToUseByDefault, DelayedCreateTbl editTblToUseWhenCustomFlagGoesFalse) {
 				Manager = manager;
 				TransitionDefinition = manager.HistoryTable.HistoryTable.StateHistoryTransitionFromRow(row);
 				OldState = stateMap[TransitionDefinition.FromStateID];
@@ -183,11 +183,10 @@ namespace Thinkage.MainBoss.Controls {
 			public ICommand GetCommand(PathToSourceMapperDelegate mapper) {
 				// TODO: Yuk! Set a member variable so the ILeafTransformation member methods can find it. Yuk!
 				PathMapper = mapper;
-				var browseLogic = Manager.ParentUI.LogicObject as BrowseLogic;
 				ICommand basicCommand;
 				// TODO (W20170064): We make the arbitrary choice here that commands for use in editor never use the custom Tbl. In the long run
 				// we might need to have the StateHistoryUITable decide this.
-				if (browseLogic != null)
+				if (Manager.ParentUI.LogicObject is BrowseLogic browseLogic)
 					basicCommand = new CommandForBrowser(this, ((OldState.CustomFlag && !NewState.CustomFlag) ? EditTblCreatorWhenCustomFlagGoesFalse : EditTblDefaultCreator).Tbl, mapper);
 				else
 					basicCommand = new CommandForEditor(this, EditTblDefaultCreator.Tbl, mapper);
@@ -229,8 +228,7 @@ namespace Thinkage.MainBoss.Controls {
 				// We keep a collection of all the sources we have obtained from paths so we use the same notifying source for multiple
 				// occurrences of the same path. This can cut down slightly on the number of re-evaluations we do. We should actually keep
 				// this keyed on a per-Condition basis so when we have multiple Conditions we only re-evaluate the xxxxx.
-				NotifyingSource source;
-				if (!pathSources.TryGetValue(path, out source)) {
+				if (!pathSources.TryGetValue(path, out NotifyingSource source)) {
 					source = PathMapper(path);
 					pathSources[path] = source;
 				}
@@ -248,12 +246,12 @@ namespace Thinkage.MainBoss.Controls {
 			public readonly List<MB3Client.StateFlagRestriction> Restrictions = new List<MB3Client.StateFlagRestriction>();
 			public readonly bool CustomFlag;
 
-			public State(Guid id, MB3Client.StateHistoryTable historyTable, System.Data.DataRow row, DBI_Column customFlagField)
+			public State(Guid id, MB3Client.StateHistoryTable historyTable, DBIDataRow row, DBI_Column customFlagField)
 				: base(null, KB.K("This operation is not allowed in the current state"), false) {
 				ID = id;
-				CustomFlag = (bool?)customFlagField?[row] ?? false;
+				CustomFlag = customFlagField == null ? false : (bool)row[customFlagField];
 				foreach (MB3Client.StateFlagRestriction r in historyTable.StateRestrictions)
-					if ((bool)r.StateFlagColumn[row] == r.ConditionAppliesWhenFlagIs)
+					if ((bool)row[r.StateFlagColumn] == r.ConditionAppliesWhenFlagIs)
 						Restrictions.Add(r);
 			}
 		}
@@ -270,7 +268,7 @@ namespace Thinkage.MainBoss.Controls {
 		// The following delegate returns a NotifyingSource for the given path rooted at the "main" table as defined by the StateHistoryTable. The caller might
 		// add further context (e.g. a recordSet index) to build the NotifyingSource.
 		public delegate NotifyingSource PathToSourceMapperDelegate(DBI_Path path);
-		public HistoryActionManager(XAFClient session, StateHistoryUITable historyTable, ICommonUI parentUI) {
+		public HistoryActionManager(DBClient session, StateHistoryUITable historyTable, ICommonUI parentUI) {
 			HistoryTable = historyTable;
 			System.Diagnostics.Debug.Assert(HistoryTable != null, "HistoryActionManager: Unknown table");
 			ParentUI = parentUI;
@@ -282,10 +280,10 @@ namespace Thinkage.MainBoss.Controls {
 			{
 				DynamicBufferManager.Query q = bm.Add(HistoryTable.HistoryTable.StateTable, false, null);
 				q.KeepUpToDate = true;
-				DataTable stateTable = q.DataTable;
-				foreach (DataRow r in stateTable.Rows)
+				DBIDataTable stateTable = q.DataTable;
+				foreach (DBIDataRow r in stateTable)
 				{
-					Guid stateID = (Guid)HistoryTable.HistoryTable.StateTable.InternalIdColumn[r];
+					Guid stateID = (Guid)r[HistoryTable.HistoryTable.StateTable.InternalIdColumn];
 					State state = new State(stateID, HistoryTable.HistoryTable, r, HistoryTable.CustomFlagField);
 					statesById.Add(stateID, state);
 				}
@@ -297,10 +295,9 @@ namespace Thinkage.MainBoss.Controls {
 				using (DataView view = new DataView(q.DataTable, null, new SortExpression(new DBI_Path(HistoryTable.HistoryTable.TransitionRankColumn), SortExpression.SortOrder.Asc).ToDataExpressionString(), DataViewRowState.CurrentRows)) {
 					var indicesByName = new Dictionary<Key, int>();
 					for (int i = 0; i < view.Count; ++i) {
-						Transition transition = new Transition(this, view[i].Row, statesById, true, HistoryTable.EditTblToUseByDefault, HistoryTable.EditTblToUseWhenCustomFlagGoesFalse);
+						Transition transition = new Transition(this, view[i].Row.ToDBIDataRow(), statesById, true, HistoryTable.EditTblToUseByDefault, HistoryTable.EditTblToUseWhenCustomFlagGoesFalse);
 						List<Transition> transitions;
-						int transitionsIndex;
-						if (!indicesByName.TryGetValue(transition.TransitionDefinition.Operation, out transitionsIndex)) {
+						if (!indicesByName.TryGetValue(transition.TransitionDefinition.Operation, out int transitionsIndex)) {
 							indicesByName.Add(transition.TransitionDefinition.Operation, Transitions.Count);
 							transitions = new List<Transition>();
 							Transitions.Add(transitions);
@@ -313,6 +310,6 @@ namespace Thinkage.MainBoss.Controls {
 			}
 		}
 		#endregion
-		private readonly XAFClient DB;
+		private readonly DBClient DB;
 	}
 }

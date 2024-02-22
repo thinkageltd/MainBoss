@@ -12,10 +12,10 @@ using Thinkage.Libraries.XAF.UI;
 
 namespace Thinkage.MainBoss.Database {
 	/// <summary>
-	/// MainBoss database client.  Defines extra support on top of an XAFClient specific
+	/// MainBoss database client.  Defines extra support on top of an DBClient specific
 	/// to the structure of the MainBoss database.
 	/// </summary>
-	public class MB3Client : XAFClient {
+	public class MB3Client : DBClient {
 		public delegate void PopulateDatabaseDelegate(MB3Client mbdb);
 
 		#region Option Support
@@ -90,7 +90,7 @@ namespace Thinkage.MainBoss.Database {
 				string[] choices = new string[l];
 				for (int i = l; --i >= 0;)
 					// Note that as with all other options, we use the untranslated text
-					choices[i] = DatabaseEnums.ApplicationModeName(ApplicationIdChoices[i]).Translate(null);
+					choices[i] = DatabaseEnums.ApplicationModeName(ApplicationIdChoices[i]).Translate(System.Globalization.CultureInfo.InvariantCulture);
 
 				return new KeywordValueOption(ApplicationCommandArgument,
 					KB.K("Application to run").Translate(), required,
@@ -104,7 +104,7 @@ namespace Thinkage.MainBoss.Database {
 				string[] choices = new string[l];
 				for (int i = l; --i >= 0;)
 					// Note that as with all other options, we use the untranslated text
-					choices[(int)Thinkage.Libraries.DBILibrary.AuthenticationCredentials.AuthenticationMethodProvider.Values[i]] = Thinkage.Libraries.DBILibrary.AuthenticationCredentials.AuthenticationMethodProvider.Labels[i].Translate(null);
+					choices[(int)Thinkage.Libraries.DBILibrary.AuthenticationCredentials.AuthenticationMethodProvider.Values[i]] = Thinkage.Libraries.DBILibrary.AuthenticationCredentials.AuthenticationMethodProvider.Labels[i].Translate(System.Globalization.CultureInfo.InvariantCulture);
 
 				return new KeywordValueOption(CredentialsAuthenticationMethodArgument,
 					KB.K("Server authentication method to use").Translate(), required,
@@ -574,30 +574,6 @@ namespace Thinkage.MainBoss.Database {
 					);
 			}
 		}
-		#region No Server Connection
-		public class ConnectionDefinitionNoServer : DBClient.Connection {
-			public ConnectionDefinitionNoServer()
-				: base(new SQLite.Connection(delegate () {
-					// we want the database files to exist under the User Personal folder in a directory called MainBoss
-					return System.IO.Path.ChangeExtension(
-						System.IO.Path.Combine(
-						Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-						KB.I("MainBoss"),
-						KB.I("Database")), KB.I(".mdf"));
-				}), dsMB.Schema) {
-			}
-		}
-		public class MBConnectionDefinitionNoServer : ConnectionDefinitionNoServer, IMBConnectionParameters {
-			public MBConnectionDefinitionNoServer(DatabaseEnums.ApplicationModeID applicationMode, bool compactBrowsers)
-				: base() {
-				ApplicationMode = applicationMode;
-				CompactBrowsers = compactBrowsers;
-			}
-			public DatabaseEnums.ApplicationModeID ApplicationMode { get; private set; }
-			public bool CompactBrowsers { get; private set; }
-			public DBClient.Connection Connection { get { return this; } }
-		}
-		#endregion
 		#endregion
 		#region Constructors
 		/// <summary>
@@ -627,9 +603,7 @@ namespace Thinkage.MainBoss.Database {
 		}
 		protected override System.Exception InterpretException(System.Exception e) {
 			System.Exception result = base.InterpretException(e);
-			var vuc = result as ColumnRelatedDBException;
-			if (vuc != null
-				&& vuc.InterpretedErrorCode == InterpretedDbExceptionCodes.ViolationUniqueConstraint
+			if (result is ColumnRelatedDBException vuc && vuc.InterpretedErrorCode == InterpretedDbExceptionCodes.ViolationUniqueConstraint
 				&& dsMB.Schema.Tables[vuc.TableInError] == dsMB.Schema.T.LocationContainment)
 				// Special case, this means a containment loop in Locations was created.
 				result = new ContainmentViolation(this, e, vuc.RowInError as dsMB.RelativeLocationRow);
@@ -849,29 +823,29 @@ namespace Thinkage.MainBoss.Database {
 			public readonly StateFlagRestriction[] StateRestrictions;
 			#endregion
 			#region StateHistoryTransitionFromRow
-			public StateHistoryTransition StateHistoryTransitionFromRow(System.Data.DataRow row) {
+			public StateHistoryTransition StateHistoryTransitionFromRow(DBIDataRow row) {
 				return new StateHistoryTransition(
-					(Key)TransitionOperationColumn[row],
-					(Key)TransitionOperationHintColumn[row],
-					(Guid)TransitionFromStateColumn[row],
-					(Guid)TransitionToStateColumn[row],
-					(int)Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(TransitionRankColumn[row], typeof(int)),
-					TransitionRightColumn == null ? null : (string)TransitionRightColumn[row],
-					(bool)TransitionWithoutUIColumn[row],
-					(bool)TransitionCopyStatusFromPreviousColumn[row]);
+					(Key)row[TransitionOperationColumn],
+					(Key)row[TransitionOperationHintColumn],
+					(Guid)row[TransitionFromStateColumn],
+					(Guid)row[TransitionToStateColumn],
+					(int)Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(row[TransitionRankColumn], typeof(int)),
+					TransitionRightColumn == null ? null : (string)row[TransitionRightColumn],
+					(bool)row[TransitionWithoutUIColumn],
+					(bool)row[TransitionCopyStatusFromPreviousColumn]);
 			}
 			#endregion
 			#region StateHistoryTransitionToRow
-			public void StateHistoryTransitionToRow(StateHistoryTransition transition, System.Data.DataRow row) {
-				TransitionOperationColumn[row] = transition.Operation;
-				TransitionOperationHintColumn[row] = transition.OperationHint;
-				TransitionFromStateColumn[row] = transition.FromStateID;
-				TransitionToStateColumn[row] = transition.ToStateID;
-				TransitionRankColumn[row] = transition.Rank;
+			public void StateHistoryTransitionToRow(StateHistoryTransition transition, DBIDataRow row) {
+				row[TransitionOperationColumn] = transition.Operation;
+				row[TransitionOperationHintColumn] = transition.OperationHint;
+				row[TransitionFromStateColumn] = transition.FromStateID;
+				row[TransitionToStateColumn] = transition.ToStateID;
+				row[TransitionRankColumn] = transition.Rank;
 				if (TransitionRightColumn != null)
-					TransitionRightColumn[row] = transition.RightName;
-				TransitionWithoutUIColumn[row] = transition.CanTransitionWithoutUI;
-				TransitionCopyStatusFromPreviousColumn[row] = transition.CopyStatusFromPrevious;
+					row[TransitionRightColumn] = transition.RightName;
+				row[TransitionWithoutUIColumn] = transition.CanTransitionWithoutUI;
+				row[TransitionCopyStatusFromPreviousColumn] = transition.CopyStatusFromPrevious;
 			}
 			#endregion
 		}
@@ -965,7 +939,7 @@ namespace Thinkage.MainBoss.Database {
 					Version effectiveServerVersion = serverUpgradeIndex == 0 ? new Version() : DBVersionInformation.ServerVersionUpgraders[serverUpgradeIndex - 1].ServerVersion;
 					db.EffectiveDBServerVersion = effectiveServerVersion;
 					foreach (DatabaseCreation.ServerSideDefinition def in DatabaseCreation.ServerSideDefinitions)
-						((SqlClient)db).SetServerSideColumnDefinition(def.Column, def.DefinitionText);
+						db.SetServerSideColumnDefinition(def.Column, def.DefinitionText);
 					string sql = DatabaseCreation.GetPostTablesCreationScript();
 					if (sql != null)
 						db.ExecuteCommandBatches(SqlClient.BuildBatchSpecificationListFromSqlScript(sql));
@@ -1004,16 +978,16 @@ namespace Thinkage.MainBoss.Database {
 				if (dbVersion >= new Version(1, 0, 10, 24))
 					using (dsBackupFileName_1_0_10_24 dsLog = new dsBackupFileName_1_0_10_24(this)) {
 						// Log start of backup
-						System.Data.DataRow row = EditSingleRow(dsLog, dsBackupFileName_1_0_10_24.Schema.T.BackupFileName, new SqlExpression(dsBackupFileName_1_0_10_24.Path.T.BackupFileName.F.FileName).Eq(filename));
+						dsBackupFileName_1_0_10_24.BackupFileNameRow row = (dsBackupFileName_1_0_10_24.BackupFileNameRow)EditSingleRow(dsLog, dsBackupFileName_1_0_10_24.Schema.T.BackupFileName, new SqlExpression(dsBackupFileName_1_0_10_24.Path.T.BackupFileName.F.FileName).Eq(filename));
 						if (row != null) {
-							dsBackupFileName_1_0_10_24.Schema.T.BackupFileName.F.LastBackupDate[row] = (DateTime)dsBackupFileName_1_0_10_24.Schema.T.BackupFileName.F.LastBackupDate.EffectiveType.ClosestValueTo(DateTime.Now);
+							row.F.LastBackupDate = (DateTime)dsBackupFileName_1_0_10_24.Schema.T.BackupFileName.F.LastBackupDate.EffectiveType.ClosestValueTo(DateTime.Now);
 							// TODO: The idea behond the following is that if MB crashes during the backup, the BackupFileName record would have a message stating that the backup is incomplete.
 							// This would get cleared on successful backup completion.
 							// The problem is that the backed-up version of the table contains the message, so if you restore from that backup, your backupfilename table will then show this backup as "incomplete"
 							// The is related to the problem that, after a restore, the BackupFileName table is incorrect for backups done since the backup of the restored file. i.e. you restore from an older backup
 							// and more recent backups to other files are "forgotten".
 							// dsBackupFileName_1_0_10_24.Schema.T.BackupFileName.F.Message[row] = KB.K("Backup incomplete").Translate();
-							dsBackupFileName_1_0_10_24.Schema.T.BackupFileName.F.Message[row] = null;   // in any case we have to clear it out of any previous message.
+							row.F.Message = null;   // in any case we have to clear it out of any previous message.
 							row.EndEdit();
 							Update(dsLog);
 						}
@@ -1021,23 +995,23 @@ namespace Thinkage.MainBoss.Database {
 				else if (dbVersion >= new Version(1, 0, 4, 79))
 					using (dsBackupFileName_1_0_4_79_To_1_0_10_23 dsLog = new dsBackupFileName_1_0_4_79_To_1_0_10_23(this)) {
 						// Log start of backup
-						System.Data.DataRow row = EditSingleRow(dsLog, dsBackupFileName_1_0_4_79_To_1_0_10_23.Schema.T.BackupFileName, new SqlExpression(dsBackupFileName_1_0_4_79_To_1_0_10_23.Path.T.BackupFileName.F.FileName).Eq(filename));
+						dsBackupFileName_1_0_4_79_To_1_0_10_23.BackupFileNameRow row = (dsBackupFileName_1_0_4_79_To_1_0_10_23.BackupFileNameRow)EditSingleRow(dsLog, dsBackupFileName_1_0_4_79_To_1_0_10_23.Schema.T.BackupFileName, new SqlExpression(dsBackupFileName_1_0_4_79_To_1_0_10_23.Path.T.BackupFileName.F.FileName).Eq(filename));
 						if (row != null) {
-							dsBackupFileName_1_0_4_79_To_1_0_10_23.Schema.T.BackupFileName.F.LastBackupDate[row] = (DateTime)dsBackupFileName_1_0_4_79_To_1_0_10_23.Schema.T.BackupFileName.F.LastBackupDate.EffectiveType.ClosestValueTo(DateTime.Now);
+							row.F.LastBackupDate = (DateTime)dsBackupFileName_1_0_4_79_To_1_0_10_23.Schema.T.BackupFileName.F.LastBackupDate.EffectiveType.ClosestValueTo(DateTime.Now);
 							row.EndEdit();
 							Update(dsLog);
 						}
 					}
 				System.Text.StringBuilder backupOutput = new System.Text.StringBuilder();
-				Server.BackupDatabase(ConnectionInfo.ConnectionInformation, filename, Strings.IFormat("MainBoss Advanced Backup - {0}", ConnectionInfo.DBName), backupOutput);
+				Server.BackupDatabase(ConnectionInfo.ConnectionInformation, filename, Strings.IFormat("MainBoss Backup - {0}", ConnectionInfo.DBName), backupOutput);
 				vh.LogHistory(this, Strings.Format(KB.K("Backup to '{0}'"), filename), backupOutput.ToString());
 				if (dbVersion >= new Version(1, 0, 10, 24))
 					using (dsBackupFileName_1_0_10_24 dsLog = new dsBackupFileName_1_0_10_24(this)) {
 						// Log successful end of backup
-						System.Data.DataRow row = EditSingleRow(dsLog, dsBackupFileName_1_0_10_24.Schema.T.BackupFileName, new SqlExpression(dsBackupFileName_1_0_10_24.Path.T.BackupFileName.F.FileName).Eq(filename));
+						dsBackupFileName_1_0_10_24.BackupFileNameRow row = (dsBackupFileName_1_0_10_24.BackupFileNameRow)EditSingleRow(dsLog, dsBackupFileName_1_0_10_24.Schema.T.BackupFileName, new SqlExpression(dsBackupFileName_1_0_10_24.Path.T.BackupFileName.F.FileName).Eq(filename));
 						if (row != null) {
-							dsBackupFileName_1_0_10_24.Schema.T.BackupFileName.F.LastBackupDate[row] = (DateTime)dsBackupFileName_1_0_10_24.Schema.T.BackupFileName.F.LastBackupDate.EffectiveType.ClosestValueTo(DateTime.Now);
-							dsBackupFileName_1_0_10_24.Schema.T.BackupFileName.F.DatabaseVersion[row] = dbVersion.ToString();
+							row.F.LastBackupDate = (DateTime)dsBackupFileName_1_0_10_24.Schema.T.BackupFileName.F.LastBackupDate.EffectiveType.ClosestValueTo(DateTime.Now);
+							row.F.DatabaseVersion = dbVersion.ToString();
 							// TODO: Clear out Message if it was set above
 							row.EndEdit();
 							Update(dsLog);
@@ -1050,10 +1024,10 @@ namespace Thinkage.MainBoss.Database {
 				if (dbVersion >= new Version(1, 0, 10, 24))
 					using (dsBackupFileName_1_0_10_24 dsLog = new dsBackupFileName_1_0_10_24(this)) {
 						// Log failure of backup.
-						System.Data.DataRow row = EditSingleRow(dsLog, dsBackupFileName_1_0_10_24.Schema.T.BackupFileName, new SqlExpression(dsBackupFileName_1_0_10_24.Path.T.BackupFileName.F.FileName).Eq(filename));
+						dsBackupFileName_1_0_10_24.BackupFileNameRow row = (dsBackupFileName_1_0_10_24.BackupFileNameRow)EditSingleRow(dsLog, dsBackupFileName_1_0_10_24.Schema.T.BackupFileName, new SqlExpression(dsBackupFileName_1_0_10_24.Path.T.BackupFileName.F.FileName).Eq(filename));
 						if (row != null) {
-							dsBackupFileName_1_0_10_24.Schema.T.BackupFileName.F.LastBackupDate[row] = (DateTime)dsBackupFileName_1_0_10_24.Schema.T.BackupFileName.F.LastBackupDate.EffectiveType.ClosestValueTo(DateTime.Now);
-							dsBackupFileName_1_0_10_24.Schema.T.BackupFileName.F.Message[row] = message;
+							row.F.LastBackupDate = (DateTime)dsBackupFileName_1_0_10_24.Schema.T.BackupFileName.F.LastBackupDate.EffectiveType.ClosestValueTo(DateTime.Now);
+							row.F.Message = message;
 							row.EndEdit();
 							Update(dsLog);
 						}
@@ -1073,9 +1047,9 @@ namespace Thinkage.MainBoss.Database {
 			IDisposable unfetteredDatabaseAccess = null;
 			{
 				// Make sure Database Exists
-				XAFClient oldDBSession = null;
+				DBClient oldDBSession = null;
 				try {
-					oldDBSession = new XAFClient(connectionDefinition);
+					oldDBSession = new DBClient(connectionDefinition);
 					DBVersionHandler versionHandler = null;
 					try {
 						versionHandler = MBUpgrader.UpgradeInformation.CheckDBVersion(oldDBSession, VersionInfo.ProductVersion, new System.Version(1, 0, 1, 0), null, KB.K("Restore MainBoss Database").Translate());
@@ -1155,7 +1129,7 @@ namespace Thinkage.MainBoss.Database {
 			// Do whatever checks necessary at this level
 			// TODO: We want a version-safe schema in the connection object. Even dsUpgrade is somewhat version-dependent.
 			// TODO: Actually, we want all the DBVersionHandler methods to take an ISession not DBClient, and all the code here should use ISession only as well.
-			var client = new XAFClient(connection, db);
+			var client = new DBClient(connection, db);
 			DBVersionHandler versionHandler = MBUpgrader.UpgradeInformation.CheckDBVersion(client, VersionInfo.ProductVersion, new System.Version(1, 0, 1, 0), null, KB.K("Restore MainBoss Database").Translate());
 			// TODO: A bit more poking to ensure it is indeed an MB database possibly of some older version
 

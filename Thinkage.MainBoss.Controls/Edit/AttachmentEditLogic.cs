@@ -7,14 +7,15 @@ using Thinkage.MainBoss.Database;
 
 namespace Thinkage.MainBoss.Controls {
 	public class AttachmentEditLogic : EditLogic {
-		public AttachmentEditLogic(IEditUI editor, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode mode, object[][] rowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+		public AttachmentEditLogic(IEditUI editor, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode mode, object[][] rowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 			: base(editor, db, tbl, settingsContainer, mode, rowIDs, subsequentModeRestrictions, initLists) {
 		}
 
 		protected override void SetupCommands() {
 			base.SetupCommands();
-			MutuallyExclusiveCommandSetDeclaration cgd = new MutuallyExclusiveCommandSetDeclaration();
-			cgd.Add(new CommandDeclaration(KB.K("Open Attachment"), new OpenAttachmentCommand(RecordManager.GetPathNotifyingValue(TInfo.Schema.IsDefaultTable ? dsMB.Path.T.Attachment.F.Path.DefaultPath : dsMB.Path.T.Attachment.F.Path, 0))));
+			MutuallyExclusiveCommandSetDeclaration cgd = new MutuallyExclusiveCommandSetDeclaration {
+				new CommandDeclaration(KB.K("Open Attachment"), new OpenAttachmentCommand(RecordManager.GetPathNotifyingValue(TInfo.Schema.IsDefaultTable ? dsMB.Path.T.Attachment.F.Path.DefaultPath : dsMB.Path.T.Attachment.F.Path, 0)))
+			};
 			CommandGroupDeclarationsInOrder.Insert(CommandGroupDeclarationsInOrder.Count - 1, cgd);
 		}
 	}

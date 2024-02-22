@@ -21,7 +21,7 @@ namespace Thinkage.MainBoss.Controls
 			}
 		}
 		#endregion
-		public ReportViewerControl(UIFactory uiFactory, XAFClient db, Tbl tbl, Settings.Container settingsContainer, SqlExpression filterExpression)
+		public ReportViewerControl(UIFactory uiFactory, DBClient db, Tbl tbl, Settings.Container settingsContainer, SqlExpression filterExpression)
 			: base(uiFactory, db, tbl, settingsContainer, filterExpression) {
 		}
 		public static IEnumerable<IDisablerProperties> SecurityPermissionsForTbl(Tbl tbl) {

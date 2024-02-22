@@ -58,7 +58,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			public readonly Thinkage.Libraries.Permissions.Right ControllingActionRight;
 			public Key Name { get { return TransitionDefinition.Operation; } }
 
-			public Transition(MB3Client.StateHistoryTable stateHistory, DataRow row, Dictionary<Guid, State> stateMap) {
+			public Transition(MB3Client.StateHistoryTable stateHistory, DBIDataRow row, Dictionary<Guid, State> stateMap) {
 				TransitionDefinition = stateHistory.StateHistoryTransitionFromRow(row);
 				OldState = stateMap[TransitionDefinition.FromStateID];
 				NewState = stateMap[TransitionDefinition.ToStateID];
@@ -77,10 +77,10 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			public readonly List<Transition> Transitions = new List<Transition>();
 			public readonly List<MB3Client.StateFlagRestriction> Restrictions = new List<MB3Client.StateFlagRestriction>();
 
-			public State(Guid id, MB3Client.StateFlagRestriction[] restrictions, System.Data.DataRow row) {
+			public State(Guid id, MB3Client.StateFlagRestriction[] restrictions, DBIDataRow row) {
 				ID = id;
 				foreach (MB3Client.StateFlagRestriction r in restrictions)
-					if ((bool)r.StateFlagColumn[row] == r.ConditionAppliesWhenFlagIs)
+					if ((bool)row[r.StateFlagColumn] == r.ConditionAppliesWhenFlagIs)
 						Restrictions.Add(r);
 			}
 		}
@@ -90,9 +90,9 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			using (DynamicBufferManager bm = new DynamicBufferManager(DB, HistoryTable.StateTable.Database, false)) {
 				DynamicBufferManager.Query q = bm.Add(HistoryTable.StateTable, false, null);
 				q.KeepUpToDate = true;
-				DataTable stateTable = q.DataTable;
-				foreach (DataRow r in stateTable.Rows) {
-					Guid stateID = (Guid)HistoryTable.StateTable.InternalIdColumn[r];
+				DBIDataTable stateTable = q.DataTable;
+				foreach (DBIDataRow r in stateTable) {
+					Guid stateID = (Guid)r[HistoryTable.StateTable.InternalIdColumn];
 					State state = new State(stateID, HistoryTable.StateRestrictions, r);
 					stateMap.Add(stateID, state);
 				}
@@ -102,7 +102,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 				q.KeepUpToDate = true;
 				DataView view = new DataView(q.DataTable, null, new SortExpression(new DBI_Path(HistoryTable.TransitionRankColumn), SortExpression.SortOrder.Asc).ToDataExpressionString(), DataViewRowState.CurrentRows);
 				for (int i = 0; i < view.Count; ++i) {
-					Transition transition = new Transition(HistoryTable, view[i].Row, stateMap);
+					Transition transition = new Transition(HistoryTable, view[i].Row.ToDBIDataRow(), stateMap);
 					transition.OldState.Transitions.Add(transition);
 					transitions.Add(transition);
 				}

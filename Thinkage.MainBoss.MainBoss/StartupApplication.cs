@@ -13,16 +13,6 @@ namespace Thinkage.MainBoss.MainBoss {
 		[System.STAThread]
 		static void Main(string[] args) {
 			try {
-				if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed) {
-					// Clickonce deployments can configure their URLs to include the mainboss parameters as ?param1&param2&...
-					// E.g. to change the language (CultureInfo), put ?/ci:es after the deployment url
-					string[] urlargs = System.AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData;
-					if (urlargs != null && urlargs.Length > 0) {
-						string[] splitArgs = urlargs[0].Split('?');
-						if (splitArgs.Length > 1)
-							args = splitArgs[1].Split('&');
-					}
-				}
 				new StartupApplication(args);
 				Thinkage.Libraries.Application.Run();
 			}
@@ -100,15 +90,30 @@ namespace Thinkage.MainBoss.MainBoss {
 			catch (Thinkage.Libraries.CommandLineParsing.Exception ex) {
 				throw new GeneralException(ex.InnerException, KB.T(Thinkage.Libraries.Translation.MessageBuilder.Build(ex.Message, Options.Help)));
 			}
-			if (Options.CultureInfo.HasValue)
-			{
-				try
-				{
-					System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(Options.CultureInfo.Value, false);
-					System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(Options.CultureInfo.Value, false);
+			if ((Options.MessageCultureInfo.HasValue || Options.FormatCultureInfo.HasValue) && Options.CultureInfo.HasValue)
+				throw new GeneralException(KB.K("Use either /CultureInfo or /MessageCultureInfo and /FormatCultureInfo"));
+			if (Options.MessageCultureInfo.HasValue) {
+				try {
+					System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(Options.MessageCultureInfo.Value, true);
 				}
-				catch (System.Exception e)
-				{
+				catch (System.Exception e) {
+					throw new GeneralException(e, KB.K("Invalid /MessageCultureInfo '{0}'"), Options.MessageCultureInfo.Value);
+				}
+			}
+			if (Options.FormatCultureInfo.HasValue) {
+				try {
+					System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(Options.FormatCultureInfo.Value, true);
+				}
+				catch (System.Exception e) {
+					throw new GeneralException(e, KB.K("Invalid /FormatCultureInfo '{0}'"), Options.FormatCultureInfo.Value);
+				}
+			}
+			if (Options.CultureInfo.HasValue) {
+				try {
+					System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(Options.CultureInfo.Value, true);
+					System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(Options.CultureInfo.Value, true);
+				}
+				catch (System.Exception e) {
 					throw new GeneralException(e, KB.K("Invalid CultureInfo '{0}'"), Options.CultureInfo.Value);
 				}
 			}
@@ -117,7 +122,7 @@ namespace Thinkage.MainBoss.MainBoss {
 				helpProviderPath = Options.HelpManualPath.Value;
 			if (helpProviderPath == null)
 				helpProviderPath = ApplicationParameters.HelpFileLocalLocation;
-			new HelpUsingFolderOfHtml(this, helpProviderPath, Thinkage.Libraries.Application.InstanceCultureInfo, ApplicationParameters.HelpFileOnlineLocation);
+			new HelpUsingFolderOfHtml(this, helpProviderPath, Thinkage.Libraries.Application.InstanceMessageCultureInfo, ApplicationParameters.HelpFileOnlineLocation);
 
 
 			// Note that if the user calls up MB with no arguments and their default organization is scragged they will get an error and the app will exit.

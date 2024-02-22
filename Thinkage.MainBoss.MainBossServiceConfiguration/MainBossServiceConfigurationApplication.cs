@@ -15,6 +15,7 @@ using Thinkage.Libraries.XAF.UI.MSWindows;
 using Thinkage.MainBoss.Database;
 using Thinkage.MainBoss.Database.Service;
 using System.Data.SqlClient;
+using Thinkage.Libraries.DBILibrary.MSSql;
 
 namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 	#region CommanLine Setup and Processing
@@ -99,7 +100,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			catch (Thinkage.Libraries.CommandLineParsing.Exception ex) {
 				throw new GeneralException(ex.InnerException, KB.T(Thinkage.Libraries.Translation.MessageBuilder.Build(Thinkage.Libraries.Exception.FullMessage(ex), Options.Help)));
 			}
-			new HelpUsingFolderOfHtml(this, ApplicationParameters.HelpFileLocalLocation, Thinkage.Libraries.Application.InstanceCultureInfo, ApplicationParameters.HelpFileOnlineLocation);
+			new HelpUsingFolderOfHtml(this, ApplicationParameters.HelpFileLocalLocation, Thinkage.Libraries.Application.InstanceMessageCultureInfo, ApplicationParameters.HelpFileOnlineLocation);
 		}
 		protected override void CreateUIFactory() {
 			new ApplicationTblDefaultsUsingWindows(this, new ETbl(), new AllowAllTablesAllOperationsPermissionsManager(Root.Table), Root.Table, null, null);
@@ -107,7 +108,10 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			new GUIApplicationIdentification(this, "Thinkage.MainBoss.MainBossServiceConfiguration.Resources.ServiceIcon.ico");
 			new Thinkage.Libraries.XAF.UI.MSWindows.UserInterface(this);
 			new Thinkage.Libraries.Presentation.MSWindows.UserInterface(this);
-			new MSWindowsUIFactory(this);
+			var uiFactory = new MSWindowsUIFactory(this) {
+				FixedPitchControlFontFamily = Configuration.MonospaceFontFamilyForDisplay,
+				ProportionalControlFontFamily = Configuration.RegularFontFamilyForDisplay
+			};
 		}
 		public override Libraries.Application.RunApplicationDelegate GetRunApplicationDelegate {
 			get {
@@ -230,7 +234,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 		}
 		protected void ObtainLog(SQLConnectionInfo sqlConnectionInfo) {
 			try {
-				DBConnection = sqlConnectionInfo.DefineConnection();
+				DBConnection = new MB3Client.ConnectionDefinition(sqlConnectionInfo.DatabaseServer, sqlConnectionInfo.DatabaseName, sqlConnectionInfo.Credentials);
 				DBSession = new MB3Client(DBConnection);
 				Log = new LogToDatabase(DBConnection);
 				Log.ProcessLog();
@@ -309,7 +313,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			if ( Controller.WaitForStatus(wantedStatus) )
 				return; // all errors will be forgiven if the service is in desired state
 			ex = ex ?? (System.Exception)Controller.LastStatusError;
-			Log.LogError(Strings.IFormat("{0}  {1}", Strings.Format(Thinkage.Libraries.Service.Application.InstanceCultureInfo, KB.K("Cannot {0} Windows Service for MainBoss '{1}' on computer '{2}'."), operation, dbParms.ServiceCode, dbParms.ServiceComputer), ex == null ? "" : Thinkage.Libraries.Exception.FullMessage(ex)));
+			Log.LogError(Strings.IFormat("{0}  {1}", Strings.Format(Thinkage.Libraries.Service.Application.InstanceMessageCultureInfo, KB.K("Cannot {0} Windows Service for MainBoss '{1}' on computer '{2}'."), operation, dbParms.ServiceCode, dbParms.ServiceComputer), ex == null ? "" : Thinkage.Libraries.Exception.FullMessage(ex)));
 			throw new GeneralException(ex, KB.K("Cannot {0} Windows Service for MainBoss '{1}' on computer '{2}'."), operation, dbParms.ServiceCode, dbParms.ServiceComputer);
 		}
 		protected static ServiceParms CheckServiceCmdLine(ServiceConfiguration sc, ServiceParms parms, string serviceBinary, Version minVersion) {
@@ -334,28 +338,28 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			if (sc == null) return null;
 			string problemText = null;
 			if (sc.StartType == System.ServiceProcess.ServiceStartMode.Disabled) {
-				var p = addError(problemText, Strings.Format(KB.K("The Windows Service for MainBoss '{0}' on computer '{1}' can not be run because it has been disabled"), sc.ServiceName, sc.ServiceComputer));
+				var p = AddError(problemText, Strings.Format(KB.K("The Windows Service for MainBoss '{0}' on computer '{1}' can not be run because it has been disabled"), sc.ServiceName, sc.ServiceComputer));
 				Log.LogWarning(problemText);
-				problemText = addError(problemText, p);
+				problemText = AddError(problemText, p);
 			}
 			if (sc.StartType == System.ServiceProcess.ServiceStartMode.Manual) {
 				var p = Strings.Format(KB.K("Start mode of MainBoss Service '{0}' is 'Manual'. It should be set to 'Automatic (Delayed Start)'"), sc.ServiceName);
 				Log.LogWarning(p);
-				problemText = addError(problemText, p);  // not sure if it should be an error, or just a warning
+				problemText = AddError(problemText, p);  // not sure if it should be an error, or just a warning
 			}
 			if (parms.ServiceUserid != null && Utilities.UseridToDisplayName(sc.StartName) != parms.ServiceUserid) {
 				var p = Strings.Format(KB.K("The Service Configuration expects the service to be running as user '{0}'. The MainBoss Service is configured to be running as {1}")
 					, parms.ServiceUserid, Utilities.UseridToDisplayName(sc.StartName));
 				Log.LogWarning(p);
-				problemText = addError(problemText, p);
+				problemText = AddError(problemText, p);
 			}
 			return problemText;
 		}
-		protected string addError(string old, string e) {
+		protected string AddError(string old, string e) {
 			if (old == null) return e;
 			return old + Environment.NewLine + Environment.NewLine + e;
 		}
-		protected void accessQuestion(VerifyServiceAccessToDatabase accessToDatabase) {
+		protected void AccessQuestion(VerifyServiceAccessToDatabase accessToDatabase) {
 			if (!accessToDatabase.LoginExists && accessToDatabase.CanManageUserLogins || !accessToDatabase.IsMainBossUser && accessToDatabase.ViewLocalUsers) {
 				var questiontext1 = Strings.Format(KB.K("The Windows Service for MainBoss is currently configured to run as user {0}.  "
 									+ "This user does not have the expected permissions "
@@ -390,14 +394,12 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 		}
 		private ConfigureServiceVerb(Definition options) : base(ServiceOpType.Create, KB.K("Configure Service"), options) {}
 		private void Run() {
-			if (dbParms.ServiceComputer == null)
-				dbParms.ServiceComputer = DomainAndIP.MyDnsName;
 			bool oKToContinue = false;
 			bool sameComputer = DomainAndIP.IsThisComputer(dbParms.ServiceComputer);
 			if( ! sameComputer )
 				throw new GeneralException(KB.K("The Windows Service for MainBoss must be configured from the computer that it is to be run on."), dbParms.ServiceCode);
 			try { 
-				ServiceParameters = ServiceConfiguration.AcquireServiceConfiguration(true, true, dbParms.ServiceComputer, dbParms.ServiceCode);
+				ServiceParameters = ServiceConfiguration.AcquireServiceConfiguration(true, true, dbParms.ServiceComputer??DomainAndIP.MyDnsName, dbParms.ServiceCode);
 			}
 			catch(System.Exception e ) {
 					throw e as GeneralException ?? new GeneralException(e, KB.K("Cannot access Windows Service properties"), dbParms.ServiceComputer);
@@ -429,7 +431,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 					dbParms.MBVersion = ServiceParameters.Version;
 					ServiceUtilities.UpdateServiceRecord(DBConnection, dbParms, Log);
 				}
-				bool needsUpdate = ServiceBinary != ServiceParameters.ServiceExecutable ;
+				bool needsUpdate = ServiceBinary != ServiceParameters.ServiceExecutable || dbParms.ServiceComputer != DomainAndIP.MyDnsName;
 				if (string.Compare(Utilities.UseridToRegistryName(ServiceParameters.ServiceUserid), Utilities.UseridToRegistryName(dbParms.ServiceUseridAsSqlUserid)) != 0) {
 					var questiontextu = Strings.Format(KB.K("There is an existing Windows Service for MainBoss which is using Service Userid '{0}', the MainBoss Service configuration uses Userid '{1}'. Do you want to change the Service Userid?"), Utilities.UseridToDisplayName(ServiceParameters.ServiceUserid), dbParms.ServiceUserid);
 					if (Thinkage.Libraries.Application.Instance.AskQuestion(questiontextu, Strings.Format(KB.K("Change MainBoss Service Userid")), Ask.Questions.YesNo) == Ask.Result.Yes) {
@@ -454,6 +456,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 				}
 				oKToContinue = true;
 			}
+			dbParms.ServiceComputer = DomainAndIP.MyDnsName;
 			var accessToDatabase = new VerifyServiceAccessToDatabase(dbParms, ServiceParameters, DBSession.ConnectionInfo, false);
 			var problem = accessToDatabase.ReportAccessPermissionOnDatabase();
 			if (problem != null)
@@ -470,7 +473,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			}
 			if (String.Compare(accessToDatabase.SqlUserid, Utilities.LOCALADMIN_DISPLAYNAME, ignoreCase: true) == 0)
 				Log.LogWarning(Strings.Format(KB.K("Windows Service for MainBoss should not run as user {0}. Use 'NT AUTHORITY\\Network Service' instead"), accessToDatabase.SqlUseridFormatted));
-			accessQuestion(accessToDatabase);
+			AccessQuestion(accessToDatabase);
 			if (PathIsNetworkPath(ServiceBinary))
 				throw new GeneralException(KB.K("The MainBoss executable must be on the computer where the Windows Service for MainBoss is to be created."))
 					.WithContext(new MessageExceptionContext(KB.K("The MainBoss executable location is '{0}'"), Path.GetDirectoryName(ServiceBinary)));
@@ -547,7 +550,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			if (ServiceParameters.Credentials.Type != AuthenticationMethod.WindowsAuthentication)
 				accessErrors = ServiceUtilities.TryAccessToDatabase(ServiceParameters, dbParms);
 			if (accessErrors != null)
-				accessQuestion(accessToDatabase);
+				AccessQuestion(accessToDatabase);
 			string startupErrors = CheckServiceStartup(ServiceParameters, dbParms);
 			var p = accessToDatabase.ReportAccessPermissionOnDatabase();
 			if (startupErrors != null)
@@ -622,7 +625,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 				Log.LogClose(null);
 				return;
 			}
-			bool okToDelete = deleteServiceQuestion(canDeleteService, sameComputer, NotMainBossService, dbParms);
+			bool okToDelete = DeleteServiceQuestion(canDeleteService, sameComputer, NotMainBossService, dbParms);
 			if (!okToDelete)
 				Thinkage.Libraries.Application.Instance.DisplayInfo(Strings.Format(KB.K("The Windows Service for MainBoss '{0}' has not been removed from computer '{1}'"), dbParms.ServiceCode, dbParms.ServiceComputer));
 			else { 
@@ -650,7 +653,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			}
 			Log.LogClose(null);
 		}
-		bool deleteServiceQuestion(bool canDeleteService, bool sameComputer, Thinkage.Libraries.Exception serviceError, ServiceParms dbParms) {
+		bool DeleteServiceQuestion(bool canDeleteService, bool sameComputer, Thinkage.Libraries.Exception serviceError, ServiceParms dbParms) {
 			if (canDeleteService) {
 				string questionText = sameComputer ? Strings.Format(KB.K("Remove the Windows Service for MainBoss '{0}'"), dbParms.ServiceCode)
 					: Strings.Format(KB.K("Remove the Windows Service for MainBoss '{0}' installed on computer '{1}'"), dbParms.ServiceCode, dbParms.ServiceComputer);

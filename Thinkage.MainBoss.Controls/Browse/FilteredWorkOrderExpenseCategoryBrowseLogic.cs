@@ -13,7 +13,7 @@ namespace Thinkage.MainBoss.Controls
 		public static readonly object ModelFilterId = 42;
 
 		#region Construction
-		public FilteredWorkOrderExpenseCategoryBrowseLogic(IBrowseUI control, XAFClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
+		public FilteredWorkOrderExpenseCategoryBrowseLogic(IBrowseUI control, DBClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
 			: base(control, db, takeDBCustody, tbl, settingsContainer, structure)
 		{
 		}

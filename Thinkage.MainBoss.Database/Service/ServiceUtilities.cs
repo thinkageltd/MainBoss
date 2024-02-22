@@ -1,14 +1,12 @@
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.DirectoryServices.ActiveDirectory;
-using System.Linq;
 using System.Security.Principal;
 using System.Text.RegularExpressions;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
 using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.DBILibrary.MSSql;
 using Thinkage.Libraries.Licensing;
 using Thinkage.Libraries.Service;
 using Thinkage.Libraries.TypeInfo;
@@ -81,7 +79,10 @@ namespace Thinkage.MainBoss.Database.Service {
 		public string SqlUseridFormatted {
 			get {
 				var displayname = Utilities.UseridToDisplayName(ConnectionInfo.SqlUserid ?? WorkingServiceUserid);
-				return !Utilities.IsComputerLocalName(displayname) ? Strings.IFormat("'{0}'", displayname) : Strings.Format(KB.K("'{0}' (external name '{1}' )"), displayname, getMachineUserid(displayname));
+				var externalname = Utilities.IsComputerLocalName(displayname) ? GetExternalMachineUserid(displayname) : null;
+				if (externalname == null)
+					return displayname;
+				return !Utilities.IsComputerLocalName(displayname) ? Strings.IFormat("'{0}'", displayname) : Strings.Format(KB.K("'{0}' (external name '{1}')"), displayname, externalname);
 			}
 		}
 		public string ServiceUseridAsSqlUserid {
@@ -90,18 +91,15 @@ namespace Thinkage.MainBoss.Database.Service {
 				if (DomainAndIP.IsThisComputer(ServiceComputer))
 					return u;
 				if (ServiceComputer != null && Utilities.IsComputerLocalName(WorkingServiceUserid))
-					return getMachineUserid(u);
+					return GetExternalMachineUserid(u);
 				return u;
 			}
 		}
-		private static string getMachineUserid(string u) {
-			try {
-				u = Strings.IFormat("{0}\\{1}$", DomainAndIP.GetDomainNetBiosName(), Environment.MachineName);
-			}
-			catch (SystemException) { // most like failure is the computer is not a member of a domain
-				u = Strings.IFormat("{0}$", Environment.MachineName); // computer is not a member of a domain
-			}
-			return u;
+		private static string GetExternalMachineUserid(string u) {
+			var name = DomainAndIP.GetDomainName();
+			if (name != null)
+				return Strings.IFormat("{0}\\{1}$", name, Environment.MachineName);
+			return null;
 		}
 		public bool WindowsAccountExists {
 			get {
@@ -196,7 +194,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			DBVersionHandler VersionHandler = null;
 			// validate the databaselog
 			try {
-				Version MinDBVersion = new Version(1, 1, 5, 2); // Usually kept in lock step with mainboss application; changing this should be reflected in the checkin comment to vault
+				Version MinDBVersion = new Version(1, 1, 5, 5); // Usually kept in lock step with mainboss application; changing this should be reflected in the checkin comment to vault
 																// MinMBAppVersion; 4.2; MinDBVersion; changing this should be reflected in the checkin comment to vault
 				VersionHandler = MBUpgrader.UpgradeInformation.CheckDBVersion(DBSession, VersionInfo.ProductVersion, MinDBVersion, dsMB.Schema.V.MinMBRemoteAppVersion, KB.I("MainBoss Service"));
 			}
@@ -284,8 +282,7 @@ namespace Thinkage.MainBoss.Database.Service {
 					dsMB.ServiceConfigurationRow sr = null;
 					dsMB.ServiceConfigurationRow anysr = null;
 					int numrow = 0;
-					var rows = dsMB.Schema.T.ServiceConfiguration.GetDataTable(ds).Rows;
-					foreach (dsMB.ServiceConfigurationRow r in dsMB.Schema.T.ServiceConfiguration.GetDataTable(ds).Rows) {
+					foreach (dsMB.ServiceConfigurationRow r in ds.GetDataTable(dsMB.Schema.T.ServiceConfiguration)) {
 						anysr = r;
 						numrow++;
 						if (string.Compare(r.F.Code, serviceCode, ignoreCase: true) == 0) {
@@ -347,7 +344,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				using (dsMB ds = new dsMB(DBSession)) {
 					ds.DB.ViewAdditionalRows(ds, dsMB.Schema.T.ServiceConfiguration);
 					dsMB.ServiceConfigurationRow sr = null;
-					foreach (dsMB.ServiceConfigurationRow r in dsMB.Schema.T.ServiceConfiguration.GetDataTable(ds).Rows)
+					foreach (dsMB.ServiceConfigurationRow r in ds.T.ServiceConfiguration)
 						if (string.Compare(r.F.Code, parms.ServiceCode, ignoreCase: true) == 0) {
 							sr = r;
 							break;
@@ -445,10 +442,10 @@ namespace Thinkage.MainBoss.Database.Service {
 		public static GeneralException TryAccessToDatabase(ServiceConfiguration serviceConfiguration, ServiceParms parms) {
 			if (serviceConfiguration?.ConnectionInfo != null && string.Compare(serviceConfiguration.ConnectionInfo.ConnectionString, parms.ConnectionInfo.ConnectionString, true) != 0
 				&& serviceConfiguration.Credentials.Type != Libraries.DBILibrary.AuthenticationMethod.WindowsAuthentication) {
-				// if the connection strings are different see if the one recored in the service, will work.
-				// if it windows authentication we cannot do the check.
+				// if the connection strings are different see if the one recorded in the service, will work.
+				// if it is windows authentication we cannot do the check.
 				try {
-					var serviceAccess = serviceConfiguration.ConnectionInfo.DefineConnection();
+					var serviceAccess = new MB3Client.ConnectionDefinition(serviceConfiguration.ConnectionInfo.DatabaseServer, serviceConfiguration.ConnectionInfo.DatabaseName, serviceConfiguration.ConnectionInfo.Credentials);
 					var session = new MB3Client(serviceAccess);
 					session.CloseDatabase();
 				}
@@ -528,14 +525,13 @@ namespace Thinkage.MainBoss.Database.Service {
 			var v = new Version(0, 0, 0, 0);
 			using (var ds = new dsMB(dbSession)) {
 				ds.DB.ViewAdditionalVariables(ds, dsMB.Schema.V.MinMBRemoteAppVersion);
-				string vs = ds.V.MinMBRemoteAppVersion.Value;
+				string vs = (string)ds.V.MinMBRemoteAppVersion.Value;
 				System.Version.TryParse(vs, out v);
 			}
 			return v;
 		}
 		public static Version Version(string vs) {
-			Version v;
-			System.Version.TryParse(vs, out v);
+			System.Version.TryParse(vs, out Version v);
 			return v;
 		}
 
@@ -684,9 +680,9 @@ namespace Thinkage.MainBoss.Database.Service {
 			}
 		}
 		#region EmailRequestFromEmail
-		public static Guid EmailRequestFromEmail(dsMB dsmb, EmailMessage message, int maxsize) {
+		public static Guid EmailRequestFromEmail(dsMB dsmb, EmailMessage message, int maxsize, DatabaseEnums.EmailRequestState processingState) {
 			dsMB.EmailRequestRow erequestrow = dsmb.T.EmailRequest.AddNewEmailRequestRow();
-			erequestrow.F.ProcessingState = (int)DatabaseEnums.EmailRequestState.UnProcessed;
+			erequestrow.F.ProcessingState = (short)processingState;
 			erequestrow.F.MailHeader = message.HeaderText;
 			erequestrow.F.Subject = message.Subject;
 			erequestrow.F.MailMessage = message.Body;
@@ -720,7 +716,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			}
 			return erequestrow.F.Id;
 		}
-		public static Guid EmailRequestFromEmail(XAFClient DB, string message, string filename) {
+		public static Guid EmailRequestFromEmail(DBClient DB, string message, string filename) {
 			EmailMessage emailmessage = null;
 			;
 			try {
@@ -734,7 +730,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			}
 			using (var dsmb = new dsMB(DB)) {
 				dsmb.EnsureDataTableExists(dsMB.Schema.T.EmailRequest, dsMB.Schema.T.EmailPart);
-				var id = EmailRequestFromEmail(dsmb, emailmessage, int.MaxValue);
+				var id = EmailRequestFromEmail(dsmb, emailmessage, int.MaxValue, DatabaseEnums.EmailRequestState.UnProcessed);
 				DB.Update(dsmb);
 				return id;
 			}
@@ -754,7 +750,7 @@ namespace Thinkage.MainBoss.Database.Service {
 #else
 		private const string DBEmailViewerDebugCategory = null;
 #endif
-		public static void DebugEmailMessage(XAFClient DB, bool encode, Guid emailRequestID) {
+		public static void DebugEmailMessage(DBClient DB, bool encode, Guid emailRequestID) {
 			try {
 				var message = EmailMessage.EmailRequestToRFC822(DB, encode, emailRequestID);
 				System.Diagnostics.Debug.WriteLine(String.Format("Email Message\r\n{0}", message), DBEmailViewerDebugCategory);
@@ -765,7 +761,7 @@ namespace Thinkage.MainBoss.Database.Service {
 		}
 		#endregion
 		static public System.CodeDom.Compiler.TempFileCollection TemporaryFiles;
-		public static void OpenEmail(XAFClient DB, Guid emailRequestId) {
+		public static void OpenEmail(DBClient DB, Guid emailRequestId) {
 			string fileName = Strings.IFormat("{0}{1}.eml", System.IO.Path.GetTempPath(), Guid.NewGuid().ToString());
 			if (TemporaryFiles == null)
 				TemporaryFiles = new System.CodeDom.Compiler.TempFileCollection();
@@ -835,7 +831,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				Error = AccessUser(false, grantAccess, newDatabaseUser);
 			if (!IsMainBossUser && !IsWindowsAuthentication && !dbConnection.DBCredentials.Same(serviceConfiguration.Credentials)) {
 				try {
-					var serviceAccess = serviceConfiguration.ConnectionInfo.DefineConnection();
+					var serviceAccess = new MB3Client.ConnectionDefinition(serviceConfiguration.ConnectionInfo.DatabaseServer, serviceConfiguration.ConnectionInfo.DatabaseName, serviceConfiguration.ConnectionInfo.Credentials);
 					var session = new MB3Client(serviceAccess);
 					HasAccessToDatabase = true;
 					LoginExists = true;
@@ -851,7 +847,7 @@ namespace Thinkage.MainBoss.Database.Service {
 		private GeneralException AccessUser(bool forlogins, bool grant, Action<bool, MB3Client, dsSecurityOnServer> perms) {
 			dsSecurityOnServer dsmb = null;
 			try {
-				var Dbclient = new XAFClient(DBConnection);
+				var Dbclient = new DBClient(DBConnection);
 				var SecurityConnection = new MainBoss.SecurityOnServerSession.Connection(Dbclient, forlogins);
 				var SecurityClient = new MB3Client(new DBClient.Connection(SecurityConnection, dsSecurityOnServer.Schema), SecurityConnection.CreateServer().OpenSession(SecurityConnection, dsSecurityOnServer.Schema));
 				ViewAllUsers = SecurityClient.Session.CanViewUserLogins();
@@ -878,7 +874,7 @@ namespace Thinkage.MainBoss.Database.Service {
 		}
 		void newLoginUser(bool grant, MB3Client SecurityClient, dsSecurityOnServer dsmb) {
 			dsSecurityOnServer.SecurityOnServerRow user = null;
-			foreach (dsSecurityOnServer.SecurityOnServerRow r in dsmb.T.SecurityOnServer.Rows) {
+			foreach (dsSecurityOnServer.SecurityOnServerRow r in dsmb.T.SecurityOnServer) {
 				if (string.Compare(r.F.LoginName, SqlUserid, true) == 0) {
 					user = r;
 					break;
@@ -907,7 +903,7 @@ namespace Thinkage.MainBoss.Database.Service {
 		}
 		void newDatabaseUser(bool grant, MB3Client SecurityClient, dsSecurityOnServer dsmb) {
 			dsSecurityOnServer.SecurityOnServerRow user = null;
-			foreach (dsSecurityOnServer.SecurityOnServerRow r in dsmb.T.SecurityOnServer.Rows) {
+			foreach (dsSecurityOnServer.SecurityOnServerRow r in dsmb.T.SecurityOnServer) {
 				if (string.Compare(r.F.LoginName, SqlUserid, true) == 0) {
 					user = r;
 					break;
@@ -993,160 +989,4 @@ namespace Thinkage.MainBoss.Database.Service {
 		}
 	}
 	#endregion
-	#region SQLAuthenticationFromName
-	public class SQLAuthenticationFromName {
-		public SQLAuthenticationFromName([Libraries.Translation.Invariant] string authenicationName) {
-			if (string.IsNullOrWhiteSpace(authenicationName))
-				AMN = AuthenticationMethods[0];
-			else {
-				AMN = AuthenticationMethods.Where(e => Strings.Match(authenicationName, e.Pattern)).FirstOrDefault();
-				if (AMN == null)
-					throw new GeneralException(KB.K("{0}=\"{1}\" is unknown, Authentication must be one of '{2}'"), KB.I("/Authentication"), authenicationName, string.Join("', '", AuthenticationMethods.Select(e => e.Name)));
-
-			}
-		}
-		AuthenticationMethodName AMN;
-		public string Name => AMN.Name;
-		public SqlAuthenticationMethod Method => AMN.Method;
-		public class AuthenticationMethodName { public SqlAuthenticationMethod Method; public string Pattern; public string Name; }
-
-		public static AuthenticationMethodName[] AuthenticationMethods = {
-			new AuthenticationMethodName { Method= SqlAuthenticationMethod.NotSpecified,               Pattern= KB.I("Windowauthentication"),      Name = KB.I("WindowAuthentication") },
-			new AuthenticationMethodName { Method= SqlAuthenticationMethod.SqlPassword,                Pattern= KB.I("sqlPassword"),               Name = KB.I("SQLPassword") },
-			new AuthenticationMethodName { Method= SqlAuthenticationMethod.ActiveDirectoryPassword,    Pattern= KB.I("ActiveDirectoryPassword"),   Name = KB.I("ActiveDirectoryPassword") },
-			new AuthenticationMethodName { Method= SqlAuthenticationMethod.ActiveDirectoryIntegrated,  Pattern= KB.I("ActiveDirectoryIntegrated"), Name = KB.I("ActiveDirectoryIntegrated") }
-		};
-	}
-	#endregion
-	#region SQLConnectionInfo
-
-	/// <summary>
-	/// Maps between Mcrosofts utils to decode SQL Server Connection strings
-	/// and MainBoss host,database,authentication.
-	/// 
-	/// </summary>
-	[Thinkage.Libraries.Translation.Invariant]
-	public class SQLConnectionInfo {
-		public SQLConnectionInfo(SqlConnectionStringBuilder builder) {
-			SqlConnectionObject = builder;
-		}
-		public SQLConnectionInfo(string connection) {
-			try {
-				SqlConnectionObject = new SqlConnectionStringBuilder(connection);
-				SqlConnectionObject.DataSource = globalName(SqlConnectionObject.DataSource);
-			}
-			catch (System.Exception e) {
-				throw new GeneralException(e, KB.K("SQL connection string '{0}' format is not valid "), connection);
-			}
-		}
-		public SQLConnectionInfo(string server, string database, AuthenticationCredentials authenticate = null) {
-			try {
-				SqlConnectionObject = new SqlConnectionStringBuilder();
-				SqlConnectionObject.DataSource = globalName(server);
-				SqlConnectionObject.InitialCatalog = database;
-				if (authenticate != null) {
-					SqlConnectionObject.UserID = authenticate.Username;
-					SqlConnectionObject.Password = authenticate.Password;
-					SqlConnectionObject.Authentication = TtoM[authenticate.Type];
-				}
-			}
-			catch (System.Exception e) {
-				throw new GeneralException(e, KB.K("Could not construct a valid SQL connection string from server '{0}' database '{1}' and Authentication '{3}'"), server, database, authenticate);
-			}
-		}
-		public SQLConnectionInfo(string server, string database, AuthenticationMethod method, string userid, string password)
-			: this(server, database, new AuthenticationCredentials(method, userid, password)) { }
-
-		public SQLConnectionInfo(string server, string database, SqlAuthenticationMethod method, string userid, string password) : this(server, database) {
-			SqlConnectionObject.UserID = userid;
-			SqlConnectionObject.Password = password;
-			SqlConnectionObject.Authentication = method;
-		}
-		static Dictionary<AuthenticationMethod, SqlAuthenticationMethod> TtoM = new Dictionary<AuthenticationMethod, SqlAuthenticationMethod>() {
-			{ AuthenticationMethod.WindowsAuthentication, SqlAuthenticationMethod.NotSpecified },
-			{ AuthenticationMethod.SQLPassword, SqlAuthenticationMethod.SqlPassword },
-			{ AuthenticationMethod.ActiveDirectoryPassword, SqlAuthenticationMethod.ActiveDirectoryPassword },
-			{ AuthenticationMethod.ActiveDirectoryIntegrated, SqlAuthenticationMethod.ActiveDirectoryIntegrated }
-		};
-
-		// datasource has format 'computer\instance,port' where instance and port are optional
-		public SqlConnectionStringBuilder SqlConnectionObject { get; }
-		public string DatabaseServer => SqlConnectionObject.DataSource;
-		public string ConnectionString => SqlConnectionObject.ConnectionString;
-		public string ConnectionStringNoPassword {
-			get {
-				var c = new SqlConnectionStringBuilder(ConnectionString);
-				c.Password = "";
-				return c.ConnectionString;
-
-			}
-		}
-		public string DatabaseName => SqlConnectionObject.InitialCatalog;
-		public string Server {
-			get {
-				var m = DatabaseServer.Split("\\,".ToCharArray())[0];   // remove intance and port
-				var s = m.Split(':');                                   // remove protocol
-				return s[s.Length - 1];
-			}
-		}
-		public string Instance {
-			get {
-				var d = DatabaseServer.Split('\\');
-				if (d.Length <= 1)
-					return "";
-				return d[1].Split(',')[0];
-			}
-		}
-		public int? Port {
-			get {
-				var d = DatabaseServer.Split('\\');
-				if (d.Length <= 1)
-					return null;
-				var ps = d[1].Split(',');
-				if (ps.Length <= 1)
-					return null;
-				int p = 0;
-				if (int.TryParse(ps[1], out p))
-					return p;
-				return null;
-			}
-		}
-		public AuthenticationCredentials Credentials {
-			get {
-				var t = TtoM.FirstOrDefault(x => x.Value == SqlConnectionObject.Authentication).Key;
-				return new AuthenticationCredentials(t, SqlConnectionObject.UserID, SqlConnectionObject.Password);
-			}
-		}
-		public bool IsWindowsAuthentication => SqlConnectionObject.Authentication == SqlAuthenticationMethod.NotSpecified;
-		public MB3Client.ConnectionDefinition DefineConnection() {
-			return new MB3Client.ConnectionDefinition(DatabaseServer, DatabaseName, Credentials);
-		}
-		public string SqlUserid {
-			get {
-				return !string.IsNullOrWhiteSpace(SqlConnectionObject.UserID) ? SqlConnectionObject.UserID : null;
-			}
-		}
-		public string SqlPassword {
-			get {
-				return !string.IsNullOrWhiteSpace(SqlConnectionObject.Password) ? SqlConnectionObject.Password : null;
-			}
-		}
-		public override string ToString() {
-			return SqlConnectionObject == null ? "Invalid Connection" : SqlConnectionObject.ToString();
-		}
-		private static string globalName(string ds) {
-			var c = ds.IndexOf(',');
-			var i = ds.IndexOf('\\');
-			var e = c < 0 ? i : c;
-			e = e < 0 ? ds.Length : e;
-			var p = ds.IndexOf(':') + 1;
-			var s = p > e ? 0 : p;
-			var m = ds.Substring(s, e - s).Trim();
-			if (m == "" || m == "." || string.Compare(m, "localhost", true) == 0)
-				ds = ds.Remove(s, e - s).Insert(s, Environment.MachineName);
-			return ds;
-		}
-	}
-	#endregion
-
 }

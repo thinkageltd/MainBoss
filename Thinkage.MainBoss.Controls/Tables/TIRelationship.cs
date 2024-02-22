@@ -57,9 +57,9 @@ namespace Thinkage.MainBoss.Controls
 						UnitsDependentGroup,
 						new BTbl(
 							BTbl.ListColumn(dsMB.Path.T.Relationship.F.Code),
-							BTbl.ListColumn(dsMB.Path.T.Relationship.F.Desc)
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl(delegate(){ return TIReports.RelationshipReport;}))
+							BTbl.ListColumn(dsMB.Path.T.Relationship.F.Desc),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.RelationshipReport))
+						)
 					},
 					null,
 					new CompositeView(UnitUnitRelationshipEditTbl, dsMB.Path.T.Relationship.F.Id,
@@ -81,9 +81,9 @@ namespace Thinkage.MainBoss.Controls
 							BTbl.ListColumn(dsMB.Path.T.Relationship.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.Relationship.F.Desc),
 							BTbl.ExpressionFilter(new SqlExpression(dsMB.Path.T.Relationship.F.AType).Eq((int)DatabaseEnums.RelationshipRoleType.Unit)
-																.And(new SqlExpression(dsMB.Path.T.Relationship.F.BType).Eq((int)DatabaseEnums.RelationshipRoleType.Contact)))
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl(delegate(){ return TIReports.RelationshipReport;}))
+																.And(new SqlExpression(dsMB.Path.T.Relationship.F.BType).Eq((int)DatabaseEnums.RelationshipRoleType.Contact))),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.RelationshipReport))
+						)
 					},
 					null,
 					CompositeView.ChangeEditTbl(UnitContactRelationshipEditTbl)
@@ -240,9 +240,9 @@ namespace Thinkage.MainBoss.Controls
 						new Tbl.IAttr[] {
 							UnitsDependentGroup,
 							new BTbl(
-								BTbl.PerViewListColumn(dsMB.LabelKeyBuilder.K("Relationship"), relationshipColumnId)
-							),
-							new FilteredTreeStructuredTbl(dsMB.Path.T.UnitRelatedRecords.F.ParentID, dsMB.Schema.T.UnitRelatedRecordsContainment, 2, 2)
+								BTbl.PerViewListColumn(dsMB.LabelKeyBuilder.K("Relationship"), relationshipColumnId),
+								BTbl.SetTreeStructure(dsMB.Path.T.UnitRelatedRecords.F.ParentID, 2, 2, dsMB.Schema.T.UnitRelatedRecordsContainment)
+							)
 						},
 						null,
 						// When identifying the various Relationship record types, we do monimal checks on AType and BType, relying on the query not sending us
@@ -378,9 +378,9 @@ namespace Thinkage.MainBoss.Controls
 						new Tbl.IAttr[] {
 							UnitsDependentGroup,
 							new BTbl(
-								BTbl.PerViewListColumn(dsMB.LabelKeyBuilder.K("Relationship"), relationshipColumnId)
-							),
-							new FilteredTreeStructuredTbl(dsMB.Path.T.ContactRelatedRecords.F.ParentID, dsMB.Schema.T.ContactRelatedRecordsContainment, 2, 2)
+								BTbl.PerViewListColumn(dsMB.LabelKeyBuilder.K("Relationship"), relationshipColumnId),
+								BTbl.SetTreeStructure(dsMB.Path.T.ContactRelatedRecords.F.ParentID, 2, 2, dsMB.Schema.T.ContactRelatedRecordsContainment)
+							)
 						},
 						null,
 						// The BAsRelatedToA relationship role. Note that these records will always be secondary because this tbl is always ContactID-filtered (but BrowseLogic doesn't realize it)

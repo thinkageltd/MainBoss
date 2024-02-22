@@ -42,7 +42,7 @@ namespace Thinkage.MainBoss.Application {
 
 		#region IApplicationDataImportExport Members
 		private System.Text.StringBuilder validationErrors;
-		public void Import(UIFactory uiFactory, XAFClient DB, Tuple<string, DelayedCreateTbl> info) {
+		public void Import(UIFactory uiFactory, DBClient DB, Tuple<string, DelayedCreateTbl> info) {
 			UIFileSelectorPattern[] importFilter = new UIFileSelectorPattern[] {
 				new UIFileSelectorPattern(KB.K("Import files (*.xml)"), KB.I("*.xml")),
 				new UIFileSelectorPattern(KB.K("All files (*.*)"), KB.I("*.*")) };
@@ -95,7 +95,7 @@ namespace Thinkage.MainBoss.Application {
 			validationErrors.AppendLine(Strings.Format(KB.K("Line {0}, Position {1}:{2}"), e.Exception.LineNumber, e.Exception.LinePosition, e.Message));
 		}
 
-		public void Export(UIFactory uiFactory, XAFClient DB, Tuple<string, DelayedCreateTbl> info) {
+		public void Export(UIFactory uiFactory, DBClient DB, Tuple<string, DelayedCreateTbl> info) {
 			UIFileSelectorPattern[] exportFilter = new UIFileSelectorPattern[] {
 				new UIFileSelectorPattern(KB.K("Export for Excel (includes schema in other file)  (*.xml)"), KB.I("*.xml")),
 				new UIFileSelectorPattern(KB.K("Export with embedded schema  (*.xml)"), KB.I("*.xml")),
@@ -294,7 +294,7 @@ namespace Thinkage.MainBoss.Application {
 		private Source pSettingsName;
 		public override Stream GetSettings(object id, out Version version, out bool isGlobal) {
 			// Load the Settings record with the given Id, and get its Value field. If no record use new Byte[0].
-			XAFClient db = GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
+			DBClient db = GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
 			var row = (dsMB.SettingsRow)db.ViewAdditionalRow(DS, dsMB.Schema.T.Settings, new SqlExpression(dsMB.Path.T.Settings.F.Id).Eq(SqlExpression.Constant(id)));
 			if (row == null)
 				throw new GeneralException(KB.K("Requested Settings could not be found"));
@@ -307,7 +307,7 @@ namespace Thinkage.MainBoss.Application {
 			// Map from the settingsName to an Id (creating a SettingsName record if required).
 			if (!isGlobal && !SupportsPersonalSettings)
 				throw new GeneralException(KB.K("This application does not support personal Settings"));
-			XAFClient db = GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
+			DBClient db = GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
 
 			try {
 				var nameRrow = (dsMB.SettingsNameRow)db.ViewAdditionalRow(DS, dsMB.Schema.T.SettingsName, new SqlExpression(dsMB.Path.T.SettingsName.F.Code).Eq(SqlExpression.Constant(settingsName)));
@@ -348,7 +348,7 @@ namespace Thinkage.MainBoss.Application {
 		public override void SaveDefault(object id) {
 			// Find the DefaultSettings record for the user id and SettingsNameID of the Settings record with the given id. If none, create one, otherwise update the existing one.
 			// This call is not allowed for anonymous logins
-			XAFClient db = GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
+			DBClient db = GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
 			object userId = TblDrivenMainBossApplication.Instance.AppConnectionMixIn.UserRecordID;
 			try {
 				object settingsNameId = db.Session.ExecuteCommandReturningScalar(dsMB.Schema.T.DefaultSettings.F.SettingsNameID.EffectiveType,
@@ -374,7 +374,7 @@ namespace Thinkage.MainBoss.Application {
 		}
 		public override void ClearDefault(string settingsName) {
 			// Delete any DefaultSettings record for the given SettingsName id and user id.
-			XAFClient db = GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
+			DBClient db = GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
 			object userId = TblDrivenMainBossApplication.Instance.AppConnectionMixIn.UserRecordID;
 			try {
 				var defaultSettingsRow = (dsMB.DefaultSettingsRow)db.ViewAdditionalRow(DS, dsMB.Schema.T.DefaultSettings,
@@ -390,11 +390,11 @@ namespace Thinkage.MainBoss.Application {
 			}
 		}
 		public override void DeleteSettings(object id) {
-			XAFClient db = GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
+			DBClient db = GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
 			try {
 				// Delete any DefaultSettings records that refer to this Settings. For a personal Settings there should be only one but for global Settings there could be up to one per user.
 				db.Edit(DS, dsMB.Schema.T.DefaultSettings, new SqlExpression(dsMB.Path.T.DefaultSettings.F.SettingsID).Eq(SqlExpression.Constant(id)));
-				foreach (dsMB.DefaultSettingsRow defaultSettingsRow in DS.T.DefaultSettings.Rows)
+				foreach (dsMB.DefaultSettingsRow defaultSettingsRow in DS.T.DefaultSettings)
 					defaultSettingsRow.Delete();
 				// delete the Settings record for the given Id.
 				var settingsRow = (dsMB.SettingsRow)db.EditSingleRow(DS, dsMB.Schema.T.Settings, new SqlExpression(dsMB.Path.T.Settings.F.Id).Eq(SqlExpression.Constant(id)));
@@ -423,34 +423,38 @@ namespace Thinkage.MainBoss.Application {
 																														  // extended properties of the schema and will thus automatically be there.
 			Thinkage.MainBoss.Database.MBRestrictions.DefineRestrictions();
 
-			FormsPresentationMixIn = new FormsPresentationApplication(this, !o.MBConnectionParameters.CompactBrowsers,
-				// This UIHandler adds a recursive containment filter to all Link(Location) type values. It uses the PermanentLocationPickerTblCreator, which is correct for most cases,
-				// but for Sublocation it contains values (Units and Storerooms) that cannot possibly contain a Sublocation. I don't have a good way of avoiding this because we don't
-				// know what types of Locations the search value allows in the first place. Even looking at the field underlying the search value is insufficient, because it might be
-				// RelativeLocation.ContainingLocationID which has exactly the ambiguity described above.
-				// Note that LocationContainment.ContainedLocationID is not nullable, but sv.TypeInfo might be so we have to remove nullability from the latter before testing the type.
-				new SearchExpressionControl.UIHandler(
-					(sv => sv.TypeInfo.IntersectCompatible(ObjectTypeInfo.NonNullUniverse).TypeEquals(dsMB.Schema.T.LocationContainment.F.ContainedLocationID.EffectiveType)),
-					KB.K("Is contained in one of"), KB.K("is contained in one of {0}"),
-					null,
-					// We can't code this as an EXISTS(SELECT * FROM LocationContainment WHERE ContainedLocationID = (Source Placeholder) AND ...
-					// because we would have to increment the scope level of any Path expr node in the Source value.
-					SearchExpressionControl.UIHandler.SourcePlaceholder.In(
-						new SelectSpecification(dsMB.Schema.T.LocationContainment, new[] { new SqlExpression(dsMB.Path.T.LocationContainment.F.ContainedLocationID) },
-												new SqlExpression(dsMB.Path.T.LocationContainment.F.ContainingLocationID).In(SearchExpressionControl.UIHandler.ValuePlaceholders[0]), null)),
-					SearchExpressionControl.Context.Server,
-					new SearchExpressionControl.UIHandler.ParameterInfoNode(
-						(searchValue) => new SetTypeInfo(false, dsMB.Schema.T.LocationContainment.F.ContainingLocationID.EffectiveType, 1),
-						(searchValue) => new Fmt(Fmt.SetPickFrom(TILocations.PermanentLocationPickerTblCreator)),
-						null, null, null, null)
-				)
-			);
+			var extraHandlers = new List<SearchExpressionControl.UIHandler>();
+			foreach (DBI_PathToRow pathToValue in new[] {
+					(DBI_PathToRow)dsMB.Path.T.Location,
+					(DBI_PathToRow)dsMB.Path.T.Location.F.RelativeLocationID.F.UnitID.PathToReferencedRow,
+					(DBI_PathToRow)dsMB.Path.T.Location.F.RelativeLocationID.F.PermanentStorageID.PathToReferencedRow
+				})
+				extraHandlers.Add(
+					// This UIHandler adds a recursive containment filter to all Link(Locationderivation) type values. It uses the PermanentLocationPickerTblCreator, which is correct for most cases,
+					// but for Sublocation it contains values (Units and Storerooms) that cannot possibly contain a Sublocation. I don't have a good way of avoiding this because we don't
+					// know what types of Locations the search value allows in the first place. Even looking at the field underlying the search value is insufficient, because it might be
+					// RelativeLocation.ContainingLocationID which has exactly the ambiguity described above.
+					new SearchExpressionControl.UIHandler(
+						(sv => sv.TypeInfo.IntersectCompatible(ObjectTypeInfo.NonNullUniverse).TypeEquals(new LinkedTypeInfo(false, pathToValue.ReferencedTable.InternalIdColumn))),
+						KB.K("Is contained in one of"), KB.K("is contained in one of {0}"),
+						null,
+						// We can't code this as an EXISTS(SELECT * FROM LocationContainment WHERE ContainedLocationID = (Source Placeholder) AND ...
+						// because we would have to increment the scope level of any Path expr node in the Source value.
+						SearchExpressionControl.UIHandler.SourcePlaceholder.In(
+							new SelectSpecification(dsMB.Schema.T.LocationContainment, new[] { new SqlExpression(new DBI_PathToRow(dsMB.Path.T.LocationContainment.F.ContainedLocationID.PathToReferencedRow, pathToValue).PathToReferencedRowId) },
+													new SqlExpression(dsMB.Path.T.LocationContainment.F.ContainingLocationID).In(SearchExpressionControl.UIHandler.ValuePlaceholders[0]), null)),
+						SearchExpressionControl.Context.Server,
+						new SearchExpressionControl.UIHandler.ParameterInfoNode(
+							(searchValue) => new SetTypeInfo(false, dsMB.Schema.T.LocationContainment.F.ContainingLocationID.EffectiveType, 1),
+							(searchValue) => new Fmt(Fmt.SetPickFrom(TILocations.PermanentLocationPickerTblCreator)),
+							null, null, null, null)
+					)
+				);
+			FormsPresentationMixIn = new FormsPresentationApplication(this, !o.MBConnectionParameters.CompactBrowsers, extraHandlers.ToArray());
 			new Thinkage.MainBoss.Database.RaiseErrorTranslationKeyBuilder(this);
 			var permManager = new MainBossPermissionsManager(Root.Rights);
 			new ApplicationTblDefaultsUsingWindows(this, new ETbl(), permManager, Root.Rights.Table, Root.RightsSchema, Root.Rights.Action.Customize);
-			Thinkage.Libraries.XAF.UI.UIFactory uiFactory = GetInterface<UIFactory>();
-			uiFactory.FixedPitchControlFontFamily = Configuration.MonospaceFontFamilyForDisplay;
-			uiFactory.ProportionalControlFontFamily = Configuration.RegularFontFamilyForDisplay;
+			var uiFactory = GetInterface<UIFactory>();
 
 			// Copy the help parameters from the app that is creating us.
 			HelpUsingFolderOfHtml.CopyFromOtherApplication(this, Thinkage.Libraries.Application.Instance);
@@ -475,14 +479,7 @@ namespace Thinkage.MainBoss.Application {
 					permManager.InitializeRolesGrantingPermission(session);
 					using (dsMB ds = new dsMB(session)) {
 						session.ViewAdditionalVariables(ds, dsMB.Schema.V.ActiveFilterInterval, dsMB.Schema.V.ActiveFilterSinceDate);
-						DateTime? sinceDate = null;
-						TimeSpan? interval = null;
-						if (!ds.V.ActiveFilterSinceDate.IsNull)
-							sinceDate = ds.V.ActiveFilterSinceDate.Value;
-						if (!ds.V.ActiveFilterInterval.IsNull)
-							interval = ds.V.ActiveFilterInterval.Value;
-
-						new MainBossActiveFilter(this, sinceDate, interval);
+						new MainBossActiveFilter(this, (DateTime?)ds.V.ActiveFilterSinceDate.Value, (TimeSpan?)ds.V.ActiveFilterInterval.Value);
 					}
 					new ApplicationImportExport(this);
 					// Daisy-chain our UserMessageTranslator in front of the existing one thus giving UserMessageTranslations precedence.

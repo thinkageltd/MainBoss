@@ -138,8 +138,9 @@ namespace Thinkage.MainBoss.WebApi.Models
 			public ModelMember(DBI_Table t)
 				: this(t.Name, null, t.Doc, false)
 			{
-				RecordSetDictionary = new Dictionary<int, ModelMember>();
-				RecordSetDictionary.Add(0, this);
+				RecordSetDictionary = new Dictionary<int, ModelMember> {
+					{ 0, this }
+				};
 				Add(new ModelMember(t.InternalId.ReferencedColumn, this));
 			}
 
@@ -180,15 +181,13 @@ namespace Thinkage.MainBoss.WebApi.Models
 				StringBuilder comment = new StringBuilder();
 				int recordSet = 0;
 				DBI_Value v = n.ReferencedValue;
-				TblColumnNode cn = n as TblColumnNode;
 				if (v.Doc != null)
 					comment.AppendLine(v.Doc);
-				if( cn != null ) {
+				if (n is TblColumnNode cn) {
 					comment.AppendLine(cn.Path.ToString());
 					recordSet = cn.RecordSet;
 				}
-				ModelMember container;
-				if (!RecordSetDictionary.TryGetValue(recordSet, out container)) {
+				if (!RecordSetDictionary.TryGetValue(recordSet, out ModelMember container)) {
 					container = new ModelMember(Strings.IFormat("RecordSet{0}", recordSet), null, null, false);
 					RecordSetDictionary.Add(recordSet, container);
 					RecordSetDictionary[0].Add(container);
@@ -228,8 +227,7 @@ namespace Thinkage.MainBoss.WebApi.Models
 					continue;
 				ECol ecol = TblLayoutNode.GetECol(c);
 				if (ecol != null) {
-					TblValueNode vn = c as TblValueNode;
-					if (vn != null) {
+					if (c is TblValueNode vn) {
 						Fmt fmt = new Fmt(vn.ReferencedType, vn.ReferencedValue, ecol, c);
 						if (Fmt.GetShowReferences(fmt) == null) // is it a browsette reference ?
 							ModelMemberCollection.New(vn);
@@ -425,7 +423,7 @@ namespace Thinkage.MainBoss.WebApi.Models
 			// TODO: For layout nodes not assigned to a Tbl (e.g. unbound parameter controls in a browser) there is no container, and IndexInParent is zero in the node and any children
 			// TODO: For the case of unbound parameter controls in a browser, call AssignToTbl(null) ???? so the IndexInParent gets set on all children. Technically the "container" should be all the controls
 			// created for a particular command, and the name of the container should be the hierarchy of command node names to get to that command. Perhaps this could be done by creating group layout nodes appropriately named...
-			TblLayoutNodeArray container = n.Parent != null ? n.Parent.Columns : n.OwnerTbl != null ? n.OwnerTbl.Columns : null;
+			TblLayoutNodeArray container = n.Parent != null ? n.Parent.Columns : n.OwnerTbl?.Columns;
 			if (n.Label != null) {
 				// Use the /name syntax, or if we are not the first with that name use /[n]name
 				string name = n.Label.IdentifyingName;

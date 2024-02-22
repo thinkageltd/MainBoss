@@ -148,9 +148,8 @@ namespace Thinkage.MainBoss.Database {
 		/// <param name="permissionName"></param>
 		/// <returns></returns>
 		public List<string> MapPermissionToRoles([Thinkage.Libraries.Translation.Invariant] string permissionName) {
-			List<string> result;
 			if (RolesGrantingPermission != null) { // Will be empty if no one has called InitializeRolesGrantingPermission (or incorrect if they switched sessions underneath us)
-				if (RolesGrantingPermission.TryGetValue(permissionName, out result))
+				if (RolesGrantingPermission.TryGetValue(permissionName, out List<string> result))
 					return result;
 				// Try applying a '*' pattern for Tables to find permissions applied to all operations on a particular table.
 				if (RolesGrantingPermission.TryGetValue(TablePermissionPattern.Replace(permissionName, KB.I("$1*")), out result))
@@ -184,7 +183,7 @@ namespace Thinkage.MainBoss.Database {
 		/// This sets the RolesGrantingPermission dictionary so permission disabler tips can identify which roles are required for a particular permission.
 		/// </summary>
 		/// <param name="db"></param>
-		public void InitializeRolesGrantingPermission(XAFClient session) {
+		public void InitializeRolesGrantingPermission(DBClient session) {
 			var x = Thinkage.MainBoss.Database.Licensing.AllMainbossLicenses; // access a static to force translations into memory before we use them below.
 			RolesGrantingPermission = new Dictionary<string, List<string>>();
 			Libraries.DBAccess.DBVersionHandler vh = MBUpgrader.UpgradeInformation.CreateCurrentVersionHandler(session);
@@ -198,9 +197,8 @@ namespace Thinkage.MainBoss.Database {
 							dsMB.Path.T.Permission.F.PrincipalID.F.RoleID.PathToReferencedRow,
 							dsMB.Path.T.Permission.F.PrincipalID.F.CustomRoleID.PathToReferencedRow
 						});
-					foreach (dsMB.PermissionRow pr in ds.T.Permission.Rows) {
-						List<string> roles;
-						if (!RolesGrantingPermission.TryGetValue(pr.F.PermissionPathPattern, out roles))
+					foreach (dsMB.PermissionRow pr in ds.T.Permission) {
+						if (!RolesGrantingPermission.TryGetValue(pr.F.PermissionPathPattern, out List<string> roles))
 							RolesGrantingPermission.Add(pr.F.PermissionPathPattern, roles = new List<string>());
 						roles.Add(pr.PrincipalIDParentRow.F.RoleID.HasValue ? pr.PrincipalIDParentRow.RoleIDParentRow.F.RoleName.Translate() : pr.PrincipalIDParentRow.CustomRoleIDParentRow.F.Code);
 					}

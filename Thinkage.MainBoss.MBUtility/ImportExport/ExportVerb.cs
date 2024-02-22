@@ -44,10 +44,9 @@ namespace Thinkage.MainBoss.MBUtility
 			DataImportExportHelper.Setup();
 			DataImportExport id = new DataImportExport(DataImportExportHelper.ValidateSchemaIdentification(Options.SchemaIdentification.Value));
 			// Get a connection to the database that we are exporting from
-			string oName;
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out string oName);
 			DataImportExportHelper.SetupDatabaseAccess(oName, connect);
-			Thinkage.Libraries.DBAccess.XAFClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
+			Thinkage.Libraries.DBAccess.DBClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
 			DataSet exportDataSet = id.LoadDataSetFromDatabase(db, dsMB.Schema);
 			if( Options.EmbedSchema.Value && Options.ExcelOption.Value)
 				throw new Thinkage.Libraries.GeneralException(KB.K("You cannot use EmbeddedSchema together with EXCEL"));

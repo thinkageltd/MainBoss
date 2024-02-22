@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
+using Thinkage.Libraries;
 using Thinkage.MainBoss.WebAccess.Models;
 
 namespace Thinkage.MainBoss.WebAccess.Controllers {
@@ -16,13 +17,13 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		protected ActionResult RedirectBack(Guid parentID, Guid stateHistoryID) {
 			var redirectController = ControllerContext.RouteData.GetRequiredString("controller");
 			var redirectTarget = ControllerContext.RouteData.GetRequiredString("action");
-			ModelState.SetModelValue("CurrentStateHistoryID", new ValueProviderResult(stateHistoryID, stateHistoryID.ToString(), System.Globalization.CultureInfo.CurrentCulture));
+			ModelState.SetModelValue("CurrentStateHistoryID", new ValueProviderResult(stateHistoryID, stateHistoryID.ToString(), Application.InstanceFormatCultureInfo));
 			DateTime resetEffectiveDate = DateTime.Now;
-			ModelState.SetModelValue("EffectiveDate", new ValueProviderResult(resetEffectiveDate, null, System.Globalization.CultureInfo.CurrentCulture));
+			ModelState.SetModelValue("EffectiveDate", new ValueProviderResult(resetEffectiveDate, null, Application.InstanceFormatCultureInfo));
 			return RedirectToAction(Thinkage.Libraries.Strings.IFormat("../{0}/{1}", redirectController, redirectTarget), new {
 				@ParentID = parentID,
 				@CurrentStateHistoryID = stateHistoryID,
-				@ResultMessage = ResultMessage
+				 ResultMessage
 			});
 		}
 		protected ActionResult DefaultStateHistoryChangedException(Guid parentID, Guid id) {

@@ -17,7 +17,7 @@ namespace Thinkage.MainBoss.Controls
 	public abstract class ForecastReportViewerControl : ReportViewerControl
 	{
 		private IInputControl fromDateControl, toDateControl;
-		public ForecastReportViewerControl(UIFactory uiFactory, XAFClient db, Tbl tbl, Settings.Container settingsContainer, SqlExpression filterExpression)
+		public ForecastReportViewerControl(UIFactory uiFactory, DBClient db, Tbl tbl, Settings.Container settingsContainer, SqlExpression filterExpression)
 			: base(uiFactory, db, tbl, settingsContainer, filterExpression)
 		{
 		}
@@ -30,7 +30,7 @@ namespace Thinkage.MainBoss.Controls
 			// From date
 			Key fromLabel = KB.K("The first day of work");
 			// our dateControl values will be used in a SqlExpression so make sure we only provide values acceptable to Sql
-			DateTimeTypeInfo limitDateTypeInfo = (DateTimeTypeInfo)Thinkage.Libraries.XAF.Database.Service.MSSql.MSSqlServer.SqlDateTimeTypeInfo.IntersectCompatible(ObjectTypeInfo.NonNullUniverse);
+			DateTimeTypeInfo limitDateTypeInfo = (DateTimeTypeInfo)Thinkage.Libraries.XAF.Database.Service.MSSql.Server.SqlDateTimeTypeInfo.IntersectCompatible(ObjectTypeInfo.NonNullUniverse);
 			fromDateControl = UIFactory.CreateDateTimePicker(limitDateTypeInfo, null, null);
 			var wrappedFromDateControl = UIFactory.WrapFeedbackProvider(fromDateControl, fromDateControl);
 			fromDateControl.Value = DateTime.Today;
@@ -41,7 +41,7 @@ namespace Thinkage.MainBoss.Controls
 			using (dsMB tempds = new dsMB(DB))
 			{
 				DB.ViewAdditionalVariables(tempds, dsMB.Schema.V.PmGenerateInterval);
-				toDateControl.Value = DateTime.Today.AddDays(tempds.V.PmGenerateInterval.Value.Days);
+				toDateControl.Value = DateTime.Today.AddDays(((TimeSpan)tempds.V.PmGenerateInterval.Value).Days);
 			}
 			// The panel to contain the controls.
 			lcp.AddControl(KB.K("From Date"), wrappedFromDateControl);
@@ -122,7 +122,7 @@ namespace Thinkage.MainBoss.Controls
 	}
 
 	public class ResourceForecastReportViewerControl : ForecastReportViewerControl {
-		public ResourceForecastReportViewerControl(UIFactory uiFactory, XAFClient db, Tbl tbl, Settings.Container settingsContainer, SqlExpression filterExpression)
+		public ResourceForecastReportViewerControl(UIFactory uiFactory, DBClient db, Tbl tbl, Settings.Container settingsContainer, SqlExpression filterExpression)
 			: base(uiFactory, db, tbl, settingsContainer, filterExpression) {
 		}
 		protected override SqlExpression composeStaticFilter(Guid batchId, DateTime fromDate, DateTime toDate) {
@@ -136,7 +136,7 @@ namespace Thinkage.MainBoss.Controls
 
 	public class MaintenanceForecastReportViewerControl : ForecastReportViewerControl
 	{
-		public MaintenanceForecastReportViewerControl(UIFactory uiFactory, XAFClient db, Tbl tbl, Settings.Container settingsContainer, SqlExpression filterExpression)
+		public MaintenanceForecastReportViewerControl(UIFactory uiFactory, DBClient db, Tbl tbl, Settings.Container settingsContainer, SqlExpression filterExpression)
 			: base(uiFactory, db, tbl, settingsContainer, filterExpression)
 		{
 		}

@@ -14,15 +14,6 @@ namespace Thinkage.MainBoss.MBUtility.ImportExport {
 			: base(attachTo) {
 			RegisterService<IApplicationDataImportExport>(this);
 			RegisterService<IDataImportExport>(this);
-#if TESTINGOTHERLANGUAGEIMPORT
-			try {
-				System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("es", false);
-				System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("es", false);
-			}
-			catch (System.Exception e) {
-				throw new GeneralException(e, KB.K("Invalid CultureInfo '{0}'"), "es");
-			}
-#endif
 		}
 
 		#region IDataImportExport Members
@@ -40,10 +31,10 @@ namespace Thinkage.MainBoss.MBUtility.ImportExport {
 		}
 		#endregion
 		#region IApplicationDataImportExport Members
-		public void Import(UIFactory uiFactory, XAFClient DB, Tuple<string, DelayedCreateTbl> info) {
+		public void Import(UIFactory uiFactory, DBClient DB, Tuple<string, DelayedCreateTbl> info) {
 		}
 
-		public void Export(UIFactory uiFactory, XAFClient DB, Tuple<string, DelayedCreateTbl> info) {
+		public void Export(UIFactory uiFactory, DBClient DB, Tuple<string, DelayedCreateTbl> info) {
 		}
 
 		public void GenerateXmlSchema(UIFactory uiFactory, Tuple<string, DelayedCreateTbl> info) {

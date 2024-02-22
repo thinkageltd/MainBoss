@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
   <types uri="..\Types.xafdb"/>
+  <!--TODO: Delete this-->
   <table name="WorkOrderTemplateWithContainers" defaults="false" log="false" id="Id"  labelkey="Task">
 	<field name="Id" read="RequiredGUID"/>
 	<field name="IsPrimary" type="RequiredBool">

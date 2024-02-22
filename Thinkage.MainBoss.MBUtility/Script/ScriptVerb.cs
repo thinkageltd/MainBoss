@@ -53,12 +53,14 @@ namespace Thinkage.MainBoss.MBUtility {
 #if SIGNATURE_PASSES_SCHEMA_VALIDATION
 			settings = GetSchemaValidatingXmlReaderSettings();
 #else
-			settings = new XmlReaderSettings();
-			settings.ValidationType = ValidationType.None;
+			settings = new XmlReaderSettings {
+				ValidationType = ValidationType.None
+			};
 #endif
 
-			TXmlDocument doc = new TXmlDocument();
-			doc.PreserveWhitespace = true;	// This setting must match from when the file was signed.
+			TXmlDocument doc = new TXmlDocument {
+				PreserveWhitespace = true   // This setting must match from when the file was signed.
+			};
 			Stream scriptStream = new FileStream(Options.ScriptName.Value, FileMode.Open, FileAccess.Read);
 			using (XmlReader reader = XmlReader.Create(scriptStream, settings))
 				doc.Load(reader);
@@ -76,8 +78,9 @@ namespace Thinkage.MainBoss.MBUtility {
 				// Create a new SignedXml object and pass it the XML document instance.
 				SignedXml signedXml = new SignedXml(doc);
 				// Create a reference describing the virtual document to be verified against the signature
-				Reference reference = new Reference();
-				reference.Uri = "";
+				Reference reference = new Reference {
+					Uri = ""
+				};
 				// Add an enveloped transformation to the reference. This transformation locates the appropriate section of the document to be signed.
 				XmlDsigEnvelopedSignatureTransform env = new XmlDsigEnvelopedSignatureTransform();
 				reference.AddTransform(env);
@@ -97,10 +100,8 @@ namespace Thinkage.MainBoss.MBUtility {
 					if (kic509 == null)
 						continue;
 					for (int i = kic509.Certificates.Count; --i >= 0; ) {
-						X509Certificate2 cert = kic509.Certificates[i] as X509Certificate2;
 						// TODO: Perhaps there is some other field we should check since we may get different serial numbers for renewal certificates.
-						if (cert != null
-							&& cert.Issuer == Thinkage.Libraries.Security.ThinkageCertificateIssuer
+						if (kic509.Certificates[i] is X509Certificate2 cert && cert.Issuer == Thinkage.Libraries.Security.ThinkageCertificateIssuer
 							&& string.Compare(cert.GetSerialNumberString(), Thinkage.Libraries.Security.ThinkageCertificateSerialNumber, true) == 0)
 							thinkageCertificate = cert;
 					}
@@ -137,18 +138,19 @@ namespace Thinkage.MainBoss.MBUtility {
 				doc = new TXmlDocument();
 				doc.Load(reader);
 			}
+
 #endif
 
 			// Handle LicenseKey options from the command line based on what the script says.
-			string oName;
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out string oName);
 		}
 		private XmlReaderSettings GetSchemaValidatingXmlReaderSettings() {
 			XmlSchemaSet schemaCollection = new XmlSchemaSet();
 			XmlResolver schemaResolver = new ManifestXmlResolver(Assembly.GetExecutingAssembly());
 
-			XmlReaderSettings schemaReaderSettings = new XmlReaderSettings();
-			schemaReaderSettings.XmlResolver = schemaResolver;
+			XmlReaderSettings schemaReaderSettings = new XmlReaderSettings {
+				XmlResolver = schemaResolver
+			};
 			XmlReader schemaReader = XmlReader.Create("manifest://localhost/Thinkage/MainBoss/MBUtility/Script/ScriptSchema.xsd", schemaReaderSettings);
 			schemaCollection.XmlResolver = schemaResolver;
 			schemaCollection.ValidationEventHandler += delegate(object sender, ValidationEventArgs e) {

@@ -43,11 +43,10 @@ namespace Thinkage.MainBoss.MBUtility
 			DataImportExportHelper.Setup();
 			Thinkage.MainBoss.Controls.DataImportExportPackage p = new Thinkage.MainBoss.Controls.DataImportExportPackage();
 			p.AddAllExports();
-			string oName;
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out string oName);
 			DataImportExportHelper.SetupDatabaseAccess(oName, connect);
 			// Get a connection to the database that we are exporting from
-			Thinkage.Libraries.DBAccess.XAFClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
+			Thinkage.Libraries.DBAccess.DBClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
 			p.ExportXml(Options.OutputPackageFilename.Value, db, dsMB.Schema, Options.ExcludeDeleted.HasValue ? Options.ExcludeDeleted.Value : false, schemaIdentification => new DataImportExport(schemaIdentification));
 		}
 	}

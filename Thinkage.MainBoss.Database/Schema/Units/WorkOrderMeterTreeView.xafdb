@@ -60,6 +60,7 @@
 	<field name="FilterID" type="GUIDREF" link="MeterAndReadingVariants">
 	  <doc>The ID of the filter record for the tree structure</doc>
 	</field>
+	<!--TODO: Delete this-->
 	<field name="IsPrimary" type="RequiredBool">
 	  <doc>Flag indicating the two ID's are the same.</doc>
 	</field>

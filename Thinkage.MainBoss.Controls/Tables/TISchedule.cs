@@ -80,7 +80,6 @@ namespace Thinkage.MainBoss.Controls {
 		#endregion
 
 		public static DelayedCreateTbl ScheduledWorkOrderBrowserTbl;
-		private static DelayedCreateTbl ScheduledWorkOrderCompositeViewTbl;
 		private static DelayedCreateTbl CreateUnscheduledWorkOrderTbl;
 		private static DelayedCreateTbl PMGenerationDetailSchedulingTerminatedPanelTbl;
 		private static DelayedCreateTbl PMGenerationDetailDeferredPanelTbl;
@@ -167,24 +166,23 @@ namespace Thinkage.MainBoss.Controls {
 		#region Tbl Creation for PMGenerationBatch records
 		private static SqlExpression AllNonHiddenScheduledWorkOrders = new SqlExpression(dsMB.Path.T.ScheduledWorkOrder.F.Hidden).IsNull();
 		private static TblUnboundControlNode MultiplePlanPickerControl(SqlExpression filter = null) {
-			var ecolArgs = new List<ECol.ICtorArg>();
-			ecolArgs.Add(ECol.OmitInUpdateAccess);
-			ecolArgs.Add(Fmt.SetUseChecks(true));
-			ecolArgs.Add(ECol.SetUserChangeNotify());
-			ecolArgs.Add(Fmt.SetId(MaintenancePlansId));
-			ecolArgs.Add(Fmt.SetCreatedT<SchedulingBaseEditLogic>(
+			var ecolArgs = new List<ECol.ICtorArg> {
+				ECol.OmitInUpdateAccess,
+				Fmt.SetUseChecks(true),
+				ECol.SetUserChangeNotify(),
+				Fmt.SetId(MaintenancePlansId),
+				Fmt.SetCreatedT<SchedulingBaseEditLogic>(
 				delegate (SchedulingBaseEditLogic editor, IBasicDataControl valueCtrl) {
 					editor.ScheduledWorkOrderSelectionControl = valueCtrl;
 				}
-			));
+			)
+			};
 			if (filter != null)
 				ecolArgs.Add(
 					Fmt.SetInitialValue(
 						delegate (CommonLogic editor) {
 							var initialValue = new Set<object>(dsMB.Schema.T.ScheduledWorkOrder.F.Id.EffectiveType);
-							FromDSType fromDSType;
-							ToDSType toDSType;
-							editor.DB.Session.Server.DataColumnConverters(dsMB.Schema.T.ScheduledWorkOrder.F.Id.EffectiveType, out fromDSType, out toDSType);
+							editor.DB.Session.Server.DataColumnConverters(dsMB.Schema.T.ScheduledWorkOrder.F.Id.EffectiveType, out FromDSType fromDSType, out ToDSType toDSType);
 							using (System.Data.DataSet ds = editor.DB.Session.ExecuteCommandReturningTable(
 									new SelectSpecification(dsMB.Schema.T.ScheduledWorkOrder,
 										new SqlExpression[] { new SqlExpression(dsMB.Path.T.ScheduledWorkOrder.F.Id) },
@@ -203,9 +201,10 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		static void CallChangeScheduleBasisForm(CommonLogic logic, Set<object> planSelection) {
 			ITblDrivenApplication appInstance = Libraries.Application.Instance.GetInterface<ITblDrivenApplication>();
-			var initList = new List<TblActionNode>();
-			// TODO: If caller is editing a Deleted record (mode is ViewDeleted or EditDeleted..., called picker should be in ALL mode. This is a general problem, see W20140007
-			initList.Add(Init.OnLoadNew(new ControlTarget(MaintenancePlansId), new ConstantValue(planSelection)));
+			var initList = new List<TblActionNode> {
+				// TODO: If caller is editing a Deleted record (mode is ViewDeleted or EditDeleted..., called picker should be in ALL mode. This is a general problem, see W20140007
+				Init.OnLoadNew(new ControlTarget(MaintenancePlansId), new ConstantValue(planSelection))
+			};
 			appInstance.GetInterface<ITblDrivenApplication>().PerformMultiEdit(logic.CommonUI.UIFactory, logic.DB, PMGenerationBatchChangeMultipleSchedulingBasisEditTbl,
 				EdtMode.New,
 				new[] { new object[] { } },
@@ -273,8 +272,11 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.Schedule, TId.MaintenanceTiming,
 							new Tbl.IAttr[] {
 								SchedulingGroup,
-								new BTbl(BTbl.ListColumn(dsMB.Path.T.Schedule.F.Code), BTbl.ListColumn(dsMB.Path.T.Schedule.F.Desc)),
-								TIReports.NewRemotePTbl(new DelayedCreateTbl(delegate(){ return TIReports.MaintenanceTimings; })),
+								new BTbl(
+									BTbl.ListColumn(dsMB.Path.T.Schedule.F.Code),
+									BTbl.ListColumn(dsMB.Path.T.Schedule.F.Desc),
+									BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.MaintenanceTimings))
+								),
 								new ETbl()
 						},
 							new TblLayoutNodeArray(
@@ -302,29 +304,29 @@ namespace Thinkage.MainBoss.Controls {
 												TblColumnNode.New(dsMB.Path.T.Schedule.F.SeasonStart,
 													new ECol(
 														Fmt.SetId(SeasonStartId),
-														Fmt.SetEditTextHandler((type) => new DateInYearFormatter((IntervalTypeInfo)type, Thinkage.Libraries.Application.InstanceCultureInfo))
+														Fmt.SetEditTextHandler((type) => new DateInYearFormatter((IntervalTypeInfo)type, Thinkage.Libraries.Application.InstanceFormatCultureInfo))
 													)
 												),
 												TblColumnNode.New(dsMB.Path.T.Schedule.F.SeasonEnd,
 													new ECol(
 														Fmt.SetId(SeasonEndId),
-														Fmt.SetEditTextHandler((type) => new DateInYearFormatter((IntervalTypeInfo)type, Thinkage.Libraries.Application.InstanceCultureInfo))
+														Fmt.SetEditTextHandler((type) => new DateInYearFormatter((IntervalTypeInfo)type, Thinkage.Libraries.Application.InstanceFormatCultureInfo))
 													)
 												),
 												TblUnboundControlNode.New(dsMB.Path.T.Schedule.F.SeasonStart.ReferencedColumn.EffectiveType,
 													new ECol(
 														ECol.AllReadonlyAccess,
-														Fmt.SetEditTextHandler((type) => new DateInYearFormatter((IntervalTypeInfo)type, Thinkage.Libraries.Application.InstanceCultureInfo)),
+														Fmt.SetEditTextHandler((type) => new DateInYearFormatter((IntervalTypeInfo)type, Thinkage.Libraries.Application.InstanceFormatCultureInfo)),
 														Fmt.SetInitialValue(new TimeSpan(31 + 29 + 31 + 30 + 4 - 1, 0, 0, 0))   // Jan+feb(leap)+mar+april+4th-offset
 													)
 												)
 											)
 										),
 										TblColumnNode.New(dsMB.Path.T.Schedule.F.SeasonStart,
-											new DCol(Fmt.SetEditTextHandler((type) => new DateInYearFormatter((IntervalTypeInfo)type, Thinkage.Libraries.Application.InstanceCultureInfo)))
+											new DCol(Fmt.SetEditTextHandler((type) => new DateInYearFormatter((IntervalTypeInfo)type, Thinkage.Libraries.Application.InstanceFormatCultureInfo)))
 										),
 										TblColumnNode.New(dsMB.Path.T.Schedule.F.SeasonEnd,
-											new DCol(Fmt.SetEditTextHandler((type) => new DateInYearFormatter((IntervalTypeInfo)type, Thinkage.Libraries.Application.InstanceCultureInfo)))
+											new DCol(Fmt.SetEditTextHandler((type) => new DateInYearFormatter((IntervalTypeInfo)type, Thinkage.Libraries.Application.InstanceFormatCultureInfo)))
 										),
 										TblColumnNode.New(dsMB.Path.T.Schedule.F.InhibitSeason,
 											Fmt.SetLabelPositioning(Fmt.LabelPositioning.BlankOnSide),
@@ -496,17 +498,19 @@ namespace Thinkage.MainBoss.Controls {
 					new ETbl(
 						ETbl.CustomCommand(
 							delegate(EditLogic el) {
-								var group = new EditLogic.MutuallyExclusiveCommandSetDeclaration();
-								group.Add(new EditLogic.CommandDeclaration(
+								var group = new EditLogic.MutuallyExclusiveCommandSetDeclaration{
+								new EditLogic.CommandDeclaration(
 									SetScheduleBasisCommandText,
 									EditLogic.StateTransitionCommand.NewSameTargetState(el,
 										null,	// TODO: Put a tip here ?? What about the others, which are (or will be) just AdditionalNewVerbs on browsers??
 										delegate() {
-											Set<object> callerSelection = new Set<object>(el.TInfo.Schema.InternalIdColumn.EffectiveType);
-											callerSelection.Add(el.RootRowIDs[0]);
+											Set<object> callerSelection = new Set<object>(el.TInfo.Schema.InternalIdColumn.EffectiveType){
+											el.RootRowIDs[0]
+};
 											CallChangeScheduleBasisForm(el, callerSelection);
 										},
-										el.AllStatesWithExistingRecord.ToArray())));
+										el.AllStatesWithExistingRecord.ToArray()))
+};
 								return group;
 							}
 						)
@@ -515,8 +519,10 @@ namespace Thinkage.MainBoss.Controls {
 				(TblLayoutNodeArray)swoNodes.Clone()
 				);
 			});
+			DefineEditTbl(dsMB.Schema.T.ScheduledWorkOrder, swoEditTbl);
 			RegisterForImportExport(TId.UnitMaintenancePlan, swoEditTbl);
 
+			// TODO: This does not need to be a named Tbl. Each place it is used, its value would be used anyway because it is the registered browse tbl for ScheduledWorkOrder.
 			ScheduledWorkOrderBrowserTbl = new DelayedCreateTbl(delegate () {
 				return new CompositeTbl(dsMB.Schema.T.ScheduledWorkOrder, TId.UnitMaintenancePlan,
 					new Tbl.IAttr[] {
@@ -535,9 +541,9 @@ namespace Thinkage.MainBoss.Controls {
 										}
 									);
 								}
-							)
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl(delegate(){ return TIReports.ScheduledWorkOrderReport; }))
+							),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ScheduledWorkOrderReport))
+						)
 					},
 					null,
 					CompositeView.ChangeEditTbl(swoEditTbl),
@@ -547,30 +553,15 @@ namespace Thinkage.MainBoss.Controls {
 					)
 				);
 			});
-
-			// For displaying in PMGenerationDetails activity
-			ScheduledWorkOrderCompositeViewTbl = new DelayedCreateTbl(delegate () {
-				return new Tbl(dsMB.Schema.T.ScheduledWorkOrder, TId.UnitMaintenancePlan,
-					new Tbl.IAttr[] {
-						new BTbl(
-							BTbl.ListColumn(dsMB.Path.T.ScheduledWorkOrder.F.WorkOrderTemplateID.F.Code),
-							BTbl.ListColumn(dsMB.Path.T.ScheduledWorkOrder.F.UnitLocationID.F.Code),
-							BTbl.ListColumn(dsMB.Path.T.ScheduledWorkOrder.F.ScheduleID.F.Code),
-							BTbl.ListColumn(dsMB.Path.T.ScheduledWorkOrder.F.CurrentPMGenerationDetailID.F.NextAvailableDate)
-						),
-					},
-					(TblLayoutNodeArray)swoNodes.Clone()
-				);
-			});
-
 			DefineBrowseTbl(dsMB.Schema.T.ScheduledWorkOrder, ScheduledWorkOrderBrowserTbl);
 			#endregion
 			#region CreateUnscheduledWorkOrderTbl
 			CreateUnscheduledWorkOrderTbl = new DelayedCreateTbl(delegate () {
-				var layout = new List<TblLayoutNode>();
-				// We could make the Detail be the root of this Tbl and have it link to the Batch but all the paths would have to be mapped.
-				// Instead we use a second recordset for the Detail record.
-				layout.Add(TblColumnNode.New(dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID, 1, ECol.Normal));
+				var layout = new List<TblLayoutNode> {
+					// We could make the Detail be the root of this Tbl and have it link to the Batch but all the paths would have to be mapped.
+					// Instead we use a second recordset for the Detail record.
+					TblColumnNode.New(dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID, 1, ECol.Normal)
+				};
 				PMGenerationBatchGenerationParameters(layout);
 				layout.Add(TblColumnNode.New(dsMB.Path.T.PMGenerationBatch.F.Comment, DCol.Normal, ECol.Normal));
 
@@ -613,15 +604,17 @@ namespace Thinkage.MainBoss.Controls {
 					// These records have two distinct saved states, committed and uncommitted. The "scheduling parameter" controls are readonly in all saved modes so we can code
 					// this in the ECol's. "generation parameter" controls are only readonly once committed, so we have to rely on a custom changeEnabler for them.
 					// Finally, there are "regular fields" which are writeable anytime.
-					var detailTabLayout = new List<TblLayoutNode>();
-					detailTabLayout.Add(TblColumnNode.New(dsMB.Path.T.PMGenerationBatch.F.UserID.F.ContactID.F.Code, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly));
+					var detailTabLayout = new List<TblLayoutNode> {
+						TblColumnNode.New(dsMB.Path.T.PMGenerationBatch.F.UserID.F.ContactID.F.Code, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly)
+					};
 
-					List<TblLayoutNode> schedulingParametersGroup = new List<TblLayoutNode>();
-					// These nodes represent the "scheduling parameters"
-					schedulingParametersGroup.Add(TblColumnNode.New(dsMB.Path.T.PMGenerationBatch.F.EntryDate, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly));
-					schedulingParametersGroup.Add(TblVariableNode.New(KB.K("Generation Interval"), dsMB.Schema.V.PmGenerateInterval, new DefaultOnlyCol(), DCol.Normal, ECol.ReadonlyInUpdate));
+					List<TblLayoutNode> schedulingParametersGroup = new List<TblLayoutNode> {
+						// These nodes represent the "scheduling parameters"
+						TblColumnNode.New(dsMB.Path.T.PMGenerationBatch.F.EntryDate, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly),
+						TblVariableNode.New(KB.K("Generation Interval"), dsMB.Schema.V.PmGenerateInterval, new DefaultOnlyCol(), DCol.Normal, ECol.ReadonlyInUpdate)
+					};
 					object BatchEndDateId = KB.I("BatchEndDateId");
-					schedulingParametersGroup.Add(TblColumnNode.New(dsMB.Path.T.PMGenerationBatch.F.EndDate, new NonDefaultCol(), DCol.Normal, ECol.ReadonlyInUpdate, Fmt.SetId(BatchEndDateId)));
+					schedulingParametersGroup.Add(TblColumnNode.New(dsMB.Path.T.PMGenerationBatch.F.EndDate, new NonDefaultCol(), DCol.Normal, new ECol(ECol.ReadonlyInUpdateAccess, Fmt.SetId(BatchEndDateId))));
 					// TODO: A picker tree-structured on Units would be nice. THis requires an explicit PickFrom in our ECol and might open a can of worms (only primary records should have checkboxes)
 					// TODO: Eliminate the dsMB.Path.T.PMGenerationBatch.F.FilterUsed field.
 					// TODO: What if the user does not have Browse permission on the SWO table?
@@ -629,11 +622,12 @@ namespace Thinkage.MainBoss.Controls {
 					schedulingParametersGroup.Add(MultiplePlanPickerControl(AllNonHiddenScheduledWorkOrders));
 					detailTabLayout.Add(TblGroupNode.New(KB.K("Scheduling Parameters"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal }, schedulingParametersGroup.ToArray()));
 
-					List<TblLayoutNode> generationParametersGroup = new List<TblLayoutNode>();
-					generationParametersGroup.Add(TblColumnNode.New(dsMB.Path.T.PMGenerationBatch.F.SinglePurchaseOrders,
+					List<TblLayoutNode> generationParametersGroup = new List<TblLayoutNode> {
+						TblColumnNode.New(dsMB.Path.T.PMGenerationBatch.F.SinglePurchaseOrders,
 						new FeatureGroupArg(PurchasingGroup), DCol.Normal,
 						new ECol(ECol.AddChangeEnablerT<PMGenerationBatchBaseEditLogic>(editor => editor.CommittedDisabler))
-					));
+					)
+					};
 					PMGenerationBatchGenerationParameters(generationParametersGroup);
 					detailTabLayout.Add(TblGroupNode.New(KB.K("Work Order Generation Parameters"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal }, generationParametersGroup.ToArray()));
 
@@ -656,7 +650,7 @@ namespace Thinkage.MainBoss.Controls {
 											return ETbl.CloseHandlerClassArg.CloseHandlerDecision.DoNotClose;
 										}
 									}
-									if (el.userChanges && el.EditMode == EdtMode.New) {
+									if (el.UserChanges && el.EditMode == EdtMode.New) {
 										// Because in New mode Save means Generate we don't want to offer the standard question.
 										// The only options we offer are to continue closing or to cancel the close.
 										switch (Ask.Question(KB.K("You have not generated the work orders. Are you sure you want to quit?").Translate())) {
@@ -703,15 +697,15 @@ namespace Thinkage.MainBoss.Controls {
 
 			PMGenerationBatchChangeMultipleSchedulingBasisEditTbl = new DelayedCreateTbl(delegate () {
 				var layout = new List<TblLayoutNode>();
-				var actions = new List<TblActionNode>();
-
-				actions.Add(Init.OnLoadNew(new PathTarget(dsMB.Path.T.PMGenerationBatch.F.UserID), new UserIDValue()));
-				actions.Add(Init.OnLoadNew(new PathTarget(dsMB.Path.T.PMGenerationBatch.F.EndDate), new ConstantValue(null)));
-				// Ensure the other required fields of the PMGenerationBatch record are initialized not withstanding the (possible) null settings in the default PMGenerationBatch
-				// record. Otherwise, the user will be unable to save their new Scheduling basis: WO20130094
-				actions.Add(Init.OnLoadNew(new PathTarget(dsMB.Path.T.PMGenerationBatch.F.AccessCodeUnitTaskPriority), new ConstantValue(DatabaseEnums.TaskUnitPriority.PreferUnitValue)));
-				actions.Add(Init.OnLoadNew(new PathTarget(dsMB.Path.T.PMGenerationBatch.F.WorkOrderExpenseModelUnitTaskPriority), new ConstantValue(DatabaseEnums.TaskUnitPriority.PreferUnitValue)));
-				actions.Add(Init.OnLoadNew(new PathTarget(dsMB.Path.T.PMGenerationBatch.F.SinglePurchaseOrders), new ConstantValue(true)));
+				var actions = new List<TblActionNode> {
+					Init.OnLoadNew(new PathTarget(dsMB.Path.T.PMGenerationBatch.F.UserID), new UserIDValue()),
+					Init.OnLoadNew(new PathTarget(dsMB.Path.T.PMGenerationBatch.F.EndDate), new ConstantValue(null)),
+					// Ensure the other required fields of the PMGenerationBatch record are initialized not withstanding the (possible) null settings in the default PMGenerationBatch
+					// record. Otherwise, the user will be unable to save their new Scheduling basis: WO20130094
+					Init.OnLoadNew(new PathTarget(dsMB.Path.T.PMGenerationBatch.F.AccessCodeUnitTaskPriority), new ConstantValue(DatabaseEnums.TaskUnitPriority.PreferUnitValue)),
+					Init.OnLoadNew(new PathTarget(dsMB.Path.T.PMGenerationBatch.F.WorkOrderExpenseModelUnitTaskPriority), new ConstantValue(DatabaseEnums.TaskUnitPriority.PreferUnitValue)),
+					Init.OnLoadNew(new PathTarget(dsMB.Path.T.PMGenerationBatch.F.SinglePurchaseOrders), new ConstantValue(true))
+				};
 
 				layout.Add(MultiplePlanPickerControl());
 				layout.Add(TblUnboundControlNode.New(KB.K("New Scheduling Basis"), dsMB.Schema.T.PMGenerationDetail.F.ScheduleDate.EffectiveType,
@@ -763,7 +757,7 @@ namespace Thinkage.MainBoss.Controls {
 					SchedulingGroup,
 					new BTbl(
 						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID.F.UnitLocationID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.ListColumnArg.Contexts.SortInitialAscending)
+						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.Contexts.SortInitialAscending)
 					)
 				},
 				new TblLayoutNodeArray(
@@ -789,7 +783,7 @@ namespace Thinkage.MainBoss.Controls {
 					SchedulingGroup,
 					new BTbl(
 						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID.F.UnitLocationID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.ListColumnArg.Contexts.SortInitialAscending)
+						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.Contexts.SortInitialAscending)
 					)
 				},
 				new TblLayoutNodeArray(
@@ -812,7 +806,7 @@ namespace Thinkage.MainBoss.Controls {
 					SchedulingGroup,
 					new BTbl(
 						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID.F.UnitLocationID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.ListColumnArg.Contexts.SortInitialAscending)
+						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.Contexts.SortInitialAscending)
 					)
 				},
 				new TblLayoutNodeArray(
@@ -837,7 +831,7 @@ namespace Thinkage.MainBoss.Controls {
 					SchedulingGroup,
 					new BTbl(
 						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID.F.UnitLocationID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.ListColumnArg.Contexts.SortInitialAscending)
+						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.Contexts.SortInitialAscending)
 					)
 				},
 				new TblLayoutNodeArray(
@@ -863,7 +857,7 @@ namespace Thinkage.MainBoss.Controls {
 					SchedulingGroup,
 					new BTbl(
 						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID.F.UnitLocationID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.ListColumnArg.Contexts.SortInitialAscending)
+						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.Contexts.SortInitialAscending)
 					)
 				},
 				new TblLayoutNodeArray(
@@ -890,7 +884,7 @@ namespace Thinkage.MainBoss.Controls {
 					SchedulingGroup,
 					new BTbl(
 						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID.F.UnitLocationID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.ListColumnArg.Contexts.SortInitialAscending)
+						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.Contexts.SortInitialAscending)
 					)
 				},
 				new TblLayoutNodeArray(
@@ -916,7 +910,7 @@ namespace Thinkage.MainBoss.Controls {
 					SchedulingGroup,
 					new BTbl(
 						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID.F.UnitLocationID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.ListColumnArg.Contexts.SortInitialAscending)
+						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.Contexts.SortInitialAscending)
 					)
 				},
 				new TblLayoutNodeArray(
@@ -941,7 +935,7 @@ namespace Thinkage.MainBoss.Controls {
 					SchedulingGroup,
 					new BTbl(
 						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID.F.UnitLocationID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.ListColumnArg.Contexts.SortInitialAscending)
+						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.Contexts.SortInitialAscending)
 					)
 				},
 				new TblLayoutNodeArray(
@@ -987,7 +981,7 @@ namespace Thinkage.MainBoss.Controls {
 					SchedulingGroup,
 					new BTbl(
 						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID.F.UnitLocationID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.ListColumnArg.Contexts.SortInitialAscending)
+						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.Contexts.SortInitialAscending)
 					)
 				},
 				new TblLayoutNodeArray(
@@ -1030,7 +1024,7 @@ namespace Thinkage.MainBoss.Controls {
 					SchedulingGroup,
 					new BTbl(
 						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID.F.UnitLocationID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.ListColumnArg.Contexts.SortInitialAscending)
+						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.Contexts.SortInitialAscending)
 					)
 				},
 				new TblLayoutNodeArray(
@@ -1056,7 +1050,7 @@ namespace Thinkage.MainBoss.Controls {
 					SchedulingGroup,
 					new BTbl(
 						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID.F.UnitLocationID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.ListColumnArg.Contexts.SortInitialAscending)
+						BTbl.ListColumn(dsMB.Path.T.PMGenerationDetail.F.Sequence, BTbl.Contexts.SortInitialAscending)
 					)
 				},
 				new TblLayoutNodeArray(
@@ -1080,9 +1074,9 @@ namespace Thinkage.MainBoss.Controls {
 					new Tbl.IAttr[] {
 						new BTbl(
 							BTbl.PerViewListColumn(CommonCodeColumnKey, localCodeColumnId),
-							BTbl.ListColumn(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.WorkStartDate)
-						),
-						new FilteredTreeStructuredTbl(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.ParentID, dsMB.Schema.T.PMGenerationDetailAndContainers, 6, uint.MaxValue)
+							BTbl.ListColumn(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.WorkStartDate),
+							BTbl.SetTreeStructure(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.ParentID, 6, uint.MaxValue, dsMB.Schema.T.PMGenerationDetailAndContainers, treatAllRecordsAsPrimary: true)
+						)
 					},
 					dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.TableEnum,
 					// Table #0 (PostalAddress)
@@ -1120,11 +1114,10 @@ namespace Thinkage.MainBoss.Controls {
 					// Table #5 (TemplateTemporaryStorage) - cannot be a container for a Unit
 					null,
 					// Table #6 (ScheduledWorkOrder)
-					new CompositeView(ScheduledWorkOrderCompositeViewTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.ScheduledWorkOrderID,
+					new CompositeView(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.ScheduledWorkOrderID,
 						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.Unit),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.ScheduledWorkOrder.F.WorkOrderTemplateID.F.Code),
-						ReadonlyView,
-						CompositeView.ForceNotPrimary()),
+						OnlyViewEdit),
 					// Remaining record types are readonly because the edit tbls do not have any ETbl.
 					new CompositeView(PMGenerationDetailSchedulingTerminatedPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,    // Table #7 (SchedulingTerminated)
 						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
@@ -1186,9 +1179,9 @@ namespace Thinkage.MainBoss.Controls {
 						new Tbl.IAttr[] {
 							new BTbl(
 								BTbl.PerViewListColumn(dsMB.LabelKeyBuilder.K("Generation/Work Start Date"), generationOrWorkStartDateId),
-								BTbl.ListColumn(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.Sequence)	// note that because this field is numeric it sorts properly without the "Seq xxxxx" formatting.
-							),
-							new FilteredTreeStructuredTbl(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.ParentID, dsMB.Schema.T.CommittedPMGenerationDetailAndBatches, 2, 2)
+								BTbl.ListColumn(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.Sequence),	// note that because this field is numeric it sorts properly without the "Seq xxxxx" formatting.
+								BTbl.SetTreeStructure(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.ParentID, 2, 2, dsMB.Schema.T.CommittedPMGenerationDetailAndBatches, treatAllRecordsAsPrimary: true)
+							)
 						},
 						dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.TableEnum,
 						new CompositeView(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationBatchID,    // Table #0 (PMGenerationBatch)

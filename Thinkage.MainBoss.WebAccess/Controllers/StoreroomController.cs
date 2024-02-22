@@ -9,6 +9,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 	public class StoreroomController : BaseControllerWithRulesViolationCheck<ItemCountValueEntities.PermanentStorage> {
 		ItemCountValueEntities.PermanentStorage Model;
 		protected override ItemCountValueEntities.PermanentStorage GetModelForModelStateErrors() {
+			Model=null; // assign to eliminate warnings
 			return Model;
 		}
 		private void InitViewData() {

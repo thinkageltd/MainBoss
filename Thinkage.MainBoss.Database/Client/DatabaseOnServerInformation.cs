@@ -8,6 +8,15 @@ namespace Thinkage.MainBoss.Database {
 	/// Provide information on databases that look like MainBoss Databases as identified in the provided SqlClient.Connection
 	/// </summary>
 	public class DatabaseOnServerInformation {
+		public DatabaseOnServerInformation() { // required for generic usage elsewhere
+		}
+
+		public DatabaseOnServerInformation(string serverName, System.Exception error) {
+			// This is used if we are unable to enumerate the databases on the server
+			Id = unchecked((ulong)System.Threading.Interlocked.Increment(ref Counter));
+			ServerName = serverName;
+			AccessError = Libraries.Exception.FullMessage(error);
+		}
 		public DatabaseOnServerInformation(SqlClient.Connection c) {
 			Id = unchecked((ulong)System.Threading.Interlocked.Increment(ref Counter));
 			ServerName = c.DBServer;
@@ -78,13 +87,13 @@ namespace Thinkage.MainBoss.Database {
 					// TODO: Fetch the ??? of the referenced Location record
 				}
 				else {
-					// We want a dsMB to access the OrganizationName variable, and this requires at least an XAFClient
-					// so we create a new XAFClient using db's ISession object, then we DO NOT call CloseDatabase on it,
+					// We want a dsMB to access the OrganizationName variable, and this requires at least an DBClient
+					// so we create a new DBClient using db's ISession object, then we DO NOT call CloseDatabase on it,
 					// leaving the ISession object intact for db's use.
-					var XAFdb = new XAFClient(new DBClient.Connection(c, Database.dsMB.Schema), db.Session);
+					var XAFdb = new DBClient(new DBClient.Connection(c, Database.dsMB.Schema), db.Session);
 					using (dsMB ds = new dsMB(XAFdb)) {
 						XAFdb.ViewAdditionalVariables(ds, dsMB.Schema.V.OrganizationName);
-						OrganizationName = ds.V.OrganizationName.Value;
+						OrganizationName = (string)ds.V.OrganizationName.Value;
 					}
 				}
 			}
@@ -99,21 +108,15 @@ namespace Thinkage.MainBoss.Database {
 					db.CloseDatabase();
 			}
 		}
-		public DatabaseOnServerInformation(string serverName, System.Exception error) {
-			// This is used if we are unable to enumerate the databases on the server
-			Id = unchecked((ulong)System.Threading.Interlocked.Increment(ref Counter));
-			ServerName = serverName;
-			AccessError = Libraries.Exception.FullMessage(error);
-		}
-		public readonly ulong Id;
-		public readonly string ServerName;
-		public readonly string DatabaseName;
-		public readonly string OrganizationName;
-		public readonly bool? UserRecordExists;
-		public readonly string Version;
-		public readonly string Access;
-		public readonly string AccessError;
-		public readonly bool CanDropDatabase;
-		private static long Counter = 0;
+		public ulong Id;
+		public string ServerName;
+		public string DatabaseName;
+		public string OrganizationName;
+		public bool? UserRecordExists;
+		public string Version;
+		public string Access;
+		public string AccessError;
+		public bool CanDropDatabase;
+		protected static long Counter = 0;
 	};
 }

@@ -38,7 +38,7 @@ namespace Thinkage.MainBoss.MainBoss {
 				if (pModes == null)
 					pModes = new ModeDefinition[] {
 						new ModeDefinition("MainBoss Maintenance Manager", (int)DatabaseEnums.ApplicationModeID.Normal, KB.K("Start MainBoss with all permitted licenses."),
-							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 5, 2),// changing this should be reflected in the checkin comment to vault
+							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 5, 5),// changing this should be reflected in the checkin comment to vault
 							new [] {
 								new [] {new Libraries.Licensing.LicenseRequirement(Licensing.NamedUsersLicense, overLimitFatal: true)}
 							},
@@ -46,7 +46,7 @@ namespace Thinkage.MainBoss.MainBoss {
 						),
 						new ModeDefinition("MainBoss Assignments", (int)DatabaseEnums.ApplicationModeID.Assignments, KB.K("Start MainBoss showing only user's assignments."),
 							// This is a simplified mode for users to see only Work Orders, Requests, and/or Purchase Orders which are assigned to them.
-							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 5, 2), // changing this should be reflected in the checkin comment to vault
+							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 5, 5), // changing this should be reflected in the checkin comment to vault
 							new [] {
 								new [] {new Libraries.Licensing.LicenseRequirement(Licensing.NamedUsersLicense, overLimitFatal: true)}
 							},
@@ -54,7 +54,7 @@ namespace Thinkage.MainBoss.MainBoss {
 						),
 						new ModeDefinition("MainBoss Requests", (int)DatabaseEnums.ApplicationModeID.Requests, KB.K("Start only MainBoss Requests"),
 							// This is a simplified mode only for users to enter Requests and monitor requests they have entered (and are thus part of their Assigned requests)
-							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 5, 2), // changing this should be reflected in the checkin comment to vault
+							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 5, 5), // changing this should be reflected in the checkin comment to vault
 							new[] {
 								new [] { new Libraries.Licensing.LicenseRequirement(Licensing.NamedUsersLicense, overLimitFatal: true), new Libraries.Licensing.LicenseRequirement(Licensing.RequestsLicense, overLimitFatal: true) }
 							},
@@ -95,7 +95,10 @@ namespace Thinkage.MainBoss.MainBoss {
 			new GUIApplicationIdentification(this, "Thinkage.MainBoss.MainBoss.Resources.MainBoss400.ico");
 			new Thinkage.Libraries.XAF.UI.MSWindows.UserInterface(this);
 			new Thinkage.Libraries.Presentation.MSWindows.UserInterface(this);
-			new MSWindowsUIFactory(this);
+			var uiFactory = new MSWindowsUIFactory(this) {
+				FixedPitchControlFontFamily = Configuration.MonospaceFontFamilyForDisplay,
+				ProportionalControlFontFamily = Configuration.RegularFontFamilyForDisplay
+			};
 			// Note that the derived App has the option of doing the DBSession setup in its Ctor or in its SetupApplication.
 			// The former is used for built-in app objects called from the startup application or Pick Organization, where one wants
 			// the ctor to fail if the DB connection cannot be made.

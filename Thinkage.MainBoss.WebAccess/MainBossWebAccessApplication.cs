@@ -11,12 +11,12 @@ using Thinkage.MainBoss.Database;
 using Thinkage.MainBoss.WebAccess.Models;
 
 namespace Thinkage.MainBoss.WebAccess {
-	public delegate XAFClient CreateDBSession(XAFClient.Connection connection);
+	public delegate DBClient CreateDBSession(DBClient.Connection connection);
 	#region MainBossWebAccessApplication
 	public class MainBossWebAccessApplication : Thinkage.Libraries.Application {
 		// The following came from Thinkage.MainBoss.Database.MB3Client.ConnectionDefinition
 		public static readonly string ApplicationName = KB.I("MainBoss Web Access");
-		public static readonly Version MinDBVersion = new Version(1, 1, 5, 2);
+		public static readonly Version MinDBVersion = new Version(1, 1, 5, 5);
 		public static Version MBWebAccessAppVersion {
 			// TODO: VersionInfo.ProductVersion farts around with AssemblyInformationalVersionAttribute which no one specifies anywhere, and then falls back on a file version somewhere.
 			// It turns out that the [AssemblyVersion] attribute is a NON-"custom" attribute and so does not appear in assembly.GetCustomAttributes and instead appears as the Version property of the assembly name.
@@ -41,14 +41,14 @@ namespace Thinkage.MainBoss.WebAccess {
 		private MainBossWebAccessApplication() {
 			IsValid = false;
 		}
-		public delegate XAFClient CreateDBSession(XAFClient.Connection connection);
+		public delegate DBClient CreateDBSession(DBClient.Connection connection);
 
-		internal static MainBossWebAccessApplication CreateNewApplicationObject(System.Globalization.CultureInfo ci) {
+		internal static MainBossWebAccessApplication CreateNewApplicationObject(System.Globalization.CultureInfo formatCultureInfo, System.Globalization.CultureInfo messageCultureInfo) {
 			MainBossWebAccessApplication result = new MainBossWebAccessApplication();
-			new FixedUserInformationOverride(result, "", "", ci, null);
+			new FixedUserInformationOverride(result, "", "", formatCultureInfo, messageCultureInfo, null);
 			new StandardApplicationIdentification(result, "MainBossWebAccess", ApplicationName);
 			new DatabaseFeaturesApplication(result,
-				(XAFClient.Connection connection) =>
+				(DBClient.Connection connection) =>
 				{
 					return new Thinkage.MainBoss.Database.MB3Client(connection);
 				});
@@ -61,7 +61,7 @@ namespace Thinkage.MainBoss.WebAccess {
 			Thinkage.Libraries.MVC.ConfigHandler config = Thinkage.Libraries.MVC.ConfigHandler.FetchConfig();
 			SqlClient.Connection sql = new SqlClient.Connection(config.DatabaseServer, config.DatabaseName, null, AuthenticationCredentials.Default);
 			Connection = new DatabaseConnection(sql);
-			GetInterface<ISessionDatabaseFeature>().OpenDatabaseSession(new XAFClient.Connection(sql, Thinkage.MainBoss.Database.dsUpgrade_1_1_4_2.Schema));
+			GetInterface<ISessionDatabaseFeature>().OpenDatabaseSession(new DBClient.Connection(sql, Thinkage.MainBoss.Database.dsUpgrade_1_1_4_2.Schema));
 			var manager = (MainBossPermissionsManager)GetInterface<IPermissionsFeature>().PermissionsManager;
 			manager.InitializeRolesGrantingPermission(GetInterface<ISessionDatabaseFeature>().Session);
 
@@ -136,7 +136,7 @@ namespace Thinkage.MainBoss.WebAccess {
 			}
 			if (user != null) {
 				UserID = user.Id;
-				new FixedUserInformationOverride(Application.Instance, userIdentification, Application.Instance.WorkstationName, Application.InstanceCultureInfo, System.Web.HttpContext.Current.User);
+				new FixedUserInformationOverride(Application.Instance, userIdentification, Application.Instance.WorkstationName, Application.InstanceFormatCultureInfo, Application.InstanceMessageCultureInfo, System.Web.HttpContext.Current.User);
 				AuthenticationEntities.Contact contact = rp.GetContactForUser(UserID.Value);
 				ContactID = contact.Id;
 				ContactName = contact.Code;
@@ -153,7 +153,7 @@ namespace Thinkage.MainBoss.WebAccess {
 		}
 		private void ResetIdentificationProperties() {
 			UserID = null;
-			new FixedUserInformationOverride(Application.Instance, "", Application.Instance.WorkstationName, Application.InstanceCultureInfo, null);
+			new FixedUserInformationOverride(Application.Instance, "", Application.Instance.WorkstationName, Application.InstanceFormatCultureInfo, Application.InstanceMessageCultureInfo, null);
 			ContactName = null;
 			ContactID = null;
 		}
@@ -347,10 +347,10 @@ namespace Thinkage.MainBoss.WebAccess {
 	/// Provide database session handling
 	/// </summary>
 	public interface ISessionDatabaseFeature : IApplicationInterfaceGroup {
-		XAFClient Session {
+		DBClient Session {
 			get;
 		}
-		void OpenDatabaseSession(XAFClient.Connection connection);
+		void OpenDatabaseSession(DBClient.Connection connection);
 		void CloseDatabaseSession();
 	}
 	public interface IDBVersionDatabaseFeature : IApplicationInterfaceGroup {
@@ -368,7 +368,7 @@ namespace Thinkage.MainBoss.WebAccess {
 		}
 		private readonly CreateDBSession DBSessionCreator;
 		#region ISessionDatabaseFeature
-		public void OpenDatabaseSession(XAFClient.Connection connection) {
+		public void OpenDatabaseSession(DBClient.Connection connection) {
 			try {
 				DBSession = DBSessionCreator(connection);
 				pVersionHandler = Thinkage.MainBoss.Database.MBUpgrader.UpgradeInformation.CheckDBVersion(DBSession, MainBossWebAccessApplication.MBWebAccessAppVersion, MainBossWebAccessApplication.MinDBVersion, dsMB.Schema.V.MinMBRemoteAppVersion, MainBossWebAccessApplication.ApplicationName);
@@ -390,12 +390,12 @@ namespace Thinkage.MainBoss.WebAccess {
 				DBSession = null;
 			}
 		}
-		public XAFClient Session {
+		public DBClient Session {
 			get {
 				return DBSession;
 			}
 		}
-		private XAFClient DBSession;
+		private DBClient DBSession;
 		#endregion
 		#region IDBVersionDatabaseFeature Members
 		private DBVersionHandler pVersionHandler;

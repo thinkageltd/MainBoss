@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7A8C0FD6-67BF-446D-B557-458D4D1E7E35}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Thinkage.Libraries.Presentation.ASPNet</RootNamespace>
+    <AssemblyName>Thinkage.Libraries.Presentation.ASPNet</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Installation|AnyCPU'">
+    <OutputPath>bin\Installation\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BrowsePage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="BrowserControl.cs">
+    </Compile>
+    <Compile Include="CallBrowsetteControl.cs">
+    </Compile>
+    <Compile Include="CompanyInfo.cs" />
+    <Compile Include="EditorControl.cs">
+    </Compile>
+    <Compile Include="HtmlRadioButtonSet.cs" />
+    <Compile Include="PersistentData.cs" />
+    <Compile Include="CommandButton.cs" />
+    <Compile Include="EditPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="HtmlSequence.cs" />
+    <Compile Include="ProductInfo.cs" />
+    <Compile Include="SolutionSettings.cs" />
+    <Compile Include="TblApplication.cs">
+    </Compile>
+    <Compile Include="TblPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TextDisplay.cs">
+    </Compile>
+    <Compile Include="TextEdit.cs">
+    </Compile>
+    <Compile Include="Translation.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Thinkage.Libraries.DBAccess\Thinkage.Libraries.DBAccess.csproj">
+      <Project>{4C013DD4-7AE5-49ED-9A18-CE2204C9B508}</Project>
+      <Name>Thinkage.Libraries.DBAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary\Thinkage.Libraries.DBILibrary.csproj">
+      <Project>{9398F76E-D6FD-4194-9599-CE4B6512D5A2}</Project>
+      <Name>Thinkage.Libraries.DBILibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.Presentation\Thinkage.Libraries.Presentation.csproj">
+      <Project>{DED2C505-EF02-483C-95A6-F2AD5B60A081}</Project>
+      <Name>Thinkage.Libraries.Presentation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Layout\Thinkage.Libraries.XAF.Database.Layout.csproj">
+      <Project>{D329682F-5E4C-496D-9DF4-E94896DAEC54}</Project>
+      <Name>Thinkage.Libraries.XAF.Database.Layout</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Service\Thinkage.Libraries.XAF.Database.Service.csproj">
+      <Project>{1BF2EC15-6F92-4CE1-AEB4-FBA8E3E147A1}</Project>
+      <Name>Thinkage.Libraries.XAF.Database.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.UI\Thinkage.Libraries.XAF.UI.csproj">
+      <Project>{7675980A-46B7-41D8-AD27-1ED46277D959}</Project>
+      <Name>Thinkage.Libraries.XAF.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries\Thinkage.Libraries.csproj">
+      <Project>{F1588FB4-32FC-4718-8982-66C02732DF13}</Project>
+      <Name>Thinkage.Libraries</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TranslationResources\messages.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TranslationResources\messages.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TranslationResources\messages.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>powershell -noprofile $(SolutionDir)GenerateProjectSolutionSettings.ps1 $(ProjectDir) "c#" $(ProjectName)</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

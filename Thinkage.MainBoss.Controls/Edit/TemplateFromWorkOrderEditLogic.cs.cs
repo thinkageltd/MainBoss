@@ -56,7 +56,7 @@ namespace Thinkage.MainBoss.Controls {
 			}
 		}
 		#endregion
-		public TemplateFromWorkOrderEditLogic(IEditUI control, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+		public TemplateFromWorkOrderEditLogic(IEditUI control, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 			: base(control, db, tbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, initLists) {
 		}
 		public override void EndSetup() {
@@ -77,7 +77,7 @@ namespace Thinkage.MainBoss.Controls {
 					// Query all the temporary storage and convert it to template temporary storage; preserve a mapping from TS ID to TTS ID
 					var TempStorageMap = new Dictionary<Guid, Guid>();
 					DB.ViewAdditionalRows(DataSet, dsMB.Schema.T.TemporaryStorage, new SqlExpression(dsMB.Path.T.TemporaryStorage.F.WorkOrderID).Eq(workOrderID), null, new[] { dsMB.Path.T.TemporaryStorage.F.LocationID.PathToReferencedRow });
-					foreach (dsMB.TemporaryStorageRow temporaryStorageRow in ((dsMB)DataSet).T.TemporaryStorage.Rows) {
+					foreach (dsMB.TemporaryStorageRow temporaryStorageRow in ((dsMB)DataSet).T.TemporaryStorage) {
 						if (temporaryStorageRow.F.WorkOrderID != workOrderID)
 							continue;
 						var templateTemporaryStorageRow = (dsMB.TemplateTemporaryStorageRow)DB.AddNewRowAndBases(DataSet, dsMB.Schema.T.TemplateTemporaryStorage);
@@ -99,7 +99,7 @@ namespace Thinkage.MainBoss.Controls {
 						dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.PathToReferencedRow
 					}
 					);
-					foreach (dsMB.TemporaryItemLocationRow temporaryItemLocationRow in ((dsMB)DataSet).T.TemporaryItemLocation.Rows) {
+					foreach (dsMB.TemporaryItemLocationRow temporaryItemLocationRow in ((dsMB)DataSet).T.TemporaryItemLocation) {
 						if (temporaryItemLocationRow.F.WorkOrderID != workOrderID)
 							continue;
 						var templateItemLocationRow = (dsMB.TemplateItemLocationRow)DB.AddNewRowAndBases(DataSet, dsMB.Schema.T.TemplateItemLocation);
@@ -123,7 +123,7 @@ namespace Thinkage.MainBoss.Controls {
 						dsMB.Path.T.Demand.F.DemandMiscellaneousWorkOrderCostID.PathToReferencedRow
 					}
 					);
-					foreach (dsMB.DemandRow demandRow in ((dsMB)DataSet).T.Demand.Rows) {
+					foreach (dsMB.DemandRow demandRow in ((dsMB)DataSet).T.Demand) {
 						if (demandRow.F.WorkOrderID != workOrderID)
 							continue;
 						dsMB.DemandTemplateRow demandTemplateRow = null;

@@ -59,15 +59,15 @@ namespace Thinkage.MainBoss.Database.Security
 					}
 					else if (child.Name == KB.I("workorder"))
 					{
-						createTransitions("WorkOrder", child, "Open Close Draft Reopen Void Suspend");
+						CreateTransitions("WorkOrder", child, "Open Close Draft Reopen Void Suspend");
 					}
 					else if (child.Name == KB.I("purchaseorder"))
 					{
-						createTransitions("PurchaseOrder", child, "Issue Close Draft ReActivate Void Withdraw");
+						CreateTransitions("PurchaseOrder", child, "Issue Close Draft ReActivate Void Withdraw");
 					}
 					else if (child.Name == KB.I("request"))
 					{
-						createTransitions("Request", child, "InProgress Close Reopen Void");
+						CreateTransitions("Request", child, "InProgress Close Reopen Void");
 					}
 					else if( child.Name == KB.I("action") )
 					{
@@ -104,7 +104,7 @@ namespace Thinkage.MainBoss.Database.Security
 				}
 			}
 		}
-		private void createTransitions([Thinkage.Libraries.Translation.Invariant] string toWhat, XmlNode values, [Thinkage.Libraries.Translation.Invariant] string defaultPerms)
+		private void CreateTransitions([Thinkage.Libraries.Translation.Invariant] string toWhat, XmlNode values, [Thinkage.Libraries.Translation.Invariant] string defaultPerms)
 		{
 			string perms = values.ChildNodes.Count == 0 ? defaultPerms : values.FirstChild.Value;
 			string[] contents = perms.Split(new char[] {',', ' '});
@@ -630,9 +630,9 @@ namespace Thinkage.MainBoss.Database.Security
 								try 
 								{
 									RolePermission included;
-									included = lookupInclude(r, includeRightName, include.From == TableRightType.Role ? TableRightType.Role: TableRightType.Right);
+									included = LookupInclude(r, includeRightName, include.From == TableRightType.Role ? TableRightType.Role: TableRightType.Right);
 									if( included == null && include.From != TableRightType.Role )
-										included = lookupInclude(r, includeRightName, TableRightType.Internal);
+										included = LookupInclude(r, includeRightName, TableRightType.Internal);
 									if (included == null)
 										throw new GeneralException(KB.T("Undefined or forward reference of \"{0}\" included from \"{1} {2}\""), includeRightName,r.ClassName, r.Name);
 									if (!include.Demote)
@@ -703,7 +703,7 @@ namespace Thinkage.MainBoss.Database.Security
 				return pRoleToPermissions;
 			}
 		}
-		private RolePermission lookupInclude(RoleRight r, string includename, TableRightType aclass)
+		private RolePermission LookupInclude(RoleRight r, string includename, TableRightType aclass)
 		{
 			RoleRight ir = (RoleRight)Rights.Lookup(aclass, includename);
 			if (ir == null || (r.Class == ir.Class && r.Name == ir.Name) )
@@ -883,7 +883,7 @@ namespace Thinkage.MainBoss.Database.Security
 				   where r.Class == TableRightType.Role && r.Name != KB.I("All") && r.Name != KB.I("AllView") && t(r).Any(p => p == perm || p == full)
 				   let tr = KB.K(r.Name).Translate()
 				   orderby r.Rank, tr
-				   select new { Rank = r.Rank, Role = tr }) {
+				   select new { r.Rank, Role = tr }) {
 				if( rr.Rank-lastrank > 10 )
 					result.Add("");
 				result.Add(rr.Role);

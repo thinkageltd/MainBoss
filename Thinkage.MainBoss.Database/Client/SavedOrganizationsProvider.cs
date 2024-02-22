@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Win32;
 using Thinkage.Libraries.DBAccess;
 using Thinkage.Libraries.DBILibrary;
 using Thinkage.Libraries.DBILibrary.MSSql;
 using Thinkage.Libraries.TypeInfo;
+using static Thinkage.Libraries.DBAccess.DBDataSet;
 
 namespace Thinkage.MainBoss.Database {
 	#region SavedOrganizationSession
@@ -52,23 +54,22 @@ namespace Thinkage.MainBoss.Database {
 		public class SavedOrganizationServer3 : RegistrySessionServer {
 			public override ISession OpenSession(IConnectionInformation connectInfo, DBI_Database schema) {
 				SavedOrganizationSession session = new SavedOrganizationSession(connectInfo, this, schema);
-				Version currentVersion;
 
-				GetDBVersion(session, schema, out currentVersion);
+				session.GetDBVersion(schema, out Version currentVersion);
 				if (currentVersion.Major > 0) { // A structure exists of some form
 					if (currentVersion < Version_1000_0_0_0) { // we have no existing structure from 3.0; we just start fresh with no copy of original structure
 						session.UpgradeTo_1000_0_0_0();
-						currentVersion = SetDBVersion(session, schema, Version_1000_0_0_0);
+						currentVersion = session.SetDBVersion(schema, Version_1000_0_0_0);
 					}
 					if (currentVersion < Version_1000_1_0_0) {
 						var root = session.CreateItem(rootKeyDesignator);
 						session.UpgradeTo_1000_1_0_0(root);
-						currentVersion = SetDBVersion(session, schema, Version_1000_1_0_0);
+						currentVersion = session.SetDBVersion(schema, Version_1000_1_0_0);
 					}
 					if (currentVersion < Version_1000_2_0_0) {
 						var root = session.CreateItem(rootKeyDesignator);
 						session.UpgradeTo_1000_2_0_0(root);
-						currentVersion = SetDBVersion(session, schema, Version_1000_2_0_0);
+						currentVersion = session.SetDBVersion(schema, Version_1000_2_0_0);
 					}
 				}
 				//TODO: Change the above pattern to a table driven mechanism when it becomes too unwieldly to maintain the way it is.
@@ -84,20 +85,17 @@ namespace Thinkage.MainBoss.Database {
 			public override ISession OpenSession(IConnectionInformation connectInfo, DBI_Database schema) {
 
 				SavedOrganizationSession session = CreateSession(connectInfo, schema);
-				Version currentVersion;
 
-				GetDBVersion(session, schema, out currentVersion);
+				session.GetDBVersion(schema, out Version currentVersion);
 				if (currentVersion.Major == 0 && CreateRegistryStructure(session, schema)) { // this is the FIRST time ever; one time only, COPY any existing 3.0 structure to this new structure
-					Connection3 connection3 = new Connection3();
-					var savedOrganization3 = new XAFClient(new DBClient.Connection(connection3, dsSavedOrganizations.Schema));
-					Version org3Version;
-					GetDBVersion((RegistrySession)savedOrganization3.Session, schema, out org3Version);
+					var session3 = new SavedOrganizationSession(new Connection3(), this, schema);
+					session3.GetDBVersion(schema, out Version org3Version);
 					if (org3Version.Major > 0) { // Something exists
 												 // Copy the 3.0 tree to the 4.0 tree, and refresh the Version.
-						RegistrySession.CloneSession((RegistrySession)savedOrganization3.Session, session);
-						GetDBVersion(session, schema, out currentVersion);
+						RegistrySession.CloneSession(session3, session);
+						session.GetDBVersion(schema, out currentVersion);
 					}
-					savedOrganization3.CloseDatabase();
+					session3.CloseDatabase();
 				}
 				Upgrade(session, currentVersion, schema);
 				return session;
@@ -106,13 +104,14 @@ namespace Thinkage.MainBoss.Database {
 				if (currentVersion < Version_1000_3_0_0) {
 					var root = session.CreateItem(rootKeyDesignator);
 					session.UpgradeTo_1000_3_0_0(root);
-					currentVersion = SetDBVersion(session, schema, Version_1000_3_0_0);
+					currentVersion = session.SetDBVersion(schema, Version_1000_3_0_0);
 				}
 				// Something wrong; missing upgrade step
 				System.Diagnostics.Debug.Assert(currentVersion == LatestVersion, "Missing upgrade version step");
 				//TODO: Change the above pattern to a table driven mechanism when it becomes too unwieldly to maintain the way it is.
 			}
 		}
+		#endregion
 		#endregion
 		#region Construction
 		public SavedOrganizationSession(IConnectionInformation connection, IServer server, DBI_Database schema)
@@ -127,12 +126,7 @@ namespace Thinkage.MainBoss.Database {
 		#endregion
 		#region Upgraders
 		private void UpgradeTo_1000_0_0_0() {
-			// Old organization structures may or may not have the CompactBrowsers registry key under a configured organization. We need to enumerate all the 
-			// existing organizations, and ensure that 'column' CompactBrowsers exists
-			FromRegType fromConverter;
-			ToRegType toConverter;
-			RegistryValueKind valueKind;
-			GetConverters(dsSavedOrganizations.Schema.T.Organizations.F.CompactBrowsers.EffectiveType, out fromConverter, out toConverter, out valueKind);
+			GetConverters(dsSavedOrganizations.Schema.T.Organizations.F.CompactBrowsers.EffectiveType, out FromRegType fromConverter, out ToRegType toConverter, out RegistryValueKind valueKind);
 
 			var organizations = GetItemEnumerable(dsSavedOrganizations.Schema.T.Organizations);
 			foreach (KeyValuePair<RegistryKey, string> organization in organizations) {
@@ -147,28 +141,24 @@ namespace Thinkage.MainBoss.Database {
 		private void UpgradeTo_1000_1_0_0(RegistryKey root) {
 			// Forgot to propogate LastSavedSession and other values stored under Organizations into Variables in the new schema.
 			RegistryKey varsToMigrate = root.OpenSubKey(KB.I("Organizations"), true);
-			XAFClient forUpdate = new XAFClient(new DBClient.Connection(ConnectionObject, dsSavedOrganizations.Schema), this);
+			DBClient forUpdate = new DBClient(new DBClient.Connection(ConnectionObject, dsSavedOrganizations.Schema), this);
 			using (var ds = new dsSavedOrganizations(forUpdate)) {
 				ds.DisableUpdatePropagation();
 				foreach (var valueName in varsToMigrate.GetValueNames()) {
 					try {
 						var value = varsToMigrate.GetValue(valueName);
-						var vKey = root.OpenSubKey(dsSavedOrganizations.Schema.VariablesTable.Name + "\\" + valueName, true);
 						DBI_Variable v = ds.DBISchema.Variables[valueName];
 						if (value != null) {
-							ds.EnsureDataVariableExists(v);
 							ds.DB.EditVariable(ds, v);
 							TypeInfo baseResultType = v.EffectiveType;
-							var linkedResultType = v.EffectiveType as LinkedTypeInfo;
-							if (linkedResultType != null)
+							if (v.EffectiveType is LinkedTypeInfo linkedResultType)
 								baseResultType = linkedResultType.BaseType;
 							if (baseResultType is IdTypeInfo)
-								ds.DataVariables[v].Value = v.EffectiveType.GenericAsNativeType(Guid.Parse((string)value), v.EffectiveType.GenericMinimalNativeType());
+								ds[v].Value = v.EffectiveType.GenericAsNativeType(Guid.Parse((string)value), v.EffectiveType.GenericMinimalNativeType());
 							else
-								ds.DataVariables[v].Value = v.EffectiveType.GenericAsNativeType(value, v.EffectiveType.GenericMinimalNativeType());
+								ds[v].Value = v.EffectiveType.GenericAsNativeType(value, v.EffectiveType.GenericMinimalNativeType());
 						}
 						varsToMigrate.DeleteValue(valueName);
-						vKey.Close();
 					}
 					catch (System.Exception) {
 					}
@@ -178,34 +168,28 @@ namespace Thinkage.MainBoss.Database {
 			}
 		}
 		private void UpgradeTo_1000_2_0_0(RegistryKey root) {
-			// Delete the LastSelectedOrganization/LastSelectedOrganizationDebug variables
-			root.DeleteSubKey(dsSavedOrganizations.Schema.VariablesTable.Name + "\\" + KB.I("LastSelectedOrganization"), false);
-			root.DeleteSubKey(dsSavedOrganizations.Schema.VariablesTable.Name + "\\" + KB.I("LastSelectedOrganizationDebug"), false);
+			DeleteVariable(dsSavedOrganizations_0_0_0_0_to_1000_1_0_0.Schema.V.LastSelectedOrganization);
+			DeleteVariable(dsSavedOrganizations_0_0_0_0_to_1000_1_0_0.Schema.V.LastSelectedOrganizationDebug);
 		}
 		private void UpgradeTo_1000_3_0_0(RegistryKey root) {
-			// and Add credential entries to all existing entries, defaulting to WindowsAuthentication, and null userid/password
-			FromRegType authenticationMethodfromConverter;
-			ToRegType authenticationMethodtoConverter;
 
-			RegistryValueKind authenticationMethodValueKind;
-			GetConverters(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsAuthenticationMethod.EffectiveType, out authenticationMethodfromConverter, out authenticationMethodtoConverter, out authenticationMethodValueKind);
+			GetConverters(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsAuthenticationMethod.EffectiveType, out FromRegType authenticationMethodfromConverter, out ToRegType authenticationMethodtoConverter, out RegistryValueKind authenticationMethodValueKind);
 			// Move any Solo connection to a new organization record, and set the SoloOrganization variable to the id of that record. Then delete the Solo SubKey
 			var solo = root.OpenSubKey(KB.I("Solo"), true);
 			if (solo != null) {
 				var connection = solo.OpenSubKey(KB.I("ConnectionDefinition"), true);
 				if (connection != null) {
 					Guid soloRowId;
-					XAFClient forUpdate = new XAFClient(new DBClient.Connection(ConnectionObject, dsSavedOrganizations.Schema), this);
+					DBClient forUpdate = new DBClient(new DBClient.Connection(ConnectionObject, dsSavedOrganizations.Schema), this);
 					using (var ds = new dsSavedOrganizations(forUpdate)) {
 						ds.DisableUpdatePropagation();
 						ds.EnsureDataTableExists(dsSavedOrganizations.Schema.T.Organizations);
 						var soloRow = ds.T.Organizations.AddNewOrganizationsRow();
 						soloRow.F.OrganizationName = KB.I("MainBoss Solo");
 						soloRowId = soloRow.F.Id;
-						ds.EnsureDataVariableExists(dsSavedOrganizations.Schema.V.SoloOrganization);
 						DBI_Variable v = dsSavedOrganizations.Schema.V.SoloOrganization;
 						ds.DB.EditVariable(ds, v);
-						ds.DataVariables[v].Value = v.EffectiveType.GenericAsNativeType(soloRowId, v.EffectiveType.GenericMinimalNativeType());
+						ds[v].Value = v.EffectiveType.GenericAsNativeType(soloRowId, v.EffectiveType.GenericMinimalNativeType());
 						// leave the 'columns' to our cheater code later to copy the ConnectionDefinition key to the Organizationkey
 						ds.DB.Update(ds);
 					}
@@ -231,14 +215,14 @@ namespace Thinkage.MainBoss.Database {
 		}
 		#endregion
 		#region Accessors
-		private XAFClient VariablesSession {
+		private DBClient VariablesSession {
 			get {
 				if (pVariablesSession == null)
-					pVariablesSession = new XAFClient(new DBClient.Connection(ConnectionObject, dsSavedOrganizations.Schema));
+					pVariablesSession = new DBClient(new DBClient.Connection(ConnectionObject, dsSavedOrganizations.Schema));
 				return pVariablesSession;
 			}
 		}
-		private XAFClient pVariablesSession = null;
+		private DBClient pVariablesSession = null;
 		public override void CloseDatabase() {
 			if (pVariablesSession != null) {
 				pVariablesSession.CloseDatabase();
@@ -249,9 +233,7 @@ namespace Thinkage.MainBoss.Database {
 		GetNormalColumnValue DataBaseServerSource {
 			get {
 				if (pDataBaseServerSource == null) {
-					SetNormalColumnValue noUpdate;
-					GetExceptionColumnValue noException;
-					GetEvaluators(dsSavedOrganizations.Schema.T.Organizations.F.DataBaseServer, out pDataBaseServerSource, out noUpdate, out noException);
+					GetEvaluators(dsSavedOrganizations.Schema.T.Organizations.F.DataBaseServer, out pDataBaseServerSource, out SetNormalColumnValue noUpdate, out GetExceptionColumnValue noException);
 				}
 				return pDataBaseServerSource;
 			}
@@ -260,9 +242,7 @@ namespace Thinkage.MainBoss.Database {
 		GetNormalColumnValue DataBaseNameSource {
 			get {
 				if (pDataBaseNameSource == null) {
-					SetNormalColumnValue noUpdate;
-					GetExceptionColumnValue noException;
-					GetEvaluators(dsSavedOrganizations.Schema.T.Organizations.F.DataBaseName, out pDataBaseNameSource, out noUpdate, out noException);
+					GetEvaluators(dsSavedOrganizations.Schema.T.Organizations.F.DataBaseName, out pDataBaseNameSource, out SetNormalColumnValue noUpdate, out GetExceptionColumnValue noException);
 				}
 				return pDataBaseNameSource;
 			}
@@ -272,9 +252,7 @@ namespace Thinkage.MainBoss.Database {
 		GetNormalColumnValue CredentialsAuthenticationMethodSource {
 			get {
 				if (pCredentialsAuthenticationMethodSource == null) {
-					SetNormalColumnValue noUpdate;
-					GetExceptionColumnValue noException;
-					GetEvaluators(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsAuthenticationMethod, out pCredentialsAuthenticationMethodSource, out noUpdate, out noException);
+					GetEvaluators(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsAuthenticationMethod, out pCredentialsAuthenticationMethodSource, out SetNormalColumnValue noUpdate, out GetExceptionColumnValue noException);
 				}
 				return pCredentialsAuthenticationMethodSource;
 			}
@@ -283,9 +261,7 @@ namespace Thinkage.MainBoss.Database {
 		GetNormalColumnValue CredentialsUsernameSource {
 			get {
 				if (pCredentialsUsernameSource == null) {
-					SetNormalColumnValue noUpdate;
-					GetExceptionColumnValue noException;
-					GetEvaluators(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsUsername, out pCredentialsUsernameSource, out noUpdate, out noException);
+					GetEvaluators(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsUsername, out pCredentialsUsernameSource, out SetNormalColumnValue noUpdate, out GetExceptionColumnValue noException);
 				}
 				return pCredentialsUsernameSource;
 			}
@@ -294,9 +270,7 @@ namespace Thinkage.MainBoss.Database {
 		GetNormalColumnValue CredentialsPasswordSource {
 			get {
 				if (pCredentialsPasswordSource == null) {
-					SetNormalColumnValue noUpdate;
-					GetExceptionColumnValue noException;
-					GetEvaluators(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsPassword, out pCredentialsPasswordSource, out noUpdate, out noException);
+					GetEvaluators(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsPassword, out pCredentialsPasswordSource, out SetNormalColumnValue noUpdate, out GetExceptionColumnValue noException);
 				}
 				return pCredentialsPasswordSource;
 			}
@@ -307,14 +281,31 @@ namespace Thinkage.MainBoss.Database {
 		/// </summary>
 		long GenerationStampValue = 0;
 		#endregion
+		public void GetDBVersion(DBI_Database schema, out Version currentVersion) {
+			DBIDataSet varData = ViewVariables(dsSavedOrganizations.Schema.V.DBVersion);
+			try {
+				currentVersion = new Version((string)varData[dsSavedOrganizations.Schema.V.DBVersion].Value);
+			}
+			catch (System.Exception) {
+				currentVersion = new Version(0, 0, 0, 0);
+			}
+		}
+		protected Version SetDBVersion(DBI_Database schema, Version newVersion) {
+			DBIDataSet varData = ViewVariables(dsSavedOrganizations.Schema.V.DBVersion);
+			try {
+				varData[dsSavedOrganizations.Schema.V.DBVersion].Value = newVersion.ToString();
+				UpdateGivenVariables(Libraries.DBILibrary.Server.UpdateOptions.Normal, varData[dsSavedOrganizations.Schema.V.DBVersion]);
+			}
+			catch (System.Exception) {
+				return new Version(0, 0, 0, 0);
+			}
+			return newVersion;
+		}
 		protected override void GetEvaluators(DBI_Column sourceColumnSchema, out GetNormalColumnValue normalEvaluator, out SetNormalColumnValue normalUpdater, out GetExceptionColumnValue exceptionEvaluator) {
 			exceptionEvaluator = delegate (System.Exception e) {
 				return Thinkage.Libraries.Exception.FullMessage(e);
 			};
-			FromRegType fromConverter;
-			ToRegType toConverter;
-			RegistryValueKind valueKind;
-			GetConverters(dsSavedOrganizations.Schema.T.Organizations.F.Id.EffectiveType, out fromConverter, out toConverter, out valueKind);
+			GetConverters(dsSavedOrganizations.Schema.T.Organizations.F.Id.EffectiveType, out FromRegType fromConverter, out ToRegType toConverter, out RegistryValueKind valueKind);
 			if (sourceColumnSchema == dsSavedOrganizations.Schema.T.Organizations.F.IsPreferredOrganization) {
 				normalUpdater = null;
 				normalEvaluator = delegate (RegistryKey sc) {
@@ -322,13 +313,13 @@ namespace Thinkage.MainBoss.Database {
 						ds.DisableUpdatePropagation();
 #if DEBUG
 						VariablesSession.ViewAdditionalVariables(ds, dsSavedOrganizations.Schema.V.PreferredOrganizationDebug);
-						NullableDataVariable<Guid> variable = ds.V.PreferredOrganizationDebug;
+						DBIVariable variable = ds.V.PreferredOrganizationDebug;
 #else
 						VariablesSession.ViewAdditionalVariables(ds, dsSavedOrganizations.Schema.V.PreferredOrganization);
-						NullableDataVariable<Guid> variable = ds.V.PreferredOrganization;
+						DBIVariable variable = ds.V.PreferredOrganization;
 #endif
 						string fullname = sc.Name;
-						return !variable.IsNull && (Guid)fromConverter(fullname.Substring(1 + fullname.LastIndexOf('\\'))) == variable.Value;
+						return variable.Schema.EffectiveType.GenericEquals((Guid)fromConverter(fullname.Substring(1 + fullname.LastIndexOf('\\'))), variable.Value);
 					}
 				};
 			}
@@ -383,6 +374,43 @@ namespace Thinkage.MainBoss.Database {
 					return GenerationStampValue++;
 				};
 			}
+			else if (sourceColumnSchema == dsVariablesService.Schema.T.__Variables.F.Value) {
+				// The Registry session uses the VariablesService like everyone else, using a blob type for the value encoding type.
+				// However, the old ad-hoc registry service code stored string variables in __Variables.Value as REG_SZ rather than REG_BINARY.
+				// We have to map the string in the registry to a byte array that will ultimately decode to the correct value for the variable.
+				normalEvaluator = delegate (RegistryKey sc) {
+					var valueAsStored = sc.GetValue(sourceColumnSchema.Name);
+					if (valueAsStored is string s)
+						// Encode the string as a byte array, which is what should have been stored in the first place.
+						valueAsStored = Schema.VariableEncoderProviderObject.GetValueEncoder(Libraries.XAF.Database.Service.MSSql.Server.NVARCHAR_MAX_NULLABLE_TypeInfo, Libraries.XAF.Database.Service.MSSql.Server.EncodedType).Encode(s);
+					return (Byte[])valueAsStored;
+				};
+				normalUpdater = (sc, v) => {
+					RegistryUpdates.Add(() => {
+						// Going in the other direction, we have things already blob-encoded so we have to use a heuristic to determine if the value was a string
+						// or an Id. The only string we stored was a version number, which is all 7-bit characters.
+						if (v == null)
+							try {
+								sc.DeleteValue(sourceColumnSchema.Name);
+							}
+							catch (System.Exception) { }
+						else {
+							var blobValue = (Byte[])v;
+							try {
+								var stringValue = (string)Schema.VariableEncoderProviderObject.GetValueEncoder(Libraries.XAF.Database.Service.MSSql.Server.NVARCHAR_MAX_NULLABLE_TypeInfo, Libraries.XAF.Database.Service.MSSql.Server.EncodedType).UnEncode(blobValue);
+								var regex = new System.Text.RegularExpressions.Regex("^[0-9.]+$");
+								if (regex.IsMatch(stringValue)) {
+									sc.SetValue(sourceColumnSchema.Name, stringValue, RegistryValueKind.String);
+									return;
+								}
+							}
+							catch {
+							}
+							sc.SetValue(sourceColumnSchema.Name, blobValue, RegistryValueKind.Binary);
+						}
+					});
+				};
+			}
 			else
 				base.GetEvaluators(sourceColumnSchema, out normalEvaluator, out normalUpdater, out exceptionEvaluator);
 		}
@@ -402,7 +430,6 @@ namespace Thinkage.MainBoss.Database {
 			}
 		}
 	}
-	#endregion
 	#endregion
 
 	#region SavedOrganizationSessionLocalAllUsers
@@ -472,9 +499,8 @@ namespace Thinkage.MainBoss.Database {
 				return session;
 			}
 			public override ISession CreateDatabase(IConnectionInformation connectInfo, DBI_Database schema) {
-				Version currentVersion;
 				SavedOrganizationSessionAllUsers session = (SavedOrganizationSessionAllUsers)OpenSession(connectInfo, schema);
-				GetDBVersion(session, schema, out currentVersion);
+				session.GetDBVersion(schema, out Version currentVersion);
 				if (currentVersion.Major == 0)
 					CreateRegistryStructure(session, schema);
 				Upgrade(session, currentVersion, schema);

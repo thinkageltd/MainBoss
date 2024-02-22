@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
-using Thinkage.Libraries.DBILibrary;
 using System.Linq;
-using Thinkage.Libraries.DBAccess;
+using Thinkage.Libraries.DBILibrary;
 using Thinkage.Libraries.DBILibrary.MSSql;
-using Thinkage.MainBoss.Database;
 
-namespace Thinkage.MainBoss.MainBoss {
+namespace Thinkage.MainBoss.Database {
 	public class DatabasesOnServerSession : EnumerableDrivenSession<DatabaseOnServerInformation, DatabaseOnServerInformation> {
 		#region Connection
 		public class Connection : IConnectionInformation {
@@ -86,70 +83,62 @@ namespace Thinkage.MainBoss.MainBoss {
 		#endregion
 		#region - GetEvaluators (returns delegates that produce column values)
 		protected override void GetEvaluators(DBI_Column sourceColumnSchema, out GetNormalColumnValue normalEvaluator, out SetNormalColumnValue normalUpdater, out GetExceptionColumnValue exceptionEvaluator) {
-			normalUpdater = delegate(DatabaseOnServerInformation e, object v)
-			{
+			normalUpdater = delegate (DatabaseOnServerInformation e, object v) {
 				throw new NotImplementedException();
 			};
 			if (sourceColumnSchema == dsDatabasesOnServer.Schema.T.DatabasesOnServer.F.Id) {
-				normalEvaluator = delegate(DatabaseOnServerInformation e)
-				{
+				normalEvaluator = delegate (DatabaseOnServerInformation e) {
 					return e.Id;
 				};
-				exceptionEvaluator = delegate(System.Exception e) {
+				exceptionEvaluator = delegate (System.Exception e) {
 					return ((Libraries.TypeInfo.IntegralTypeInfo)dsDatabasesOnServer.Schema.T.DatabasesOnServer.F.Id.EffectiveType).NativeMaxLimit(typeof(ulong));
 				};
 			}
 			else if (sourceColumnSchema == dsDatabasesOnServer.Schema.T.DatabasesOnServer.F.ServerName) {
-				normalEvaluator = delegate(DatabaseOnServerInformation e)
-				{
+				normalEvaluator = delegate (DatabaseOnServerInformation e) {
 					return e.ServerName;
 				};
-				exceptionEvaluator = delegate(System.Exception e) {
+				exceptionEvaluator = delegate (System.Exception e) {
 					return KB.I("Error");
 				};
 			}
 			else if (sourceColumnSchema == dsDatabasesOnServer.Schema.T.DatabasesOnServer.F.Database) {
-				normalEvaluator = delegate(DatabaseOnServerInformation e)
-				{
+				normalEvaluator = delegate (DatabaseOnServerInformation e) {
 					return e.DatabaseName;
 				};
-				exceptionEvaluator = delegate(System.Exception e) {
+				exceptionEvaluator = delegate (System.Exception e) {
 					return KB.I("Error");
 				};
 			}
 			else if (sourceColumnSchema == dsDatabasesOnServer.Schema.T.DatabasesOnServer.F.OrganizationName) {
-				normalEvaluator = delegate(DatabaseOnServerInformation e)
-				{
+				normalEvaluator = delegate (DatabaseOnServerInformation e) {
 					return e.OrganizationName;
 				};
-				exceptionEvaluator = delegate(System.Exception e) {
+				exceptionEvaluator = delegate (System.Exception e) {
 					return null;
 				};
 			}
 			else if (sourceColumnSchema == dsDatabasesOnServer.Schema.T.DatabasesOnServer.F.UserRecordExists) {
-				normalEvaluator = delegate(DatabaseOnServerInformation e)
-				{
+				normalEvaluator = delegate (DatabaseOnServerInformation e) {
 					return e.UserRecordExists;
 				};
-				exceptionEvaluator = delegate(System.Exception e) {
+				exceptionEvaluator = delegate (System.Exception e) {
 					return null;
 				};
 			}
 			else if (sourceColumnSchema == dsDatabasesOnServer.Schema.T.DatabasesOnServer.F.Version) {
-				normalEvaluator = delegate(DatabaseOnServerInformation e)
-				{
+				normalEvaluator = delegate (DatabaseOnServerInformation e) {
 					return e.Version;
 				};
-				exceptionEvaluator = delegate(System.Exception e) {
+				exceptionEvaluator = delegate (System.Exception e) {
 					return null;
 				};
 			}
 			else if (sourceColumnSchema == dsDatabasesOnServer.Schema.T.DatabasesOnServer.F.AccessError) {
-				normalEvaluator = delegate(DatabaseOnServerInformation e)
-				{
+				normalEvaluator = delegate (DatabaseOnServerInformation e) {
 					return e.AccessError;
 				};
-				exceptionEvaluator = delegate(System.Exception e) {
+				exceptionEvaluator = delegate (System.Exception e) {
 					return Libraries.Exception.FullMessage(e);
 				};
 			}
@@ -212,12 +201,12 @@ namespace Thinkage.MainBoss.MainBoss {
 				serverEnumerator = new string[] { fixedServer };
 			else
 				serverEnumerator = System.Data.Sql.SqlDataSourceEnumerator.Instance.GetDataSources().Rows.Cast<DataRow>().Select((row => row[1] is DBNull ? (string)row[0] : Libraries.Strings.IFormat("{0}\\{1}", row[0], row[1])));
-			// transform the serverEnumerator into an enumerator of sql connection objects and create DatabaseOnServerInformation objects for them.
+			// transform the serverEnumerator into an enumerator of sql connection objects and create T objects for them.
 			serverEnumerator.AsParallel().WithDegreeOfParallelism(10).ForAll(
-				delegate(string serverName) {
+				delegate (string serverName) {
 					try {
 						SqlClient.SqlServer.ListDatabaseNames(serverName).AsParallel().WithDegreeOfParallelism(4).ForAll(
-							delegate(SqlClient.Connection c) {
+							delegate (SqlClient.Connection c) {
 								var e = new DatabaseOnServerInformation(c);
 								lock (result) {
 									result.Add(e);
@@ -232,7 +221,7 @@ namespace Thinkage.MainBoss.MainBoss {
 						}
 					}
 				});
-			return result;
+			return (IEnumerable<DatabaseOnServerInformation>)result;
 		}
 		#endregion
 		#endregion

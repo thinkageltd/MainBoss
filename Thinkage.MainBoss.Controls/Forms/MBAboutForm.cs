@@ -42,17 +42,26 @@ namespace Thinkage.MainBoss.Controls {
 				aboutText.Append(" ");
 			}
 			aboutText.Append(Strings.Format(KB.K("Revision {0}"), ver.Revision));
-			aboutText.AppendLine(Strings.Format(KB.K("Culture {0} ({1})"), Thinkage.Libraries.Application.InstanceCultureInfo.NativeName, Thinkage.Libraries.Application.InstanceCultureInfo.Name));
-			if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed) {
-				// Determine the root of our application from the UpdateLocation Uri if we have been clickonce deployed
-				var webRoot = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.UpdateLocation.GetLeftPart(UriPartial.Authority);
-				aboutText.AppendLine(Strings.Format(KB.K("Network Deployed {0}"), webRoot));
-			}
+			aboutText.Append("\n");
+			aboutText.Append(Environment.OSVersion.VersionString);
+
+			aboutText.AppendLine(Strings.Format(KB.K("Formats {0} ({1}/{2:X4})"), Thinkage.Libraries.Application.InstanceFormatCultureInfo.NativeName, Thinkage.Libraries.Application.InstanceFormatCultureInfo.Name, Thinkage.Libraries.Application.InstanceFormatCultureInfo.LCID));
+			aboutText.Append("\n"); // single space next three
+			aboutText.Append(Strings.Format(KB.K("Messages {0} ({1}/{2:X4})"), Thinkage.Libraries.Application.InstanceMessageCultureInfo.NativeName, Thinkage.Libraries.Application.InstanceMessageCultureInfo.Name, Thinkage.Libraries.Application.InstanceMessageCultureInfo.LCID));
+			aboutText.Append("\n"); // single space next three
+			aboutText.Append(Strings.Format(KB.K("Installed as {0} ({1}/{2:X4})"), System.Globalization.CultureInfo.InstalledUICulture.NativeName, System.Globalization.CultureInfo.InstalledUICulture.Name, System.Globalization.CultureInfo.InstalledUICulture.LCID));
+			// TODO: Determine out deployment using some other more portable method; System.Deployment is not the means to get the information for .NET Core
+			//if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed) {
+			//	// Determine the root of our application from the UpdateLocation Uri if we have been clickonce deployed
+			//	var webRoot = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.UpdateLocation.GetLeftPart(UriPartial.Authority);
+			//	aboutText.AppendLine(Strings.Format(KB.K("Network Deployed {0}"), webRoot));
+			//}
 			if (db != null) {
-				aboutText.AppendLine(Strings.Format(KB.K("Database {0}"), db.ConnectionInfo.DBName));
-				aboutText.AppendLine(Strings.Format(KB.K("Database version {0}"), Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().VersionHandler.CurrentVersion));
-				aboutText.AppendLine(Strings.Format(KB.K("Server {0}"), db.ConnectionInfo.DBServer));
-				aboutText.AppendLine(db.DatabaseServerProductIdentification);
+				aboutText.AppendLine(Strings.Format(KB.K("Database {0} Version {1}"), db.ConnectionInfo.DBName, Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().VersionHandler.CurrentVersion));
+				aboutText.Append("\n");
+				aboutText.Append(Strings.Format(KB.K("Server {0}"), db.ConnectionInfo.DBServer));
+				aboutText.Append("\n");
+				aboutText.Append(db.DatabaseServerProductIdentification);
 			}
 			else
 				aboutText.AppendLine(KB.K("Not connected to a database").Translate());
@@ -67,14 +76,16 @@ namespace Thinkage.MainBoss.Controls {
 				typeof(System.Reflection.AssemblyCopyrightAttribute)))).Copyright);
 			uint desiredWidth = aboutText.MaxLineLength * 10 / 8;
 			TextSizePreference preference = new TextSizePreference() { DefaultWidthInCharacters = desiredWidth, MinWidthInCharacters = desiredWidth, MaxPreferredWidthInCharacters = desiredWidth };
-			UITextDisplay tbAbout = uiFactory.CreateTextDisplay(new StringTypeInfo(0, null, aboutText.LineCount + 1, false, false, false).GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo), null, false, preference);
+			UITextDisplay tbAbout = uiFactory.CreateTextDisplay(new StringTypeInfo(0, null, aboutText.LineCount + 1, false, false, false).GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo), null, false, preference);
 
-			tbAbout.HorizontalScrollbar = UIScollbarVisibility.Never;
-			tbAbout.VerticalScrollbar = UIScollbarVisibility.Never;
+			if (tbAbout is UIScrollbars) {
+				((UIScrollbars)tbAbout).HorizontalScrollbar = UIScollbarVisibility.Never;
+				((UIScrollbars)tbAbout).VerticalScrollbar = UIScollbarVisibility.Never;
+			}
 			tbAbout.HorizontalAlignment = System.Drawing.StringAlignment.Center;
 			tbAbout.Value = aboutText.ToString();
 
-			webLink = uiFactory.CreateLinkDisplay(new StringTypeInfo(0, 20, 0, false, false, false).GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo),
+			webLink = uiFactory.CreateLinkDisplay(new StringTypeInfo(0, 20, 0, false, false, false).GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo),
 				(tf, value) => Thinkage.Libraries.Xml.UriUtilities.SetImpliedProtocol(tf.Format(value), "http://"));
 			webLink.Value = KB.I("www.mainboss.com");
 			webLink.HorizontalAlignment = System.Drawing.StringAlignment.Center;

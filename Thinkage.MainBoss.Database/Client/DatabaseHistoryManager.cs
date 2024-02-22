@@ -7,10 +7,10 @@ namespace Thinkage.MainBoss.Database {
 	// The purpose of this class is to "rescue" DatabaseHistory messages created during a failed transaction and to try to
 	// commit them anyway.
 	public class DatabaseHistoryManager {
-		public DatabaseHistoryManager(XAFClient session) {
+		public DatabaseHistoryManager(DBClient session) {
 			Session = session;
 		}
-		private XAFClient Session;
+		private DBClient Session;
 //		private DateTime? LastPreviousDate;
 #if WORK_IN_PROGRESS
 		// Any DatabaseHistory rows created in the workingDS during the PerformTransaction body will be "rescued" and

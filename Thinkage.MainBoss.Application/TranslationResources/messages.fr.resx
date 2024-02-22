@@ -329,6 +329,12 @@ ne sera pas valable pour cette version</value>
   <data name="Thinkage.MainBoss.Application§The culture info to use" xml:space="preserve">
     <value>L'information culturelle à utiliser</value>
   </data>
+  <data name="Thinkage.MainBoss.Application§The culture info to use for formatting" xml:space="preserve">
+    <value>Les informations de culture à utiliser pour le formatage</value>
+  </data>
+  <data name="Thinkage.MainBoss.Application§The culture info to use for messages" xml:space="preserve">
+    <value>L'information de culture à utiliser pour les messages</value>
+  </data>
   <data name="Thinkage.MainBoss.Application§The database is already at the latest version and tailored for your current SQL Server version" xml:space="preserve">
     <value>La base de données est déjà à la dernière version et adaptée à votre version de SQL Server actuel</value>
   </data>

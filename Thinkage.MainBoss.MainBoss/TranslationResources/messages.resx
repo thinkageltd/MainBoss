@@ -117,30 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="dsDatabasesOnServerLabel§AccessError" xml:space="preserve">
-    <value>Access Error</value>
-  </data>
-  <data name="dsDatabasesOnServerLabel§Database" xml:space="preserve">
-    <value>DataBase Name</value>
-  </data>
-  <data name="dsDatabasesOnServerLabel§Databases On Server" xml:space="preserve">
-    <value>Databases On Server</value>
-  </data>
-  <data name="dsDatabasesOnServerLabel§Id" xml:space="preserve">
-    <value>Id</value>
-  </data>
-  <data name="dsDatabasesOnServerLabel§OrganizationName" xml:space="preserve">
-    <value>Organization Name</value>
-  </data>
-  <data name="dsDatabasesOnServerLabel§ServerName" xml:space="preserve">
-    <value>Server Name</value>
-  </data>
-  <data name="dsDatabasesOnServerLabel§UserRecordExists" xml:space="preserve">
-    <value>User Record Exists</value>
-  </data>
-  <data name="dsDatabasesOnServerLabel§Version" xml:space="preserve">
-    <value>Version</value>
-  </data>
   <data name="Thinkage.MainBoss.MainBoss§¯SQL Servers Enumerator" xml:space="preserve">
     <value>SQL Servers Enumerator</value>
   </data>
@@ -234,9 +210,6 @@
   <data name="Thinkage.MainBoss.MainBoss§Credentials" xml:space="preserve">
     <value>Credentials</value>
   </data>
-  <data name="Thinkage.MainBoss.MainBoss§CultureInfo" xml:space="preserve">
-    <value>Language</value>
-  </data>
   <data name="Thinkage.MainBoss.MainBoss§Database Operations" xml:space="preserve">
     <value>Database Operations</value>
   </data>
@@ -263,6 +236,9 @@
   </data>
   <data name="Thinkage.MainBoss.MainBoss§Exit this application" xml:space="preserve">
     <value>Exit this application</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§FormatCultureInfo" xml:space="preserve">
+    <value>FormatCultureInfo</value>
   </data>
   <data name="Thinkage.MainBoss.MainBoss§Free Limited Single User" xml:space="preserve">
     <value>Free Limited Single User</value>
@@ -297,6 +273,12 @@
   <data name="Thinkage.MainBoss.MainBoss§Input SQL database {0}" xml:space="preserve">
     <value>Input SQL database {0}</value>
   </data>
+  <data name="Thinkage.MainBoss.MainBoss§Invalid /FormatCultureInfo '{0}'" xml:space="preserve">
+    <value>Invalid /FormatCultureInfo '{0}'</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Invalid /MessageCultureInfo '{0}'" xml:space="preserve">
+    <value>Invalid /MessageCultureInfo '{0}'</value>
+  </data>
   <data name="Thinkage.MainBoss.MainBoss§Invalid CultureInfo '{0}'" xml:space="preserve">
     <value>Invalid CultureInfo '{0}'</value>
   </data>
@@ -329,6 +311,9 @@
   </data>
   <data name="Thinkage.MainBoss.MainBoss§MB2.9 data source {0}" xml:space="preserve">
     <value>MB2.9 data source {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§MessageCultureInfo" xml:space="preserve">
+    <value>MessageCultureInfo</value>
   </data>
   <data name="Thinkage.MainBoss.MainBoss§No License" xml:space="preserve">
     <value>No License</value>
@@ -491,6 +476,9 @@
   </data>
   <data name="Thinkage.MainBoss.MainBoss§Upgrade the database structure to the one used by this version of MainBoss" xml:space="preserve">
     <value>Upgrade the database structure to the one used by this version of MainBoss</value>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Use either /CultureInfo or /MessageCultureInfo and /FormatCultureInfo" xml:space="preserve">
+    <value>Use either /CultureInfo or /MessageCultureInfo and /FormatCultureInfo</value>
   </data>
   <data name="Thinkage.MainBoss.MainBoss§User {0}" xml:space="preserve">
     <value>User {0}</value>

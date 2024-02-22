@@ -18,7 +18,7 @@ namespace Thinkage.MainBoss.WebCommon
 		/// Derived class must be able to create a new ApplicationObject when we need it
 		/// </summary>
 		/// <returns></returns>
-		protected abstract APPOBJ CreateNewApplicationObject(System.Globalization.CultureInfo ci);
+		protected abstract APPOBJ CreateNewApplicationObject(System.Globalization.CultureInfo formatCultureInfo, System.Globalization.CultureInfo messageCultureInfo);
 
 		const string InstanceKey = "Thinkage.Libraries.Application.Instance";
 #if DEBUG
@@ -37,8 +37,8 @@ namespace Thinkage.MainBoss.WebCommon
 					if (appObj != null) { // could be null if exception occurred during Session startup and no app object was successfully created
 						Thinkage.Libraries.Application.SetApplicationObject(appObj);
 						// Set thread culture info to the application's CultureInfo.
-						System.Threading.Thread.CurrentThread.CurrentCulture = appObj.CultureInfo;
-						System.Threading.Thread.CurrentThread.CurrentUICulture = appObj.CultureInfo;
+						System.Threading.Thread.CurrentThread.CurrentCulture = appObj.FormatCultureInfo;
+						System.Threading.Thread.CurrentThread.CurrentUICulture = appObj.MessageCultureInfo;
 					}
 				}
 			};
@@ -104,25 +104,29 @@ namespace Thinkage.MainBoss.WebCommon
 			// out INstance. If requests are handled concurrently by multiple threads there is no way to use Instance.
 			//if (Thinkage.Libraries.Application.Instance != null)
 			//	throw new GeneralException(KB.K("HTTP state indicates a new session but Application.Instance is non-null"));
-			System.Globalization.CultureInfo userCultureInfo = null;
-			for (int i = 0; i < Request.UserLanguages.Length && userCultureInfo == null; ++i) {
+			System.Globalization.CultureInfo messageCultureInfo = null;
+			System.Globalization.CultureInfo formatCultureInfo = null;
+			for (int i = 0; i < Request.UserLanguages.Length && messageCultureInfo == null; ++i) {
 				try {
 					string simpleUserLanguage = Request.UserLanguages[i].Split(';')[0]; // separate any "; q = xx" parameters that might be present
-					userCultureInfo = System.Globalization.CultureInfo.GetCultureInfoByIetfLanguageTag(simpleUserLanguage);
-					userCultureInfo = System.Globalization.CultureInfo.CreateSpecificCulture(userCultureInfo.Name); // must use Specific cultures in .NET programs (see MSDN)
-					System.Threading.Thread.CurrentThread.CurrentCulture = userCultureInfo;
-					System.Threading.Thread.CurrentThread.CurrentUICulture = userCultureInfo;
+					messageCultureInfo = System.Globalization.CultureInfo.GetCultureInfoByIetfLanguageTag(simpleUserLanguage);
+					messageCultureInfo = System.Globalization.CultureInfo.CreateSpecificCulture(messageCultureInfo.Name); // must use Specific cultures in .NET programs (see MSDN)
+					System.Threading.Thread.CurrentThread.CurrentCulture = messageCultureInfo;
+					System.Threading.Thread.CurrentThread.CurrentUICulture = messageCultureInfo;
+					formatCultureInfo = messageCultureInfo; // use messageCultureInfo for formatting as well
 				}
 				catch (ArgumentException) { // Unsupported culture, try another
-					userCultureInfo = null;
+					messageCultureInfo = null;
 				}
 			}
-			if (userCultureInfo == null)
-				userCultureInfo = System.Globalization.CultureInfo.CurrentCulture;
+			if (messageCultureInfo == null) {
+				formatCultureInfo = System.Globalization.CultureInfo.CurrentCulture;
+				messageCultureInfo = System.Globalization.CultureInfo.CurrentUICulture;
+			}
 
 			try {
 				// Note the Current.Request.UserHostName will be "::1" for a local computer if testing locally (meaning 127.0.0.1 for some reason).
-				APPOBJ app = CreateNewApplicationObject(userCultureInfo);
+				APPOBJ app = CreateNewApplicationObject(formatCultureInfo, messageCultureInfo);
 				Session.Add(InstanceKey, app); // Unset up object is fine in event of an exception
 
 				app.SetupApplication();

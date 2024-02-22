@@ -72,11 +72,12 @@ namespace Thinkage.MainBoss.Controls
 		private static DelayedCreateTbl RequestAssignmentBrowseTbl(bool fixedRequest) {
 			return new DelayedCreateTbl(
 				delegate() {
-					List<BTbl.ICtorArg> BTblAttrs = new List<BTbl.ICtorArg>();
-					BTblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.RequestAssignment.F.RequestID.F.Number));
-					BTblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.RequestAssignment.F.RequestID.F.CurrentRequestStateHistoryID.F.RequestStateID.F.Code));
-					BTblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.RequestAssignment.F.RequestID.F.Subject));
-					BTblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.RequestAssignment.F.RequestAssigneeID.F.ContactID.F.Code));
+					List<BTbl.ICtorArg> BTblAttrs = new List<BTbl.ICtorArg> {
+						BTbl.ListColumn(dsMB.Path.T.RequestAssignment.F.RequestID.F.Number),
+						BTbl.ListColumn(dsMB.Path.T.RequestAssignment.F.RequestID.F.CurrentRequestStateHistoryID.F.RequestStateID.F.Code),
+						BTbl.ListColumn(dsMB.Path.T.RequestAssignment.F.RequestID.F.Subject),
+						BTbl.ListColumn(dsMB.Path.T.RequestAssignment.F.RequestAssigneeID.F.ContactID.F.Code)
+					};
 
 					return new CompositeTbl(dsMB.Schema.T.RequestAssignment, TId.RequestAssignment,
 						new Tbl.IAttr[] {
@@ -249,8 +250,9 @@ namespace Thinkage.MainBoss.Controls
 		private static List<IDisablerProperties> SelfAssignDisablers() {
 			ITblDrivenApplication app = Application.Instance.GetInterface<ITblDrivenApplication>();
 			TableOperationRightsGroup rightsGroup = (TableOperationRightsGroup)app.TableRights.FindDirectChild("UnassignedRequest");
-			var list = new List<IDisablerProperties>();
-			list.Add((IDisablerProperties)app.PermissionsManager.GetPermission(rightsGroup.GetTableOperationRight(TableOperationRightsGroup.TableOperation.Create)));
+			var list = new List<IDisablerProperties> {
+				(IDisablerProperties)app.PermissionsManager.GetPermission(rightsGroup.GetTableOperationRight(TableOperationRightsGroup.TableOperation.Create))
+			};
 			rightsGroup = (TableOperationRightsGroup)app.TableRights.FindDirectChild(dsMB.Schema.T.RequestStateHistory.Name);
 			list.Add((IDisablerProperties)app.PermissionsManager.GetPermission(rightsGroup.GetTableOperationRight(TableOperationRightsGroup.TableOperation.Create)));
 			return list;
@@ -269,14 +271,15 @@ namespace Thinkage.MainBoss.Controls
 					throw new GeneralException(KB.K("You are not registered as a Request Assignee"));
 				requestAssigneeID = ((dsMB.RequestAssigneeRow)row).F.Id;
 			}
-			var initList = new List<TblActionNode>();
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.RequestStateHistory.F.RequestID, new ConstantValue(requestID)));
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.RequestStateHistory.F.RequestStateID, new ConstantValue(KnownIds.RequestStateInProgressId)));
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.RequestStateHistory.F.RequestStateHistoryStatusID, new EditorPathValue(dsMB.Path.T.RequestStateHistory.F.RequestID.F.CurrentRequestStateHistoryID.F.RequestStateHistoryStatusID)));
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.RequestStateHistory.F.PredictedCloseDate, new EditorPathValue(dsMB.Path.T.RequestStateHistory.F.RequestID.F.CurrentRequestStateHistoryID.F.PredictedCloseDate)));
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.RequestStateHistory.F.Comment, new ConstantValue(Strings.Format(KB.K("Self assigned")))));
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.RequestAssignment.F.RequestID, 1, new EditorPathValue(dsMB.Path.T.RequestStateHistory.F.RequestID)));
-			initList.Add(Init.OnLoadNew(dsMB.Path.T.RequestAssignment.F.RequestAssigneeID, 1, new ConstantValue(requestAssigneeID)));
+			var initList = new List<TblActionNode> {
+				Init.OnLoadNew(dsMB.Path.T.RequestStateHistory.F.RequestID, new ConstantValue(requestID)),
+				Init.OnLoadNew(dsMB.Path.T.RequestStateHistory.F.RequestStateID, new ConstantValue(KnownIds.RequestStateInProgressId)),
+				Init.OnLoadNew(dsMB.Path.T.RequestStateHistory.F.RequestStateHistoryStatusID, new EditorPathValue(dsMB.Path.T.RequestStateHistory.F.RequestID.F.CurrentRequestStateHistoryID.F.RequestStateHistoryStatusID)),
+				Init.OnLoadNew(dsMB.Path.T.RequestStateHistory.F.PredictedCloseDate, new EditorPathValue(dsMB.Path.T.RequestStateHistory.F.RequestID.F.CurrentRequestStateHistoryID.F.PredictedCloseDate)),
+				Init.OnLoadNew(dsMB.Path.T.RequestStateHistory.F.Comment, new ConstantValue(Strings.Format(KB.K("Self assigned")))),
+				Init.OnLoadNew(dsMB.Path.T.RequestAssignment.F.RequestID, 1, new EditorPathValue(dsMB.Path.T.RequestStateHistory.F.RequestID)),
+				Init.OnLoadNew(dsMB.Path.T.RequestAssignment.F.RequestAssigneeID, 1, new ConstantValue(requestAssigneeID))
+			};
 			Libraries.Application.Instance.GetInterface<ITblDrivenApplication>().GetInterface<ITblDrivenApplication>().PerformMultiEdit(el.CommonUI.UIFactory, el.DB, TblRegistry.FindDelayedEditTbl(dsMB.Schema.T.RequestStateHistory),
 				EdtMode.New,
 				new[] { new object[] { } },
@@ -288,10 +291,11 @@ namespace Thinkage.MainBoss.Controls
 #endif
 		private static DelayedCreateTbl RequestEditTbl(TblLayoutNodeArray nodes, FeatureGroup featureGroup, bool AssignToSelf) {
 			return new DelayedCreateTbl(delegate() {
-				List<ETbl.ICtorArg> etblArgs = new List<ETbl.ICtorArg>();
-				etblArgs.Add(MB3ETbl.HasStateHistoryAndSequenceCounter(dsMB.Path.T.Request.F.Number, dsMB.Schema.T.RequestSequenceCounter, dsMB.Schema.V.WRSequence, dsMB.Schema.V.WRSequenceFormat, RequestHistoryTable));
-				etblArgs.Add(ETbl.EditorAccess(false, EdtMode.UnDelete, EdtMode.Delete));
-				etblArgs.Add(ETbl.Print(TIReports.SingleRequestFormReport, dsMB.Path.T.RequestReport.F.RequestID));
+				List<ETbl.ICtorArg> etblArgs = new List<ETbl.ICtorArg> {
+					MB3ETbl.HasStateHistoryAndSequenceCounter(dsMB.Path.T.Request.F.Number, dsMB.Schema.T.RequestSequenceCounter, dsMB.Schema.V.WRSequence, dsMB.Schema.V.WRSequenceFormat, RequestHistoryTable),
+					ETbl.EditorAccess(false, EdtMode.UnDelete, EdtMode.Delete),
+					ETbl.Print(TIReports.SingleRequestFormReport, dsMB.Path.T.RequestReport.F.RequestID)
+				};
 				if (AssignToSelf) {
 #if KEVINSWAY
 					var augmentedNodes = new List<TblLayoutNode>(nodes.ColumnArray);
@@ -301,19 +305,19 @@ namespace Thinkage.MainBoss.Controls
 #if KEITHSWAY
 					etblArgs.Add(ETbl.CustomCommand(
 							delegate(EditLogic el) {
-								var group = new EditLogic.MutuallyExclusiveCommandSetDeclaration();
-								group.Add(new EditLogic.CommandDeclaration(
+								var group = new EditLogic.MutuallyExclusiveCommandSetDeclaration {
+									new EditLogic.CommandDeclaration(
 									SelfAssignCommand,
 									new MultiCommandIfAllEnabled(
 										EditLogic.StateTransitionCommand.NewSameTargetState(el,
 											SelfAssignTip,
-											delegate()
-											{
+											delegate () {
 												SelfAssignmentEditor(el, el.RootRowIDs[0]);
 											},
 											el.AllStatesWithExistingRecord.ToArray()),
 										SelfAssignDisablers().ToArray())
-									));
+									)
+								};
 								return group;
 							}
 					));
@@ -379,10 +383,10 @@ namespace Thinkage.MainBoss.Controls
 						BTbl.ListColumn(dsMB.Path.T.RequestAssignee.F.ContactID.F.BusinessPhone, NonPerViewColumn),
 						BTbl.ListColumn(dsMB.Path.T.RequestAssignee.F.ContactID.F.MobilePhone, NonPerViewColumn),
 						BTbl.ListColumn(dsMB.Path.T.RequestAssignee.F.Id.L.RequestAssigneeStatistics.Id.F.NumNew, NonPerViewColumn),
-						BTbl.ListColumn(dsMB.Path.T.RequestAssignee.F.Id.L.RequestAssigneeStatistics.Id.F.NumInProgress, NonPerViewColumn)
+						BTbl.ListColumn(dsMB.Path.T.RequestAssignee.F.Id.L.RequestAssigneeStatistics.Id.F.NumInProgress, NonPerViewColumn),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.RequestAssigneeReport))
 					),
-					new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete)),
-					TIReports.NewRemotePTbl(TIReports.RequestAssigneeReport)
+					new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete))
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -420,10 +424,10 @@ namespace Thinkage.MainBoss.Controls
 							BTbl.ListColumn(dsMB.Path.T.RequestAssignmentByAssignee.F.RequestID.F.CurrentRequestStateHistoryID.F.RequestStateID.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.RequestAssignmentByAssignee.F.RequestID.F.CurrentRequestStateHistoryID.F.RequestStateHistoryStatusID.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.RequestAssignmentByAssignee.F.RequestID.F.Subject),
-							BTbl.ListColumn(dsMB.Path.T.RequestAssignmentByAssignee.F.RequestID.L.RequestExtras.RequestID.F.CountOfLinkedWorkOrders, BTbl.ListColumnArg.Contexts.SearchAndFilter)
-						),
-						new TreeStructuredTbl(null, 2),
-						TIReports.NewRemotePTbl(TIReports.RequestByAssigneeFormReport),
+							BTbl.ListColumn(dsMB.Path.T.RequestAssignmentByAssignee.F.RequestID.L.RequestExtras.RequestID.F.CountOfLinkedWorkOrders, BTbl.Contexts.SearchAndFilter),
+							BTbl.SetTreeStructure(null, 2),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.RequestByAssigneeFormReport))
+						)
 					},
 					null,
 					// The fake contact row for unassigned work orders; This displays because the XAFDB file specifies a text provider for its own ID field.
@@ -543,8 +547,11 @@ namespace Thinkage.MainBoss.Controls
 				return new Tbl(dsMB.Schema.T.RequestState, TId.RequestState,
 				new Tbl.IAttr[] {
 					RequestsGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.RequestState.F.Code), BTbl.ListColumn(dsMB.Path.T.RequestState.F.Desc)),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(
+						BTbl.ListColumn(dsMB.Path.T.RequestState.F.Code),
+						BTbl.ListColumn(dsMB.Path.T.RequestState.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()
+					)
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -565,11 +572,12 @@ namespace Thinkage.MainBoss.Controls
 				return new Tbl(dsMB.Schema.T.RequestStateHistoryStatus, TId.RequestStatus,
 				new Tbl.IAttr[] {
 					RequestsGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.RequestStateHistoryStatus.F.Code),
-							BTbl.ListColumn(dsMB.Path.T.RequestStateHistoryStatus.F.Desc)
+					new BTbl(
+						BTbl.ListColumn(dsMB.Path.T.RequestStateHistoryStatus.F.Code),
+						BTbl.ListColumn(dsMB.Path.T.RequestStateHistoryStatus.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()
 					),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -583,8 +591,7 @@ namespace Thinkage.MainBoss.Controls
 			#endregion
 			#region RequestStateHistory
 			DefineEditTbl(dsMB.Schema.T.RequestStateHistory, new DelayedCreateTbl(delegate () {
-				TblLayoutNodeArray extraNodes;
-				List<TblActionNode> inits = StateHistoryInits(MB3Client.RequestHistoryTable, out extraNodes);
+				List<TblActionNode> inits = StateHistoryInits(MB3Client.RequestHistoryTable, out TblLayoutNodeArray extraNodes);
 				TblLayoutNodeArray RequestStateHistoryNodes = new TblLayoutNodeArray(
 						TblGroupNode.New(dsMB.Path.T.RequestStateHistory.F.RequestID, new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
 							TblColumnNode.New(dsMB.Path.T.RequestStateHistory.F.RequestID.F.Number, DCol.Normal, ECol.AllReadonly),
@@ -626,7 +633,7 @@ namespace Thinkage.MainBoss.Controls
 						new BTbl(
 							MB3BTbl.IsStateHistoryTbl(RequestHistoryTable),
 							BTbl.ListColumn(dsMB.Path.T.RequestStateHistory.F.RequestID.F.Number),
-							BTbl.ListColumn(dsMB.Path.T.RequestStateHistory.F.EffectiveDate, BTbl.ListColumnArg.Contexts.SortInitialDescending),
+							BTbl.ListColumn(dsMB.Path.T.RequestStateHistory.F.EffectiveDate, BTbl.Contexts.SortInitialDescending),
 							BTbl.ListColumn(dsMB.Path.T.RequestStateHistory.F.RequestStateID.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.RequestStateHistory.F.RequestStateHistoryStatusID.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.RequestStateHistory.F.Comment)
@@ -670,10 +677,10 @@ namespace Thinkage.MainBoss.Controls
 			#region Request
 			BTbl.ICtorArg RequestNumberListColumn = BTbl.ListColumn(dsMB.Path.T.Request.F.Number);
 			BTbl.ICtorArg RequestRequestorListColumn = BTbl.ListColumn(dsMB.Path.T.Request.F.RequestorID.F.ContactID.F.Code);
-			BTbl.ICtorArg RequestBusinessPhoneListColumn = BTbl.ListColumn(dsMB.Path.T.Request.F.RequestorID.F.ContactID.F.BusinessPhone, BTbl.ListColumnArg.Contexts.ClosedCombo | BTbl.ListColumnArg.Contexts.OpenCombo | BTbl.ListColumnArg.Contexts.SearchAndFilter);
+			BTbl.ICtorArg RequestBusinessPhoneListColumn = BTbl.ListColumn(dsMB.Path.T.Request.F.RequestorID.F.ContactID.F.BusinessPhone, BTbl.Contexts.ClosedPicker | BTbl.Contexts.OpenPicker | BTbl.Contexts.SearchAndFilter);
 			BTbl.ICtorArg RequestSubjectListColumn = BTbl.ListColumn(dsMB.Path.T.Request.F.Subject);
 			BTbl.ICtorArg RequestStatusListColumn = BTbl.ListColumn(dsMB.Path.T.Request.F.CurrentRequestStateHistoryID.F.RequestStateHistoryStatusID.F.Code);
-			BTbl.ICtorArg RequestStateAuthorListColumn = BTbl.ListColumn(dsMB.Path.T.Request.F.CurrentRequestStateHistoryID.F.UserID.F.ContactID.F.Code, BTbl.ListColumnArg.Contexts.SearchAndFilter);
+			BTbl.ICtorArg RequestStateAuthorListColumn = BTbl.ListColumn(dsMB.Path.T.Request.F.CurrentRequestStateHistoryID.F.UserID.F.ContactID.F.Code, BTbl.Contexts.SearchAndFilter);
 			BTbl.ICtorArg OpenEmailCommand = BTbl.AdditionalVerb(KB.K("View Email"),
 							delegate (BrowseLogic browserLogic) {
 								Libraries.DataFlow.Source emailRequestId = browserLogic.GetTblPathDisplaySource(dsMB.Path.T.Request.F.Id.L.EmailRequest.RequestID.F.Id, -1);
@@ -689,10 +696,10 @@ namespace Thinkage.MainBoss.Controls
 			// The priority column uses an alternative sort key which biases the non-null values:
 			// null -> int.MaxValue, int.MinValue -> null, and all others -> value-1
 			// This causes null to sort as lower-than-lowest (because a big ranking number means low priority), and also that the default ascending sort puts highest priority at the top of the list.
-			BTbl.ICtorArg RequestPriorityListColumnSortValue = BTbl.ListColumn(dsMB.Path.T.Request.F.RequestPriorityID.F.Code.Key(), dsMB.Path.T.Request.F.RequestPriorityID.F.Rank, BTbl.ListColumnArg.Contexts.TaggedValueProvider | BTbl.ListColumnArg.Contexts.SortNormal,
+			BTbl.ICtorArg RequestPriorityListColumnSortValue = BTbl.ListColumn(dsMB.Path.T.Request.F.RequestPriorityID.F.Code.Key(), dsMB.Path.T.Request.F.RequestPriorityID.F.Rank, BTbl.Contexts.TaggedValueProvider,
 				BTbl.ListColumnArg.WrapSource((originalSource) => new ConvertingSource<int?, int?>(originalSource, dsMB.Path.T.Request.F.RequestPriorityID.F.Rank.ReferencedColumn.EffectiveType,
 					(value) => (value.HasValue ? value.Value == int.MinValue ? null : value - 1 : int.MaxValue))));
-			BTbl.ICtorArg RequestPriorityListColumn = BTbl.ListColumn(dsMB.Path.T.Request.F.RequestPriorityID.F.Code, BTbl.ListColumnArg.Contexts.List | BTbl.ListColumnArg.Contexts.SearchAndFilter | BTbl.ListColumnArg.Contexts.SortAlternativeValue);
+			BTbl.ICtorArg RequestPriorityListColumn = BTbl.ListColumn(dsMB.Path.T.Request.F.RequestPriorityID.F.Code, BTbl.Contexts.List | BTbl.Contexts.SearchAndFilter | BTbl.Contexts.SortAlternativeValue);
 
 			// We build the layout piecemeal so as to skip the Work Order browsette if we are the Service Desk application.
 			// The "Create WO" button should perhaps be done here as another contextual New operation on the browser. This would still
@@ -755,10 +762,9 @@ namespace Thinkage.MainBoss.Controls
 				new Tbl.IAttr[] {
 					new BTbl(
 						MB3BTbl.HasStateHistory(RequestHistoryTable),
-						RequestNumberListColumn, RequestRequestorListColumn, RequestBusinessPhoneListColumn, RequestStatusListColumn, RequestSubjectListColumn, RequestStateAuthorListColumn, OpenEmailCommand
-
-					),
-					TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.RequestFormReport; }))
+						RequestNumberListColumn, RequestRequestorListColumn, RequestBusinessPhoneListColumn, RequestStatusListColumn, RequestSubjectListColumn, RequestStateAuthorListColumn, OpenEmailCommand,
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.RequestFormReport))
+					)
 				},
 				null,	// no record type
 				CompositeView.ChangeEditTbl(RequestEditorTblCreator, CompositeView.JoinedNewCommand(NewRequest),
@@ -785,9 +791,9 @@ namespace Thinkage.MainBoss.Controls
 							// We use ExpressionFilter instead since it does not turn into an Init directive in the new-mode editor.
 							// DefaultVisibility of the other filtered Request browsers allow New mode.
 							BTbl.ExpressionFilter(new SqlExpression(dsMB.Path.T.Request.F.CurrentRequestStateHistoryID.F.RequestStateID.F.FilterAsNew).IsTrue()),
-							RequestNumberListColumn, RequestRequestorListColumn, RequestBusinessPhoneListColumn, RequestStatusListColumn, RequestSubjectListColumn, RequestStateAuthorListColumn, OpenEmailCommand
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl(() => TIReports.RequestNewFormReport))
+							RequestNumberListColumn, RequestRequestorListColumn, RequestBusinessPhoneListColumn, RequestStatusListColumn, RequestSubjectListColumn, RequestStateAuthorListColumn, OpenEmailCommand,
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.RequestNewFormReport))
+						)
 				},
 					null,	// no record type
 					CompositeView.ChangeEditTbl(RequestEditorTblCreator)
@@ -800,9 +806,9 @@ namespace Thinkage.MainBoss.Controls
 						new BTbl(
 							MB3BTbl.HasStateHistory(RequestHistoryTable),
 							BTbl.EqFilter(dsMB.Path.T.Request.F.CurrentRequestStateHistoryID.F.RequestStateID.F.FilterAsInProgress, true),
-							RequestNumberListColumn, RequestPriorityListColumnSortValue, RequestPriorityListColumn, RequestStatusListColumn, RequestSubjectListColumn, RequestStateAuthorListColumn, OpenEmailCommand
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl(() => TIReports.RequestInProgressFormReport))
+							RequestNumberListColumn, RequestPriorityListColumnSortValue, RequestPriorityListColumn, RequestStatusListColumn, RequestSubjectListColumn, RequestStateAuthorListColumn, OpenEmailCommand,
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.RequestInProgressFormReport))
+						)
 					},
 					null,	// no record type
 					CompositeView.ChangeEditTbl(RequestEditorTblCreator, OnlyViewEdit)
@@ -827,9 +833,9 @@ namespace Thinkage.MainBoss.Controls
 							MB3BTbl.HasStateHistory(RequestHistoryTable),
 							BTbl.ExpressionFilter(UserRequestAssignmentsInProgress),
 							BTbl.ListColumn(dsMB.Path.T.Request.F.CurrentRequestStateHistoryID.F.EffectiveDate),
-							RequestNumberListColumn, RequestPriorityListColumnSortValue, RequestPriorityListColumn, RequestStatusListColumn, RequestSubjectListColumn, RequestStateAuthorListColumn, OpenEmailCommand
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( () =>TIReports.RequestInProgressAndAssignedFormReport))
+							RequestNumberListColumn, RequestPriorityListColumnSortValue, RequestPriorityListColumn, RequestStatusListColumn, RequestSubjectListColumn, RequestStateAuthorListColumn, OpenEmailCommand,
+							BTbl.SetReportTbl(new DelayedCreateTbl( () =>TIReports.RequestInProgressAndAssignedFormReport))
+						)
 					},
 					null,	// no record type
 					CompositeView.ChangeEditTbl(RequestAssignedToEditorTblCreator, OnlyViewEdit)
@@ -917,8 +923,8 @@ namespace Thinkage.MainBoss.Controls
 							MB3BTbl.HasStateHistory(RequestHistoryTable),
 							BTbl.EqFilter(dsMB.Path.T.Request.F.CurrentRequestStateHistoryID.F.RequestStateID.F.FilterAsClosed, true),
 						RequestNumberListColumn, RequestRequestorListColumn, RequestBusinessPhoneListColumn, RequestSubjectListColumn, RequestStateAuthorListColumn, OpenEmailCommand
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl(() => TIReports.RequestClosedFormReport))
+,
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.RequestClosedFormReport)))
 					},
 					null,	// no record type
 					CompositeView.ChangeEditTbl(RequestEditorTblCreator, OnlyViewEdit)
@@ -932,9 +938,9 @@ namespace Thinkage.MainBoss.Controls
 							MB3BTbl.HasStateHistory(RequestHistoryTable),
 							BTbl.EqFilter(dsMB.Path.T.Request.F.CurrentRequestStateHistoryID.F.RequestStateID.F.FilterAsInProgress, true),
 							BTbl.ExpressionFilter(new SqlExpression(dsMB.Path.T.Request.F.Id.L.RequestExtras.RequestID.F.CountOfLinkedWorkOrders).Gt(0)),
-							RequestNumberListColumn, RequestPriorityListColumnSortValue, RequestPriorityListColumn, RequestStatusListColumn, RequestSubjectListColumn, RequestStateAuthorListColumn, OpenEmailCommand
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl(() =>TIReports.RequestInProgressWithWOFormReport))
+							RequestNumberListColumn, RequestPriorityListColumnSortValue, RequestPriorityListColumn, RequestStatusListColumn, RequestSubjectListColumn, RequestStateAuthorListColumn, OpenEmailCommand,
+							BTbl.SetReportTbl(new DelayedCreateTbl(() =>TIReports.RequestInProgressWithWOFormReport))
+						)
 					},
 					null,	// no record type
 					CompositeView.ChangeEditTbl(RequestEditorTblCreator, OnlyViewEdit)
@@ -948,9 +954,8 @@ namespace Thinkage.MainBoss.Controls
 							MB3BTbl.HasStateHistory(RequestHistoryTable),
 							BTbl.EqFilter(dsMB.Path.T.Request.F.CurrentRequestStateHistoryID.F.RequestStateID.F.FilterAsInProgress, true),
 							BTbl.ExpressionFilter(new SqlExpression(dsMB.Path.T.Request.F.Id.L.RequestExtras.RequestID.F.CountOfLinkedWorkOrders).Eq(0)),
-							RequestNumberListColumn, RequestPriorityListColumnSortValue, RequestPriorityListColumn, RequestStatusListColumn, RequestSubjectListColumn, RequestStateAuthorListColumn, OpenEmailCommand
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl(() => TIReports.RequestInProgressWithoutWOFormReport ))
+							RequestNumberListColumn, RequestPriorityListColumnSortValue, RequestPriorityListColumn, RequestStatusListColumn, RequestSubjectListColumn, RequestStateAuthorListColumn, OpenEmailCommand,
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.RequestInProgressWithoutWOFormReport )))
 					},
 					null,	// no record type
 					CompositeView.ChangeEditTbl(RequestEditorTblCreator, OnlyViewEdit)
@@ -959,10 +964,11 @@ namespace Thinkage.MainBoss.Controls
 
 			#endregion
 			#region Requestor
-			BTbl.ICtorArg[] RequestorListColumns = {
+			BTbl.ICtorArg[] RequestorBTblAttrs = {
 				BTbl.ListColumn(dsMB.Path.T.Requestor.F.ContactID.F.Code),
-				BTbl.ListColumn(dsMB.Path.T.Requestor.F.ContactID.F.BusinessPhone, BTbl.ListColumnArg.Contexts.List|BTbl.ListColumnArg.Contexts.SearchAndFilter),
-				BTbl.ListColumn(dsMB.Path.T.Requestor.F.ContactID.F.MobilePhone, BTbl.ListColumnArg.Contexts.List|BTbl.ListColumnArg.Contexts.SearchAndFilter)
+				BTbl.ListColumn(dsMB.Path.T.Requestor.F.ContactID.F.BusinessPhone, BTbl.Contexts.List|BTbl.Contexts.SearchAndFilter),
+				BTbl.ListColumn(dsMB.Path.T.Requestor.F.ContactID.F.MobilePhone, BTbl.Contexts.List|BTbl.Contexts.SearchAndFilter),
+				BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.RequestorReport))
 			};
 			TblLayoutNodeArray requestorNodes = new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -980,10 +986,8 @@ namespace Thinkage.MainBoss.Controls
 				return new Tbl(dsMB.Schema.T.Requestor, TId.Requestor,
 				new Tbl.IAttr[] {
 					RequestorsGroup,
-					new BTbl(RequestorListColumns),
-					new ETbl(),
-//					new ImageTbl(Images.Requestor, KB.TOi(TId.Requestor)),
-					TIReports.NewRemotePTbl(TIReports.RequestorReport)
+					new BTbl(RequestorBTblAttrs),
+					new ETbl()
 				},
 				(TblLayoutNodeArray)requestorNodes.Clone()
 				);
@@ -992,10 +996,8 @@ namespace Thinkage.MainBoss.Controls
 			{
 				return new Tbl(dsMB.Schema.T.Requestor, TId.Requestor,
 				new Tbl.IAttr[] {
-					new BTbl(RequestorListColumns),
-					new ETbl(),
-//					new ImageTbl(Images.Requestor, KB.TOi(TId.Requestor)),
-					TIReports.NewRemotePTbl(TIReports.RequestorReport)
+					new BTbl(RequestorBTblAttrs),
+					new ETbl()
 				},
 				(TblLayoutNodeArray)requestorNodes.Clone()
 				);
@@ -1009,10 +1011,8 @@ namespace Thinkage.MainBoss.Controls
 				return new Tbl(dsMB.Schema.T.Requestor, TId.Requestor,
 				new Tbl.IAttr[] {
 					WorkOrdersGroup,
-					new BTbl(RequestorListColumns),
-					new ETbl(),
-//					new ImageTbl(Images.Requestor, KB.TOi(TId.Requestor)),
-					TIReports.NewRemotePTbl(TIReports.RequestorReport)
+					new BTbl(RequestorBTblAttrs),
+					new ETbl()
 				},
 				requestorNodes
 				);
@@ -1023,12 +1023,13 @@ namespace Thinkage.MainBoss.Controls
 				return new Tbl(dsMB.Schema.T.RequestPriority, TId.RequestPriority,
 				new Tbl.IAttr[] {
 					RequestsGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.RequestPriority.F.Code),
-							BTbl.ListColumn(dsMB.Path.T.RequestPriority.F.Desc),
-							BTbl.ListColumn(dsMB.Path.T.RequestPriority.F.Rank, BTbl.ListColumnArg.Contexts.SortInitialAscending|NonPerViewColumn)
+					new BTbl(
+						BTbl.ListColumn(dsMB.Path.T.RequestPriority.F.Code),
+						BTbl.ListColumn(dsMB.Path.T.RequestPriority.F.Desc),
+						BTbl.ListColumn(dsMB.Path.T.RequestPriority.F.Rank, BTbl.Contexts.SortInitialAscending|NonPerViewColumn),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()
 					),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(

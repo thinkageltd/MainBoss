@@ -59,9 +59,8 @@ namespace Thinkage.MainBoss.MBUtility {
 		}
 		private readonly Definition Options;
 		private void Run() {
-			string oName;
 			System.Version minDBVersionForRolesTable = new System.Version(1, 0, 4, 38); // The roles table appeared in its current form at this version
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out string oName);
 			// Get a connection to the database that we are referencing
 			var dbapp = new ApplicationWithSingleDatabaseConnection(Thinkage.Libraries.Application.Instance);
 			try {
@@ -82,7 +81,7 @@ namespace Thinkage.MainBoss.MBUtility {
 					throw;          // message should be good
 				throw new GeneralException(ex, KB.K("There was a problem validating access to the database {0} on server {1}"), connect.DBName, connect.DBServer);
 			}
-			XAFClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
+			DBClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
 
 			// Test if we have the required permissions
 			// We need Create on the User table
@@ -103,7 +102,7 @@ namespace Thinkage.MainBoss.MBUtility {
 				// See if we can break in
 				int? result = null;
 				try {
-					result = (int?)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(db.Session.ExecuteCommandReturningScalar(MSSqlServer.INT_NULLABLE_TypeInfo, new MSSqlLiteralCommandSpecification("select has_perms_by_name(db_name(), 'DATABASE', 'CONTROL')")), typeof(int?));
+					result = (int?)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(db.Session.ExecuteCommandReturningScalar(Thinkage.Libraries.XAF.Database.Service.MSSql.Server.INT_NULLABLE_TypeInfo, new MSSqlLiteralCommandSpecification("select has_perms_by_name(db_name(), 'DATABASE', 'CONTROL')")), typeof(int?));
 				}
 				catch {
 				}
@@ -125,9 +124,7 @@ namespace Thinkage.MainBoss.MBUtility {
 				dsMB.UserRow uRow = (dsMB.UserRow)db.AddNewRowAndBases(updateDs, dsMB.Schema.T.User);
 				dsMB.PrincipalRow pRow = uRow.PrincipalIDParentRow;
 				dsMB.ContactRow cRow = (dsMB.ContactRow)db.AddNewRowAndBases(updateDs, dsMB.Schema.T.Contact);
-				string userName;
-				string realm;
-				DatabaseCreation.ParseUserIdentification(Options.AuthenticationCredential.Value, out userName, out realm);
+				DatabaseCreation.ParseUserIdentification(Options.AuthenticationCredential.Value, out string userName, out string realm);
 				cRow.F.Code = userName;
 				uRow.F.AuthenticationCredential = Options.AuthenticationCredential.Value;
 				if (failedPermission != null) {

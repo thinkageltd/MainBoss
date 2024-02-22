@@ -4,7 +4,7 @@
 	<table name="UserRole" defaults="true" log="false" id="Id" xid="UserID PrincipalID" xunique="true" labelkey="">
 		<doc>This is the Role assignment for a user</doc>
 		<field name="Id" read="RequiredGUID"/>
-		<field name="PrincipalID" link="Principal" type="RequiredGUIDREF">
+		<field name="PrincipalID" link="Principal" type="RequiredGUIDREF" labelkey="Role"> <!-- TODO: the field name should be RolePrincipalID -->
 			<doc>The associated role to the Role record (through the base record for a Role or CustomRole)</doc>
 			<extension name="linkage">captive</extension>
 		</field>

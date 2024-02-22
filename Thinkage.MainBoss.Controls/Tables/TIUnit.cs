@@ -49,14 +49,16 @@ namespace Thinkage.MainBoss.Controls {
 			// New command.
 			return new DelayedCreateTbl(delegate() {
 				var actions = new List<TblActionNode>();
-				var attrs = new List<Tbl.IAttr>();
-				attrs.Add(UnitsDependentGroup);
+				var attrs = new List<Tbl.IAttr> {
+					UnitsDependentGroup
+				};
 
-				var battrs = new List<BTbl.ICtorArg>();
-				battrs.Add(BTbl.ListColumn(dsMB.Path.T.Specification.F.Code));
-				battrs.Add(BTbl.ListColumn(dsMB.Path.T.Specification.F.Desc));
-				battrs.Add(BTbl.ListColumn(dsMB.Path.T.Specification.F.UnitLocationID.F.Code));
-				battrs.Add(BTbl.ListColumn(dsMB.Path.T.Specification.F.SpecificationFormID.F.Code));
+				var battrs = new List<BTbl.ICtorArg> {
+					BTbl.ListColumn(dsMB.Path.T.Specification.F.Code),
+					BTbl.ListColumn(dsMB.Path.T.Specification.F.Desc),
+					BTbl.ListColumn(dsMB.Path.T.Specification.F.UnitLocationID.F.Code),
+					BTbl.ListColumn(dsMB.Path.T.Specification.F.SpecificationFormID.F.Code)
+				};
 				if (!forEditOrFormBrowsette)
 					battrs.Add(BTbl.LogicClass(typeof(SpecificationBrowseLogic)));
 				attrs.Add(new BTbl(battrs.ToArray()));
@@ -126,9 +128,9 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.AssetCode, TId.AssetCode,
 				new Tbl.IAttr[] {
 					UnitValueAndServiceGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.AssetCode.F.Code), BTbl.ListColumn(dsMB.Path.T.AssetCode.F.Desc)),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.AssetCode.F.Code), BTbl.ListColumn(dsMB.Path.T.AssetCode.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -162,16 +164,16 @@ namespace Thinkage.MainBoss.Controls {
 						new[] { dsMB.Path.T.MeterReading.F.EntryDate.Key(), dsMB.Path.T.MeterReading.F.EffectiveDate.Key(), dsMB.Path.T.MeterReading.F.Reading.Key(), dsMB.Path.T.MeterReading.F.EffectiveReading.Key() },
 						TblRowNode.New(KB.K("Current"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
 							TblColumnNode.New(dsMB.Path.T.MeterReading.F.MeterID.F.CurrentMeterReadingID.F.EntryDate, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly),
-							TblColumnNode.New(dsMB.Path.T.MeterReading.F.MeterID.F.CurrentMeterReadingID.F.EffectiveDate, Fmt.SetId(MeterCurrentEffectiveDateId), new NonDefaultCol(), DCol.Normal, ECol.AllReadonly),
+							TblColumnNode.New(dsMB.Path.T.MeterReading.F.MeterID.F.CurrentMeterReadingID.F.EffectiveDate, new NonDefaultCol(), DCol.Normal, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(MeterCurrentEffectiveDateId))),
 							TblColumnNode.New(dsMB.Path.T.MeterReading.F.MeterID.F.CurrentMeterReadingID.F.Reading, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly),
-							TblColumnNode.New(dsMB.Path.T.MeterReading.F.MeterID.F.CurrentMeterReadingID.F.EffectiveReading, Fmt.SetId(MeterCurrentEffectiveReadingId), new NonDefaultCol(), DCol.Normal, ECol.AllReadonly)
+							TblColumnNode.New(dsMB.Path.T.MeterReading.F.MeterID.F.CurrentMeterReadingID.F.EffectiveReading, new NonDefaultCol(), DCol.Normal, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(MeterCurrentEffectiveReadingId)))
 						)
 					)
 				),
 				// TODO: Perhaps these should just be a second row in the multi-column layout for "Current". The "Meter" group box would have to be eliminated, or the current reading
 				// information would have to follow it.
 				TblColumnNode.New(dsMB.Path.T.MeterReading.F.EntryDate, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly),
-				TblColumnNode.New(dsMB.Path.T.MeterReading.F.EffectiveDate, new NonDefaultCol(), Fmt.SetId(MeterEffectiveDateId), DCol.Normal, ECol.ReadonlyInUpdate),
+				TblColumnNode.New(dsMB.Path.T.MeterReading.F.EffectiveDate, new NonDefaultCol(), DCol.Normal, new ECol(ECol.ReadonlyInUpdateAccess, Fmt.SetId(MeterEffectiveDateId))),
 				TblColumnNode.New(dsMB.Path.T.MeterReading.F.Reading, DCol.Normal, new ECol(ECol.ReadonlyInUpdateAccess, Fmt.SetId(MeterReadingId))),
 				TblColumnNode.New(dsMB.Path.T.MeterReading.F.EffectiveReading, DCol.Normal),
 				TblUnboundControlNode.New(dsMB.Path.T.MeterReading.F.EffectiveReading.Key(), dsMB.Path.T.MeterReading.F.EffectiveReading.ReferencedColumn.EffectiveType, new ECol(ECol.ReadonlyInUpdateAccess, Fmt.SetId(MeterEffectiveReadingId)))
@@ -330,7 +332,7 @@ namespace Thinkage.MainBoss.Controls {
 					new Tbl.IAttr[] {
 						new BTbl(BTbl.ListColumn(dsMB.Path.T.MeterReading.F.MeterID.F.MeterClassID.F.Code),
 								BTbl.ListColumn(dsMB.Path.T.MeterReading.F.MeterID.F.UnitLocationID.F.Code),
-								BTbl.ListColumn(dsMB.Path.T.MeterReading.F.EffectiveDate, BTbl.ListColumnArg.Contexts.SortInitialAscending),
+								BTbl.ListColumn(dsMB.Path.T.MeterReading.F.EffectiveDate, BTbl.Contexts.SortInitialAscending),
 								BTbl.ListColumn(dsMB.Path.T.MeterReading.F.Reading),
 								BTbl.ListColumn(dsMB.Path.T.MeterReading.F.EffectiveReading)
 						)
@@ -380,8 +382,7 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.Meter, TId.Meter,
 					new Tbl.IAttr[] {
 						MetersDependentGroup,
-						new ETbl(),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.UnitMeters; }))
+						new ETbl()
 					 },
 					(TblLayoutNodeArray)MeterNodesWithManualReading.Clone(),
 					Init.LinkRecordSets(dsMB.Path.T.MeterReading.F.MeterID, 1, dsMB.Path.T.Meter.F.Id, 0),
@@ -400,10 +401,10 @@ namespace Thinkage.MainBoss.Controls {
 					new Tbl.IAttr[] {
 						new BTbl(BTbl.ListColumn(dsMB.Path.T.Meter.F.MeterClassID.F.Code),
 								BTbl.ListColumn(dsMB.Path.T.Meter.F.UnitLocationID.F.Code),
-								BTbl.ListColumn(dsMB.Path.T.Meter.F.CurrentMeterReadingID.F.EffectiveDate, BTbl.ListColumnArg.Contexts.List|BTbl.ListColumnArg.Contexts.SearchAndFilter),
-								BTbl.ListColumn(dsMB.Path.T.Meter.F.CurrentMeterReadingID.F.EffectiveReading, BTbl.ListColumnArg.Contexts.List|BTbl.ListColumnArg.Contexts.SearchAndFilter)
-						),
-						TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.UnitMeters; }))
+								BTbl.ListColumn(dsMB.Path.T.Meter.F.CurrentMeterReadingID.F.EffectiveDate, BTbl.Contexts.List|BTbl.Contexts.SearchAndFilter),
+								BTbl.ListColumn(dsMB.Path.T.Meter.F.CurrentMeterReadingID.F.EffectiveReading, BTbl.Contexts.List|BTbl.Contexts.SearchAndFilter),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.UnitMeters))
+						)
 					},
 					null,	// no record type
 					CompositeView.ChangeEditTbl(MeterWithManualReadingEditTbl)
@@ -439,10 +440,11 @@ namespace Thinkage.MainBoss.Controls {
 				object codeColumnId = KB.I("MeterReadingCodeId");
 				return new CompositeTbl(dsMB.Schema.T.MeterAndReadingVariants, TId.WorkOrderMeterReading,
 					new Tbl.IAttr[] {
-						new BTbl(BTbl.PerViewListColumn(dsMB.LabelKeyBuilder.K("Meter Class/Effective Date"), codeColumnId),
-								BTbl.ListColumn(dsMB.Path.T.MeterAndReadingVariants.F.MeterReadingID.F.EffectiveReading)
-						),
-						new FilteredTreeStructuredTbl(dsMB.Path.T.MeterAndReadingVariants.F.ParentID, dsMB.Schema.T.WorkOrderMeterTreeView, 2, 2)
+						new BTbl(
+							BTbl.PerViewListColumn(dsMB.LabelKeyBuilder.K("Meter Class/Effective Date"), codeColumnId),
+							BTbl.ListColumn(dsMB.Path.T.MeterAndReadingVariants.F.MeterReadingID.F.EffectiveReading),
+							BTbl.SetTreeStructure(dsMB.Path.T.MeterAndReadingVariants.F.ParentID, 2, 2, dsMB.Schema.T.WorkOrderMeterTreeView)
+						)
 					},
 					dsMB.Path.T.MeterAndReadingVariants.F.TableEnum,
 					// Meter itself
@@ -475,9 +477,9 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.MeterClass, TId.MeterClass,
 				new Tbl.IAttr[] {
 					MetersDependentGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.MeterClass.F.Code), BTbl.ListColumn(dsMB.Path.T.MeterClass.F.Desc)),
-					new ETbl(),
-					TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.MeterClassReport; }))
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.MeterClass.F.Code), BTbl.ListColumn(dsMB.Path.T.MeterClass.F.Desc),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.MeterClassReport))),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -499,9 +501,9 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.Ownership, TId.Ownership,
 				new Tbl.IAttr[] {
 					UnitValueAndServiceGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.Ownership.F.Code), BTbl.ListColumn(dsMB.Path.T.Ownership.F.Desc)),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.Ownership.F.Code), BTbl.ListColumn(dsMB.Path.T.Ownership.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -524,9 +526,9 @@ namespace Thinkage.MainBoss.Controls {
 					new BTbl(BTbl.ListColumn(dsMB.Path.T.ServiceContract.F.Code),BTbl.ListColumn(dsMB.Path.T.ServiceContract.F.Desc),
 							BTbl.ListColumn(dsMB.Path.T.ServiceContract.F.VendorID.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.ServiceContract.F.ContractNumber)
-					),
-					new ETbl(),
-					TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.ServiceContractReport; }))
+					,
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ServiceContractReport))),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -557,9 +559,9 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.ListColumn(dsMB.Path.T.SparePart.F.ItemID.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.SparePart.F.Quantity, NonPerViewColumn),
 							BTbl.ListColumn(dsMB.Path.T.SparePart.F.ItemID.F.UnitOfMeasureID.F.Code, NonPerViewColumn)
-					),
-					new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete, EdtMode.EditDefault, EdtMode.ViewDefault)),
-					TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.UnitParts; }))
+					,
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.UnitParts))),
+					new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete, EdtMode.EditDefault, EdtMode.ViewDefault))
 				},
 				new TblLayoutNodeArray(
 					TblGroupNode.New(dsMB.Path.T.SparePart.F.UnitLocationID, new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal }, new TblLayoutNode[] {
@@ -611,9 +613,9 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.SpecificationForm, TId.SpecificationForm,
 				new Tbl.IAttr[] {
 					UnitsDependentGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.SpecificationForm.F.Code), BTbl.ListColumn(dsMB.Path.T.SpecificationForm.F.Desc)),
-					new ETbl(),
-					TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.SpecificationFormReport; }))
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.SpecificationForm.F.Code), BTbl.ListColumn(dsMB.Path.T.SpecificationForm.F.Desc),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.SpecificationFormReport))),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -679,9 +681,9 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.SystemCode, TId.System,
 				new Tbl.IAttr[] {
 					UnitsDependentGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.SystemCode.F.Code), BTbl.ListColumn(dsMB.Path.T.SystemCode.F.Desc)),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.SystemCode.F.Code), BTbl.ListColumn(dsMB.Path.T.SystemCode.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -704,12 +706,12 @@ namespace Thinkage.MainBoss.Controls {
 								ETbl.UseNewConcurrency(true),
 								ETbl.CustomCommand(delegate(EditLogic editorLogic) {
 									var ShowOnMap = new EditLogic.CommandDeclaration(KB.K("Show on map"), new ShowOnMapCommand(editorLogic));
-									var ShowOnMapGroup = new EditLogic.MutuallyExclusiveCommandSetDeclaration();
-									ShowOnMapGroup.Add(ShowOnMap);
+									var ShowOnMapGroup = new EditLogic.MutuallyExclusiveCommandSetDeclaration{
+									ShowOnMap
+};
 									return ShowOnMapGroup;
 								})
-							),
-							TIReports.NewRemotePTbl(TIReports.UnitReport)
+							)
 					},
 					new TblLayoutNodeArray(
 						DetailsTabNode.New(
@@ -806,9 +808,9 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.UnitCategory, TId.UnitCategory,
 				new Tbl.IAttr[] {
 					UnitsDependentGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.UnitCategory.F.Code), BTbl.ListColumn(dsMB.Path.T.UnitCategory.F.Desc)),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.UnitCategory.F.Code), BTbl.ListColumn(dsMB.Path.T.UnitCategory.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -826,9 +828,9 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.UnitOfMeasure, TId.UnitOfMeasure,
 				new Tbl.IAttr[] {
 					ItemsDependentGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.UnitOfMeasure.F.Code), BTbl.ListColumn(dsMB.Path.T.UnitOfMeasure.F.Desc)),
-					new ETbl(),
-					TIReports.NewCodeDescPTbl()
+					new BTbl(BTbl.ListColumn(dsMB.Path.T.UnitOfMeasure.F.Code), BTbl.ListColumn(dsMB.Path.T.UnitOfMeasure.F.Desc),
+						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+					new ETbl()
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
@@ -916,9 +918,9 @@ namespace Thinkage.MainBoss.Controls {
 				return new Tbl(dsMB.Schema.T.UnitUsage, TId.UnitUsage,
 					new Tbl.IAttr[] {
 						UnitsDependentGroup,
-						new BTbl(BTbl.ListColumn(dsMB.Path.T.UnitUsage.F.Code), BTbl.ListColumn(dsMB.Path.T.UnitUsage.F.Desc)),
-						new ETbl(),
-						TIReports.NewCodeDescPTbl()
+						new BTbl(BTbl.ListColumn(dsMB.Path.T.UnitUsage.F.Code), BTbl.ListColumn(dsMB.Path.T.UnitUsage.F.Desc),
+							BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
+						new ETbl()
 					},
 					new TblLayoutNodeArray(
 						DetailsTabNode.New(

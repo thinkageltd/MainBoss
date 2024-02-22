@@ -9,7 +9,7 @@ namespace Thinkage.MainBoss.Controls {
 	// the standard New verb.
 	public class SpecificationBrowseLogic : BrowseLogic {
 		internal static object SpecificationNodeId = KB.I("Specification");
-		public SpecificationBrowseLogic(IBrowseUI control, XAFClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
+		public SpecificationBrowseLogic(IBrowseUI control, DBClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
 			: base(control, db, takeDBCustody, tbl, settingsContainer, structure) {
 		}
 

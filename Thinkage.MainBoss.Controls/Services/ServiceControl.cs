@@ -27,10 +27,12 @@ namespace Thinkage.MainBoss.Controls {
 	// and what shows in the panel. The main tbl would use BrowsetteFilterBind to set the computer and event log names.
 	#region ServiceCommonBrowseLogic
 	public abstract class ServiceCommonBrowseLogic : BrowseLogic {
+		public const string ServiceConfigurationCommand = "Thinkage.MainBoss.MainBossServiceConfiguration.exe"; // command that runs elevated to control windows service configuration
+
 		// This is the basic BrowseLogic for Service management. The service is defined by the Tbl which must specify MB3BTbl.WithServiceLogicArg.
 		// We provide service status monitoring.
 		#region Constructor
-		public ServiceCommonBrowseLogic(IBrowseUI control, XAFClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
+		public ServiceCommonBrowseLogic(IBrowseUI control, DBClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
 			: base(control, db, takeDBCustody, tbl, settingsContainer, structure) {
 			MainBossServiceConfiguration config = MainBossServiceConfiguration.GetConfiguration(db);
 			ServiceCode = config.ServiceName;
@@ -47,14 +49,17 @@ namespace Thinkage.MainBoss.Controls {
 			// filling though, which expects all the sources to synchronously get the correct values.
 			Controller.SetControllerInfo(new Thinkage.Libraries.Service.StaticServiceConfiguration(ServerMachineName, ServiceName));
 			if (refreshlog == null && ServerMachineName != null) {
-				refreshlog = new System.Windows.Forms.Timer();
-				refreshlog.Interval = 60 * 1000;
-				refreshlog.Tick += (s, e) => Controller.Refresh(0);
-				refreshlog.Start();
+				IdleCallback idleCallback = Thinkage.Libraries.Application.Instance.GetInterface<IIdleCallback>().CallInCurrentThread(
+					delegate () {
+						Controller.Refresh(0);
+					}
+				);
+				refreshlog = new System.Threading.Timer((state) => { idleCallback(); });
+				refreshlog.Change(0, 60 * 1000); // start the timer now
 				ObjectsToDispose.Add(refreshlog);
 			}
-			else if ( refreshlog != null && ServerMachineName == null ) {
-				refreshlog.Stop();
+			else if (refreshlog != null && ServerMachineName == null) {
+				refreshlog.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite); // disable the timer
 				ObjectsToDispose.Remove(refreshlog);
 				refreshlog.Dispose();
 				refreshlog = null;
@@ -91,21 +96,6 @@ namespace Thinkage.MainBoss.Controls {
 		public string ServiceCode {
 			get; private set;
 		}
-
-		private static bool? pIsNetworkDeployed = null;
-		private static bool IsNetworkDeployed {
-			get {
-				if(pIsNetworkDeployed != null)
-					return (bool)pIsNetworkDeployed;
-				try {
-					pIsNetworkDeployed = System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed;
-				}
-				finally {
-					pIsNetworkDeployed = false;
-				}
-				return (bool)pIsNetworkDeployed;
-			}
-		}
 		public readonly ServiceController Controller;
 		#region Service Status
 		public IBasicDataControl ServiceStatus;
@@ -123,7 +113,6 @@ namespace Thinkage.MainBoss.Controls {
 		public SettableDisablerProperties HasTraceLogEntriesDisabler = new SettableDisablerProperties(null, KB.K("No 'Trace' log entries in the MainBoss Service log."), false);
 		public SettableDisablerProperties HasActivityLogEntriesDisabler = new SettableDisablerProperties(null, KB.K("No 'Activity' log entries in the MainBoss Service log."), false);
 		public SettableDisablerProperties HasLogEntriesDisabler = new SettableDisablerProperties(null, KB.K("No log entries in the MainBoss Service log."), false);
-		public SettableDisablerProperties IsNotNetworkDeployedDisabler = new SettableDisablerProperties(null, KB.K("The Windows Service for MainBoss cannot be configured from within clickonce deployment of MainBoss."), !IsNetworkDeployed);
 		public SettableDisablerProperties IsNotDemonstrationDisabler = new SettableDisablerProperties(null, KB.K("The Windows Service for MainBoss cannot be configured with only a demonstration license."), true);
 		public SettableDisablerProperties HasMainBossServiceAsWindowsServiceLicense = new SettableDisablerProperties(null, KB.K("The Windows Service for MainBoss requires a MainBoss Service License Key."), TIGeneralMB3.MainBossServiceAsWindowsServiceLicenseGroup.Enabled);
 		#endregion
@@ -133,7 +122,7 @@ namespace Thinkage.MainBoss.Controls {
 			ServiceNotPendingDisabler.Enabled = false;
 			ServiceStatus.Value = Strings.Format(KB.K("Status Pending"));
 		}
-		private System.Windows.Forms.Timer refreshlog = null;
+		private System.Threading.Timer refreshlog = null;
 		public void RefreshStatus() {
 			MainBossServiceConfiguration config = MainBossServiceConfiguration.GetConfiguration(DB);
 			ServiceCode = config.ServiceName;
@@ -170,9 +159,8 @@ namespace Thinkage.MainBoss.Controls {
 			ServiceController.Statuses status = Controller.Status;
 			if (Controller.LastStatusError == null && ServiceNotInstalled)
 				status = ServiceController.Statuses.NotInstalled;
-			SimpleKey statusKey;
 			string statusText;
-			if(ServiceController.StatusNames.TryGetValue(status, out statusKey))
+			if (ServiceController.StatusNames.TryGetValue(status, out SimpleKey statusKey))
 				statusText = statusKey.Translate();
 			else {
 				statusText = Strings.Format(KB.K("Unknown service controller status 0X{0:x}"), status);
@@ -249,17 +237,11 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		private bool HasLogEntries(Database.DatabaseEnums.ServiceLogEntryType? type) {
 			try {
-				using(dsMB ds = new dsMB(this.DB)) {
-					ds.DB.ViewAdditionalRows(ds, dsMB.Schema.T.ServiceLog);
-					foreach(dsMB.ServiceLogRow r in dsMB.Schema.T.ServiceLog.GetDataTable(ds).Rows)
-						if(type == null || r.F.EntryType == (int)type.Value)
-							return true;
-				}
+				return DB.Session.RowsExist(dsMB.Schema.T.ServiceLog, type.HasValue ? new SqlExpression(dsMB.Path.T.ServiceLog.F.EntryType).Eq(SqlExpression.Constant((int)type.Value)) : null);
 			}
-			catch(System.Exception) {
+			catch {
 				return true; // some thing is weird
 			}
-			return false;
 		}
 	}
 	#endregion
@@ -277,7 +259,7 @@ namespace Thinkage.MainBoss.Controls {
 			public Key ActionTip;
 			public ApplicationServiceRequests ActionValue;
 		}
-		public ManageServiceBrowseLogic(IBrowseUI control, XAFClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
+		public ManageServiceBrowseLogic(IBrowseUI control, DBClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
 			: base(control, db, takeDBCustody, tbl, settingsContainer, structure) {
 		}
 		#region ServiceControllerCommand which sends a command to the service
@@ -336,77 +318,96 @@ namespace Thinkage.MainBoss.Controls {
 			new ManageServiceBrowseLogic.ServiceActionCommand("Trace Notify Requestor", "Trace all email notifications sent to requestors", ApplicationServiceRequests.TRACE_NOTIFY_REQUESTOR),
 			new ManageServiceBrowseLogic.ServiceActionCommand("Trace Notify Assignee", "Trace all email notifications sent to request assignees", ApplicationServiceRequests.TRACE_NOTIFY_ASSIGNEE),
 		};
+		bool? pElevatedCommandsAvailable;
+		public bool ElevatedCommandsAvailable {
+			get {
+				if (!pElevatedCommandsAvailable.HasValue) {
+					string serviceCommand = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), KB.I(ServiceConfigurationCommand));
+					try {
+						pElevatedCommandsAvailable = System.IO.File.Exists(serviceCommand);
+					}
+					catch {
+						pElevatedCommandsAvailable = false;
+					}
+				}
+				return pElevatedCommandsAvailable.Value;
+			}
+		}
+
 		protected override void CreateCustomBrowserCommands() {
 			base.CreateCustomBrowserCommands();
 
 			MultiCommandIfAllEnabled command;
 
-			CommonLogic.CommandNode serviceStart = Commands.CreateNestedNode(KB.K("Service Control"), null);
+			if (ElevatedCommandsAvailable) {
+				CommonLogic.CommandNode serviceStart = Commands.CreateNestedNode(KB.K("Service Control"), null);
 
-			command = new MultiCommandIfAllEnabled(new RunElevatedCallDelegateCommand(KB.K("Start the Windows Service for MainBoss"), new CallDelegateCommand.Delegate(
-				delegate () {
-					try {
-						ClearStatus();
-						new TIMainBossService.ServiceCommand("StartService", ServiceCode, DB).RunCommand();
-					}
-					catch (System.Exception ex) {
-						Libraries.Application.Instance.DisplayError(ex);
-					}
-					RefreshStatus();
-					RefreshCommand.Execute(); // refresh any log information that may have appeared
+				command = new MultiCommandIfAllEnabled(new RunElevatedCallDelegateCommand(KB.K("Start the Windows Service for MainBoss"), new CallDelegateCommand.Delegate(
+					delegate () {
+						try {
+							ClearStatus();
+							new TIMainBossService.ServiceCommand("StartService", ServiceCode, DB).RunCommand();
+						}
+						catch (System.Exception ex) {
+							Libraries.Application.Instance.DisplayError(ex);
+						}
+						RefreshStatus();
+						RefreshCommand.Execute(); // refresh any log information that may have appeared
 				})),
-				ServiceIsStoppedDisabler,
-				ServiceNotPendingDisabler,
-				ServiceStatusKnownDisabler,
-				ServiceConfigurationNeededDisabler,
-				ServiceInstalledDisabler,
-				NoServiceConfigurationRecord
-				);
-			serviceStart.AddCommand(KB.K("Start Service"), KB.K("Start"), command, command);
+					HasMainBossServiceAsWindowsServiceLicense,
+					ServiceIsStoppedDisabler,
+					ServiceNotPendingDisabler,
+					ServiceStatusKnownDisabler,
+					ServiceConfigurationNeededDisabler,
+					ServiceInstalledDisabler,
+					NoServiceConfigurationRecord
+					);
+				serviceStart.AddCommand(KB.K("Start Service"), KB.K("Start"), command, command);
 
-			// Now add the adminstrator, less likely to be used commands
-			command = new MultiCommandIfAllEnabled(new RunElevatedCallDelegateCommand(KB.K("Restart the Windows Service for MainBoss"), new CallDelegateCommand.Delegate(
-				delegate () {
-					try {
-						ClearStatus();
-						new TIMainBossService.ServiceCommand("RestartService", ServiceCode, DB).RunCommand();
-					}
-					catch(System.Exception ex) {
-						Libraries.Application.Instance.DisplayError(ex);
-					}
-					RefreshStatus();
-					RefreshCommand.Execute(); // refresh any log information that may have appeared
+				// Now add the administrator, less likely to be used commands
+				command = new MultiCommandIfAllEnabled(new RunElevatedCallDelegateCommand(KB.K("Restart the Windows Service for MainBoss"), new CallDelegateCommand.Delegate(
+					delegate () {
+						try {
+							ClearStatus();
+							new TIMainBossService.ServiceCommand("RestartService", ServiceCode, DB).RunCommand();
+						}
+						catch (System.Exception ex) {
+							Libraries.Application.Instance.DisplayError(ex);
+						}
+						RefreshStatus();
+						RefreshCommand.Execute(); // refresh any log information that may have appeared
 				})),
-				ServiceIsRunningDisabler,
-				ServiceNotPendingDisabler,
-				ServiceStatusKnownDisabler,
-				ServiceConfigurationNeededDisabler,
-				ServiceInstalledDisabler,
-				NoServiceConfigurationRecord
-				);
-			serviceStart.AddCommand(KB.K("Restart Service"), KB.K("Restart"), command, command);
+					HasMainBossServiceAsWindowsServiceLicense,
+					ServiceIsRunningDisabler,
+					ServiceNotPendingDisabler,
+					ServiceStatusKnownDisabler,
+					ServiceConfigurationNeededDisabler,
+					ServiceInstalledDisabler,
+					NoServiceConfigurationRecord
+					);
+				serviceStart.AddCommand(KB.K("Restart Service"), KB.K("Restart"), command, command);
 
-			command = new MultiCommandIfAllEnabled(new RunElevatedCallDelegateCommand(KB.K("Stop the Windows Service for MainBoss"), new CallDelegateCommand.Delegate(
-				delegate () {
-					try {
-						ClearStatus();
-						new TIMainBossService.ServiceCommand("StopService", ServiceCode, DB).RunCommand();
-					}
-					catch(System.Exception ex) {
-						Libraries.Application.Instance.DisplayError(ex);
-					}
-					RefreshStatus();
-					RefreshCommand.Execute(); // refresh any log information that may have appeared
+				command = new MultiCommandIfAllEnabled(new RunElevatedCallDelegateCommand(KB.K("Stop the Windows Service for MainBoss"), new CallDelegateCommand.Delegate(
+					delegate () {
+						try {
+							ClearStatus();
+							new TIMainBossService.ServiceCommand("StopService", ServiceCode, DB).RunCommand();
+						}
+						catch (System.Exception ex) {
+							Libraries.Application.Instance.DisplayError(ex);
+						}
+						RefreshStatus();
+						RefreshCommand.Execute(); // refresh any log information that may have appeared
 				})),
-				ServiceIsRunningDisabler,
-				ServiceNotPendingDisabler,
-				ServiceStatusKnownDisabler,
-				ServiceConfigurationNeededDisabler,
-				ServiceInstalledDisabler,
-				NoServiceConfigurationRecord
-				);
-			serviceStart.AddCommand(KB.K("Stop Service"), KB.K("Stop"), command, command);
-
+					ServiceIsRunningDisabler,
+					ServiceNotPendingDisabler,
+					ServiceStatusKnownDisabler,
+					ServiceConfigurationNeededDisabler,
+					ServiceInstalledDisabler,
+					NoServiceConfigurationRecord
+					);
+				serviceStart.AddCommand(KB.K("Stop Service"), KB.K("Stop"), command, command);
+			}
 			CommonLogic.CommandNode serviceManagementNodes = Commands.CreateNestedNode(KB.K("Service Management"), null);
 			command = new MultiCommandIfAllEnabled(new CallDelegateCommand(KB.K("Retrieve Email, create Requests from the Email, and when licensed notify Assignees, and Log the activity for the Windows Service for MainBoss"), new CallDelegateCommand.Delegate(
 				delegate () {
@@ -447,76 +448,75 @@ namespace Thinkage.MainBoss.Controls {
 				);
 			serviceManagementNodes.AddCommand(KB.K("Process Email with Diagnostics"), KB.K("Process Email with Diagnostics"), command, command);
 
-
-			command = new MultiCommandIfAllEnabled(new RunElevatedCallDelegateCommand(KB.K("Associates the Windows Service for MainBoss with this database and configures the service."), new CallDelegateCommand.Delegate(
+			if (ElevatedCommandsAvailable) {
+				command = new MultiCommandIfAllEnabled(new RunElevatedCallDelegateCommand(KB.K("Associates the Windows Service for MainBoss with this database and configures the service."), new CallDelegateCommand.Delegate(
 				delegate () {
 					try {
 						ClearStatus();
 						new TIMainBossService.ServiceCommand("ConfigureService", ServiceCode, DB).RunCommand();
 					}
-					catch(System.Exception ex) {
+					catch (System.Exception ex) {
 						Libraries.Application.Instance.DisplayError(ex);
 					}
 					SetAllOutOfDate();
 				})),
 				ServiceNotPendingDisabler,
 				HasMainBossServiceAsWindowsServiceLicense,
-				IsNotNetworkDeployedDisabler,
 				IsNotDemonstrationDisabler,
 				ServiceConfigurationNeededWrongComputerDisabler,
 				NoServiceConfigurationRecord
 				);
-			serviceManagementNodes.AddCommand(KB.K("Configure Windows Service for MainBoss"), KB.K("Configure"), command, command);
+				serviceManagementNodes.AddCommand(KB.K("Configure Windows Service for MainBoss"), KB.K("Configure"), command, command);
 
-			command = new MultiCommandIfAllEnabled(new RunElevatedCallDelegateCommand(KB.K("Verify configuration of the Windows Service for MainBoss."), new CallDelegateCommand.Delegate(
-				delegate () {
-					try {
-						ClearStatus();
-						new TIMainBossService.ServiceCommand("VerifyService", ServiceCode, DB).RunCommand();
-					}
-					catch(System.Exception ex) {
-						Libraries.Application.Instance.DisplayError(ex);
-					}
-					SetAllOutOfDate();
-				})),
-				ServiceNotPendingDisabler,
-				ServiceInstalledDisabler,
-				HasMainBossServiceAsWindowsServiceLicense,
-				IsNotDemonstrationDisabler,
-				NoServiceConfigurationRecord
-				);
-			serviceManagementNodes.AddCommand(KB.K("Verify Windows Service for MainBoss"), KB.K("Verify"), command, command);
-
-			command = new MultiCommandIfAllEnabled(new RunElevatedCallDelegateCommand(KB.K("Delete the Windows Service for MainBoss"), new CallDelegateCommand.Delegate(
-				delegate () {
-					try {
-						ClearStatus();
-						new TIMainBossService.ServiceCommand("DeleteService", ServiceCode, DB).RunCommand();
-					}
-					catch(System.Exception ex) {
-						Libraries.Application.Instance.DisplayError(ex);
-					}
-					SetAllOutOfDate();
-				})),
-				HasMainBossServiceAsWindowsServiceLicense,
-				ServiceInstalledDisabler,
-				ServiceNotPendingDisabler,
-				ServiceIsNotRunningDisabler,
-				NoServiceConfigurationRecord
-				);
-			serviceManagementNodes.AddCommand(KB.K("Delete Windows Service for MainBoss"), KB.K("Delete"), command, command);
-
-			CommonLogic.CommandNode actionNodes = Commands.CreateNestedNode(KB.K("Service"), KB.K("Service"));
-			foreach(ManageServiceBrowseLogic.ServiceActionCommand c in ((MB3BTbl.WithManageServiceLogicArg)BTbl.BrowserLogicClassArg).ServiceCommands) {
-				command = new MultiCommandIfAllEnabled(new ServiceControllerCommand(this, c),
-					ServiceIsRunningDisabler,
+				command = new MultiCommandIfAllEnabled(new RunElevatedCallDelegateCommand(KB.K("Verify configuration of the Windows Service for MainBoss."), new CallDelegateCommand.Delegate(
+					delegate () {
+						try {
+							ClearStatus();
+							new TIMainBossService.ServiceCommand("VerifyService", ServiceCode, DB).RunCommand();
+						}
+						catch (System.Exception ex) {
+							Libraries.Application.Instance.DisplayError(ex);
+						}
+						SetAllOutOfDate();
+					})),
+					ServiceNotPendingDisabler,
 					ServiceInstalledDisabler,
-					ServiceStatusKnownDisabler,
-					ServiceConfigurationNeededDisabler,
-					ServiceInstalledDisabler,
+					HasMainBossServiceAsWindowsServiceLicense,
+					IsNotDemonstrationDisabler,
 					NoServiceConfigurationRecord
 					);
-				actionNodes.AddCommand(c.ActionName, c.ActionName, command, command);
+				serviceManagementNodes.AddCommand(KB.K("Verify Windows Service for MainBoss"), KB.K("Verify"), command, command);
+
+				command = new MultiCommandIfAllEnabled(new RunElevatedCallDelegateCommand(KB.K("Delete the Windows Service for MainBoss"), new CallDelegateCommand.Delegate(
+					delegate () {
+						try {
+							ClearStatus();
+							new TIMainBossService.ServiceCommand("DeleteService", ServiceCode, DB).RunCommand();
+						}
+						catch (System.Exception ex) {
+							Libraries.Application.Instance.DisplayError(ex);
+						}
+						SetAllOutOfDate();
+					})),
+					ServiceInstalledDisabler,
+					ServiceNotPendingDisabler,
+					ServiceIsNotRunningDisabler,
+					NoServiceConfigurationRecord
+					);
+				serviceManagementNodes.AddCommand(KB.K("Delete Windows Service for MainBoss"), KB.K("Delete"), command, command);
+
+				CommonLogic.CommandNode actionNodes = Commands.CreateNestedNode(KB.K("Service"), KB.K("Service"));
+				foreach (ManageServiceBrowseLogic.ServiceActionCommand c in ((MB3BTbl.WithManageServiceLogicArg)BTbl.BrowserLogicClassArg).ServiceCommands) {
+					command = new MultiCommandIfAllEnabled(new ServiceControllerCommand(this, c),
+						ServiceIsRunningDisabler,
+						ServiceInstalledDisabler,
+						ServiceStatusKnownDisabler,
+						ServiceConfigurationNeededDisabler,
+						ServiceInstalledDisabler,
+						NoServiceConfigurationRecord
+						);
+					actionNodes.AddCommand(c.ActionName, c.ActionName, command, command);
+				}
 			}
 			CommonLogic.CommandNode loggingNodes = Commands.CreateNestedNode(KB.K("Logging"), KB.K("Logging"));
 
@@ -533,7 +533,6 @@ namespace Thinkage.MainBoss.Controls {
 			})),
 				HasTraceLogEntriesDisabler);
 			loggingNodes.AddCommand(KB.K("Delete Trace Logging Entries"), KB.K("Delete Trace Logging Entries"), command, command);
-
 
 			command = new MultiCommandIfAllEnabled(new CallDelegateCommand(KB.K("Permanently delete all current 'Activity' and 'Trace' entries in the MainBoss Service log"), new CallDelegateCommand.Delegate(delegate () {
 				try {
@@ -565,17 +564,19 @@ namespace Thinkage.MainBoss.Controls {
 			})),
 				HasLogEntriesDisabler);
 			loggingNodes.AddCommand(KB.K("Delete All Logging Entries"), KB.K("Delete All Logging Entries"), command, command);
-			// commands to trace service actions
-			foreach(ManageServiceBrowseLogic.ServiceActionCommand c in pServiceTraceControlActions) {
-				command = new MultiCommandIfAllEnabled(new ServiceControllerCommand(this, c),
-					ServiceNotPendingDisabler,
-					ServiceIsRunningDisabler,
-					ServiceInstalledDisabler,
-					ServiceStatusKnownDisabler,
-					ServiceConfigurationNeededDisabler,
-					ServiceInstalledDisabler
-					);
-				loggingNodes.AddCommand(c.ActionName, c.ActionName, command, command);
+			if (ElevatedCommandsAvailable) {
+				// commands to trace service actions
+				foreach (ManageServiceBrowseLogic.ServiceActionCommand c in pServiceTraceControlActions) {
+					command = new MultiCommandIfAllEnabled(new ServiceControllerCommand(this, c),
+						ServiceNotPendingDisabler,
+						ServiceIsRunningDisabler,
+						ServiceInstalledDisabler,
+						ServiceStatusKnownDisabler,
+						ServiceConfigurationNeededDisabler,
+						ServiceInstalledDisabler
+						);
+					loggingNodes.AddCommand(c.ActionName, c.ActionName, command, command);
+				}
 			}
 		}
 		#endregion

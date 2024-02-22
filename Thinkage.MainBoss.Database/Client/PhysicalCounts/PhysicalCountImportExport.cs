@@ -50,7 +50,7 @@ namespace Thinkage.MainBoss.Database {
 			}
 #endif
 		}
-		private DataSet FetchData(DBI_Table tableSchema, XAFClient db, List<KeyValuePair<DBI_Path, string>> mappings) {
+		private DataSet FetchData(DBI_Table tableSchema, DBClient db, List<KeyValuePair<DBI_Path, string>> mappings) {
 			// Note that this dataset is only used by the MS report viewer control and thus never needs to be a custom typed dataset.
 			List<SqlExpression> queryColumns = new List<SqlExpression>();
 			// Iterate over all columns and select the ServerExpressionQueryColumn objects only. Alternatively we could iterate through the PathColumns.Values and ServerExpressionColumns but then we would have to duplicate the loop guts.
@@ -58,7 +58,7 @@ namespace Thinkage.MainBoss.Database {
 				var columnExpression = new SqlExpression(qCol.Key);
 				queryColumns.Add(columnExpression); //.Cast(qCol.Key.ReferencedColumn.ReadType).As(qCol.Value));
 			}
-			XAFDataSet xds = XAFDataSet.New(tableSchema.Database, db);
+			DBDataSet xds = DBDataSet.New(tableSchema.Database, db);
 			db.ViewAdditionalRows(xds, tableSchema, null, queryColumns.ToArray(), null);
 			//			{
 			//				dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.PathToReferencedRow,
@@ -110,14 +110,12 @@ namespace Thinkage.MainBoss.Database {
 
 #region Physical Count Builder
 		private Guid GetItemLocationID(Guid storeroomAssignmentID) {
-			Tuple<Guid, Guid> ailValue;
-			if (AILValuesIndexedByPermanentItemLocation.TryGetValue(storeroomAssignmentID, out ailValue))
+			if (AILValuesIndexedByPermanentItemLocation.TryGetValue(storeroomAssignmentID, out Tuple<Guid, Guid> ailValue))
 				return ailValue.Item1;
 			throw new GeneralException(KB.K("Storeroom Assignment reference {0} is not valid for this database"), storeroomAssignmentID);
 		}
 		private Guid GetAILCostCenterID(Guid storeroomAssignmentID) {
-			Tuple<Guid, Guid> ailValue;
-			if (AILValuesIndexedByPermanentItemLocation.TryGetValue(storeroomAssignmentID, out ailValue))
+			if (AILValuesIndexedByPermanentItemLocation.TryGetValue(storeroomAssignmentID, out Tuple<Guid, Guid> ailValue))
 				return ailValue.Item2;
 			throw new GeneralException(KB.K("Storeroom Assignment reference {0} is not valid for this database"), storeroomAssignmentID);
 		}
@@ -134,12 +132,12 @@ namespace Thinkage.MainBoss.Database {
 			ds.DB.ViewOnlyRows(ds, dsMB.Schema.T.ItemAdjustmentCode, SqlExpression.Constant(adjustmentCode).Eq(new SqlExpression(dsMB.Path.T.ItemAdjustmentCode.F.Code)), null, new DBI_PathToRow[] {
 					dsMB.Path.T.ItemAdjustmentCode.F.CostCenterID.PathToReferencedRow }
 			);
-			dsMB.ItemAdjustmentCodeDataTable ajTable = (dsMB.ItemAdjustmentCodeDataTable)dsMB.Schema.T.ItemAdjustmentCode.GetDataTable(ds);
+			dsMB.ItemAdjustmentCodeDataTable ajTable = ds.T.ItemAdjustmentCode;
 			if (ajTable.Rows.Count != 1)
 				throw new GeneralException(KB.K("Was unable to locate the Adjustment Code record for '{0}'"), adjustmentCode);
 			// Check the associated CostCenter is still valid (i.e. not deleted)
 			var aRecord = ((dsMB.ItemAdjustmentCodeRow)ajTable.Rows[0]);
-			var ccRow = (dsMB.CostCenterRow)ds.T.CostCenter.Rows.Find(aRecord.F.CostCenterID);
+			var ccRow = (dsMB.CostCenterRow)ds.T.CostCenter.RowFind(aRecord.F.CostCenterID);
 			if (ccRow == null || ccRow.F.Hidden.HasValue)
 				throw new GeneralException(KB.K("Cost Center associated with Adjustment Code is missing or has been deleted and cannot be used"));
 
@@ -151,8 +149,8 @@ namespace Thinkage.MainBoss.Database {
 			ds.DB.ViewOnlyRows(ds, dsMB.Schema.T.PermanentItemLocation, null, null, new DBI_PathToRow[] {
 					dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.PathToReferencedRow
 				});
-			var AILTable = (dsMB.ActualItemLocationDataTable)dsMB.Schema.T.ActualItemLocation.GetDataTable(ds);
-			foreach (dsMB.ActualItemLocationRow row in AILTable.Rows) {
+			var AILTable = ds.T.ActualItemLocation;
+			foreach (dsMB.ActualItemLocationRow row in AILTable) {
 				AILValuesIndexedByPermanentItemLocation.Add(row.F.PermanentItemLocationID, new Tuple<Guid, Guid>(row.F.ItemLocationID, row.F.CostCenterID));
 			}
 			AILTable.Clear();
@@ -172,8 +170,8 @@ namespace Thinkage.MainBoss.Database {
 			Source PCQuantity = importPositioner.GetDataColumnSource(DataHelper.DataTable.Columns[dsPhysicalCount.Path.T.PhysicalCount.F.Quantity.Column.Name]);
 			Source PCCost = importPositioner.GetDataColumnSource(DataHelper.DataTable.Columns[dsPhysicalCount.Path.T.PhysicalCount.F.Cost.Column.Name]);
 
-			dsMB.ItemCountValueDataTable itemCountTable = (dsMB.ItemCountValueDataTable)dsMB.Schema.T.ItemCountValue.GetDataTable(ds);
-			dsMB.AccountingTransactionDataTable accountingTransactionTable = (dsMB.AccountingTransactionDataTable)dsMB.Schema.T.AccountingTransaction.GetDataTable(ds);
+			dsMB.ItemCountValueDataTable itemCountTable = ds.T.ItemCountValue;
+			dsMB.AccountingTransactionDataTable accountingTransactionTable = ds.T.AccountingTransaction;
 
 			for (Position p = importPositioner.StartPosition.Next; !p.IsEnd; p = p.Next) {
 				importPositioner.CurrentPosition = p;
@@ -199,7 +197,7 @@ namespace Thinkage.MainBoss.Database {
 				}
 				catch (System.Exception ex) {
 					DataRow errorRow = errorDataTable.NewRow();
-					DataRow currentRow = DataHelper.DataTable.Rows.Find(p.Id);
+					DataRow currentRow = DataHelper.DataTable.RowFind(p.Id);
 					for (int j = DataHelper.DataTable.Columns.Count; --j >= 0;)
 						errorRow[j] = currentRow[j];
 					errorRow[ErrorColumnName] = Thinkage.Libraries.Exception.FullMessage(ex);

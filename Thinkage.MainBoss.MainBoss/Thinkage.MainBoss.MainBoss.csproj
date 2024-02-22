@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -27,16 +27,16 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <SignManifests>true</SignManifests>
-    <ManifestCertificateThumbprint>6BCBEF3F5A78F2A2648C61ABC82700F0DF2BEAB3</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>0072E09A760BFAC04E5CD4F5A26ABC34A1C0072B</ManifestCertificateThumbprint>
     <ManifestKeyFile>
     </ManifestKeyFile>
-    <ManifestTimestampUrl>http://sha256timestamp.ws.symantec.com/sha256/timestamp</ManifestTimestampUrl>
+    <ManifestTimestampUrl>http://tsa.starfieldtech.com</ManifestTimestampUrl>
     <Win32Resource>
     </Win32Resource>
     <OldToolsVersion>3.5</OldToolsVersion>
     <SignAssembly>true</SignAssembly>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <GenerateManifests>true</GenerateManifests>
     <ApplicationManifest>Resources\MainBoss.manifest</ApplicationManifest>
     <TargetZone>Custom</TargetZone>
@@ -53,17 +53,17 @@
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>false</MapFileExtensions>
     <InstallUrl>http://www.mainboss.com/MainBossAdvancedPreview/4.2.0.6/</InstallUrl>
-    <SupportUrl>http://www.mainboss.com/info/support.shtml%3fversion=4.2</SupportUrl>
+    <SupportUrl>http://www.mainboss.com/info/support.htm%3fversion=4.2</SupportUrl>
     <ErrorReportUrl>http://www.mainboss.com/info/support.shtml%3fversion=4.2</ErrorReportUrl>
     <ProductName>MainBoss Advanced</ProductName>
     <PublisherName>Thinkage</PublisherName>
     <SuiteName>MainBoss</SuiteName>
-    <MinimumRequiredVersion>4.2.0.6</MinimumRequiredVersion>
+    <MinimumRequiredVersion>4.2.1.1</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>WebDeploy.htm</WebPage>
     <TrustUrlParameters>true</TrustUrlParameters>
-    <ApplicationRevision>6</ApplicationRevision>
-    <ApplicationVersion>4.2.0.6</ApplicationVersion>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>4.2.1.1</ApplicationVersion>
     <UseApplicationTrust>true</UseApplicationTrust>
     <ExcludeDeploymentUrl>true</ExcludeDeploymentUrl>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -120,16 +120,17 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Installation|AnyCPU' ">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Desktop|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Installation\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>bin\Desktop\</OutputPath>
     <BaseAddress>285212672</BaseAddress>
     <Optimize>true</Optimize>
+    <FileAlignment>4096</FileAlignment>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
@@ -140,18 +141,6 @@
     <ProjectReference Include="..\Thinkage.MainBoss.CustomConversion\Thinkage.MainBoss.CustomConversion.csproj">
       <Project>{afd4135f-3de8-4ce1-9562-0d35af38e84d}</Project>
       <Name>Thinkage.MainBoss.CustomConversion</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Thinkage.MainBoss.MainBossServiceConfiguration\Thinkage.MainBoss.MainBossServiceConfiguration.csproj">
-      <Project>{DDBE6907-254E-463F-BBB9-DCC3E2982E5E}</Project>
-      <Name>Thinkage.MainBoss.MainBossServiceConfiguration</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Thinkage.MainBoss.MBUtility\Thinkage.MainBoss.MBUtility.csproj">
-      <Project>{DD52589F-DDB8-46A0-9B79-606254FF4201}</Project>
-      <Name>Thinkage.MainBoss.MBUtility</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Thinkage.MainBoss.Service\Thinkage.MainBoss.Service.csproj">
-      <Project>{5ce02ddb-c336-4416-848e-454325f3fb0f}</Project>
-      <Name>Thinkage.MainBoss.Service</Name>
     </ProjectReference>
     <Reference Include="System">
       <Name>System</Name>
@@ -252,12 +241,6 @@
     <Compile Include="MainBossApplication.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="PseudoDatabases\DatabasesOnServer\DatabasesOnServer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DatabasesOnServer.xafdb</DependentUpon>
-    </Compile>
-    <Compile Include="PseudoDatabases\DatabasesOnServer\DatabasesOnServerSession.cs" />
     <Compile Include="SolutionSettings.cs" />
     <Compile Include="StartupApplication.cs" />
     <Compile Include="PickOrganizationApplication.cs" />
@@ -267,9 +250,6 @@
     <Compile Include="Translation.cs">
       <SubType>Code</SubType>
     </Compile>
-    <None Include="www\.htaccess">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup Condition="Exists('SolutionSettings.targets')">
     <None Include="SolutionSettings.targets" />
@@ -291,6 +271,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="www\version\en\default.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="www\version\es\default.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="www\version\fr\default.htm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="www\version\mbmanual.css">
@@ -332,11 +318,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="BuildDARTRuntimeLicense.ps1" />
-    <EmbeddedResource Include="PseudoDatabases\DatabasesOnServer\DatabasesOnServer.xafdb">
-      <Generator>XAFDataSetGenerator</Generator>
-      <LastGenOutput>DatabasesOnServer.cs</LastGenOutput>
-      <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
-    </EmbeddedResource>
     <None Include="Resources\MainBoss.manifest">
       <SubType>Designer</SubType>
     </None>
@@ -379,102 +360,102 @@
   <ItemGroup>
     <PublishFile Include="HelpTopics.xml">
       <Visible>False</Visible>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>False</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>False</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Resources\Facility.ico">
       <Visible>False</Visible>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Resources\FACTORY.ICO">
       <Visible>False</Visible>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Resources\Fleet.ico">
       <Visible>False</Visible>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Resources\HealthCare.ico">
       <Visible>False</Visible>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Resources\Hotel.ico">
       <Visible>False</Visible>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Resources\Laundry.ico">
       <Visible>False</Visible>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Resources\Resort.ico">
       <Visible>False</Visible>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Resources\SCHOOL.ICO">
       <Visible>False</Visible>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Resources\ServiceDeskApplication.ico">
       <Visible>False</Visible>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
   </ItemGroup>

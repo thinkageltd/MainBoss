@@ -13,6 +13,8 @@ namespace Thinkage.MainBoss.Application {
 		public StringValueOption DataBaseName;
 		public StringValueOption DataBaseServer;
 		public StringValueOption CultureInfo;
+		public StringValueOption FormatCultureInfo;
+		public StringValueOption MessageCultureInfo;
 		public MainBossOptable() {
 			Add(OrganizationName = MB3Client.OptionSupport.CreateOrganizationNameOption(false));
 			Add(DataBaseServer = MB3Client.OptionSupport.CreateServerNameOption(false));
@@ -25,7 +27,8 @@ namespace Thinkage.MainBoss.Application {
 
 			Add(HelpManualPath = new StringValueOption(KB.I("HelpManualPath"), KB.K("The URL location for the documentation").Translate(), false));
 			Add(CultureInfo = new StringValueOption(KB.I("CultureInfo"), KB.K("The culture info to use").Translate(), false));
-
+			Add(FormatCultureInfo = new StringValueOption(KB.I("FormatCultureInfo"), KB.K("The culture info to use for formatting").Translate(), false));
+			Add(MessageCultureInfo = new StringValueOption(KB.I("MessageCultureInfo"), KB.K("The culture info to use for messages").Translate(), false));
 			MarkAsDefaults();
 		}
 		/// <summary>

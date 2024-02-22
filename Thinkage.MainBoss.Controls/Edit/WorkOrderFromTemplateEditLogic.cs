@@ -60,7 +60,6 @@ namespace Thinkage.MainBoss.Controls {
 					TblUnboundControlNode.New(KB.K("Purchase Order initial State override"), new LinkedTypeInfo(true, dsMB.Schema.T.PurchaseOrderState.InternalIdColumn),
 						new FeatureGroupArg(TIGeneralMB3.PurchasingGroup),
 						new ECol(
-							Fmt.SetNotifyT<WorkOrderFromTemplateEditLogic>(editor => editor.FillInWorkOrderRecord),
 							Fmt.SetCreatedT<WorkOrderFromTemplateEditLogic>((editor, valueCtrl) => { editor.POInitialStateOverrideControl = valueCtrl; }),
 							Fmt.SetIsSetting(System.Guid.Empty)
 						)
@@ -106,7 +105,7 @@ namespace Thinkage.MainBoss.Controls {
 		});
 		#endregion
 		#region Construction
-		public WorkOrderFromTemplateEditLogic(IEditUI control, XAFClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
+		public WorkOrderFromTemplateEditLogic(IEditUI control, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 			: base(control, db, tbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, initLists) {
 		}
 		protected override void SetupDataset() {
@@ -159,11 +158,11 @@ namespace Thinkage.MainBoss.Controls {
 			Thinkage.Libraries.Application.Instance.GetInterface<IIdleCallback>().ScheduleIdleCallback(this,
 				delegate() {
 					if (!IsDisposed)
-						doFillInWorkOrderRecord();
+						DoFillInWorkOrderRecord();
 				}
 			);
 		}
-		private void doFillInWorkOrderRecord() {
+		private void DoFillInWorkOrderRecord() {
 			// Because this code alters controls and occurs at idle time, we must preserve and restore the editor state.
 			EditLogic.EditorState stateSave = State;
 
@@ -195,8 +194,8 @@ namespace Thinkage.MainBoss.Controls {
 
 				// Now set the read-only status of the Subject and WorkOrderExpenseModel controls according to whether
 				// the template provided values for these fields.  If provided, then they are read-only.
-				SubjectChangeEnabler.Enabled = dsMB.Schema.T.WorkOrder.F.Subject[workorder] == null;
-				WorkOrderExpenseModelChangeEnabler.Enabled = dsMB.Schema.T.WorkOrder.F.WorkOrderExpenseModelID[workorder] == null;
+				SubjectChangeEnabler.Enabled = workorder.F.Subject == null;
+				WorkOrderExpenseModelChangeEnabler.Enabled = workorder[dsMB.Schema.T.WorkOrder.F.WorkOrderExpenseModelID] == null;
 
 				// Finally, if the template did not provide a value for the Subject or WorkOrderExpenseModel fields,
 				// then copy the previous value back into the control so it appears unchanged.  In this case, the

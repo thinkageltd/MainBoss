@@ -257,9 +257,7 @@ namespace Thinkage.MainBoss.Application {
 			MainControlPanel = (TreeViewExplorer)FormContents;
 			MainControlPanel.SetSettingsControlContainerToTitleBar();
 			string organizationName = TblDrivenMainBossApplication.Instance.AppConnectionMixIn.OrganizationName;
-			string dbOrganizationName;
-			string userName;
-			GetIdentificationForDisplay(out dbOrganizationName, out userName);
+			GetIdentificationForDisplay(out string dbOrganizationName, out string userName);
 			SetStatusAndCaption(organizationName, dbOrganizationName, userName);
 
 			TblDrivenMainBossApplication.Instance.AppConnectionMixIn.PermissionsReloadNotify += HandlePermissionsReloadEvent;
@@ -304,9 +302,9 @@ namespace Thinkage.MainBoss.Application {
 			public readonly System.Drawing.Font TitleFont;
 			public DefaultThemeFromSchema(DBI_Table schema, System.Drawing.Color? bg = null, System.Drawing.Color? fg = null, System.Drawing.Font f = null) {
 				TableSchema = schema;
-				TitleBackground = bg ?? System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.ControlDarkDark);
-				TitleForeground = fg ?? System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Window);
-				TitleFont = f ?? SystemFonts.CaptionFont;
+				TitleBackground = bg ?? Thinkage.Libraries.Presentation.MSWindows.TreeViewExplorer.DefaultTitleBackgroundColour;
+				TitleForeground = fg ?? Thinkage.Libraries.Presentation.MSWindows.TreeViewExplorer.DefaultTitleForegroundColour;
+				TitleFont = f ?? Thinkage.Libraries.Presentation.MSWindows.TreeViewExplorer.DefaultTitleFont;
 			}
 			public DefaultThemeFromSchema AddTId(params Tbl.TblIdentification[] tableIds) {
 				TableIds.AddRange(tableIds);
@@ -347,11 +345,9 @@ namespace Thinkage.MainBoss.Application {
 		}
 		private void SetMainControlPanelMenu() {
 			MainControlPanel.SetTreeViewMenu(delegate (MenuDef item) {
-				BrowseMenuDef brdef = item as BrowseMenuDef;
-				if (brdef != null)
+				if (item is BrowseMenuDef brdef)
 					return new BrowseExplorer(UIFactory, brdef.Id, DB, new MainBossDefaultProvider(brdef.TblCreator.Tbl));
-				ReportMenuDef repdef = item as ReportMenuDef;
-				if (repdef != null)
+				if (item is ReportMenuDef repdef)
 					return new ReportExplorer(UIFactory, repdef.Id, DB, new MainBossDefaultProvider(repdef.Tbl), repdef.UserTip);
 				return null;
 			},
@@ -401,7 +397,7 @@ namespace Thinkage.MainBoss.Application {
 			userName = userToDisplay.ToString();
 			using (dsMB ds = new dsMB(DB)) {
 				DB.ViewAdditionalVariables(ds, dsMB.Schema.V.OrganizationName);
-				organizationName = ds.V.OrganizationName.Value;
+				organizationName = (string)ds.V.OrganizationName.Value;
 			}
 		}
 
@@ -637,13 +633,11 @@ namespace Thinkage.MainBoss.Application {
 		/// </summary>
 		private static void SetMenuState(IMenuItemContainer newItems, IMenuItemContainer oldItems) {
 			for (int i = 0; i < newItems.Count; ++i) {
-				var oldm = oldItems[i] as IBasicDataControl;
 				var newm = newItems[i] as IBasicDataControl;
-				if (oldm != null && newm != null && oldm.ValueStatus == null)
+				if (oldItems[i] is IBasicDataControl oldm && newm != null && oldm.ValueStatus == null)
 					newm.Value = oldm.Value;
-				var ochildren = oldItems[i] as IMenuItemContainer;
 				var nchildren = newItems[i] as IMenuItemContainer;
-				if (ochildren != null && nchildren != null)
+				if (oldItems[i] is IMenuItemContainer ochildren && nchildren != null)
 					SetMenuState(nchildren, ochildren);
 			}
 		}
@@ -715,7 +709,7 @@ namespace Thinkage.MainBoss.Application {
 			Caption = KB.K("Pick View Cost Permissions");
 
 			IListComboDataControlWithExplicitMultipleRowValue picker = uiFactory.CreateList(new Thinkage.Libraries.TypeInfo.SetTypeInfo(false, Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse), null, UIListStyles.ExcludeDisabledRowsFromValue, null);
-			IListColumn column = picker.AddColumn(Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo));
+			IListColumn column = picker.AddColumn(Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo));
 			FormContents.Add(picker);
 
 			ButtonRowPanel okCancelButtons = new ButtonRowPanel(uiFactory);
@@ -755,7 +749,7 @@ namespace Thinkage.MainBoss.Application {
 			Caption = KB.K("Pick View Cost Roles");
 
 			IListComboDataControlWithExplicitMultipleRowValue picker = uiFactory.CreateList(new Thinkage.Libraries.TypeInfo.SetTypeInfo(false, Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse), null, UIListStyles.ExcludeDisabledRowsFromValue, null);
-			IListColumn column = picker.AddColumn(Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo));
+			IListColumn column = picker.AddColumn(Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo));
 			FormContents.Add(picker);
 
 			ButtonRowPanel okCancelButtons = new ButtonRowPanel(uiFactory);
@@ -808,7 +802,7 @@ namespace Thinkage.MainBoss.Application {
 			Caption = KB.K("Pick Roles");
 
 			IListComboDataControlWithExplicitMultipleRowValue picker = uiFactory.CreateList(new Thinkage.Libraries.TypeInfo.SetTypeInfo(false, Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse), null, UIListStyles.ExcludeDisabledRowsFromValue, null);
-			IListColumn column = picker.AddColumn(Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo));
+			IListColumn column = picker.AddColumn(Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo));
 			FormContents.Add(picker);
 
 			ButtonRowPanel okCancelButtons = new ButtonRowPanel(uiFactory);
@@ -852,10 +846,10 @@ namespace Thinkage.MainBoss.Application {
 			: base(uiFactory, PanelHelper.NewCenterColumnPanel(uiFactory)) {
 			PanelHelper.SetColumnPanelGaps(FormContents, 3, 3);
 			Caption = KB.K("Pick Live Roles");
-			XAFClient session = TblDrivenMainBossApplication.Instance.AppConnectionMixIn.Session;
+			DBClient session = TblDrivenMainBossApplication.Instance.AppConnectionMixIn.Session;
 
 			IListComboDataControlWithExplicitMultipleRowValue picker = uiFactory.CreateList(new Thinkage.Libraries.TypeInfo.SetTypeInfo(false, dsMB.Schema.T.Role.F.Id.EffectiveType), null, UIListStyles.ExcludeDisabledRowsFromValue, null);
-			IListColumn column = picker.AddColumn(Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse.GetTypeFormatter(Thinkage.Libraries.Application.InstanceCultureInfo));
+			IListColumn column = picker.AddColumn(Thinkage.Libraries.TypeInfo.StringTypeInfo.NonNullUniverse.GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo));
 			FormContents.Add(picker);
 
 			ButtonRowPanel okCancelButtons = new ButtonRowPanel(uiFactory);
@@ -872,7 +866,7 @@ namespace Thinkage.MainBoss.Application {
 					foreach (Guid principalId in v)
 						session.ViewAdditionalRows(ds, dsPermission_1_1_4_2.Schema.T.Permission, new SqlExpression(dsPermission_1_1_4_2.Path.T.Permission.F.PrincipalID).Eq(principalId));
 
-					foreach (dsMB.PermissionRow row in ds.T.Permission.Rows)
+					foreach (dsMB.PermissionRow row in ds.T.Permission)
 						manager.SetPermission(row.F.PermissionPathPattern.ToLower(), true);
 				}
 				CloseForm(UIDialogResult.OK);
@@ -886,11 +880,11 @@ namespace Thinkage.MainBoss.Application {
 				session.ViewOnlyRows(ds, dsMB.Schema.T.Role, null, null, null);
 				session.ViewOnlyRows(ds, dsMB.Schema.T.CustomRole, null, null, null);
 				// TODO: Sort by code
-				foreach (dsMB.RoleRow r in ds.T.Role.Rows) {
+				foreach (dsMB.RoleRow r in ds.T.Role) {
 					picker.Insert(r.F.Id);
 					column.SetValue(r.F.Code);
 				}
-				foreach (dsMB.CustomRoleRow r in ds.T.CustomRole.Rows) {
+				foreach (dsMB.CustomRoleRow r in ds.T.CustomRole) {
 					picker.Insert(r.F.Id);
 					column.SetValue(r.F.Code);
 				}
@@ -899,7 +893,7 @@ namespace Thinkage.MainBoss.Application {
 				session.ViewOnlyRows(ds, dsMB.Schema.T.UserRole, new SqlExpression(dsMB.Path.T.UserRole.F.UserID).Eq(TblDrivenMainBossApplication.Instance.AppConnectionMixIn.UserRecordIDForPermissions), null,
 					new DBI_PathToRow[] { dsMB.Path.T.UserRole.F.PrincipalID.PathToReferencedRow });
 				// TODO: Sort by code
-				foreach (dsMB.UserRoleRow r in ds.T.UserRole.Rows)
+				foreach (dsMB.UserRoleRow r in ds.T.UserRole)
 					currentMembership.AddUnique(r.PrincipalIDParentRow.F.RoleID ?? r.PrincipalIDParentRow.F.CustomRoleID);
 				picker.Value = currentMembership;
 			}

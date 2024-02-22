@@ -18,7 +18,7 @@ namespace Thinkage.MainBoss.Application {
 			return new Tbl(dsMB.Schema.T.BackupFileName, TId.Backup,
 				new Tbl.IAttr[] {
 					new CustomSessionTbl(
-						delegate(Thinkage.Libraries.DBAccess.XAFClient existingDBAccess, DBI_Database newSchema, out bool callerHasCustody) {
+						delegate(Thinkage.Libraries.DBAccess.DBClient existingDBAccess, DBI_Database newSchema, out bool callerHasCustody) {
 							callerHasCustody = true;
 							var db = new MB3Client(new MB3Client.ConnectionDefinition(dbserver, dbname, credentials));
 							var manager = new MainBossPermissionsManager(Root.Rights);

@@ -22,7 +22,7 @@ namespace UnitEntities {
 				return new System.Data.Linq.Binary((byte[])result);
 		}
 		static Unit() {
-			Thinkage.Libraries.XAF.Database.Service.MSSql.MSSqlServer.GetConverters(Thinkage.MainBoss.Database.dsMB.Path.T.Unit.F.RelativeLocationID.F.LocationID.F.GISLocation.ReferencedColumn.EffectiveType, out FromGeographyConverter, out ToGeographyConverter);
+			Thinkage.Libraries.XAF.Database.Service.MSSql.Server.GetConverters(Thinkage.MainBoss.Database.dsMB.Path.T.Unit.F.RelativeLocationID.F.LocationID.F.GISLocation.ReferencedColumn.EffectiveType, out FromGeographyConverter, out ToGeographyConverter);
 		}
 		#endregion
 		public GeoGeography UnitGISLocation {

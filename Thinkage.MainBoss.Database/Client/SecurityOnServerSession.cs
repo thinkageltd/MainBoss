@@ -285,11 +285,11 @@ namespace Thinkage.MainBoss.MainBoss {
 				}
 				if (row.RowState == DataRowState.Deleted) {
 					if (ConnectionObject.DatabaseLoginManager) {
-						string loginName = (string)dsSecurityOnServer.Schema.T.SecurityOnServer.F.LoginName.EffectiveType.GenericAsNativeType(dsSecurityOnServer.Schema.T.SecurityOnServer.F.LoginName[row, DataRowVersion.Original], typeof(string));
+						string loginName = (string)dsSecurityOnServer.Schema.T.SecurityOnServer.F.LoginName.EffectiveType.GenericAsNativeType(row[dsSecurityOnServer.Schema.T.SecurityOnServer.F.LoginName, DataRowVersion.Original], typeof(string));
 						ConnectionObject.SqlDBClient.DeleteUserLogin(new AuthenticationCredentials(AuthenticationMethod.WindowsAuthentication, loginName));
 					}
 					else {
-						string userName = (string)dsSecurityOnServer.Schema.T.SecurityOnServer.F.DBUserName.EffectiveType.GenericAsNativeType(dsSecurityOnServer.Schema.T.SecurityOnServer.F.DBUserName[row, DataRowVersion.Original], typeof(string));
+						string userName = (string)dsSecurityOnServer.Schema.T.SecurityOnServer.F.DBUserName.EffectiveType.GenericAsNativeType(row[dsSecurityOnServer.Schema.T.SecurityOnServer.F.DBUserName, DataRowVersion.Original], typeof(string));
 						ConnectionObject.SqlDBClient.DeleteUserCredential(new AuthenticationCredentials(AuthenticationMethod.WindowsAuthentication, userName));
 					}
 				}

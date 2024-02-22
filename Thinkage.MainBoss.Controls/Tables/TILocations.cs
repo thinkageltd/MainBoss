@@ -96,12 +96,13 @@ namespace Thinkage.MainBoss.Controls
 					break;
 			}
 
-			List<CompositeView.ICtorArg> overallAttrs = new List<CompositeView.ICtorArg>(attrsForFullUse);
-			overallAttrs.Add(codeColumnDefinition);
+			List<CompositeView.ICtorArg> overallAttrs = new List<CompositeView.ICtorArg>(attrsForFullUse) {
+				codeColumnDefinition
+			};
 			return new CompositeView(
 				// TODO: DBI_Path has a reorient from related table that changes the *start* of a path but no method to modify the *end* of a path to point to a related table.
 				// This would likely be called RetargetToRelatedTable. Even at that DBI_Path's Reorient etc doesn't like using paths that might be null (including derived-table linkages)
-				editTblCreator == null ? TIGeneralMB3.FindDelayedEditTbl(derivedTable) : editTblCreator,
+				editTblCreator ?? TIGeneralMB3.FindDelayedEditTbl(derivedTable),
 				new DBI_PathToRow(dsMB.Path.T.LocationDerivations.F.LocationID.PathToReferencedRow, dsMB.Schema.T.Location.PathToVariantIndirectDerived(derivedTable)).PathToReferencedRowId,
 				overallAttrs.ToArray());
 		}
@@ -136,23 +137,23 @@ namespace Thinkage.MainBoss.Controls
 		#endregion
 		#endregion
 		#region Overall CompositeTbls
-		internal static CompositeTbl LACComposite(Tbl.TblIdentification tableName, DBI_Table permission, IPTbl pTbl,
+		internal static CompositeTbl LACComposite(Tbl.TblIdentification tableName, DBI_Table permission,
 			ViewUse postal, ViewUse temporaryStorage, ViewUse unit, ViewUse permanentStorage, ViewUse plainRelativeLocation, ViewUse templateTemporaryStorage, params BTbl.ICtorArg[] btblArgs) {
 			object localCodeColumnId = KB.I("Local Code Id");
-			List<BTbl.ICtorArg> btblAttrs = new List<BTbl.ICtorArg>(btblArgs);
-			btblAttrs.Add(BTbl.PerViewListColumn(dsMB.LabelKeyBuilder.K("Code"), localCodeColumnId, NonPerViewColumn));
-			btblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.LocationDerivations.F.LocationID.F.Code, BTbl.ListColumnArg.Contexts.ClosedCombo | BTbl.ListColumnArg.Contexts.SearchAndFilter));
-			btblAttrs.Add(BTbl.ListColumn(dsMB.Path.T.LocationDerivations.F.LocationID.F.Desc, NonPerViewColumn));
+			List<BTbl.ICtorArg> btblAttrs = new List<BTbl.ICtorArg>(btblArgs) {
+				BTbl.PerViewListColumn(dsMB.LabelKeyBuilder.K("Code"), localCodeColumnId, NonPerViewColumn),
+				BTbl.ListColumn(dsMB.Path.T.LocationDerivations.F.LocationID.F.Code, BTbl.Contexts.ClosedPicker | BTbl.Contexts.SearchAndFilter),
+				BTbl.ListColumn(dsMB.Path.T.LocationDerivations.F.LocationID.F.Desc, NonPerViewColumn),
+				BTbl.SetTreeStructure(dsMB.Path.T.LocationDerivations.F.ContainingLocationID, 4, uint.MaxValue,
+				dsMB.Path.T.LocationContainment.F.ContainedLocationID.L.LocationDerivations.Id, dsMB.Path.T.LocationContainment.F.ContainingLocationID.L.LocationDerivations.Id)
+			};
 
-			List<Tbl.IAttr> attrs = new List<Tbl.IAttr>(new Tbl.IAttr[]
-			{
-				new BTbl(btblAttrs.ToArray()),
-				new FilteredTreeStructuredTbl(dsMB.Path.T.LocationDerivations.F.ContainingLocationID, dsMB.Schema.T.LocationAndContainers, 4, uint.MaxValue)
-			});
-			if( permission != null )
+			List<Tbl.IAttr> attrs = new List<Tbl.IAttr> {
+				new BTbl(btblAttrs.ToArray())
+			};
+
+			if ( permission != null )
 				attrs.Add(new UseNamedTableSchemaPermissionTbl(permission));
-			if (pTbl != null)
-				attrs.Add(pTbl);
 
 			var viewOnMapKey = KB.K("Show on map");
 			CompositeView.CreateVerbCommandDelegate viewOnMapDelegate =
@@ -166,7 +167,7 @@ namespace Thinkage.MainBoss.Controls
 						CompositeView.AdditionalVerb(viewOnMapKey, viewOnMapDelegate)
 					}),
 				// Table #1 (TemporaryStorage)
-				LACLocationView(dsMB.Schema.T.TemporaryStorage, temporaryStorage == ViewUse.ActiveOnly ? TIItem.ActiveTemporaryStorageTblCreator : TIItem.AllTemporaryStorageTblCreator, BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.TemporaryStorage.F.WorkOrderID.F.Number), temporaryStorage, new CompositeView.ICtorArg[] {
+				LACLocationView(dsMB.Schema.T.TemporaryStorage, temporaryStorage == ViewUse.ActiveOnly ? TIItem.ActiveTemporaryStorageEditTblCreator : TIItem.AllTemporaryStorageEditTblCreator, BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.TemporaryStorage.F.WorkOrderID.F.Number), temporaryStorage, new CompositeView.ICtorArg[] {
 						CompositeView.ContextFreeInit(dsMB.Path.T.LocationDerivations.F.LocationID, dsMB.Path.T.TemporaryStorage.F.ContainingLocationID)
 					}),
 				// Table #2 (Unit)
@@ -231,25 +232,27 @@ namespace Thinkage.MainBoss.Controls
 			);
 		}
 		private delegate List<CompositeView.ICtorArg> InitILACViewArgsT(bool isPrimary, DBI_Table editTableSchema, CompositeView.ICtorArg pathAlias, params CompositeView.ICtorArg[] contextualInits);
-		private static CompositeTbl ILACComposite(Tbl.TblIdentification tableName, DBI_Table permission, IPTbl pTbl, bool groupNewCommands, bool onlyActiveTemporaryItemLocations, bool permanentIL, bool temporaryIL, bool templateIL) {
+		private static CompositeTbl ILACComposite(Tbl.TblIdentification tableName, DBI_Table permission, bool groupNewCommands, bool onlyActiveTemporaryItemLocations, bool permanentIL, bool temporaryIL, bool templateIL, params BTbl.ICtorArg[] btblArgs) {
 			Key newItemLocationButtonGroupKey = KB.K("New Location Assignment");
 			object localCodeColumnId = KB.I("Local Code Id");
 			object descriptionColumnId = KB.I("DescriptionId");
-			List<Tbl.IAttr> attrs = new List<Tbl.IAttr>(new Tbl.IAttr[]	{
-					new BTbl(
+			List<BTbl.ICtorArg> btblAttrs = new List<BTbl.ICtorArg>(btblArgs);
+			btblAttrs.AddRange(new BTbl.ICtorArg[] {
 						BTbl.PerViewListColumn(dsMB.LabelKeyBuilder.K("Code"), localCodeColumnId, NonPerViewColumn),
 						// The following Closed form will have no value to display for (non-Item) Location record types but none of these are pickable anyway.
-						BTbl.ListColumn(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.Code, BTbl.ListColumnArg.Contexts.ClosedCombo|BTbl.ListColumnArg.Contexts.SearchAndFilter),
-						BTbl.ListColumn(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.Shortage, BTbl.ListColumnArg.Contexts.SearchAndFilter),
+						BTbl.ListColumn(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.Code, BTbl.Contexts.ClosedPicker|BTbl.Contexts.SearchAndFilter),
+						BTbl.ListColumn(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.Shortage, BTbl.Contexts.SearchAndFilter),
 						BTbl.PerViewListColumn(CommonDescColumnKey, descriptionColumnId, NonPerViewColumn),
-						BTbl.ListColumn(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.Available, NonPerViewColumn, new BTbl.ListColumnArg.FeatureGroupArg(StoreroomGroup))
-					),
-					new FilteredTreeStructuredTbl(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ContainingLocationID, dsMB.Schema.T.ItemLocationAndContainers, 5, uint.MaxValue)
-				});
+						BTbl.ListColumn(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.Available, NonPerViewColumn, new BTbl.ListColumnArg.FeatureGroupArg(StoreroomGroup)),
+						BTbl.SetTreeStructure(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ContainingLocationID, 5, uint.MaxValue,
+							dsMB.Path.T.ItemLocationContainment.F.ContainedLocationID.L.LocationDerivationsAndItemLocations.Id, dsMB.Path.T.ItemLocationContainment.F.ContainingLocationID.L.LocationDerivationsAndItemLocations.Id)
+			});
+			List<Tbl.IAttr> attrs = new List<Tbl.IAttr> {
+				new BTbl(btblAttrs.ToArray())
+			};
+
 			if (permission != null)
 				attrs.Add(new UseNamedTableSchemaPermissionTbl(permission));
-			if (pTbl != null)
-				attrs.Add(pTbl);
 
 			var views = new List<CompositeView>();
 			List<CompositeView.ICtorArg> viewArgs;
@@ -261,7 +264,7 @@ namespace Thinkage.MainBoss.Controls
 				BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.PostalAddress.F.LocationID.F.Desc),
 				CompositeView.ForceNotPrimary()));
 			// Table #1 (TemporaryStorage)
-			views.Add(new CompositeView(TIItem.AllTemporaryStorageTblCreator, dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID.F.TemporaryStorageID,
+			views.Add(new CompositeView(TIItem.AllTemporaryStorageEditTblCreator, dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID.F.TemporaryStorageID,
 				BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.TemporaryStorage.F.WorkOrderID.F.Number),
 				BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.TemporaryStorage.F.LocationID.F.Desc),
 				ReadonlyView,
@@ -293,11 +296,12 @@ namespace Thinkage.MainBoss.Controls
 
 			// This is as close to a nested function as I can get. The only thing is that the delegate type must be declared with a name and outside the function.
 			InitILACViewArgsT InitILACViewArgs = delegate(bool isPrimary, DBI_Table editTableSchema, CompositeView.ICtorArg pathAlias, CompositeView.ICtorArg[] contextualInits) {
-				var result = new List<CompositeView.ICtorArg>();
-				result.Add(BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.ItemLocation.F.ItemID.F.Code.ReOrientFromRelatedTable(editTableSchema)));
-				result.Add(BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.ItemLocation.F.ItemID.F.Desc.ReOrientFromRelatedTable(editTableSchema)));
-				result.Add(CompositeView.PathAlias(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ItemID, dsMB.Path.T.ItemLocation.F.ItemID.ReOrientFromRelatedTable(editTableSchema)));
-				result.Add(CompositeView.PathAlias(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.LocationID, dsMB.Path.T.ItemLocation.F.LocationID.ReOrientFromRelatedTable(editTableSchema)));
+				var result = new List<CompositeView.ICtorArg> {
+					BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.ItemLocation.F.ItemID.F.Code.ReOrientFromRelatedTable(editTableSchema)),
+					BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.ItemLocation.F.ItemID.F.Desc.ReOrientFromRelatedTable(editTableSchema)),
+					CompositeView.PathAlias(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ItemID, dsMB.Path.T.ItemLocation.F.ItemID.ReOrientFromRelatedTable(editTableSchema)),
+					CompositeView.PathAlias(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.LocationID, dsMB.Path.T.ItemLocation.F.LocationID.ReOrientFromRelatedTable(editTableSchema))
+				};
 				if (groupNewCommands)
 					result.Add(CompositeView.NewCommandGroup(newItemLocationButtonGroupKey));
 				if (pathAlias != null)
@@ -385,6 +389,7 @@ namespace Thinkage.MainBoss.Controls
 		#region Declarations for Browse/Browsette Tbl Creators
 		#region Location Browse Tbl Creators
 		public static readonly DelayedCreateTbl LocationBrowseTblCreator = null;
+		public static readonly DelayedCreateTbl LocationPickerTblCreator = null;
 		public static readonly DelayedCreateTbl LocationOrganizerBrowseTblCreator = null;
 		#region MoveLocationsCommand - part of Reorganize locations
 		private class MoveLocationsCommand : BrowseLogic.MultiBrowserCommand {
@@ -418,8 +423,7 @@ namespace Thinkage.MainBoss.Controls
 				UpdateEnabling(Libraries.DataFlow.DataChangedEvent.Reset, null);
 
 				Browser.ControlCreationCompletedNotificationRecipients += delegate() {
-					bool NeedsContext;
-					TargetLocationIdSource = new ControlValue(targetId).GetSourceForInit(Browser, -1, out NeedsContext);
+					TargetLocationIdSource = new ControlValue(targetId).GetSourceForInit(Browser, -1, out bool NeedsContext);
 					TargetUnitIdSource = new InSubBrowserValue( targetId, new BrowserPathValue(dsMB.Path.T.LocationDerivations.F.LocationID.F.RelativeLocationID.F.UnitID)).GetSourceForInit(Browser, -1, out NeedsContext);
 					TargetPermanentStorageIdSource = new InSubBrowserValue(targetId, new BrowserPathValue(dsMB.Path.T.LocationDerivations.F.LocationID.F.RelativeLocationID.F.PermanentStorageID)).GetSourceForInit(Browser, -1, out NeedsContext);
 				};
@@ -478,7 +482,7 @@ namespace Thinkage.MainBoss.Controls
 				// being shown in the browser. Rather than fetching the records here we should copy them (somehow) from the browser's data set. This would require
 				// a bit of XAFCLient cooperation so it knows we are editing based on already-fetched record copies. We would also have to ensure that we only check
 				// stuff that the browser shows, but the explicit concurrency checking as it stands does not support this.
-				using (XAFDataSet dsMove = XAFDataSet.New(Browser.TInfo.Schema.Database, Browser.DB)) {
+				using (DBDataSet dsMove = DBDataSet.New(Browser.TInfo.Schema.Database, Browser.DB)) {
 					dsMove.EnforceConstraints = false;
 					dsMove.DataSetName = KB.I("BrowseBaseControl.MoveRecord.dsMove");
 					Browser.IterateOverContextRecords(
@@ -537,7 +541,7 @@ namespace Thinkage.MainBoss.Controls
 			#region PermanentLocationPickerTblCreator
 			// For picking a non-temporary location, e.g. for temporary storage (task), contact
 			PermanentLocationPickerTblCreator = new DelayedCreateTbl(delegate() {
-				return LACComposite(TId.NonTemporaryLocation, null, null,
+				return LACComposite(TId.NonTemporaryLocation, null,
 					ViewUse.Full,	// Table 0 (PostalAddress)
 					ViewUse.None,	// Table 1 (TemporaryStorage)
 					ViewUse.Full,	// Table 2 (Unit)
@@ -550,7 +554,7 @@ namespace Thinkage.MainBoss.Controls
 			#region AllShipToLocationPickerTblCreator
 			// For picking a location where items can be shipped to (for a PurchaseOrder)
 			AllShipToLocationPickerTblCreator = new DelayedCreateTbl(delegate() {
-				return LACComposite(TId.AllowedShipToLocation, null, null,
+				return LACComposite(TId.AllowedShipToLocation, null,
 					ViewUse.Full, 		// Table 0 (PostalAddress)
 					ViewUse.Full,		// Table 1 (TemporaryStorage)
 					ViewUse.Full,	 	// Table 2 (Unit)
@@ -563,7 +567,7 @@ namespace Thinkage.MainBoss.Controls
 			#region ShipToLocationForPurchaseOrderTemplatePickerTblCreator
 			// For picking a location where items can be shipped to (for a PurchaseOrderTemplate)
 			ShipToLocationForPurchaseOrderTemplatePickerTblCreator = new DelayedCreateTbl(delegate() {
-				return LACComposite(TId.AllowedShipToLocation, null, null,
+				return LACComposite(TId.AllowedShipToLocation, null,
 					ViewUse.Full, 	// Table 0 (PostalAddress)
 					ViewUse.None, 	// Table 1 (TemporaryStorage)
 					ViewUse.Full, 	// Table 2 (Unit)
@@ -576,7 +580,7 @@ namespace Thinkage.MainBoss.Controls
 			#region CompanyLocationPickerTblCreator
 			// For picking a location to use for the Purchaser's address on Purchase Orders
 			CompanyLocationPickerTblCreator = new DelayedCreateTbl(delegate() {
-				return LACComposite(TId.PostalAddress, null, null,
+				return LACComposite(TId.PostalAddress, null,
 					ViewUse.Full, 	// Table 0 (PostalAddress)
 					ViewUse.None, 	// Table 1 (TemporaryStorage)
 					ViewUse.None, 	// Table 2 (Unit)
@@ -589,20 +593,20 @@ namespace Thinkage.MainBoss.Controls
 			#region AllTemporaryStoragePickerTblCreator
 			// For picking a temporary storage location
 			AllTemporaryStoragePickerTblCreator = new DelayedCreateTbl(delegate() {
-				return LACComposite(TId.TemporaryStorage, null, TIReports.NewRemotePTbl(TIReports.TemporaryStorageReport),
+				return LACComposite(TId.TemporaryStorage, null,
 					ViewUse.Secondary, 	// Table 0 (PostalAddress)
 					ViewUse.Full,		// Table 1 (TemporaryStorage)
 					ViewUse.Secondary, 	// Table 2 (Unit)
 					ViewUse.Secondary, 	// Table 3 (PermanentStorage)
 					ViewUse.Secondary,	// Table 4 (PlainRelativeLocation)
-					ViewUse.None		// Table 5 (TemplateTemporaryStorage)
+					ViewUse.None        // Table 5 (TemplateTemporaryStorage)
 				);
 			});
 			#endregion
 			#region TemplateTemporaryStoragePickerTblCreator
 			// For picking the containing location of a permanent storage location
 			TemplateTemporaryStoragePickerTblCreator = new DelayedCreateTbl(delegate() {
-				return LACComposite(TId.TemplateTemporaryStorage, null, null,
+				return LACComposite(TId.TemplateTemporaryStorage, null,
 					ViewUse.Secondary, 	// Table 0 (PostalAddress)
 					ViewUse.None, 		// Table 1 (TemporaryStorage)
 					ViewUse.Secondary, 	// Table 2 (Unit)
@@ -614,24 +618,30 @@ namespace Thinkage.MainBoss.Controls
 			#endregion
 
 			#region LocationBrowseTblCreator
-			// For browsing/picking normal locations (postal/relative)
+			// For browsing normal locations (postal/relative)
 			LocationBrowseTblCreator = new DelayedCreateTbl(delegate()
 			{
 				return LACComposite(TId.Location, dsMB.Schema.T.Location,
-					TIReports.NewRemotePTbl(
-						new DelayedCreateTbl(
-							delegate()
-							{
-								return TIReports.LocationReport;
-							}
-						)
-					),
-					ViewUse.Full, 		// Table 0 (PostalAddress)
-					ViewUse.None, 		// Table 1 (TemporaryStorage)
-					ViewUse.None, 		// Table 2 (Unit)
-					ViewUse.None, 		// Table 3 (PermanentStorage)
-					ViewUse.Full,		// Table 4 (PlainRelativeLocation)
-					ViewUse.None		// Table 5 (TemplateTemporaryStorage)
+					ViewUse.Full,       // Table 0 (PostalAddress)
+					ViewUse.None,       // Table 1 (TemporaryStorage)
+					ViewUse.None,       // Table 2 (Unit)
+					ViewUse.None,       // Table 3 (PermanentStorage)
+					ViewUse.Full,       // Table 4 (PlainRelativeLocation)
+					ViewUse.None,        // Table 5 (TemplateTemporaryStorage)
+					BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.LocationReport))
+				);
+			});
+			#endregion
+			#region LocationPickerTblCreator
+			// For picking normal locations (postal/relative)
+			LocationPickerTblCreator = new DelayedCreateTbl(delegate () {
+				return LACComposite(TId.Location, dsMB.Schema.T.Location,
+					ViewUse.Full,       // Table 0 (PostalAddress)
+					ViewUse.None,       // Table 1 (TemporaryStorage)
+					ViewUse.None,       // Table 2 (Unit)
+					ViewUse.None,       // Table 3 (PermanentStorage)
+					ViewUse.Full,       // Table 4 (PlainRelativeLocation)
+					ViewUse.None        // Table 5 (TemplateTemporaryStorage)
 				);
 			});
 			#endregion
@@ -639,7 +649,7 @@ namespace Thinkage.MainBoss.Controls
 			// Requires Unit table permissions since it is Units that are what are commonly 'organized'
 			LocationOrganizerBrowseTblCreator = new DelayedCreateTbl(delegate() {
 				object targetLocationId = KB.I("Target LocationID");
-				return LACComposite(TId.Location, dsMB.Schema.T.Unit, null,
+				return LACComposite(TId.Location, dsMB.Schema.T.Unit,
 					ViewUse.Secondary, 			// Table 0 (PostalAddress)
 					ViewUse.None, 				// Table 1 (TemporaryStorage)
 					ViewUse.FullOnlyExisting, 	// Table 2 (Unit)
@@ -669,45 +679,43 @@ namespace Thinkage.MainBoss.Controls
 			// For browsing units
 			UnitBrowseTblCreator = new DelayedCreateTbl(delegate()
 			{
-				return LACComposite(TId.Unit, dsMB.Schema.T.Unit, TIReports.NewRemotePTbl(TIReports.UnitReport),
-
+				return LACComposite(TId.Unit, dsMB.Schema.T.Unit,
 					ViewUse.Secondary, 	// Table 0 (PostalAddress)
 					ViewUse.None, 		// Table 1 (TemporaryStorage)
 					ViewUse.Full, 		// Table 2 (Unit)
 					ViewUse.Secondary, 	// Table 3 (PermanentStorage)
 					ViewUse.Secondary,	// Table 4 (PlainRelativeLocation)
-					ViewUse.None		// Table 5 (TemplateTemporaryStorage)
-					);
+					ViewUse.None,       // Table 5 (TemplateTemporaryStorage)
+					BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.UnitReport), matchingRowInBrowser: dsMB.Path.T.LocationDerivations.F.LocationID.F.RelativeLocationID.F.UnitID.PathToReferencedRow)
+				);
 			});
 			#endregion
 			#region PermanentStorageBrowseTblCreator
 			// For browsing/picking a permanent storage template location
 			PermanentStorageBrowseTblCreator = new DelayedCreateTbl(delegate()
 			{
-				return LACComposite(TId.Storeroom, dsMB.Schema.T.PermanentStorage, TIReports.NewRemotePTbl(new DelayedCreateTbl(delegate() {
-						return TIReports.PermanentStorageReport;
-					})),
-					ViewUse.Secondary, 	// Table 0 (PostalAddress)
-					ViewUse.None, 		// Table 1 (TemporaryStorage)
-					ViewUse.Secondary, 	// Table 2 (Unit)
-					ViewUse.Full, 		// Table 3 (PermanentStorage)
-					ViewUse.Secondary,	// Table 4 (PlainRelativeLocation)
-					ViewUse.None		// Table 5 (TemplateTemporaryStorage)
+				return LACComposite(TId.Storeroom, dsMB.Schema.T.PermanentStorage,
+					ViewUse.Secondary,  // Table 0 (PostalAddress)
+					ViewUse.None,       // Table 1 (TemporaryStorage)
+					ViewUse.Secondary,  // Table 2 (Unit)
+					ViewUse.Full,       // Table 3 (PermanentStorage)
+					ViewUse.Secondary,  // Table 4 (PlainRelativeLocation)
+					ViewUse.None,        // Table 5 (TemplateTemporaryStorage)
+					BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PermanentStorageReport))
 				);
 			});
 			#endregion
 			#region AllStorageBrowseTblCreator
 			// For browsing/picking a All storage template location
 			AllStorageBrowseTblCreator = new DelayedCreateTbl(delegate () {
-				return LACComposite(TId.Storeroom, dsMB.Schema.T.RelativeLocation, TIReports.NewRemotePTbl(new DelayedCreateTbl(delegate () {
-						return TIReports.StorageLocationStatus;
-					})),
+				return LACComposite(TId.Storeroom, dsMB.Schema.T.RelativeLocation,
 					ViewUse.Secondary,  // Table 0 (PostalAddress)
 					ViewUse.Full,       // Table 1 (TemporaryStorage)
 					ViewUse.Secondary,  // Table 2 (Unit)
 					ViewUse.Full,       // Table 3 (PermanentStorage)
 					ViewUse.Secondary,  // Table 4 (PlainRelativeLocation)
-					ViewUse.None        // Table 5 (TemplateTemporaryStorage)
+					ViewUse.None,        // Table 5 (TemplateTemporaryStorage)
+					BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.StorageLocationStatus))
 				);
 			});
 			#endregion
@@ -716,7 +724,7 @@ namespace Thinkage.MainBoss.Controls
 			#region AllActualItemLocationPickerTblCreator
 			// For picking an ItemLocation for an item located in actual (permanent or temporary) storage
 			AllActualItemLocationPickerTblCreator = new DelayedCreateTbl(delegate() {
-				return ILACComposite(TId.StoreroomOrTemporaryStorageAssignment, null, null, false, false,
+				return ILACComposite(TId.StoreroomOrTemporaryStorageAssignment, null, false, false,
 					true,	// Table #5 (PermanentItemLocation)
 					true,	// Table #6 (TemporaryItemLocation)
 					false	// Table #7 (TemplateItemLocation)
@@ -726,7 +734,7 @@ namespace Thinkage.MainBoss.Controls
 			#region ActiveActualItemLocationBrowseTblCreator
 			// For picking an ItemLocation for an item located in permanent storage or temporary storage for a particular work order.
 			ActiveActualItemLocationBrowseTblCreator = new DelayedCreateTbl(delegate() {
-				return ILACComposite(TId.StoreroomOrTemporaryStorageAssignment, null, null, false, true,
+				return ILACComposite(TId.StoreroomOrTemporaryStorageAssignment, null, false, true,
 					true,	// Table #5 (PermanentItemLocation)
 					true,	// Table #6 (TemporaryItemLocation)
 					false	// Table #7 (TemplateItemLocation)
@@ -737,7 +745,6 @@ namespace Thinkage.MainBoss.Controls
 			// For picking an ItemLocation for an item located in permanent storage
 			PermanentItemLocationPickerTblCreator = new DelayedCreateTbl(delegate() {
 				return ILACComposite(TId.StoreroomAssignment, dsMB.Schema.T.PermanentItemLocation,
-					null,
 					false, false,
 					true,	// Table #5 (PermanentItemLocation)
 					false,	// Table #6 (TemporaryItemLocation)
@@ -750,13 +757,11 @@ namespace Thinkage.MainBoss.Controls
 			PermanentItemLocationBrowseTblCreator = new DelayedCreateTbl(delegate()
 			{
 				return ILACComposite(TId.StoreroomAssignment, dsMB.Schema.T.PermanentItemLocation,
-					TIReports.NewRemotePTbl(new DelayedCreateTbl(delegate() {
-						return TIReports.PermanentInventoryLocation;
-					})),
 					false, false,
-					true,	// Table #5 (PermanentItemLocation)
-					false,	// Table #6 (TemporaryItemLocation)
-					false	// Table #7 (TemplateItemLocation)
+					true,   // Table #5 (PermanentItemLocation)
+					false,  // Table #6 (TemporaryItemLocation)
+					false,   // Table #7 (TemplateItemLocation)
+					BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PermanentInventoryLocation))
 				);
 			});
 			#endregion
@@ -764,7 +769,7 @@ namespace Thinkage.MainBoss.Controls
 			// For picking an ItemLocation for an item located in permanent storage or template temporary storage
 			PermanentOrTemporaryTaskItemLocationPickerTblCreator = new DelayedCreateTbl(delegate()
 			{
-				return ILACComposite(TId.TaskStoreroomorTemporaryStorageAssignment, dsMB.Schema.T.TemporaryItemLocation, null, false, false,
+				return ILACComposite(TId.TaskStoreroomorTemporaryStorageAssignment, dsMB.Schema.T.TemporaryItemLocation, false, false,
 					true,	// Table #5 (PermanentItemLocation)
 					false,	// Table #6 (TemporaryItemLocation)
 					true	// Table #7 (TemplateItemLocation)
@@ -774,7 +779,6 @@ namespace Thinkage.MainBoss.Controls
 			#region ActiveTemporaryItemLocationBrowseTblCreator
 			ActiveTemporaryItemLocationBrowseTblCreator = new DelayedCreateTbl(delegate() {
 				return ILACComposite(TId.TemporaryStorageAssignment, dsMB.Schema.T.TemporaryItemLocation,
-					null,
 					false, true,
 					false,	// Table #5 (PermanentItemLocation)
 					true,	// Table #6 (TemporaryItemLocation)
@@ -787,7 +791,6 @@ namespace Thinkage.MainBoss.Controls
 			TemporaryItemLocationBrowseTblCreator = new DelayedCreateTbl(delegate()
 			{
 				return ILACComposite(TId.TemporaryStorageAssignment, dsMB.Schema.T.TemporaryItemLocation,
-					null,
 					false, false,
 					false,	// Table #5 (PermanentItemLocation)
 					true,	// Table #6 (TemporaryItemLocation)
@@ -799,11 +802,11 @@ namespace Thinkage.MainBoss.Controls
 			// For browsing/picking an ItemLocation for an item located in template temporary storage
 			TemporaryTaskItemLocationBrowseTblCreator = new DelayedCreateTbl(delegate() {
 				return ILACComposite(TId.TaskTemporaryStorageAssignment, dsMB.Schema.T.TemplateItemLocation,
-					TIReports.NewRemotePTbl(new DelayedCreateTbl( delegate() { return TIReports.TemplateInventoryLocation; })),
 					false, false,
-					false,	// Table #5 (PermanentItemLocation)
-					false,	// Table #6 (TemporaryItemLocation)
-					true	// Table #7 (TemplateItemLocation)
+					false,  // Table #5 (PermanentItemLocation)
+					false,  // Table #6 (TemporaryItemLocation)
+					true,    // Table #7 (TemplateItemLocation)
+					BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.TemplateInventoryLocation))
 				);
 			});
 			#endregion

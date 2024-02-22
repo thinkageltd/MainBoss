@@ -29,11 +29,10 @@ namespace Thinkage.MainBoss.MBUtility {
 		}
 		private readonly Definition Options;
 		private void Run() {
-			string oName;
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out string oName);
 			// Get a connection to the database that we are referencing
 			// Because we don't enforce any permissions ourselves, nor any licensing, we don't use the usual open-database code.
-			Thinkage.Libraries.DBAccess.XAFClient db = new MB3Client(connect);
+			Thinkage.Libraries.DBAccess.DBClient db = new MB3Client(connect);
 			// The roles table appeared in its current form at this version
 			DBVersionHandler pVersionHandler = MBUpgrader.UpgradeInformation.CheckDBVersion(db, VersionInfo.ProductVersion, new System.Version(1, 0, 4, 38), dsMB.Schema.V.MinMBAppVersion, KB.I("MainBoss Utility Tool--Load Security"));
 			db.ObtainSession((int)DatabaseEnums.ApplicationModeID.UtilityTool);
@@ -43,7 +42,7 @@ namespace Thinkage.MainBoss.MBUtility {
 				db.Update(updateDs);
 			}
 		}
-		private void AddPermission(XAFClient db, dsMB updateDs, Guid principalId, string permission) {
+		private void AddPermission(DBClient db, dsMB updateDs, Guid principalId, string permission) {
 			dsMB.PermissionRow prow = (dsMB.PermissionRow)db.AddNewRowAndBases(updateDs, dsMB.Schema.T.Permission);
 			prow.F.PermissionPathPattern = permission;
 			prow.F.PrincipalID = principalId;

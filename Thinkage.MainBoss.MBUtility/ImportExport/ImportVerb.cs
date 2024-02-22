@@ -43,10 +43,9 @@ namespace Thinkage.MainBoss.MBUtility
 			id.LoadDataSetFromXmlFile(Options.InputFile.Value, new System.Xml.Schema.ValidationEventHandler(xml_ValidationEventHandler));
 
 			// Get a connection to the database that we are importing to
-			string oName;
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out oName);
+			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out string oName);
 			DataImportExportHelper.SetupDatabaseAccess(oName, connect);
-			Thinkage.Libraries.DBAccess.XAFClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
+			Thinkage.Libraries.DBAccess.DBClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
 			DataSet errors;
 			using (dsMB mbds = new dsMB(db))
 			{

@@ -23,7 +23,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 	/// </summary>
 	public class SelectListWithEmpty : SelectList {
 		public SelectListWithEmpty(IEnumerable items, Guid? selectedValue)
-			: base(items, "Id", "Code", selectedValue.HasValue ? selectedValue.Value : Guid.Empty) {
+			: base(items, "Id", "Code", selectedValue ?? Guid.Empty) {
 		}
 	}
 	/// <summary>

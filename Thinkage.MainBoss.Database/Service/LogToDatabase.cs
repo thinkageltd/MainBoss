@@ -118,7 +118,7 @@ namespace Thinkage.MainBoss.Database.Service {
 						try {
 							if (LogDs == null)
 								GetServiceLog();
-							dsMB.ServiceLogDataTable log = (dsMB.ServiceLogDataTable)dsMB.Schema.T.ServiceLog.GetDataTable(LogDs);
+							dsMB.ServiceLogDataTable log = LogDs.T.ServiceLog;
 							dsMB.ServiceLogRow entry = log.AddNewServiceLogRow();
 							entry.F.Source = msg.Source;
 							entry.F.Message = msg.Message;

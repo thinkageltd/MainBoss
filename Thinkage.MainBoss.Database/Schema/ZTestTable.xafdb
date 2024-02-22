@@ -44,7 +44,6 @@
 	<field name="AutoNumber" type="AutoNumber"  />
 	<field name="Bool" type="bool"  />
 	<field name="Code" type="Code"  />
-	<field name="CultureInfo" type="CultureInfo"  />
 	<field name="Currency" type="Currency"  />
 	<field name="Date" type="Date"  />
 	<field name="DateTime" type="DateTime"  />
