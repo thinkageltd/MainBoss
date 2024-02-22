@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="WorkOrderAttachment" defaults="true" log="false" xid="AttachmentID WorkOrderID" xunique="true" id="Id" labelkey="">
+		<field name="Id" read="RequiredGUID" />
+		<field name="AttachmentID" type="RequiredGUIDREF" link="Attachment">
+			<extension name="linkage">captive</extension>
+			<extension name="pickfrom">Thinkage.MainBoss.Controls.TIAttachments.AttachmentBrowseTblCreator,Thinkage.MainBoss.Controls</extension>
+		</field>
+		<field name="WorkOrderID" labelkey="WorkOrder" type="RequiredGUIDREF" link="WorkOrder">
+			<extension name="linkage">captive</extension>
+		</field>
+		<extension name="deletemethod">delete</extension>
+	</table>
+	<table name="Attachment"/>
+	<table name="WorkOrder"/>
+</database>

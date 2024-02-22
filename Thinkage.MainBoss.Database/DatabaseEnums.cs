@@ -75,9 +75,6 @@ namespace Thinkage.MainBoss.Database {
 	// TableEnum column of the view
 	// "NotSpecified" represents an unspecified record type
 	public static class ViewRecordTypes {   // static to prevent instantiation
-
-		public static EnumValueTextRepresentations IsPreventiveEnumText = EnumValueTextRepresentations.NewForBool(KB.K("Corrective"), null, KB.K("Preventive"), null);
-
 		#region AccountingTransactionVariants
 		public enum AccountingTransactionVariants {
 			ActualItem = 0,
@@ -141,35 +138,6 @@ namespace Thinkage.MainBoss.Database {
 		public static Thinkage.Libraries.EnumValueTextRepresentations TransactionTypeNames = new Thinkage.Libraries.EnumValueTextRepresentations(TransactionTypeNameLabels, null, TransactionTypeNameValues);
 
 		#endregion
-		#region ContactFunctions
-		public enum ContactFunctions {
-			Contact = 0,
-			Requestor = 1,
-			BillableRequestor = 2,
-			Employee = 3,
-			SalesVendor = 4,
-			ServiceVendor = 5,
-			AccountsPayableVendor = 6,
-			SalesServiceVendor = 7,
-			SalesAccountsPayableVendor = 8,
-			ServiceAccountsPayableVendor = 9,
-			SalesServiceAccountsPayableVendor = 10,
-			RequestAssignee = 11,
-			WorkOrderAssignee = 12,
-			PurchaseOrderAssignee = 13,
-			User = 14
-		}
-		#endregion
-		#region LocationDerivations
-		public enum LocationDerivations {
-			PostalAddress = 0,
-			TemporaryStorage,
-			Unit,
-			PermanentStorage,
-			PlainRelativeLocation,
-			TemplateTemporaryStorage
-		}
-		#endregion
 		#region LocationReport
 		public enum LocationReport {
 			PostalAddress = 0,
@@ -199,44 +167,6 @@ namespace Thinkage.MainBoss.Database {
 			};
 		public static Thinkage.Libraries.EnumValueTextRepresentations LocationReportProvider = new Thinkage.Libraries.EnumValueTextRepresentations(LocationReportProviderLabels, null, LocationReportProviderValues);
 
-		#endregion
-		#region LocationDerivationsAndItemLocations
-		/// <summary>
-		/// Types of Locations
-		/// </summary>
-		public enum LocationDerivationsAndItemLocations {
-			FirstLD,	// 0
-			PostalAddress = LocationDerivationsAndItemLocations.FirstLD + LocationDerivations.PostalAddress,
-			TemporaryStorage = LocationDerivationsAndItemLocations.FirstLD + LocationDerivations.TemporaryStorage,
-			Unit = LocationDerivationsAndItemLocations.FirstLD + LocationDerivations.Unit,
-			PermanentStorage = LocationDerivationsAndItemLocations.FirstLD + LocationDerivations.PermanentStorage,
-			PlainRelativeLocation = LocationDerivationsAndItemLocations.FirstLD + LocationDerivations.PlainRelativeLocation,
-			TemplateTemporaryStorage = LocationDerivationsAndItemLocations.FirstLD + LocationDerivations.TemplateTemporaryStorage,
-			PermanentItemLocation,
-			TemporaryItemLocation,
-			TemporaryItemLocationTemplate	// 8
-		}
-		#endregion
-		#region ItemActivity
-		public enum ItemActivity {
-			NotSpecified = -1,
-			ItemCountValue = 0,
-			VoidItemCountValue = 1,
-			ItemAdjustment = 2,
-			ItemIssue = 3,
-			ItemTransferTo = 4,
-			ItemTransferFrom = 5,
-			ReceiveItemPO = 6,
-			ReceiveItemNonPO = 7,
-			ActualItem = 8,
-			ItemIssueCorrection = 9,
-			ReceiveItemPOCorrection = 10,
-			ReceiveItemNonPOCorrection = 11,
-			ActualItemCorrection = 12,
-			ItemTransferToCorrection = 13,
-			ItemTransferFromCorrection = 14,
-			VoidedItemCountValue = 15
-		}
 		#endregion
 		#region ItemActivityReport
 		public enum ItemActivityReport {
@@ -280,270 +210,6 @@ namespace Thinkage.MainBoss.Database {
 		public static Thinkage.Libraries.EnumValueTextRepresentations ItemActivityReportProvider = new Thinkage.Libraries.EnumValueTextRepresentations(ItemActivityReportProviderLabels, null, ItemActivityReportProviderValues);
 
 		#endregion
-		#region ItemReceiving
-		public enum ItemReceiving {
-			NotSpecified = -1,
-			ReceivePermanentPO = 0,
-			ReceiveTemporaryPO = 1,
-			ReceivePermanentNonPO = 2,
-			ReceiveTemporaryNonPO = 3,
-			ReceivePermanentPOCorrection = 4,
-			ReceiveTemporaryPOCorrection = 5,
-			ReceivePermanentNonPOCorrection = 6,
-			ReceiveTemporaryNonPOCorrection = 7
-		}
-		#endregion
-		#region ItemPricing
-		public enum ItemPricing {
-			NotSpecified = -1,
-			PriceQuote = 0,
-			ReceivePO = 1,
-			ReceiveNonPO = 2
-		}
-		#endregion
-		#region PurchaseOrderLines Names
-		public enum PurchaseOrderLine {
-			POLineItem,
-			ReceiveItemPO,
-			ReceiveItemPOCorrection,
-			POLineLabor,
-			ActualLaborOutsidePO,
-			ActualLaborOutsidePOCorrection,
-			POLineOtherWork,
-			ActualOtherWorkOutsidePO,
-			ActualOtherWorkOutsidePOCorrection,
-			POLineMiscellaneous,
-			ReceiveMiscellaneousPO,
-			ReceiveMiscellaneousPOCorrection
-		}
-		#endregion
-		#region ReceiptActivity  Names
-		public enum ReceiptActivity {
-			POLineItem,
-			ReceiveItemPO,
-			ReceiveItemPOCorrection,
-			POLineLabor,
-			ActualLaborOutsidePO,
-			ActualLaborOutsidePOCorrection,
-			POLineOtherWork,
-			ActualOtherWorkOutsidePO,
-			ActualOtherWorkOutsidePOCorrection,
-			POLineMiscellaneous,
-			ReceiveMiscellaneousPO,
-			ReceiveMiscellaneousPOCorrection
-		}
-		#endregion
-		#region ActiveTemporaryStorageWithItemAssignments
-		public enum ActiveTemporaryStorageWithItemAssignments {
-			TemporaryStorage,
-			TemporaryItemLocation
-		}
-		#endregion
-
-		#region WorkOrderItems
-		public enum WorkOrderItems {
-			Item,	// 0
-			DemandItem	// 1
-		}
-		#endregion
-		#region WorkOrderInside
-		public enum WorkOrderInside {
-			UnassignedTrade,
-			Trade,
-			DemandLaborInside,
-			DemandOtherWorkInside,	// 3
-		}
-		#endregion
-		#region WorkOrderOutside
-		public enum WorkOrderOutside {
-			UnassignedTrade,
-			Trade,
-			DemandLaborOutside,
-			DemandOtherWorkOutside,
-			POLineLabor,
-			POLineOtherWork, 	// 5
-		}
-		#endregion
-
-		#region WorkOrderMiscellaneous
-		public enum WorkOrderMiscellaneous {
-			MiscellaneousWorkOrderCost,
-			DemandMiscellaneousWorkOrderCost
-		}
-		#endregion
-		#region WorkOrderTemporaryStorage
-		public enum WorkOrderTemporaryStorage {
-			FirstLD = 0,
-			PostalAddress = FirstLD + LocationDerivations.PostalAddress,
-			TemporaryStorage = FirstLD + LocationDerivations.TemporaryStorage,
-			Unit = FirstLD + LocationDerivations.Unit,
-			PermanentStorage = FirstLD + LocationDerivations.PermanentStorage,
-			PlainRelativeLocation = FirstLD + LocationDerivations.PlainRelativeLocation,
-			TemplateTemporaryStorage = FirstLD + LocationDerivations.TemplateTemporaryStorage,
-			TemporaryItemLocation	// 6
-		}
-		#endregion
-
-
-		#region WorkOrderTemplateItems
-		public enum WorkOrderTemplateItems {
-			Item,	// 0
-			DemandItemTemplate	// 1
-		}
-		#endregion
-		#region WorkOrderTemplateInside
-		public enum WorkOrderTemplateInside {
-			UnassignedTrade,
-			Trade,
-			DemandLaborInsideTemplate,
-			DemandOtherWorkInsideTemplate,	// 3
-		}
-		#endregion
-		#region WorkOrderTemplateOutside
-		public enum WorkOrderTemplateOutside {
-			UnassignedTrade,
-			Trade,
-			DemandLaborOutsideTemplate,
-			DemandOtherWorkOutsideTemplate,	// 3
-		}
-		#endregion
-
-		#region WorkOrderTemplateMiscellaneous
-		public enum WorkOrderTemplateMiscellaneous {
-			MiscellaneousWorkOrderCost,
-			DemandMiscellaneousWorkOrderCostTemplate
-		}
-		#endregion
-
-		#region WorkOrderTemplateTemporaryStorage
-		public enum WorkOrderTemplateStorage {
-			FirstLD = 0,
-			PostalAddress = FirstLD + LocationDerivations.PostalAddress,
-			TemporaryStorage = FirstLD + LocationDerivations.TemporaryStorage,
-			Unit = FirstLD + LocationDerivations.Unit,
-			PermanentStorage = FirstLD + LocationDerivations.PermanentStorage,
-			PlainRelativeLocation = FirstLD + LocationDerivations.PlainRelativeLocation,
-			TemplateTemporaryStorage = FirstLD + LocationDerivations.TemplateTemporaryStorage,
-			TemplateItemLocation // 6
-		}
-		#endregion
-
-		#region ChargebackActivity
-		public enum ChargebackActivity {
-			NotSpecified = -1,
-			Chargeback = 0,
-			ChargebackCorrection = 1
-		}
-		#endregion
-		#region PMGenerationDetailAndScheduledWorkOrderAndLocation types
-		/// <summary>
-		/// Types of records in the PMGenerationDetailAndScheduledWorkOrderAndLocation.
-		/// We inherit the same values as LocationDerivations, plus one special value for the Task (a child of the unit)
-		/// plus offset values for each PMType.
-		/// </summary>
-		public enum PMGenerationDetailAndScheduledWorkOrderAndLocation {
-			FirstLD,	// 0
-			PostalAddress = LocationDerivationsAndItemLocations.FirstLD + LocationDerivations.PostalAddress,
-			TemporaryStorage = LocationDerivationsAndItemLocations.FirstLD + LocationDerivations.TemporaryStorage,
-			Unit = LocationDerivationsAndItemLocations.FirstLD + LocationDerivations.Unit,
-			PermanentStorage = LocationDerivationsAndItemLocations.FirstLD + LocationDerivations.PermanentStorage,
-			PlainRelativeLocation = LocationDerivationsAndItemLocations.FirstLD + LocationDerivations.PlainRelativeLocation,
-			TemplateTemporaryStorage = LocationDerivationsAndItemLocations.FirstLD + LocationDerivations.TemplateTemporaryStorage,
-			ScheduledWorkOrder,
-			DetailBaseIndex,	// 7
-			DispositionAfterSchedulingPeriod = DetailBaseIndex + DatabaseEnums.PMType.SchedulingTerminated,
-			Deferred = DetailBaseIndex + DatabaseEnums.PMType.Deferred,
-			PredictedWorkOrder = DetailBaseIndex + DatabaseEnums.PMType.PredictedWorkOrder,
-			Error = DetailBaseIndex + DatabaseEnums.PMType.Error,
-			ErrorMakingWorkOrder = DetailBaseIndex + DatabaseEnums.PMType.ErrorMakingWorkOrder,
-			MakeWorkOrder = DetailBaseIndex + DatabaseEnums.PMType.MakeWorkOrder,
-			MakeUnscheduledWorkOrder = DetailBaseIndex + DatabaseEnums.PMType.MakeUnscheduledWorkOrder,
-			Inhibited = DetailBaseIndex + DatabaseEnums.PMType.Inhibited,
-			ManualReschedule = DetailBaseIndex + DatabaseEnums.PMType.ManualReschedule,
-			MakeSharedWorkOrder = DetailBaseIndex + DatabaseEnums.PMType.MakeSharedWorkOrder	// 16
-		}
-		#endregion
-		#region CommittedPMGenerationDetailAndPMGenerationBatch types
-		/// <summary>
-		/// Types of records in the CommittedPMGenerationDetailAndPMGenerationBatch.
-		/// We use one type for the Batch record plus offset values for each PMType.
-		/// </summary>
-		public enum CommittedPMGenerationDetailAndPMGenerationBatch {
-			PMGenerationBatch = 0,
-			DetailBaseIndex,
-			DispositionAfterSchedulingPeriod = DetailBaseIndex + DatabaseEnums.PMType.SchedulingTerminated,
-			Deferred = DetailBaseIndex + DatabaseEnums.PMType.Deferred,
-			PredictedWorkOrder = DetailBaseIndex + DatabaseEnums.PMType.PredictedWorkOrder,
-			Error = DetailBaseIndex + DatabaseEnums.PMType.Error,
-			ErrorMakingWorkOrder = DetailBaseIndex + DatabaseEnums.PMType.ErrorMakingWorkOrder,
-			MakeWorkOrder = DetailBaseIndex + DatabaseEnums.PMType.MakeWorkOrder,
-			MakeUnscheduledWorkOrder = DetailBaseIndex + DatabaseEnums.PMType.MakeUnscheduledWorkOrder,
-			Inhibited = DetailBaseIndex + DatabaseEnums.PMType.Inhibited,
-			ManualReschedule = DetailBaseIndex + DatabaseEnums.PMType.ManualReschedule,
-			MakeSharedWorkOrder = DetailBaseIndex + DatabaseEnums.PMType.MakeSharedWorkOrder
-		}
-		#endregion
-		#region WorkOrderMeterTreeView
-		public enum WorkOrderMeterTreeView {
-			Meter,
-			ManualReading,
-			WorkOrderReading
-		}
-		#endregion
-		#region PeriodicityInterval
-		public enum PeriodicityInterval {
-			DayInterval = 0,
-			MonthInterval = 1,
-			MeterInterval = 2
-		}
-		#endregion
-
-		#region WorkOrderPurchaseOrderLinkage
-		public enum WorkOrderPurchaseOrderLinkage {
-			Explicit = 0,
-			UsingLaborDemand = 1,
-			UsingOtherWorkDemand = 2,
-			UsingPOLineItemToTemporary = 3,
-			UsingReceiveItemToTemporary = 4
-		}
-		public enum WorkOrderPurchaseOrderView {
-			WorkOrder = 0,
-			PurchaseOrder = 1,
-			Explicit = WorkOrderPurchaseOrderLinkage.Explicit + 2,
-			UsingLaborDemand = WorkOrderPurchaseOrderLinkage.UsingLaborDemand + 2,
-			UsingOtherWorkDemand = WorkOrderPurchaseOrderLinkage.UsingOtherWorkDemand + 2,
-			UsingPOLineItemToTemporary = WorkOrderPurchaseOrderLinkage.UsingPOLineItemToTemporary + 2,
-			UsingReceiveItemToTemporary = WorkOrderPurchaseOrderLinkage.UsingReceiveItemToTemporary + 2
-		}
-		#endregion
-		#region WorkOrderTemplatePurchaseOrderTemplateLinkage
-		public enum WorkOrderTemplatePurchaseOrderTemplateLinkage {
-			Explicit = 0,
-			UsingLaborDemandTemplate = 1,
-			UsingOtherWorkDemandTemplate = 2,
-			UsingPOLineItemTemplateToTemplateItemLocation = 3,
-		}
-		public enum WorkOrderTemplatePurchaseOrderTemplateView {
-			WorkOrderTemplate = 0,
-			PurchaseOrderTemplate = 1,
-			Explicit = WorkOrderTemplatePurchaseOrderTemplateLinkage.Explicit + 2,
-			UsingLaborDemandTemplate = WorkOrderTemplatePurchaseOrderTemplateLinkage.UsingLaborDemandTemplate + 2,
-			UsingOtherWorkDemandTemplate = WorkOrderTemplatePurchaseOrderTemplateLinkage.UsingOtherWorkDemandTemplate + 2,
-			UsingPOLineItemTemplateToTemplateItemLocation = WorkOrderTemplatePurchaseOrderTemplateLinkage.UsingPOLineItemTemplateToTemplateItemLocation + 2,
-		}
-		#endregion
-		#region WorkOrderAssigneeProspect (also used by RequestAssigneeProspect and PurchaseOrderAssigneeProspect )
-		public enum WorkOrderAssigneeProspect {
-			Employee = 0,
-			VendorService = 1,
-			Requestor = 2,
-			UnitContact = 3,
-			Assignees = 4,
-			VendorSales = 5,
-			VendorPayables = 6,
-			BillableRequestor = 7,
-		}
-		#endregion
 	}
 	#endregion
 	#region DatabaseEnums
@@ -552,54 +218,54 @@ namespace Thinkage.MainBoss.Database {
 		// The application ID's that actually name all the "Applications" whether they be separate executables or modes on a single one.
 		// These are what appear in the Session record.
 		public enum ApplicationModeID {
-			Requests,			// Just requests, admin, related definition tables
-			Normal,				// full mainboss and admin
-			Sessions,			// license keys, sessions in progress
-			Administration,		// licensing, users
-			MainBossServiceAdmin,	// MainBoss Service Administration
+			Requests,           // Just requests, admin, related definition tables
+			Normal,             // full mainboss and admin
+			Sessions,           // license keys, sessions in progress
+			Administration,     // licensing, users
+			MainBossServiceAdmin,   // MainBoss Service Administration
 			PickOrganization,
 			MainBossService,
 			GeneralNotifierService,
-			UtilityTool,		// Console mode database access utility tool
-			Assignments,		// Only the user's assignments
-			WebSession,			// A web application is using the database
-			WebServer,			// A web server exists to host WebSession sessions
-			WebAccess,			// Web Requests/Access web application session
-			SoloDeprecated,		// Mode ended 4.2
-			NextAvailable		// For determine length of this set, and to have a value outside the expected range for error detection
+			UtilityTool,        // Console mode database access utility tool
+			Assignments,        // Only the user's assignments
+			WebSession,         // A web application is using the database
+			WebServer,          // A web server exists to host WebSession sessions
+			WebAccess,          // Web Requests/Access web application session
+			SoloDeprecated,     // Mode ended 4.2
+			NextAvailable       // For determine length of this set, and to have a value outside the expected range for error detection
 		}
 		public static Key ApplicationModeName(DatabaseEnums.ApplicationModeID id) {
 			switch (id) {
-				case DatabaseEnums.ApplicationModeID.Requests:
-					return KB.K("MainBoss Requests");
-				case DatabaseEnums.ApplicationModeID.Normal:
-					return KB.T("MainBoss");
-				case DatabaseEnums.ApplicationModeID.Sessions:
-					return KB.K("View Sessions");
-				case DatabaseEnums.ApplicationModeID.Administration:
-					return KB.K("Administration");
-				case DatabaseEnums.ApplicationModeID.MainBossServiceAdmin:
-					return KB.K("MainBoss Service Administration");
-				case DatabaseEnums.ApplicationModeID.PickOrganization:
-					return KB.K("Pick Organization");
-				case DatabaseEnums.ApplicationModeID.MainBossService:
-					return KB.T("MainBoss Service");
-				case DatabaseEnums.ApplicationModeID.GeneralNotifierService:
-					return KB.K("General Notifier");
-				case DatabaseEnums.ApplicationModeID.UtilityTool:
-					return KB.K("MainBoss Utility Tool");
-				case DatabaseEnums.ApplicationModeID.Assignments:
-					return KB.K("MainBoss Assignments");
-				case DatabaseEnums.ApplicationModeID.WebSession:
-					return KB.K("MainBoss Web");
-				case DatabaseEnums.ApplicationModeID.WebServer:
-					return KB.K("MainBoss Web Server");
-				case DatabaseEnums.ApplicationModeID.WebAccess:
-					return KB.K("MainBoss Web Access");
-				case DatabaseEnums.ApplicationModeID.SoloDeprecated:
-					return KB.T("MainBoss Solo (Deprecated)");
-				default:
-					return KB.T(Strings.IFormat("Unknown ApplicationModeID {0}", ((int)id).ToString()));
+			case DatabaseEnums.ApplicationModeID.Requests:
+				return KB.K("MainBoss Requests");
+			case DatabaseEnums.ApplicationModeID.Normal:
+				return KB.T("MainBoss");
+			case DatabaseEnums.ApplicationModeID.Sessions:
+				return KB.K("View Sessions");
+			case DatabaseEnums.ApplicationModeID.Administration:
+				return KB.K("Administration");
+			case DatabaseEnums.ApplicationModeID.MainBossServiceAdmin:
+				return KB.K("MainBoss Service Administration");
+			case DatabaseEnums.ApplicationModeID.PickOrganization:
+				return KB.K("Pick Organization");
+			case DatabaseEnums.ApplicationModeID.MainBossService:
+				return KB.T("MainBoss Service");
+			case DatabaseEnums.ApplicationModeID.GeneralNotifierService:
+				return KB.K("General Notifier");
+			case DatabaseEnums.ApplicationModeID.UtilityTool:
+				return KB.K("MainBoss Utility Tool");
+			case DatabaseEnums.ApplicationModeID.Assignments:
+				return KB.K("MainBoss Assignments");
+			case DatabaseEnums.ApplicationModeID.WebSession:
+				return KB.K("MainBoss Web");
+			case DatabaseEnums.ApplicationModeID.WebServer:
+				return KB.K("MainBoss Web Server");
+			case DatabaseEnums.ApplicationModeID.WebAccess:
+				return KB.K("MainBoss Web Access");
+			case DatabaseEnums.ApplicationModeID.SoloDeprecated:
+				return KB.T("MainBoss Solo (Deprecated)");
+			default:
+				return KB.T(Strings.IFormat("Unknown ApplicationModeID {0}", ((int)id).ToString()));
 			}
 		}
 		#endregion
@@ -652,7 +318,11 @@ namespace Thinkage.MainBoss.Database {
 		/// <summary>
 		/// The DetailType values for PMGenerationDetail records.
 		/// The 2.9 import process knows about value '8' for ManualReschedule for setting the Schedule basis
+		/// The ManualReschedule and MakeUnscheduledWorkOrder only ever appear alone for a (SWO, Batch) combination i.e. they are always sequence zero and no other detail records exist for
+		/// that Batch and SWO. On the other hand, scheduled batches can contain multiple records for a (SWO, Batch) combination, with consecutive Sequence numbers starting at 0.
+		/// The last (highest sequence) such record for each (SWO, Batch) combination will be either Error or SchedulingTerminated and such records will always be the last for the (SWO, Batch) pair.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1027:Mark enums with FlagsAttribute", Justification = "Non contiguous values")]
 		public enum PMType {
 			/// <summary>
 			/// Scheduling has terminated. The DetailContext explains why (usually end of scheduling period)
@@ -798,20 +468,27 @@ namespace Thinkage.MainBoss.Database {
 		/// The type of mail server that @Requests will attempt to connect to.
 		/// </summary>
 		public enum MailServerType {
-			Any,  
+			Any,
 			POP3, // post office protocol version 3
 			IMAP4, // internet message access protocol version 4
 			POP3S,
 			IMAP4S
 		}
 		/// <summary>
-		/// The type of mail server that @Requests will attempt to connect to.
+		/// The acceptable types of encryption for the incoming mail server connection
 		/// </summary>
 		public enum MailServerEncryption {
-			AnyAvailable,			  // Use Encryption if available
-			RequireEncryption,		  // Require encryption
+			AnyAvailable,             // Use Encryption if available
+			RequireEncryption,        // Require encryption
 			RequireValidCertificate,  // Require a valid certicate
-			None,					  // No Encryption
+			None,                     // No Encryption
+		}
+		/// <summary>
+		/// The type of authentication used when connecting to the incoming mail server.
+		/// </summary>
+		public enum MailServerAuthentication {
+			Plain,						// User and password
+			OAuth2,						// OAuth2 (at least, as implemented by Microsoft)
 		}
 		/// <summary>
 		/// The authentication method to use when connecting the SMTP server.
@@ -843,7 +520,7 @@ namespace Thinkage.MainBoss.Database {
 			Trace,
 			Close
 		};
-		public static Dictionary<ServiceLogEntryType, System.Diagnostics.EventLogEntryType> ServiceLogEntryToEventLogEntry = new Dictionary<ServiceLogEntryType, System.Diagnostics.EventLogEntryType>{ 
+		public static Dictionary<ServiceLogEntryType, System.Diagnostics.EventLogEntryType> ServiceLogEntryToEventLogEntry = new Dictionary<ServiceLogEntryType, System.Diagnostics.EventLogEntryType>{
 			{ServiceLogEntryType.Error, System.Diagnostics.EventLogEntryType.Error },
 			{ServiceLogEntryType.Info, System.Diagnostics.EventLogEntryType.Information },
 			{ServiceLogEntryType.Warn, System.Diagnostics.EventLogEntryType.Warning },

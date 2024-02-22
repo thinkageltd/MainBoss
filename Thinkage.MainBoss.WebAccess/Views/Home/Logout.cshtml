@@ -5,5 +5,8 @@
 	ViewBag.Title = "Logout";
 }
 @section MainContent{
-	<h3>@(Html.ActionLink(T.Text("Return to MainBoss Web Access"), "Index"))</h3>
+<div class="ActivityLink">
+	@(Html.ActionLink(T.Text("Return to MainBoss Web Access"), "Index"))
+	<span class="HelpPopup">@T.Text("Goto the Web Access start page.")</span>
+</div>
 }

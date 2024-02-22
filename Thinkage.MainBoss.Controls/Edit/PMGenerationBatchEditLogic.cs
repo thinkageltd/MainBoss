@@ -104,13 +104,13 @@ namespace Thinkage.MainBoss.Controls {
 				InitList.Add(Init.OnLoadNew(dsMB.Path.T.PMGenerationBatch.F.EndDate, new ConstantValue(DateTime.Today.AddDays(default_end))));
 
 				SessionIdSource = RecordManager.GetPathNotifyingSource(dsMB.Path.T.PMGenerationBatch.F.SessionID, 0);
-				SessionIdSource.Notify += delegate() {
+				SessionIdSource.Notify += delegate () {
 					UpdateDisablers();
 				};
 			}
 
 			UpdateDisablers();
-			EditStateChanged += delegate() {
+			EditStateChanged += delegate () {
 				UpdateDisablers();
 			};
 		}
@@ -207,10 +207,10 @@ namespace Thinkage.MainBoss.Controls {
 			CommandGroupDeclarationsInOrder.Insert(0, cgd);
 
 			SaveCommandGroup.Add(new CommandDeclaration(KB.K("Commit"), StateTransitionCommand.NewSingleTargetState(this, KB.K("Create the scheduled Work Orders"),
-					delegate() {
+					delegate () {
 						ValidateBeforeSave();
 						ICheckpointData PMGeneratorCheckpoint = PMGenerator.Checkpoint();
-						System.Text.StringBuilder resultMessage = new System.Text.StringBuilder(); 
+						System.Text.StringBuilder resultMessage = new System.Text.StringBuilder();
 						IProgressDisplay ipd = CommonUI.UIFactory.CreateProgressDisplay(KB.K("Maintenance Work Order Creation"), PMGeneration.CommitProgressSteps);
 						try {
 							PMGenerator.Commit(BatchRowBeingEdited, resultMessage, ipd);
@@ -228,8 +228,8 @@ namespace Thinkage.MainBoss.Controls {
 					InitialStatesForModes[(int)EdtMode.Edit],
 					StateUnCommittedUnchanged,
 					StateUnCommittedChanged)));
-			SaveAndCloseCommandGroup.Add(new CommandDeclaration(KB.K("Commit && Close"), StateTransitionCommand.NewSingleTargetState(this, KB.K("Create the scheduled Work Orders and close this editor"),
-					delegate() {
+			SaveAndCloseCommandVariantGroup.Add(new CommandDeclaration(KB.K("Commit && Close"), StateTransitionCommand.NewSingleTargetState(this, KB.K("Create the scheduled Work Orders and close this editor"),
+					delegate () {
 						ValidateBeforeSave();
 						ICheckpointData PMGeneratorCheckpoint = PMGenerator.Checkpoint();
 						System.Text.StringBuilder resultMessage = new System.Text.StringBuilder();
@@ -252,8 +252,8 @@ namespace Thinkage.MainBoss.Controls {
 					StateUnCommittedChanged)));
 			// Add a Commit-and-New to the New command group, which would be enabled when we have a generated but uncommitted batch.
 			// Note however that this command does not currently appear because re-entry to New mode is disallowed; see ModifySubsequentModeRestrictions for details why.
-			NewCommandGroup.Add(new CommandDeclaration(KB.K("Commit && New"), StateTransitionCommand.NewSingleTargetState(this, KB.K("Create the scheduled Work Orders and create a new batch"),
-					delegate() {
+			NewCommandVariantGroup.Add(new CommandDeclaration(KB.K("Commit && New"), StateTransitionCommand.NewSingleTargetState(this, KB.K("Create the scheduled Work Orders and create a new batch"),
+					delegate () {
 						ValidateBeforeSave();
 						ICheckpointData PMGeneratorCheckpoint = PMGenerator.Checkpoint();
 						System.Text.StringBuilder resultMessage = new System.Text.StringBuilder();
@@ -284,7 +284,7 @@ namespace Thinkage.MainBoss.Controls {
 			// remove the uncommitted set: Use the PMGenerator to roll back the dataset and Update it to SQL.
 			// We are using the EditLogic's DataSet to do this entirely unbeknownst to it; when we are done (barring errors) all changes will have been accepted.
 			// As far as the RecordManager is concerned, the buffer had no changes before we started and there will be no changes once we're done.
-			PMGenerator.DeleteUncommittedBatch(BatchRowBeingEdited);
+			PMGeneration.DeleteUncommittedBatch(BatchRowBeingEdited);
 			try {
 				DB.Update(DataSet, ServerExtensions.UpdateOptions.NoConcurrencyCheck);
 			}
@@ -326,10 +326,10 @@ namespace Thinkage.MainBoss.Controls {
 			// SetupCommands, and have the latter use InitialStates to find the target states for verbs like New etc.
 			// The New states are uncommitted states so we want to replace the Save verb with a new caption and new code.
 			// First we remove any Print and Clone groups.
-			CommandGroupDeclarationsInOrder.Remove(CloneCommandGroup);
-			CloneCommandGroup = null;
-			CommandGroupDeclarationsInOrder.Remove(PrintCommandGroup);
-			PrintCommandGroup = null;
+			CommandGroupDeclarationsInOrder.Remove(CloneCommandVariantGroup);
+			CloneCommandVariantGroup = null;
+			CommandGroupDeclarationsInOrder.Remove(PrintCommandVariantGroup);
+			PrintCommandVariantGroup = null;
 		}
 		#endregion
 		#region DataSet setup
@@ -353,7 +353,7 @@ namespace Thinkage.MainBoss.Controls {
 		// As a result per-record operations which would normally belong in SaveRecord can be done in SaveMultipleRecords instead.
 		// In this case, the Commit operation needs its own transaction(s) to reserve sequence numbers, and so cannot occur within SaveRecord (which is already contained in the
 		// transaction created by EditLogic.SaveMultipleRecords). To avoid this, we move the Commit call to SaveMultipleRecords.
-		protected override void SaveMultipleRecords(ServerExtensions.UpdateOptions updateOptions, EditorState postSaveState, IProgress<IProgressDisplay> rP = null, CancellationToken cT = default(CancellationToken)) {
+		protected override void SaveMultipleRecords(ServerExtensions.UpdateOptions updateOptions, EditorState postSaveState, IProgress<IProgressDisplay> rP = null, CancellationToken cT = default) {
 			// This is called once per Save command, from outside the transaction.
 			ICheckpointData PMGeneratorCheckpoint = PMGenerator.Checkpoint();
 			System.Text.StringBuilder resultMessage = new System.Text.StringBuilder();
@@ -412,8 +412,8 @@ namespace Thinkage.MainBoss.Controls {
 		protected override void SetupCommands() {
 			base.SetupCommands();
 
-			SaveAndCloseCommandGroup.Add(new CommandDeclaration(KB.K("Save Scheduling Basis"), StateTransitionCommand.NewSingleTargetState(this, KB.K("Save the scheduling basis for each of the selected Unit Maintenance Plans"),
-					delegate() {
+			SaveAndCloseCommandVariantGroup.Add(new CommandDeclaration(KB.K("Save Scheduling Basis"), StateTransitionCommand.NewSingleTargetState(this, KB.K("Save the scheduling basis for each of the selected Unit Maintenance Plans"),
+					delegate () {
 						ValidateBeforeSave();
 						ICheckpointData ScheduleBasisCheckpoint = ScheduleBasisGenerator.Checkpoint();
 						IProgressDisplay ipd = CommonUI.UIFactory.CreateProgressDisplay(KB.K("Scheduling Basis Update"), PMGeneration.CommitProgressSteps);
@@ -444,14 +444,9 @@ namespace Thinkage.MainBoss.Controls {
 			ScheduleBasisGenerator = new ScheduleBasis((dsMB)DataSet);
 			ObjectsToDispose.Add(ScheduleBasisGenerator);
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "ScheduleBasisGenerator")]
-		// ObjectsToDispose has ScheduleBasisGenerator
-		protected override void Dispose(bool disposing) {
-			if (disposing && ScheduleBasisGenerator != null)
-				ScheduleBasisGenerator = null;
-			base.Dispose(disposing);
-		}
+
 		#region Properties
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "ObjectsToDispose has ScheduleBasisGenerator")]
 		private ScheduleBasis ScheduleBasisGenerator;
 		#endregion
 	}

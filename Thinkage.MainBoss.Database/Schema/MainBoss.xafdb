@@ -95,6 +95,12 @@
   <merge uri="AssignmentNotification.xafdb"/>
   <merge uri="AttentionStatus.xafdb"/>
   <merge uri="ExternalTag.xafdb"/>
+	<merge uri="Attachments\Attachment.xafdb"/>
+	<!--<merge uri="Attachments\AttachmentImage.xafdb"/>-->
+	<merge uri="Attachments\AttachmentPath.xafdb"/>
+	<merge uri="Attachments\UnitAttachment.xafdb"/>
+  <merge uri="Attachments\WorkOrderAttachment.xafdb"/>
+  <merge uri="Attachments\WorkOrderTemplateAttachment.xafdb"/>
   <merge uri="Inventory\ActualItemLocation.xafdb"/>
   <merge uri="Inventory\Item.xafdb"/>
   <merge uri="Inventory\ItemActivity.xafdb"/>
@@ -120,7 +126,6 @@
   <merge uri="Inventory\LocationDerivationsAndItemLocation.xafdb"/>
   <merge uri="PurchaseOrderTemplate\PurchaseOrderTemplate.xafdb" />
   <merge uri="PurchaseOrderTemplate\PurchaseOrderTemplateReport.xafdb" />
-  <merge uri="PurchaseOrderTemplate\PurchaseOrderTemplateLine.xafdb" />
   <merge uri="PurchaseOrderTemplate\POLineTemplate.xafdb" />
   <merge uri="PurchaseOrderTemplate\POLineItemTemplate.xafdb" />
   <merge uri="PurchaseOrderTemplate\POLineLaborTemplate.xafdb" />
@@ -147,7 +152,6 @@
   <merge uri="Purchasing\PurchaseOrderState.xafdb"/>
   <merge uri="Purchasing\PurchaseOrderStateTransition.xafdb"/>
   <merge uri="Purchasing\PurchaseOrderStateHistory.xafdb"/>
-  <merge uri="Purchasing\PurchaseOrderStateHistoryReport.xafdb"/>
   <merge uri="Purchasing\PurchaseOrderStateHistoryStatus.xafdb"/>
   <merge uri="Purchasing\PurchaseOrderFormReport.xafdb"/>
   <merge uri="Purchasing\PurchaseOrderSequenceCounter.xafdb"/>
@@ -179,7 +183,6 @@
   <merge uri="Requests\RequestState.xafdb"/>
   <merge uri="Requests\RequestStateTransition.xafdb"/>
   <merge uri="Requests\RequestStateHistory.xafdb"/>
-  <merge uri="Requests\RequestStateHistoryReport.xafdb"/>
   <merge uri="Requests\RequestStateHistoryStatus.xafdb"/>
   <merge uri="Requests\Requestor.xafdb"/>
   <merge uri="Requests\RequestReport.xafdb"/>
@@ -205,7 +208,6 @@
   <merge uri="WorkOrder\ChargebackFormReport.xafdb"/>
   <merge uri="WorkOrder\ChargebackLine.xafdb"/>
   <merge uri="WorkOrder\ChargebackLineCategory.xafdb"/>
-  <merge uri="WorkOrder\ChargebackActivity.xafdb"/>
   <merge uri="WorkOrder\CloseCode.xafdb"/>
   <merge uri="WorkOrder\Demand.xafdb"/>
   <merge uri="WorkOrder\DemandItem.xafdb"/>
@@ -242,7 +244,6 @@
   <merge uri="WorkOrder\WorkOrderStateTransition.xafdb"/>
   <merge uri="WorkOrder\WorkOrderStateHistory.xafdb"/>
   <merge uri="WorkOrder\WorkOrderStateHistoryStatus.xafdb"/>
-  <merge uri="WorkOrder\WorkOrderStateHistoryReport.xafdb"/>
   <merge uri="WorkOrder\WorkOrderExpenseModel.xafdb"/>
   <merge uri="WorkOrder\WorkOrderExpenseCategory.xafdb"/>
   <merge uri="WorkOrder\WorkOrderExpenseModelEntry.xafdb"/>
@@ -258,7 +259,6 @@
   <merge uri="WorkOrderTemplate\WorkOrderTemplateMiscellaneous.xafdb"/>
   <merge uri="WorkOrderTemplate\WorkOrderTemplateReport.xafdb"/>
   <merge uri="WorkOrderTemplate\WorkOrderTemplatePurchaseOrderTemplate.xafdb"/>
-  <merge uri="WorkOrderTemplate\WorkOrderTemplateWithContainers.xafdb"/>
   <merge uri="WorkOrderTemplate\DemandTemplate.xafdb"/>
   <merge uri="WorkOrderTemplate\DemandItemTemplate.xafdb"/>
   <merge uri="WorkOrderTemplate\DemandLaborInsideTemplate.xafdb"/>
@@ -281,7 +281,6 @@
   <merge uri="Locations\Location.xafdb"/>
   <merge uri="Locations\LocationContainment.xafdb"/>
   <merge uri="Locations\LocationReport.xafdb"/>
-  <merge uri="Locations\LocationDerivations.xafdb"/>
   <merge uri="Locations\PermanentStorage.xafdb"/>
   <merge uri="Locations\PlainRelativeLocation.xafdb"/>
   <merge uri="Locations\PostalAddress.xafdb"/>
@@ -308,7 +307,6 @@
   <merge uri="Relationships\ContactRelatedRecords.xafdb"/>
   <merge uri="Units\Unit.xafdb"/>
   <merge uri="Units\AssetCode.xafdb"/>
-  <merge uri="Units\Attachment.xafdb"/>
   <merge uri="Units\SparePart.xafdb"/>
   <merge uri="Units\Specification.xafdb"/>
   <merge uri="Units\SpecificationForm.xafdb"/>

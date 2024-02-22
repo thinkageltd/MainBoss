@@ -1,14 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using Thinkage.Libraries.XAF.Database.Layout;
-using Thinkage.Libraries.DBAccess;
+using System.Linq;
 using Thinkage.Libraries;
+using Thinkage.Libraries.Collections;
 using Thinkage.Libraries.Translation;
 using Thinkage.Libraries.TypeInfo;
-using Thinkage.Libraries.Collections;
-using System.Linq;
+using Thinkage.Libraries.XAF.Database.Layout;
 
 namespace Thinkage.MainBoss.Database {
 	#region Scheduling
@@ -36,8 +33,8 @@ namespace Thinkage.MainBoss.Database {
 		#region IDisposable Members
 		bool disposed = false;
 		protected virtual void Dispose(bool disposing) {
-			if(disposing) {
-				if(disposed)
+			if (disposing) {
+				if (disposed)
 					return;
 				disposed = true;
 				LookupDs.Dispose();
@@ -45,7 +42,7 @@ namespace Thinkage.MainBoss.Database {
 		}
 		public void Dispose() {
 			Dispose(true);
-			GC.SuppressFinalize(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 
@@ -59,9 +56,9 @@ namespace Thinkage.MainBoss.Database {
 			}
 			private readonly List<dsMB.PMGenerationDetailRow> AddedDetailRows;
 			public void Rollback(Scheduling pmg) {
-				for(int i = pmg.AddedDetailRows.Count; --i >= 0;) {
+				for (int i = pmg.AddedDetailRows.Count; --i >= 0;) {
 					dsMB.PMGenerationDetailRow row = pmg.AddedDetailRows[i];
-					if(!AddedDetailRows.Contains(row)) {
+					if (!AddedDetailRows.Contains(row)) {
 						// This particular row did not exist when the checkpoint was taken.
 						row.Delete();
 						pmg.AddedDetailRows.RemoveAt(i);
@@ -103,13 +100,13 @@ namespace Thinkage.MainBoss.Database {
 			//
 			System.Diagnostics.Debug.Assert(batchRow.Table.DataSet == WorkingDs, "PMGenerationBatch row in incorrect dataset");
 			// We should never be called on a saved committed batch row.
-			if(batchRow.RowState != DataRowState.Added && batchRow[dsMB.Schema.T.PMGenerationBatch.F.SessionID, DataRowVersion.Original] == null)
+			if (batchRow.RowState != System.Data.DataRowState.Added && batchRow[dsMB.Schema.T.PMGenerationBatch.F.SessionID, System.Data.DataRowVersion.Original] == null)
 				throw new GeneralException(KB.K("Cannot update schedule basis for a pre-existing committed batch"));
 
 			WorkingDs.EnsureDataTableExists(dsMB.Schema.T.PMGenerationDetail);
-			foreach(Guid sRecId in ScheduledWorkOrderIDsToGenerate) {
+			foreach (Guid sRecId in ScheduledWorkOrderIDsToGenerate) {
 				// Make one seed row for the SWO. Provisionally each starts off as an error row until we are sure we can set the schedule basis.
-				dsMB.PMGenerationDetailRow dRow = WorkingDs.T.PMGenerationDetail.AddNewPMGenerationDetailRow();
+				dsMB.PMGenerationDetailRow dRow = WorkingDs.T.PMGenerationDetail.AddNewRow();
 				AddedDetailRows.Add(dRow);
 
 				dRow.F.DetailType = (sbyte)DatabaseEnums.PMType.ManualReschedule;
@@ -184,7 +181,11 @@ namespace Thinkage.MainBoss.Database {
 #endif
 		}
 #if DEBUG
+#pragma warning disable CA1821 // Remove empty Finalizers
+#pragma warning disable CA1063 // Implement IDisposable Correctly
 		~PMGeneration() {
+#pragma warning restore CA1063 // Implement IDisposable Correctly
+#pragma warning restore CA1821 // Remove empty Finalizers
 			System.Diagnostics.Debug.Assert(destroyed, "PMGeneration: Was not Destroyed");
 		}
 #endif
@@ -203,7 +204,7 @@ namespace Thinkage.MainBoss.Database {
 		// Similarly, the Commit operation merely clears out the PMGenerationBatch.SessionID field, so we can undo the change by setting it back to the user's SessionID without needing to keep original record contents.
 		// Note that we do not handle the case (which does not occur) where a Detail or Batch record is changed multiple times with checkpoints taken between. Rolling back to the intermediate checkpoint
 		// would not roll the record back because the code would think it had already changed when the checkpoint was taken.
-		private Dictionary<dsMB.PMGenerationDetailRow, DatabaseEnums.PMType> CommittedDetailRows = new Dictionary<dsMB.PMGenerationDetailRow, DatabaseEnums.PMType>();
+		private readonly Dictionary<dsMB.PMGenerationDetailRow, DatabaseEnums.PMType> CommittedDetailRows = new Dictionary<dsMB.PMGenerationDetailRow, DatabaseEnums.PMType>();
 		public List<dsMB.PMGenerationBatchRow> CommittedBatchRows = new List<dsMB.PMGenerationBatchRow>();
 		private new class CheckpointDataImplementation : Scheduling.CheckpointDataImplementation {
 			public CheckpointDataImplementation(PMGeneration pmg)
@@ -217,9 +218,9 @@ namespace Thinkage.MainBoss.Database {
 			private readonly List<dsMB.PMGenerationBatchRow> CommittedBatchRows;
 			public void Rollback(PMGeneration pmg) {
 				pmg.woBuilder.Rollback(WOBuilderCheckpoint);
-				foreach(KeyValuePair<dsMB.PMGenerationDetailRow, DatabaseEnums.PMType> kvp in new Dictionary<dsMB.PMGenerationDetailRow, DatabaseEnums.PMType>(pmg.CommittedDetailRows)) {
+				foreach (KeyValuePair<dsMB.PMGenerationDetailRow, DatabaseEnums.PMType> kvp in new Dictionary<dsMB.PMGenerationDetailRow, DatabaseEnums.PMType>(pmg.CommittedDetailRows)) {
 					dsMB.PMGenerationDetailRow row = kvp.Key;
-					if(!CommittedDetailRows.ContainsKey(row)) {
+					if (!CommittedDetailRows.ContainsKey(row)) {
 						// This particular row was not committed when the checkpoint was taken but is now.
 						row.F.WorkOrderID = null;
 						row.F.DetailContext = null;
@@ -228,9 +229,9 @@ namespace Thinkage.MainBoss.Database {
 					}
 				}
 				base.Rollback(pmg); // Delete any newly-created Detail rows.
-				for(int i = pmg.CommittedBatchRows.Count; --i >= 0;) {
+				for (int i = pmg.CommittedBatchRows.Count; --i >= 0;) {
 					dsMB.PMGenerationBatchRow row = pmg.CommittedBatchRows[i];
-					if(!CommittedBatchRows.Contains(row)) {
+					if (!CommittedBatchRows.Contains(row)) {
 						// This particular row was not committed when the checkpoint was taken but is now.
 						row.F.SessionID = pmg.DB.SessionRecordID;
 						pmg.CommittedBatchRows.RemoveAt(i);
@@ -252,6 +253,61 @@ namespace Thinkage.MainBoss.Database {
 		/// </summary>
 		public override void Rollback(ICheckpointData data) {
 			((CheckpointDataImplementation)data).Rollback(this);
+		}
+		#endregion
+		#region Analysis
+		public IEnumerable<System.Exception> AnalyzePlan(dsMB.ScheduledWorkOrderRow planRow, dsMB lookupDs, bool quickExitIfInhibited) {
+			var messages = new List<System.Exception>();
+			// TODO: This duplicates logic that is elsewhere located in the PM Generation code, and also duplicates the messages
+			// Also, because it returns Keys it cannot use formatted insertions, so the analysis of meter-based stucc has different messages
+			// that the main Generation code.
+			if (planRow.F.Inhibit) {
+				messages.Add(new GeneralException(KB.K("This Unit Maintenance Plan record is Inhibited")));
+				if (quickExitIfInhibited)
+					return messages;
+			}
+			if (planRow.WorkOrderTemplateIDParentRow.F.Hidden.HasValue)
+				// Treat it as an error if the Task is hidden.
+				messages.Add(new GeneralException(KB.K("The Task for this Unit Maintenance Plan has been deleted")));
+			if (planRow.UnitLocationIDParentRow.RelativeLocationIDParentRow.F.Hidden.HasValue)
+				// Treat it as an error if the Unit is hidden. Note though that we don't complain if the unit is *contained in* a deleted location.
+				messages.Add(new GeneralException(KB.K("The Unit for this Unit Maintenance Plan has been deleted")));
+			if (planRow.ScheduleIDParentRow.F.Hidden.HasValue)
+				// Treat it as an error if the Schedule is hidden.
+				messages.Add(new GeneralException(KB.K("The Schedule for this Unit Maintenance Plan has been deleted")));
+			if (!planRow.F.CurrentPMGenerationDetailID.HasValue)
+				// If there is no schedule basis, just make an error row saying so.
+				messages.Add(new GeneralException(KB.K("There is no timing basis for this Unit Maintenance Plan")));
+
+			var currentScheduleRow = planRow.ScheduleIDParentRow;
+			foreach (dsMB.PeriodicityRow currentPeriodicityRow in currentScheduleRow.GetPeriodicityScheduleIDChildRows()) {
+				if (currentPeriodicityRow.F.MeterClassID.HasValue) {
+					if (currentPeriodicityRow.F.CalendarUnit.HasValue)
+						// TODO: Add to the schema a CHECK constraint that (CalendarUnit IS NULL OR MeterClassID IS NULL) AND (CalendarUnit IS NOT NULL OR MeterClassID IS NOT NULL) so
+						// SQL will ensure that exactly one of these is non-null.
+						messages.Add(new GeneralException(KB.K("Maintenance Period for Maintenance Timing '{0}' contains both a Meter Class and a Calendar Unit"), currentScheduleRow.F.Code));
+					if (currentPeriodicityRow.MeterClassIDParentRow.F.Hidden.HasValue)
+						messages.Add(new GeneralException(KB.K("Maintenance Period for Maintenance Timing '{0}' references deleted Meter Class '{1}'"), currentScheduleRow.F.Code, currentPeriodicityRow.MeterClassIDParentRow.F.Code));
+					dsMB.MeterRow[] meterRows = lookupDs.T.Meter.Rows.Select(
+								new SqlExpression(dsMB.Path.T.Meter.F.MeterClassID).Eq(SqlExpression.Constant(currentPeriodicityRow.F.MeterClassID))
+									.And(new SqlExpression(dsMB.Path.T.Meter.F.UnitLocationID).Eq(SqlExpression.Constant(planRow.F.UnitLocationID))));
+					if (meterRows.Length == 0)
+						messages.Add(new GeneralException(KB.K("Maintenance Period for Maintenance Timing '{0}' refers to meter class '{1}' but Unit '{2}' has no meter of that class"), currentScheduleRow.F.Code, currentPeriodicityRow.MeterClassIDParentRow.F.Code, planRow.UnitLocationIDParentRow.F.Code));
+					else if (meterRows[0].F.Hidden.HasValue)
+						messages.Add(new GeneralException(KB.K("Maintenance Period for Maintenance Timing '{0}' refers to meter class '{1}' but the meter of that class for Unit '{2}' has been deleted"), currentScheduleRow.F.Code, currentPeriodicityRow.MeterClassIDParentRow.F.Code, planRow.UnitLocationIDParentRow.F.Code));
+				}
+			}
+			return messages;
+		}
+		public IEnumerable<Key> AnalyzeSchedule(dsMB.ScheduledWorkOrderRow planRow) {
+			var messages = new List<Key>();
+			// We want messages that show the basis date,
+			// explain each of the scheduling periods and the schedule point they create,
+			// explain the net schedule point
+			// explain any deferrals
+			// Explain whether the WO will ne generated, inhibited, or only projected
+
+			return messages;
 		}
 		#endregion
 		#region Generate and helpers
@@ -283,12 +339,12 @@ namespace Thinkage.MainBoss.Database {
 			public Key UncertaintyExplanationKey;
 			public object[] UncertaintyExplanationArguments;
 			public override bool Equals(object obj) {
-				if(obj == null)
+				if (obj == null)
 					return false;
-				if(base.Equals(obj))
+				if (base.Equals(obj))
 					return true;
 				var other = obj as FuzzyValue<VT>;
-				if(other == null)
+				if (other == null)
 					return false;
 				return InclusiveMinValue.Equals(other.InclusiveMinValue) && ExpectedValue.Equals(other.ExpectedValue) && ExclusiveMaxValue.Equals(other.ExclusiveMaxValue);
 			}
@@ -296,8 +352,8 @@ namespace Thinkage.MainBoss.Database {
 				return InclusiveMinValue.GetHashCode() ^ ExpectedValue.GetHashCode() ^ ExclusiveMaxValue.GetHashCode();
 			}
 			public static bool operator ==(FuzzyValue<VT> one, FuzzyValue<VT> other) {
-				if(object.ReferenceEquals(one, null))
-					return object.ReferenceEquals(other, null);
+				if (one is null)
+					return other is null;
 				return one.Equals(other);
 			}
 			public static bool operator !=(FuzzyValue<VT> one, FuzzyValue<VT> other) {
@@ -327,16 +383,16 @@ namespace Thinkage.MainBoss.Database {
 				UncertaintyExplanationArguments = arguments;
 			}
 			public bool PossiblyBefore(FuzzyDate other) {
-				if(!InclusiveMinValue.HasValue)
+				if (!InclusiveMinValue.HasValue)
 					return true;
-				if(!other.ExclusiveMaxValue.HasValue)
+				if (!other.ExclusiveMaxValue.HasValue)
 					return true;
 				return InclusiveMinValue.Value < other.ExclusiveMaxValue.Value;
 			}
 			public bool DefinitelyBefore(FuzzyDate other) {
-				if(!ExclusiveMaxValue.HasValue)
+				if (!ExclusiveMaxValue.HasValue)
 					return false;
-				if(!other.InclusiveMinValue.HasValue)
+				if (!other.InclusiveMinValue.HasValue)
 					return false;
 				return ExclusiveMaxValue.Value < other.InclusiveMinValue.Value;
 			}
@@ -347,18 +403,18 @@ namespace Thinkage.MainBoss.Database {
 				Key minUncertaintyExplanationKey = one.UncertaintyExplanationKey;
 				object[] minUncertaintyExplanationArguments = one.UncertaintyExplanationArguments;
 
-				if(!other.InclusiveMinValue.HasValue || other.InclusiveMinValue < minInclusiveMinValue)
+				if (!other.InclusiveMinValue.HasValue || other.InclusiveMinValue < minInclusiveMinValue)
 					minInclusiveMinValue = other.InclusiveMinValue;
-				if(!minExclusiveMaxValue.HasValue || other.ExclusiveMaxValue < minExclusiveMaxValue)
+				if (!minExclusiveMaxValue.HasValue || other.ExclusiveMaxValue < minExclusiveMaxValue)
 					minExclusiveMaxValue = other.ExclusiveMaxValue;
 
-				if(minUncertaintyExplanationKey == null || (other.UncertaintyExplanationKey != null && other.ExpectedValue < minExpectedValue)) {
+				if (minUncertaintyExplanationKey == null || (other.UncertaintyExplanationKey != null && other.ExpectedValue < minExpectedValue)) {
 					// Either 'one' is definite or both are fuzzy but 'other' will provide the expected value
 					minUncertaintyExplanationKey = other.UncertaintyExplanationKey;
 					minUncertaintyExplanationArguments = other.UncertaintyExplanationArguments;
 				}
 
-				if(other.ExpectedValue < minExpectedValue)
+				if (other.ExpectedValue < minExpectedValue)
 					minExpectedValue = other.ExpectedValue;
 
 				return new FuzzyDate(minExpectedValue, minInclusiveMinValue, minExclusiveMaxValue, minUncertaintyExplanationKey, minUncertaintyExplanationArguments);
@@ -367,7 +423,7 @@ namespace Thinkage.MainBoss.Database {
 				try {
 					return checked(new FuzzyDate(left.ExpectedValue + right, left.InclusiveMinValue + right, left.ExclusiveMaxValue + right, left.UncertaintyExplanationKey, left.UncertaintyExplanationArguments));
 				}
-				catch(ArgumentOutOfRangeException e) {
+				catch (ArgumentOutOfRangeException e) {
 					// For some unknown reason overflow/underflow on DateTime operator+ is reported as ArgumentOutOfRangeException (orly?? Which argument do you blame???) instead of OverflowException so we convert it here.
 					throw new OverflowException(e.Message);
 				}
@@ -398,7 +454,7 @@ namespace Thinkage.MainBoss.Database {
 			//
 			System.Diagnostics.Debug.Assert(batchRow.Table.DataSet == WorkingDs, "PMGenerationBatch row in incorrect dataset");
 			// We should never be called on a saved committed batch row.
-			if(batchRow.RowState != DataRowState.Added && batchRow[dsMB.Schema.T.PMGenerationBatch.F.SessionID, DataRowVersion.Original] == null)
+			if (batchRow.RowState != System.Data.DataRowState.Added && batchRow[dsMB.Schema.T.PMGenerationBatch.F.SessionID, System.Data.DataRowVersion.Original] == null)
 				throw new GeneralException(KB.K("Cannot re-generate PMs for a pre-existing committed batch"));
 			PMGenerationBatchID = batchRow.F.Id;
 			PurchaseOrderCreationStateID = batchRow.F.PurchaseOrderCreationStateID;
@@ -440,15 +496,15 @@ namespace Thinkage.MainBoss.Database {
 																					 // Loop over the relevant SWO's, convert the seed information into an initial detail row, and loop advancing that row until the SWO is disposed of.
 			WorkingDs.EnsureDataTableExists(dsMB.Schema.T.PMGenerationDetail);
 			int validationErrorCount = 0;
-			foreach(dsMB.ScheduledWorkOrderRow currentScheduledWORow in LookupDs.T.ScheduledWorkOrder) {
+			foreach (dsMB.ScheduledWorkOrderRow currentScheduledWORow in LookupDs.T.ScheduledWorkOrder.Rows) {
 				int detailSequence = 0;
 				progress.Update(KB.T(Strings.Format(KB.K("Task {0} on Unit {1}"), currentScheduledWORow.WorkOrderTemplateIDParentRow.F.Code, currentScheduledWORow.UnitLocationIDParentRow.RelativeLocationIDParentRow.F.Code)));
 				// Check if there is a list of ids to generate. If there is and this row is not in it, skip the row.
-				if(ScheduledWorkOrderIDsToGenerate != null && !ScheduledWorkOrderIDsToGenerate.Contains(currentScheduledWORow.F.Id))
+				if (ScheduledWorkOrderIDsToGenerate != null && !ScheduledWorkOrderIDsToGenerate.Contains(currentScheduledWORow.F.Id))
 					continue;
 
 				// Make first detail row for the SWO.
-				dsMB.PMGenerationDetailRow currentDetailRow = WorkingDs.T.PMGenerationDetail.AddNewPMGenerationDetailRow();
+				dsMB.PMGenerationDetailRow currentDetailRow = WorkingDs.T.PMGenerationDetail.AddNewRow();
 				AddedDetailRows.Add(currentDetailRow);
 				currentDetailRow.F.PMGenerationBatchID = PMGenerationBatchID;
 				currentDetailRow.F.ScheduledWorkOrderID = currentScheduledWORow.F.Id;
@@ -461,39 +517,9 @@ namespace Thinkage.MainBoss.Database {
 				FuzzyReading currentScheduleReading = null;
 				Guid? currentTriggeringMeterID = null;
 				try {
-					if (currentScheduledWORow.F.Inhibit) {
-						// This entire SWO is inhibited, say so.
-						// If the site doesn't want to see it at all, the can delete (hide) the maintenance plan.
-						// TODO: We don't have a PMType for this case, so we treat it as an Error.
-						// This means it will show up in the Errors tab of the PMGBatch tbl, but because we don't throw an exception here
-						// it does not show up as an error in a popup window on generation.
-						// Adding a PMType is nontrivial because we number them so the types that form a valid scheduling basis are the upper values
-						// so we would either have to add this value at the end and make this check more complex, or add the value in the middle and
-						// use an upgrade step to renumber all the values in existing records.
-						currentDetailRow.F.DetailType = (sbyte)DatabaseEnums.PMType.Error;
-						// We add only the message without context to the disposition record. FullMessage will not put AggregateException messages in so we need to do it explicitly
-						currentDetailRow.F.DetailContext = KB.K("This Unit Maintenance Plan record is Inhibited").Translate();
-						// Update the current detail row to reflect the 'current' values in case the ValidationException occurs between creating a new detail record and calculating a valid next schedule point.
-						SetWorkStartDate(currentDetailRow, currentWorkStartDate, currentWorkEndDate);
-						currentDetailRow.F.ScheduleDate = currentScheduleDate.ExpectedValue;
-						// On to the next Maintenance Plan
-						continue;
-					}
-					var aggregateExceptions = new List<GeneralException>();
-					if (currentScheduledWORow.WorkOrderTemplateIDParentRow.F.Hidden.HasValue)
-						// Treat it as an error if the Task is hidden.
-						aggregateExceptions.Add(new GeneralException(KB.K("The Task for this Unit Maintenance Plan has been deleted")));
-					if(currentScheduledWORow.UnitLocationIDParentRow.RelativeLocationIDParentRow.F.Hidden.HasValue)
-						// Treat it as an error if the Unit is hidden. Note though that we don't complain if the unit is *contained in* a deleted location.
-						aggregateExceptions.Add(new GeneralException(KB.K("The Unit for this Unit Maintenance Plan has been deleted")));
-					if(currentScheduledWORow.ScheduleIDParentRow.F.Hidden.HasValue)
-						// Treat it as an error if the Schedule is hidden.
-						aggregateExceptions.Add(new GeneralException(KB.K("The Schedule for this Unit Maintenance Plan has been deleted")));
-					if(!currentScheduledWORow.F.CurrentPMGenerationDetailID.HasValue)
-						// If there is no schedule basis, just make an error row saying so.
-						aggregateExceptions.Add(new GeneralException(KB.K("There is no timing basis for this Unit Maintenance Plan")));
-
-					Thinkage.Libraries.Exception.ThrowIfAggregateExceptions(aggregateExceptions, KB.K("Unit Maintenance Plan has multiple errors."));
+					IEnumerable<System.Exception> errors = AnalyzePlan(currentScheduledWORow, LookupDs, quickExitIfInhibited: true);
+					if (errors.Any())
+						Thinkage.Libraries.Exception.ThrowIfAggregateExceptions(errors, KB.K("Unit Maintenance Plan has multiple errors."));
 
 					dsMB.PMGenerationDetailRow seedRow = currentScheduledWORow.CurrentPMGenerationDetailIDParentRow;
 					// Load the seed information into the 'current' values.
@@ -506,7 +532,7 @@ namespace Thinkage.MainBoss.Database {
 					dsMB.WorkOrderTemplateRow currentTemplateRow = currentScheduledWORow.WorkOrderTemplateIDParentRow;
 					// We should be searching ResolvedWorkOrderTemplate by its WorkOrderTemplateID field but that is difficult with DataView stuff, but ID field of
 					// that table is equal to the WorkOrderTemplateID field so we just use a simple Find call.
-					dsMB.ResolvedWorkOrderTemplateRow currentResolvedTemplateRow = (dsMB.ResolvedWorkOrderTemplateRow)LookupDs.T.ResolvedWorkOrderTemplate.RowFind(currentScheduledWORow.F.WorkOrderTemplateID);
+					dsMB.ResolvedWorkOrderTemplateRow currentResolvedTemplateRow = (dsMB.ResolvedWorkOrderTemplateRow)LookupDs.T.ResolvedWorkOrderTemplate.Rows.Find(currentScheduledWORow.F.WorkOrderTemplateID);
 					dsMB.ScheduleRow currentScheduleRow = currentScheduledWORow.ScheduleIDParentRow;
 
 					DateTime effectiveBatchEndDate = BatchEndDate.Add(currentResolvedTemplateRow.F.GenerateLeadTime);
@@ -514,23 +540,12 @@ namespace Thinkage.MainBoss.Database {
 
 					// Create the mapping from Periodicity to Meter row for this SWO.
 					var meterMapping = new Dictionary<Guid, Guid>();
-					foreach(dsMB.PeriodicityRow currentPeriodicityRow in currentScheduleRow.GetPeriodicityScheduleIDChildRows()) {
-						if(currentPeriodicityRow.F.MeterClassID.HasValue) {
-							if(currentPeriodicityRow.F.CalendarUnit.HasValue)
-								// TODO: Add to the schema a CHECK constraint that (CalendarUnit IS NULL OR MeterClassID IS NULL) AND (CalendarUnit IS NOT NULL OR MeterClassID IS NOT NULL) so
-								// SQL will ensure that exactly one of these is non-null.
-								throw new GeneralException(KB.K("Maintenance Period for Maintenance Timing '{0}' contains both a Meter Class and a Calendar Unit"), currentScheduleRow.F.Code);
-							if(currentPeriodicityRow.MeterClassIDParentRow.F.Hidden.HasValue)
-								throw new GeneralException(KB.K("Maintenance Period for Maintenance Timing '{0}' references deleted Meter Class '{1}'"), currentScheduleRow.F.Code, currentPeriodicityRow.MeterClassIDParentRow.F.Code);
-							DataRow[] meterRows = LookupDs.T.Meter.Select(new ColumnExpressionUnparser().UnParse(
+					foreach (dsMB.PeriodicityRow currentPeriodicityRow in currentScheduleRow.GetPeriodicityScheduleIDChildRows()) {
+						if (currentPeriodicityRow.F.MeterClassID.HasValue) {
+							dsMB.MeterRow[] meterRows = LookupDs.T.Meter.Rows.Select(
 										new SqlExpression(dsMB.Path.T.Meter.F.MeterClassID).Eq(SqlExpression.Constant(currentPeriodicityRow.F.MeterClassID))
-											.And(new SqlExpression(dsMB.Path.T.Meter.F.UnitLocationID).Eq(SqlExpression.Constant(currentScheduledWORow.F.UnitLocationID)))));
-							if(meterRows.Length == 0)
-								throw new GeneralException(KB.K("Maintenance Period for Maintenance Timing '{0}' refers to meter class '{1}' but Unit '{2}' has no meter of that class"), currentScheduleRow.F.Code, currentPeriodicityRow.MeterClassIDParentRow.F.Code, currentScheduledWORow.UnitLocationIDParentRow.F.Code);
-							var meterRow = (dsMB.MeterRow)meterRows[0];
-							if(meterRow.F.Hidden.HasValue)
-								throw new GeneralException(KB.K("Maintenance Period for Maintenance Timing '{0}' refers to meter class '{1}' but the meter of that class for Unit '{2}' has been deleted"), currentScheduleRow.F.Code, currentPeriodicityRow.MeterClassIDParentRow.F.Code, currentScheduledWORow.UnitLocationIDParentRow.F.Code);
-							meterMapping[currentPeriodicityRow.F.Id] = meterRow.F.Id;
+											.And(new SqlExpression(dsMB.Path.T.Meter.F.UnitLocationID).Eq(SqlExpression.Constant(currentScheduledWORow.F.UnitLocationID))));
+							meterMapping[currentPeriodicityRow.F.Id] = meterRows[0].F.Id;
 						}
 					}
 
@@ -541,21 +556,28 @@ namespace Thinkage.MainBoss.Database {
 					// Do the forward scheduling for this SWO. On loop entry, the currentXxxx variables represent the state of our seed row (from a previous batch),
 					// and on each iteration these are advanced to the result (Make(Shared)WorkOrder or Inhibited) row of the schedule point just handled.
 					// This outer loop advances the schedule basis, and an inner loop does deferrals.
-					for(;;) {
+					for (; ; ) {
+#if LATER
+						// Remember the old scheduled date so we can check for positive progress after updating the 'current' from 'next'
+						FuzzyDate previousScheduleDate = currentScheduleDate;
+						CalculateNextWorkStarteDate(currentScheduleRow, currentScheduledWORow, currentResolvedTemplateRow, meterMapping,
+							currentWorkOrderID, ref currentScheduleReading, ref currentTriggeringMeterID, ref currentScheduleDate,
+							ref currentWorkStartDate, ref currentWorkEndDate, currentDetailType, ref basedOnTentativeBasis);
+#endif
 						#region Calculate basis date for scheduling
 						// Calculate when the next schedule point is, based on the scheduling interval plus the basis from the current row information.
 						FuzzyDate basisScheduleDate = currentScheduleDate;
-						if(basisScheduleDate.UncertaintyExplanationKey != null) {
+						if (basisScheduleDate.UncertaintyExplanationKey != null) {
 							basisScheduleDate.UncertaintyExplanationKey = KB.K("Based on previous tentative schedule date");
 							basisScheduleDate.UncertaintyExplanationArguments = null;
 						}
 						FuzzyDate basisWorkStartDate = currentWorkStartDate;
-						if(basisWorkStartDate.UncertaintyExplanationKey != null) {
+						if (basisWorkStartDate.UncertaintyExplanationKey != null) {
 							basisWorkStartDate.UncertaintyExplanationKey = KB.K("Based on previous tentative schedule date");
 							basisWorkStartDate.UncertaintyExplanationArguments = null;
 						}
 						FuzzyDate basisWorkEndDate = currentWorkEndDate;
-						if(basisWorkEndDate.UncertaintyExplanationKey != null) {
+						if (basisWorkEndDate.UncertaintyExplanationKey != null) {
 							basisWorkEndDate.UncertaintyExplanationKey = KB.K("Based on previous tentative schedule date");
 							basisWorkEndDate.UncertaintyExplanationArguments = null;
 						}
@@ -566,69 +588,69 @@ namespace Thinkage.MainBoss.Database {
 						// and also should be placed at the bottom of the loop and streamlined for only the possible detail types encountered there (Inhibit or Make/Predict(Shared)WorkOrder).
 						// Then currentDetailType and currentWorkOrderID would no longer be needed and the code would be clearer because each iteration of the loop starts with the three basis dates set.
 						// Maybe also the basis/current/new/next variable names could be made clearer as well.
-						switch(currentDetailType) {
-							case DatabaseEnums.PMType.PredictedWorkOrder:
-							case DatabaseEnums.PMType.MakeWorkOrder:
-							case DatabaseEnums.PMType.MakeSharedWorkOrder:
-							case DatabaseEnums.PMType.MakeUnscheduledWorkOrder:
-								// If the next schedule is based on work start/end date check if there is a real WO. If so obtain updated work start/end from it.
-								// Also mark the date tentative if the WO dates can still change.
-								//
-								// It could be argued that detail record referencing a WO that !AffectsFuturePMGeneration (i.e. a voided WO) should not
-								// be eligible to become a current detail record and thus a schedule basis. But that is not sufficient to "undo" a Commit (for instance
-								// it will not let you undo an Inhibit record). Thus the records we look at *can* reference !AffectsFuturePMGeneration wo's so we must check for them.
-								if((DatabaseEnums.RescheduleBasisAlgorithm)currentScheduledWORow.F.RescheduleBasisAlgorithm != DatabaseEnums.RescheduleBasisAlgorithm.FromScheduleBasis) {
-									if(currentWorkOrderID.HasValue) {
-										dsMB.WorkOrderRow woRow = (dsMB.WorkOrderRow)LookupDs.T.WorkOrder.RowFind(currentWorkOrderID.Value);
-										basisWorkStartDate = woRow.F.StartDateEstimate;
-										basisWorkEndDate = woRow.F.EndDateEstimate + WorkDurationEpsilon;
-										if(!woRow.CurrentWorkOrderStateHistoryIDParentRow.WorkOrderStateIDParentRow.F.CanModifyOperationalFields
-												|| !woRow.CurrentWorkOrderStateHistoryIDParentRow.WorkOrderStateIDParentRow.F.AffectsFuturePMGeneration)
-											break;
-										var tentativeMessageKey = KB.K("Work Order {0} start/end date subject to change");
-										var tentativeMessageArgs = new object[] { woRow.F.Number };
-										// TODO: Setting min to the current date here is not really correct; we should perhaps be using some date from the work order.
-										basisWorkStartDate.SetFutureIndefinite(currentDateOnly, tentativeMessageKey, tentativeMessageArgs);
-										basisWorkEndDate.SetFutureIndefinite(currentDateOnly, tentativeMessageKey, tentativeMessageArgs);
-									}
-									else {
-										// TODO: base this decision on the initial WO state of the WO that would be generated.
-										var tentativeMessageKey = KB.K("Previous Work Order has not been generated yet so start/end date subject to change");
-										basisWorkStartDate.SetFutureIndefinite(currentDateOnly, tentativeMessageKey);
-										basisWorkEndDate.SetFutureIndefinite(currentDateOnly, tentativeMessageKey);
-									}
-									basedOnTentativeBasis = true;
+						switch (currentDetailType) {
+						case DatabaseEnums.PMType.PredictedWorkOrder:
+						case DatabaseEnums.PMType.MakeWorkOrder:
+						case DatabaseEnums.PMType.MakeSharedWorkOrder:
+						case DatabaseEnums.PMType.MakeUnscheduledWorkOrder:
+							// If the next schedule is based on work start/end date check if there is a real WO. If so obtain updated work start/end from it.
+							// Also mark the date tentative if the WO dates can still change.
+							//
+							// It could be argued that detail record referencing a WO that !AffectsFuturePMGeneration (i.e. a voided WO) should not
+							// be eligible to become a current detail record and thus a schedule basis. But that is not sufficient to "undo" a Commit (for instance
+							// it will not let you undo an Inhibit record). Thus the records we look at *can* reference !AffectsFuturePMGeneration wo's so we must check for them.
+							if ((DatabaseEnums.RescheduleBasisAlgorithm)currentScheduledWORow.F.RescheduleBasisAlgorithm != DatabaseEnums.RescheduleBasisAlgorithm.FromScheduleBasis) {
+								if (currentWorkOrderID.HasValue) {
+									dsMB.WorkOrderRow woRow = (dsMB.WorkOrderRow)LookupDs.T.WorkOrder.Rows.Find(currentWorkOrderID.Value);
+									basisWorkStartDate = woRow.F.StartDateEstimate;
+									basisWorkEndDate = woRow.F.EndDateEstimate + WorkDurationEpsilon;
+									if (!woRow.CurrentWorkOrderStateHistoryIDParentRow.WorkOrderStateIDParentRow.F.CanModifyOperationalFields
+											|| !woRow.CurrentWorkOrderStateHistoryIDParentRow.WorkOrderStateIDParentRow.F.AffectsFuturePMGeneration)
+										break;
+									var tentativeMessageKey = KB.K("Work Order {0} start/end date subject to change");
+									var tentativeMessageArgs = new object[] { woRow.F.Number };
+									// TODO: Setting min to the current date here is not really correct; we should perhaps be using some date from the work order.
+									basisWorkStartDate.SetFutureIndefinite(currentDateOnly, tentativeMessageKey, tentativeMessageArgs);
+									basisWorkEndDate.SetFutureIndefinite(currentDateOnly, tentativeMessageKey, tentativeMessageArgs);
 								}
-								break;
-							case DatabaseEnums.PMType.ManualReschedule:
-								if(currentTriggeringMeterID.HasValue) {
-									// TODO: No one creates these right now; only calendar-based ManualReschedules are used.
-									// This is to handle meter-based manual reschedules. We ignore the date stored in these records
-									// Calculate a corrected basis date by re-predicting back from the meter reading. This way any calendar-based periodicity
-									// as well as any periodicities on other meters will have a more correct date to work from, in case the meter information has changed
-									// since the ManualReschedule record was created.
-									basisScheduleDate = MeterDatePredictor.Predict(currentTriggeringMeterID.Value, currentScheduleReading);
-									basisWorkStartDate = basisScheduleDate;
-									basisWorkEndDate = basisScheduleDate;
+								else {
+									// TODO: base this decision on the initial WO state of the WO that would be generated.
+									var tentativeMessageKey = KB.K("Previous Work Order has not been generated yet so start/end date subject to change");
+									basisWorkStartDate.SetFutureIndefinite(currentDateOnly, tentativeMessageKey);
+									basisWorkEndDate.SetFutureIndefinite(currentDateOnly, tentativeMessageKey);
 								}
-								break;
-							case DatabaseEnums.PMType.Inhibited:
-								break;
+								basedOnTentativeBasis = true;
+							}
+							break;
+						case DatabaseEnums.PMType.ManualReschedule:
+							if (currentTriggeringMeterID.HasValue) {
+								// TODO: No one creates these right now; only calendar-based ManualReschedules are used.
+								// This is to handle meter-based manual reschedules. We ignore the date stored in these records
+								// Calculate a corrected basis date by re-predicting back from the meter reading. This way any calendar-based periodicity
+								// as well as any periodicities on other meters will have a more correct date to work from, in case the meter information has changed
+								// since the ManualReschedule record was created.
+								basisScheduleDate = MeterDatePredictor.Predict(currentTriggeringMeterID.Value, currentScheduleReading);
+								basisWorkStartDate = basisScheduleDate;
+								basisWorkEndDate = basisScheduleDate;
+							}
+							break;
+						case DatabaseEnums.PMType.Inhibited:
+							break;
 						}
 
 						FuzzyDate basisDate;
-						switch((DatabaseEnums.RescheduleBasisAlgorithm)currentScheduledWORow.F.RescheduleBasisAlgorithm) {
-							case DatabaseEnums.RescheduleBasisAlgorithm.FromScheduleBasis:
-								basisDate = basisScheduleDate;
-								break;
-							case DatabaseEnums.RescheduleBasisAlgorithm.FromWorkOrderStartDate:
-								basisDate = basisWorkStartDate;
-								break;
-							case DatabaseEnums.RescheduleBasisAlgorithm.FromWorkOrderEndDate:
-								basisDate = basisWorkEndDate;
-								break;
-							default:
-								throw new GeneralException(KB.K("Unknown timing basis algorithm {0}"), currentScheduledWORow.F.RescheduleBasisAlgorithm);
+						switch ((DatabaseEnums.RescheduleBasisAlgorithm)currentScheduledWORow.F.RescheduleBasisAlgorithm) {
+						case DatabaseEnums.RescheduleBasisAlgorithm.FromScheduleBasis:
+							basisDate = basisScheduleDate;
+							break;
+						case DatabaseEnums.RescheduleBasisAlgorithm.FromWorkOrderStartDate:
+							basisDate = basisWorkStartDate;
+							break;
+						case DatabaseEnums.RescheduleBasisAlgorithm.FromWorkOrderEndDate:
+							basisDate = basisWorkEndDate;
+							break;
+						default:
+							throw new GeneralException(KB.K("Unknown timing basis algorithm {0}"), currentScheduledWORow.F.RescheduleBasisAlgorithm);
 						}
 
 						#endregion
@@ -636,23 +658,23 @@ namespace Thinkage.MainBoss.Database {
 						// We now have a basis date. Find the next date from that. We have to loop over each of the periodicities and find the one that generates
 						// the earliest trigger date. However, if any of them cause estimated dates, we have to estimate everything.
 						IEnumerable<dsMB.PeriodicityRow> currentPeriodicityRows = currentScheduleRow.GetPeriodicityScheduleIDChildRows();
-						if(Enumerable.Count(currentPeriodicityRows) == 0)
+						if (Enumerable.Count(currentPeriodicityRows) == 0)
 							throw new GeneralException(KB.K("No intervals are defined for the Maintenance Timing '{0}'"), currentScheduleRow.F.Code);
 						FuzzyDate nextScheduleDate = null;
 						FuzzyReading nextScheduleReading = null;
 						Guid? nextTriggeringMeterID = null;
-						foreach(dsMB.PeriodicityRow periodicity in currentPeriodicityRows) {
+						foreach (dsMB.PeriodicityRow periodicity in currentPeriodicityRows) {
 							FuzzyDate thisScheduleDate;
 							FuzzyReading thisScheduleReading = 0;
 							Guid? thisTriggeringMeterID = null;
 
-							if(periodicity.F.MeterClassID.HasValue) {
+							if (periodicity.F.MeterClassID.HasValue) {
 								// This is a meter-based periodicity. Get the ID of the referenced meter
 								Guid referencedMeterID = meterMapping[periodicity.F.Id];
 								// advance from reading estimate on basisDate by the periodicity's interval and estimate a new schedule date, possibly marking it tentative
 								// If scheduling is FromScheduleBasis and the meter for this periodicity is the same as the one from the current record information,
 								// ignore the basis date and start immediately with the current record's reading.
-								if((DatabaseEnums.RescheduleBasisAlgorithm)currentScheduledWORow.F.RescheduleBasisAlgorithm == DatabaseEnums.RescheduleBasisAlgorithm.FromScheduleBasis
+								if ((DatabaseEnums.RescheduleBasisAlgorithm)currentScheduledWORow.F.RescheduleBasisAlgorithm == DatabaseEnums.RescheduleBasisAlgorithm.FromScheduleBasis
 									&& currentTriggeringMeterID == referencedMeterID)
 									// The meters match and it is the Trigger point on which the next should be based,
 									// so use the reading as it stands in the record rather than estimating it from the Trigger date.
@@ -666,7 +688,7 @@ namespace Thinkage.MainBoss.Database {
 								try {
 									thisScheduleReading += periodicity.F.Interval;
 								}
-								catch(System.OverflowException) {
+								catch (System.OverflowException) {
 									throw new GeneralException(KB.K("Overflow occurred adding the interval {0} to meter reading {1}"), periodicity.F.Interval, thisScheduleReading.ExpectedValue);
 								}
 								// Map that back to a date
@@ -675,36 +697,36 @@ namespace Thinkage.MainBoss.Database {
 								thisTriggeringMeterID = referencedMeterID;
 							}
 							else
-								switch((DatabaseEnums.CalendarUnit)periodicity.F.CalendarUnit) {
-									// This is a calendar-based periodicity, just add the interval to the basisDate.
-									case DatabaseEnums.CalendarUnit.Days:
-										// advance from basisDate by next's schedule's interval, possibly marking it tentative
-										try {
-											thisScheduleDate = basisDate.AddDays(periodicity.F.Interval);
-										}
-										catch(System.OverflowException) {
-											throw new GeneralException(KB.K("Overflow occurred adding {0} days to basis date {1}"), periodicity.F.Interval, basisDate.ExpectedValue);
-										}
-										break;
-									case DatabaseEnums.CalendarUnit.Months:
-										// advance from basisDate by next's schedule's interval, possibly marking it tentative
-										try {
-											thisScheduleDate = basisDate.AddMonths(periodicity.F.Interval);
-										}
-										catch(System.OverflowException) {
-											throw new GeneralException(KB.K("Overflow occurred adding {0} months to basis date {1}"), periodicity.F.Interval, basisDate.ExpectedValue);
-										}
-										break;
-									default:
-										throw new GeneralException(KB.K("Unknown unit for period in Maintenance Timing '{0}'"), currentScheduleRow.F.Code);
+								switch ((DatabaseEnums.CalendarUnit)periodicity.F.CalendarUnit) {
+								// This is a calendar-based periodicity, just add the interval to the basisDate.
+								case DatabaseEnums.CalendarUnit.Days:
+									// advance from basisDate by next's schedule's interval, possibly marking it tentative
+									try {
+										thisScheduleDate = basisDate.AddDays(periodicity.F.Interval);
+									}
+									catch (System.OverflowException) {
+										throw new GeneralException(KB.K("Overflow occurred adding {0} days to basis date {1}"), periodicity.F.Interval, basisDate.ExpectedValue);
+									}
+									break;
+								case DatabaseEnums.CalendarUnit.Months:
+									// advance from basisDate by next's schedule's interval, possibly marking it tentative
+									try {
+										thisScheduleDate = basisDate.AddMonths(periodicity.F.Interval);
+									}
+									catch (System.OverflowException) {
+										throw new GeneralException(KB.K("Overflow occurred adding {0} months to basis date {1}"), periodicity.F.Interval, basisDate.ExpectedValue);
+									}
+									break;
+								default:
+									throw new GeneralException(KB.K("Unknown unit for period in Maintenance Timing '{0}'"), currentScheduleRow.F.Code);
 								}
-							if(nextScheduleDate == null || thisScheduleDate.DefinitelyBefore(nextScheduleDate)) {
+							if (nextScheduleDate == null || thisScheduleDate.DefinitelyBefore(nextScheduleDate)) {
 								// 'this' schedule date is definitely before the (so far) 'next' schedule date (if any), so keep only the information from the former.
 								nextScheduleDate = thisScheduleDate;
 								nextScheduleReading = thisScheduleReading;
 								nextTriggeringMeterID = thisTriggeringMeterID;
 							}
-							else if(thisScheduleDate.PossiblyBefore(nextScheduleDate)) {
+							else if (thisScheduleDate.PossiblyBefore(nextScheduleDate)) {
 								// 'this' schedule date is *possibly* before the (so far) 'next' schedule date, so build a new fuzzy date taking the min of each of the corresponding values.
 								nextScheduleDate = FuzzyDate.Min(nextScheduleDate, thisScheduleDate);
 								// Since we are uncertain as to the basis for the trigger, we must forget about any basis meter reading.
@@ -717,31 +739,31 @@ namespace Thinkage.MainBoss.Database {
 						var scheduleDateType = (Libraries.TypeInfo.DateTimeTypeInfo)dsMB.Schema.T.PMGenerationDetail.F.ScheduleDate.EffectiveType;
 						var nextAvailableDateType = (Libraries.TypeInfo.DateTimeTypeInfo)dsMB.Schema.T.PMGenerationDetail.F.NextAvailableDate.EffectiveType;
 						// First we crowd the ExpectedValue, which requires making a new FuzzyDate.
-						if(nextScheduleDate.ExpectedValue < (DateTime)scheduleDateType.NativeMinLimit(typeof(DateTime)))
+						if (nextScheduleDate.ExpectedValue < (DateTime)scheduleDateType.NativeMinLimit(typeof(DateTime)))
 							nextScheduleDate = new FuzzyDate((DateTime)scheduleDateType.NativeMinLimit(typeof(DateTime)), nextScheduleDate.InclusiveMinValue, nextScheduleDate.ExclusiveMaxValue, nextScheduleDate.UncertaintyExplanationKey, nextScheduleDate.UncertaintyExplanationArguments);
-						if(nextScheduleDate.ExpectedValue + currentResolvedTemplateRow.F.Duration > (DateTime)nextAvailableDateType.NativeMaxLimit(typeof(DateTime)))
+						if (nextScheduleDate.ExpectedValue + currentResolvedTemplateRow.F.Duration > (DateTime)nextAvailableDateType.NativeMaxLimit(typeof(DateTime)))
 							nextScheduleDate = new FuzzyDate((DateTime)nextAvailableDateType.NativeMaxLimit(typeof(DateTime)) - currentResolvedTemplateRow.F.Duration, nextScheduleDate.InclusiveMinValue, nextScheduleDate.ExclusiveMaxValue, nextScheduleDate.UncertaintyExplanationKey, nextScheduleDate.UncertaintyExplanationArguments);
 						// Crowd the fuzzy limits as well. These can be changed in situ.
-						if(nextScheduleDate.InclusiveMinValue.HasValue) {
-							if(nextScheduleDate.InclusiveMinValue.Value < (DateTime)scheduleDateType.NativeMinLimit(typeof(DateTime)))
+						if (nextScheduleDate.InclusiveMinValue.HasValue) {
+							if (nextScheduleDate.InclusiveMinValue.Value < (DateTime)scheduleDateType.NativeMinLimit(typeof(DateTime)))
 								nextScheduleDate.InclusiveMinValue = (DateTime)scheduleDateType.NativeMinLimit(typeof(DateTime));
-							if(nextScheduleDate.InclusiveMinValue.Value + currentResolvedTemplateRow.F.Duration > (DateTime)nextAvailableDateType.NativeMaxLimit(typeof(DateTime)))
+							if (nextScheduleDate.InclusiveMinValue.Value + currentResolvedTemplateRow.F.Duration > (DateTime)nextAvailableDateType.NativeMaxLimit(typeof(DateTime)))
 								nextScheduleDate.InclusiveMinValue = (DateTime)nextAvailableDateType.NativeMaxLimit(typeof(DateTime)) - currentResolvedTemplateRow.F.Duration;
 						}
-						if(nextScheduleDate.ExclusiveMaxValue.HasValue) {
-							if(nextScheduleDate.ExclusiveMaxValue.Value < (DateTime)scheduleDateType.NativeMinLimit(typeof(DateTime)))
+						if (nextScheduleDate.ExclusiveMaxValue.HasValue) {
+							if (nextScheduleDate.ExclusiveMaxValue.Value < (DateTime)scheduleDateType.NativeMinLimit(typeof(DateTime)))
 								nextScheduleDate.ExclusiveMaxValue = (DateTime)scheduleDateType.NativeMinLimit(typeof(DateTime));
-							if(nextScheduleDate.ExclusiveMaxValue.Value + currentResolvedTemplateRow.F.Duration > (DateTime)nextAvailableDateType.NativeMaxLimit(typeof(DateTime)))
+							if (nextScheduleDate.ExclusiveMaxValue.Value + currentResolvedTemplateRow.F.Duration > (DateTime)nextAvailableDateType.NativeMaxLimit(typeof(DateTime)))
 								nextScheduleDate.ExclusiveMaxValue = (DateTime)nextAvailableDateType.NativeMaxLimit(typeof(DateTime)) - currentResolvedTemplateRow.F.Duration;
 						}
 						#endregion
 						#region Validate that the 'next' values can fit in the SQL fields of the Detail record before making them 'current'
 						System.Exception membershipException;
-						if((membershipException = dsMB.Schema.T.PMGenerationDetail.F.ScheduleDate.EffectiveType.CheckMembership(nextScheduleDate.ExpectedValue)) != null)
+						if ((membershipException = dsMB.Schema.T.PMGenerationDetail.F.ScheduleDate.EffectiveType.CheckMembership(nextScheduleDate.ExpectedValue)) != null)
 							throw new GeneralException(membershipException, KB.K("The calculated Next Schedule Date {0} is invalid"), nextScheduleDate.ExpectedValue);
-						if((membershipException = dsMB.Schema.T.PMGenerationDetail.F.NextAvailableDate.EffectiveType.CheckMembership(nextScheduleDate.ExpectedValue + currentResolvedTemplateRow.F.Duration)) != null)
+						if ((membershipException = dsMB.Schema.T.PMGenerationDetail.F.NextAvailableDate.EffectiveType.CheckMembership(nextScheduleDate.ExpectedValue + currentResolvedTemplateRow.F.Duration)) != null)
 							throw new GeneralException(membershipException, KB.K("The calculated Next Work End Date {0} is invalid"), nextScheduleDate.ExpectedValue + currentResolvedTemplateRow.F.Duration);
-						if(nextTriggeringMeterID.HasValue && (membershipException = dsMB.Schema.T.PMGenerationDetail.F.ScheduleReading.EffectiveType.CheckMembership(nextScheduleReading.ExpectedValue)) != null)
+						if (nextTriggeringMeterID.HasValue && (membershipException = dsMB.Schema.T.PMGenerationDetail.F.ScheduleReading.EffectiveType.CheckMembership(nextScheduleReading.ExpectedValue)) != null)
 							throw new GeneralException(membershipException, KB.K("The calculated Next Schedule Reading {0} is invalid"), nextScheduleReading.ExpectedValue);
 						// Remember the old scheduled date so we can check for positive progress after updating the 'current' from 'next'
 						FuzzyDate previousScheduleDate = currentScheduleDate;
@@ -756,13 +778,13 @@ namespace Thinkage.MainBoss.Database {
 						#region Store trigger point information in Detail record
 						SetWorkStartDate(currentDetailRow, currentWorkStartDate, currentWorkEndDate);
 						currentDetailRow.F.ScheduleDate = currentScheduleDate.ExpectedValue;
-						if(currentTriggeringMeterID.HasValue) {
+						if (currentTriggeringMeterID.HasValue) {
 							currentDetailRow.F.TriggeringMeterID = currentTriggeringMeterID;
 							currentDetailRow.F.ScheduleReading = currentScheduleReading.ExpectedValue;
 						}
 						#endregion
-						if(currentScheduleDate.ExpectedValue <= previousScheduleDate.ExpectedValue)
-							if(previousScheduleDate.UncertaintyExplanationKey == null && currentScheduleDate.UncertaintyExplanationKey != null)
+						if (currentScheduleDate.ExpectedValue <= previousScheduleDate.ExpectedValue)
+							if (previousScheduleDate.UncertaintyExplanationKey == null && currentScheduleDate.UncertaintyExplanationKey != null)
 								throw new GeneralException(currentScheduleDate.UncertaintyExplanationKey, currentScheduleDate.UncertaintyExplanationArguments);
 							else
 								throw new GeneralException(KB.K("Maintenance Timing interval is not sufficient to advance scheduled date by at least a day"));
@@ -782,8 +804,8 @@ namespace Thinkage.MainBoss.Database {
 						// Nevertheless, these three hard-wired availabilities are hidden under the cover of GetAvailability, which returns null once
 						// the index exceeds the count.
 						IScheduleAvailability availability;
-						for(int availabilityIndex = 0; (availability = GetAvailability(availabilityIndex, currentScheduleRow)) != null && currentWorkStartDate.ExpectedValue <= effectiveBatchEndDate; ++availabilityIndex) {
-							if(!availability.Inhibits && !availability.IsAssuredlyAvailable(currentWorkStartDate)) {
+						for (int availabilityIndex = 0; (availability = GetAvailability(availabilityIndex, currentScheduleRow)) != null && currentWorkStartDate.ExpectedValue <= effectiveBatchEndDate; ++availabilityIndex) {
+							if (!availability.Inhibits && !availability.IsAssuredlyAvailable(currentWorkStartDate)) {
 								// Defer due to this availability.
 								// Ask the availability when next available. Note that this can reduce the uncertain range if the start of the current range is not available but the end is,
 								// or in the opposite case it can widen the uncertain range.
@@ -792,13 +814,13 @@ namespace Thinkage.MainBoss.Database {
 								try {
 									deferredWorkStartDate = availability.NextAvailableOnOrAfter(currentWorkStartDate);
 								}
-								catch(AvailabilityException ex) {
+								catch (AvailabilityException ex) {
 									throw new GeneralException(ex, KB.K("Deferral error on availability '{0}'"), availability.IDText);
 								}
-								if(deferredWorkStartDate == currentWorkStartDate)
+								if (deferredWorkStartDate == currentWorkStartDate)
 									// No deferral actually took place because all the uncertainty boundaries are on 'available' dates
 									continue;
-								if(currentWorkStartDate.UncertaintyExplanationKey != null
+								if (currentWorkStartDate.UncertaintyExplanationKey != null
 									&& deferredWorkStartDate.UncertaintyExplanationKey == null
 									&& basedOnTentativeBasis) {
 									// The deferral removed any uncertainty from the date, but our basis is tentative so we want to preclude generating any work orders.
@@ -811,16 +833,16 @@ namespace Thinkage.MainBoss.Database {
 								currentDetailRow.F.DetailContext = availability.MessageText.Translate();
 
 								// Make a new detail row with the same schedule point but a deferred work start date.
-								currentDetailRow = WorkingDs.T.PMGenerationDetail.AddNewPMGenerationDetailRow();
+								currentDetailRow = WorkingDs.T.PMGenerationDetail.AddNewRow();
 								AddedDetailRows.Add(currentDetailRow);
 								currentDetailRow.F.PMGenerationBatchID = PMGenerationBatchID;
 								currentDetailRow.F.ScheduledWorkOrderID = currentScheduledWORow.F.Id;
 								currentDetailRow.F.Sequence = detailSequence++;
 
 								// Validate the new work interval before making it 'current'
-								if((membershipException = dsMB.Schema.T.PMGenerationDetail.F.WorkStartDate.EffectiveType.CheckMembership(deferredWorkStartDate.ExpectedValue)) != null)
+								if ((membershipException = dsMB.Schema.T.PMGenerationDetail.F.WorkStartDate.EffectiveType.CheckMembership(deferredWorkStartDate.ExpectedValue)) != null)
 									throw new GeneralException(membershipException, KB.K("The calculated Next Work Start Date {0} is invalid"), deferredWorkStartDate.ExpectedValue);
-								if((membershipException = dsMB.Schema.T.PMGenerationDetail.F.NextAvailableDate.EffectiveType.CheckMembership(deferredWorkStartDate.ExpectedValue + currentResolvedTemplateRow.F.Duration)) != null)
+								if ((membershipException = dsMB.Schema.T.PMGenerationDetail.F.NextAvailableDate.EffectiveType.CheckMembership(deferredWorkStartDate.ExpectedValue + currentResolvedTemplateRow.F.Duration)) != null)
 									throw new GeneralException(membershipException, KB.K("The calculated Next Work End Date {0} is invalid"), deferredWorkStartDate.ExpectedValue + currentResolvedTemplateRow.F.Duration);
 								// Make it 'current'
 								currentWorkStartDate = deferredWorkStartDate;
@@ -828,34 +850,34 @@ namespace Thinkage.MainBoss.Database {
 								// Put the updated 'current' values into the new Detail row.
 								SetWorkStartDate(currentDetailRow, currentWorkStartDate, currentWorkEndDate);
 								currentDetailRow.F.ScheduleDate = currentScheduleDate.ExpectedValue;
-								if(currentTriggeringMeterID.HasValue) {
+								if (currentTriggeringMeterID.HasValue) {
 									currentDetailRow.F.ScheduleReading = currentScheduleReading.ExpectedValue;
 									currentDetailRow.F.TriggeringMeterID = currentTriggeringMeterID;
 								}
 							}
 						}
 						#endregion
-						if(currentWorkStartDate.ExpectedValue > effectiveBatchEndDate) {
+						if (currentWorkStartDate.ExpectedValue > effectiveBatchEndDate) {
 							currentDetailRow.F.DetailType = (sbyte)DatabaseEnums.PMType.SchedulingTerminated;
 							break;
 						}
 						#region Check for inhibiting on finalized work start date
 						// The work might be "available" to deferring availabilities on the work start date and this date does not exceed the ActualBatchEndDate.
 						// Do inhibits
-						for(short availabilityIndex = 0; (availability = GetAvailability(availabilityIndex, currentScheduleRow)) != null; ++availabilityIndex)
-							if(availability.Inhibits && !availability.IsAssuredlyAvailable(currentWorkStartDate))
+						for (short availabilityIndex = 0; (availability = GetAvailability(availabilityIndex, currentScheduleRow)) != null; ++availabilityIndex)
+							if (availability.Inhibits && !availability.IsAssuredlyAvailable(currentWorkStartDate))
 								break;
 						#endregion
 						#region Record disposition as Inhibited or some form of MakeWorkOrder
 						// If the work start date is uncertain we have to poison the SWO so future work orders cannot be made even if something like a seasonal deferral firms up the date.
-						if(currentWorkStartDate.UncertaintyExplanationKey != null)
+						if (currentWorkStartDate.UncertaintyExplanationKey != null)
 							basedOnTentativeBasis = true;
-						if(availability != null) {
+						if (availability != null) {
 							// 'availability' inhibits the work order. If the date is not firm this cannot become eligible to be a "current" detail record.
 							currentDetailType = DatabaseEnums.PMType.Inhibited;
 							currentDetailRow.F.DetailContext = availability.MessageText.Translate();
 						}
-						else if(currentWorkStartDate.UncertaintyExplanationKey == null) {
+						else if (currentWorkStartDate.UncertaintyExplanationKey == null) {
 							// Made it this far and available - make a workorder and advance to next schedule point.
 							if (lastMakeWorkOrderRow != null && lastMakeWorkOrderRow.F.WorkStartDate == currentWorkStartDate.ExpectedValue) {
 								lastMakeWorkOrderRow.F.DetailType = (sbyte)DatabaseEnums.PMType.MakeSharedWorkOrder;
@@ -873,7 +895,7 @@ namespace Thinkage.MainBoss.Database {
 						currentWorkOrderID = null;
 						#endregion
 						#region Make the next Detail row
-						currentDetailRow = WorkingDs.T.PMGenerationDetail.AddNewPMGenerationDetailRow();
+						currentDetailRow = WorkingDs.T.PMGenerationDetail.AddNewRow();
 						AddedDetailRows.Add(currentDetailRow);
 						currentDetailRow.F.PMGenerationBatchID = PMGenerationBatchID;
 						currentDetailRow.F.ScheduledWorkOrderID = currentScheduledWORow.F.Id;
@@ -906,36 +928,271 @@ namespace Thinkage.MainBoss.Database {
 				}
 			}
 			progress.Update(KB.K("Completing generation"));
-			if(resultMessage != null && validationErrorCount > 0) {
+			if (resultMessage != null && validationErrorCount > 0) {
 				resultMessage.AppendLine(KB.K("All errors may also be reviewed in the 'Errors' tab.").Translate());
 				resultMessage.Insert(0, Environment.NewLine);
 				resultMessage.Insert(0, Environment.NewLine);
-				if(validationErrorCount == 1)
+				if (validationErrorCount == 1)
 					resultMessage.Insert(0, KB.K("There is one error.").Translate());
 				else
 					resultMessage.Insert(0, Strings.Format(KB.K("There are {0} errors."), validationErrorCount));
 			}
 		}
+#if LATER
+		// The goal here is to separate the steps in PM scheduling into a few steps none of which actually interact with
+		// the PMGenerationDetail record itself, or at least only do so conditionally (on such a record existing)
+		// We want to be able to call this/these methods starting with a single basis state and get the full gory detailed
+		// explanation of the outcome (to the next WO/Inhibit/Error). This would not include the "end of scheduling period" check,
+		// or at least such a check would be disabled. Perhaps there should be some sort of loop limiting to prevent an infinite deferral
+		// loop, but I don't think that can happen.
+		//
+		// Perhaps all the state should be encapsulated into a struct or class.
+		private void CalculateNextWorkStarteDate(
+			dsMB.ScheduleRow currentScheduleRow,
+			dsMB.ScheduledWorkOrderRow currentScheduledWORow,
+			dsMB.ResolvedWorkOrderTemplateRow currentResolvedTemplateRow,
+			Dictionary<Guid, Guid> meterMapping,
+			Guid? currentWorkOrderID,
+			ref FuzzyReading currentScheduleReading,
+			ref Guid? currentTriggeringMeterID,
+			ref FuzzyDate currentScheduleDate,
+			ref FuzzyDate currentWorkStartDate,
+			ref FuzzyDate currentWorkEndDate,
+			DatabaseEnums.PMType currentDetailType,
+			ref bool basedOnTentativeBasis) {
+			#region Calculate basis date for scheduling
+			// Calculate when the next schedule point is, based on the scheduling interval plus the basis from the current row information.
+			FuzzyDate basisScheduleDate = currentScheduleDate;
+			if (basisScheduleDate.UncertaintyExplanationKey != null) {
+				basisScheduleDate.UncertaintyExplanationKey = KB.K("Based on previous tentative schedule date");
+				basisScheduleDate.UncertaintyExplanationArguments = null;
+			}
+			FuzzyDate basisWorkStartDate = currentWorkStartDate;
+			if (basisWorkStartDate.UncertaintyExplanationKey != null) {
+				basisWorkStartDate.UncertaintyExplanationKey = KB.K("Based on previous tentative schedule date");
+				basisWorkStartDate.UncertaintyExplanationArguments = null;
+			}
+			FuzzyDate basisWorkEndDate = currentWorkEndDate;
+			if (basisWorkEndDate.UncertaintyExplanationKey != null) {
+				basisWorkEndDate.UncertaintyExplanationKey = KB.K("Based on previous tentative schedule date");
+				basisWorkEndDate.UncertaintyExplanationArguments = null;
+			}
+
+			// First, find a basisDate based on the rescheduling algorithm being either the trigger, work start, or work end.
+			// For the latter two cases the date may be marked as tentative unless a WO really exists and it no longer affects scheduling.
+			// TODO: The code from the start of this for(;;) up to the end of the following switch statement should be put before the head of the loop and streamlined based only on the seed row,
+			// and also should be placed at the bottom of the loop and streamlined for only the possible detail types encountered there (Inhibit or Make/Predict(Shared)WorkOrder).
+			// Then currentDetailType and currentWorkOrderID would no longer be needed and the code would be clearer because each iteration of the loop starts with the three basis dates set.
+			// Maybe also the basis/current/new/next variable names could be made clearer as well.
+			switch (currentDetailType) {
+			case DatabaseEnums.PMType.PredictedWorkOrder:
+			case DatabaseEnums.PMType.MakeWorkOrder:
+			case DatabaseEnums.PMType.MakeSharedWorkOrder:
+			case DatabaseEnums.PMType.MakeUnscheduledWorkOrder:
+				// If the next schedule is based on work start/end date check if there is a real WO. If so obtain updated work start/end from it.
+				// Also mark the date tentative if the WO dates can still change.
+				//
+				// It could be argued that detail record referencing a WO that !AffectsFuturePMGeneration (i.e. a voided WO) should not
+				// be eligible to become a current detail record and thus a schedule basis. But that is not sufficient to "undo" a Commit (for instance
+				// it will not let you undo an Inhibit record). Thus the records we look at *can* reference !AffectsFuturePMGeneration wo's so we must check for them.
+				if ((DatabaseEnums.RescheduleBasisAlgorithm)currentScheduledWORow.F.RescheduleBasisAlgorithm != DatabaseEnums.RescheduleBasisAlgorithm.FromScheduleBasis) {
+					if (currentWorkOrderID.HasValue) {
+						dsMB.WorkOrderRow woRow = (dsMB.WorkOrderRow)LookupDs.T.WorkOrder.Rows.Find(currentWorkOrderID.Value);
+						basisWorkStartDate = woRow.F.StartDateEstimate;
+						basisWorkEndDate = woRow.F.EndDateEstimate + WorkDurationEpsilon;
+						if (!woRow.CurrentWorkOrderStateHistoryIDParentRow.WorkOrderStateIDParentRow.F.CanModifyOperationalFields
+								|| !woRow.CurrentWorkOrderStateHistoryIDParentRow.WorkOrderStateIDParentRow.F.AffectsFuturePMGeneration)
+							break;
+						var tentativeMessageKey = KB.K("Work Order {0} start/end date subject to change");
+						var tentativeMessageArgs = new object[] { woRow.F.Number };
+						// TODO: Setting min to the current date here is not really correct; we should perhaps be using some date from the work order.
+						basisWorkStartDate.SetFutureIndefinite(currentDateOnly, tentativeMessageKey, tentativeMessageArgs);
+						basisWorkEndDate.SetFutureIndefinite(currentDateOnly, tentativeMessageKey, tentativeMessageArgs);
+					}
+					else {
+						// TODO: base this decision on the initial WO state of the WO that would be generated.
+						var tentativeMessageKey = KB.K("Previous Work Order has not been generated yet so start/end date subject to change");
+						basisWorkStartDate.SetFutureIndefinite(currentDateOnly, tentativeMessageKey);
+						basisWorkEndDate.SetFutureIndefinite(currentDateOnly, tentativeMessageKey);
+					}
+					basedOnTentativeBasis = true;
+				}
+				break;
+			case DatabaseEnums.PMType.ManualReschedule:
+				if (currentTriggeringMeterID.HasValue) {
+					// TODO: No one creates these right now; only calendar-based ManualReschedules are used.
+					// This is to handle meter-based manual reschedules. We ignore the date stored in these records
+					// Calculate a corrected basis date by re-predicting back from the meter reading. This way any calendar-based periodicity
+					// as well as any periodicities on other meters will have a more correct date to work from, in case the meter information has changed
+					// since the ManualReschedule record was created.
+					basisScheduleDate = MeterDatePredictor.Predict(currentTriggeringMeterID.Value, currentScheduleReading);
+					basisWorkStartDate = basisScheduleDate;
+					basisWorkEndDate = basisScheduleDate;
+				}
+				break;
+			case DatabaseEnums.PMType.Inhibited:
+				break;
+			}
+
+			FuzzyDate basisDate;
+			switch ((DatabaseEnums.RescheduleBasisAlgorithm)currentScheduledWORow.F.RescheduleBasisAlgorithm) {
+			case DatabaseEnums.RescheduleBasisAlgorithm.FromScheduleBasis:
+				basisDate = basisScheduleDate;
+				break;
+			case DatabaseEnums.RescheduleBasisAlgorithm.FromWorkOrderStartDate:
+				basisDate = basisWorkStartDate;
+				break;
+			case DatabaseEnums.RescheduleBasisAlgorithm.FromWorkOrderEndDate:
+				basisDate = basisWorkEndDate;
+				break;
+			default:
+				throw new GeneralException(KB.K("Unknown timing basis algorithm {0}"), currentScheduledWORow.F.RescheduleBasisAlgorithm);
+			}
+
+			#endregion
+			#region Calculate new trigger point as min(basis+each interval)
+			// We now have a basis date. Find the next date from that. We have to loop over each of the periodicities and find the one that generates
+			// the earliest trigger date. However, if any of them cause estimated dates, we have to estimate everything.
+			IEnumerable<dsMB.PeriodicityRow> currentPeriodicityRows = currentScheduleRow.GetPeriodicityScheduleIDChildRows();
+			if (Enumerable.Count(currentPeriodicityRows) == 0)
+				throw new GeneralException(KB.K("No intervals are defined for the Maintenance Timing '{0}'"), currentScheduleRow.F.Code);
+			FuzzyDate nextScheduleDate = null;
+			FuzzyReading nextScheduleReading = null;
+			Guid? nextTriggeringMeterID = null;
+			foreach (dsMB.PeriodicityRow periodicity in currentPeriodicityRows) {
+				FuzzyDate thisScheduleDate;
+				FuzzyReading thisScheduleReading = 0;
+				Guid? thisTriggeringMeterID = null;
+
+				if (periodicity.F.MeterClassID.HasValue) {
+					// This is a meter-based periodicity. Get the ID of the referenced meter
+					Guid referencedMeterID = meterMapping[periodicity.F.Id];
+					// advance from reading estimate on basisDate by the periodicity's interval and estimate a new schedule date, possibly marking it tentative
+					// If scheduling is FromScheduleBasis and the meter for this periodicity is the same as the one from the current record information,
+					// ignore the basis date and start immediately with the current record's reading.
+					if ((DatabaseEnums.RescheduleBasisAlgorithm)currentScheduledWORow.F.RescheduleBasisAlgorithm == DatabaseEnums.RescheduleBasisAlgorithm.FromScheduleBasis
+						&& currentTriggeringMeterID == referencedMeterID)
+						// The meters match and it is the Trigger point on which the next should be based,
+						// so use the reading as it stands in the record rather than estimating it from the Trigger date.
+						// TODO: If this becomes the next schedule date we should clear any tentativeMessageKey.
+						thisScheduleReading = currentScheduleReading;
+					else
+						// The basis record is for a different meter or is based on WO start/end or manually-entered date.
+						// Predict what reading this meter would have had on the basis date.
+						thisScheduleReading = MeterReadingPredictor.Predict(referencedMeterID, basisDate);
+					// Advance by the meter interval from the periodicity
+					try {
+						thisScheduleReading += periodicity.F.Interval;
+					}
+					catch (System.OverflowException) {
+						throw new GeneralException(KB.K("Overflow occurred adding the interval {0} to meter reading {1}"), periodicity.F.Interval, thisScheduleReading.ExpectedValue);
+					}
+					// Map that back to a date
+					thisScheduleDate = MeterDatePredictor.Predict(referencedMeterID, thisScheduleReading);
+					// Remember that we used this particular meter as a trigger.
+					thisTriggeringMeterID = referencedMeterID;
+				}
+				else
+					switch ((DatabaseEnums.CalendarUnit)periodicity.F.CalendarUnit) {
+					// This is a calendar-based periodicity, just add the interval to the basisDate.
+					case DatabaseEnums.CalendarUnit.Days:
+						// advance from basisDate by next's schedule's interval, possibly marking it tentative
+						try {
+							thisScheduleDate = basisDate.AddDays(periodicity.F.Interval);
+						}
+						catch (System.OverflowException) {
+							throw new GeneralException(KB.K("Overflow occurred adding {0} days to basis date {1}"), periodicity.F.Interval, basisDate.ExpectedValue);
+						}
+						break;
+					case DatabaseEnums.CalendarUnit.Months:
+						// advance from basisDate by next's schedule's interval, possibly marking it tentative
+						try {
+							thisScheduleDate = basisDate.AddMonths(periodicity.F.Interval);
+						}
+						catch (System.OverflowException) {
+							throw new GeneralException(KB.K("Overflow occurred adding {0} months to basis date {1}"), periodicity.F.Interval, basisDate.ExpectedValue);
+						}
+						break;
+					default:
+						throw new GeneralException(KB.K("Unknown unit for period in Maintenance Timing '{0}'"), currentScheduleRow.F.Code);
+					}
+				if (nextScheduleDate == null || thisScheduleDate.DefinitelyBefore(nextScheduleDate)) {
+					// 'this' schedule date is definitely before the (so far) 'next' schedule date (if any), so keep only the information from the former.
+					nextScheduleDate = thisScheduleDate;
+					nextScheduleReading = thisScheduleReading;
+					nextTriggeringMeterID = thisTriggeringMeterID;
+				}
+				else if (thisScheduleDate.PossiblyBefore(nextScheduleDate)) {
+					// 'this' schedule date is *possibly* before the (so far) 'next' schedule date, so build a new fuzzy date taking the min of each of the corresponding values.
+					nextScheduleDate = FuzzyDate.Min(nextScheduleDate, thisScheduleDate);
+					// Since we are uncertain as to the basis for the trigger, we must forget about any basis meter reading.
+					nextScheduleReading = null;
+					nextTriggeringMeterID = null;
+				}
+			}
+			#endregion
+			#region Crowd the Excpected, min, and max values of nextScheduleDate to fit into our TypeInfo.
+			var scheduleDateType = (Libraries.TypeInfo.DateTimeTypeInfo)dsMB.Schema.T.PMGenerationDetail.F.ScheduleDate.EffectiveType;
+			var nextAvailableDateType = (Libraries.TypeInfo.DateTimeTypeInfo)dsMB.Schema.T.PMGenerationDetail.F.NextAvailableDate.EffectiveType;
+			// First we crowd the ExpectedValue, which requires making a new FuzzyDate.
+			if (nextScheduleDate.ExpectedValue < (DateTime)scheduleDateType.NativeMinLimit(typeof(DateTime)))
+				nextScheduleDate = new FuzzyDate((DateTime)scheduleDateType.NativeMinLimit(typeof(DateTime)), nextScheduleDate.InclusiveMinValue, nextScheduleDate.ExclusiveMaxValue, nextScheduleDate.UncertaintyExplanationKey, nextScheduleDate.UncertaintyExplanationArguments);
+			if (nextScheduleDate.ExpectedValue + currentResolvedTemplateRow.F.Duration > (DateTime)nextAvailableDateType.NativeMaxLimit(typeof(DateTime)))
+				nextScheduleDate = new FuzzyDate((DateTime)nextAvailableDateType.NativeMaxLimit(typeof(DateTime)) - currentResolvedTemplateRow.F.Duration, nextScheduleDate.InclusiveMinValue, nextScheduleDate.ExclusiveMaxValue, nextScheduleDate.UncertaintyExplanationKey, nextScheduleDate.UncertaintyExplanationArguments);
+			// Crowd the fuzzy limits as well. These can be changed in situ.
+			if (nextScheduleDate.InclusiveMinValue.HasValue) {
+				if (nextScheduleDate.InclusiveMinValue.Value < (DateTime)scheduleDateType.NativeMinLimit(typeof(DateTime)))
+					nextScheduleDate.InclusiveMinValue = (DateTime)scheduleDateType.NativeMinLimit(typeof(DateTime));
+				if (nextScheduleDate.InclusiveMinValue.Value + currentResolvedTemplateRow.F.Duration > (DateTime)nextAvailableDateType.NativeMaxLimit(typeof(DateTime)))
+					nextScheduleDate.InclusiveMinValue = (DateTime)nextAvailableDateType.NativeMaxLimit(typeof(DateTime)) - currentResolvedTemplateRow.F.Duration;
+			}
+			if (nextScheduleDate.ExclusiveMaxValue.HasValue) {
+				if (nextScheduleDate.ExclusiveMaxValue.Value < (DateTime)scheduleDateType.NativeMinLimit(typeof(DateTime)))
+					nextScheduleDate.ExclusiveMaxValue = (DateTime)scheduleDateType.NativeMinLimit(typeof(DateTime));
+				if (nextScheduleDate.ExclusiveMaxValue.Value + currentResolvedTemplateRow.F.Duration > (DateTime)nextAvailableDateType.NativeMaxLimit(typeof(DateTime)))
+					nextScheduleDate.ExclusiveMaxValue = (DateTime)nextAvailableDateType.NativeMaxLimit(typeof(DateTime)) - currentResolvedTemplateRow.F.Duration;
+			}
+			#endregion
+			#region Validate that the 'next' values can fit in the SQL fields of the Detail record before making them 'current'
+			System.Exception membershipException;
+			if ((membershipException = dsMB.Schema.T.PMGenerationDetail.F.ScheduleDate.EffectiveType.CheckMembership(nextScheduleDate.ExpectedValue)) != null)
+				throw new GeneralException(membershipException, KB.K("The calculated Next Schedule Date {0} is invalid"), nextScheduleDate.ExpectedValue);
+			if ((membershipException = dsMB.Schema.T.PMGenerationDetail.F.NextAvailableDate.EffectiveType.CheckMembership(nextScheduleDate.ExpectedValue + currentResolvedTemplateRow.F.Duration)) != null)
+				throw new GeneralException(membershipException, KB.K("The calculated Next Work End Date {0} is invalid"), nextScheduleDate.ExpectedValue + currentResolvedTemplateRow.F.Duration);
+			if (nextTriggeringMeterID.HasValue && (membershipException = dsMB.Schema.T.PMGenerationDetail.F.ScheduleReading.EffectiveType.CheckMembership(nextScheduleReading.ExpectedValue)) != null)
+				throw new GeneralException(membershipException, KB.K("The calculated Next Schedule Reading {0} is invalid"), nextScheduleReading.ExpectedValue);
+			// Remember the old scheduled date so we can check for positive progress after updating the 'current' from 'next'
+			FuzzyDate previousScheduleDate = currentScheduleDate;
+			#endregion
+			#region Make the new trigger point be the current schedule date and (tentative) work start date
+			currentScheduleDate = nextScheduleDate;
+			currentWorkStartDate = nextScheduleDate;
+			currentWorkEndDate = nextScheduleDate + currentResolvedTemplateRow.F.Duration;
+			currentScheduleReading = nextScheduleReading;
+			currentTriggeringMeterID = nextTriggeringMeterID;
+			#endregion
+		}
+#endif
 		private static void SetWorkStartDate(dsMB.PMGenerationDetailRow detailRow, FuzzyDate workStartDate, FuzzyDate workEndDate) {
 			detailRow.F.WorkStartDate = workStartDate.ExpectedValue;
 			detailRow.F.NextAvailableDate = workEndDate.ExpectedValue;
 			detailRow.F.FirmScheduleData = workStartDate.UncertaintyExplanationKey == null;
-			if(workStartDate.UncertaintyExplanationKey != null) {
+			if (workStartDate.UncertaintyExplanationKey != null) {
 				var explanation = new System.Text.StringBuilder();
-				if(workStartDate.UncertaintyExplanationArguments != null)
+				if (workStartDate.UncertaintyExplanationArguments != null)
 					Strings.Append(explanation, workStartDate.UncertaintyExplanationKey, workStartDate.UncertaintyExplanationArguments);
 				else
 					explanation.Append(workStartDate.UncertaintyExplanationKey.Translate());
-				if(workStartDate.InclusiveMinValue != workStartDate.ExpectedValue
+				if (workStartDate.InclusiveMinValue != workStartDate.ExpectedValue
 					|| workStartDate.ExclusiveMaxValue != workStartDate.ExpectedValue + SchedulingEpsilon) {
 					explanation.AppendLine();
-					if(workStartDate.InclusiveMinValue == null)
-						if(workStartDate.ExclusiveMaxValue == null)
+					if (workStartDate.InclusiveMinValue == null)
+						if (workStartDate.ExclusiveMaxValue == null)
 							Strings.Append(explanation, KB.K("Work Start Date could potentially have any value"));
 						else
 							Strings.Append(explanation, KB.K("Work Start Date could potentially have any value before {0}"), workStartDate.ExclusiveMaxValue.Value);
 					else
-						if(workStartDate.ExclusiveMaxValue == null)
+						if (workStartDate.ExclusiveMaxValue == null)
 						Strings.Append(explanation, KB.K("Work Start Date could potentially have any value on or after {0}"), workStartDate.InclusiveMinValue.Value);
 					else
 						Strings.Append(explanation, KB.K("Work Start Date could potentially have any value from {0} up to but not including {1}"), workStartDate.InclusiveMinValue.Value, workStartDate.ExclusiveMaxValue.Value);
@@ -950,8 +1207,7 @@ namespace Thinkage.MainBoss.Database {
 		/// An IAvailability which indicates how to react to unavailability: Inhibit or not (defer)
 		/// </summary>
 		public interface IScheduleAvailability : IAvailability {
-			bool Inhibits
-			{
+			bool Inhibits {
 				get;
 			}
 		}
@@ -961,28 +1217,27 @@ namespace Thinkage.MainBoss.Database {
 			public WeekdayAvailability(dsMB.ScheduleRow scheduleRow) {
 				Inhibits = scheduleRow.F.InhibitWeek;
 				AvailableWeekDayMask = 0;
-				if(scheduleRow.F.EnableSunday)
+				if (scheduleRow.F.EnableSunday)
 					AvailableWeekDayMask |= 1 << 0;
-				if(scheduleRow.F.EnableMonday)
+				if (scheduleRow.F.EnableMonday)
 					AvailableWeekDayMask |= 1 << 1;
-				if(scheduleRow.F.EnableTuesday)
+				if (scheduleRow.F.EnableTuesday)
 					AvailableWeekDayMask |= 1 << 2;
-				if(scheduleRow.F.EnableWednesday)
+				if (scheduleRow.F.EnableWednesday)
 					AvailableWeekDayMask |= 1 << 3;
-				if(scheduleRow.F.EnableThursday)
+				if (scheduleRow.F.EnableThursday)
 					AvailableWeekDayMask |= 1 << 4;
-				if(scheduleRow.F.EnableFriday)
+				if (scheduleRow.F.EnableFriday)
 					AvailableWeekDayMask |= 1 << 5;
-				if(scheduleRow.F.EnableSaturday)
+				if (scheduleRow.F.EnableSaturday)
 					AvailableWeekDayMask |= 1 << 6;
 			}
 			#region IAvailability Members
-
 			public bool IsAssuredlyAvailable(FuzzyDate d) {
-				if(d.InclusiveMinValue == null || d.ExclusiveMaxValue == null)
+				if (d.InclusiveMinValue == null || d.ExclusiveMaxValue == null)
 					return false;
 				int daysMask;
-				if(d.ExclusiveMaxValue.Value >= d.InclusiveMinValue.Value.AddDays(7))
+				if (d.ExclusiveMaxValue.Value >= d.InclusiveMinValue.Value.AddDays(7))
 					// The uncertainty spans 7 or more days so we use all weekdays.
 					daysMask = 0x7F;
 				else {
@@ -997,52 +1252,46 @@ namespace Thinkage.MainBoss.Database {
 
 			public FuzzyDate NextAvailableOnOrAfter(FuzzyDate d) {
 				int wday_mask = AvailableWeekDayMask;
-				if(d.InclusiveMinValue == null || wday_mask == 0x7F)
+				if (d.InclusiveMinValue == null || wday_mask == 0x7F)
 					return d;
-				if((wday_mask & 0x7f) == 0)// never available ?
+				if ((wday_mask & 0x7f) == 0)// never available ?
 					throw new AvailabilityException(KB.K("week day is never available"));
 				DateTime mind = d.InclusiveMinValue.Value;
 				int wday = (int)mind.DayOfWeek;
-				while((wday_mask & (1 << wday)) == 0) {
+				while ((wday_mask & (1 << wday)) == 0) {
 					mind = mind.AddDays(1);
-					if(++wday > 6)
+					if (++wday > 6)
 						wday = 0;
 				}
-				if(d.ExclusiveMaxValue != null && mind.AddDays(1) >= d.ExclusiveMaxValue.Value)
+				if (d.ExclusiveMaxValue != null && mind.AddDays(1) >= d.ExclusiveMaxValue.Value)
 					return new FuzzyDate(mind);
 				return new FuzzyDate(mind > d.ExpectedValue ? mind : d.ExpectedValue, mind, d.ExclusiveMaxValue, d.UncertaintyExplanationKey, d.UncertaintyExplanationArguments);
 			}
 
-			public string IDText
-			{
-				get
-				{
+			public string IDText {
+				get {
 					return KB.K("week day").Translate();
 				}
 			}
-			public Key MessageText
-			{
-				get
-				{
+			public Key MessageText {
+				get {
 					return KB.K("The proposed Work Start Date falls on a weekday disabled by the Schedule");
 				}
 			}
 
-			public bool Inhibits
-			{
+			public bool Inhibits {
 				get; private set;
 			}
 
 			private readonly ushort AvailableWeekDayMask;
 			#endregion
 		}
-
 		#endregion
 		#region -   SeasonalAvailability
 		private class SeasonalAvailability : IScheduleAvailability {
 			public SeasonalAvailability(dsMB.ScheduleRow scheduleRow) {
 				Inhibits = scheduleRow.F.InhibitSeason;
-				if(scheduleRow.F.SeasonEnd.HasValue && scheduleRow.F.SeasonStart.HasValue) {
+				if (scheduleRow.F.SeasonEnd.HasValue && scheduleRow.F.SeasonStart.HasValue) {
 					int startDays = scheduleRow.F.SeasonStart.Value.Days;
 					int endDays = scheduleRow.F.SeasonEnd.Value.Days;
 					SeasonAlwaysAvailable = (startDays == 0 && endDays == 365) || (startDays == endDays + 1);
@@ -1057,28 +1306,28 @@ namespace Thinkage.MainBoss.Database {
 			private readonly DateTime SeasonStartIn2000;
 			private readonly DateTime SeasonEndIn2000;
 			public bool IsAssuredlyAvailable(FuzzyDate d) {
-				if(SeasonAlwaysAvailable)
+				if (SeasonAlwaysAvailable)
 					return true;
-				if(d.InclusiveMinValue == null || d.ExclusiveMaxValue == null)
+				if (d.InclusiveMinValue == null || d.ExclusiveMaxValue == null)
 					return false;
 
 				DateTime mind = d.InclusiveMinValue.Value;
 				DateTime maxd = d.ExclusiveMaxValue.Value.AddDays(-1);
 				int minyear = mind.Year;
 				int maxyear = maxd.Year;
-				if(SeasonStartIn2000 <= SeasonEndIn2000) {
+				if (SeasonStartIn2000 <= SeasonEndIn2000) {
 					// The season does not span the year boundary, and excludes (at least) either Dec 31st or Jan 1st
-					if(maxyear > minyear)
+					if (maxyear > minyear)
 						// The uncertainty does span the year boundary, including both Dec 31st and Jan 1st, at least one of which is out of season.
 						return false;
 					return SeasonStartIn2000.AddYears(minyear - 2000) <= mind && maxd <= SeasonEndIn2000.AddYears(minyear - 2000);
 				}
 				else {
 					// The season spans the year boundary, including both Dec 31st and Jan 1st.
-					if(maxyear == minyear)
+					if (maxyear == minyear)
 						// The uncertainty is all in a single year
 						return SeasonStartIn2000.AddYears(minyear - 2000) <= mind || maxd <= SeasonEndIn2000.AddYears(minyear - 2000);
-					if(maxyear > minyear + 1)
+					if (maxyear > minyear + 1)
 						// The uncertainty spans multiple years.
 						return false;
 					// The uncertainty spans the year boundary.
@@ -1086,41 +1335,36 @@ namespace Thinkage.MainBoss.Database {
 				}
 			}
 			public FuzzyDate NextAvailableOnOrAfter(FuzzyDate d) {
-				if(d.InclusiveMinValue == null || SeasonAlwaysAvailable)
+				if (d.InclusiveMinValue == null || SeasonAlwaysAvailable)
 					return d;
 
 				DateTime mind = d.InclusiveMinValue.Value;
 				int minyear = mind.Year;
-				if(SeasonStartIn2000 <= SeasonEndIn2000) {
-					if(mind < SeasonStartIn2000.AddYears(minyear - 2000))
+				if (SeasonStartIn2000 <= SeasonEndIn2000) {
+					if (mind < SeasonStartIn2000.AddYears(minyear - 2000))
 						mind = SeasonStartIn2000.AddYears(minyear - 2000);
-					else if(mind > SeasonEndIn2000.AddYears(minyear - 2000))
+					else if (mind > SeasonEndIn2000.AddYears(minyear - 2000))
 						mind = SeasonStartIn2000.AddYears(minyear + 1 - 2000);
 				}
 				else {
-					if(mind < SeasonStartIn2000.AddYears(minyear - 2000) && mind > SeasonEndIn2000.AddYears(minyear - 2000))
+					if (mind < SeasonStartIn2000.AddYears(minyear - 2000) && mind > SeasonEndIn2000.AddYears(minyear - 2000))
 						mind = SeasonStartIn2000.AddYears(minyear - 2000);
 				}
-				if(d.ExclusiveMaxValue != null && mind.AddDays(1) >= d.ExclusiveMaxValue.Value)
+				if (d.ExclusiveMaxValue != null && mind.AddDays(1) >= d.ExclusiveMaxValue.Value)
 					return new FuzzyDate(mind);
 				return new FuzzyDate(mind > d.ExpectedValue ? mind : d.ExpectedValue, mind, d.ExclusiveMaxValue, d.UncertaintyExplanationKey, d.UncertaintyExplanationArguments);
 			}
-			public string IDText
-			{
-				get
-				{
+			public string IDText {
+				get {
 					return KB.K("season").Translate();
 				}
 			}
-			public Key MessageText
-			{
-				get
-				{
+			public Key MessageText {
+				get {
 					return KB.K("The proposed Work Start Date is in the off-season defined by the Schedule");
 				}
 			}
-			public bool Inhibits
-			{
+			public bool Inhibits {
 				get; private set;
 			}
 			#endregion
@@ -1128,7 +1372,7 @@ namespace Thinkage.MainBoss.Database {
 		#endregion
 		#region -   CurrentDateAvailability
 		private class CurrentDateAvailability : IScheduleAvailability {
-			DateTime currentDate;
+			readonly DateTime currentDate;
 			public CurrentDateAvailability(dsMB.ScheduleRow scheduleRow, DateTime currentDate) {
 				Inhibits = scheduleRow.F.InhibitIfOverdue;
 				this.currentDate = currentDate;
@@ -1142,27 +1386,22 @@ namespace Thinkage.MainBoss.Database {
 
 			public FuzzyDate NextAvailableOnOrAfter(FuzzyDate d) {
 				DateTime mind = d.InclusiveMinValue.HasValue && d.InclusiveMinValue.Value > currentDate ? d.InclusiveMinValue.Value : currentDate;
-				if(d.ExclusiveMaxValue != null && mind.AddDays(1) >= d.ExclusiveMaxValue.Value)
+				if (d.ExclusiveMaxValue != null && mind.AddDays(1) >= d.ExclusiveMaxValue.Value)
 					return new FuzzyDate(mind);
 				return new FuzzyDate(mind > d.ExpectedValue ? mind : d.ExpectedValue, mind, d.ExclusiveMaxValue, d.UncertaintyExplanationKey, d.UncertaintyExplanationArguments);
 			}
 
-			public string IDText
-			{
-				get
-				{
+			public string IDText {
+				get {
 					return KB.K("current date").Translate();
 				}
 			}
-			public Key MessageText
-			{
-				get
-				{
+			public Key MessageText {
+				get {
 					return KB.K("The proposed Work Start Date is before the date the Maintenance Batch was generated");
 				}
 			}
-			public bool Inhibits
-			{
+			public bool Inhibits {
 				get; private set;
 			}
 			#endregion
@@ -1173,16 +1412,16 @@ namespace Thinkage.MainBoss.Database {
 		// at Commit time in the event multiple workorders are deemed necessary by the scheduling algorithm (for example, playing catchup for a generation
 		// that hasn't been done for several months
 		private IScheduleAvailability GetAvailability(int index, dsMB.ScheduleRow currentScheduleRow) {
-			switch(index) {
-				case 0:
-					return new CurrentDateAvailability(currentScheduleRow, currentDateOnly);
-				case 1:
-					return new SeasonalAvailability(currentScheduleRow);
-				case 2:
-					return new WeekdayAvailability(currentScheduleRow);
+			switch (index) {
+			case 0:
+				return new CurrentDateAvailability(currentScheduleRow, currentDateOnly);
+			case 1:
+				return new SeasonalAvailability(currentScheduleRow);
+			case 2:
+				return new WeekdayAvailability(currentScheduleRow);
 
-				default:
-					return null;
+			default:
+				return null;
 			}
 		}
 		#endregion
@@ -1207,117 +1446,110 @@ namespace Thinkage.MainBoss.Database {
 									.Or(new SqlExpression(dsMB.Path.T.PMGenerationDetail.F.DetailType).Eq((short)DatabaseEnums.PMType.MakeSharedWorkOrder))
 									.Or(new SqlExpression(dsMB.Path.T.PMGenerationDetail.F.DetailType).Eq((short)DatabaseEnums.PMType.MakeUnscheduledWorkOrder))
 								.And(new SqlExpression(dsMB.Path.T.PMGenerationDetail.F.PMGenerationBatchID).Eq(batchRow.F.Id));
-			// Sort in reverse by the work start date so we can allocate stock items in date order. A second sort key of SWO id makes sure
+			// Sort by the work start date so we can allocate stock items in date order. A second sort key of SWO id makes sure
 			// simultaneous WO's for the same SWO are handled all in sequence with no simultaneous WO's from other SWO's mixed in.
-			SortExpression sort = new SortExpression(dsMB.Path.T.PMGenerationDetail.F.WorkStartDate, SortExpression.SortOrder.Desc,
-									dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID, SortExpression.SortOrder.Desc);
+			SortExpression sort = new SortExpression(dsMB.Path.T.PMGenerationDetail.F.WorkStartDate, SortExpression.SortOrder.Asc,
+									dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID, SortExpression.SortOrder.Asc);
+			dsMB.PMGenerationDetailRow[] MakeWorkOrderRecords = WorkingDs.T.PMGenerationDetail.Rows.Select(filter, sort);
 			dsMB.WorkOrderRow lastWorkOrderRow = null; // for displaying workorder number of single workorders created
-			using(DataView MakeWorkOrderRecords = new DataView(WorkingDs.T.PMGenerationDetail, new ColumnExpressionUnparser().UnParse(filter),
-															sort.ToDataExpressionString(), DataViewRowState.CurrentRows)) {
-				uint WorkOrderCountEstimate = 0;
-				DateTime lastWOStart = DateTime.MaxValue;
-				Guid lastWOScheduledWorkOrderID = Guid.Empty;
-				// Count the number of workorders we will make, accounting for the MakeSharedWorkOrder records. This reduces the number of workorder numbers
-				// that we reserve to a reasonable value that matches what we are going to actually generate.
-				{
-					for(int i = MakeWorkOrderRecords.Count; --i >= 0;) {
-						dsMB.PMGenerationDetailRow dRow = (dsMB.PMGenerationDetailRow)MakeWorkOrderRecords[i].Row;
-						if(!(dRow.F.WorkStartDate == lastWOStart && dRow.F.ScheduledWorkOrderID == lastWOScheduledWorkOrderID)) {
-							++WorkOrderCountEstimate;
-							lastWOStart = dRow.F.WorkStartDate;
-							lastWOScheduledWorkOrderID = dRow.F.ScheduledWorkOrderID;
-						}
+
+			uint WorkOrderCountEstimate = 0;
+			DateTime lastWOStart = DateTime.MaxValue;
+			Guid lastWOScheduledWorkOrderID = Guid.Empty;
+
+			// Count the number of workorders we will make, accounting for the MakeSharedWorkOrder records. This reduces the number of workorder numbers
+			// that we reserve to a reasonable value that matches what we are going to actually generate.
+			foreach (dsMB.PMGenerationDetailRow dRow in MakeWorkOrderRecords)
+				if (!(dRow.F.WorkStartDate == lastWOStart && dRow.F.ScheduledWorkOrderID == lastWOScheduledWorkOrderID)) {
+					++WorkOrderCountEstimate;
+					lastWOStart = dRow.F.WorkStartDate;
+					lastWOScheduledWorkOrderID = dRow.F.ScheduledWorkOrderID;
+				}
+
+			woBuilder.PopulateLookupTables();
+			woBuilder.PopulateChildLookupTables();
+			woBuilder.SetCountEstimate(WorkOrderCountEstimate);
+			woBuilder.SpecifyRecordArguments(batchRow);
+
+			lastWOStart = DateTime.MaxValue;
+			lastWOScheduledWorkOrderID = Guid.Empty;
+			dsMB.WorkOrderRow lastWORow = null;
+			System.Exception lastWOException = null;
+			int currentWorkOrderCount = 1;
+			int successWorkOrderCount = 0;
+			int errorWorkOrderCount = 0;
+			foreach (dsMB.PMGenerationDetailRow dRow in MakeWorkOrderRecords) {
+				progress.Update(KB.T(Strings.Format(KB.K("Creating Work Order {0} of {1}"), currentWorkOrderCount, WorkOrderCountEstimate)));
+				DatabaseEnums.PMType oldType = (DatabaseEnums.PMType)dRow.F.DetailType;
+				try {
+					if (dRow.F.WorkStartDate == lastWOStart && dRow.F.ScheduledWorkOrderID == lastWOScheduledWorkOrderID) {
+						// We want to reuse the same WO, or the exception produced trying to create it.
+						if (lastWOException != null)
+							throw lastWOException;
 					}
-				}
+					else {
+						// We want a fresh WO. Find the related SWO row which contains the basic information required to make the WO.
+						dsMB.ScheduledWorkOrderRow SWORow = null;
+						// If this Commit is tied to a Generate call the SWO row will be in the LookupDs.
+						// Otherwise the SWO table will not even exist in the LookupDs and whoever called Generate must ensure the required row is in the WorkingDs.
+						if (LookupDs.T.ScheduledWorkOrder != null)
+							SWORow = LookupDs.T.ScheduledWorkOrder.Rows.Find(dRow.F.ScheduledWorkOrderID);
+						if (SWORow == null && WorkingDs.T.ScheduledWorkOrder != null)
+							SWORow = dRow.ScheduledWorkOrderIDParentRow;
+						if (SWORow == null)
+							// Our fetch failed to get the correct record. We got a Detail row without its parent SWO row.
+							throw new GeneralException(KB.K("Missing Unit Maintenance Plan data row"));
 
-				woBuilder.PopulateLookupTables();
-				woBuilder.PopulateChildLookupTables();
-				woBuilder.SetCountEstimate(WorkOrderCountEstimate);
-				woBuilder.SpecifyRecordArguments(batchRow);
-				// Process in reverse; if we change the detailType for an error, the row will vanish from our view, but we will still be able to process
-				// the next record. The View is pre-sorted by descending WorkStartDate so this means we actually make the WO's in ascending WorkStartDate order,
-				// giving them properly-ordered WO numbers and proper allocation of in-stock tangible resources.
-				lastWOStart = DateTime.MaxValue;
-				lastWOScheduledWorkOrderID = Guid.Empty;
-				dsMB.WorkOrderRow lastWORow = null;
-				System.Exception lastWOException = null;
-				int currentWorkOrderCount = 1;
-				int successWorkOrderCount = 0;
-				int errorWorkOrderCount = 0;
-				for(int i = MakeWorkOrderRecords.Count; --i >= 0;) {
-					dsMB.PMGenerationDetailRow dRow = (dsMB.PMGenerationDetailRow)MakeWorkOrderRecords[i].Row;
-					progress.Update(KB.T(Strings.Format(KB.K("Creating Work Order {0} of {1}"), currentWorkOrderCount, WorkOrderCountEstimate)));
-					DatabaseEnums.PMType oldType = (DatabaseEnums.PMType)dRow.F.DetailType;
-					try {
-						if(dRow.F.WorkStartDate == lastWOStart && dRow.F.ScheduledWorkOrderID == lastWOScheduledWorkOrderID) {
-							// We want to reuse the same WO, or the exception produced trying to create it.
-							if(lastWOException != null)
-								throw lastWOException;
-						}
-						else {
-							// We want a fresh WO. Find the related SWO row which contains the basic information required to make the WO.
-							dsMB.ScheduledWorkOrderRow SWORow = null;
-							// If this Commit is tied to a Generate call the SWO row will be in the LookupDs.
-							// Otherwise the SWO table will not even exist in the LookupDs and whoever called Generate must ensure the required row is in the WorkingDs.
-							if(LookupDs.T.ScheduledWorkOrder != null)
-								SWORow = (dsMB.ScheduledWorkOrderRow)LookupDs.T.ScheduledWorkOrder.RowFind(dRow.F.ScheduledWorkOrderID);
-							if(SWORow == null && WorkingDs.T.ScheduledWorkOrder != null)
-								SWORow = dRow.ScheduledWorkOrderIDParentRow;
-							if(SWORow == null)
-								// Our fetch failed to get the correct record. We got a Detail row without its parent SWO row.
-								throw new GeneralException(KB.K("Missing Unit Maintenance Plan data row"));
-
-							++currentWorkOrderCount;
-							lastWOException = null;
-							lastWOStart = dRow.F.WorkStartDate;
-							lastWOScheduledWorkOrderID = dRow.F.ScheduledWorkOrderID;
-							lastWORow = woBuilder.Create(SWORow, lastWOStart);
-							++successWorkOrderCount;
-							lastWorkOrderRow = lastWORow;
-						}
-						dRow.F.WorkOrderID = lastWORow.F.Id;
-						dRow.F.NextAvailableDate = lastWORow.F.EndDateEstimate + WorkDurationEpsilon;   // would not be filled into MakeUnscheduledWorkOrder records yet
+						++currentWorkOrderCount;
+						lastWOException = null;
+						lastWOStart = dRow.F.WorkStartDate;
+						lastWOScheduledWorkOrderID = dRow.F.ScheduledWorkOrderID;
+						lastWORow = woBuilder.Create(SWORow, lastWOStart);
+						++successWorkOrderCount;
+						lastWorkOrderRow = lastWORow;
 					}
-					catch(System.Exception e) {
-						if((DatabaseEnums.PMType)dRow.F.DetailType == DatabaseEnums.PMType.MakeUnscheduledWorkOrder)
-							// If it is a MakeUnscheduledWorkOrder record, just continue throwing the exception since we have no way to record the error anyway.
-							// Someday we may want to save the error and continue on these as well, or have a ctor arg indicating which way to do it.
-							throw;
-						dRow.F.DetailType = (sbyte)DatabaseEnums.PMType.ErrorMakingWorkOrder;
-						dRow.F.DetailContext = Thinkage.Libraries.Exception.FullMessage(e);
-						lastWOException = e;
-						lastWORow = null;
-						++errorWorkOrderCount;
-					}
-					CommittedDetailRows[dRow] = oldType;
+					dRow.F.WorkOrderID = lastWORow.F.Id;
+					dRow.F.NextAvailableDate = lastWORow.F.EndDateEstimate + WorkDurationEpsilon;   // would not be filled into MakeUnscheduledWorkOrder records yet
 				}
-				// Last step is to allocate the workorder numbers in the order the user desires
-				// TODO: make this sort order user selectable via some UI interface to select the primary, secondary, tertiary sorting order
-				// Sort by the work start date, followed by Subject
-				woBuilder.AssignWorkOrderNumbers(dsMB.Path.T.WorkOrder.F.StartDateEstimate, dsMB.Path.T.WorkOrder.F.Subject);
-
-				progress.Update(KB.K("Completing committal"));
-
-				CommittedBatchRows.Add(batchRow);
-				batchRow.F.SessionID = null;
-				if(successWorkOrderCount > 0) {
-					if(successWorkOrderCount == 1)
-						resultMessage.AppendLine(Strings.Format(KB.K("Work Order {0} was created."), lastWorkOrderRow.F.Number));
-					else
-						resultMessage.AppendLine(Strings.Format(KB.K("{0} Work Orders were created."), successWorkOrderCount));
+				catch (System.Exception e) {
+					if ((DatabaseEnums.PMType)dRow.F.DetailType == DatabaseEnums.PMType.MakeUnscheduledWorkOrder)
+						// If it is a MakeUnscheduledWorkOrder record, just continue throwing the exception since we have no way to record the error anyway.
+						// Someday we may want to save the error and continue on these as well, or have a ctor arg indicating which way to do it.
+						throw;
+					dRow.F.DetailType = (sbyte)DatabaseEnums.PMType.ErrorMakingWorkOrder;
+					dRow.F.DetailContext = Thinkage.Libraries.Exception.FullMessage(e);
+					lastWOException = e;
+					lastWORow = null;
+					++errorWorkOrderCount;
 				}
-				else
-					resultMessage.AppendLine(Strings.Format(KB.K("No Work Orders were created.")));
-				resultMessage.AppendLine();
-				if(errorWorkOrderCount > 0) {
-					if(errorWorkOrderCount == 1)
-						resultMessage.AppendLine(Strings.Format(KB.K("There is one error.")));
-					else
-						resultMessage.AppendLine(Strings.Format(KB.K("There are {0} errors."), errorWorkOrderCount));
-				}
-				else
-					resultMessage.AppendLine(Strings.Format(KB.K("There are no errors.")));
+				CommittedDetailRows[dRow] = oldType;
 			}
+			// Last step is to allocate the workorder numbers in the order the user desires
+			// TODO: make this sort order user selectable via some UI interface to select the primary, secondary, tertiary sorting order
+			// Sort by the work start date, followed by Subject
+			woBuilder.AssignWorkOrderNumbers(dsMB.Path.T.WorkOrder.F.StartDateEstimate, dsMB.Path.T.WorkOrder.F.Subject);
+
+			progress.Update(KB.K("Completing committal"));
+
+			CommittedBatchRows.Add(batchRow);
+			batchRow.F.SessionID = null;
+			if (successWorkOrderCount > 0) {
+				if (successWorkOrderCount == 1)
+					resultMessage.AppendLine(Strings.Format(KB.K("Work Order {0} was created."), lastWorkOrderRow.F.Number));
+				else
+					resultMessage.AppendLine(Strings.Format(KB.K("{0} Work Orders were created."), successWorkOrderCount));
+			}
+			else
+				resultMessage.AppendLine(Strings.Format(KB.K("No Work Orders were created.")));
+			resultMessage.AppendLine();
+			if (errorWorkOrderCount > 0) {
+				if (errorWorkOrderCount == 1)
+					resultMessage.AppendLine(Strings.Format(KB.K("There is one error.")));
+				else
+					resultMessage.AppendLine(Strings.Format(KB.K("There are {0} errors."), errorWorkOrderCount));
+			}
+			else
+				resultMessage.AppendLine(Strings.Format(KB.K("There are no errors.")));
 		}
 		#endregion
 		#region DeleteUncommittedBatch
@@ -1327,8 +1559,8 @@ namespace Thinkage.MainBoss.Database {
 		/// commit this to the server to delete all the records. This includes deleting the bathRow itself.
 		/// </summary>
 		/// <param name="batchRow"></param>
-		public void DeleteUncommittedBatch(dsMB.PMGenerationBatchRow batchRow) {
-			foreach(dsMB.PMGenerationDetailRow detail in batchRow.GetPMGenerationDetailPMGenerationBatchIDChildRows())
+		public static void DeleteUncommittedBatch(dsMB.PMGenerationBatchRow batchRow) {
+			foreach (dsMB.PMGenerationDetailRow detail in batchRow.GetPMGenerationDetailPMGenerationBatchIDChildRows())
 				detail.Delete();
 			batchRow.Delete();
 		}
@@ -1339,8 +1571,8 @@ namespace Thinkage.MainBoss.Database {
 		// Our override for Dispose to get rid of our objects
 		protected override void Dispose(bool disposing) {
 			base.Dispose(disposing);
-			if(disposing) {
-				if(disposed)
+			if (disposing) {
+				if (disposed)
 					return;
 				disposed = true;
 				woBuilder.Dispose();

@@ -13,6 +13,14 @@ namespace Thinkage.MainBoss.Controls {
 	/// Register Tbl and/or DelayedCreateTbl objects for Units.
 	/// </summary>
 	public class TIUnit : TIGeneralMB3 {
+		#region View Record Types
+		#region - WorkOrderMeterTreeView
+		public enum WorkOrderMeterTreeView {
+			Meter,
+			WorkOrderReading
+		}
+		#endregion
+		#endregion
 		#region NodeIds
 		public static readonly object PredictedDateFromReadingId = KB.I("PredictedDateFromReadingId");
 		public static readonly object ReadingToPredictFromId = KB.I("ReadingToPredictFromId");
@@ -31,100 +39,22 @@ namespace Thinkage.MainBoss.Controls {
 		#region Named Tbls
 		public static DelayedCreateTbl WorkOrderMeterReadingBrowseTbl;
 		public static DelayedCreateTbl MeterWithManualReadingBrowseTbl;
-		public static DelayedCreateTbl SpecificationEditOrFormBrowsetteTbl;
-		public static DelayedCreateTbl SpecificationGeneralBrowseTbl;
 		public static DelayedCreateTbl WorkOrderServiceContractsBrowseTbl;
-		public static DelayedCreateTbl AttachmentTblCreator;
 		#endregion
 		#region Tbl-creator functions
-		#region SpecificationTbl
-		private static DelayedCreateTbl SpecificationTbl(bool forEditOrFormBrowsette) {
-			// This method generates two forms of the specification Tbl. One form is a fairly normal Tbl and is used for editing
-			// specifications and for a browsette filtered by SpecificationForm. This form names the custom editor class and
-			// a creator delegate whose purpose is to fetch the SpecificationFormField records and build a customized tbl (based on this one)
-			// for the actual EditControl to use. The Tbl is also a custom class that contains mapping information for the individual
-			// data records.
-			// The other form is a CompositeTbl for general purpose browsing. It modifies the CompositeView to disable the standard New command
-			// and a custom browser class instead defines a special New command and a SpecificationForm picker to provide a choice of Form to the
-			// New command.
-			return new DelayedCreateTbl(delegate() {
-				var actions = new List<TblActionNode>();
-				var attrs = new List<Tbl.IAttr> {
-					UnitsDependentGroup
-				};
 
-				var battrs = new List<BTbl.ICtorArg> {
-					BTbl.ListColumn(dsMB.Path.T.Specification.F.Code),
-					BTbl.ListColumn(dsMB.Path.T.Specification.F.Desc),
-					BTbl.ListColumn(dsMB.Path.T.Specification.F.UnitLocationID.F.Code),
-					BTbl.ListColumn(dsMB.Path.T.Specification.F.SpecificationFormID.F.Code)
-				};
-				if (!forEditOrFormBrowsette)
-					battrs.Add(BTbl.LogicClass(typeof(SpecificationBrowseLogic)));
-				attrs.Add(new BTbl(battrs.ToArray()));
-
-				if (forEditOrFormBrowsette)
-					attrs.Add(new ETbl(
-						ETbl.LogicClass(typeof(SpecificationEditLogic)),
-						ETbl.EditorAccess(false, EdtMode.UnDelete)
-					));
-
-				// The ECol's here are ignored but harmless if !forEditOrFormBrowsette since the Tbl has no ETbl. It just isn't worth
-				// the code trouble to omit them in this case.
-				TblLayoutNodeArray layout = new TblLayoutNodeArray(
-					TblColumnNode.New(dsMB.Path.T.Specification.F.SpecificationFormID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.SpecificationForm.F.Code)), ECol.Normal),
-					TblColumnNode.New(dsMB.Path.T.Specification.F.Code, ECol.Normal),
-					TblColumnNode.New(dsMB.Path.T.Specification.F.Desc, ECol.Normal),
-					TblColumnNode.New(dsMB.Path.T.Specification.F.UnitLocationID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.Location.F.Code)), ECol.Normal),
-					// The fields defined by the Form go here, instead of the node identified with the label CustomFieldPlaceholderLabel.
-					// Because this node has no DCol or ECol it will be ignored if not removed.
-					TblUnboundControlNode.Empty(SpecificationEditLogic.CustomFieldPlaceholderLabel),
-					TblColumnNode.New(dsMB.Path.T.Specification.F.ReportText, DCol.Normal),
-					TblColumnNode.New(dsMB.Path.T.Specification.F.Comment, DCol.Normal, ECol.Normal)
-				);
-				if (forEditOrFormBrowsette)
-					return new Tbl(dsMB.Schema.T.Specification, TId.Specification, attrs.ToArray(), layout);
-				else
-					return new CompositeTbl(dsMB.Schema.T.Specification, TId.Specification, attrs.ToArray(), null,
-						CompositeView.ChangeEditTbl(SpecificationEditOrFormBrowsetteTbl,
-							// We don't allow New specifications, but we let them edit or view them; New requires special handling in the custom SpecificationEditControl
-							CompositeView.EditorAccess(false, EdtMode.New, EdtMode.Clone, EdtMode.UnDelete, EdtMode.EditDefault, EdtMode.ViewDefault)
-						)
-					);
-			});
-		}
-		#endregion
 		#endregion
 
 		#region Constructors and Property Initializers
 		private TIUnit() {
 		}
 		static TIUnit() {
-			#region Attachment
-			AttachmentTblCreator = new DelayedCreateTbl(delegate () {
-				return new Tbl(dsMB.Schema.T.Attachment, TId.Attachment,
-					new Tbl.IAttr[] {
-						UnitsDependentGroup,
-						new BTbl(BTbl.ListColumn(dsMB.Path.T.Attachment.F.Code)),
-						new ETbl(ETbl.LogicClass(typeof(AttachmentEditLogic)), ETbl.EditorAccess(false, EdtMode.UnDelete))
-					},
-					new TblLayoutNodeArray(
-						TblColumnNode.New(dsMB.Path.T.Attachment.F.UnitLocationID, new NonDefaultCol(), new DCol(Fmt.SetDisplayPath(dsMB.Path.T.Location.F.Code)), ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Attachment.F.Code, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Attachment.F.Desc, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Attachment.F.Path, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Attachment.F.Comment, DCol.Normal, ECol.Normal)
-					)
-				);
-			}
-			);
-			#endregion
 		}
 		#endregion
 
 		internal static void DefineTblEntries() {
 			#region AssetCode
-			DefineTbl(dsMB.Schema.T.AssetCode, delegate() {
+			DefineTbl(dsMB.Schema.T.AssetCode, delegate () {
 				return new Tbl(dsMB.Schema.T.AssetCode, TId.AssetCode,
 				new Tbl.IAttr[] {
 					UnitValueAndServiceGroup,
@@ -137,14 +67,11 @@ namespace Thinkage.MainBoss.Controls {
 						TblColumnNode.New(dsMB.Path.T.AssetCode.F.Code, DCol.Normal, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.AssetCode.F.Desc, DCol.Normal, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.AssetCode.F.Comment, DCol.Normal, ECol.Normal)),
-					BrowsetteTabNode.New(TId.Unit, TId.AssetCode, 
-						TblColumnNode.NewBrowsette(TILocations.UnitBrowseTblCreator, dsMB.Path.T.LocationDerivations.F.LocationID.F.RelativeLocationID.F.UnitID.F.AssetCodeID, DCol.Normal, ECol.Normal))
+					BrowsetteTabNode.New(TId.Unit, TId.AssetCode,
+						TblColumnNode.NewBrowsette(TILocations.UnitBrowseTblCreator, dsMB.Path.T.Location.F.RelativeLocationID.F.UnitID.F.AssetCodeID, DCol.Normal, ECol.Normal))
 				));
 			});
 			RegisterExistingForImportExport(TId.AssetCode, dsMB.Schema.T.AssetCode);
-			#endregion
-			#region Attachment
-			DefineTbl(dsMB.Schema.T.Attachment, AttachmentTblCreator);
 			#endregion
 			#region MeterReading
 			// This Tbl only allows New and Edit modes. In New mode, the offset comes from the Meter selection, and is used to update the actual/effective
@@ -161,12 +88,13 @@ namespace Thinkage.MainBoss.Controls {
 					// TODO: These are sort of silly to show in the browser, as they beat little connection to the reading being viewed.
 					TblMultiColumnNode.New(
 						new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-						new[] { dsMB.Path.T.MeterReading.F.EntryDate.Key(), dsMB.Path.T.MeterReading.F.EffectiveDate.Key(), dsMB.Path.T.MeterReading.F.Reading.Key(), dsMB.Path.T.MeterReading.F.EffectiveReading.Key() },
+						new[] { dsMB.Path.T.MeterReading.F.EntryDate.Key(), dsMB.Path.T.MeterReading.F.EffectiveDate.Key(), dsMB.Path.T.MeterReading.F.Reading.Key(), dsMB.Path.T.MeterReading.F.EffectiveReading.Key(), dsMB.Path.T.MeterReading.F.Comment.Key() },
 						TblRowNode.New(KB.K("Current"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
 							TblColumnNode.New(dsMB.Path.T.MeterReading.F.MeterID.F.CurrentMeterReadingID.F.EntryDate, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly),
 							TblColumnNode.New(dsMB.Path.T.MeterReading.F.MeterID.F.CurrentMeterReadingID.F.EffectiveDate, new NonDefaultCol(), DCol.Normal, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(MeterCurrentEffectiveDateId))),
 							TblColumnNode.New(dsMB.Path.T.MeterReading.F.MeterID.F.CurrentMeterReadingID.F.Reading, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly),
-							TblColumnNode.New(dsMB.Path.T.MeterReading.F.MeterID.F.CurrentMeterReadingID.F.EffectiveReading, new NonDefaultCol(), DCol.Normal, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(MeterCurrentEffectiveReadingId)))
+							TblColumnNode.New(dsMB.Path.T.MeterReading.F.MeterID.F.CurrentMeterReadingID.F.EffectiveReading, new NonDefaultCol(), DCol.Normal, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(MeterCurrentEffectiveReadingId))),
+							TblColumnNode.New(dsMB.Path.T.MeterReading.F.MeterID.F.CurrentMeterReadingID.F.Comment, Fmt.SetLineCount(2), new NonDefaultCol(), DCol.Normal, ECol.AllReadonly)
 						)
 					)
 				),
@@ -174,23 +102,25 @@ namespace Thinkage.MainBoss.Controls {
 				// information would have to follow it.
 				TblColumnNode.New(dsMB.Path.T.MeterReading.F.EntryDate, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly),
 				TblColumnNode.New(dsMB.Path.T.MeterReading.F.EffectiveDate, new NonDefaultCol(), DCol.Normal, new ECol(ECol.ReadonlyInUpdateAccess, Fmt.SetId(MeterEffectiveDateId))),
+				TblColumnNode.New(dsMB.Path.T.MeterReading.F.UserID.F.ContactID.F.Code, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly),
 				TblColumnNode.New(dsMB.Path.T.MeterReading.F.Reading, DCol.Normal, new ECol(ECol.ReadonlyInUpdateAccess, Fmt.SetId(MeterReadingId))),
 				TblColumnNode.New(dsMB.Path.T.MeterReading.F.EffectiveReading, DCol.Normal),
-				TblUnboundControlNode.New(dsMB.Path.T.MeterReading.F.EffectiveReading.Key(), dsMB.Path.T.MeterReading.F.EffectiveReading.ReferencedColumn.EffectiveType, new ECol(ECol.ReadonlyInUpdateAccess, Fmt.SetId(MeterEffectiveReadingId)))
+				TblUnboundControlNode.New(dsMB.Path.T.MeterReading.F.EffectiveReading.Key(), dsMB.Path.T.MeterReading.F.EffectiveReading.ReferencedColumn.EffectiveType, new ECol(ECol.ReadonlyInUpdateAccess, Fmt.SetId(MeterEffectiveReadingId))),
+				TblColumnNode.New(dsMB.Path.T.MeterReading.F.Comment, Fmt.SetLineCount(2), DCol.Normal, ECol.Normal)
 			);
 			// The following Check validates the new effective reading and current effective reading are in the same order as their respective effective dates.
 			// TODO: The 2.9 code actually fetched the readings that bracket the EffectiveDate in the form and checked the Effective Reading against those of the two fetched records.
 			// What we do here is a diluted version of the same check. A trigger in the db checks this properly so this is not a high-priority item.
 			var EffectiveReadingChecker = new Check4<DateTime, DateTime?, ulong, ulong?>(
-					delegate(DateTime newEffectiveDate, DateTime? currentEffectiveDate, ulong newEffectiveReading, ulong? currentEffectiveReading) {
+					delegate (DateTime newEffectiveDate, DateTime? currentEffectiveDate, ulong newEffectiveReading, ulong? currentEffectiveReading) {
 						if (currentEffectiveDate.HasValue && newEffectiveDate == currentEffectiveDate.Value)
 							// This just flags the Effective Date control (operand 1 -> index 0)
 							return new EditLogic.ValidatorAndCorrector.ValidatorStatus(0, new GeneralException(KB.K("Effective Date must be different from Current Effective Date")));
 						if (currentEffectiveDate.HasValue && currentEffectiveReading.HasValue) {
 							if (newEffectiveDate > currentEffectiveDate.Value && newEffectiveReading < currentEffectiveReading.Value)
-								return EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("Effective Reading must be greater than Current Effective Reading")));
+								return EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("Effective Reading must be greater than Current Effective Reading of {0}"), currentEffectiveReading.Value));
 							if (newEffectiveDate < currentEffectiveDate.Value && newEffectiveReading > currentEffectiveReading.Value)
-								return EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("Effective Reading that predates Current Reading must be less than Current Effective Reading")));
+								return EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("Effective Reading that predates Current Reading must be less than Current Effective Reading of {0}"), currentEffectiveReading.Value));
 						}
 						return null;
 					},
@@ -206,30 +136,30 @@ namespace Thinkage.MainBoss.Controls {
 			//		is saved. The Effective and Actual readings correct each other as either is changed.
 			// In UnDelete mode, an init fills in the EffectiveReading, this calculator generates the Offset and all the controls are readonly.
 			Check3<ulong, ulong, ulong> MeterReadingChecker = new Check3<ulong, ulong, ulong>(
-					delegate(ulong actual, ulong effective, ulong offset) {
+					delegate (ulong actual, ulong effective, ulong offset) {
 						if (checked(actual + offset != effective))
-							return EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("Actual and Effective readings must differ by Meter offset")));
+							return EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("Actual and Effective readings must differ by Meter offset of {0}"), offset));
 						return null;
 					})
 					.Operand1(MeterReadingId,
-						delegate(ulong effective, ulong offset) {
+						delegate (ulong effective, ulong offset) {
 							if (effective < offset)
-								throw new GeneralException(KB.K("Effective reading must not be less than offset"));
+								throw new GeneralException(KB.K("Effective reading must not be less than offset of {0}"), offset);
 							return checked(effective - offset);
 						}, EdtMode.New
 					)
 					.Operand2(MeterEffectiveReadingId,
-						delegate(ulong actual, ulong offset) {
+						delegate (ulong actual, ulong offset) {
 							return checked(actual + offset);
 						}, EdtMode.New
 					)
 					.Operand3(MeterReadingOffsetId,
-						delegate(ulong actual, ulong effective) {
+						delegate (ulong actual, ulong effective) {
 							return checked(effective - actual);
 						}, EdtMode.View, EdtMode.ViewDeleted, EdtMode.UnDelete
 					);
 
-			DelayedCreateTbl WorkOrderMeterReadingEditTbl = new DelayedCreateTbl(delegate() {
+			DelayedCreateTbl WorkOrderMeterReadingEditTbl = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.MeterReading, TId.WorkOrderMeterReading,
 					new Tbl.IAttr[] {
 						MetersDependentGroup,
@@ -238,6 +168,7 @@ namespace Thinkage.MainBoss.Controls {
 					TblFixedRecordTypeNode.New()
 					+ (TblColumnNode.New(dsMB.Path.T.MeterReading.F.WorkOrderID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.WorkOrder.F.Number)), new ECol(ECol.AllReadonlyAccess, ECol.ForceValue()), new NonDefaultCol())
 					  + MeterReadingNodesGeneral),
+					Init.OnLoadNew(new PathTarget(dsMB.Path.T.MeterReading.F.UserID), new UserIDValue()),
 					Init.New(new ControlTarget(MeterReadingOffsetId),
 									new EditorPathValue(dsMB.Path.T.MeterReading.F.MeterID.F.MeterReadingOffset),
 									null,
@@ -250,13 +181,14 @@ namespace Thinkage.MainBoss.Controls {
 					EffectiveReadingChecker
 				);
 			});
-			DelayedCreateTbl ManualMeterReadingEditTbl = new DelayedCreateTbl(delegate() {
+			DelayedCreateTbl ManualMeterReadingEditTbl = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.MeterReading, TId.ManualMeterReading,
 					new Tbl.IAttr[] {
 						MetersDependentGroup,
 						new ETbl(ETbl.EditorDefaultAccess(false), ETbl.EditorAccess(true, EdtMode.New, EdtMode.View, EdtMode.Delete, EdtMode.UnDelete, EdtMode.ViewDeleted))
 					},
 					TblFixedRecordTypeNode.New() + MeterReadingNodesGeneral,
+					Init.OnLoadNew(new PathTarget(dsMB.Path.T.MeterReading.F.UserID), new UserIDValue()),
 					Init.New(new ControlTarget(MeterReadingOffsetId),
 								new EditorPathValue(dsMB.Path.T.MeterReading.F.MeterID.F.MeterReadingOffset),
 								null,
@@ -270,7 +202,7 @@ namespace Thinkage.MainBoss.Controls {
 				);
 			});
 			// Importing of meter reading needs modified Tbl to provide a picker to identify the meter
-			RegisterForImportExport(TId.MeterReading, new DelayedCreateTbl(delegate() {
+			RegisterForImportExport(TId.MeterReading, new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.MeterReading, TId.ManualMeterReading,
 					new Tbl.IAttr[] {
 						MetersDependentGroup,
@@ -282,7 +214,7 @@ namespace Thinkage.MainBoss.Controls {
 
 			#region Meter Reading Predictor (testing)
 #if DEBUG
-			DelayedCreateTbl MeterReadingPredictorTbl = new DelayedCreateTbl(delegate() {
+			DelayedCreateTbl MeterReadingPredictorTbl = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.MeterReading, TId.MeterReadingPrediction,
 					new Tbl.IAttr[] {
 						MetersDependentGroup,
@@ -302,21 +234,21 @@ namespace Thinkage.MainBoss.Controls {
 						TblUnboundControlNode.New(KB.K("Predicted Reading"), dsMB.Path.T.MeterReading.F.MeterID.F.MeterReadingOffset.ReferencedColumn.EffectiveType, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(PredictedReadingFromDateId)))
 					),
 					new Check3<Guid, long, DateTime>()
-						.Operand1(KB.TOi(TId.Meter), dsMB.Path.T.MeterReading.F.MeterID, 0)
+						.Operand1(KB.TOi(TId.Meter), new EditorPathValue(dsMB.Path.T.MeterReading.F.MeterID))
 						.Operand2(ReadingToPredictFromId)
 						.Operand3(PredictedDateFromReadingId,
-							delegate(Guid meterID, long reading) {
+							delegate (Guid meterID, long reading) {
 								PMGeneration.FuzzyDate when = new MeterReadingAnalysis.PredictDateFromReadingRange((MB3Client)Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session)
 																.Predict(meterID, new PMGeneration.FuzzyReading(reading));
 								return when.ExpectedValue;
 							}
 						),
 					new Check4<Guid, DateTime, TimeSpan, long>()
-						.Operand1(KB.TOi(TId.Meter), dsMB.Path.T.MeterReading.F.MeterID, 0)
+						.Operand1(KB.TOi(TId.Meter), new EditorPathValue(dsMB.Path.T.MeterReading.F.MeterID))
 						.Operand2(DateToPredictFromId)
 						.Operand3(DurationToPredictOverId)
 						.Operand4(PredictedReadingFromDateId,
-							delegate(Guid meterID, DateTime when, TimeSpan interval) {
+							delegate (Guid meterID, DateTime when, TimeSpan interval) {
 								PMGeneration.FuzzyReading reading = new MeterReadingAnalysis.PredictReadingFromDateRange((MB3Client)Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session)
 									.Predict(meterID, new PMGeneration.FuzzyDate(when));
 								return reading.ExpectedValue;
@@ -327,7 +259,7 @@ namespace Thinkage.MainBoss.Controls {
 			});
 #endif
 			#endregion
-			DelayedCreateTbl ManualMeterReadingBrowseTbl = new DelayedCreateTbl(delegate() {
+			DelayedCreateTbl ManualMeterReadingBrowseTbl = new DelayedCreateTbl(delegate () {
 				return new CompositeTbl(dsMB.Schema.T.MeterReading, TId.ManualMeterReading,
 					new Tbl.IAttr[] {
 						new BTbl(BTbl.ListColumn(dsMB.Path.T.MeterReading.F.MeterID.F.MeterClassID.F.Code),
@@ -337,7 +269,6 @@ namespace Thinkage.MainBoss.Controls {
 								BTbl.ListColumn(dsMB.Path.T.MeterReading.F.EffectiveReading)
 						)
 					},
-					null,
 					CompositeView.ChangeEditTbl(ManualMeterReadingEditTbl,
 						//CompositeView.IdentificationOverride(TId.MeterReading),
 						CompositeView.AddRecognitionCondition(new Libraries.XAF.Database.Layout.SqlExpression(dsMB.Path.T.MeterReading.F.WorkOrderID).IsNull()),
@@ -361,24 +292,25 @@ namespace Thinkage.MainBoss.Controls {
 					// TODO: The Latest-reading information should be done by a function similar to current state history and/or contact groupings.
 					TblMultiColumnNode.New(
 						new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-						new[] { dsMB.Path.T.MeterReading.F.EntryDate.Key(), dsMB.Path.T.MeterReading.F.EffectiveDate.Key(), dsMB.Path.T.MeterReading.F.Reading.Key(), dsMB.Path.T.MeterReading.F.EffectiveReading.Key() },
+						new[] { dsMB.Path.T.MeterReading.F.EntryDate.Key(), dsMB.Path.T.MeterReading.F.EffectiveDate.Key(), dsMB.Path.T.MeterReading.F.Reading.Key(), dsMB.Path.T.MeterReading.F.EffectiveReading.Key(), dsMB.Path.T.MeterReading.F.Comment.Key() },
 						TblRowNode.New(KB.K("Current"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
 							TblColumnNode.New(dsMB.Path.T.Meter.F.CurrentMeterReadingID.F.EntryDate, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly),
 							TblColumnNode.New(dsMB.Path.T.Meter.F.CurrentMeterReadingID.F.EffectiveDate, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly),
 							TblColumnNode.New(dsMB.Path.T.Meter.F.CurrentMeterReadingID.F.Reading, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly),
-							TblColumnNode.New(dsMB.Path.T.Meter.F.CurrentMeterReadingID.F.EffectiveReading, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly)
+							TblColumnNode.New(dsMB.Path.T.Meter.F.CurrentMeterReadingID.F.EffectiveReading, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly),
+							TblColumnNode.New(dsMB.Path.T.Meter.F.CurrentMeterReadingID.F.Comment, Fmt.SetLineCount(1), new NonDefaultCol(), DCol.Normal, ECol.AllReadonly)
 						)
 					),
 					TblColumnNode.New(dsMB.Path.T.Meter.F.Comment, DCol.Normal, ECol.Normal))
 			);
 
 			TblLayoutNodeArray MeterNodesWithManualReading = MeterNodesBasic + new TblLayoutNodeArray(
-				BrowsetteTabNode.New(TId.MeterReading, TId.Meter, 
+				BrowsetteTabNode.New(TId.MeterReading, TId.Meter,
 					TblColumnNode.NewBrowsette(ManualMeterReadingBrowseTbl, dsMB.Path.T.MeterReading.F.MeterID, DCol.Normal, ECol.Normal)
 				)
 			);
 
-			DelayedCreateTbl MeterWithManualReadingEditTbl = new DelayedCreateTbl(delegate() {
+			DelayedCreateTbl MeterWithManualReadingEditTbl = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.Meter, TId.Meter,
 					new Tbl.IAttr[] {
 						MetersDependentGroup,
@@ -390,13 +322,14 @@ namespace Thinkage.MainBoss.Controls {
 					// (Initial Reading), and the effective reading should use the meter editor's Offset control to calculate itself.
 					// MeterReading Effective date is servergetsDateTime to reflect the server's time, not the client time
 					//							Init.OnLoadNew(dsMB.Path.T.MeterReading.F.EffectiveDate, 1, new CurrentDateTimeValue()),
+					Init.OnLoadNew(dsMB.Path.T.MeterReading.F.UserID, 1, new UserIDValue()),
 					Init.OnLoadNew(dsMB.Path.T.MeterReading.F.Reading, 1, new ConstantValue(0))
 				);
 			});
 			// The Meter browser is made Composite only to allow specification of an alternative Tbl for editing.
 			// We need the alternative edit tbl because recordset 1 is used to create the first reading in New mode and the browser disallows
 			// anything but recordset 0. As well, in DEBUG mode we want a second New verb.
-			MeterWithManualReadingBrowseTbl = new DelayedCreateTbl(delegate() {
+			MeterWithManualReadingBrowseTbl = new DelayedCreateTbl(delegate () {
 				return new CompositeTbl(dsMB.Schema.T.Meter, TId.Meter,
 					new Tbl.IAttr[] {
 						new BTbl(BTbl.ListColumn(dsMB.Path.T.Meter.F.MeterClassID.F.Code),
@@ -406,7 +339,6 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.UnitMeters))
 						)
 					},
-					null,	// no record type
 					CompositeView.ChangeEditTbl(MeterWithManualReadingEditTbl)
 #if DEBUG
 ,
@@ -421,7 +353,7 @@ namespace Thinkage.MainBoss.Controls {
 			RegisterForImportExport(TId.Meter, MeterWithManualReadingEditTbl);
 
 			// Definition to have the MeterClass identifier in WorkOrderMeterTreeView displayed in the view, but to disallow any editing/creation of a new Meter
-			DelayedCreateTbl WorkOrderMeterEditTbl = new DelayedCreateTbl(delegate() {
+			DelayedCreateTbl WorkOrderMeterEditTbl = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.Meter, TId.Meter,
 					new Tbl.IAttr[] {
 							MetersDependentGroup,
@@ -436,33 +368,33 @@ namespace Thinkage.MainBoss.Controls {
 			// Note that although we can include readings on meters from units other than the one associated with the WO, we do not show the heirarchical location for
 			// each meter's unit, since the "wrong unit" condition is rare... it required altering the WO's Unit after a WO-linked reading has been taken.
 			// However, we must be filtered-tree-structured so at least the meters for these wrong-unit readings are in the list.
-			WorkOrderMeterReadingBrowseTbl = new DelayedCreateTbl(delegate() {
+			WorkOrderMeterReadingBrowseTbl = new DelayedCreateTbl(delegate () {
 				object codeColumnId = KB.I("MeterReadingCodeId");
 				return new CompositeTbl(dsMB.Schema.T.MeterAndReadingVariants, TId.WorkOrderMeterReading,
 					new Tbl.IAttr[] {
 						new BTbl(
 							BTbl.PerViewListColumn(dsMB.LabelKeyBuilder.K("Meter Class/Effective Date"), codeColumnId),
 							BTbl.ListColumn(dsMB.Path.T.MeterAndReadingVariants.F.MeterReadingID.F.EffectiveReading),
-							BTbl.SetTreeStructure(dsMB.Path.T.MeterAndReadingVariants.F.ParentID, 2, 2, dsMB.Schema.T.WorkOrderMeterTreeView)
+							BTbl.SetTreeStructure(null, 2, 2, dsMB.Schema.T.WorkOrderMeterTreeView)
 						)
 					},
-					dsMB.Path.T.MeterAndReadingVariants.F.TableEnum,
 					// Meter itself
 					new CompositeView(WorkOrderMeterEditTbl, dsMB.Path.T.MeterAndReadingVariants.F.MeterID,
+						// All rows have a meter id, so instead we recognize it by the *lack* of a meter reading ID.
+						CompositeView.AddRecognitionCondition(new Libraries.XAF.Database.Layout.SqlExpression(dsMB.Path.T.MeterAndReadingVariants.F.MeterReadingID).IsNull()),
 						BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.Meter.F.MeterClassID.F.Code),
 						CompositeView.EditorDefaultAccess(false),
 						BTbl.TaggedEqFilter(dsMB.Path.T.MeterAndReadingVariants.F.MeterID.F.UnitLocationID, WorkOrderUnitLocationValueId)
 					),
-					// Manual (i.e. non-workorder) readings
-					null,	// No manual readings at all.
-					// readings on this workorder
 					new CompositeView(WorkOrderMeterReadingEditTbl, dsMB.Path.T.MeterAndReadingVariants.F.MeterReadingID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.SetParentPath(dsMB.Path.T.MeterAndReadingVariants.F.MeterID),
 						NoNewMode,
 						BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.MeterReading.F.EffectiveDate, DateTimeFormat),
 						CompositeView.ContextualInit(
 							new int[] {
-								(int)ViewRecordTypes.WorkOrderMeterTreeView.WorkOrderReading,
-								(int)ViewRecordTypes.WorkOrderMeterTreeView.Meter
+								(int)WorkOrderMeterTreeView.WorkOrderReading,
+								(int)WorkOrderMeterTreeView.Meter
 							},
 							dsMB.Path.T.MeterAndReadingVariants.F.MeterID, dsMB.Path.T.MeterReading.F.MeterID),
 						BTbl.TaggedEqFilter(dsMB.Path.T.MeterAndReadingVariants.F.MeterReadingID.F.WorkOrderID, WorkOrderIDValueId)
@@ -473,7 +405,7 @@ namespace Thinkage.MainBoss.Controls {
 
 			#endregion
 			#region MeterClass
-			DefineTbl(dsMB.Schema.T.MeterClass, delegate() {
+			DefineTbl(dsMB.Schema.T.MeterClass, delegate () {
 				return new Tbl(dsMB.Schema.T.MeterClass, TId.MeterClass,
 				new Tbl.IAttr[] {
 					MetersDependentGroup,
@@ -487,17 +419,17 @@ namespace Thinkage.MainBoss.Controls {
 						TblColumnNode.New(dsMB.Path.T.MeterClass.F.Desc, DCol.Normal, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.MeterClass.F.UnitOfMeasureID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.UnitOfMeasure.F.Code)), ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.MeterClass.F.Comment, DCol.Normal, ECol.Normal)),
-					BrowsetteTabNode.New(TId.Meter, TId.MeterClass, 
+					BrowsetteTabNode.New(TId.Meter, TId.MeterClass,
 						TblColumnNode.NewBrowsette(dsMB.Path.T.Meter.F.MeterClassID, DCol.Normal, ECol.Normal)),
-					BrowsetteTabNode.New(TId.MaintenanceTiming, TId.MeterClass, 
-					// TODO: We want to filter on record type here in a manner that prevents all the other New operations (besides new meter schedule)
+					BrowsetteTabNode.New(TId.MaintenanceTiming, TId.MeterClass,
+						// TODO: We want to filter on record type here in a manner that prevents all the other New operations (besides new meter schedule)
 						TblColumnNode.NewBrowsette(dsMB.Path.T.Periodicity.F.MeterClassID, DCol.Normal, ECol.Normal))
 				));
 			});
 			RegisterExistingForImportExport(TId.MeterClass, dsMB.Schema.T.MeterClass);
 			#endregion
 			#region Ownership
-			DefineTbl(dsMB.Schema.T.Ownership, delegate() {
+			DefineTbl(dsMB.Schema.T.Ownership, delegate () {
 				return new Tbl(dsMB.Schema.T.Ownership, TId.Ownership,
 				new Tbl.IAttr[] {
 					UnitValueAndServiceGroup,
@@ -511,14 +443,14 @@ namespace Thinkage.MainBoss.Controls {
 						TblColumnNode.New(dsMB.Path.T.Ownership.F.Desc, DCol.Normal, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.Ownership.F.Comment, DCol.Normal, ECol.Normal)),
 					BrowsetteTabNode.New(TId.Unit, TId.Ownership,
-						TblColumnNode.NewBrowsette(TILocations.UnitBrowseTblCreator, dsMB.Path.T.LocationDerivations.F.LocationID.F.RelativeLocationID.F.UnitID.F.OwnershipID, DCol.Normal, ECol.Normal))
+						TblColumnNode.NewBrowsette(TILocations.UnitBrowseTblCreator, dsMB.Path.T.Location.F.RelativeLocationID.F.UnitID.F.OwnershipID, DCol.Normal, ECol.Normal))
 				));
 			});
 			RegisterExistingForImportExport(TId.Ownership, dsMB.Schema.T.Ownership);
 
 			#endregion
 			#region ServiceContract
-			DefineTbl(dsMB.Schema.T.ServiceContract, delegate() {
+			DefineTbl(dsMB.Schema.T.ServiceContract, delegate () {
 				return new Tbl(dsMB.Schema.T.ServiceContract, TId.ServiceContract,
 				new Tbl.IAttr[] {
 					CommonTblAttrs.ViewCostsDefinedBySchema,
@@ -550,7 +482,7 @@ namespace Thinkage.MainBoss.Controls {
 			});
 			#endregion
 			#region Part
-			DefineTbl(dsMB.Schema.T.SparePart, delegate() {
+			DefineTbl(dsMB.Schema.T.SparePart, delegate () {
 				return new Tbl(dsMB.Schema.T.SparePart, TId.Part,
 				new Tbl.IAttr[] {
 					PartsGroup,
@@ -583,101 +515,8 @@ namespace Thinkage.MainBoss.Controls {
 			});
 			RegisterExistingForImportExport(TId.Part, dsMB.Schema.T.SparePart);
 			#endregion
-			#region Specification
-			// This is a standard browser/editor. The editor has special creation code which customizes the tbl. This tbl is used for editing
-			// and for the specifications browsette within the Form editor (where the browsette filter becomes an init specifying the form ID)
-			SpecificationEditOrFormBrowsetteTbl = SpecificationTbl(true);
-			// This is a special browse tbl for general use. It uses a custom class to put a Form picker control in the button row, and to
-			// replace the standard New button with a special one which converts the current value of this picker into an Init directive in New mode
-			// and CLone mode.
-			SpecificationGeneralBrowseTbl = SpecificationTbl(false);
-			#endregion
-			#region SpecificationData
-			DefineTbl(dsMB.Schema.T.SpecificationData, delegate() {
-				return new Tbl(dsMB.Schema.T.SpecificationData, TId.SpecificationData,
-				new Tbl.IAttr[] {
-					UnitsDependentGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.SpecificationData.F.SpecificationFormFieldID.F.EditLabel),
-							BTbl.ListColumn(dsMB.Path.T.SpecificationData.F.FieldValue)
-					),
-					new ETbl(ETbl.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete, EdtMode.EditDefault, EdtMode.ViewDefault))
-				},
-				new TblLayoutNodeArray(
-					TblColumnNode.New(dsMB.Path.T.SpecificationData.F.SpecificationFormFieldID.F.EditLabel, ECol.AllReadonly),
-					TblColumnNode.New(dsMB.Path.T.SpecificationData.F.FieldValue, ECol.Normal)
-				));
-			});
-			#endregion
-			#region SpecificationForm
-			DefineTbl(dsMB.Schema.T.SpecificationForm, delegate() {
-				return new Tbl(dsMB.Schema.T.SpecificationForm, TId.SpecificationForm,
-				new Tbl.IAttr[] {
-					UnitsDependentGroup,
-					new BTbl(BTbl.ListColumn(dsMB.Path.T.SpecificationForm.F.Code), BTbl.ListColumn(dsMB.Path.T.SpecificationForm.F.Desc),
-						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.SpecificationFormReport))),
-					new ETbl()
-				},
-				new TblLayoutNodeArray(
-					DetailsTabNode.New(
-						TblColumnNode.New(dsMB.Path.T.SpecificationForm.F.Code, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.SpecificationForm.F.Desc, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.SpecificationForm.F.Comment, DCol.Normal, ECol.Normal)),
-					BrowsetteTabNode.New(TId.SpecificationFormField, TId.SpecificationForm,
-						TblColumnNode.NewBrowsette(dsMB.Path.T.SpecificationFormField.F.SpecificationFormID, DCol.Normal, ECol.Normal)),
-					TblTabNode.New(KB.K("Default Report Layout"), KB.K("Display the default report layout for this specification form"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-						TblColumnNode.New(dsMB.Path.T.SpecificationForm.F.DefaultReportLayout, new NonDefaultCol(), DCol.Normal, ECol.AllReadonly)),
-					TblTabNode.New(KB.K("Custom Report Layout"), KB.K("Display the custom report layout for this specification form"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-						TblColumnNode.New(dsMB.Path.T.SpecificationForm.F.CustomizedReportLayout, DCol.Normal, ECol.Normal)),
-					BrowsetteTabNode.New(TId.Specification, TId.SpecificationForm,
-						TblColumnNode.NewBrowsette(SpecificationEditOrFormBrowsetteTbl, dsMB.Path.T.Specification.F.SpecificationFormID, DCol.Normal, ECol.Normal))
-				));
-			});
-			#endregion
-			#region SpecificationFormField
-			Key FieldSize = KB.K("Field Size");
-			Key FieldName = KB.K("Field Name");
-			DefineTbl(dsMB.Schema.T.SpecificationFormField, delegate() {
-				return new Tbl(dsMB.Schema.T.SpecificationFormField, TId.SpecificationFormField,
-				new Tbl.IAttr[] {
-					UnitsDependentGroup,
-					new BTbl(
-						BTbl.ListColumn(dsMB.Path.T.SpecificationFormField.F.FieldName),
-						BTbl.ListColumn(dsMB.Path.T.SpecificationFormField.F.EditLabel),
-						BTbl.ListColumn(dsMB.Path.T.SpecificationFormField.F.FieldSize),
-						BTbl.ListColumn(dsMB.Path.T.SpecificationFormField.F.FieldOrder)
-					),
-					new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete))
-				},
-				new TblLayoutNodeArray(
-					TblColumnNode.New(dsMB.Path.T.SpecificationFormField.F.SpecificationFormID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.SpecificationForm.F.Code)), ECol.Normal),
-					TblColumnNode.New(dsMB.Path.T.SpecificationFormField.F.FieldName, DCol.Normal, new ECol(Fmt.SetId(FieldName))),
-					TblColumnNode.New(dsMB.Path.T.SpecificationFormField.F.EditLabel, DCol.Normal, ECol.Normal),
-					TblColumnNode.New(dsMB.Path.T.SpecificationFormField.F.FieldSize, DCol.Normal, new ECol(Fmt.SetId(FieldSize))),
-					// ??? should field order be editable or implied by a specicial editor interface?
-					TblColumnNode.New(dsMB.Path.T.SpecificationFormField.F.FieldOrder, DCol.Normal, ECol.Normal)
-				),
-				new Check1<long?>(delegate(long? fieldSize) {
-					if (fieldSize > 80)
-						return EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("Field Size must be less than or equal to 80")));
-					return null;
-				})
-				.Operand1(FieldSize),
-				new Check1<string>(delegate(string fieldName) {
-					if (fieldName != null)
-						try {
-							System.Xml.XmlConvert.VerifyName(fieldName);
-						}
-						catch (System.Xml.XmlException) {
-							return EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("Field Name must be a valid XML name beginning with a alphabetic character followed by 0 or more alphabetic or numeric characters.")));
-						}
-					return null;
-				})
-				.Operand1(FieldName)
-				);
-			});
-			#endregion
 			#region SystemCode
-			DefineTbl(dsMB.Schema.T.SystemCode, delegate() {
+			DefineTbl(dsMB.Schema.T.SystemCode, delegate () {
 				return new Tbl(dsMB.Schema.T.SystemCode, TId.System,
 				new Tbl.IAttr[] {
 					UnitsDependentGroup,
@@ -691,7 +530,7 @@ namespace Thinkage.MainBoss.Controls {
 						TblColumnNode.New(dsMB.Path.T.SystemCode.F.Desc, DCol.Normal, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.SystemCode.F.Comment, DCol.Normal, ECol.Normal)),
 					BrowsetteTabNode.New(TId.Unit, TId.System,
-						TblColumnNode.NewBrowsette(TILocations.UnitBrowseTblCreator, dsMB.Path.T.LocationDerivations.F.LocationID.F.RelativeLocationID.F.UnitID.F.SystemCodeID, DCol.Normal, ECol.Normal))
+						TblColumnNode.NewBrowsette(TILocations.UnitBrowseTblCreator, dsMB.Path.T.Location.F.RelativeLocationID.F.UnitID.F.SystemCodeID, DCol.Normal, ECol.Normal))
 				));
 			});
 			RegisterExistingForImportExport(TId.System, dsMB.Schema.T.SystemCode);
@@ -725,7 +564,7 @@ namespace Thinkage.MainBoss.Controls {
 								new DCol(Fmt.SetDisplayPath(dsMB.Path.T.Location.F.Code)),
 								new ECol(
 									Fmt.SetPickFrom(TILocations.PermanentLocationPickerTblCreator),
-									FilterOutContainedLocations(dsMB.Path.T.Unit.F.RelativeLocationID.F.LocationID, dsMB.Path.T.LocationDerivations.F.LocationID)
+									FilterOutContainedLocations(dsMB.Path.T.Unit.F.RelativeLocationID.F.LocationID, dsMB.Path.T.Location.F.Id)
 								)),
 							TblColumnNode.New(dsMB.Path.T.Unit.F.RelativeLocationID.F.ContainingLocationID,
 								new DefaultOnlyCol(),
@@ -753,7 +592,7 @@ namespace Thinkage.MainBoss.Controls {
 						BrowsetteTabNode.New(TId.Part, TId.Unit,
 							TblColumnNode.NewBrowsette(dsMB.Path.T.Unit.F.RelativeLocationID.F.LocationID, dsMB.Path.T.SparePart.F.UnitLocationID, DCol.Normal, ECol.Normal)),
 						BrowsetteTabNode.New(TId.Specification, TId.Unit,
-							TblColumnNode.NewBrowsette(SpecificationGeneralBrowseTbl, dsMB.Path.T.Unit.F.RelativeLocationID.F.LocationID, dsMB.Path.T.Specification.F.UnitLocationID, DCol.Normal, ECol.Normal)),
+							TblColumnNode.NewBrowsette(TIAttachments.UnitSpecificationBrowseTblCreator, dsMB.Path.T.Unit.F.RelativeLocationID.F.LocationID, dsMB.Path.T.UnitAttachment.F.UnitLocationID, DCol.Normal, ECol.Normal)),
 						// We disable the Value tab for Requests only mode. The biggest gumball here is Vendor; if we want the Vendor for Requests mode,
 						// we might as well also include Service Contracts and their unit association table.
 						TblTabNode.New(KB.K("Value"), KB.K("Display the value properties for this unit"), new TblLayoutNode.ICtorArg[] { new FeatureGroupArg(UnitValueAndServiceGroup), DCol.Normal, ECol.Normal, new AddCostCol(CommonNodeAttrs.ViewUnitValueCosts) },
@@ -773,7 +612,7 @@ namespace Thinkage.MainBoss.Controls {
 						BrowsetteTabNode.New(TId.Meter, TId.Unit,
 							TblColumnNode.NewBrowsette(dsMB.Path.T.Unit.F.RelativeLocationID.F.LocationID, dsMB.Path.T.Meter.F.UnitLocationID, DCol.Normal, ECol.Normal)),
 						BrowsetteTabNode.New(TId.Attachment, TId.Unit,
-							TblColumnNode.NewBrowsette(dsMB.Path.T.Unit.F.RelativeLocationID.F.LocationID, dsMB.Path.T.Attachment.F.UnitLocationID, DCol.Normal, ECol.Normal)),
+							TblColumnNode.NewBrowsette(TIAttachments.UnitAttachmentBrowseTblCreator, dsMB.Path.T.Unit.F.RelativeLocationID.F.LocationID, dsMB.Path.T.UnitAttachment.F.UnitLocationID, DCol.Normal, ECol.Normal)),
 						BrowsetteTabNode.New(TId.Request, TId.Unit,
 							TblColumnNode.NewBrowsette(dsMB.Path.T.Unit.F.RelativeLocationID.F.LocationID, dsMB.Path.T.Request.F.UnitLocationID, DCol.Normal, ECol.Normal)),
 						BrowsetteTabNode.New(TId.UnitMaintenancePlan, TId.Unit,
@@ -795,16 +634,15 @@ namespace Thinkage.MainBoss.Controls {
 								BTbl.ListColumn(dsMB.Path.T.Unit.F.Serial)
 							)
 					},
-					null,
-					CompositeView.ChangeEditTbl(UnitEditorTblCreator),
-					CompositeView.AdditionalEditDefault(AttachmentTblCreator)
+					CompositeView.ChangeEditTbl(UnitEditorTblCreator)//,
+																	 //					CompositeView.AdditionalEditDefault(UnitAttachmentTblCreator)
 				);
 			}
 			);
 			RegisterExistingForImportExport(TId.Unit, dsMB.Schema.T.Unit);
 			#endregion
 			#region UnitCategory
-			DefineTbl(dsMB.Schema.T.UnitCategory, delegate() {
+			DefineTbl(dsMB.Schema.T.UnitCategory, delegate () {
 				return new Tbl(dsMB.Schema.T.UnitCategory, TId.UnitCategory,
 				new Tbl.IAttr[] {
 					UnitsDependentGroup,
@@ -818,16 +656,16 @@ namespace Thinkage.MainBoss.Controls {
 						TblColumnNode.New(dsMB.Path.T.UnitCategory.F.Desc, DCol.Normal, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.UnitCategory.F.Comment, DCol.Normal, ECol.Normal)),
 					BrowsetteTabNode.New(TId.Unit, TId.UnitCategory,
-						TblColumnNode.NewBrowsette(TILocations.UnitBrowseTblCreator, dsMB.Path.T.LocationDerivations.F.LocationID.F.RelativeLocationID.F.UnitID.F.UnitCategoryID, DCol.Normal, ECol.Normal))
+						TblColumnNode.NewBrowsette(TILocations.UnitBrowseTblCreator, dsMB.Path.T.Location.F.RelativeLocationID.F.UnitID.F.UnitCategoryID, DCol.Normal, ECol.Normal))
 				));
 			});
 			RegisterExistingForImportExport(TId.UnitCategory, dsMB.Schema.T.UnitCategory);
 			#endregion
 			#region UnitOfMeasure
-			DefineTbl(dsMB.Schema.T.UnitOfMeasure, delegate() {
+			DefineTbl(dsMB.Schema.T.UnitOfMeasure, delegate () {
 				return new Tbl(dsMB.Schema.T.UnitOfMeasure, TId.UnitOfMeasure,
 				new Tbl.IAttr[] {
-					ItemsDependentGroup,
+					ItemsDependentGroup|MetersDependentGroup,
 					new BTbl(BTbl.ListColumn(dsMB.Path.T.UnitOfMeasure.F.Code), BTbl.ListColumn(dsMB.Path.T.UnitOfMeasure.F.Desc),
 						BTbl.SetCustomClassReportTbl<CodeDescReportTbl>()),
 					new ETbl()
@@ -868,7 +706,7 @@ namespace Thinkage.MainBoss.Controls {
 						TblColumnNode.New(dsMB.Path.T.UnitServiceContract.F.ServiceContractID.F.Comment, DCol.Normal, ECol.AllReadonly)
 					})
 			);
-			DelayedCreateTbl UnitServiceContractEditTbl = new DelayedCreateTbl(delegate() {
+			DelayedCreateTbl UnitServiceContractEditTbl = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.UnitServiceContract, TId.UnitServiceContract,
 					new Tbl.IAttr[] {
 						CommonTblAttrs.ViewCostsDefinedBySchema,
@@ -878,7 +716,7 @@ namespace Thinkage.MainBoss.Controls {
 				(TblLayoutNodeArray)unitServiceContractNodes.Clone()
 				);
 			});
-			WorkOrderServiceContractsBrowseTbl = new DelayedCreateTbl(delegate() {
+			WorkOrderServiceContractsBrowseTbl = new DelayedCreateTbl(delegate () {
 				return new CompositeTbl(dsMB.Schema.T.UnitServiceContract, TId.UnitServiceContract,
 					new Tbl.IAttr[] {
 						CommonTblAttrs.ViewCostsDefinedBySchema,
@@ -890,12 +728,11 @@ namespace Thinkage.MainBoss.Controls {
 								BTbl.ListColumn(dsMB.Path.T.UnitServiceContract.F.ServiceContractID.F.ContractNumber)
 						)
 					},
-					null,
 					CompositeView.ChangeEditTbl(UnitServiceContractEditTbl,
 						CompositeView.EditorAccess(false, EdtMode.UnDelete, EdtMode.New, EdtMode.Edit, EdtMode.Delete))
 				);
 			});
-			DelayedCreateTbl UnitServiceContractBrowseTbl = new DelayedCreateTbl(delegate() {
+			DelayedCreateTbl UnitServiceContractBrowseTbl = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.UnitServiceContract, TId.UnitServiceContract,
 					new Tbl.IAttr[] {
 						CommonTblAttrs.ViewCostsDefinedBySchema,
@@ -914,7 +751,7 @@ namespace Thinkage.MainBoss.Controls {
 			DefineTbl(dsMB.Schema.T.UnitServiceContract, UnitServiceContractBrowseTbl);
 			#endregion
 			#region UnitUsage
-			DefineTbl(dsMB.Schema.T.UnitUsage, delegate() {
+			DefineTbl(dsMB.Schema.T.UnitUsage, delegate () {
 				return new Tbl(dsMB.Schema.T.UnitUsage, TId.UnitUsage,
 					new Tbl.IAttr[] {
 						UnitsDependentGroup,
@@ -928,7 +765,7 @@ namespace Thinkage.MainBoss.Controls {
 							TblColumnNode.New(dsMB.Path.T.UnitUsage.F.Desc, DCol.Normal, ECol.Normal),
 							TblColumnNode.New(dsMB.Path.T.UnitUsage.F.Comment, DCol.Normal, ECol.Normal)),
 						BrowsetteTabNode.New(TId.Unit, TId.UnitUsage,
-							TblColumnNode.NewBrowsette(TILocations.UnitBrowseTblCreator, dsMB.Path.T.LocationDerivations.F.LocationID.F.RelativeLocationID.F.UnitID.F.UnitUsageID, DCol.Normal, ECol.Normal))
+							TblColumnNode.NewBrowsette(TILocations.UnitBrowseTblCreator, dsMB.Path.T.Location.F.RelativeLocationID.F.UnitID.F.UnitUsageID, DCol.Normal, ECol.Normal))
 					)
 				);
 			});

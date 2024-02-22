@@ -209,6 +209,13 @@ namespace Thinkage.MainBoss.WebAccess.Models
 				return this.GetTable<UnitEntities.Specification>();
 			}
 		}
+		public System.Data.Linq.Table<UnitEntities.Attachment> Attachment
+		{
+			get
+			{
+				return this.GetTable<UnitEntities.Attachment>();
+			}
+		}
 		public System.Data.Linq.Table<UnitEntities.SpecificationForm> SpecificationForm
 		{
 			get
@@ -230,11 +237,18 @@ namespace Thinkage.MainBoss.WebAccess.Models
 				return this.GetTable<UnitEntities.SpecificationData>();
 			}
 		}
-		public System.Data.Linq.Table<UnitEntities.Attachment> Attachment
+		public System.Data.Linq.Table<UnitEntities.AttachmentPath> AttachmentPath
 		{
 			get
 			{
-				return this.GetTable<UnitEntities.Attachment>();
+				return this.GetTable<UnitEntities.AttachmentPath>();
+			}
+		}
+		public System.Data.Linq.Table<UnitEntities.UnitAttachment> UnitAttachment
+		{
+			get
+			{
+				return this.GetTable<UnitEntities.UnitAttachment>();
 			}
 		}
   
@@ -753,10 +767,9 @@ namespace UnitEntities
 		private byte? _GISZoom;
 		private EntitySet<RelativeLocation> _RelativeLocationContainingLocation;
 		private EntitySet<Contact> _ContactLocation;
-		private EntitySet<Specification> _SpecificationUnitLocation;
-		private EntitySet<Attachment> _AttachmentUnitLocation;
 		private EntitySet<LocationContainment> _LocationContainmentContainedLocation;
 		private EntitySet<LocationContainment> _LocationContainmentContainingLocation;
+		private EntitySet<UnitAttachment> _UnitAttachmentUnitLocation;
 		private EntityRef<RelativeLocation> _DerivedRelativeLocation;
 		private EntityRef<PostalAddress> _DerivedPostalAddress;
 
@@ -764,10 +777,9 @@ namespace UnitEntities
 		{
 			this._RelativeLocationContainingLocation = new EntitySet<RelativeLocation>(new Action<RelativeLocation>(this.attach_RelativeLocationContainingLocation), new Action<RelativeLocation>(this.detach_RelativeLocationContainingLocation));
 			this._ContactLocation = new EntitySet<Contact>(new Action<Contact>(this.attach_ContactLocation), new Action<Contact>(this.detach_ContactLocation));
-			this._SpecificationUnitLocation = new EntitySet<Specification>(new Action<Specification>(this.attach_SpecificationUnitLocation), new Action<Specification>(this.detach_SpecificationUnitLocation));
-			this._AttachmentUnitLocation = new EntitySet<Attachment>(new Action<Attachment>(this.attach_AttachmentUnitLocation), new Action<Attachment>(this.detach_AttachmentUnitLocation));
 			this._LocationContainmentContainedLocation = new EntitySet<LocationContainment>(new Action<LocationContainment>(this.attach_LocationContainmentContainedLocation), new Action<LocationContainment>(this.detach_LocationContainmentContainedLocation));
 			this._LocationContainmentContainingLocation = new EntitySet<LocationContainment>(new Action<LocationContainment>(this.attach_LocationContainmentContainingLocation), new Action<LocationContainment>(this.detach_LocationContainmentContainingLocation));
+			this._UnitAttachmentUnitLocation = new EntitySet<UnitAttachment>(new Action<UnitAttachment>(this.attach_UnitAttachmentUnitLocation), new Action<UnitAttachment>(this.detach_UnitAttachmentUnitLocation));
 			this._DerivedRelativeLocation = default(EntityRef<RelativeLocation>);
 			this._DerivedPostalAddress = default(EntityRef<PostalAddress>);
 		}
@@ -920,30 +932,6 @@ namespace UnitEntities
 				return this._DerivedPostalAddress.Entity;
 			}
 		}
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Location_Specification", Storage="_SpecificationUnitLocation", ThisKey="Id", OtherKey="UnitLocationID")]
-		public EntitySet<Specification> SpecificationUnitLocation
-		{
-			get
-			{
-				return this._SpecificationUnitLocation;
-			}
-			set
-			{
-				this._SpecificationUnitLocation.Assign(value);
-			}
-		}
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Location_Attachment", Storage="_AttachmentUnitLocation", ThisKey="Id", OtherKey="UnitLocationID")]
-		public EntitySet<Attachment> AttachmentUnitLocation
-		{
-			get
-			{
-				return this._AttachmentUnitLocation;
-			}
-			set
-			{
-				this._AttachmentUnitLocation.Assign(value);
-			}
-		}
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Location_LocationContainment", Storage="_LocationContainmentContainedLocation", ThisKey="Id", OtherKey="ContainedLocationID")]
 		public EntitySet<LocationContainment> LocationContainmentContainedLocation
 		{
@@ -968,6 +956,18 @@ namespace UnitEntities
 				this._LocationContainmentContainingLocation.Assign(value);
 			}
 		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Location_UnitAttachment", Storage="_UnitAttachmentUnitLocation", ThisKey="Id", OtherKey="UnitLocationID")]
+		public EntitySet<UnitAttachment> UnitAttachmentUnitLocation
+		{
+			get
+			{
+				return this._UnitAttachmentUnitLocation;
+			}
+			set
+			{
+				this._UnitAttachmentUnitLocation.Assign(value);
+			}
+		}
 
 		private void attach_RelativeLocationContainingLocation(RelativeLocation entity)
 		{
@@ -987,24 +987,6 @@ namespace UnitEntities
 			entity.Location = null;
 		}
 
-		private void attach_SpecificationUnitLocation(Specification entity)
-		{
-			entity.UnitLocation = this;
-		}
-		private void detach_SpecificationUnitLocation(Specification entity)
-		{
-			entity.UnitLocation = null;
-		}
-
-		private void attach_AttachmentUnitLocation(Attachment entity)
-		{
-			entity.UnitLocation = this;
-		}
-		private void detach_AttachmentUnitLocation(Attachment entity)
-		{
-			entity.UnitLocation = null;
-		}
-
 		private void attach_LocationContainmentContainedLocation(LocationContainment entity)
 		{
 			entity.ContainedLocation = this;
@@ -1021,6 +1003,15 @@ namespace UnitEntities
 		private void detach_LocationContainmentContainingLocation(LocationContainment entity)
 		{
 			entity.ContainingLocation = null;
+		}
+
+		private void attach_UnitAttachmentUnitLocation(UnitAttachment entity)
+		{
+			entity.UnitLocation = this;
+		}
+		private void detach_UnitAttachmentUnitLocation(UnitAttachment entity)
+		{
+			entity.UnitLocation = null;
 		}
 	}
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.LocationContainment")]
@@ -3066,18 +3057,17 @@ namespace UnitEntities
 		// Denotes table Specification with labelkey='Specification'
 		static public string SpecificationLabelKey { get{return UnitLabelKdsMBLabel.K("Specification").Translate();}}
 		private System.Guid _Id;
-		private string _Code;
-		private string _Desc;
-		private string _Comment;
-		private System.Guid _UnitLocationID;
+		private System.Guid _AttachmentID;
 		private System.Guid _SpecificationFormID;
 		private string _ReportText;
-		private EntityRef<Location> _UnitLocation;
+		private EntitySet<SpecificationData> _SpecificationDataSpecification;
+		private EntityRef<Attachment> _BaseAttachment;
 		private EntityRef<SpecificationForm> _SpecificationForm;
 
 		public Specification()
 		{
-			this._UnitLocation = default(EntityRef<Location>);
+			this._SpecificationDataSpecification = new EntitySet<SpecificationData>(new Action<SpecificationData>(this.attach_SpecificationDataSpecification), new Action<SpecificationData>(this.detach_SpecificationDataSpecification));
+			this._BaseAttachment = default(EntityRef<Attachment>);
 			this._SpecificationForm = default(EntityRef<SpecificationForm>);
 		}
 		/// Denotes the Specification's Id column with type id(nonnull) with labelkey='Id'
@@ -3099,77 +3089,22 @@ namespace UnitEntities
 				}
 			}
 		}
-		/// Denotes the Specification's Code column with type string(nonnull, minlength 1, maxlength 50, maxlines 0, trim) with labelkey='Code'
-		static public string Specification_Code{ get{return UnitLabelKdsMBLabel.K("Code").Translate();}}
-		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.Specification),Name="Specification_Code")]		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Code", DbType="NVARCHAR (50)", CanBeNull=false)]
+		/// Denotes the Specification's AttachmentID column with type link(nonnull, field Attachment.Id) with labelkey='Attachment'
+		static public string Specification_AttachmentID{ get{return UnitLabelKdsMBLabel.K("Attachment").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.Specification),Name="Specification_AttachmentID")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_AttachmentID", DbType="UNIQUEIDENTIFIER", CanBeNull=false)]
 		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
-		public string Code
+		public System.Guid AttachmentID
 		{
 			get
 			{
-				return this._Code;
+				return this._AttachmentID;
 			}
 			set
 			{
-				if ((this._Code != value))
+				if ((this._AttachmentID != value))
 				{
-					this._Code = value;
-				}
-			}
-		}
-		/// Denotes the Specification's Desc column with type string(minlength 1, maxlength 150, maxlines 0, trim) with labelkey='Desc'
-		static public string Specification_Desc{ get{return UnitLabelKdsMBLabel.K("Desc").Translate();}}
-		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.Specification),Name="Specification_Desc")]		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Desc", DbType="NVARCHAR (150)")]
-		public string Desc
-		{
-			get
-			{
-				return this._Desc;
-			}
-			set
-			{
-				if ((this._Desc != value))
-				{
-					this._Desc = value;
-				}
-			}
-		}
-		/// Denotes the Specification's Comment column with type string(minlength 1, (maxlength 1,073,741,823), trim) with labelkey='Comment'
-		static public string Specification_Comment{ get{return UnitLabelKdsMBLabel.K("Comment").Translate();}}
-		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.Specification),Name="Specification_Comment")]		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Comment", DbType="NVARCHAR(MAX)")]
-		public string Comment
-		{
-			get
-			{
-				return this._Comment;
-			}
-			set
-			{
-				if ((this._Comment != value))
-				{
-					this._Comment = value;
-				}
-			}
-		}
-		/// Denotes the Specification's UnitLocationID column with type link(nonnull, field Location.Id) with labelkey='Unit'
-		static public string Specification_UnitLocationID{ get{return UnitLabelKdsMBLabel.K("Unit").Translate();}}
-		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.Specification),Name="Specification_UnitLocationID")]		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UnitLocationID", DbType="UNIQUEIDENTIFIER", CanBeNull=false)]
-		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
-		public System.Guid UnitLocationID
-		{
-			get
-			{
-				return this._UnitLocationID;
-			}
-			set
-			{
-				if ((this._UnitLocationID != value))
-				{
-					this._UnitLocationID = value;
+					this._AttachmentID = value;
 				}
 			}
 		}
@@ -3210,16 +3145,28 @@ namespace UnitEntities
 				}
 			}
 		}
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UnitLocation_Specification", Storage="_UnitLocation", ThisKey="UnitLocationID", OtherKey="Id", IsForeignKey=true)]
-		public Location UnitLocation
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Specification_SpecificationData", Storage="_SpecificationDataSpecification", ThisKey="Id", OtherKey="SpecificationID")]
+		public EntitySet<SpecificationData> SpecificationDataSpecification
 		{
 			get
 			{
-				return this._UnitLocation.Entity;
+				return this._SpecificationDataSpecification;
 			}
 			set
 			{
-				Location previousValue = this._UnitLocation.Entity;
+				this._SpecificationDataSpecification.Assign(value);
+			}
+		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="BaseAttachment_Specification", Storage="_BaseAttachment", ThisKey="AttachmentID", OtherKey="Id", IsForeignKey=true)]
+		public Attachment BaseAttachment
+		{
+			get
+			{
+				return this._BaseAttachment.Entity;
+			}
+			set
+			{
+				Attachment previousValue = this._BaseAttachment.Entity;
 			}
 		}
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="SpecificationForm_Specification", Storage="_SpecificationForm", ThisKey="SpecificationFormID", OtherKey="Id", IsForeignKey=true)]
@@ -3234,118 +3181,14 @@ namespace UnitEntities
 				SpecificationForm previousValue = this._SpecificationForm.Entity;
 			}
 		}
-	}
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.SpecificationForm")]
-	public partial class SpecificationForm
-	{
-		// Denotes table SpecificationForm with labelkey='SpecificationForm'
-		static public string SpecificationFormLabelKey { get{return UnitLabelKdsMBLabel.K("SpecificationForm").Translate();}}
-		private System.Guid _Id;
-		private EntitySet<Specification> _SpecificationSpecificationForm;
 
-		public SpecificationForm()
+		private void attach_SpecificationDataSpecification(SpecificationData entity)
 		{
-			this._SpecificationSpecificationForm = new EntitySet<Specification>(new Action<Specification>(this.attach_SpecificationSpecificationForm), new Action<Specification>(this.detach_SpecificationSpecificationForm));
+			entity.Specification = this;
 		}
-		/// Denotes the SpecificationForm's Id column with type id(nonnull) with labelkey='Id'
-		static public string SpecificationForm_Id{ get{return UnitLabelKdsMBLabel.K("Id").Translate();}}
-		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.SpecificationForm),Name="SpecificationForm_Id")]		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="UNIQUEIDENTIFIER", IsPrimaryKey=true)]
-		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
-		public System.Guid Id
+		private void detach_SpecificationDataSpecification(SpecificationData entity)
 		{
-			get
-			{
-				return this._Id;
-			}
-			set
-			{
-				if ((this._Id != value))
-				{
-					this._Id = value;
-				}
-			}
-		}
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="SpecificationForm_Specification", Storage="_SpecificationSpecificationForm", ThisKey="Id", OtherKey="SpecificationFormID")]
-		public EntitySet<Specification> SpecificationSpecificationForm
-		{
-			get
-			{
-				return this._SpecificationSpecificationForm;
-			}
-			set
-			{
-				this._SpecificationSpecificationForm.Assign(value);
-			}
-		}
-
-		private void attach_SpecificationSpecificationForm(Specification entity)
-		{
-			entity.SpecificationForm = this;
-		}
-		private void detach_SpecificationSpecificationForm(Specification entity)
-		{
-			entity.SpecificationForm = null;
-		}
-	}
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.SpecificationFormField")]
-	public partial class SpecificationFormField
-	{
-		// Denotes table SpecificationFormField with labelkey='SpecificationFormField'
-		static public string SpecificationFormFieldLabelKey { get{return UnitLabelKdsMBLabel.K("SpecificationFormField").Translate();}}
-		private System.Guid _Id;
-
-		public SpecificationFormField()
-		{
-		}
-		/// Denotes the SpecificationFormField's Id column with type id(nonnull) with labelkey='Id'
-		static public string SpecificationFormField_Id{ get{return UnitLabelKdsMBLabel.K("Id").Translate();}}
-		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.SpecificationFormField),Name="SpecificationFormField_Id")]		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="UNIQUEIDENTIFIER", IsPrimaryKey=true)]
-		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
-		public System.Guid Id
-		{
-			get
-			{
-				return this._Id;
-			}
-			set
-			{
-				if ((this._Id != value))
-				{
-					this._Id = value;
-				}
-			}
-		}
-	}
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.SpecificationData")]
-	public partial class SpecificationData
-	{
-		// Denotes table SpecificationData with labelkey='SpecificationData'
-		static public string SpecificationDataLabelKey { get{return UnitLabelKdsMBLabel.K("SpecificationData").Translate();}}
-		private System.Guid _Id;
-
-		public SpecificationData()
-		{
-		}
-		/// Denotes the SpecificationData's Id column with type id(nonnull) with labelkey='Id'
-		static public string SpecificationData_Id{ get{return UnitLabelKdsMBLabel.K("Id").Translate();}}
-		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.SpecificationData),Name="SpecificationData_Id")]		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="UNIQUEIDENTIFIER", IsPrimaryKey=true)]
-		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
-		public System.Guid Id
-		{
-			get
-			{
-				return this._Id;
-			}
-			set
-			{
-				if ((this._Id != value))
-				{
-					this._Id = value;
-				}
-			}
+			entity.Specification = null;
 		}
 	}
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Attachment")]
@@ -3357,13 +3200,16 @@ namespace UnitEntities
 		private string _Code;
 		private string _Desc;
 		private string _Comment;
-		private string _Path;
-		private System.Guid _UnitLocationID;
-		private EntityRef<Location> _UnitLocation;
+		private System.DateTime? _Hidden;
+		private EntitySet<UnitAttachment> _UnitAttachmentAttachment;
+		private EntityRef<Specification> _DerivedSpecification;
+		private EntityRef<AttachmentPath> _DerivedAttachmentPath;
 
 		public Attachment()
 		{
-			this._UnitLocation = default(EntityRef<Location>);
+			this._UnitAttachmentAttachment = new EntitySet<UnitAttachment>(new Action<UnitAttachment>(this.attach_UnitAttachmentAttachment), new Action<UnitAttachment>(this.detach_UnitAttachmentAttachment));
+			this._DerivedSpecification = default(EntityRef<Specification>);
+			this._DerivedAttachmentPath = default(EntityRef<AttachmentPath>);
 		}
 		/// Denotes the Attachment's Id column with type id(nonnull) with labelkey='Id'
 		static public string Attachment_Id{ get{return UnitLabelKdsMBLabel.K("Id").Translate();}}
@@ -3439,9 +3285,476 @@ namespace UnitEntities
 				}
 			}
 		}
-		/// Denotes the Attachment's Path column with type string(nonnull, minlength 1, (maxlength 1,073,741,823), maxlines 0, trim) with labelkey='Path'
-		static public string Attachment_Path{ get{return UnitLabelKdsMBLabel.K("Path").Translate();}}
-		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.Attachment),Name="Attachment_Path")]		
+		/// Denotes the Attachment's Hidden column with type datetime((min Monday, 01 January 1753 00:00), (max Friday, 31 December 9999 23:59:59.99), divided 100) with labelkey='Hidden'
+		static public string Attachment_Hidden{ get{return UnitLabelKdsMBLabel.K("Hidden").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.Attachment),Name="Attachment_Hidden")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Hidden", DbType="DATETIME")]
+		public System.DateTime? Hidden
+		{
+			get
+			{
+				return this._Hidden;
+			}
+			set
+			{
+				if ((this._Hidden != value))
+				{
+					this._Hidden = value;
+				}
+			}
+		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Attachment_DerivedSpecification", Storage="_DerivedSpecification", ThisKey="Id", OtherKey="AttachmentID", IsUnique=true, IsForeignKey=false)]
+		public Specification DerivedSpecification
+		{
+			get
+			{
+				return this._DerivedSpecification.Entity;
+			}
+		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Attachment_DerivedAttachmentPath", Storage="_DerivedAttachmentPath", ThisKey="Id", OtherKey="AttachmentID", IsUnique=true, IsForeignKey=false)]
+		public AttachmentPath DerivedAttachmentPath
+		{
+			get
+			{
+				return this._DerivedAttachmentPath.Entity;
+			}
+		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Attachment_UnitAttachment", Storage="_UnitAttachmentAttachment", ThisKey="Id", OtherKey="AttachmentID")]
+		public EntitySet<UnitAttachment> UnitAttachmentAttachment
+		{
+			get
+			{
+				return this._UnitAttachmentAttachment;
+			}
+			set
+			{
+				this._UnitAttachmentAttachment.Assign(value);
+			}
+		}
+
+		private void attach_UnitAttachmentAttachment(UnitAttachment entity)
+		{
+			entity.Attachment = this;
+		}
+		private void detach_UnitAttachmentAttachment(UnitAttachment entity)
+		{
+			entity.Attachment = null;
+		}
+	}
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.SpecificationForm")]
+	public partial class SpecificationForm
+	{
+		// Denotes table SpecificationForm with labelkey='SpecificationForm'
+		static public string SpecificationFormLabelKey { get{return UnitLabelKdsMBLabel.K("SpecificationForm").Translate();}}
+		private System.Guid _Id;
+		private EntitySet<Specification> _SpecificationSpecificationForm;
+		private EntitySet<SpecificationFormField> _SpecificationFormFieldSpecificationForm;
+
+		public SpecificationForm()
+		{
+			this._SpecificationSpecificationForm = new EntitySet<Specification>(new Action<Specification>(this.attach_SpecificationSpecificationForm), new Action<Specification>(this.detach_SpecificationSpecificationForm));
+			this._SpecificationFormFieldSpecificationForm = new EntitySet<SpecificationFormField>(new Action<SpecificationFormField>(this.attach_SpecificationFormFieldSpecificationForm), new Action<SpecificationFormField>(this.detach_SpecificationFormFieldSpecificationForm));
+		}
+		/// Denotes the SpecificationForm's Id column with type id(nonnull) with labelkey='Id'
+		static public string SpecificationForm_Id{ get{return UnitLabelKdsMBLabel.K("Id").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.SpecificationForm),Name="SpecificationForm_Id")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="UNIQUEIDENTIFIER", IsPrimaryKey=true)]
+		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
+		public System.Guid Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this._Id = value;
+				}
+			}
+		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="SpecificationForm_Specification", Storage="_SpecificationSpecificationForm", ThisKey="Id", OtherKey="SpecificationFormID")]
+		public EntitySet<Specification> SpecificationSpecificationForm
+		{
+			get
+			{
+				return this._SpecificationSpecificationForm;
+			}
+			set
+			{
+				this._SpecificationSpecificationForm.Assign(value);
+			}
+		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="SpecificationForm_SpecificationFormField", Storage="_SpecificationFormFieldSpecificationForm", ThisKey="Id", OtherKey="SpecificationFormID")]
+		public EntitySet<SpecificationFormField> SpecificationFormFieldSpecificationForm
+		{
+			get
+			{
+				return this._SpecificationFormFieldSpecificationForm;
+			}
+			set
+			{
+				this._SpecificationFormFieldSpecificationForm.Assign(value);
+			}
+		}
+
+		private void attach_SpecificationSpecificationForm(Specification entity)
+		{
+			entity.SpecificationForm = this;
+		}
+		private void detach_SpecificationSpecificationForm(Specification entity)
+		{
+			entity.SpecificationForm = null;
+		}
+
+		private void attach_SpecificationFormFieldSpecificationForm(SpecificationFormField entity)
+		{
+			entity.SpecificationForm = this;
+		}
+		private void detach_SpecificationFormFieldSpecificationForm(SpecificationFormField entity)
+		{
+			entity.SpecificationForm = null;
+		}
+	}
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.SpecificationFormField")]
+	public partial class SpecificationFormField
+	{
+		// Denotes table SpecificationFormField with labelkey='Specification Form Field'
+		static public string SpecificationFormFieldLabelKey { get{return UnitLabelKdsMBLabel.K("Specification Form Field").Translate();}}
+		private System.Guid _Id;
+		private System.Guid _SpecificationFormID;
+		private string _FieldName;
+		private int _FieldSize;
+		private string _EditLabel;
+		private int? _FieldOrder;
+		private EntitySet<SpecificationData> _SpecificationDataSpecificationFormField;
+		private EntityRef<SpecificationForm> _SpecificationForm;
+
+		public SpecificationFormField()
+		{
+			this._SpecificationDataSpecificationFormField = new EntitySet<SpecificationData>(new Action<SpecificationData>(this.attach_SpecificationDataSpecificationFormField), new Action<SpecificationData>(this.detach_SpecificationDataSpecificationFormField));
+			this._SpecificationForm = default(EntityRef<SpecificationForm>);
+		}
+		/// Denotes the SpecificationFormField's Id column with type id(nonnull) with labelkey='Id'
+		static public string SpecificationFormField_Id{ get{return UnitLabelKdsMBLabel.K("Id").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.SpecificationFormField),Name="SpecificationFormField_Id")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="UNIQUEIDENTIFIER", IsPrimaryKey=true)]
+		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
+		public System.Guid Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this._Id = value;
+				}
+			}
+		}
+		/// Denotes the SpecificationFormField's SpecificationFormID column with type link(nonnull, field SpecificationForm.Id) with labelkey='SpecificationForm'
+		static public string SpecificationFormField_SpecificationFormID{ get{return UnitLabelKdsMBLabel.K("SpecificationForm").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.SpecificationFormField),Name="SpecificationFormField_SpecificationFormID")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SpecificationFormID", DbType="UNIQUEIDENTIFIER", CanBeNull=false)]
+		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
+		public System.Guid SpecificationFormID
+		{
+			get
+			{
+				return this._SpecificationFormID;
+			}
+			set
+			{
+				if ((this._SpecificationFormID != value))
+				{
+					this._SpecificationFormID = value;
+				}
+			}
+		}
+		/// Denotes the SpecificationFormField's FieldName column with type string(nonnull, minlength 1, maxlength 32, maxlines 0, trim) with labelkey='FieldName'
+		static public string SpecificationFormField_FieldName{ get{return UnitLabelKdsMBLabel.K("FieldName").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.SpecificationFormField),Name="SpecificationFormField_FieldName")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FieldName", DbType="NVARCHAR (32)", CanBeNull=false)]
+		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
+		public string FieldName
+		{
+			get
+			{
+				return this._FieldName;
+			}
+			set
+			{
+				if ((this._FieldName != value))
+				{
+					this._FieldName = value;
+				}
+			}
+		}
+		/// Denotes the SpecificationFormField's FieldSize column with type integer(nonnull, 32) with labelkey='FieldSize'
+		static public string SpecificationFormField_FieldSize{ get{return UnitLabelKdsMBLabel.K("FieldSize").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.SpecificationFormField),Name="SpecificationFormField_FieldSize")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FieldSize", DbType="INT", CanBeNull=false)]
+		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
+		public int FieldSize
+		{
+			get
+			{
+				return this._FieldSize;
+			}
+			set
+			{
+				if ((this._FieldSize != value))
+				{
+					this._FieldSize = value;
+				}
+			}
+		}
+		/// Denotes the SpecificationFormField's EditLabel column with type string(nonnull, minlength 1, maxlength 80, maxlines 0, trim) with labelkey='EditLabel'
+		static public string SpecificationFormField_EditLabel{ get{return UnitLabelKdsMBLabel.K("EditLabel").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.SpecificationFormField),Name="SpecificationFormField_EditLabel")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EditLabel", DbType="NVARCHAR (80)", CanBeNull=false)]
+		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
+		public string EditLabel
+		{
+			get
+			{
+				return this._EditLabel;
+			}
+			set
+			{
+				if ((this._EditLabel != value))
+				{
+					this._EditLabel = value;
+				}
+			}
+		}
+		/// Denotes the SpecificationFormField's FieldOrder column with type integer(32) with labelkey='FieldOrder'
+		static public string SpecificationFormField_FieldOrder{ get{return UnitLabelKdsMBLabel.K("FieldOrder").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.SpecificationFormField),Name="SpecificationFormField_FieldOrder")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FieldOrder", DbType="INT")]
+		public int? FieldOrder
+		{
+			get
+			{
+				return this._FieldOrder;
+			}
+			set
+			{
+				if ((this._FieldOrder != value))
+				{
+					this._FieldOrder = value;
+				}
+			}
+		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="SpecificationFormField_SpecificationData", Storage="_SpecificationDataSpecificationFormField", ThisKey="Id", OtherKey="SpecificationFormFieldID")]
+		public EntitySet<SpecificationData> SpecificationDataSpecificationFormField
+		{
+			get
+			{
+				return this._SpecificationDataSpecificationFormField;
+			}
+			set
+			{
+				this._SpecificationDataSpecificationFormField.Assign(value);
+			}
+		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="SpecificationForm_SpecificationFormField", Storage="_SpecificationForm", ThisKey="SpecificationFormID", OtherKey="Id", IsForeignKey=true)]
+		public SpecificationForm SpecificationForm
+		{
+			get
+			{
+				return this._SpecificationForm.Entity;
+			}
+			set
+			{
+				SpecificationForm previousValue = this._SpecificationForm.Entity;
+			}
+		}
+
+		private void attach_SpecificationDataSpecificationFormField(SpecificationData entity)
+		{
+			entity.SpecificationFormField = this;
+		}
+		private void detach_SpecificationDataSpecificationFormField(SpecificationData entity)
+		{
+			entity.SpecificationFormField = null;
+		}
+	}
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.SpecificationData")]
+	public partial class SpecificationData
+	{
+		// Denotes table SpecificationData with labelkey='Specification Data'
+		static public string SpecificationDataLabelKey { get{return UnitLabelKdsMBLabel.K("Specification Data").Translate();}}
+		private System.Guid _Id;
+		private System.Guid _SpecificationID;
+		private System.Guid _SpecificationFormFieldID;
+		private string _FieldValue;
+		private EntityRef<Specification> _Specification;
+		private EntityRef<SpecificationFormField> _SpecificationFormField;
+
+		public SpecificationData()
+		{
+			this._Specification = default(EntityRef<Specification>);
+			this._SpecificationFormField = default(EntityRef<SpecificationFormField>);
+		}
+		/// Denotes the SpecificationData's Id column with type id(nonnull) with labelkey='Id'
+		static public string SpecificationData_Id{ get{return UnitLabelKdsMBLabel.K("Id").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.SpecificationData),Name="SpecificationData_Id")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="UNIQUEIDENTIFIER", IsPrimaryKey=true)]
+		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
+		public System.Guid Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this._Id = value;
+				}
+			}
+		}
+		/// Denotes the SpecificationData's SpecificationID column with type link(nonnull, field Specification.Id) with labelkey='Specification'
+		static public string SpecificationData_SpecificationID{ get{return UnitLabelKdsMBLabel.K("Specification").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.SpecificationData),Name="SpecificationData_SpecificationID")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SpecificationID", DbType="UNIQUEIDENTIFIER", CanBeNull=false)]
+		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
+		public System.Guid SpecificationID
+		{
+			get
+			{
+				return this._SpecificationID;
+			}
+			set
+			{
+				if ((this._SpecificationID != value))
+				{
+					this._SpecificationID = value;
+				}
+			}
+		}
+		/// Denotes the SpecificationData's SpecificationFormFieldID column with type link(nonnull, field SpecificationFormField.Id) with labelkey='Specification Form Field'
+		static public string SpecificationData_SpecificationFormFieldID{ get{return UnitLabelKdsMBLabel.K("Specification Form Field").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.SpecificationData),Name="SpecificationData_SpecificationFormFieldID")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SpecificationFormFieldID", DbType="UNIQUEIDENTIFIER", CanBeNull=false)]
+		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
+		public System.Guid SpecificationFormFieldID
+		{
+			get
+			{
+				return this._SpecificationFormFieldID;
+			}
+			set
+			{
+				if ((this._SpecificationFormFieldID != value))
+				{
+					this._SpecificationFormFieldID = value;
+				}
+			}
+		}
+		/// Denotes the SpecificationData's FieldValue column with type string(minlength 1, maxlength 80, maxlines 0, trim) with labelkey='FieldValue'
+		static public string SpecificationData_FieldValue{ get{return UnitLabelKdsMBLabel.K("FieldValue").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.SpecificationData),Name="SpecificationData_FieldValue")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FieldValue", DbType="NVARCHAR (80)")]
+		public string FieldValue
+		{
+			get
+			{
+				return this._FieldValue;
+			}
+			set
+			{
+				if ((this._FieldValue != value))
+				{
+					this._FieldValue = value;
+				}
+			}
+		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Specification_SpecificationData", Storage="_Specification", ThisKey="SpecificationID", OtherKey="Id", IsForeignKey=true)]
+		public Specification Specification
+		{
+			get
+			{
+				return this._Specification.Entity;
+			}
+			set
+			{
+				Specification previousValue = this._Specification.Entity;
+			}
+		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="SpecificationFormField_SpecificationData", Storage="_SpecificationFormField", ThisKey="SpecificationFormFieldID", OtherKey="Id", IsForeignKey=true)]
+		public SpecificationFormField SpecificationFormField
+		{
+			get
+			{
+				return this._SpecificationFormField.Entity;
+			}
+			set
+			{
+				SpecificationFormField previousValue = this._SpecificationFormField.Entity;
+			}
+		}
+	}
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.AttachmentPath")]
+	public partial class AttachmentPath
+	{
+		// Denotes table AttachmentPath with labelkey='Attachment Path'
+		static public string AttachmentPathLabelKey { get{return UnitLabelKdsMBLabel.K("Attachment Path").Translate();}}
+		private System.Guid _Id;
+		private System.Guid _AttachmentID;
+		private string _Path;
+		private EntityRef<Attachment> _BaseAttachment;
+
+		public AttachmentPath()
+		{
+			this._BaseAttachment = default(EntityRef<Attachment>);
+		}
+		/// Denotes the AttachmentPath's Id column with type id(nonnull) with labelkey='Id'
+		static public string AttachmentPath_Id{ get{return UnitLabelKdsMBLabel.K("Id").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.AttachmentPath),Name="AttachmentPath_Id")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="UNIQUEIDENTIFIER", IsPrimaryKey=true)]
+		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
+		public System.Guid Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this._Id = value;
+				}
+			}
+		}
+		/// Denotes the AttachmentPath's AttachmentID column with type link(nonnull, field Attachment.Id) with labelkey='Attachment'
+		static public string AttachmentPath_AttachmentID{ get{return UnitLabelKdsMBLabel.K("Attachment").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.AttachmentPath),Name="AttachmentPath_AttachmentID")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_AttachmentID", DbType="UNIQUEIDENTIFIER", CanBeNull=false)]
+		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
+		public System.Guid AttachmentID
+		{
+			get
+			{
+				return this._AttachmentID;
+			}
+			set
+			{
+				if ((this._AttachmentID != value))
+				{
+					this._AttachmentID = value;
+				}
+			}
+		}
+		/// Denotes the AttachmentPath's Path column with type string(nonnull, minlength 1, (maxlength 1,073,741,823), maxlines 0, trim) with labelkey='Path'
+		static public string AttachmentPath_Path{ get{return UnitLabelKdsMBLabel.K("Path").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.AttachmentPath),Name="AttachmentPath_Path")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Path", DbType="NVARCHAR(MAX)", CanBeNull=false)]
 		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
 		public string Path
@@ -3458,9 +3771,76 @@ namespace UnitEntities
 				}
 			}
 		}
-		/// Denotes the Attachment's UnitLocationID column with type link(nonnull, field Location.Id) with labelkey='Unit'
-		static public string Attachment_UnitLocationID{ get{return UnitLabelKdsMBLabel.K("Unit").Translate();}}
-		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.Attachment),Name="Attachment_UnitLocationID")]		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="BaseAttachment_AttachmentPath", Storage="_BaseAttachment", ThisKey="AttachmentID", OtherKey="Id", IsForeignKey=true)]
+		public Attachment BaseAttachment
+		{
+			get
+			{
+				return this._BaseAttachment.Entity;
+			}
+			set
+			{
+				Attachment previousValue = this._BaseAttachment.Entity;
+			}
+		}
+	}
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.UnitAttachment")]
+	public partial class UnitAttachment
+	{
+		// Denotes table UnitAttachment with labelkey=''
+		static public string UnitAttachmentLabelKey { get{return UnitLabelKdsMBLabel.K("").Translate();}}
+		private System.Guid _Id;
+		private System.Guid _AttachmentID;
+		private System.Guid _UnitLocationID;
+		private EntityRef<Attachment> _Attachment;
+		private EntityRef<Location> _UnitLocation;
+
+		public UnitAttachment()
+		{
+			this._Attachment = default(EntityRef<Attachment>);
+			this._UnitLocation = default(EntityRef<Location>);
+		}
+		/// Denotes the UnitAttachment's Id column with type id(nonnull) with labelkey='Id'
+		static public string UnitAttachment_Id{ get{return UnitLabelKdsMBLabel.K("Id").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.UnitAttachment),Name="UnitAttachment_Id")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="UNIQUEIDENTIFIER", IsPrimaryKey=true)]
+		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
+		public System.Guid Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this._Id = value;
+				}
+			}
+		}
+		/// Denotes the UnitAttachment's AttachmentID column with type link(nonnull, field Attachment.Id) with labelkey='Attachment'
+		static public string UnitAttachment_AttachmentID{ get{return UnitLabelKdsMBLabel.K("Attachment").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.UnitAttachment),Name="UnitAttachment_AttachmentID")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_AttachmentID", DbType="UNIQUEIDENTIFIER", CanBeNull=false)]
+		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
+		public System.Guid AttachmentID
+		{
+			get
+			{
+				return this._AttachmentID;
+			}
+			set
+			{
+				if ((this._AttachmentID != value))
+				{
+					this._AttachmentID = value;
+				}
+			}
+		}
+		/// Denotes the UnitAttachment's UnitLocationID column with type link(nonnull, field Location.Id) with labelkey='Unit'
+		static public string UnitAttachment_UnitLocationID{ get{return UnitLabelKdsMBLabel.K("Unit").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(UnitEntities.UnitAttachment),Name="UnitAttachment_UnitLocationID")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UnitLocationID", DbType="UNIQUEIDENTIFIER", CanBeNull=false)]
 		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
 		public System.Guid UnitLocationID
@@ -3477,7 +3857,19 @@ namespace UnitEntities
 				}
 			}
 		}
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UnitLocation_Attachment", Storage="_UnitLocation", ThisKey="UnitLocationID", OtherKey="Id", IsForeignKey=true)]
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Attachment_UnitAttachment", Storage="_Attachment", ThisKey="AttachmentID", OtherKey="Id", IsForeignKey=true)]
+		public Attachment Attachment
+		{
+			get
+			{
+				return this._Attachment.Entity;
+			}
+			set
+			{
+				Attachment previousValue = this._Attachment.Entity;
+			}
+		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UnitLocation_UnitAttachment", Storage="_UnitLocation", ThisKey="UnitLocationID", OtherKey="Id", IsForeignKey=true)]
 		public Location UnitLocation
 		{
 			get

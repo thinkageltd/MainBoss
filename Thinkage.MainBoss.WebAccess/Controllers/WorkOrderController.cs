@@ -32,17 +32,20 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		protected override ViewResult GetViewForModelStateError(WorkOrderEntities.WorkOrder model) {
 			return WorkOrderView();
 		}
+
 		// The Id of the WorkOrder we are dealing with for View&Actualize
-		Guid WorkOrderId;
+		private Guid WorkOrderId;
 		#endregion
 		private void InitViewData() {
 			ViewData["ResultMessage"] = "";
 			ViewData["UnAssigned"] = false;
 			ViewData["Refresh"] = "";
+			ViewData["Home"] = "WebAccess";
 			ViewData["CanSelfAssign"] = false;
 		}
 		#region UnAssigned
 		// GET: /WorkOrder/UnAssigned
+		[HttpGet]
 		[MainBossAuthorization]
 		public ActionResult UnAssigned([Translated]string resultMessage) {
 			InitViewData();
@@ -57,6 +60,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		#endregion
 		#region Index
 		// GET: /WorkOrder/
+		[HttpGet]
 		[MainBossAuthorization]
 		public ActionResult Index([Translated]string resultMessage) {
 			InitViewData();
@@ -71,6 +75,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		#region View
 		//
 		// GET: /WorkOrder/View/5
+		[HttpGet]
 		[MainBossAuthorization]
 		public ActionResult View(Guid id, [Translated] string resultMessage) {
 			InitViewData();
@@ -87,6 +92,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 			return WorkOrderView();
 		}
 		// GET: /WorkOrder/View/UnAssigned
+		[HttpGet]
 		[MainBossAuthorization]
 		public ActionResult ViewUnAssigned(Guid id, [Translated] string resultMessage) {
 			InitViewData();
@@ -98,7 +104,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 			ProposedWOResources = new List<WOResource>(repository.Resources(WorkOrderId));
 			Model.Resources = ProposedWOResources;
 			ViewData["UnAssigned"] = true;
-			ViewData["CanSelfAssign"] = repository.CanSelfAssign();
+			ViewData["CanSelfAssign"] = UnAssignedWorkOrderRepository.CanSelfAssign();
 			ViewData["ResultMessage"] = resultMessage;
 			return WorkOrderView();
 		}
@@ -119,6 +125,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		[MainBossAuthorization]
 		[AcceptVerbs(HttpVerbs.Post)]
 		[ValidateInput(false)]
+		[ValidateAntiForgeryToken]
 		public ActionResult Actualize(FormCollectionWithType inputValues) {
 			ViewData["UnAssigned"] = false;
 			var values = inputValues.ToValueProvider();

@@ -10,8 +10,10 @@ namespace Thinkage.MainBoss.Database {
 		public DatabaseHistoryManager(DBClient session) {
 			Session = session;
 		}
-		private DBClient Session;
-//		private DateTime? LastPreviousDate;
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0052:Remove unread private members", Justification = "Remove when work in progress is completed")]
+		private readonly DBClient Session;
+		//		private DateTime? LastPreviousDate;
 #if WORK_IN_PROGRESS
 		// Any DatabaseHistory rows created in the workingDS during the PerformTransaction body will be "rescued" and
 		// flushed to the DB outside the transaction even if the transaction rolls back. We will also query any messages created
@@ -42,9 +44,9 @@ namespace Thinkage.MainBoss.Database {
 			}
 		}
 #endif
-		public SqlExpression GetFilter() {	// or return a BrowseControl.Filter object?
-			// Return the Entry-Date based filter from the start of the last transaction.
-			// If PerformTransaction has not been called yet return FALSE.
+		public SqlExpression GetFilter() {  // or return a BrowseControl.Filter object?
+											// Return the Entry-Date based filter from the start of the last transaction.
+											// If PerformTransaction has not been called yet return FALSE.
 			return null;
 		}
 	}

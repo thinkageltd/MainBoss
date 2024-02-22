@@ -5,14 +5,10 @@
 	<field name="Id" read="RequiredGUID">
 	  <doc>The Id of this row, which is equal to the ID of the AccountingTransaction or POLine record</doc>
 	</field>
-	<field name="TableEnum" type="integer(min 0, max 11, nonnull)">
-	  <!-- ViewRecordTypes.PurchaseOrderLine -->
-	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIPurchaseOrder.PurchaseOrderLineProvider,Thinkage.MainBoss.Controls</extension>
-	</field>
-	<field name="AccountingTransactionID" type="RequiredGUIDREF" link="AccountingTransaction" labelkey="">
+	<field name="AccountingTransactionID" type="GUIDREF" link="AccountingTransaction" labelkey="">
 	  <doc>The base AccountingTransaction ID if the referenced record is a derivation thereof</doc>
 	</field>
-	<field name="POLineID" type="RequiredGUIDREF" link="POLine" labelkey="">
+	<field name="POLineID" type="GUIDREF" link="POLine" labelkey="">
 	  <doc>The base POLine ID if the referenced record is a derivation thereof</doc>
 	</field>
 	<field name="PurchaseOrderID" type="RequiredGUIDREF" link="PurchaseOrder">
@@ -21,38 +17,23 @@
 	<field name="WorkOrderExpenseModelEntryID" type="GUIDREF" link="WorkOrderExpenseModelEntry">
 	  <doc>the WorkOrderExpenseModelEntry that defines the paying cost centre for labor/other work PO lines</doc>
 	</field>
-	<field name="ParentID" type="GUIDREF" link="PurchaseOrderLine" labelkey="Purchase Order Line"/>
 	<extension name="query">
-		  select POLI.POLineID, 0,<!-- ViewRecordTypes.PurchaseOrderLine.POLineItem -->
+		  select POLI.POLineID,
 				null, POLI.POLineID,
-				POL.PurchaseOrderID, null,
-				null
+				POL.PurchaseOrderID, null
 			from POLineItem as POLI
 			  join POLine as POL on POL.Id = POLI.POLineID
 		union all
-		  select RI.AccountingTransactionID, 1,<!-- ViewRecordTypes.PurchaseOrderLine.ReceiveItemPO -->
+		  select RI.AccountingTransactionID,
 				RI.AccountingTransactionID, null, 
-				POL.PurchaseOrderID, null,
-				POLI.POLineID
+				POL.PurchaseOrderID, null
 			from ReceiveItemPO as RI
 			  join POLineItem as POLI on POLI.Id = RI.POLineItemID
 			  join POLine as POL on POL.Id = POLI.POLineID
-			where RI.Id = RI.CorrectionID
 		union all
-		  select RI.AccountingTransactionID, 2,<!-- ViewRecordTypes.PurchaseOrderLine.ReceiveItemPOCorrection -->
-				RI.AccountingTransactionID, null, 
-				POL.PurchaseOrderID, null,
-				ORI.AccountingTransactionID
-			from ReceiveItemPO as RI
-			  join POLineItem as POLI on POLI.Id = RI.POLineItemID
-			  join POLine as POL on POL.Id = POLI.POLineID
-			  join ReceiveItemPO as ORI on ORI.Id = RI.CorrectionID
-			where RI.Id != RI.CorrectionID
-		union all
-		  select POLL.POLineID, 3,<!-- ViewRecordTypes.PurchaseOrderLine.POLineLabor -->
+		  select POLL.POLineID,
 				null, POLL.POLineID,
-				POL.PurchaseOrderID, WOXME.ID,
-				null
+				POL.PurchaseOrderID, WOXME.ID
 			from POLineLabor as POLL
 			  join POLine as POL on POL.Id = POLL.POLineID
   			  join DemandLaborOutside as DLO on DLO.Id = POLL.DemandLaborOutsideID
@@ -60,31 +41,17 @@
 			  join WorkOrder as WO on WO.Id = D.WorkOrderID
 			  left join WorkOrderExpenseModelEntry as WOXME
 						on WOXME.WorkOrderExpenseModelID = WO.WorkOrderExpenseModelID and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
-
 		union all
-		  select RL.AccountingTransactionID, 4,<!-- ViewRecordTypes.PurchaseOrderLine.ActualLaborOutsidePO -->
+		  select RL.AccountingTransactionID,
 				RL.AccountingTransactionID, null, 
-				POL.PurchaseOrderID, null,
-				POLL.POLineID
+				POL.PurchaseOrderID, null
 			from ActualLaborOutsidePO as RL
 			  join POLineLabor as POLL on POLL.Id = RL.POLineLaborID
 			  join POLine as POL on POL.Id = POLL.POLineID
-			where RL.Id = RL.CorrectionID
 		union all
-		  select RL.AccountingTransactionID, 5,<!-- ViewRecordTypes.PurchaseOrderLine.ActualLaborOutsidePOCorrection -->
-				RL.AccountingTransactionID, null, 
-				POL.PurchaseOrderID, null,
-				ORL.AccountingTransactionID
-			from ActualLaborOutsidePO as RL
-			  join POLineLabor as POLL on POLL.Id = RL.POLineLaborID
-			  join POLine as POL on POL.Id = POLL.POLineID
-			  join ActualLaborOutsidePO as ORL on ORL.Id = RL.CorrectionID
-			where RL.Id != RL.CorrectionID
-		union all
-		  select POLOW.POLineID, 6,<!-- ViewRecordTypes.PurchaseOrderLine.POLineOtherWork -->
+		  select POLOW.POLineID,
 				null, POLOW.POLineID,
-				POL.PurchaseOrderID, WOXME.ID,
-				null
+				POL.PurchaseOrderID, WOXME.ID
 			from POLineOtherWork as POLOW
 			  join POLine as POL on POL.Id = POLOW.POLineID
 			  join DemandOtherWorkOutside as DOWO on DOWO.Id = POLOW.DemandOtherWorkOutsideID
@@ -93,50 +60,25 @@
 			  left join WorkOrderExpenseModelEntry as WOXME
 						on WOXME.WorkOrderExpenseModelID = WO.WorkOrderExpenseModelID and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
 		union all
-		  select ROW.AccountingTransactionID, 7,<!-- ViewRecordTypes.PurchaseOrderLine.ActualOtherWorkOutsidePO -->
+		  select ROW.AccountingTransactionID,
 				ROW.AccountingTransactionID, null, 
-				POL.PurchaseOrderID, null,
-				POLOW.POLineID
+				POL.PurchaseOrderID, null
 			from ActualOtherWorkOutsidePO as ROW
 			  join POLineOtherWork as POLOW on POLOW.Id = ROW.POLineOtherWorkID
 			  join POLine as POL on POL.Id = POLOW.POLineID
-			where ROW.Id = ROW.CorrectionID
 		union all
-		  select ROW.AccountingTransactionID, 8,<!-- ViewRecordTypes.PurchaseOrderLine.ActualOtherWorkOutsidePOCorrection -->
-				ROW.AccountingTransactionID, null, 
-				POL.PurchaseOrderID, null,
-				OROW.AccountingTransactionID
-			from ActualOtherWorkOutsidePO as ROW
-			  join POLineOtherWork as POLOW on POLOW.Id = ROW.POLineOtherWorkID
-			  join POLine as POL on POL.Id = POLOW.POLineID
-			  join ActualOtherWorkOutsidePO as OROW on OROW.Id = ROW.CorrectionID
-			where ROW.Id != ROW.CorrectionID
-		union all
-		  select POLM.POLineID, 9,<!-- ViewRecordTypes.PurchaseOrderLine.POLineMiscellaneous -->
+		  select POLM.POLineID,
 				null, POLM.POLineID,
-				POL.PurchaseOrderID, null,
-				null
+				POL.PurchaseOrderID, null
 			from POLineMiscellaneous as POLM
 			  join POLine as POL on POL.Id = POLM.POLineID
 		union all
-		  select RM.AccountingTransactionID, 10,<!-- ViewRecordTypes.PurchaseOrderLine.ReceiveMiscellaneousPO -->
+		  select RM.AccountingTransactionID,
 				RM.AccountingTransactionID, null, 
-				POL.PurchaseOrderID, null,
-				POLM.POLineID
+				POL.PurchaseOrderID, null
 			from ReceiveMiscellaneousPO as RM
 			  join POLineMiscellaneous as POLM on POLM.Id = RM.POLineMiscellaneousID
 			  join POLine as POL on POL.Id = POLM.POLineID
-			where RM.Id = RM.CorrectionID
-		union all
-		  select RM.AccountingTransactionID, 11,<!-- ViewRecordTypes.PurchaseOrderLine.ReceiveMiscellaneousPOCorrection -->
-				RM.AccountingTransactionID, null, 
-				POL.PurchaseOrderID, null,
-				ORM.AccountingTransactionID
-			from ReceiveMiscellaneousPO as RM
-			  join POLineMiscellaneous as POLM on POLM.Id = RM.POLineMiscellaneousID
-			  join POLine as POL on POL.Id = POLM.POLineID
-			  join ReceiveMiscellaneousPO as ORM on ORM.Id = RM.CorrectionID
-			where RM.Id != RM.CorrectionID
 	</extension>
 	<extension name="dependson">POLineItem</extension>
 	<extension name="dependson">ReceiveItemPO</extension>

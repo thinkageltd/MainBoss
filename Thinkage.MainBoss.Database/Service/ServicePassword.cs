@@ -7,7 +7,7 @@ namespace Thinkage.MainBoss.Database.Service
 	/// <summary>
 	/// Class to provide encryption/decryption of service passwords stored for mainboss applications.
 	/// </summary>
-	public class ServicePassword
+	public static class ServicePassword
 	{
 		private static PasswordDeriveBytes PDB
 		{

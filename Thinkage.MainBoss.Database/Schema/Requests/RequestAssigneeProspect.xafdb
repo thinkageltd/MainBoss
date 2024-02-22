@@ -3,15 +3,12 @@
   <types uri="..\Types.xafdb"/>
   <table name="RequestAssigneeProspect" defaults="false" log="false" id="Id" labelkey="">
 	<doc>
-	  This view locates all probably prospects to be assigned as a RequestAssignee to workorders that have modifiable demands (CanModifyDemands). It is the
-	  basis for a picker filter on RequestAssignee assignment to provide a list of likely assignees for that particular workorder.
-	  The 
+	  This view locates all probable prospects to be assigned to a Request.
+	  It is the basis for a picker filter on RequestAssignee assignment to provide a list of likely assignees for that particular request.
+	  Note that this can return duplicate records and in particular duplicate ID fields.
+	  Note also that it returns Contacts that may or may not already be a RequestAssignee.
 	</doc>
 	<field name="Id" read="RequiredGUID">
-	</field>
-	<field name="TableEnum" type="integer(min 0, max 3, nonnull)">
-	  <doc>The type of resource record</doc>
-	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIRequest.RequestAssigneeProspectProvider,Thinkage.MainBoss.Controls</extension>
 	</field>
 	<field name="RequestID" type="RequiredGUIDREF" link="Request">
 	  <doc>The Request to which the assignee is a prospect (for filtering)</doc>
@@ -20,54 +17,32 @@
 	  <doc>The Contact to which the assignee is a prospect (for picker filtering)</doc>
 	</field>
 	<extension name="query">
-	  <!--
-	  A view to locate all likely RequestAssignees for Draft/Open WorkOrders, includes
-	  any contact for the unit, for any workorder for this request,
-	  Note that the unioned values within RqContacts may generate duplicates but the outer SELECT DISTINCT clears them out.
-	  TODO: What is the point of all thse JOINs in the main query? None of them will exclude any records and none of the joined tables
-	  are used in any column-expressions.
-	  -->
-		with RqContacts(TableEnum, RequestID, ContactID) AS
-		(
-			select 1, R.ID, P.ContactId
+			select P.ContactId, R.ID, P.ContactId
 				from
 					Request as R
 					join Requestor as P on R.RequestorID = P.Id
 		union all
-			select A.TableEnum, R.ID, A.ContactId
+			select A.ContactId, R.ID, A.ContactId
 				from
 					Request as R 
 					join RequestedWorkOrder as RW on RW.RequestID = R.ID
 					join WorkOrderAssigneeProspect as A on A.WorkOrderID = RW.WorkOrderID
 		union all
-			select 3, R.ID, URC.ContactID
+			select URC.ContactID, R.ID, URC.ContactID
 				from
-					Unit as U
-					join RelativeLocation as RL on RL.ID = U.RelativeLocationId
-					join Request as R on R.UnitLocationID = RL.LocationId
-					join UnitRelatedContact as URC on URC.UnitLocationID = R.UnitLocationID
-		)
-		select DISTINCT RC.ContactId, RC.TableEnum, RC.RequestID, RC.ContactID from RqContacts as RC
-		join Contact as C on C.ID = RC.ContactID
-		join Request as R on R.ID = RC.RequestID
-		join RequestStateHistory as RSH on RSH.ID = R.CurrentRequestStateHistoryID
-		join RequestState as RS on RS.ID = RSH.RequestStateID
+					UnitRelatedContact as URC
+					join Request as R on R.UnitLocationID = URC.UnitLocationId
 	</extension>
-	<extension name="dependson">Contact</extension>
 	<extension name="dependson">Request</extension>
-	<extension name="dependson">RequestState</extension>
-	<extension name="dependson">RequestStateHistory</extension>
 	<extension name="dependson">Requestor</extension>
-	<extension name="dependson">RelativeLocation</extension>
 	<extension name="dependson">RequestedWorkOrder</extension>
-	<extension name="dependson">Unit</extension>
+	<extension name="dependson">WorkOrderAssigneeProspect</extension>
+	<extension name="dependson">UnitRelatedContact</extension>
   </table>
-	<table name="Contact"/>
-	<table name="Request"/>
-	<table name="RequestState"/>
-	<table name="RequestStateHistory"/>
-	<table name="Requestor"/>
-	<table name="RelativeLocation"/>
-	<table name="RequestedWorkOrder"/>
-	<table name="Unit"/>
+  <table name="Contact"/>
+  <table name="Request"/>
+  <table name="Requestor"/>
+  <table name="RequestedWorkOrder"/>
+  <table name="WorkOrderAssigneeProspect"/>
+  <table name="UnitRelatedContact"/>
 </database>

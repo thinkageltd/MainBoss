@@ -89,13 +89,6 @@ h5, h6
     font-size: 1em;
 }
 
-/* this rule styles <h2> tags that are the 
-first child of the left and right table columns */
-.rightColumn > h1, .rightColumn > h2, .leftColumn > h1, .leftColumn > h2
-{
-    margin-top: 0;
-}
-
 /* PRIMARY LAYOUT ELEMENTS ----------------------------------------------------------*/
 /* you can specify a greater or lesser percentage for the 
 page width. Or, you can specify an exact pixel width. */
@@ -401,13 +394,19 @@ div#title
 	width: 15%;
 	text-align: right;
 }
-.viewPanel td.V1{ border-right: none;
+.viewPanel td.V1
+{
+ border-right: none;
  width: 30%;
-}
-.viewPanel td.V2{ border-left: none;
+}
+
+.viewPanel td.V2
+{
+ border-left: none;
  width: 55%;
  text-align: right;
-}
+}
+
 /* Panel for enclosing Requestor contact information identified with id="contactPanel" */
 #contactPanel
 {

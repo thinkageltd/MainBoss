@@ -6,7 +6,7 @@ namespace Thinkage.MainBoss.Service
 {
 	public class MainBossServiceApplication : Thinkage.Libraries.Service.Application {
 		#region Constructor
-		public MainBossServiceApplication()	: this (new string[] {}) {	}
+		public MainBossServiceApplication()	: this (System.Array.Empty<string>()) {	}
 		public MainBossServiceApplication(string[] args) : base()	{
 			ServiceOptions = new ServiceOptions(args);
 			ServiceName = ServiceOptions.ServiceName ?? KB.I("MainBossService");
@@ -35,7 +35,7 @@ namespace Thinkage.MainBoss.Service
 		public override Thinkage.Libraries.Service.Application.RunApplicationDelegate GetRunApplicationDelegate	{
 			get	{
 				return delegate() {
-					using (var x = new MainBossService(this)) {
+					using (var x = new MainBossService(this, ServiceOptions.Force)) {
 						x.Run();
 						int NBusy = 0;
 						if (!UserInterface.IsRunningAsAService) {
@@ -89,7 +89,7 @@ namespace Thinkage.MainBoss.Service
 							//x.DebugCommand(ApplicationServiceRequests.PROCESS_ALL);
 #endif
 							x.StopWorkers();
-							NBusy = activeWorkers(x, 5 * 60);
+							NBusy = ActiveWorkers(x, 5 * 60);
 							x.ServiceLogging.LogClose(null);
 							MainBossService.Exit(0);
 						}
@@ -98,7 +98,7 @@ namespace Thinkage.MainBoss.Service
 				};
 			}
 		}
-		private int activeWorkers(MainBossService s, int maxPauseInSeconds) {
+		private int ActiveWorkers(MainBossService s, int maxPauseInSeconds) {
 			int NBusy = 0;
 			int retries = maxPauseInSeconds / 5;
 			for (int i = 0; i < retries ; ++i) {

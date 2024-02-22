@@ -5,6 +5,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 	[HandleError]
 	public class AssignmentController : BaseController<AssignmentRepository> {
 		#region Index
+		[HttpGet]
 		[MainBossAuthorization]
 		public ActionResult Index() {
 			var repository = NewRepository<AssignmentRepository>();
@@ -17,6 +18,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		}
 		#endregion
 		#region NoPermission
+		[HttpGet]
 		public ActionResult NoPermission(NoPermissionException exception) {
 			return View("NoPermission", exception);
 		}

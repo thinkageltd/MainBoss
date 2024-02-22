@@ -6,11 +6,6 @@
 	<field name="Id" read="RequiredGUID">
 	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderGroupNameProvider,Thinkage.MainBoss.Controls</extension>
 	</field>
-	<field name="TableEnum" type="integer(min 0, max 3, nonnull)">
-	  <!-- DatabaseEnums.WorkOrderOutside -->
-	  <doc>The type of resource record</doc>
-	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderTemplateOutsideProvider,Thinkage.MainBoss.Controls</extension>
-	</field>
 	<!-- the base linkages of the unified records -->
 	<field name="TradeID" type="GUIDREF" link="Trade">
 	  <doc>the Trade record linkage (the 'agent')</doc>
@@ -18,45 +13,26 @@
 	<field name="DemandTemplateID" type="GUIDREF" link="DemandTemplate">
 	  <doc>the base DemandTemplate record linkage for resources derived from this (demands)</doc>
 	</field>
-	<!-- Other fields required for filtering/parentage -->
-	<field name="ParentID" type="GUIDREF" link="WorkOrderTemplateOutside" labelkey="Task Outside">
-	  <!-- This must remain until we have some way of expressing the row parent on a per-view basis -->
-	  <doc>the Id of another record in this table that is the parent of this record in the tree view
-	  For Demands this is the Trade ID or the magic no-agent Id</doc>
-	</field>
 	<extension name="query">
 		<!-- fabricated record: Unspecified Trade -->
-		select '60000000-0000-0000-0000-000000000006', 0,	<!-- WorkOrderOutside.UnassignedTrade--><!--KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId-->
-				null, null, null
+		select '60000000-0000-0000-0000-000000000006', <!--KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId-->
+				null, null
 	  union all
 		<!-- Trade -->
-		select T.ID, 1,					<!-- WorkOrderTemplateOutside.Trade -->
-			T.ID, NULL, NULL
-		from
-			Trade as T
+		select ID, ID, NULL
+		  from Trade
 	  union all
 		<!-- Demand Hourly Outside Template -->
-		select D.ID, 2,				<!-- WorkOrderTemplateOutside.LaborOutside -->
-			NULL, D.ID, coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006') <!-- KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId -->
+		select DemandTemplateID, NULL, DemandTemplateID
 		  from
-			DemandTemplate as D
-		  inner join
-			DemandLaborOutsideTemplate as DLO on D.ID = DLO.DemandTemplateID
-		  inner join
-			LaborOutside as LO on LO.ID = DLO.LaborOutsideID
+			DemandLaborOutsideTemplate
 	  union all
 		<!-- Demand Other Work Outside Template -->
-		select D.ID, 3,				<!-- WorkOrderTemplateOutside.OtherWorkOutside -->
-			NULL, D.ID, coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006') <!-- KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId -->
+		select DemandTemplateID, NULL, DemandTemplateID
 		  from
-			DemandTemplate as D
-		  inner join
-			DemandOtherWorkOutsideTemplate as DOWO on D.ID = DOWO.DemandTemplateID
-		  inner join
-			OtherWorkOutside as OWO on OWO.ID = DOWO.OtherWorkOutsideID
+			DemandOtherWorkOutsideTemplate
 	</extension>
 	<extension name="dependson">Trade</extension>
-	<extension name="dependson">DemandTemplate</extension>
 	<extension name="dependson">DemandLaborOutsideTemplate</extension>
 	<extension name="dependson">DemandOtherWorkOutsideTemplate</extension>
 	<extension name="costrights">WorkOrderOutside</extension>
@@ -68,24 +44,21 @@
 	</field>
 	<field name="DisplayID" type="GUIDREF" link="WorkOrderTemplateOutside">
 	</field>
-	<!--TODO: delete this-->
-	<field name="IsPrimary" type="RequiredBool">
-	</field>
 	<extension name="query">
 	  <!-- We don't need self-containment for the Labor records since they are never primary -->
-		select DLO.DemandTemplateID, DLO.DemandTemplateID, DLO.DemandTemplateID, 1
+		select DLO.DemandTemplateID, DLO.DemandTemplateID, DLO.DemandTemplateID
 		  from DemandLaborOutsideTemplate as DLO
 	  union all
-		select DOWO.DemandTemplateID, DOWO.DemandTemplateID, DOWO.DemandTemplateID, 1
+		select DOWO.DemandTemplateID, DOWO.DemandTemplateID, DOWO.DemandTemplateID
 		  from DemandOtherWorkOutsideTemplate as DOWO
 	  union all
-		select coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006'), DLO.DemandTemplateID, coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006'), 0
+		select coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006'), DLO.DemandTemplateID, coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006')
 		  from
 			DemandLaborOutsideTemplate as DLO
 		  join
 			LaborOutside as LO on LO.ID = DLO.LaborOutsideID
 	  union all
-		select coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006'), DOWO.DemandTemplateID, coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006'), 0
+		select coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006'), DOWO.DemandTemplateID, coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006')
 		  from
 			DemandOtherWorkOutsideTemplate as DOWO
 		  join
@@ -97,8 +70,5 @@
   <table name="DemandTemplate"/>
   <table name="DemandLaborOutsideTemplate"/>
   <table name="DemandOtherWorkOutsideTemplate"/>
-  <table name="WorkOrderTemplate"/>
-  <table name="LaborOutside"/>
-  <table name="OtherWorkOutside"/>
   <table name="Trade"/>
 </database>

@@ -17,12 +17,12 @@ namespace Thinkage.MainBoss.WebAccess {
 	public class MainBossWebAccessApplication : Thinkage.Libraries.Application {
 		// The following came from Thinkage.MainBoss.Database.MB3Client.ConnectionDefinition
 		public static readonly string ApplicationName = KB.I("MainBoss Web Access");
-		public static readonly Version MinDBVersion = new Version(1, 1, 5, 5);
+		public static readonly Version MinDBVersion = new Version(1, 1, 6, 2);
 		public static Version MBWebAccessAppVersion {
 			// TODO: VersionInfo.ProductVersion farts around with AssemblyInformationalVersionAttribute which no one specifies anywhere, and then falls back on a file version somewhere.
 			// It turns out that the [AssemblyVersion] attribute is a NON-"custom" attribute and so does not appear in assembly.GetCustomAttributes and instead appears as the Version property of the assembly name.
 			get {
-				lock (LockObject) {	// This is not necessary if System.Reflection.Assembly.GetExecutingAssembly().GetName().Version always returns the same object; concurrent calls would just set the value twice to the same object. TODO: Check this.
+				lock (LockObject) { // This is not necessary if System.Reflection.Assembly.GetExecutingAssembly().GetName().Version always returns the same object; concurrent calls would just set the value twice to the same object. TODO: Check this.
 					if (pMBWebAccessAppVersionX == null)
 						pMBWebAccessAppVersionX = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 				}
@@ -34,11 +34,7 @@ namespace Thinkage.MainBoss.WebAccess {
 		protected override void CreateUIFactory() {
 			// None required
 		}
-		public new MainBossWebAccessApplication Instance {
-			get {
-				return (MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance;
-			}
-		}
+		public static new MainBossWebAccessApplication Instance => (MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance;
 		private MainBossWebAccessApplication() {
 			IsValid = false;
 		}
@@ -49,8 +45,7 @@ namespace Thinkage.MainBoss.WebAccess {
 			new FixedUserInformationOverride(result, "", "", formatCultureInfo, messageCultureInfo, null);
 			new StandardApplicationIdentification(result, "MainBossWebAccess", ApplicationName);
 			new DatabaseFeaturesApplication(result,
-				(DBClient.Connection connection) =>
-				{
+				(DBClient.Connection connection) => {
 					return new Thinkage.MainBoss.Database.MB3Client(connection);
 				});
 			new ApplicationPermissions(result, new MainBossPermissionsManager(Root.Rights));
@@ -107,50 +102,34 @@ namespace Thinkage.MainBoss.WebAccess {
 			if (IsMainBossUser)
 				return; // already done
 
-			string userIdentification = System.Web.HttpContext.Current.User.Identity.Name;
-			if (String.IsNullOrEmpty(userIdentification)) {
-				ResetIdentificationProperties();
-				return;
+			string userIdentification = System.Web.HttpContext.Current.User.Identity.Name?.ToLower();
+			if (!String.IsNullOrEmpty(userIdentification)) {
+				var rp = new AuthenticationRepository();
+				var validUsers = from u in rp.Users()
+								 where !u.Hidden.HasValue // Not hidden
+								 && (
+									u.AuthenticationCredential.ToLower().Equals(userIdentification)
+									|| u.AuthenticationCredential.ToLower().StartsWith(userIdentification+';')
+									|| u.AuthenticationCredential.ToLower().EndsWith(';'+userIdentification)
+									|| u.AuthenticationCredential.ToLower().Contains(';'+userIdentification+';')
+								 )
+								 select u.Id;
+				if (validUsers.Count() == 1) {
+					UserID = validUsers.First();
+					new FixedUserInformationOverride(Application.Instance, userIdentification, Application.Instance.WorkstationName, Application.InstanceFormatCultureInfo, Application.InstanceMessageCultureInfo, System.Web.HttpContext.Current.User);
+					AuthenticationEntities.Contact contact = rp.GetContactForUser(UserID.Value);
+					ContactID = contact.Id;
+					ContactName = contact.Code;
+					ContactEmail = contact.Email;
+					var manager = (MainBossPermissionsManager)GetInterface<IPermissionsFeature>().PermissionsManager;
+					manager.ResetPermissions();
+					GetInterface<IDBVersionDatabaseFeature>().VersionHandler.LoadPermissions(GetInterface<ISessionDatabaseFeature>().Session, UserID.Value, false, delegate (string pattern, bool grant) {
+						manager.SetPermission(pattern, grant);
+					});
+					return;
+				}
 			}
-			AuthenticationRepository rp = new AuthenticationRepository();
-//			string[] splitUser = userIdentification.ToLower().Split(new char[] { '\\' }); // split domain and user name for validating in MainBoss User table
-//			if (splitUser.Length != 2)
-//				throw new GeneralException(KB.K("The name of the current user \"{0}\" is not in the expected form \"SCOPE\\USER\""), userIdentification);
-
-
-			// try as a mainboss user first
-			var validUsers = from u in rp.Users()
-							 where !u.Hidden.HasValue // Not hidden
-							 && u.AuthenticationCredential.ToLower() == userIdentification.ToLower()
-							 select u;
-			AuthenticationEntities.User user;
-			switch (validUsers.Count()) {
-			case 0:
-				user = null;
-				break;
-			case 1:
-				user = (AuthenticationEntities.User)validUsers.First();
-				break;
-			default:
-				user = null;
-				break;
-			}
-			if (user != null) {
-				UserID = user.Id;
-				new FixedUserInformationOverride(Application.Instance, userIdentification, Application.Instance.WorkstationName, Application.InstanceFormatCultureInfo, Application.InstanceMessageCultureInfo, System.Web.HttpContext.Current.User);
-				AuthenticationEntities.Contact contact = rp.GetContactForUser(UserID.Value);
-				ContactID = contact.Id;
-				ContactName = contact.Code;
-				ContactEmail = contact.Email;
-				var manager = (MainBossPermissionsManager)GetInterface<IPermissionsFeature>().PermissionsManager;
-				manager.ResetPermissions();
-				GetInterface<IDBVersionDatabaseFeature>().VersionHandler.LoadPermissions(GetInterface<ISessionDatabaseFeature>().Session, UserID.Value, false, delegate(string pattern, bool grant)
-				{
-					manager.SetPermission(pattern, grant);
-				});
-			}
-			else
-				ResetIdentificationProperties();
+			ResetIdentificationProperties();
 		}
 		private void ResetIdentificationProperties() {
 			UserID = null;
@@ -255,8 +234,8 @@ namespace Thinkage.MainBoss.WebAccess {
 		}
 		#endregion
 		#region SequenceCounter & DataSet Management
-		Guid SequenceCountDataSetIdentifier = Guid.Empty;
-		SequenceCountDataSet SequenceCountDataSet;
+		private Guid SequenceCountDataSetIdentifier = Guid.Empty;
+		private SequenceCountDataSet SequenceCountDataSet;
 		public void RememberSequenceCountDataSet(Guid identifier, SequenceCountDataSet ds) {
 			if (SequenceCountDataSet != null) {
 				SequenceCountDataSet.Destroy(); // eliminate a left over
@@ -380,7 +359,7 @@ namespace Thinkage.MainBoss.WebAccess {
 					DBSession = null;
 				}
 				if (ex is GeneralException)
-					throw;			// message should be good
+					throw;          // message should be good
 				throw new GeneralException(ex, KB.K("There was a problem validating access to {0}"), connection.ConnectionInformation.DisplayNameLowercase);
 			}
 		}

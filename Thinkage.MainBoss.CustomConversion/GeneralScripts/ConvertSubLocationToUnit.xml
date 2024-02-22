@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion" first="ConvertSubLocationToUnit" >
+  <table name="ConvertSubLocationToUnit">
+    <data>
+INSERT INTO <ODB/>.dbo.Unit (Id, RelativeLocationID) select ID, RelativeLocationID from PlainRelativeLocation
+DELETE <ODB/>.dbo.PlainRelativeLocation
+</data>
+  </table>
+</dbconversion>

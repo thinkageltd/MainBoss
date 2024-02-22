@@ -267,8 +267,9 @@
   <data name="Thinkage.MainBoss.MainBossServiceConfiguration§The MainBoss Service configuration information on the Windows Service for MainBoss '{0}' on computer '{1}' has been removed" xml:space="preserve">
     <value>Se ha eliminado la información de configuración del servicio MainBoss del servicio Windows para MainBoss '{0}' en la computador '{1}</value>
   </data>
-  <data name="Thinkage.MainBoss.MainBossServiceConfiguration§The Service Configuration expects the service to be running as user '{0}'. The MainBoss Service is configured to be running as {1}" xml:space="preserve">
-    <value>La configuración del servicio espera que el servicio se ejecute como usuario '{0}'. El servicio MainBoss está configurado para ejecutarse como {1}</value>
+  <data name="Thinkage.MainBoss.MainBossServiceConfiguration§The Service Configuration expected the service to be running as user '{0}'. The MainBoss Service is configured to be running as '{1}'" xml:space="preserve">
+    <value>The Service Configuration expected the service to be running as user '{0}'. The MainBoss Service is configured to be running as '{1}'</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.MainBossServiceConfiguration§The service name to perform operation on" xml:space="preserve">
     <value>El nombre del servicio para realizar la operación en</value>

@@ -28,7 +28,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
   </PropertyGroup>
@@ -96,6 +96,16 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Dart.Mail.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Identity.Client, Version=4.47.2.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Identity.Client.4.47.2\lib\net461\Microsoft.Identity.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Abstractions, Version=6.22.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Abstractions.6.22.0\lib\net472\Microsoft.IdentityModel.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -108,9 +118,12 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
@@ -144,6 +157,7 @@
       <Project>{4C013DD4-7AE5-49ED-9A18-CE2204C9B508}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Schema\AccessCode.xafdb" />
@@ -261,9 +275,6 @@
     <EmbeddedResource Include="Schema\WorkOrder\WorkOrderStateHistory.xafdb">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Schema\WorkOrder\WorkOrderStateHistoryReport.xafdb">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Schema\ZTestTable.xafdb" />
     <Compile Include="ApplicationParameters.cs" />
     <Compile Include="Client\Compute.cs" />
@@ -341,7 +352,8 @@
     <Compile Include="Schema\Security\Security.cs" />
     <Compile Include="Service\AssignmentNotificationProcessor.cs" />
     <Compile Include="Service\AcquireContact.cs" />
-    <Compile Include="Service\LDAPEntry.cs" />
+    <Compile Include="Service\LDAPEntryHelper.cs" />
+    <Compile Include="Service\OAuth2Manager.cs" />
     <Compile Include="Service\RequestFromEmailActions.cs" />
     <Compile Include="Service\EmailHelper.cs" />
     <Compile Include="Service\EmailMessage.cs" />
@@ -369,6 +381,8 @@
     <Compile Include="SolutionSettings.cs" />
     <Compile Include="Translation.cs" />
     <Compile Include="DatabaseEnums.cs" />
+    <Compile Include="Upgrade\BuiltinFunctionCreateUpgradeStep.cs" />
+    <Compile Include="Upgrade\BuiltinFunctionUpdateUpgradeStep.cs" />
     <Compile Include="Upgrade\DBVersionHandler30.cs" />
     <Compile Include="Upgrade\EmailMessageToPartsUpgradeStep.cs" />
     <Compile Include="Upgrade\PermissionUpgradeStep.cs" />
@@ -511,8 +525,6 @@
     <EmbeddedResource Include="Schema\WorkOrder\WorkOrderItems.xafdb" />
     <EmbeddedResource Include="Schema\DatabaseFunctions.xafdb">
     </EmbeddedResource>
-    <EmbeddedResource Include="Schema\WorkOrder\ChargebackActivity.xafdb">
-    </EmbeddedResource>
     <EmbeddedResource Include="Schema\Inventory\ActualItemLocation.xafdb">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -535,8 +547,6 @@
     <EmbeddedResource Include="Schema\Requests\RequestStateTransition.xafdb">
     </EmbeddedResource>
     <EmbeddedResource Include="Schema\Inventory\LocationDerivationsAndItemLocation.xafdb">
-    </EmbeddedResource>
-    <EmbeddedResource Include="Schema\Locations\LocationDerivations.xafdb">
     </EmbeddedResource>
     <EmbeddedResource Include="Schema\WorkOrder\WorkOrderPurchaseOrder.xafdb">
     </EmbeddedResource>
@@ -590,8 +600,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Schema\Units\SystemCode.xafdb">
     </EmbeddedResource>
-    <EmbeddedResource Include="Schema\Units\Attachment.xafdb">
-    </EmbeddedResource>
     <EmbeddedResource Include="Schema\Units\SparePart.xafdb">
     </EmbeddedResource>
     <EmbeddedResource Include="Schema\Units\Specification.xafdb">
@@ -639,7 +647,6 @@
     <EmbeddedResource Include="Schema\Requests\RequestSequenceCounter.xafdb">
     </EmbeddedResource>
     <EmbeddedResource Include="Schema\WorkOrder\WorkOrderSequenceCounter.xafdb" />
-    <EmbeddedResource Include="Schema\PurchaseOrderTemplate\PurchaseOrderTemplateLine.xafdb" />
     <EmbeddedResource Include="Schema\PurchaseOrderTemplate\POLineMiscellaneousTemplate.xafdb">
     </EmbeddedResource>
     <EmbeddedResource Include="Schema\PurchaseOrderTemplate\POLineOtherWorkTemplate.xafdb">
@@ -675,7 +682,6 @@
     <EmbeddedResource Include="Schema\Inventory\ItemRestocking.xafdb">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Schema\Purchasing\PurchaseOrderStateHistoryReport.xafdb" />
     <EmbeddedResource Include="Schema\ExternalTag.xafdb" />
     <EmbeddedResource Include="Upgrade\PreviousSchema\1_0_8_6.xaf" />
     <EmbeddedResource Include="Schema\Relationships\Relationship.xafdb" />
@@ -869,6 +875,12 @@
       <CustomToolNamespace>/templateproject:Thinkage.Libraries.DBAccess</CustomToolNamespace>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Schema\Attachments\UnitAttachment.xafdb" />
+    <EmbeddedResource Include="Schema\Attachments\AttachmentPath.xafdb" />
+    <EmbeddedResource Include="Schema\Attachments\Attachment.xafdb" />
+    <EmbeddedResource Include="Schema\Attachments\WorkOrderAttachment.xafdb" />
+    <EmbeddedResource Include="Schema\Attachments\WorkOrderTemplateAttachment.xafdb" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Schema\Inventory\ItemCountValueVoid.xafdb">
@@ -999,7 +1011,6 @@
     <EmbeddedResource Include="Schema\Security\rightset.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Schema\Requests\RequestStateHistoryReport.xafdb" />
     <EmbeddedResource Include="Service\Site.css" />
   </ItemGroup>
   <ItemGroup>

@@ -7,8 +7,8 @@ namespace UnitEntities {
 	/// </summary>
 	public partial class Unit {
 		#region GeoGeography conversions
-		static FromDSType FromGeographyConverter;
-		static ToDSType ToGeographyConverter;
+		private static readonly FromDSType FromGeographyConverter;
+		private static readonly ToDSType ToGeographyConverter;
 		public static GeoGeography LinqSqlToGeoGeography(System.Data.Linq.Binary gislocation) {
 			if (gislocation == null)
 				return null;

@@ -1,4 +1,5 @@
 #if DEBUG
+// #define OVERDUE_GORY_DETAILS to get some of the values underlying the Overdue calculation
 #define SearchIsOneOf
 #endif
 using System;
@@ -12,7 +13,6 @@ using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.Translation;
 using Thinkage.Libraries.TypeInfo;
 using Thinkage.Libraries.XAF.UI;
-using Thinkage.MainBoss.Controls.Resources;
 using Thinkage.MainBoss.Database;
 
 namespace Thinkage.MainBoss.Controls {
@@ -20,146 +20,88 @@ namespace Thinkage.MainBoss.Controls {
 	/// Register Tbl and/or DelayedCreateTbl objects for Work Orders.
 	/// </summary>
 	public class TIWorkOrder : TIGeneralMB3 {
+		#region Table enums
+		#region - WorkOrderItems
+		public enum WorkOrderItems {
+			Item,   // 0
+			DemandItem  // 1
+		}
+		#endregion
+		#region - WorkOrderInside
+		public enum WorkOrderInside {
+			UnassignedTrade,
+			Trade,
+			DemandLaborInside,
+			DemandOtherWorkInside,  // 3
+		}
+		#endregion
+		#region - WorkOrderOutside
+		public enum WorkOrderOutside {
+			UnassignedTrade,
+			Trade,
+			DemandLaborOutside,
+			DemandOtherWorkOutside,
+			POLineLabor,
+			POLineOtherWork,    // 5
+		}
+		#endregion
+		#region - WorkOrderMiscellaneous
+		public enum WorkOrderMiscellaneous {
+			MiscellaneousWorkOrderCost,
+			DemandMiscellaneousWorkOrderCost
+		}
+		#endregion
+		#region - WorkOrderTemporaryStorage
+		public enum WorkOrderTemporaryStorage {
+			PostalAddress,
+			TemporaryStorage,
+			Unit,
+			PermanentStorage,
+			PlainRelativeLocation,
+			TemporaryItemLocation
+		}
+		#endregion
+		#region - WorkOrderTemplateItems
+		public enum WorkOrderTemplateItems {
+			Item,   // 0
+			DemandItemTemplate  // 1
+		}
+		#endregion
+		#region - WorkOrderTemplateInside
+		public enum WorkOrderTemplateInside {
+			UnassignedTrade,
+			Trade,
+			DemandLaborInsideTemplate,
+			DemandOtherWorkInsideTemplate
+		}
+		#endregion
+		#region - WorkOrderTemplateOutside
+		public enum WorkOrderTemplateOutside {
+			UnassignedTrade,
+			Trade,
+			DemandLaborOutsideTemplate,
+			DemandOtherWorkOutsideTemplate
+		}
+		#endregion
+		#region - WorkOrderTemplateMiscellaneous
+		public enum WorkOrderTemplateMiscellaneous {
+			MiscellaneousWorkOrderCost,
+			DemandMiscellaneousWorkOrderCostTemplate
+		}
+		#endregion
+		#region - WorkOrderTemplateTemporaryStorage
+		public enum WorkOrderTemplateStorage {
+			PostalAddress,
+			Unit,
+			PermanentStorage,
+			PlainRelativeLocation,
+			TemplateTemporaryStorage,
+			TemplateItemLocation
+		}
+		#endregion
+		#endregion
 		#region Record-type providers
-		#region ChargebackActivityProvider
-		private static object[] ChargebackActivityValues = new object[] {
-			(int)ViewRecordTypes.ChargebackActivity.NotSpecified,
-			(int)ViewRecordTypes.ChargebackActivity.Chargeback,
-			(int)ViewRecordTypes.ChargebackActivity.ChargebackCorrection
-		};
-		private static Key[] ChargebackActivityLabels = new Key[] {
-			KB.K("Not Specified"),
-			KB.TOi(TId.Chargeback),
-			KB.K("Correction of Chargeback"),
-		};
-		public static EnumValueTextRepresentations ChargebackActivityProvider = new EnumValueTextRepresentations(ChargebackActivityLabels, null, ChargebackActivityValues);
-		#endregion
-		#region WorkOrderTemplateResourceProvider
-		#region WorkOrderTemplateItemsProvider
-		public static EnumValueTextRepresentations WorkOrderTemplateItemsProvider = new EnumValueTextRepresentations(
-			new Key[] {
-				KB.TOi(TId.Item),
-				KB.TOi(TId.TaskDemandItem),
-			},
-			null,
-			new object[] {
-				(int)ViewRecordTypes.WorkOrderItems.Item,
-				(int)ViewRecordTypes.WorkOrderItems.DemandItem,
-			}
-		);
-		#endregion
-		#region WorkOrderTemplateInsideProvider
-		public static EnumValueTextRepresentations WorkOrderTemplateInsideProvider = new EnumValueTextRepresentations(
-			new Key[] {
-				KB.K("Unassigned Trade"),
-				KB.TOi(TId.Trade),
-				KB.TOi(TId.TaskDemandHourlyInside),
-				KB.TOi(TId.TaskDemandPerJobInside)
-			},
-			null,
-			new object[] {
-				(int)ViewRecordTypes.WorkOrderTemplateInside.UnassignedTrade,
-				(int)ViewRecordTypes.WorkOrderTemplateInside.Trade,
-				(int)ViewRecordTypes.WorkOrderTemplateInside.DemandLaborInsideTemplate,
-				(int)ViewRecordTypes.WorkOrderTemplateInside.DemandOtherWorkInsideTemplate
-			}
-		);
-		#endregion
-		#region WorkOrderTemplateOutsideProvider
-		public static EnumValueTextRepresentations WorkOrderTemplateOutsideProvider = new EnumValueTextRepresentations(
-			new Key[] {
-				KB.K("Unassigned Trade"),
-				KB.TOi(TId.Trade),
-				KB.TOi(TId.TaskDemandHourlyOutside),
-				KB.TOi(TId.TaskDemandPerJobOutside)
-			},
-			null,
-			new object[] {
-				(int)ViewRecordTypes.WorkOrderTemplateOutside.UnassignedTrade,
-				(int)ViewRecordTypes.WorkOrderTemplateOutside.Trade,
-				(int)ViewRecordTypes.WorkOrderTemplateOutside.DemandLaborOutsideTemplate,
-				(int)ViewRecordTypes.WorkOrderTemplateOutside.DemandOtherWorkOutsideTemplate
-			}
-		);
-		#endregion
-		#region WorkOrderTemplateMiscellaneousProvider
-		public static EnumValueTextRepresentations WorkOrderTemplateMiscellaneousProvider = new EnumValueTextRepresentations(
-			new Key[] {
-				KB.TOi(TId.MiscellaneousCost),
-				KB.TOi(TId.TaskDemandMiscellaneousCost),
-			},
-			null,
-			new object[] {
-				(int)ViewRecordTypes.WorkOrderTemplateMiscellaneous.MiscellaneousWorkOrderCost,
-				(int)ViewRecordTypes.WorkOrderTemplateMiscellaneous.DemandMiscellaneousWorkOrderCostTemplate
-			}
-		);
-		#endregion
-		#endregion
-		#region WorkOrderItemsProvider
-		public static EnumValueTextRepresentations WorkOrderItemsProvider = new EnumValueTextRepresentations(
-			new Key[] {
-				KB.TOi(TId.Item),
-				KB.TOi(TId.DemandItem),
-			},
-			null,
-			new object[] {
-				(int)ViewRecordTypes.WorkOrderItems.Item,
-				(int)ViewRecordTypes.WorkOrderItems.DemandItem,
-			}
-		);
-		#endregion
-		#region WorkOrderInsideProvider
-		public static EnumValueTextRepresentations WorkOrderInsideProvider = new EnumValueTextRepresentations(
-			new Key[] {
-				KB.K("Unassigned Trade"),
-				KB.TOi(TId.Trade),
-				KB.TOi(TId.DemandHourlyInside),
-				KB.TOi(TId.DemandPerJobInside)
-			},
-			null,
-			new object[] {
-				(int)ViewRecordTypes.WorkOrderInside.UnassignedTrade,
-				(int)ViewRecordTypes.WorkOrderInside.Trade,
-				(int)ViewRecordTypes.WorkOrderInside.DemandLaborInside,
-				(int)ViewRecordTypes.WorkOrderInside.DemandOtherWorkInside
-			}
-		);
-		#endregion
-		#region WorkOrderOutsideProvider
-		public static EnumValueTextRepresentations WorkOrderOutsideProvider = new EnumValueTextRepresentations(
-			new Key[] {
-				KB.K("Unassigned Trade"),
-				KB.TOi(TId.Trade),
-				KB.TOi(TId.DemandHourlyOutside),
-				KB.TOi(TId.DemandPerJobOutside),
-				KB.K("Purchase Order Line Hourly"),
-				KB.K("Purchase Order Line Per Job")
-			},
-			null,
-			new object[] {
-				(int)ViewRecordTypes.WorkOrderOutside.UnassignedTrade,
-				(int)ViewRecordTypes.WorkOrderOutside.Trade,
-				(int)ViewRecordTypes.WorkOrderOutside.DemandLaborOutside,
-				(int)ViewRecordTypes.WorkOrderOutside.DemandOtherWorkOutside,
-				(int)ViewRecordTypes.WorkOrderOutside.POLineLabor,
-				(int)ViewRecordTypes.WorkOrderOutside.POLineOtherWork
-			}
-		);
-		#endregion
-		#region WorkOrderMiscellaneousProvider
-		public static EnumValueTextRepresentations WorkOrderMiscellaneousProvider = new EnumValueTextRepresentations(
-			new Key[] {
-				KB.TOi(TId.MiscellaneousCost),
-				KB.TOi(TId.DemandMiscellaneousCost)
-			},
-			null,
-			new object[] {
-				(int)ViewRecordTypes.WorkOrderMiscellaneous.MiscellaneousWorkOrderCost,
-				(int)ViewRecordTypes.WorkOrderMiscellaneous.DemandMiscellaneousWorkOrderCost
-			}
-		);
-		#endregion
+		public static EnumValueTextRepresentations IsPreventiveEnumText = EnumValueTextRepresentations.NewForBool(KB.K("Corrective"), null, KB.K("Preventive"), null);
 		#region WorkOrderGroupNameProvider
 		public static EnumValueTextRepresentations WorkOrderGroupNameProvider = new EnumValueTextRepresentations(
 			new Key[] {
@@ -200,119 +142,13 @@ namespace Thinkage.MainBoss.Controls {
 			});
 		}
 		#endregion
-		#region WorkOrderPurchaseOrderLinkageProvider
-		public static EnumValueTextRepresentations WorkOrderPurchaseOrderLinkageProvider = new EnumValueTextRepresentations(
-			new Key[] {
-				KB.K("Explicit"),
-				KB.K("Using Hourly Demand"),
-				KB.K("Using Per Job Demand"),
-				KB.K("Using Purchase item to Temporary Storage"),
-				KB.K("Using Receive item to Temporary Storage")
-			},
-			null,
-			new object[] {
-				(int)ViewRecordTypes.WorkOrderPurchaseOrderLinkage.Explicit,
-				(int)ViewRecordTypes.WorkOrderPurchaseOrderLinkage.UsingLaborDemand,
-				(int)ViewRecordTypes.WorkOrderPurchaseOrderLinkage.UsingOtherWorkDemand,
-				(int)ViewRecordTypes.WorkOrderPurchaseOrderLinkage.UsingPOLineItemToTemporary,
-				(int)ViewRecordTypes.WorkOrderPurchaseOrderLinkage.UsingReceiveItemToTemporary
-			}
-		);
-		#endregion
-		#region WorkOrderPurchaseOrderViewProvider
-		public static EnumValueTextRepresentations WorkOrderPurchaseOrderViewProvider = new EnumValueTextRepresentations(
-			new Key[] {
-				KB.TOi(TId.WorkOrder),
-				KB.TOi(TId.PurchaseOrder),
-				KB.K("Explicit"),
-				KB.K("Using Hourly Demand"),
-				KB.K("Using Per Job Demand"),
-				KB.K("Using Purchase item to Temporary Storage"),
-				KB.K("Using Receive item to Temporary Storage")
-			},
-			null,
-			new object[] {
-				(int)ViewRecordTypes.WorkOrderPurchaseOrderView.WorkOrder,
-				(int)ViewRecordTypes.WorkOrderPurchaseOrderView.PurchaseOrder,
-				(int)ViewRecordTypes.WorkOrderPurchaseOrderView.Explicit,
-				(int)ViewRecordTypes.WorkOrderPurchaseOrderView.UsingLaborDemand,
-				(int)ViewRecordTypes.WorkOrderPurchaseOrderView.UsingOtherWorkDemand,
-				(int)ViewRecordTypes.WorkOrderPurchaseOrderView.UsingPOLineItemToTemporary,
-				(int)ViewRecordTypes.WorkOrderPurchaseOrderView.UsingReceiveItemToTemporary
-			}
-		);
-		#endregion
-		#region WorkOrderTemplatePurchaseOrderTemplateLinkageProvider
-		public static EnumValueTextRepresentations WorkOrderTemplatePurchaseOrderTemplateLinkageProvider = new EnumValueTextRepresentations(
-			new Key[] {
-				KB.K("Explicit"),
-				KB.K("Using Task Hourly Demand"),
-				KB.K("Using Task Per Job Demand"),
-				KB.K("Using Purchase Item Template to Template Storage Assignment"),
-			},
-			null,
-			new object[] {
-				(int)ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage.Explicit,
-				(int)ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage.UsingLaborDemandTemplate,
-				(int)ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage.UsingOtherWorkDemandTemplate,
-				(int)ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage.UsingPOLineItemTemplateToTemplateItemLocation
-			}
-		);
-		#endregion
-		#region WorkOrderTemplatePurchaseOrderTemplateViewProvider
-		public static EnumValueTextRepresentations WorkOrderTemplatePurchaseOrderTemplateViewProvider = new EnumValueTextRepresentations(
-			new Key[] {
-				KB.TOi(TId.WorkOrder),
-				KB.TOi(TId.PurchaseOrder),
-				KB.K("Using Task Hourly Demand"),
-				KB.K("Using Task Per Job Demand"),
-				KB.K("Using Purchase Item Template to Template Storage Assignment"),
-			},
-			null,
-			new object[] {
-				(int)ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateView.WorkOrderTemplate,
-				(int)ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateView.PurchaseOrderTemplate,
-				(int)ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateView.Explicit,
-				(int)ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage.UsingLaborDemandTemplate,
-				(int)ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage.UsingOtherWorkDemandTemplate,
-				(int)ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage.UsingPOLineItemTemplateToTemplateItemLocation
-			}
-		);
-		#endregion
-		#region WorkOrderAssigneeProspectProvider
-		public static EnumValueTextRepresentations WorkOrderAssigneeProspectProvider = new EnumValueTextRepresentations(
-			new Key[] {
-				KB.TOi(TId.Employee),
-				KB.K("Vendor Service"),
-				KB.TOi(TId.Requestor),
-				KB.K("Unit Contact"),
-				KB.K("Assignees"),
-				KB.K("Vendor Sales"),
-				KB.K("Vendor Payables"),
-				KB.TOi(TId.BillableRequestor),
-			},
-			null,
-			new object[] {
-				(int)ViewRecordTypes.WorkOrderAssigneeProspect.Employee,
-				(int)ViewRecordTypes.WorkOrderAssigneeProspect.VendorService,
-				(int)ViewRecordTypes.WorkOrderAssigneeProspect.Requestor,
-				(int)ViewRecordTypes.WorkOrderAssigneeProspect.UnitContact,
-				(int)ViewRecordTypes.WorkOrderAssigneeProspect.Assignees,
-				(int)ViewRecordTypes.WorkOrderAssigneeProspect.VendorSales,
-				(int)ViewRecordTypes.WorkOrderAssigneeProspect.VendorPayables,
-				(int)ViewRecordTypes.WorkOrderAssigneeProspect.BillableRequestor,
-			}
-		);
-		#endregion
-
 		#endregion
 		#region NodeIds
 		private static readonly object WorkOrderStartDateEstimateId = KB.I("WorkOrderStartDateEstimateId");
 		private static readonly object WorkOrderEndDateEstimateId = KB.I("WorkOrderEndDateEstimateId");
 		private static readonly object WorkOrderDurationEstimateId = KB.I("WorkOrderDurationEstimateId");
-		private static readonly object WorkOrderResourceTemplateCodeId = KB.I("WorkOrderResourceTemplateCodeId");
-		private static readonly object WorkOrderMainFieldDisablerId = KB.I("Main Disabler");
-		private static readonly object WorkOrderWorkIntervalDisablerId = KB.I("Interval Disabler");
+		internal static readonly object WorkOrderSlackDaysId = KB.I("WorkOrderSlackDaysId");
+		private static readonly object WorkOrderDueDateId = KB.I("WorkOrderDueDateId");
 		private static readonly object DemandFromStoreroomQuantityId = KB.I("DemandFromStoreroomQuantityId");
 		private static readonly object DemandFromStoreroomUnitCostId = KB.I("DemandFromStoreroomUnitCostId");
 		private static readonly object DemandFromStoreroomValueId = KB.I("DemandFromStoreroomValueId");
@@ -340,7 +176,11 @@ namespace Thinkage.MainBoss.Controls {
 		internal static readonly Key correctedCostColumnId = KB.K("Corrected Cost");
 		internal static readonly Key correctedQuantityColumnId = KB.K("Corrected Quantity");
 		internal static readonly Key EffectiveDateId = KB.K("Effective Date");
-
+		#endregion
+		#region Types (for unbound controls etc)
+		// Although we don't allow the default for slack days to be negative, on any particular WO, the work end date can be after the due date,
+		// so we allow the control to have a negative value.
+		internal static TypeInfo SlackDaysType = new IntervalTypeInfo(new TimeSpan(1, 0, 0, 0), TimeSpan.MinValue, TimeSpan.MaxValue, allow_null: true);
 		#endregion
 
 		#region Caption keys shared by several layout objects
@@ -354,9 +194,9 @@ namespace Thinkage.MainBoss.Controls {
 		private static readonly Key ActualColumnKey = dsMB.Path.T.Demand.F.DemandItemID.F.ActualQuantity.Key();
 		private static readonly Key ActualCostColumnKey = dsMB.Path.T.Demand.F.ActualCost.Key();
 		private static readonly object WorkOrderExpenseModelId = KB.I("WorkOrderExpenseModelId");
-		static SimpleKey UseUnitWorkOrderExpenseModel = KB.K("Use Expense Model from Unit");
-		static SimpleKey BecauseUsingUnitWorkOrderExpenseModel = KB.K("Readonly because Unit's Expense Model is being used");
-
+		private static readonly SimpleKey UseUnitWorkOrderExpenseModel = KB.K("Use Expense Model from Unit");
+		private static readonly SimpleKey BecauseUsingUnitWorkOrderExpenseModel = KB.K("Readonly because Unit's Expense Model is being used");
+		internal static readonly Key SlackDaysKey = KB.K("Slack Days");
 		#endregion
 		#region StartEndDurationCalculator
 		private static Check StartEndDurationCalculator(object startCol, object durationCol, object endCol) {
@@ -378,6 +218,22 @@ namespace Thinkage.MainBoss.Controls {
 				});
 		}
 		#endregion
+		#region EndSlackDueCalculator
+		// TODO: When the work end date changes this calculator alters the due date to match. But when the WO is no longer in Draft mode, the Due Date should not be changed
+		// and instead the Slack Days should be updated. Essentially we want to make the Due Date not be eligible for correction if it is readonly. On the other hand, Slack Days
+		// should still be eligible for correction, so I think this may have to be an option to the .Operand modifier.
+		private static Check EndSlackDueCalculator(object endCol, object slackCol, object dueCol) {
+			return new Check3<DateTime, TimeSpan?, DateTime?>(
+				delegate (DateTime end, TimeSpan? slack, DateTime? due) {
+					if (slack.HasValue != due.HasValue || checked(end + slack != due))
+						return EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("Work Due Date is inconsistent with Planned End Date and Slack Days")));
+					return null;
+				})
+				.Operand1(endCol)
+				.Operand2(slackCol, (DateTime end, DateTime? due) => checked(due - end))
+				.Operand3(dueCol, (DateTime end, TimeSpan? slack) => checked(end + slack), Check.OperandOptions.CorrectOnlyIfWriteable);
+		}
+		#endregion
 
 		#region Named Tbls
 		public static DelayedCreateTbl AssigneeBrowsetteFromWorkOrderTblCreator;
@@ -390,7 +246,7 @@ namespace Thinkage.MainBoss.Controls {
 		public static DelayedCreateTbl WorkOrderEditTblCreator;
 
 		public static DelayedCreateTbl WorkOrderTemplateSpecializationEditTbl;
-		public static DelayedCreateTbl WorkOrderTemplateEditTbl;
+		public static DelayedCreateTbl WorkOrderTemplateEditTblCreator;
 		public static DelayedCreateTbl WorkOrderTemplateFromWorkOrderEditTbl;
 
 		public static DelayedCreateTbl WorkOrderEditorFromRequestTbl;   // Has the hooks to create the WorkOrderStateHistory and RequestedWorkOrder records
@@ -422,18 +278,19 @@ namespace Thinkage.MainBoss.Controls {
 		public static readonly DelayedCreateTbl ActualMiscellaneousWorkOrderCostBrowseTblCreator = null;
 		public static readonly DelayedCreateTbl ActualMiscellaneousWorkOrderCostCorrectionTblCreator = null;
 		public static readonly DelayedCreateTbl ChargebackLineCorrectionTblCreator;
-		private static DelayedCreateTbl ChargebackLineEditTblCreator;
-		private static DelayedCreateTbl DemandItemDefaultEditorTblCreator;
-		private static DelayedCreateTbl DemandLaborInsideDefaultEditorTblCreator;
-		private static DelayedCreateTbl DemandLaborOutsideDefaultEditorTblCreator;
-		private static DelayedCreateTbl DemandOtherWorkInsideDefaultEditorTblCreator;
-		private static DelayedCreateTbl DemandOtherWorkOutsideDefaultEditorTblCreator;
-		private static DelayedCreateTbl DemandMiscellaneousWorkOrderCostDefaultEditorTblCreator;
+		private static readonly DelayedCreateTbl ChargebackLineEditTblCreator;
+		private static readonly DelayedCreateTbl DemandItemDefaultEditorTblCreator;
+		private static readonly DelayedCreateTbl DemandLaborInsideDefaultEditorTblCreator;
+		private static readonly DelayedCreateTbl DemandLaborOutsideDefaultEditorTblCreator;
+		private static readonly DelayedCreateTbl DemandOtherWorkInsideDefaultEditorTblCreator;
+		private static readonly DelayedCreateTbl DemandOtherWorkOutsideDefaultEditorTblCreator;
+		private static readonly DelayedCreateTbl DemandMiscellaneousWorkOrderCostDefaultEditorTblCreator;
 
 		private static readonly DelayedCreateTbl AssociatedPurchaseOrdersTbl;
 		private static readonly DelayedCreateTbl AssociatedPurchaseOrderTemplatesTbl;
 
 		public static readonly DelayedCreateTbl AllChargebackTbl;
+		public static readonly DelayedCreateTbl ChargebackActivityTbl;
 
 		public static DelayedCreateTbl FilteredWorkOrderExpenseCategoryTbl;
 		public static DelayedCreateTbl WorkOrderExpenseModelEntryAsCategoryPickerTbl;
@@ -448,24 +305,23 @@ namespace Thinkage.MainBoss.Controls {
 		#endregion
 		#region Tbl-creator functions
 		#region WorkOrder browser Tbl attributes
-		private static BTbl.ICtorArg WorkOrderNumberListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.Number);
-		private static BTbl.ICtorArg WorkOrderSubjectListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.Subject);
-		private static BTbl.ICtorArg WorkOrderUnitListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.UnitLocationID.F.Code, BTbl.Contexts.ClosedPicker | BTbl.Contexts.OpenPicker | BTbl.Contexts.SearchAndFilter);
-		private static BTbl.ICtorArg WorkOrderStatusListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateHistoryStatusID.F.Code);
-		private static BTbl.ICtorArg WorkOrderStateListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateID.F.Code, Fmt.SetDynamicSizing());
-		private static BTbl.ICtorArg WorkOrderClosingCodeListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CloseCodeID.F.Code, BTbl.Contexts.List | BTbl.Contexts.SearchAndFilter);
-		private static BTbl.ICtorArg WorkOrderStateAuthorListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.UserID.F.ContactID.F.Code, BTbl.Contexts.SearchAndFilter);
-		private static BTbl.ICtorArg WorkOrderCurrentStateHistoryEffectiveDateListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.EffectiveDate, BTbl.Contexts.SortInitialDescending);
-		private static BTbl.ICtorArg WorkOrderOverdueListColumn = BTbl.ListColumn(KB.K("Overdue"), new TblQueryExpression(WOStatisticCalculation.Overdue(dsMB.Path.T.WorkOrder, dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID)), null, BTbl.Contexts.SortInitialDescending, Fmt.SetUsage(DBI_Value.UsageType.IntervalDays), Fmt.SetColor(System.Drawing.Color.Red));
+		private static readonly BTbl.ICtorArg WorkOrderNumberListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.Number);
+		private static readonly BTbl.ICtorArg WorkOrderSubjectListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.Subject);
+		private static readonly BTbl.ICtorArg WorkOrderStatusListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateHistoryStatusID.F.Code);
+		private static readonly BTbl.ICtorArg WorkOrderClosingCodeListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CloseCodeID.F.Code, BTbl.Contexts.List | BTbl.Contexts.SearchAndFilter);
+		private static readonly BTbl.ICtorArg WorkOrderStateAuthorListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.UserID.F.ContactID.F.Code, BTbl.Contexts.SearchAndFilter);
+		private static readonly BTbl.ICtorArg WorkOrderCurrentStateHistoryEffectiveDateListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.EffectiveDate, BTbl.Contexts.SortInitialDescending);
+		// The following should only be used if the WO is assuredly !IsComplete.
+		private static readonly BTbl.ICtorArg WorkOrderExpectedOverdueListColumn = BTbl.ListColumn(KB.K("Overdue"), new TblQueryExpression(WOStatisticCalculation.ExpectedOverdue(dsMB.Path.T.WorkOrder)), null, BTbl.Contexts.SortInitialDescending, Fmt.SetUsage(DBI_Value.UsageType.IntervalDays), Fmt.SetColor(System.Drawing.Color.Red));
 
 		// The priority column uses an alternative sort key which biases the non-null values:
 		// null -> int.MaxValue, int.MinValue -> null, and all others -> value-1
 		// This causes null to sort as lower-than-lowest (because a big ranking number means low priority), and also that the default ascending sort puts highest priority at the top of the list.
-		private static BTbl.ICtorArg WorkOrderPriorityListColumnSortValue = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Code.Key(), dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Rank, BTbl.Contexts.TaggedValueProvider,
+		private static readonly BTbl.ICtorArg WorkOrderPriorityListColumnSortValue = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Code.Key(), dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Rank, BTbl.Contexts.TaggedValueProvider,
 			BTbl.ListColumnArg.WrapSource((originalSource) => new ConvertingSource<int?, int?>(originalSource, dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Rank.ReferencedColumn.EffectiveType,
 				(value) => (value.HasValue ? value.Value == int.MinValue ? null : value - 1 : int.MaxValue))),
 				new CustomizationOptions(CustomizationOptions.HidingOptions.HideableButNoUI)); // NoHideUi on the SortValue column since the Code value column is also listed; only provide one opportunity to hide the listcolumn
-		private static BTbl.ICtorArg WorkOrderPriorityListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Code, BTbl.Contexts.List | BTbl.Contexts.SearchAndFilter | BTbl.Contexts.SortAlternativeValue);
+		private static readonly BTbl.ICtorArg WorkOrderPriorityListColumn = BTbl.ListColumn(dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID.F.Code, BTbl.Contexts.List | BTbl.Contexts.SearchAndFilter | BTbl.Contexts.SortAlternativeValue);
 		/// <summary>
 		/// Return a WO browse/pick tbl
 		/// </summary>
@@ -551,7 +407,6 @@ namespace Thinkage.MainBoss.Controls {
 
 			return new CompositeTbl(dsMB.Schema.T.WorkOrder, tableId,
 				tblAttrs.ToArray(),
-				null,   // no record type
 				views.ToArray()
 			);
 		}
@@ -574,8 +429,8 @@ namespace Thinkage.MainBoss.Controls {
 			list.Add((IDisablerProperties)app.PermissionsManager.GetPermission(rightsGroup.GetTableOperationRight(TableOperationRightsGroup.TableOperation.Create)));
 			return list;
 		}
-		private static Key SelfAssignCommand = KB.K("Self Assign");
-		private static Key SelfAssignTip = KB.K("Add yourself as an assignee to this Work Order");
+		private static readonly Key SelfAssignCommand = KB.K("Self Assign");
+		private static readonly Key SelfAssignTip = KB.K("Add yourself as an assignee to this Work Order");
 		private static void SelfAssignmentEditor(CommonLogic el, object requestID) {
 			object requestAssigneeID;
 			using (dsMB ds = new dsMB(el.DB)) {
@@ -598,7 +453,7 @@ namespace Thinkage.MainBoss.Controls {
 			};
 			Libraries.Application.Instance.GetInterface<ITblDrivenApplication>().GetInterface<ITblDrivenApplication>().PerformMultiEdit(el.CommonUI.UIFactory, el.DB, TblRegistry.FindDelayedEditTbl(dsMB.Schema.T.WorkOrderStateHistory),
 				EdtMode.New,
-				new[] { new object[] { } },
+				new[] { Array.Empty<object>() },
 				ApplicationTblDefaults.NoModeRestrictions,
 				new[] { initList },
 				((ICommonUI)el.CommonUI).Form, el.CallEditorsModally,
@@ -631,14 +486,13 @@ namespace Thinkage.MainBoss.Controls {
 						)
 					),
 					// No value is provided when editing so commented out for now					IsPreventiveValueNodeBuilder(dsMB.Path.T.WorkOrder, new NonDefaultCol(), ECol.AllReadonly),
-					SingleRequestorGroup(dsMB.Path.T.WorkOrder.F.RequestorID, true),
+					TIContact.SingleRequestorGroup(dsMB.Path.T.WorkOrder.F.RequestorID, true),
 					TblColumnNode.New(dsMB.Path.T.WorkOrder.F.UnitLocationID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.Location.F.Code)), ECol.Normal),
 					TblMultiColumnNode.New(
 						new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal, new NonDefaultCol() },
-						new Key[] { KB.K("Start Estimate"), KB.K("End Estimate"), KB.K("Duration"), KB.K("Due Date") },
-						TblRowNode.New(KB.K("Work Period"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
+						new Key[] { KB.K("Start"), KB.K("Duration"), KB.K("End"), SlackDaysKey, KB.K("Due Date") },
+						TblRowNode.New(KB.K("Planned Work Period"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
 							TblColumnNode.New(dsMB.Path.T.WorkOrder.F.StartDateEstimate, DCol.Normal, new ECol(Fmt.SetId(WorkOrderStartDateEstimateId))),
-							TblColumnNode.New(dsMB.Path.T.WorkOrder.F.EndDateEstimate, DCol.Normal, new ECol(Fmt.SetId(WorkOrderEndDateEstimateId))),
 							TblUnboundControlNode.New(KB.K("Work Duration"), new IntervalTypeInfo(new TimeSpan(1, 0, 0, 0, 0), new TimeSpan(1, 0, 0, 0, 0), TimeSpan.MaxValue, false),
 								new ECol(Fmt.SetId(WorkOrderDurationEstimateId), ECol.RestrictPerGivenPath(dsMB.Path.T.WorkOrder.F.EndDateEstimate, 0))),
 							// The following isn't valid because we have no SQL type for time spans that comes back in the data set as a TimeSpan.
@@ -649,11 +503,30 @@ namespace Thinkage.MainBoss.Controls {
 									new BrowserPathValue(dsMB.Path.T.WorkOrder.F.EndDateEstimate),
 									new BrowserPathValue(dsMB.Path.T.WorkOrder.F.StartDateEstimate)),
 								DCol.Normal),
-							TblColumnNode.New(dsMB.Path.T.WorkOrder.F.WorkDueDate, DCol.Normal, ECol.Normal)
+							TblColumnNode.New(dsMB.Path.T.WorkOrder.F.EndDateEstimate, DCol.Normal, new ECol(Fmt.SetId(WorkOrderEndDateEstimateId))),
+							TblUnboundControlNode.New(SlackDaysKey, SlackDaysType,
+								new ECol(Fmt.SetId(WorkOrderSlackDaysId), ECol.RestrictPerGivenPath(dsMB.Path.T.WorkOrder.F.WorkDueDate, 0))),
+							// The following isn't valid because we have no SQL type for time spans that comes back in the data set as a TimeSpan.
+							//TblQueryValueNode.New(SlackDaysKey, new TblQueryExpression(new SqlExpression(dsMB.Path.T.WorkOrder.F.WorkDueDate).Minus(new SqlExpression(dsMB.Path.T.WorkOrder.F.EndDateEstimate))), DCol.Normal),
+							TblInitSourceNode.New(SlackDaysKey,
+								new BrowserCalculatedInitValue(SlackDaysType,
+									values => (DateTime?)values[0] - (DateTime?)values[1],
+									new BrowserPathValue(dsMB.Path.T.WorkOrder.F.WorkDueDate),
+									new BrowserPathValue(dsMB.Path.T.WorkOrder.F.EndDateEstimate)),
+								DCol.Normal),
+							TblColumnNode.New(dsMB.Path.T.WorkOrder.F.WorkDueDate, DCol.Normal, new ECol(Fmt.SetId(WorkOrderDueDateId)))
 						)
 					),
 					TblVariableNode.New(KB.K("Work Duration"), dsMB.Schema.V.WODefaultDuration, new DefaultOnlyCol(), DCol.Normal, ECol.Normal),
-					TblQueryValueNode.New(KB.K("Overdue"), new TblQueryExpression(WOStatisticCalculation.Overdue(dsMB.Path.T.WorkOrder, dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID)), DCol.Normal, Fmt.SetUsage(DBI_Value.UsageType.IntervalDays), Fmt.SetColor(System.Drawing.Color.Red)),
+					TblVariableNode.New(SlackDaysKey, dsMB.Schema.V.WODefaultSlackDays, new DefaultOnlyCol(), DCol.Normal, ECol.Normal),
+#if OVERDUE_GORY_DETAILS
+					TblColumnNode.New(KB.T("X Previous Worked Days"), dsMB.Path.T.WorkOrder.F.PreviousWorkedDays, DCol.Normal, Fmt.SetUsage(DBI_Value.UsageType.IntervalDays), Fmt.SetColor(System.Drawing.Color.Red)),
+					TblQueryValueNode.New(KB.T("X Days Worked To Date"), new TblQueryExpression(WOStatisticCalculation.DaysWorkedToDate(dsMB.Path.T.WorkOrder)), DCol.Normal, Fmt.SetUsage(DBI_Value.UsageType.IntervalDays), Fmt.SetColor(System.Drawing.Color.Red)),
+					TblQueryValueNode.New(KB.T("X Remaining Work Days"), new TblQueryExpression(WOStatisticCalculation.RemainingWorkDays(dsMB.Path.T.WorkOrder)), DCol.Normal, Fmt.SetUsage(DBI_Value.UsageType.IntervalDays), Fmt.SetColor(System.Drawing.Color.Red)),
+					TblQueryValueNode.New(KB.T("X Expected Completion Date"), new TblQueryExpression(WOStatisticCalculation.ExpectedCompletedDate(dsMB.Path.T.WorkOrder)), DCol.Normal, Fmt.SetUsage(DBI_Value.UsageType.IntervalDays), Fmt.SetColor(System.Drawing.Color.Red)),
+					TblQueryValueNode.New(KB.T("X Actual Completion Date"), new TblQueryExpression(WOStatisticCalculation.ActualCompletedDate(dsMB.Path.T.WorkOrder)), DCol.Normal, Fmt.SetUsage(DBI_Value.UsageType.IntervalDays), Fmt.SetColor(System.Drawing.Color.Red)),
+#endif
+					TblQueryValueNode.New(KB.K("Overdue"), new TblQueryExpression(WOStatisticCalculation.MergedOverdue(dsMB.Path.T.WorkOrder)), new NonDefaultCol(), DCol.Normal, Fmt.SetUsage(DBI_Value.UsageType.IntervalDays), Fmt.SetColor(System.Drawing.Color.Red)),
 					TblColumnNode.New(dsMB.Path.T.WorkOrder.F.WorkCategoryID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.WorkCategory.F.Code)), ECol.Normal),
 					TblUnboundControlNode.New(UseUnitAccessCode, BoolTypeInfo.NonNullUniverse, new ECol(Fmt.SetId(UseUnitAccessCode), Fmt.SetIsSetting(false), ECol.RestrictPerGivenPath(dsMB.Path.T.WorkOrder.F.AccessCodeID, 0)), new NonDefaultCol()),
 					TblColumnNode.New(dsMB.Path.T.WorkOrder.F.AccessCodeID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.AccessCode.F.Code)), new ECol(Fmt.SetId(AccessCodeId))),
@@ -669,6 +542,9 @@ namespace Thinkage.MainBoss.Controls {
 				),
 				BrowsetteTabNode.New(TId.WorkOrderAssignment, TId.WorkOrder,
 					TblColumnNode.NewBrowsette(AssigneeBrowsetteFromWorkOrderTblCreator, dsMB.Path.T.WorkOrderAssignmentAll.F.WorkOrderID, DCol.Normal, ECol.Normal)
+				),
+				BrowsetteTabNode.New(TId.Attachment, TId.WorkOrder,
+					TblColumnNode.NewBrowsette(dsMB.Path.T.WorkOrderAttachment.F.WorkOrderID, DCol.Normal, ECol.Normal)
 				),
 				BrowsetteTabNode.New(TId.ServiceContract, TId.WorkOrder,
 					TblColumnNode.NewBrowsette(TIUnit.WorkOrderServiceContractsBrowseTbl, dsMB.Path.T.WorkOrder.F.UnitLocationID, dsMB.Path.T.UnitServiceContract.F.UnitLocationID, DCol.Normal, ECol.Normal)),
@@ -688,7 +564,7 @@ namespace Thinkage.MainBoss.Controls {
 					BrowsetteTabNode.New(TId.WorkOrderOutside, TId.WorkOrder,
 						TblColumnNode.NewBrowsette(dsMB.Path.T.WorkOrderOutside.F.DemandID.F.WorkOrderID, DCol.Normal, ECol.Normal)),
 					BrowsetteTabNode.New(TId.WorkOrderMiscellaneousExpense, TId.WorkOrder,
-						TblColumnNode.NewBrowsette(dsMB.Path.T.WorkOrderMiscellaneous.F.WorkOrderID, DCol.Normal, ECol.Normal))
+						TblColumnNode.NewBrowsette(dsMB.Path.T.WorkOrderMiscellaneous.F.DemandID.F.WorkOrderID, DCol.Normal, ECol.Normal))
 				),
 				BrowsetteTabNode.New(TId.TemporaryStorage, TId.WorkOrder,
 					// We don't use TILocations.TemporaryItemLocationBrowseTblCreator because it does not permit direct creation of temp storage nor would it show any as primary
@@ -704,7 +580,7 @@ namespace Thinkage.MainBoss.Controls {
 				BrowsetteTabNode.New(TId.Chargeback, TId.WorkOrder,
 					TblColumnNode.NewBrowsette(AllChargebackTbl, dsMB.Path.T.Chargeback.F.WorkOrderID, DCol.Normal, ECol.Normal)),
 				BrowsetteTabNode.New(TId.Request, TId.WorkOrder,
-					TblColumnNode.NewBrowsette(dsMB.Path.T.RequestedWorkOrder.F.WorkOrderID, DCol.Normal, ECol.Normal)),
+					TblColumnNode.NewBrowsette(TIRequest.WorkOrderRequestedRequestsTbl, dsMB.Path.T.RequestedWorkOrder.F.WorkOrderID, DCol.Normal, ECol.Normal)),
 				BrowsetteTabNode.New(TId.WorkOrderStateHistory, TId.WorkOrder,
 					TblColumnNode.NewBrowsette(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderID, DCol.Normal, ECol.Normal)
 				),
@@ -754,6 +630,8 @@ namespace Thinkage.MainBoss.Controls {
 					Init.OnLoadNew(new PathTarget(dsMB.Path.T.WorkOrderStateHistory.F.UserID, 1), new UserIDValue()),
 					Init.OnLoadNew(new ControlTarget(WorkOrderDurationEstimateId), new VariableValue(dsMB.Schema.V.WODefaultDuration)),
 					StartEndDurationCalculator(WorkOrderStartDateEstimateId, WorkOrderDurationEstimateId, WorkOrderEndDateEstimateId),
+					Init.OnLoadNew(new ControlTarget(WorkOrderSlackDaysId), new VariableValue(dsMB.Schema.V.WODefaultSlackDays)),
+					EndSlackDueCalculator(WorkOrderEndDateEstimateId, WorkOrderSlackDaysId, WorkOrderDueDateId),
 					// Copy the WO Expense and AccessCode from unit if the checkbox is checked
 					Init.New(new ControlTarget(WorkOrderExpenseModelId), new EditorPathValue(dsMB.Path.T.WorkOrder.F.UnitLocationID.F.RelativeLocationID.F.UnitID.F.WorkOrderExpenseModelID), new Thinkage.Libraries.Presentation.ControlValue(UseUnitWorkOrderExpenseModel), TblActionNode.Activity.Disabled, TblActionNode.SelectiveActivity(TblActionNode.Activity.Continuous, EdtMode.New, EdtMode.Edit, EdtMode.Clone)),
 					Init.New(new ControlTarget(AccessCodeId), new EditorPathValue(dsMB.Path.T.WorkOrder.F.UnitLocationID.F.RelativeLocationID.F.UnitID.F.AccessCodeID), new Thinkage.Libraries.Presentation.ControlValue(UseUnitAccessCode), TblActionNode.Activity.Disabled, TblActionNode.SelectiveActivity(TblActionNode.Activity.Continuous, EdtMode.New, EdtMode.Edit, EdtMode.Clone)),
@@ -1218,12 +1096,12 @@ namespace Thinkage.MainBoss.Controls {
 			}
 			#endregion
 			#region BuildExpenseCategory
-			static Key[] choiceLabels = new Key[] {
+			static readonly Key[] choiceLabels = new Key[] {
 							KB.K("Manual entry"),
 							KB.K("Current value calculation"),
 							DemandedColumnKey
 			};
-			static EnumValueTextRepresentations costChoices = new EnumValueTextRepresentations(
+			static readonly EnumValueTextRepresentations costChoices = new EnumValueTextRepresentations(
 				choiceLabels,
 				null,
 				new object[] {
@@ -1280,7 +1158,6 @@ namespace Thinkage.MainBoss.Controls {
 					return new CompositeTbl(MostDerivedTable,
 						Identification,
 						TblAttributes.ToArray(),
-						null,
 						CompositeView.ChangeEditTbl(FindDelayedEditTbl(MostDerivedTable))
 					);
 				}
@@ -1291,7 +1168,7 @@ namespace Thinkage.MainBoss.Controls {
 					DetailColumns.Add(TblColumnNode.New(KB.T("DEBUG: exp cat"), dsMB.Path.T.WorkOrderExpenseModelEntry.F.WorkOrderExpenseCategoryID.F.Code, 1, ECol.AllReadonly));
 					DetailColumns.Add(TblColumnNode.New(KB.T("DEBUG: exp mdl"), dsMB.Path.T.WorkOrderExpenseModelEntry.F.WorkOrderExpenseModelID.F.Code, 1, ECol.AllReadonly));
 #endif
-					if( TblForEditDefaults )
+					if (TblForEditDefaults)
 						TblAttributes.Add(new ETbl(ETbl.LogicClass(typeof(DemandEditLogic)), ETbl.EditorAccess(false, EdtMode.UnDelete)));
 					else
 						TblAttributes.Add(new ETbl(ETbl.LogicClass(typeof(DemandEditLogic)), ETbl.EditorAccess(false, EdtMode.UnDelete), ETbl.RowEditType(dsMB.Path.T.WorkOrderExpenseModelEntry.F.Id, 1, RecordManager.RowInfo.RowEditTypes.Lookup)));
@@ -1313,10 +1190,6 @@ namespace Thinkage.MainBoss.Controls {
 				: base(identification, mostDerivedTable, tblForBrowsing, tblForEditDefaults, unitCostTypeInfo) {
 				ActualQuantityPath = new DBI_Path(TIGeneralMB3.ActualQuantityColumn(MostDerivedTable));
 				System.Diagnostics.Debug.Assert(QuantityTypeInfo.GenericAcceptedNativeType(typeof(QT)), "DemandDerivationTblCreator: QT incompatible with QuantityTypeInfo");
-				if (ActualQuantityPath.ReferencedColumn.EffectiveType is IntervalTypeInfo)
-					QuantityFormat = IntervalFormat;
-				else
-					QuantityFormat = IntegralFormat;
 			}
 			public override void BuildPanelCostDisplay() {
 				if (TblForEditDefaults)
@@ -1443,7 +1316,6 @@ namespace Thinkage.MainBoss.Controls {
 			#region Members
 			#region - Information computed based on the ctor arguments
 			private readonly DBI_Path ActualQuantityPath;
-			private readonly BTbl.ListColumnArg.IAttr QuantityFormat;
 			#endregion
 			#endregion
 			#region Demand Filters
@@ -1578,7 +1450,7 @@ namespace Thinkage.MainBoss.Controls {
 						return checked(effectiveUsed > effectiveDemand ? 0 : effectiveDemand - effectiveUsed);
 					}),
 				new Check4<bool, long, long, long>()
-							.Operand1(KB.K("Demand counts active"), dsMB.Path.T.DemandItem.F.DemandID.F.WorkOrderID.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateID.F.DemandCountsActive)
+							.Operand1(KB.K("Demand counts active"), new EditorPathValue(dsMB.Path.T.DemandItem.F.DemandID.F.WorkOrderID.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateID.F.DemandCountsActive))
 							.Operand2(OriginalQuantityNotYetUsedId)
 							.Operand3(AvailableQuantityId)
 							.Operand4(NetQuantityAvailableId, delegate(bool If, long qStillDemanded, long qTotalAvailable)
@@ -1705,7 +1577,7 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		#endregion
 		#region DemandOtherWorkInsideTbl
-		private static Tbl DemandOtherWorkInsideTbl(bool tblForBrowsing,bool tblForEditDefaults) {
+		private static Tbl DemandOtherWorkInsideTbl(bool tblForBrowsing, bool tblForEditDefaults) {
 			var creator = new DemandDerivationTblCreator<long>(TId.DemandPerJobInside, dsMB.Schema.T.DemandOtherWorkInside, tblForBrowsing, tblForEditDefaults, TIGeneralMB3.PerJobUnitCostTypeOnClient);
 			creator.BuildCommonDemandHeaderControls();
 
@@ -1946,12 +1818,12 @@ namespace Thinkage.MainBoss.Controls {
 			}
 			#endregion
 			#region BuildExpenseCategory
-			static Key[] choiceLabels = new Key[] {
+			static readonly Key[] choiceLabels = new Key[] {
 							KB.K("Manual entry"),
 							KB.K("Current value calculation"),
 							DemandedColumnKey
 			};
-			static EnumValueTextRepresentations costChoices = new EnumValueTextRepresentations(
+			static readonly EnumValueTextRepresentations costChoices = new EnumValueTextRepresentations(
 				choiceLabels,
 				null,
 				new object[] {
@@ -1983,7 +1855,6 @@ namespace Thinkage.MainBoss.Controls {
 					return new CompositeTbl(MostDerivedTable,
 						Identification,
 						TblAttributes.ToArray(),
-						null,
 						CompositeView.ChangeEditTbl(FindDelayedEditTbl(MostDerivedTable))
 					);
 				}
@@ -2014,10 +1885,6 @@ namespace Thinkage.MainBoss.Controls {
 			public DemandTemplateDerivationTblCreator(Tbl.TblIdentification identification, DBI_Table mostDerivedTable, bool tblForBrowsing, TypeInfo unitCostTypeInfo)
 				: base(identification, mostDerivedTable, tblForBrowsing, unitCostTypeInfo) {
 				System.Diagnostics.Debug.Assert(QuantityTypeInfo.GenericAcceptedNativeType(typeof(QT)), "DemandDerivationTblCreator: QT incompatible with QuantityTypeInfo");
-				if (QuantityPath.ReferencedColumn.EffectiveType is IntervalTypeInfo)
-					QuantityFormat = IntervalFormat;
-				else
-					QuantityFormat = IntegralFormat;
 			}
 			public override void BuildPanelCostDisplay() {
 				DetailColumns.Add(TblColumnNode.New(QuantityPath, DCol.Normal));
@@ -2048,11 +1915,6 @@ namespace Thinkage.MainBoss.Controls {
 					TblColumnNode.NewBrowsette(tbl, filterPath, DCol.Normal, ECol.Normal)
 				));
 			}
-			#endregion
-			#region Members
-			#region - Information computed based on the ctor arguments
-			private readonly BTbl.ListColumnArg.IAttr QuantityFormat;
-			#endregion
 			#endregion
 			#region Demand Filters
 			public void StorageAssignmentPicker() {
@@ -2247,13 +2109,13 @@ namespace Thinkage.MainBoss.Controls {
 							new DCol(Fmt.SetDisplayPath(dsMB.Path.T.WorkOrder.F.Number)),
 							new ECol(Fmt.SetPickFrom(TIWorkOrder.AllWorkOrderChargebackBrowsePickerTblCreator))),
 						TblColumnNode.New(dsMB.Path.T.Chargeback.F.Code, DCol.Normal, ECol.Normal),
-						ContactGroupTblLayoutNode(
-							ContactGroupRow(dsMB.Path.T.Chargeback.F.BillableRequestorID, dsMB.Path.T.BillableRequestor.F.ContactID.PathToReferencedRow, ECol.Normal)
+						TIContact.ContactGroupTblLayoutNode(
+							TIContact.ContactGroupRow(dsMB.Path.T.Chargeback.F.BillableRequestorID, dsMB.Path.T.BillableRequestor.F.ContactID.PathToReferencedRow, ECol.Normal)
 						),
 						TblColumnNode.New(dsMB.Path.T.Chargeback.F.TotalCost, DCol.Normal, ECol.AllReadonly),
 						TblColumnNode.New(dsMB.Path.T.Chargeback.F.Comment, DCol.Normal, ECol.Normal)),
 					BrowsetteTabNode.New(TId.ChargebackActivity, TId.Chargeback,
-						TblColumnNode.NewBrowsette(dsMB.Path.T.ChargebackActivity.F.ChargebackID, DCol.Normal, ECol.Normal))
+						TblColumnNode.NewBrowsette(ChargebackActivityTbl, dsMB.Path.T.ChargebackLine.F.ChargebackID, DCol.Normal, ECol.Normal))
 				));
 			});
 		}
@@ -2265,16 +2127,31 @@ namespace Thinkage.MainBoss.Controls {
 			return new DelayedCreateTbl(delegate () {
 				DBI_Path parentPath;
 				DBI_Table containmentTable;
+				CompositeView parentRecordView;
+				object codeColumnId = KB.I("WOTemplatePOTemplateCodeColumnId");
+				object descColumnId = KB.I("WOTemplatePOTemplateDescColumnId");
 				if (showPurchaseOrders) {
 					containmentTable = dsMB.Schema.T.WorkOrderLinkedPurchaseOrdersTreeview;
 					parentPath = dsMB.Path.T.WorkOrderPurchaseOrderView.F.LinkedPurchaseOrderID;
+					parentRecordView = new CompositeView(TIPurchaseOrder.PurchaseOrderEditTblCreator, dsMB.Path.T.WorkOrderPurchaseOrderView.F.PurchaseOrderID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.ForceNotPrimary(),
+						ReadonlyView,
+						BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.PurchaseOrder.F.Number),
+						BTbl.PerViewColumnValue(descColumnId, dsMB.Path.T.PurchaseOrder.F.Subject)
+					);
 				}
 				else {
 					containmentTable = dsMB.Schema.T.PurchaseOrderLinkedWorkOrdersTreeview;
 					parentPath = dsMB.Path.T.WorkOrderPurchaseOrderView.F.LinkedWorkOrderID;
+					parentRecordView = new CompositeView(TIWorkOrder.WorkOrderEditTblCreator, dsMB.Path.T.WorkOrderPurchaseOrderView.F.WorkOrderID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.ForceNotPrimary(),
+						ReadonlyView,
+						BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.WorkOrder.F.Number),
+						BTbl.PerViewColumnValue(descColumnId, dsMB.Path.T.WorkOrder.F.Subject)
+					);
 				}
-				object codeColumnId = KB.I("WOTemplatePOTemplateCodeColumnId");
-				object descColumnId = KB.I("WOTemplatePOTemplateDescColumnId");
 				return new CompositeTbl(dsMB.Schema.T.WorkOrderPurchaseOrderView, showPurchaseOrders ? TId.WorkOrder : TId.PurchaseOrder,
 					new Tbl.IAttr[] {
 							PurchasingGroup,
@@ -2284,26 +2161,17 @@ namespace Thinkage.MainBoss.Controls {
 								BTbl.SetTreeStructure(parentPath, 2, 2, containmentTable)
 							)
 						},
-					dsMB.Path.T.WorkOrderPurchaseOrderView.F.TableEnum,
-					new CompositeView(TIWorkOrder.WorkOrderEditTblCreator, dsMB.Path.T.WorkOrderPurchaseOrderView.F.WorkOrderID,
-						CompositeView.ForceNotPrimary(), ReadonlyView,
-						BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.WorkOrder.F.Number),
-						BTbl.PerViewColumnValue(descColumnId, dsMB.Path.T.WorkOrder.F.Subject)
-					),
-					new CompositeView(TIPurchaseOrder.PurchaseOrderEditTblCreator, dsMB.Path.T.WorkOrderPurchaseOrderView.F.PurchaseOrderID,
-						CompositeView.ForceNotPrimary(), ReadonlyView,
-						BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.PurchaseOrder.F.Number),
-						BTbl.PerViewColumnValue(descColumnId, dsMB.Path.T.PurchaseOrder.F.Subject)
-					),
+					parentRecordView,
 					new CompositeView(dsMB.Path.T.WorkOrderPurchaseOrderView.F.WorkOrderPurchaseOrderID,
+						CompositeView.RecognizeByValidEditLinkage(),
 						CompositeView.PathAlias(dsMB.Path.T.WorkOrderPurchaseOrderView.F.LinkedWorkOrderID, dsMB.Path.T.WorkOrderPurchaseOrder.F.WorkOrderID),
 						CompositeView.PathAlias(dsMB.Path.T.WorkOrderPurchaseOrderView.F.LinkedPurchaseOrderID, dsMB.Path.T.WorkOrderPurchaseOrder.F.PurchaseOrderID),
 						CompositeView.SetAdditionalPermissionGroupName(showPurchaseOrders ? (DBI_Table)dsMB.Schema.T.PurchaseOrder : (DBI_Table)dsMB.Schema.T.WorkOrder)
 					),
-					new CompositeView(dsMB.Path.T.WorkOrderPurchaseOrderView.F.POLineID.F.POLineLaborID, ReadonlyView),
-					new CompositeView(dsMB.Path.T.WorkOrderPurchaseOrderView.F.POLineID.F.POLineOtherWorkID, ReadonlyView),
-					new CompositeView(dsMB.Path.T.WorkOrderPurchaseOrderView.F.POLineID.F.POLineItemID, ReadonlyView),
-					new CompositeView(dsMB.Path.T.WorkOrderPurchaseOrderView.F.AccountingTransactionID.F.ReceiveItemPOID, ReadonlyView)
+					new CompositeView(dsMB.Path.T.WorkOrderPurchaseOrderView.F.POLineID.F.POLineLaborID, CompositeView.RecognizeByValidEditLinkage(), ReadonlyView),
+					new CompositeView(dsMB.Path.T.WorkOrderPurchaseOrderView.F.POLineID.F.POLineOtherWorkID, CompositeView.RecognizeByValidEditLinkage(), ReadonlyView),
+					new CompositeView(dsMB.Path.T.WorkOrderPurchaseOrderView.F.POLineID.F.POLineItemID, CompositeView.RecognizeByValidEditLinkage(), ReadonlyView),
+					new CompositeView(dsMB.Path.T.WorkOrderPurchaseOrderView.F.AccountingTransactionID.F.ReceiveItemPOID, CompositeView.RecognizeByValidEditLinkage(), ReadonlyView)
 				);
 			});
 		}
@@ -2314,17 +2182,32 @@ namespace Thinkage.MainBoss.Controls {
 			return new DelayedCreateTbl(delegate () {
 				DBI_Path parentPath;
 				DBI_Table containmentTable;
+				CompositeView parentRecordView;
+				object codeColumnId = KB.I("WOTemplatePOTemplateCodeColumnId");
+				object descColumnId = KB.I("WOTemplatePOTemplateDescColumnId");
 				if (showPurchaseOrderTemplates) {
 					containmentTable = dsMB.Schema.T.WorkOrderTemplateLinkedPurchaseOrderTemplatesTreeview;
 					parentPath = dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.LinkedPurchaseOrderTemplateID;
+					parentRecordView = new CompositeView(TIPurchaseOrder.PurchaseOrderTemplateEditTblCreator, dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.PurchaseOrderTemplateID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.ForceNotPrimary(),
+						ReadonlyView,
+						BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.PurchaseOrderTemplate.F.Code),
+						BTbl.PerViewColumnValue(descColumnId, dsMB.Path.T.PurchaseOrderTemplate.F.Subject)
+					);
 				}
 				else {
 					containmentTable = dsMB.Schema.T.PurchaseOrderTemplateLinkedWorkOrderTemplatesTreeview;
 					parentPath = dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.LinkedWorkOrderTemplateID;
+					parentRecordView = new CompositeView(TIWorkOrder.WorkOrderTemplateEditTblCreator, dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.WorkOrderTemplateID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.ForceNotPrimary(),
+						ReadonlyView,
+						BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.WorkOrderTemplate.F.Code),
+						BTbl.PerViewColumnValue(descColumnId, dsMB.Path.T.WorkOrderTemplate.F.Subject)
+					);
 				}
 
-				object codeColumnId = KB.I("WOTemplatePOTemplateCodeColumnId");
-				object descColumnId = KB.I("WOTemplatePOTemplateDescColumnId");
 				return new CompositeTbl(dsMB.Schema.T.WorkOrderTemplatePurchaseOrderTemplateView, showPurchaseOrderTemplates ? TId.Task : TId.PurchaseOrderTemplate,
 					new Tbl.IAttr[] {
 							PurchasingGroup,
@@ -2334,22 +2217,15 @@ namespace Thinkage.MainBoss.Controls {
 								BTbl.SetTreeStructure(parentPath, 2, 2, containmentTable)
 							)
 						},
-					dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.TableEnum,
-					new CompositeView(TIWorkOrder.WorkOrderTemplateEditTbl, dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.WorkOrderTemplateID,
-						CompositeView.ForceNotPrimary(), ReadonlyView,
-						BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.WorkOrderTemplate.F.Code),
-						BTbl.PerViewColumnValue(descColumnId, dsMB.Path.T.WorkOrderTemplate.F.Desc)),
-					new CompositeView(TIPurchaseOrder.PurchaseOrderTemplateEditTbl, dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.PurchaseOrderTemplateID,
-						CompositeView.ForceNotPrimary(), ReadonlyView,
-						BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.PurchaseOrderTemplate.F.Code),
-						BTbl.PerViewColumnValue(descColumnId, dsMB.Path.T.PurchaseOrderTemplate.F.Desc)),
+					parentRecordView,
 					new CompositeView(dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.WorkOrderTemplatePurchaseOrderTemplateID,
+						CompositeView.RecognizeByValidEditLinkage(),
 						CompositeView.PathAlias(dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.LinkedWorkOrderTemplateID, dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplate.F.WorkOrderTemplateID),
 						CompositeView.PathAlias(dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.LinkedPurchaseOrderTemplateID, dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplate.F.PurchaseOrderTemplateID)
 						),
-					new CompositeView(dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.POLineTemplateID.F.POLineLaborTemplateID, ReadonlyView),
-					new CompositeView(dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.POLineTemplateID.F.POLineOtherWorkTemplateID, ReadonlyView),
-					new CompositeView(dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.POLineTemplateID.F.POLineItemTemplateID, ReadonlyView)
+					new CompositeView(dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.POLineTemplateID.F.POLineLaborTemplateID, CompositeView.RecognizeByValidEditLinkage(), ReadonlyView),
+					new CompositeView(dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.POLineTemplateID.F.POLineOtherWorkTemplateID, CompositeView.RecognizeByValidEditLinkage(), ReadonlyView),
+					new CompositeView(dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.POLineTemplateID.F.POLineItemTemplateID, CompositeView.RecognizeByValidEditLinkage(), ReadonlyView)
 					);
 
 			});
@@ -2359,10 +2235,10 @@ namespace Thinkage.MainBoss.Controls {
 		private static Tbl TaskBrowserTbl(bool includeMakeWO, bool includeDefaultViews) {
 			var views = new List<CompositeView> {
 				// Table #0 (WorkOrderTemplate)
-				new CompositeView(WorkOrderTemplateEditTbl, dsMB.Path.T.WorkOrderTemplate.F.Id),
+				CompositeView.ChangeEditTbl(WorkOrderTemplateEditTblCreator),
 				// Table #1 (WorkOrderTemplate SupplementalTask -- this record type never occurs in the dataset)
 				CompositeView.ExtraNewVerb(TIWorkOrder.WorkOrderTemplateSpecializationEditTbl,
-						NoNewMode,
+						NoContextFreeNew,
 						CompositeView.ContextualInit(0, dsMB.Path.T.WorkOrderTemplate.F.Id, dsMB.Path.T.WorkOrderTemplate.F.ContainingWorkOrderTemplateID),
 						CompositeView.EditorAccess(false, EdtMode.EditDefault, EdtMode.ViewDefault))
 			};
@@ -2391,7 +2267,6 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.WorkOrderTemplateReport))
 						)
 				},
-				null,   // All records in query are type 0.
 				views.ToArray()
 			);
 		}
@@ -2443,7 +2318,6 @@ namespace Thinkage.MainBoss.Controls {
 						WorkOrdersGroup,
 						new BTbl(BTblAttrs.ToArray() )
 					},
-					null,
 					// Explicit assignment records
 					new CompositeView(WorkOrderAssignmentEditTbl(fixedWorkOrder), dsMB.Path.T.WorkOrderAssignmentAll.F.WorkOrderAssignmentID,
 						CompositeView.RecognizeByValidEditLinkage(),
@@ -2501,7 +2375,7 @@ namespace Thinkage.MainBoss.Controls {
 							new SqlExpression(dsMB.Path.T.WorkOrder.F.Id)
 							.In(new SelectSpecification(
 								null,
-								new SqlExpression[] { new SqlExpression(dsMB.Path.T.WorkOrderAssignmentAndUnassignedWorkOrder.F.WorkOrderID)},
+								new SqlExpression[] { new SqlExpression(dsMB.Path.T.WorkOrderAssignmentAndUnassignedWorkOrder.F.WorkOrderID) },
 								new SqlExpression(dsMB.Path.T.WorkOrderAssignmentAndUnassignedWorkOrder.F.WorkOrderAssigneeID).IsNull(),
 								null)))
 					),
@@ -2538,10 +2412,9 @@ namespace Thinkage.MainBoss.Controls {
 				creator.AddPickerFilter(BTbl.ExpressionFilter(
 																new SqlExpression(dsMB.Path.T.WorkOrderAssignee.F.ContactID)
 																	.In(new SelectSpecification(
-																		null,
 																		new SqlExpression[] { new SqlExpression(dsMB.Path.T.WorkOrderAssigneeProspect.F.ContactID), },
 																		new SqlExpression(dsMB.Path.T.WorkOrderAssigneeProspect.F.WorkOrderID).Eq(new SqlExpression(dsMB.Path.T.WorkOrderAssignment.F.WorkOrderID, 2)), // outer scope 2 refers to the edit buffer contents
-																		null).SetDistinct(true))
+																		null))
 																.Or(new SqlExpression(dsMB.Path.T.WorkOrderAssignee.F.ContactID.L.User.ContactID.F.Id)
 																	.Eq(new SqlExpression(new UserIDSource())))),
 					assigneeFilterChoiceId,
@@ -2586,7 +2459,7 @@ namespace Thinkage.MainBoss.Controls {
 		// Common TblQueryExpression
 		public static TblQueryValueNode IsPreventiveValueNodeBuilder(dsMB.PathClass.PathToWorkOrderRow WO, params TblLayoutNode.ICtorArg[] attrs) {
 			List<TblLayoutNode.ICtorArg> newAttrs = new List<TblLayoutNode.ICtorArg> {
-				Fmt.SetEnumText(ViewRecordTypes.IsPreventiveEnumText)
+				Fmt.SetEnumText(IsPreventiveEnumText)
 			};
 			newAttrs.AddRange(attrs);
 			return TblQueryValueNode.New(KB.K("Maintenance Type"),
@@ -2632,7 +2505,6 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.SetTreeStructure(null, 2)
 						)
 					},
-					null,
 					CompositeView.ChangeEditTbl(TblRegistry.FindDelayedEditTbl(dsMB.Schema.T.ActualItem),
 						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ActualItem.F.CorrectionID).Eq(new SqlExpression(dsMB.Path.T.ActualItem.F.Id)))),
 					CompositeView.ChangeEditTbl(ActualItemCorrectionTblCreator,
@@ -2661,7 +2533,6 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.SetTreeStructure(null, 2)
 						)
 					},
-					null,
 					CompositeView.ChangeEditTbl(TblRegistry.FindDelayedEditTbl(dsMB.Schema.T.ActualLaborInside),
 						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ActualLaborInside.F.CorrectionID).Eq(new SqlExpression(dsMB.Path.T.ActualLaborInside.F.Id)))),
 					CompositeView.ChangeEditTbl(ActualLaborInsideCorrectionTblCreator,
@@ -2690,7 +2561,6 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.SetTreeStructure(null, 2)
 						)
 					},
-					null,
 					CompositeView.ChangeEditTbl(TblRegistry.FindDelayedEditTbl(dsMB.Schema.T.ActualOtherWorkInside),
 						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ActualOtherWorkInside.F.CorrectionID).Eq(new SqlExpression(dsMB.Path.T.ActualOtherWorkInside.F.Id)))),
 					CompositeView.ChangeEditTbl(ActualOtherWorkInsideCorrectionTblCreator,
@@ -2717,7 +2587,6 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.SetTreeStructure(null, 2)
 						)
 					},
-					null,
 					CompositeView.ChangeEditTbl(TblRegistry.FindDelayedEditTbl(dsMB.Schema.T.ActualMiscellaneousWorkOrderCost),
 						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ActualMiscellaneousWorkOrderCost.F.CorrectionID).Eq(new SqlExpression(dsMB.Path.T.ActualMiscellaneousWorkOrderCost.F.Id)))),
 					CompositeView.ChangeEditTbl(ActualMiscellaneousWorkOrderCostCorrectionTblCreator,
@@ -2796,23 +2665,61 @@ namespace Thinkage.MainBoss.Controls {
 			var ChargebackEditorTblCreator = ChargebackEditTbl();
 			AllChargebackTbl = new DelayedCreateTbl(delegate () {
 				return new CompositeTbl(dsMB.Schema.T.Chargeback, TId.Chargeback,
-				new Tbl.IAttr[] {
-					WorkOrdersGroup,
-					CommonTblAttrs.ViewCostsDefinedBySchema,
-					new BTbl(
-						BTbl.ListColumn(dsMB.Path.T.Chargeback.F.WorkOrderID.F.Number),
-						BTbl.ListColumn(dsMB.Path.T.Chargeback.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.Chargeback.F.BillableRequestorID.F.ContactID.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.Chargeback.F.TotalCost),
-						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ChargebackFormReport))
-					)
-				},
-				null,
-				CompositeView.ChangeEditTbl(ChargebackEditorTblCreator),
-				CompositeView.AdditionalEditDefault(ChargebackLineEditTblCreator)
+					new Tbl.IAttr[] {
+						WorkOrdersGroup,
+						CommonTblAttrs.ViewCostsDefinedBySchema,
+						new BTbl(
+							BTbl.ListColumn(dsMB.Path.T.Chargeback.F.WorkOrderID.F.Number),
+							BTbl.ListColumn(dsMB.Path.T.Chargeback.F.Code),
+							BTbl.ListColumn(dsMB.Path.T.Chargeback.F.BillableRequestorID.F.ContactID.F.Code),
+							BTbl.ListColumn(dsMB.Path.T.Chargeback.F.TotalCost),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ChargebackFormReport))
+						)
+					},
+					CompositeView.ChangeEditTbl(ChargebackEditorTblCreator),
+					CompositeView.AdditionalEditDefault(ChargebackLineEditTblCreator)
 				);
 			});
 			DefineBrowseTbl(dsMB.Schema.T.Chargeback, AllChargebackTbl);
+			#endregion
+			#region ChargebackActivity
+			ChargebackActivityTbl = new DelayedCreateTbl(
+				delegate () {
+					object correctedCostColumnId = KB.I("CorrectedCostId");
+					return new CompositeTbl(dsMB.Schema.T.ChargebackLine, TId.ChargebackActivity,
+						new Tbl.IAttr[] {
+							CommonTblAttrs.ViewCostsDefinedBySchema,
+							new BTbl(
+								BTbl.ListColumn(dsMB.Path.T.ChargebackLine.F.ChargebackLineCategoryID.F.Code),
+								BTbl.ListColumn(dsMB.Path.T.ChargebackLine.F.AccountingTransactionID.F.Cost),
+								BTbl.PerViewListColumn(KB.K("Corrected Cost"), correctedCostColumnId),
+								BTbl.SetTreeStructure(null, 2)
+							)
+						},
+						CompositeView.ChangeEditTbl(FindDelayedEditTbl(dsMB.Schema.T.ChargebackLine),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ChargebackLine.F.CorrectionID).Eq(new SqlExpression(dsMB.Path.T.ChargebackLine.F.Id))),
+							BTbl.PerViewColumnValue(correctedCostColumnId, dsMB.Path.T.ChargebackLine.F.CorrectedCost),
+							CompositeView.PathAlias(dsMB.Path.T.ChargebackLine.F.ChargebackID, dsMB.Path.T.ChargebackLine.F.ChargebackID),
+							CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete)),
+						CompositeView.ChangeEditTbl(TIWorkOrder.ChargebackLineCorrectionTblCreator,
+							NoNewMode,
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ChargebackLine.F.CorrectionID).NEq(new SqlExpression(dsMB.Path.T.ChargebackLine.F.Id))),
+							CompositeView.SetParentPath(dsMB.Path.T.ChargebackLine.F.CorrectionID),
+							CompositeView.JoinedNewCommand(CorrectGroup),
+							CompositeView.ContextualInit(
+								new int[] { 0, 1 },
+								// TODO: All but the first of the following Inits is the responsibility of the edit tbl, and likely are already automatically
+								// created by the supporting accounting tbl-building infrastructure.
+								new CompositeView.Init(dsMB.Path.T.ChargebackLine.F.CorrectionID, dsMB.Path.T.ChargebackLine.F.AccountingTransactionID.F.ChargebackLineID.F.CorrectionID),
+								new CompositeView.Init(dsMB.Path.T.ChargebackLine.F.AccountingTransactionID.F.EffectiveDate, dsMB.Path.T.ChargebackLine.F.AccountingTransactionID.F.ChargebackLineID.F.AccountingTransactionID.F.EffectiveDate),
+								new CompositeView.Init(dsMB.Path.T.ChargebackLine.F.AccountingTransactionID.F.FromCostCenterID, dsMB.Path.T.ChargebackLine.F.AccountingTransactionID.F.ChargebackLineID.F.AccountingTransactionID.F.FromCostCenterID),
+								new CompositeView.Init(dsMB.Path.T.ChargebackLine.F.AccountingTransactionID.F.ToCostCenterID, dsMB.Path.T.ChargebackLine.F.AccountingTransactionID.F.ChargebackLineID.F.AccountingTransactionID.F.ToCostCenterID),
+								new CompositeView.Init(dsMB.Path.T.ChargebackLine.F.ChargebackLineCategoryID, dsMB.Path.T.ChargebackLine.F.AccountingTransactionID.F.ChargebackLineID.F.ChargebackLineCategoryID)),
+							CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete))
+
+					);
+				}
+			);
 			#endregion
 			#region WorkOrderStateHistory
 			#region - Common layout for regular state history and Close Work Order with comments
@@ -2896,7 +2803,6 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.ListColumn(dsMB.Path.T.WorkOrderStateHistory.F.Comment)
 						)
 					},
-					null,
 					CompositeView.ChangeEditTbl(FindDelayedEditTbl(dsMB.Schema.T.WorkOrderStateHistory), NoNewMode)
 				);
 			}));
@@ -2924,7 +2830,7 @@ namespace Thinkage.MainBoss.Controls {
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
-						SingleContactGroup(dsMB.Path.T.WorkOrderAssignee.F.ContactID),
+						TIContact.SingleContactGroup(dsMB.Path.T.WorkOrderAssignee.F.ContactID),
 						TblColumnNode.New(dsMB.Path.T.WorkOrderAssignee.F.ReceiveNotification, new FeatureGroupArg(MainBossServiceAsWindowsServiceGroup), DCol.Normal, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.WorkOrderAssignee.F.Comment, DCol.Normal, ECol.Normal)
 					),
@@ -2961,9 +2867,8 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.SetTreeStructure(null, 2)
 						)
 					},
-					null,
 					// The fake contact row for unassigned work orders; This displays because the XAFDB file specifies a text provider for its own ID field.
-					new CompositeView(assignedToGroup, dsMB.Path.T.WorkOrderAssignmentByAssignee.F.Id, ReadonlyView,
+					CompositeView.ChangeEditTbl(assignedToGroup, PanelOnly,
 						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.WorkOrderAssignmentByAssignee.F.ContactID).IsNull()),
 						BTbl.PerViewColumnValue(assignedToColumnID, dsMB.Path.T.WorkOrderAssignmentByAssignee.F.Id)
 					),
@@ -3075,7 +2980,7 @@ namespace Thinkage.MainBoss.Controls {
 			},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
-						ContactGroupTblLayoutNode(ContactGroupRow(dsMB.Path.T.BillableRequestor.F.ContactID, ECol.Normal)),
+						TIContact.ContactGroupTblLayoutNode(TIContact.ContactGroupRow(dsMB.Path.T.BillableRequestor.F.ContactID, ECol.Normal)),
 						TblColumnNode.New(dsMB.Path.T.BillableRequestor.F.AccountsReceivableCostCenterID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.CostCenter.F.Code)), ECol.Normal, CommonNodeAttrs.PermissionToViewAccounting, CommonNodeAttrs.PermissionToEditAccounting),
 						TblColumnNode.New(dsMB.Path.T.BillableRequestor.F.Comment, DCol.Normal, ECol.Normal)),
 					BrowsetteTabNode.New(TId.Chargeback, TId.BillableRequestor,
@@ -3107,53 +3012,6 @@ namespace Thinkage.MainBoss.Controls {
 				));
 			});
 			RegisterExistingForImportExport(TId.ChargebackCategory, dsMB.Schema.T.ChargebackLineCategory);
-			#endregion
-			#region ChargebackActivity
-			DefineBrowseTbl(dsMB.Schema.T.ChargebackActivity, new DelayedCreateTbl(
-				delegate () {
-					object correctedCostColumnId = KB.I("CorrectedCostId");
-					dsMB.PathClass.PathToChargebackActivityRow root = dsMB.Path.T.ChargebackActivity;
-					return new CompositeTbl(dsMB.Schema.T.ChargebackActivity, TId.ChargebackActivity,
-						new Tbl.IAttr[] {
-							CommonTblAttrs.ViewCostsDefinedBySchema,
-							new BTbl(
-								BTbl.ListColumn(root.F.AccountingTransactionID.F.ChargebackLineID.F.ChargebackLineCategoryID.F.Code),
-								BTbl.ListColumn(root.F.AccountingTransactionID.F.Cost),
-								BTbl.PerViewListColumn(KB.K("Corrected Cost"), correctedCostColumnId),
-								BTbl.SetTreeStructure(root.F.ParentID, 2)
-							)
-						},
-						root.F.TableEnum,
-						// TODO: Since both record variants have a valid root.F.AccountingTransactionID.F.ChargebackLineID.F.ChargebackID the unified column
-						// root.F.ChargebackID is not required. It should be removed from the view, the PathAlias removed, and any calling browsette node
-						// should refer to .F.AccountingTransactionID.F.ChargebackLineID.F.ChargebackID.
-						// Table #0 - Chargeback
-						new CompositeView(root.F.AccountingTransactionID.F.ChargebackLineID,
-							BTbl.PerViewColumnValue(correctedCostColumnId, dsMB.Path.T.ChargebackLine.F.CorrectedCost),
-							CompositeView.PathAlias(root.F.ChargebackID, dsMB.Path.T.ChargebackLine.F.ChargebackID),
-							CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete)),
-						// Table #1 - Chargeback Correction
-						new CompositeView(TIWorkOrder.ChargebackLineCorrectionTblCreator,
-							root.F.AccountingTransactionID.F.ChargebackLineID, NoNewMode,
-							CompositeView.PathAlias(root.F.ChargebackID, dsMB.Path.T.ChargebackLine.F.ChargebackID),
-							CompositeView.JoinedNewCommand(CorrectGroup),
-							CompositeView.ContextualInit(
-								new int[] {
-								(int)ViewRecordTypes.ChargebackActivity.Chargeback,
-								(int)ViewRecordTypes.ChargebackActivity.ChargebackCorrection
-							},
-								// TODO: All but the first of the following Inits is the responsibility of the edit tbl, and likely are already automatically
-								// created by the supporting accounting tbl-building infrastructure.
-								new CompositeView.Init(dsMB.Path.T.ChargebackLine.F.CorrectionID, root.F.AccountingTransactionID.F.ChargebackLineID.F.CorrectionID),
-								new CompositeView.Init(dsMB.Path.T.ChargebackLine.F.AccountingTransactionID.F.EffectiveDate, root.F.AccountingTransactionID.F.ChargebackLineID.F.AccountingTransactionID.F.EffectiveDate),
-								new CompositeView.Init(dsMB.Path.T.ChargebackLine.F.AccountingTransactionID.F.FromCostCenterID, root.F.AccountingTransactionID.F.ChargebackLineID.F.AccountingTransactionID.F.FromCostCenterID),
-								new CompositeView.Init(dsMB.Path.T.ChargebackLine.F.AccountingTransactionID.F.ToCostCenterID, root.F.AccountingTransactionID.F.ChargebackLineID.F.AccountingTransactionID.F.ToCostCenterID),
-								new CompositeView.Init(dsMB.Path.T.ChargebackLine.F.ChargebackLineCategoryID, root.F.AccountingTransactionID.F.ChargebackLineID.F.ChargebackLineCategoryID)),
-							CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete))
-							
-					);
-				}
-			));
 			#endregion
 
 			#region CloseCode
@@ -3236,7 +3094,6 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.SetTreeStructure(null, 3)
 						)
 					},
-					null,
 					// ActualLaborOutsideNonPO
 					new CompositeView(dsMB.Path.T.DemandLaborOutsideActivity.F.AccountingTransactionID.F.ActualLaborOutsideNonPOID,
 						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.DemandLaborOutsideActivity.F.AccountingTransactionID.F.ActualLaborOutsideNonPOID.F.CorrectionID).Eq(new SqlExpression(dsMB.Path.T.DemandLaborOutsideActivity.F.AccountingTransactionID.F.ActualLaborOutsideNonPOID.F.Id))),
@@ -3339,7 +3196,6 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.SetTreeStructure(null, 3)
 						)
 					},
-					null,
 					// ActualOtherWorkOutsideNonPO
 					new CompositeView(dsMB.Path.T.DemandOtherWorkOutsideActivity.F.AccountingTransactionID.F.ActualOtherWorkOutsideNonPOID,
 						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.DemandOtherWorkOutsideActivity.F.AccountingTransactionID.F.ActualOtherWorkOutsideNonPOID.F.CorrectionID).Eq(new SqlExpression(dsMB.Path.T.DemandOtherWorkOutsideActivity.F.AccountingTransactionID.F.ActualOtherWorkOutsideNonPOID.F.Id))),
@@ -3503,7 +3359,7 @@ namespace Thinkage.MainBoss.Controls {
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
 						TblFixedRecordTypeNode.New(),
-						ContactGroupTblLayoutNode(ContactGroupRow(dsMB.Path.T.Employee.F.ContactID, ECol.Normal)),
+						TIContact.ContactGroupTblLayoutNode(TIContact.ContactGroupRow(dsMB.Path.T.Employee.F.ContactID, ECol.Normal)),
 						TblColumnNode.New(dsMB.Path.T.Employee.F.Desc, DCol.Normal, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.Employee.F.Comment, DCol.Normal, ECol.Normal)
 					),
@@ -3811,6 +3667,8 @@ namespace Thinkage.MainBoss.Controls {
 					WorkOrderNodes(),
 					Init.OnLoadNew(new ControlTarget(WorkOrderDurationEstimateId), new VariableValue(dsMB.Schema.V.WODefaultDuration)),
 					StartEndDurationCalculator(WorkOrderStartDateEstimateId, WorkOrderDurationEstimateId, WorkOrderEndDateEstimateId),
+					Init.OnLoadNew(new ControlTarget(WorkOrderSlackDaysId), new VariableValue(dsMB.Schema.V.WODefaultSlackDays)),
+					EndSlackDueCalculator(WorkOrderEndDateEstimateId, WorkOrderSlackDaysId, WorkOrderDueDateId),
 					Init.LinkRecordSets(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderID, 1, dsMB.Path.T.WorkOrder.F.Id, 0),
 					Init.OnLoadNew(new PathTarget(dsMB.Path.T.WorkOrderStateHistory.F.UserID, 1), new UserIDValue()),
 					Init.LinkRecordSets(dsMB.Path.T.RequestedWorkOrder.F.WorkOrderID, 2, dsMB.Path.T.WorkOrder.F.Id, 0),
@@ -3854,9 +3712,9 @@ namespace Thinkage.MainBoss.Controls {
 			#endregion
 			#region -   WorkOrderDraftBrowseTbl
 			WorkOrderDraftBrowseTbl = new DelayedCreateTbl(delegate () {
-			// We use ExpressionFilter instead since it does not turn into an Init directive in the new-mode editor.
-			return StandardWorkOrderBrowser(TId.DraftWorkOrder, reportTblCreatorDelegate: () => TIReports.WorkOrderDraftFormReport, allowNewWO: true,
-				extraBTblAttributes: BTbl.ExpressionFilter(new SqlExpression(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateID.F.FilterAsDraft).IsTrue()));
+				// We use ExpressionFilter instead since it does not turn into an Init directive in the new-mode editor.
+				return StandardWorkOrderBrowser(TId.DraftWorkOrder, reportTblCreatorDelegate: () => TIReports.WorkOrderDraftFormReport, allowNewWO: true,
+					extraBTblAttributes: BTbl.ExpressionFilter(new SqlExpression(dsMB.Path.T.WorkOrder.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateID.F.FilterAsDraft).IsTrue()));
 			});
 			#endregion
 			#region -   WorkOrderOpenBrowseTbl
@@ -3932,7 +3790,7 @@ namespace Thinkage.MainBoss.Controls {
 				var assigneeIdExpression = SqlExpression.ScalarSubquery(new SelectSpecification(dsMB.Schema.T.WorkOrderAssignee, new[] { new SqlExpression(dsMB.Path.T.WorkOrderAssignee.F.Id) }, new SqlExpression(dsMB.Path.T.WorkOrderAssignee.F.ContactID.L.User.ContactID.F.Id).Eq(SqlExpression.Constant(Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().UserRecordID)), null));
 				var notAssigneeTip = KB.K("You are not registered as a Work Order Assignee");
 				return StandardWorkOrderBrowser(TId.UnassignedWorkOrder, classifyByState: true, editTblCreator: WorkOrderUnassignedEditorTblCreator,
-					featureGroup: WorkOrdersAssignmentsGroup, tableNameForPermissions: "UnassignedWorkOrder", 
+					featureGroup: WorkOrdersAssignmentsGroup, tableNameForPermissions: "UnassignedWorkOrder",
 					listColumns: new BTbl.ICtorArg[] {
 							WorkOrderCurrentStateHistoryEffectiveDateListColumn,
 							WorkOrderNumberListColumn,
@@ -3966,9 +3824,9 @@ namespace Thinkage.MainBoss.Controls {
 							WorkOrderPriorityListColumn,
 							WorkOrderStatusListColumn,
 							WorkOrderSubjectListColumn,
-							WorkOrderOverdueListColumn
+							WorkOrderExpectedOverdueListColumn
 						},
-					extraBTblAttributes: BTbl.ExpressionFilter(CommonExpressions.OverdueWorkOrderExpression));
+					extraBTblAttributes: BTbl.ExpressionFilter(WOStatisticCalculation.IsIncompleteOverdueWorkOrder(dsMB.Path.T.WorkOrder)));
 			});
 			#endregion
 			#endregion
@@ -4035,7 +3893,6 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ExpenseCategoryReport))
 						),
 					},
-					null,
 					CompositeView.ChangeEditTbl(TIGeneralMB3.FindDelayedEditTbl(dsMB.Schema.T.WorkOrderExpenseCategory)),
 					// TODO: Right now, in the called editor, the user can create/select any category even if it is not permitted for the type of demand. Fixing this would be painful
 					// because all we have in the demand editor is a tbl-coded filter requiring one of the flags to be true. We would instead have to have three disablable filters (one for each flag)
@@ -4095,7 +3952,7 @@ namespace Thinkage.MainBoss.Controls {
 						BrowsetteTabNode.New(TId.ExpenseMapping, TId.ExpenseModel,
 							TblColumnNode.NewBrowsette(dsMB.Path.T.WorkOrderExpenseModelEntry.F.WorkOrderExpenseModelID, DCol.Normal, ECol.Normal)),
 						BrowsetteTabNode.New(TId.Unit, TId.ExpenseModel,
-							TblColumnNode.NewBrowsette(TILocations.UnitBrowseTblCreator, dsMB.Path.T.LocationDerivations.F.LocationID.F.RelativeLocationID.F.UnitID.F.WorkOrderExpenseModelID, DCol.Normal, ECol.Normal)),
+							TblColumnNode.NewBrowsette(TILocations.UnitBrowseTblCreator, dsMB.Path.T.Location.F.RelativeLocationID.F.UnitID.F.WorkOrderExpenseModelID, DCol.Normal, ECol.Normal)),
 						BrowsetteTabNode.New(TId.WorkOrder, TId.ExpenseModel,
 							TblColumnNode.NewBrowsette(dsMB.Path.T.WorkOrder.F.WorkOrderExpenseModelID, DCol.Normal, ECol.Normal)),
 						BrowsetteTabNode.New(TId.Task, TId.ExpenseModel,
@@ -4171,7 +4028,6 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.ListColumn(dsMB.Path.T.WorkOrderExpenseModelEntry.F.CostCenterID.F.Code, AccountingGroup)
 						)
 					},
-					null,
 					CompositeView.ChangeEditTbl(TIGeneralMB3.FindDelayedEditTbl(dsMB.Schema.T.WorkOrderExpenseModelEntry))
 				);
 			});
@@ -4255,10 +4111,10 @@ namespace Thinkage.MainBoss.Controls {
 								BTbl.ListColumn(DemandedCostColumnKey, dsMB.Path.T.WorkOrderItems.F.DemandID.F.CostEstimate),
 								BTbl.ListColumn(ActualColumnKey, dsMB.Path.T.WorkOrderItems.F.DemandID.F.DemandItemID.F.ActualQuantity),
 								BTbl.ListColumn(ActualCostColumnKey, dsMB.Path.T.WorkOrderItems.F.DemandID.F.ActualCost),
-								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderItems.F.DemandID.F.DemandItemID.F.ItemLocationID.F.ItemID, 2, 2, dsMB.Schema.T.WorkOrderItemsTreeView)
+								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderItems.F.DemandID.F.DemandItemID.F.ItemLocationID.F.ItemID, 2, 2, dsMB.Schema.T.WorkOrderItemsTreeView),
+								BTbl.SetReportTbl(TIReports.WODemandItem, matchingRowInBrowser: dsMB.Path.T.WorkOrderItems.F.DemandID.F.DemandItemID.PathToReferencedRow)
 							)
 						},
-						dsMB.Path.T.WorkOrderItems.F.TableEnum,
 						new CompositeView(dsMB.Path.T.WorkOrderItems.F.ItemID,
 							CompositeView.RecognizeByValidEditLinkage(),
 							CompositeView.ForceNotPrimary(),
@@ -4269,12 +4125,12 @@ namespace Thinkage.MainBoss.Controls {
 						// appropriate resource, or a demand of the same type.
 						// We separate demands on temp and perm storage so that the Edit Storage Assignment extra verb can work.
 						new CompositeView(dsMB.Path.T.WorkOrderItems.F.DemandID.F.DemandItemID,
+							CompositeView.RecognizeByValidEditLinkage(),
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.DemandItem.F.ItemLocationID.F.LocationID.F.Code),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderItems.DemandItem,
+								(int)WorkOrderItems.DemandItem,
 								new CompositeView.Init(dsMB.Path.T.DemandItem.F.ItemLocationID, dsMB.Path.T.WorkOrderItems.F.DemandID.F.DemandItemID.F.ItemLocationID)
 							),
-							CompositeView.RecognizeByValidEditLinkage(),
 							CompositeView.AdditionalViewVerb(
 								viewStorageAssignmentVerb, viewStorageAssignmentTip,
 								null,
@@ -4290,7 +4146,7 @@ namespace Thinkage.MainBoss.Controls {
 						),
 						CompositeView.ExtraNewVerb(FindDelayedEditTbl(dsMB.Schema.T.ActualItem), NoNewMode,
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderItems.DemandItem,
+								(int)WorkOrderItems.DemandItem,
 								new CompositeView.Condition[] {
 									DemandMustHaveValidCategory
 								},
@@ -4303,21 +4159,28 @@ namespace Thinkage.MainBoss.Controls {
 				}
 			);
 			#endregion
-			#region WorkOrderInside
-			DefineBrowseTbl(dsMB.Schema.T.WorkOrderInside,
-				delegate () {
-					DelayedCreateTbl resourceGroupTbl = new DelayedCreateTbl(
+			CompositeView PlaceholderRecordView(DBI_Table rootTable, object columnTag, object knownId, TId tableIdentification) {
+				return CompositeView.ChangeEditTbl(
+					new DelayedCreateTbl(
 						delegate () {
-							return new Tbl(dsMB.Schema.T.WorkOrderInside, TId.ResourceGroup,
+							return new Tbl(rootTable, tableIdentification,
 								new Tbl.IAttr[] {
-									LaborResourcesGroup
 								},
 								new TblLayoutNodeArray(
-									TblColumnNode.New(dsMB.Path.T.WorkOrderInside.F.Id, DCol.Normal)
+									TblFixedRecordTypeNode.New()
 								)
 							);
 						}
-					);
+					),
+					CompositeView.AddRecognitionCondition(new SqlExpression(rootTable.InternalId).Eq(SqlExpression.Constant(knownId))),
+					CompositeView.IdentificationOverride(tableIdentification),
+					PanelOnly,
+					CompositeView.ForceNotPrimary(),
+					StringRecordTypePerViewColumnValue(columnTag));
+			}
+			#region WorkOrderInside
+			DefineBrowseTbl(dsMB.Schema.T.WorkOrderInside,
+				delegate () {
 					CompositeView.Condition[] DemandMustHaveValidCategory = new CompositeView.Condition[] {
 						new CompositeView.Condition(
 							new SqlExpression(dsMB.Path.T.WorkOrderInside.F.WorkOrderExpenseModelEntryID).IsNotNull(),
@@ -4340,13 +4203,13 @@ namespace Thinkage.MainBoss.Controls {
 								BTbl.PerViewListColumn(DemandedCostColumnKey, demandCostColumnId),
 								BTbl.PerViewListColumn(ActualColumnKey, actualQuantityColumnId),
 								BTbl.PerViewListColumn(ActualCostColumnKey, actualCostColumnId),
-								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderInside.F.ParentID, 2, 2, dsMB.Schema.T.WorkOrderInsideTreeView)
+								BTbl.SetTreeStructure(null, 2, 2, dsMB.Schema.T.WorkOrderInsideTreeView),
+								BTbl.SetReportTbl(TIReports.WOResourceInsideDemand, matchingRowInBrowser: dsMB.Path.T.WorkOrderInside.F.DemandID.PathToReferencedRow)
 							)
 						},
-						dsMB.Path.T.WorkOrderInside.F.TableEnum,
-						new CompositeView(resourceGroupTbl, dsMB.Path.T.WorkOrderInside.F.Id, ReadonlyView, CompositeView.ForceNotPrimary(), CompositeView.IdentificationOverride(TId.Trade),
-							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.WorkOrderInside.F.Id)),
+						PlaceholderRecordView(dsMB.Schema.T.WorkOrderInside, codeColumnId, KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId, TId.UnspecifiedTrade),
 						new CompositeView(dsMB.Path.T.WorkOrderInside.F.TradeID,
+							CompositeView.RecognizeByValidEditLinkage(),
 							ReadonlyView,
 							CompositeView.ForceNotPrimary(),
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.Trade.F.Code)
@@ -4355,41 +4218,47 @@ namespace Thinkage.MainBoss.Controls {
 						// already mentioned in this WO's Resource view. We do this init when the current record is either an appropriate resource, or a demand of the
 						// same type.
 						new CompositeView(dsMB.Path.T.WorkOrderInside.F.DemandID.F.DemandLaborInsideID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentExpression(SqlExpression.Coalesce(new SqlExpression(dsMB.Path.T.WorkOrderInside.F.DemandID.F.DemandLaborInsideID.F.LaborInsideID.F.TradeID), SqlExpression.Constant(KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId))),
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.DemandLaborInside.F.LaborInsideID.F.Code),
 							BTbl.PerViewColumnValue(demandQuantityColumnId, dsMB.Path.T.DemandLaborInside.F.Quantity, IntervalFormat),
 							BTbl.PerViewColumnValue(demandCostColumnId, dsMB.Path.T.DemandLaborInside.F.DemandID.F.CostEstimate),
 							BTbl.PerViewColumnValue(actualQuantityColumnId, dsMB.Path.T.DemandLaborInside.F.ActualQuantity, IntervalFormat),
 							BTbl.PerViewColumnValue(actualCostColumnId, dsMB.Path.T.DemandLaborInside.F.DemandID.F.ActualCost),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderInside.DemandLaborInside,
+								(int)WorkOrderInside.DemandLaborInside,
 								new CompositeView.Init(dsMB.Path.T.DemandLaborInside.F.LaborInsideID, dsMB.Path.T.WorkOrderInside.F.DemandID.F.DemandLaborInsideID.F.LaborInsideID)
 							),
 							CompositeView.NewCommandGroup(NewDemandGroup)
 						),
 						new CompositeView(dsMB.Path.T.WorkOrderInside.F.DemandID.F.DemandOtherWorkInsideID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentExpression(SqlExpression.Coalesce(new SqlExpression(dsMB.Path.T.WorkOrderInside.F.DemandID.F.DemandOtherWorkInsideID.F.OtherWorkInsideID.F.TradeID), SqlExpression.Constant(KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId))),
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.DemandOtherWorkInside.F.OtherWorkInsideID.F.Code),
 							BTbl.PerViewColumnValue(demandQuantityColumnId, dsMB.Path.T.DemandOtherWorkInside.F.Quantity, IntegralFormat),
 							BTbl.PerViewColumnValue(demandCostColumnId, dsMB.Path.T.DemandOtherWorkInside.F.DemandID.F.CostEstimate),
 							BTbl.PerViewColumnValue(actualQuantityColumnId, dsMB.Path.T.DemandOtherWorkInside.F.ActualQuantity, IntegralFormat),
 							BTbl.PerViewColumnValue(actualCostColumnId, dsMB.Path.T.DemandOtherWorkInside.F.DemandID.F.ActualCost),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderInside.DemandOtherWorkInside,
+								(int)WorkOrderInside.DemandOtherWorkInside,
 								new CompositeView.Init(dsMB.Path.T.DemandOtherWorkInside.F.OtherWorkInsideID, dsMB.Path.T.WorkOrderInside.F.DemandID.F.DemandOtherWorkInsideID.F.OtherWorkInsideID)
 							),
 							CompositeView.NewCommandGroup(NewDemandGroup)
 						),
-						CompositeView.ExtraNewVerb(FindDelayedEditTbl(dsMB.Schema.T.ActualLaborInside), NoNewMode,
+						CompositeView.ExtraNewVerb(FindDelayedEditTbl(dsMB.Schema.T.ActualLaborInside),
+							NoNewMode,
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderInside.DemandLaborInside,
+								(int)WorkOrderInside.DemandLaborInside,
 								DemandMustHaveValidCategory,
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualLaborInside.F.AccountingTransactionID.F.ToCostCenterID), dsMB.Path.T.WorkOrderInside.F.WorkOrderExpenseModelEntryID.F.CostCenterID),
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualLaborInside.F.DemandLaborInsideID), dsMB.Path.T.WorkOrderInside.F.DemandID.F.DemandLaborInsideID)
 							),
 							CompositeView.JoinedNewCommand(ActualizeGroup)
 						),
-						CompositeView.ExtraNewVerb(FindDelayedEditTbl(dsMB.Schema.T.ActualOtherWorkInside), NoNewMode,
+						CompositeView.ExtraNewVerb(FindDelayedEditTbl(dsMB.Schema.T.ActualOtherWorkInside),
+							NoNewMode,
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderInside.DemandOtherWorkInside,
+								(int)WorkOrderInside.DemandOtherWorkInside,
 								DemandMustHaveValidCategory,
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualOtherWorkInside.F.AccountingTransactionID.F.ToCostCenterID), dsMB.Path.T.WorkOrderInside.F.WorkOrderExpenseModelEntryID.F.CostCenterID),
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualOtherWorkInside.F.DemandOtherWorkInsideID), dsMB.Path.T.WorkOrderInside.F.DemandID.F.DemandOtherWorkInsideID)
@@ -4442,13 +4311,13 @@ namespace Thinkage.MainBoss.Controls {
 // TODO: when OrderedCost exists in DemandxxOutside records 								BTbl.CompositeViewMatchingIdColumn(KB.K("Ordered Cost"), OrderedCostId),
 								BTbl.PerViewListColumn(ActualColumnKey, actualQuantityColumnId),
 								BTbl.PerViewListColumn(ActualCostColumnKey, actualCostColumnId),
-								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderOutside.F.ParentID, 2, 2, dsMB.Schema.T.WorkOrderOutsideTreeView)
+								BTbl.SetTreeStructure(null, 2, 2, dsMB.Schema.T.WorkOrderOutsideTreeView),
+								BTbl.SetReportTbl(TIReports.WOResourceOutsideDemand, matchingRowInBrowser: dsMB.Path.T.WorkOrderOutside.F.DemandID.PathToReferencedRow)
 							)
 						},
-						dsMB.Path.T.WorkOrderOutside.F.TableEnum,
-						new CompositeView(resourceGroupTbl, dsMB.Path.T.WorkOrderOutside.F.Id, ReadonlyView, CompositeView.ForceNotPrimary(), CompositeView.IdentificationOverride(TId.Trade),
-							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.WorkOrderOutside.F.Id)),
+						PlaceholderRecordView(dsMB.Schema.T.WorkOrderOutside, codeColumnId, KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId, TId.UnspecifiedTrade),
 						new CompositeView(dsMB.Path.T.WorkOrderOutside.F.TradeID,
+							CompositeView.RecognizeByValidEditLinkage(),
 							ReadonlyView,
 							CompositeView.ForceNotPrimary(),
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.Trade.F.Code)
@@ -4457,8 +4326,10 @@ namespace Thinkage.MainBoss.Controls {
 						// already mentioned in this WO's Resource view. We do this init when the current record is either an appropriate resource, or a demand of the
 						// same type.
 						new CompositeView(dsMB.Path.T.WorkOrderOutside.F.DemandID.F.DemandLaborOutsideID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentExpression(SqlExpression.Coalesce(new SqlExpression(dsMB.Path.T.WorkOrderOutside.F.DemandID.F.DemandLaborOutsideID.F.LaborOutsideID.F.TradeID), SqlExpression.Constant(KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId))),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderOutside.DemandLaborOutside,
+								(int)WorkOrderOutside.DemandLaborOutside,
 								new CompositeView.Init(dsMB.Path.T.DemandLaborOutside.F.LaborOutsideID, dsMB.Path.T.WorkOrderOutside.F.DemandID.F.DemandLaborOutsideID.F.LaborOutsideID)
 							),
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.DemandLaborOutside.F.LaborOutsideID.F.Code),
@@ -4470,8 +4341,10 @@ namespace Thinkage.MainBoss.Controls {
 							CompositeView.NewCommandGroup(NewDemandGroup)
 						),
 						new CompositeView(dsMB.Path.T.WorkOrderOutside.F.DemandID.F.DemandOtherWorkOutsideID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentExpression(SqlExpression.Coalesce(new SqlExpression(dsMB.Path.T.WorkOrderOutside.F.DemandID.F.DemandOtherWorkOutsideID.F.OtherWorkOutsideID.F.TradeID), SqlExpression.Constant(KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId))),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderOutside.DemandOtherWorkOutside,
+								(int)WorkOrderOutside.DemandOtherWorkOutside,
 								new CompositeView.Init(dsMB.Path.T.DemandOtherWorkOutside.F.OtherWorkOutsideID, dsMB.Path.T.WorkOrderOutside.F.DemandID.F.DemandOtherWorkOutsideID.F.OtherWorkOutsideID)
 							),
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.DemandOtherWorkOutside.F.OtherWorkOutsideID.F.Code),
@@ -4482,24 +4355,30 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.PerViewColumnValue(actualCostColumnId, dsMB.Path.T.DemandOtherWorkOutside.F.DemandID.F.ActualCost),
 							CompositeView.NewCommandGroup(NewDemandGroup)
 						),
-						new CompositeView(dsMB.Path.T.WorkOrderOutside.F.POLineID.F.POLineLaborID, NoNewMode,
+						new CompositeView(dsMB.Path.T.WorkOrderOutside.F.POLineID.F.POLineLaborID,
+							NoNewMode,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentPath(dsMB.Path.T.WorkOrderOutside.F.POLineID.F.POLineLaborID.F.DemandLaborOutsideID.F.DemandID),
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.POLineLabor.F.POLineID.F.PurchaseOrderID.F.VendorID.F.Code),
 							BTbl.PerViewColumnValue(OrderedQuantityId, dsMB.Path.T.POLineLabor.F.Quantity, IntervalFormat),
 							BTbl.PerViewColumnValue(actualQuantityColumnId, dsMB.Path.T.POLineLabor.F.ReceiveQuantity, IntervalFormat),
 							BTbl.PerViewColumnValue(actualCostColumnId, dsMB.Path.T.POLineLabor.F.POLineID.F.ReceiveCost),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderOutside.DemandLaborOutside,
+								(int)WorkOrderOutside.DemandLaborOutside,
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.POLineLabor.F.DemandLaborOutsideID), dsMB.Path.T.WorkOrderOutside.F.DemandID.F.DemandLaborOutsideID)
 							),
 							CompositeView.JoinedNewCommand(newPOLineGroup)
 						),
-						new CompositeView(dsMB.Path.T.WorkOrderOutside.F.POLineID.F.POLineOtherWorkID, NoNewMode,
+						new CompositeView(dsMB.Path.T.WorkOrderOutside.F.POLineID.F.POLineOtherWorkID,
+							NoNewMode,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentPath(dsMB.Path.T.WorkOrderOutside.F.POLineID.F.POLineOtherWorkID.F.DemandOtherWorkOutsideID.F.DemandID),
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.POLineOtherWork.F.POLineID.F.PurchaseOrderID.F.VendorID.F.Code),
 							BTbl.PerViewColumnValue(OrderedQuantityId, dsMB.Path.T.POLineOtherWork.F.Quantity, IntegralFormat),
 							BTbl.PerViewColumnValue(actualQuantityColumnId, dsMB.Path.T.POLineOtherWork.F.ReceiveQuantity, IntegralFormat),
 							BTbl.PerViewColumnValue(actualCostColumnId, dsMB.Path.T.POLineOtherWork.F.POLineID.F.ReceiveCost),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderOutside.DemandOtherWorkOutside,
+								(int)WorkOrderOutside.DemandOtherWorkOutside,
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.POLineOtherWork.F.DemandOtherWorkOutsideID), dsMB.Path.T.WorkOrderOutside.F.DemandID.F.DemandOtherWorkOutsideID)
 							),
 							CompositeView.JoinedNewCommand(newPOLineGroup)
@@ -4507,7 +4386,7 @@ namespace Thinkage.MainBoss.Controls {
 						// Actualization Non-po (2 views)
 						CompositeView.ExtraNewVerb(FindDelayedEditTbl(dsMB.Schema.T.ActualLaborOutsideNonPO), NoNewMode,
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderOutside.DemandLaborOutside,
+								(int)WorkOrderOutside.DemandLaborOutside,
 								DemandMustHaveValidCategory,
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualLaborOutsideNonPO.F.AccountingTransactionID.F.ToCostCenterID), dsMB.Path.T.WorkOrderOutside.F.WorkOrderExpenseModelEntryID.F.CostCenterID),
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualLaborOutsideNonPO.F.DemandLaborOutsideID), dsMB.Path.T.WorkOrderOutside.F.DemandID.F.DemandLaborOutsideID)
@@ -4516,7 +4395,7 @@ namespace Thinkage.MainBoss.Controls {
 						),
 						CompositeView.ExtraNewVerb(FindDelayedEditTbl(dsMB.Schema.T.ActualOtherWorkOutsideNonPO), NoNewMode,
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderOutside.DemandOtherWorkOutside,
+								(int)WorkOrderOutside.DemandOtherWorkOutside,
 								DemandMustHaveValidCategory,
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualOtherWorkOutsideNonPO.F.AccountingTransactionID.F.ToCostCenterID), dsMB.Path.T.WorkOrderOutside.F.WorkOrderExpenseModelEntryID.F.CostCenterID),
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualOtherWorkOutsideNonPO.F.DemandOtherWorkOutsideID), dsMB.Path.T.WorkOrderOutside.F.DemandID.F.DemandOtherWorkOutsideID)
@@ -4526,7 +4405,7 @@ namespace Thinkage.MainBoss.Controls {
 						// Actualization of POLines (2 views)
 						CompositeView.ExtraNewVerb(FindDelayedEditTbl(dsMB.Schema.T.ActualLaborOutsidePO), NoNewMode,
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderOutside.POLineLabor,
+								(int)WorkOrderOutside.POLineLabor,
 								DemandMustHaveValidCategory,
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualLaborOutsidePO.F.AccountingTransactionID.F.ToCostCenterID), dsMB.Path.T.WorkOrderOutside.F.WorkOrderExpenseModelEntryID.F.CostCenterID),
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualLaborOutsidePO.F.POLineLaborID), dsMB.Path.T.WorkOrderOutside.F.POLineID.F.POLineLaborID)
@@ -4535,7 +4414,7 @@ namespace Thinkage.MainBoss.Controls {
 						),
 						CompositeView.ExtraNewVerb(FindDelayedEditTbl(dsMB.Schema.T.ActualOtherWorkOutsidePO), NoNewMode,
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderOutside.POLineOtherWork,
+								(int)WorkOrderOutside.POLineOtherWork,
 								DemandMustHaveValidCategory,
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualOtherWorkOutsidePO.F.AccountingTransactionID.F.ToCostCenterID), dsMB.Path.T.WorkOrderOutside.F.WorkOrderExpenseModelEntryID.F.CostCenterID),
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualOtherWorkOutsidePO.F.POLineOtherWorkID), dsMB.Path.T.WorkOrderOutside.F.POLineID.F.POLineOtherWorkID)
@@ -4566,33 +4445,37 @@ namespace Thinkage.MainBoss.Controls {
 								BTbl.PerViewListColumn(CommonCodeColumnKey, miscellaneousCodeColumnId),
 								BTbl.PerViewListColumn(DemandedCostColumnKey, demandCostColumnId),
 								BTbl.PerViewListColumn(ActualCostColumnKey, actualCostColumnId),
-								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderMiscellaneous.F.ParentID, 2, 2, dsMB.Schema.T.WorkOrderMiscellaneousTreeView)
+								BTbl.SetTreeStructure(null, 2, 2, dsMB.Schema.T.WorkOrderMiscellaneousTreeView),
+								BTbl.SetReportTbl(TIReports.WODemandMiscellaneousWorkOrderCost, matchingRowInBrowser: dsMB.Path.T.WorkOrderMiscellaneous.F.DemandID.F.DemandMiscellaneousWorkOrderCostID.PathToReferencedRow)
 							)
 						},
-						dsMB.Path.T.WorkOrderMiscellaneous.F.TableEnum,
-						new CompositeView(dsMB.Path.T.WorkOrderMiscellaneous.F.MiscellaneousWorkOrderCostID, ReadonlyView, CompositeView.ForceNotPrimary(),
+						new CompositeView(dsMB.Path.T.WorkOrderMiscellaneous.F.MiscellaneousWorkOrderCostID,
+							ReadonlyView,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.ForceNotPrimary(),
 							BTbl.PerViewColumnValue(miscellaneousCodeColumnId, dsMB.Path.T.MiscellaneousWorkOrderCost.F.Code)
 						),
 						// We allow Demands to have a context-free New and only advisory initing of the resource because the user may want to demand a resource not
 						// already mentioned in this WO's Resource view. We do this init when the current record is either an appropriate resource, or a demand of the
 						// same type.
 						new CompositeView(dsMB.Path.T.WorkOrderMiscellaneous.F.DemandID.F.DemandMiscellaneousWorkOrderCostID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentPath(dsMB.Path.T.WorkOrderMiscellaneous.F.DemandID.F.DemandMiscellaneousWorkOrderCostID.F.MiscellaneousWorkOrderCostID),
 							BTbl.PerViewColumnValue(miscellaneousCodeColumnId, dsMB.Path.T.DemandMiscellaneousWorkOrderCost.F.DemandID.F.EntryDate, TIWorkOrder.WorkOrderResourceActivityDateAsCodeWrapper()),
 							BTbl.PerViewColumnValue(demandCostColumnId, dsMB.Path.T.DemandMiscellaneousWorkOrderCost.F.DemandID.F.CostEstimate),
 							BTbl.PerViewColumnValue(actualCostColumnId, dsMB.Path.T.DemandMiscellaneousWorkOrderCost.F.DemandID.F.ActualCost),
-							CompositeView.PathAlias(dsMB.Path.T.WorkOrderMiscellaneous.F.WorkOrderID, dsMB.Path.T.DemandMiscellaneousWorkOrderCost.F.DemandID.F.WorkOrderID),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderMiscellaneous.MiscellaneousWorkOrderCost,
+								(int)WorkOrderMiscellaneous.MiscellaneousWorkOrderCost,
 								new CompositeView.Init(dsMB.Path.T.DemandMiscellaneousWorkOrderCost.F.MiscellaneousWorkOrderCostID, dsMB.Path.T.WorkOrderMiscellaneous.F.MiscellaneousWorkOrderCostID)
 							),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderMiscellaneous.DemandMiscellaneousWorkOrderCost,
+								(int)WorkOrderMiscellaneous.DemandMiscellaneousWorkOrderCost,
 								new CompositeView.Init(dsMB.Path.T.DemandMiscellaneousWorkOrderCost.F.MiscellaneousWorkOrderCostID, dsMB.Path.T.WorkOrderMiscellaneous.F.DemandID.F.DemandMiscellaneousWorkOrderCostID.F.MiscellaneousWorkOrderCostID)
 							)
 						),
 						CompositeView.ExtraNewVerb(FindDelayedEditTbl(dsMB.Schema.T.ActualMiscellaneousWorkOrderCost), NoNewMode,
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderMiscellaneous.DemandMiscellaneousWorkOrderCost,
+								(int)WorkOrderMiscellaneous.DemandMiscellaneousWorkOrderCost,
 								DemandMustHaveValidCategory,
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualMiscellaneousWorkOrderCost.F.AccountingTransactionID.F.ToCostCenterID), dsMB.Path.T.WorkOrderMiscellaneous.F.WorkOrderExpenseModelEntryID.F.CostCenterID),
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualMiscellaneousWorkOrderCost.F.DemandMiscellaneousWorkOrderCostID), dsMB.Path.T.WorkOrderMiscellaneous.F.DemandID.F.DemandMiscellaneousWorkOrderCostID)
@@ -4614,63 +4497,75 @@ namespace Thinkage.MainBoss.Controls {
 								BTbl.PerViewListColumn(CommonCodeColumnKey, codeId),
 								BTbl.ListColumn(dsMB.Path.T.WorkOrderTemporaryStorage.F.ItemLocationID.F.ActualItemLocationID.F.OnHand),
 								BTbl.ListColumn(dsMB.Path.T.WorkOrderTemporaryStorage.F.ItemLocationID.F.ActualItemLocationID.F.Available),
-								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderTemporaryStorage.F.ParentID, 4, 4, dsMB.Schema.T.WorkOrderTemporaryStorageTreeView)
+								BTbl.SetTreeStructure(null, 4, 4, dsMB.Schema.T.WorkOrderTemporaryStorageTreeView)
 							)
 						},
-						dsMB.Path.T.WorkOrderTemporaryStorage.F.TableEnum,
 						// Postal address
-						new CompositeView(dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID.F.PostalAddressID, ReadonlyView, CompositeView.ForceNotPrimary(),
+						new CompositeView(dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID.F.PostalAddressID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							ReadonlyView,
+							CompositeView.ForceNotPrimary(),
 							BTbl.PerViewColumnValue(codeId, dsMB.Path.T.PostalAddress.F.Code)),
 						// Temporary Storage
 						new CompositeView(TIItem.AllTemporaryStorageEditTblCreator, dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID.F.TemporaryStorageID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentPath(dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID.F.TemporaryStorageID.F.ContainingLocationID),
 							// not sure what to show in the list column
 							CompositeView.PathAlias(dsMB.Path.T.WorkOrderTemporaryStorage.F.WorkOrderID, dsMB.Path.T.TemporaryStorage.F.WorkOrderID),
 							CompositeView.ContextualInit(
 								new int[] {
-									(int)ViewRecordTypes.WorkOrderTemporaryStorage.PermanentStorage,
-									(int)ViewRecordTypes.WorkOrderTemporaryStorage.PlainRelativeLocation,
-									(int)ViewRecordTypes.WorkOrderTemporaryStorage.Unit,
-									(int)ViewRecordTypes.WorkOrderTemporaryStorage.PostalAddress
+									(int)WorkOrderTemporaryStorage.PermanentStorage,
+									(int)WorkOrderTemporaryStorage.PlainRelativeLocation,
+									(int)WorkOrderTemporaryStorage.Unit,
+									(int)WorkOrderTemporaryStorage.PostalAddress
 								},
 								new CompositeView.Init(dsMB.Path.T.TemporaryStorage.F.ContainingLocationID, dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID)
-							),
-							CompositeView.ContextualInit(
-								new int[] {
-									(int)ViewRecordTypes.WorkOrderTemporaryStorage.TemporaryItemLocation,
-								},
-								new CompositeView.Init(dsMB.Path.T.TemporaryStorage.F.ContainingLocationID, dsMB.Path.T.WorkOrderTemporaryStorage.F.ItemLocationID.F.LocationID)
 							)
+						// Initing the location of a new temporary storage if the current record is Temporary Storage or Temporary Storage Assignment is not really useful
+						// because the (WO, Location) combination already exists as a Temporary Storage (the current record or its immediate container).
 						),
 						// Unit
-						new CompositeView(dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID.F.RelativeLocationID.F.UnitID, ReadonlyView, CompositeView.ForceNotPrimary(),
+						new CompositeView(dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID.F.RelativeLocationID.F.UnitID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentPath(dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID.F.RelativeLocationID.F.ContainingLocationID),
+							ReadonlyView,
+							CompositeView.ForceNotPrimary(),
 							BTbl.PerViewColumnValue(codeId, dsMB.Path.T.Unit.F.RelativeLocationID.F.Code)),
 						// Permanent Storage
-						new CompositeView(dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID.F.RelativeLocationID.F.PermanentStorageID, ReadonlyView, CompositeView.ForceNotPrimary(),
+						new CompositeView(dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID.F.RelativeLocationID.F.PermanentStorageID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentPath(dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID.F.RelativeLocationID.F.ContainingLocationID),
+							ReadonlyView,
+							CompositeView.ForceNotPrimary(),
 							BTbl.PerViewColumnValue(codeId, dsMB.Path.T.PermanentStorage.F.RelativeLocationID.F.Code)),
 						// Plain Relative Location
-						new CompositeView(dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID.F.RelativeLocationID.F.PlainRelativeLocationID, ReadonlyView, CompositeView.ForceNotPrimary(),
+						new CompositeView(dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID.F.RelativeLocationID.F.PlainRelativeLocationID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentPath(dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID.F.RelativeLocationID.F.ContainingLocationID),
+							ReadonlyView,
+							CompositeView.ForceNotPrimary(),
 							BTbl.PerViewColumnValue(codeId, dsMB.Path.T.PlainRelativeLocation.F.RelativeLocationID.F.Code)),
-						// Template Temporary Storage (impossible in this view)
-						null,
 						// Temporary Storage Assignment
 						new CompositeView(TIItem.AllTemporaryItemLocationTblCreator, dsMB.Path.T.WorkOrderTemporaryStorage.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentPath(dsMB.Path.T.WorkOrderTemporaryStorage.F.ItemLocationID.F.LocationID),
 							BTbl.PerViewColumnValue(codeId, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID.F.Code),
 							CompositeView.PathAlias(dsMB.Path.T.WorkOrderTemporaryStorage.F.WorkOrderID, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID.F.TemporaryStorageID.F.WorkOrderID),
 							CompositeView.PathAlias(dsMB.Path.T.WorkOrderTemporaryStorage.F.WorkOrderID, dsMB.Path.T.TemporaryItemLocation.F.WorkOrderID),
 							NoContextFreeNew,
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderTemporaryStorage.TemporaryItemLocation,
+								(int)WorkOrderTemporaryStorage.TemporaryItemLocation,
 								new CompositeView.Init(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID, dsMB.Path.T.WorkOrderTemporaryStorage.F.ItemLocationID.F.LocationID)
 							),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderTemporaryStorage.TemporaryStorage,
+								(int)WorkOrderTemporaryStorage.TemporaryStorage,
 								new CompositeView.Init(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID, dsMB.Path.T.WorkOrderTemporaryStorage.F.LocationID)
 							)
 						),
 						CompositeView.ExtraNewVerb(FindDelayedEditTbl(dsMB.Schema.T.DemandItem),
 							NoContextFreeNew,
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderTemporaryStorage.TemporaryItemLocation,
+								(int)WorkOrderTemporaryStorage.TemporaryItemLocation,
 								new CompositeView.Init(dsMB.Path.T.DemandItem.F.ItemLocationID, dsMB.Path.T.WorkOrderTemporaryStorage.F.ItemLocationID),
 								// Because this is not making a record that appears in the browse data, we cannot use a PathAlias to express
 								// that dsMB.Path.T.WorkOrderTemporaryStorage.F.WorkOrderID and thus the browsette filter WO from the containing editor
@@ -4740,6 +4635,9 @@ namespace Thinkage.MainBoss.Controls {
 					BrowsetteTabNode.New(TId.TaskMiscellaneousExpense, TId.Task,
 						TblColumnNode.NewBrowsette(dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.DemandTemplateID.F.WorkOrderTemplateID, DCol.Normal, ECol.Normal))
 				),
+				BrowsetteTabNode.New(TId.Attachment, TId.Task,
+					TblColumnNode.NewBrowsette(dsMB.Path.T.WorkOrderTemplateAttachment.F.WorkOrderTemplateID, DCol.Normal, ECol.Normal)
+				),
 				BrowsetteTabNode.New(TId.TaskTemporaryStorage, TId.Task,
 				// We don't use TILocations.TemporaryItemLocationBrowseTblCreator because it does not permit direct creation of temp storage nor would it show any as primary
 					TblColumnNode.NewBrowsette(dsMB.Path.T.WorkOrderTemplateStorage.F.WorkOrderTemplateID, DCol.Normal, ECol.Normal)),
@@ -4759,7 +4657,7 @@ namespace Thinkage.MainBoss.Controls {
 					.Operand3(NetGenerateLeadTimeId, (TimeSpan thisDuration, TimeSpan? basisDuration) => (!basisDuration.HasValue || thisDuration > basisDuration) ? thisDuration : basisDuration.Value )
 			});
 
-			WorkOrderTemplateEditTbl = new DelayedCreateTbl(delegate () {
+			WorkOrderTemplateEditTblCreator = new DelayedCreateTbl(delegate () {
 				var allTabs = new List<TblTabNode> {
 					DetailsTabNode.New(detailsNodes.ToArray())
 				};
@@ -4774,7 +4672,7 @@ namespace Thinkage.MainBoss.Controls {
 					new List<TblActionNode>(commonActions)
 				);
 			});
-			RegisterForImportExport(TId.Task, WorkOrderTemplateEditTbl);
+			RegisterForImportExport(TId.Task, WorkOrderTemplateEditTblCreator);
 			// This Tbl is used in New mode only from the Browser when you select New Sub Task
 			// It has an additonal set of Inits that set all fields subject to accumulation to the "no-op" values.
 			WorkOrderTemplateSpecializationEditTbl = new DelayedCreateTbl(delegate () {
@@ -4905,13 +4803,13 @@ namespace Thinkage.MainBoss.Controls {
 							new BTbl(
 								BTbl.PerViewListColumn(CommonCodeColumnKey, codeColumnId),
 								BTbl.PerViewListColumn(DemandedColumnKey, quantityColumnId),
-								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderTemplateItems.F.DemandTemplateID.F.DemandItemTemplateID.F.ItemLocationID.F.ItemID, 2, 2, dsMB.Schema.T.WorkOrderTemplateItemsTreeView)
+								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderTemplateItems.F.DemandTemplateID.F.DemandItemTemplateID.F.ItemLocationID.F.ItemID, 2, 2, dsMB.Schema.T.WorkOrderTemplateItemsTreeView),
+								BTbl.SetReportTbl(TIReports.WOTemplateItem, matchingRowInBrowser: dsMB.Path.T.WorkOrderTemplateItems.F.DemandTemplateID.F.DemandItemTemplateID.PathToReferencedRow)
 							)
 						},
-						dsMB.Path.T.WorkOrderTemplateItems.F.TableEnum,
 						new CompositeView(dsMB.Path.T.WorkOrderTemplateItems.F.ItemID,
-							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.Item.F.Code),
 							CompositeView.RecognizeByValidEditLinkage(),
+							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.Item.F.Code),
 							CompositeView.ForceNotPrimary(),
 							ReadonlyView),
 						// We allow Demands to have a context-free New and only advisory initing of the resource because the user may want to demand
@@ -4919,13 +4817,13 @@ namespace Thinkage.MainBoss.Controls {
 						// appropriate resource, or a demand of the same type.
 						// We separate demands on temp and perm storage so that the Edit Storage Assignment extra verb can work.
 						new CompositeView(dsMB.Path.T.WorkOrderTemplateItems.F.DemandTemplateID.F.DemandItemTemplateID,
+							CompositeView.RecognizeByValidEditLinkage(),
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.DemandItemTemplate.F.ItemLocationID.F.LocationID.F.Code),
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.DemandItemTemplate.F.Quantity),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderTemplateItems.DemandItemTemplate,
+								(int)WorkOrderTemplateItems.DemandItemTemplate,
 								new CompositeView.Init(dsMB.Path.T.DemandItemTemplate.F.ItemLocationID, dsMB.Path.T.WorkOrderTemplateItems.F.DemandTemplateID.F.DemandItemTemplateID.F.ItemLocationID)
-							),
-							CompositeView.RecognizeByValidEditLinkage()
+							)
 						)
 					);
 				}
@@ -4934,18 +4832,6 @@ namespace Thinkage.MainBoss.Controls {
 			#region WorkOrderTemplateInside
 			DefineBrowseTbl(dsMB.Schema.T.WorkOrderTemplateInside,
 				delegate () {
-					DelayedCreateTbl resourceGroupTbl = new DelayedCreateTbl(
-						delegate () {
-							return new Tbl(dsMB.Schema.T.WorkOrderTemplateInside, TId.ResourceGroup,
-								new Tbl.IAttr[] {
-									SchedulingAndLaborResourcesGroup
-								},
-								new TblLayoutNodeArray(
-									TblColumnNode.New(dsMB.Path.T.WorkOrderTemplateInside.F.Id, DCol.Normal)
-								)
-							);
-						}
-					);
 					object codeColumnId = KB.I("WorkOrderTemplateInsideCodeId");
 					object demandQuantityColumnId = KB.I("WorkOrderLaborOutsideDemandQuantityId");
 					return new CompositeTbl(dsMB.Schema.T.WorkOrderTemplateInside, TId.TaskInside,
@@ -4954,13 +4840,13 @@ namespace Thinkage.MainBoss.Controls {
 							new BTbl(
 								BTbl.PerViewListColumn(CommonCodeColumnKey, codeColumnId),
 								BTbl.PerViewListColumn(DemandedColumnKey, demandQuantityColumnId),
-								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderTemplateInside.F.ParentID, 2, 2, dsMB.Schema.T.WorkOrderTemplateInsideTreeView)
+								BTbl.SetTreeStructure(null, 2, 2, dsMB.Schema.T.WorkOrderTemplateInsideTreeView),
+								BTbl.SetReportTbl(TIReports.WOTemplateInsideResource, matchingRowInBrowser: dsMB.Path.T.WorkOrderTemplateInside.F.DemandTemplateID.PathToReferencedRow)
 							)
 						},
-						dsMB.Path.T.WorkOrderTemplateInside.F.TableEnum,
-						new CompositeView(resourceGroupTbl, dsMB.Path.T.WorkOrderTemplateInside.F.Id, ReadonlyView, CompositeView.ForceNotPrimary(), CompositeView.IdentificationOverride(TId.Trade),
-							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.WorkOrderTemplateInside.F.Id)),
+						PlaceholderRecordView(dsMB.Schema.T.WorkOrderTemplateInside, codeColumnId, KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId, TId.UnspecifiedTrade),
 						new CompositeView(dsMB.Path.T.WorkOrderTemplateInside.F.TradeID,
+							CompositeView.RecognizeByValidEditLinkage(),
 							ReadonlyView,
 							CompositeView.ForceNotPrimary(),
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.Trade.F.Code)
@@ -4969,18 +4855,22 @@ namespace Thinkage.MainBoss.Controls {
 						// already mentioned in this WO's Resource view. We do this init when the current record is either an appropriate resource, or a demand of the
 						// same type.
 						new CompositeView(dsMB.Path.T.WorkOrderTemplateInside.F.DemandTemplateID.F.DemandLaborInsideTemplateID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentExpression(SqlExpression.Coalesce(new SqlExpression(dsMB.Path.T.WorkOrderTemplateInside.F.DemandTemplateID.F.DemandLaborInsideTemplateID.F.LaborInsideID.F.TradeID), SqlExpression.Constant(KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId))),
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.DemandLaborInsideTemplate.F.LaborInsideID.F.Code),
 							BTbl.PerViewColumnValue(demandQuantityColumnId, dsMB.Path.T.DemandLaborInsideTemplate.F.Quantity, IntervalFormat),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderTemplateInside.DemandLaborInsideTemplate,
+								(int)WorkOrderTemplateInside.DemandLaborInsideTemplate,
 								new CompositeView.Init(dsMB.Path.T.DemandLaborInsideTemplate.F.LaborInsideID, dsMB.Path.T.WorkOrderTemplateInside.F.DemandTemplateID.F.DemandLaborInsideTemplateID.F.LaborInsideID)
 							)
 						),
 						new CompositeView(dsMB.Path.T.WorkOrderTemplateInside.F.DemandTemplateID.F.DemandOtherWorkInsideTemplateID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentExpression(SqlExpression.Coalesce(new SqlExpression(dsMB.Path.T.WorkOrderTemplateInside.F.DemandTemplateID.F.DemandOtherWorkInsideTemplateID.F.OtherWorkInsideID.F.TradeID), SqlExpression.Constant(KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId))),
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.DemandOtherWorkInsideTemplate.F.OtherWorkInsideID.F.Code),
 							BTbl.PerViewColumnValue(demandQuantityColumnId, dsMB.Path.T.DemandOtherWorkInsideTemplate.F.Quantity, IntegralFormat),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderTemplateInside.DemandOtherWorkInsideTemplate,
+								(int)WorkOrderTemplateInside.DemandOtherWorkInsideTemplate,
 								new CompositeView.Init(dsMB.Path.T.DemandOtherWorkInsideTemplate.F.OtherWorkInsideID, dsMB.Path.T.WorkOrderTemplateInside.F.DemandTemplateID.F.DemandOtherWorkInsideTemplateID.F.OtherWorkInsideID)
 							)
 						)
@@ -4991,18 +4881,6 @@ namespace Thinkage.MainBoss.Controls {
 			#region WorkOrderTemplateOutside
 			DefineBrowseTbl(dsMB.Schema.T.WorkOrderTemplateOutside,
 				delegate () {
-					DelayedCreateTbl resourceGroupTbl = new DelayedCreateTbl(
-						delegate () {
-							return new Tbl(dsMB.Schema.T.WorkOrderTemplateOutside, TId.ResourceGroup,
-								new Tbl.IAttr[] {
-									SchedulingAndLaborResourcesGroup
-								},
-								new TblLayoutNodeArray(
-									TblColumnNode.New(dsMB.Path.T.WorkOrderTemplateOutside.F.Id, DCol.Normal)
-								)
-							);
-						}
-					);
 					object codeColumnId = KB.I("WorkOrderTemplateOutsideCodeId");
 					object demandQuantityColumnId = KB.I("WorkOrderLaborOutsideDemandQuantityId");
 					return new CompositeTbl(dsMB.Schema.T.WorkOrderTemplateOutside, TId.TaskOutside,
@@ -5011,13 +4889,13 @@ namespace Thinkage.MainBoss.Controls {
 							new BTbl(
 								BTbl.PerViewListColumn(CommonCodeColumnKey, codeColumnId),
 								BTbl.PerViewListColumn(DemandedColumnKey, demandQuantityColumnId),
-								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderTemplateOutside.F.ParentID, 2, 2, dsMB.Schema.T.WorkOrderTemplateOutsideTreeView)
+								BTbl.SetTreeStructure(null, 2, 2, dsMB.Schema.T.WorkOrderTemplateOutsideTreeView),
+								BTbl.SetReportTbl(TIReports.WOTemplateOutsideResource, matchingRowInBrowser: dsMB.Path.T.WorkOrderTemplateOutside.F.DemandTemplateID.PathToReferencedRow)
 							)
 						},
-						dsMB.Path.T.WorkOrderTemplateOutside.F.TableEnum,
-						new CompositeView(resourceGroupTbl, dsMB.Path.T.WorkOrderTemplateOutside.F.Id, ReadonlyView, CompositeView.ForceNotPrimary(), CompositeView.IdentificationOverride(TId.Trade),
-							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.WorkOrderTemplateOutside.F.Id)),
+						PlaceholderRecordView(dsMB.Schema.T.WorkOrderTemplateOutside, codeColumnId, KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId, TId.UnspecifiedTrade),
 						new CompositeView(dsMB.Path.T.WorkOrderTemplateOutside.F.TradeID,
+							CompositeView.RecognizeByValidEditLinkage(),
 							ReadonlyView,
 							CompositeView.ForceNotPrimary(),
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.Trade.F.Code)
@@ -5026,18 +4904,22 @@ namespace Thinkage.MainBoss.Controls {
 						// already mentioned in this WO's Resource view. We do this init when the current record is either an appropriate resource, or a demand of the
 						// same type.
 						new CompositeView(dsMB.Path.T.WorkOrderTemplateOutside.F.DemandTemplateID.F.DemandLaborOutsideTemplateID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentExpression(SqlExpression.Coalesce(new SqlExpression(dsMB.Path.T.WorkOrderTemplateOutside.F.DemandTemplateID.F.DemandLaborOutsideTemplateID.F.LaborOutsideID.F.TradeID), SqlExpression.Constant(KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId))),
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.DemandLaborOutsideTemplate.F.LaborOutsideID.F.Code),
 							BTbl.PerViewColumnValue(demandQuantityColumnId, dsMB.Path.T.DemandLaborOutsideTemplate.F.Quantity, IntervalFormat),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderTemplateOutside.DemandLaborOutsideTemplate,
+								(int)WorkOrderTemplateOutside.DemandLaborOutsideTemplate,
 								new CompositeView.Init(dsMB.Path.T.DemandLaborOutsideTemplate.F.LaborOutsideID, dsMB.Path.T.WorkOrderTemplateOutside.F.DemandTemplateID.F.DemandLaborOutsideTemplateID.F.LaborOutsideID)
 							)
 						),
 						new CompositeView(dsMB.Path.T.WorkOrderTemplateOutside.F.DemandTemplateID.F.DemandOtherWorkOutsideTemplateID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentExpression(SqlExpression.Coalesce(new SqlExpression(dsMB.Path.T.WorkOrderTemplateOutside.F.DemandTemplateID.F.DemandOtherWorkOutsideTemplateID.F.OtherWorkOutsideID.F.TradeID), SqlExpression.Constant(KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId))),
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.DemandOtherWorkOutsideTemplate.F.OtherWorkOutsideID.F.Code),
 							BTbl.PerViewColumnValue(demandQuantityColumnId, dsMB.Path.T.DemandOtherWorkOutsideTemplate.F.Quantity, IntegralFormat),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderTemplateOutside.DemandOtherWorkOutsideTemplate,
+								(int)WorkOrderTemplateOutside.DemandOtherWorkOutsideTemplate,
 								new CompositeView.Init(dsMB.Path.T.DemandOtherWorkOutsideTemplate.F.OtherWorkOutsideID, dsMB.Path.T.WorkOrderTemplateOutside.F.DemandTemplateID.F.DemandOtherWorkOutsideTemplateID.F.OtherWorkOutsideID)
 							)
 						)
@@ -5056,25 +4938,29 @@ namespace Thinkage.MainBoss.Controls {
 							new BTbl(
 								BTbl.PerViewListColumn(CommonCodeColumnKey, miscellaneousCodeColumnId),
 								BTbl.ListColumn(dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.MiscellaneousWorkOrderCostID.F.Cost),
-								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.ParentID, 2, 2, dsMB.Schema.T.WorkOrderTemplateMiscellaneousTreeView)
+								BTbl.SetTreeStructure(null, 2, 2, dsMB.Schema.T.WorkOrderTemplateMiscellaneousTreeView),
+								BTbl.SetReportTbl(TIReports.WOTemplateMisc, matchingRowInBrowser: dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.DemandTemplateID.F.DemandMiscellaneousWorkOrderCostTemplateID.PathToReferencedRow)
 							)
 						},
-						dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.TableEnum,
-						new CompositeView(dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.MiscellaneousWorkOrderCostID, ReadonlyView, CompositeView.ForceNotPrimary(),
+						new CompositeView(dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.MiscellaneousWorkOrderCostID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							ReadonlyView,
+							CompositeView.ForceNotPrimary(),
 							BTbl.PerViewColumnValue(miscellaneousCodeColumnId, dsMB.Path.T.MiscellaneousWorkOrderCost.F.Code)
 						),
 						// We allow Demands to have a context-free New and only advisory initing of the resource because the user may want to demand a resource not
 						// already mentioned in this WO's Resource view. We do this init when the current record is either an appropriate resource, or a demand of the
 						// same type.
 						new CompositeView(dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.DemandTemplateID.F.DemandMiscellaneousWorkOrderCostTemplateID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentPath(dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.DemandTemplateID.F.DemandMiscellaneousWorkOrderCostTemplateID.F.MiscellaneousWorkOrderCostID),
 							BTbl.PerViewColumnValue(miscellaneousCodeColumnId, dsMB.Path.T.DemandMiscellaneousWorkOrderCostTemplate.F.MiscellaneousWorkOrderCostID.F.Code),
-							CompositeView.PathAlias(dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.WorkOrderTemplateID, dsMB.Path.T.DemandMiscellaneousWorkOrderCostTemplate.F.DemandTemplateID.F.WorkOrderTemplateID),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderTemplateMiscellaneous.MiscellaneousWorkOrderCost,
+								(int)WorkOrderTemplateMiscellaneous.MiscellaneousWorkOrderCost,
 								new CompositeView.Init(dsMB.Path.T.DemandMiscellaneousWorkOrderCostTemplate.F.MiscellaneousWorkOrderCostID, dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.MiscellaneousWorkOrderCostID)
 							),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderTemplateMiscellaneous.DemandMiscellaneousWorkOrderCostTemplate,
+								(int)WorkOrderTemplateMiscellaneous.DemandMiscellaneousWorkOrderCostTemplate,
 								new CompositeView.Init(dsMB.Path.T.DemandMiscellaneousWorkOrderCostTemplate.F.MiscellaneousWorkOrderCostID, dsMB.Path.T.WorkOrderTemplateMiscellaneous.F.DemandTemplateID.F.DemandMiscellaneousWorkOrderCostTemplateID.F.MiscellaneousWorkOrderCostID)
 							)
 						)
@@ -5091,54 +4977,66 @@ namespace Thinkage.MainBoss.Controls {
 							SchedulingAndItemResourcesGroup,
 							new BTbl(
 								BTbl.PerViewListColumn(CommonCodeColumnKey, codeId),
-								BTbl.SetTreeStructure(dsMB.Path.T.WorkOrderTemplateStorage.F.ParentID, 4, 4, dsMB.Schema.T.WorkOrderTemplateStorageTreeView)
+								BTbl.SetTreeStructure(null, 4, 4, dsMB.Schema.T.WorkOrderTemplateStorageTreeView)
 							)
 						},
-						dsMB.Path.T.WorkOrderTemplateStorage.F.TableEnum,
 						// Postal address
-						new CompositeView(dsMB.Path.T.WorkOrderTemplateStorage.F.LocationID.F.PostalAddressID, ReadonlyView, CompositeView.ForceNotPrimary(),
+						new CompositeView(dsMB.Path.T.WorkOrderTemplateStorage.F.LocationID.F.PostalAddressID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							ReadonlyView,
+							CompositeView.ForceNotPrimary(),
 							BTbl.PerViewColumnValue(codeId, dsMB.Path.T.PostalAddress.F.Code)),
-						// Temporary Storage (impossible in this view)
-						null,
 						// Unit
-						new CompositeView(dsMB.Path.T.WorkOrderTemplateStorage.F.LocationID.F.RelativeLocationID.F.UnitID, ReadonlyView, CompositeView.ForceNotPrimary(),
+						new CompositeView(dsMB.Path.T.WorkOrderTemplateStorage.F.LocationID.F.RelativeLocationID.F.UnitID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentPath(dsMB.Path.T.WorkOrderTemplateStorage.F.LocationID.F.RelativeLocationID.F.ContainingLocationID),
+							ReadonlyView,
+							CompositeView.ForceNotPrimary(),
 							BTbl.PerViewColumnValue(codeId, dsMB.Path.T.Unit.F.RelativeLocationID.F.Code)),
 						// Permanent Storage
-						new CompositeView(dsMB.Path.T.WorkOrderTemplateStorage.F.LocationID.F.RelativeLocationID.F.PermanentStorageID, ReadonlyView, CompositeView.ForceNotPrimary(),
+						new CompositeView(dsMB.Path.T.WorkOrderTemplateStorage.F.LocationID.F.RelativeLocationID.F.PermanentStorageID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentPath(dsMB.Path.T.WorkOrderTemplateStorage.F.LocationID.F.RelativeLocationID.F.ContainingLocationID),
+							ReadonlyView,
+							CompositeView.ForceNotPrimary(),
 							BTbl.PerViewColumnValue(codeId, dsMB.Path.T.PermanentStorage.F.RelativeLocationID.F.Code)),
 						// Plain Relative Location
-						new CompositeView(dsMB.Path.T.WorkOrderTemplateStorage.F.LocationID.F.RelativeLocationID.F.PlainRelativeLocationID, ReadonlyView, CompositeView.ForceNotPrimary(),
+						new CompositeView(dsMB.Path.T.WorkOrderTemplateStorage.F.LocationID.F.RelativeLocationID.F.PlainRelativeLocationID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentPath(dsMB.Path.T.WorkOrderTemplateStorage.F.LocationID.F.RelativeLocationID.F.ContainingLocationID),
+							ReadonlyView,
+							CompositeView.ForceNotPrimary(),
 							BTbl.PerViewColumnValue(codeId, dsMB.Path.T.PlainRelativeLocation.F.RelativeLocationID.F.Code)),
 						// Template Temporary Storage 
 						new CompositeView(dsMB.Path.T.WorkOrderTemplateStorage.F.LocationID.F.TemplateTemporaryStorageID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentPath(dsMB.Path.T.WorkOrderTemplateStorage.F.LocationID.F.TemplateTemporaryStorageID.F.ContainingLocationID),
 							// not sure what to show in the list column
 							CompositeView.PathAlias(dsMB.Path.T.WorkOrderTemplateStorage.F.WorkOrderTemplateID, dsMB.Path.T.TemplateTemporaryStorage.F.WorkOrderTemplateID),
 							CompositeView.ContextualInit(
 								new int[] {
-									(int)ViewRecordTypes.WorkOrderTemplateStorage.PermanentStorage,
-									(int)ViewRecordTypes.WorkOrderTemplateStorage.PlainRelativeLocation,
-									(int)ViewRecordTypes.WorkOrderTemplateStorage.Unit,
-									(int)ViewRecordTypes.WorkOrderTemplateStorage.PostalAddress
+									(int)WorkOrderTemplateStorage.PermanentStorage,
+									(int)WorkOrderTemplateStorage.PlainRelativeLocation,
+									(int)WorkOrderTemplateStorage.Unit,
+									(int)WorkOrderTemplateStorage.PostalAddress
 								},
 								new CompositeView.Init(dsMB.Path.T.TemplateTemporaryStorage.F.ContainingLocationID, dsMB.Path.T.WorkOrderTemplateStorage.F.LocationID)
-							),
-							CompositeView.ContextualInit(
-								new int[] {
-									(int)ViewRecordTypes.WorkOrderTemplateStorage.TemplateItemLocation,
-								},
-								new CompositeView.Init(dsMB.Path.T.TemplateTemporaryStorage.F.ContainingLocationID, dsMB.Path.T.WorkOrderTemplateStorage.F.ItemLocationID.F.LocationID)
 							)
+						// Initing the location of a new template storage if the current record is Template Storage or Template Storage Assignment is not really useful
+						// because the (WO, Location) combination already exists as a Template Storage (the current record or its immediate container).
 						),
 						// Template Storage Assignment
 						new CompositeView(dsMB.Path.T.WorkOrderTemplateStorage.F.ItemLocationID.F.TemplateItemLocationID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.SetParentPath(dsMB.Path.T.WorkOrderTemplateStorage.F.ItemLocationID.F.TemplateItemLocationID.F.ItemLocationID.F.LocationID),
 							BTbl.PerViewColumnValue(codeId, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.ItemID.F.Code),
 							CompositeView.PathAlias(dsMB.Path.T.WorkOrderTemplateStorage.F.WorkOrderTemplateID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.LocationID.F.TemplateTemporaryStorageID.F.WorkOrderTemplateID),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderTemplateStorage.TemplateItemLocation,
+								(int)WorkOrderTemplateStorage.TemplateItemLocation,
 								new CompositeView.Init(dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.LocationID, dsMB.Path.T.WorkOrderTemplateStorage.F.ItemLocationID.F.LocationID)
 							),
 							CompositeView.ContextualInit(
-								(int)ViewRecordTypes.WorkOrderTemplateStorage.TemplateTemporaryStorage,
+								(int)WorkOrderTemplateStorage.TemplateTemporaryStorage,
 								new CompositeView.Init(dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.LocationID, dsMB.Path.T.WorkOrderTemplateStorage.F.LocationID)
 							)
 						)

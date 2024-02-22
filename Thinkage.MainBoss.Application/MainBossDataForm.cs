@@ -100,7 +100,7 @@ namespace Thinkage.MainBoss.Application {
 					if (item == null || item.name == null)
 						continue;
 					customizationName.Append(item.name.IdentifyingName);
-					Node nodeForItem = null;
+					Node nodeForItem;
 					if (item.ItemVisible
 						&& (item is BrowseMenuDef
 							|| item is ReportMenuDef
@@ -135,14 +135,11 @@ namespace Thinkage.MainBoss.Application {
 					SaveLeafNodeVisibility();
 					CloseForm();
 				}), NothingToApplyDisabler)));
-				var cancelClose = UIFactory.CreateDropDownButton();
-				cancelClose.AddCommand(KB.K("Close"), new MultiCommandIfAllEnabled(new CallDelegateCommand(delegate () {
-					CloseForm();
-				}), YouHaveChangesToApplyDisabler));
-				cancelClose.AddCommand(KB.K("Cancel"), new MultiCommandIfAllEnabled(new CallDelegateCommand(delegate () {
-					LoadLeafNodeVisibility();
-				}), NothingToApplyDisabler));
-				AddButton(cancelClose);
+				var cancelClose = new List<MenuItem> {
+					new CommandMenuItem(KB.K("Close"), new MultiCommandIfAllEnabled(new CallDelegateCommand(CloseForm), YouHaveChangesToApplyDisabler)),
+					new CommandMenuItem(KB.K("Cancel"), new MultiCommandIfAllEnabled(new CallDelegateCommand(LoadLeafNodeVisibility), NothingToApplyDisabler))
+				};
+				AddButton(UIFactory.CreateDropDownButton(cancelClose));
 			}
 			protected void CloseForm() {
 				var ParentForm = ContainingForm;
@@ -185,8 +182,9 @@ namespace Thinkage.MainBoss.Application {
 			#endregion
 			public readonly UIFactory UIFactory;
 			protected const int ButtonControlSpacing = 8;   // This is the spacing used between buttons in a row.
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Part of the UIPanel who will take care of dispose")]
 			private ButtonRowPanel ButtonPanel;             // The command-button panel if any
-			private Set<string> AllMenuCustomizationNames = new Set<string>();
+			private readonly Set<string> AllMenuCustomizationNames = new Set<string>();
 			private readonly IListComboDataControlWithExplicitMultipleRowValue List;
 			private void SaveLeafNodeVisibility() {
 				IApplicationWithCustomizations customizer = TblDrivenMainBossApplication.Instance.QueryInterface<IApplicationWithCustomizations>();
@@ -235,7 +233,7 @@ namespace Thinkage.MainBoss.Application {
 			}
 		}
 		#endregion
-		abstract protected IContainableMenuItem BuildSessionMenu();
+		abstract protected MenuItem BuildSessionMenu();
 		abstract protected MainBossDataForm CopySelf();
 		// the first organization name is the one selected by the user on the command line or from the "saved organizations"; it is the user's personal name for the organization.
 		// the second organization name is the one from the DB variable; it is what the organization calls itself.
@@ -244,9 +242,9 @@ namespace Thinkage.MainBoss.Application {
 		/// <summary>
 		/// To detect OnClosing whether to warn
 		/// </summary>
-		private SettableDisablerProperties NoUnPublishedCustomizationsExistDisabler = new SettableDisablerProperties(null, KB.K("No unpublished form customizations exist"), false);
+		private readonly SettableDisablerProperties NoUnPublishedCustomizationsExistDisabler = new SettableDisablerProperties(null, KB.K("No unpublished form customizations exist"), false);
 		#region Constructor
-		public MainBossDataForm(UIFactory uiFactory, MB3Client db)
+		protected MainBossDataForm(UIFactory uiFactory, MB3Client db)
 			: base(uiFactory, new TreeViewExplorer(uiFactory, Thinkage.Libraries.Application.Instance.GetInterface<Thinkage.Libraries.XAF.UI.MSWindows.IGUIApplicationIdentification>().DefaultFormIcon, TblDrivenMainBossApplication.Instance.AppCustomizationsMixIn)) {
 			UIFactory = uiFactory;
 			myPreferredSize = new System.Drawing.Size((int)(UIFactory.FormParameters.WorkingArea.Width * .75), (int)(UIFactory.FormParameters.WorkingArea.Height * .75));
@@ -268,13 +266,14 @@ namespace Thinkage.MainBoss.Application {
 #endif
 			#region menu construction
 			ViewMenu = BuildViewMenu();
-			ViewMenuOriginalCount = ViewMenu.Count;
-			Menu = UIFactory.CreateMainMenu(
+			ViewMenuOriginalCount = ViewMenu.Items.Count;
+
+			Menu = new List<MenuItem>() {
 				BuildSessionMenu(),
 				ViewMenu,
 				BuildActionMenu(),
 				BuildHelpMenu()
-				);
+			};
 
 			MainControlPanel.ZoomMenuItem = ZoomMenuItem;
 			SetMainControlPanelMenu();
@@ -314,7 +313,7 @@ namespace Thinkage.MainBoss.Application {
 		// Thinkage Colors used on main news panel and database status
 		// 56,88,21       #385815 (dark green)
 		// 255,235,160 #FFEBA0 (yellow)
-		private static DefaultThemeFromSchema[] ThemeFromSchemas = {
+		private static readonly DefaultThemeFromSchema[] ThemeFromSchemas = {
 			new DefaultThemeFromSchema( dsMB.Schema.T.DatabaseStatus, Color.FromArgb(56,88,21), Color.FromArgb(255,235,160)).AddTId(TId.MainBossOverview).AddTId(TId.MainBossNewsPanel),
 			new DefaultThemeFromSchema( dsMB.Schema.T.WorkOrder, Color.ForestGreen).AddTId(TId.WorkOrder, TId.WorkOrderStateHistory, TId.WorkOrderStatus, TId.WorkOrderState),
 			new DefaultThemeFromSchema( dsMB.Schema.T.PurchaseOrder, System.Drawing.Color.PaleVioletRed ).AddTId(TId.PurchaseOrder, TId.PurchaseOrderStateHistory, TId.PurchaseOrderStatus, TId.PurchaseOrderState),
@@ -322,7 +321,7 @@ namespace Thinkage.MainBoss.Application {
 			new DefaultThemeFromSchema( dsMB.Schema.T.Item, Color.Blue ).AddTId(TId.Item),
 			new DefaultThemeFromSchema( dsMB.Schema.T.ScheduledWorkOrder, Color.Violet).AddTId(TId.UnitMaintenancePlan),
 			new DefaultThemeFromSchema( dsMB.Schema.T.AttentionStatus, Color.Green, Color.Yellow).AddTId(TId.MyAssignmentOverview),
-			new DefaultThemeFromSchema( dsMB.Schema.T.LocationDerivations, Color.SeaGreen).AddTId(TId.Unit),
+			new DefaultThemeFromSchema( dsMB.Schema.T.Location, Color.SeaGreen).AddTId(TId.Unit),
 			new DefaultThemeFromSchema( dsMB.Schema.T.WorkOrderTemplate, Color.Sienna).AddTId(TId.Task)
 		};
 		private class MainBossDefaultProvider : SettableValueManager.DefaultProvider {
@@ -344,20 +343,23 @@ namespace Thinkage.MainBoss.Application {
 			}
 		}
 		private void SetMainControlPanelMenu() {
-			MainControlPanel.SetTreeViewMenu(delegate (MenuDef item) {
-				if (item is BrowseMenuDef brdef)
-					return new BrowseExplorer(UIFactory, brdef.Id, DB, new MainBossDefaultProvider(brdef.TblCreator.Tbl));
-				if (item is ReportMenuDef repdef)
-					return new ReportExplorer(UIFactory, repdef.Id, DB, new MainBossDefaultProvider(repdef.Tbl), repdef.UserTip);
-				return null;
-			},
+			MainControlPanel.SetTreeViewMenu(
+				delegate (MenuDef item) {
+					if (item is BrowseMenuDef brdef)
+						return new BrowseExplorer(UIFactory, brdef.Id, DB, new MainBossDefaultProvider(brdef.TblCreator.Tbl));
+					if (item is ReportMenuDef repdef)
+						return new ReportExplorer(UIFactory, repdef.Id, DB, new MainBossDefaultProvider(repdef.Tbl), repdef.UserTip);
+					return null;
+				},
 				new ControlPanelLayout().OverallContent()
 			);
-			if (ViewMenu.Count > ViewMenuOriginalCount)
+			if (ViewMenu.Items.Count > ViewMenuOriginalCount)
 				ViewMenu.RemoveAt(ViewMenuOriginalCount);
-			ISubMenu selectViewMenu = MainControlPanel.SelectViewMenu;
+			SubMenuItem selectViewMenu = MainControlPanel.SelectViewMenu;
 			if (selectViewMenu != null)
 				ViewMenu.Add(selectViewMenu);
+			// Force the form to refresh the menu contents since it does not monitor changes to the structure of its menu.
+			Menu = Menu;
 		}
 		private void BrowsersHavePanelChangedNotification() {
 			bool changedValue = !TblDrivenMainBossApplication.Instance.GetInterface<IFormsPresentationApplication>().BrowsersHavePanel;
@@ -372,7 +374,6 @@ namespace Thinkage.MainBoss.Application {
 			result.MainControlPanel.SetInitialState(MainControlPanel.GetState());
 		}
 		private void GetIdentificationForDisplay(out string organizationName, out string userName) {
-			userName = String.Empty; // construct the display username from the User table by locating the record matching currentUserID
 			System.Text.StringBuilder userToDisplay = new System.Text.StringBuilder();
 			string contactCode = (string)DB.Session.ExecuteCommandReturningScalar(dsMB.Schema.T.Contact.F.Code.EffectiveType,
 				new SelectSpecification(dsMB.Schema.T.User, new[] { new SqlExpression(dsMB.Path.T.User.F.ContactID.F.Code) }, new SqlExpression(dsMB.Path.T.User.F.Id).Eq(SqlExpression.Constant(TblDrivenMainBossApplication.Instance.AppConnectionMixIn.UserRecordID)), null));
@@ -414,7 +415,7 @@ namespace Thinkage.MainBoss.Application {
 		}
 		#endregion
 #if DEBUG
-		protected Thinkage.MainBoss.Database.Security.RightSet UpdateSecurity() {
+		protected static Thinkage.MainBoss.Database.Security.RightSet UpdateSecurity() {
 			return ((MainBossPermissionsManager)TblDrivenMainBossApplication.Instance.GetInterface<ITblDrivenApplication>().PermissionsManager).CurrentRightSet;
 		}
 #endif
@@ -503,25 +504,26 @@ namespace Thinkage.MainBoss.Application {
 		#endregion
 
 		#region Menus
-		private readonly ISubMenu ViewMenu;
-		private readonly uint ViewMenuOriginalCount;
+		private readonly SubMenuItem ViewMenu;
+		private readonly int ViewMenuOriginalCount;
 		protected readonly TreeViewExplorer MainControlPanel;
-		private UICheckBoxMenu ZoomMenuItem;
-		private UICheckBoxMenu CompactBrowsersItem;
-		private UICheckBoxMenu EnableCustomizationsItem;
+		private BoolCheckMenuItem ZoomMenuItem;
+		private BoolCheckMenuItem CompactBrowsersItem;
+		private BoolCheckMenuItem EnableCustomizationsItem;
 
-		protected IContainableMenuItem ExitOrCloseMenuItem() {
-			return UIFactory.CreateCommandMenuItem(KB.K("Close"), new CallDelegateCommand(KB.K("Close this window"), new EventHandler(Close_Click)));
+		protected MenuItem ExitOrCloseMenuItem() {
+			return new CommandMenuItem(KB.K("Close"), new CallDelegateCommand(KB.K("Close this window"), new EventHandler(Close_Click)));
 		}
-		private ISubMenu BuildViewMenu() {
+		private SubMenuItem BuildViewMenu() {
 			#region FormCustomization
-			ISubMenu customizeMenu = UIFactory.CreateSubMenu(KB.K("Form Customization"), (PermissionDisabler)TblDrivenMainBossApplication.Instance.GetInterface<ITblDrivenApplication>().PermissionsManager.GetPermission(Root.Rights.Action.Customize)
-				, EnableCustomizationsItem = UIFactory.CreateBoolCheckMenuItem(KB.K("Enable"), null)
-				, UIFactory.CreateCommandMenuItem(KB.K("Customize Main Menu"), new CallDelegateCommand(KB.K("Select which entries in the main menu are visible"),
+			// Use a MultiDisablerIfAllEnabled so we only have a weak subscription to the app-global permission.
+			var customizeMenu = new SubMenuItem(KB.K("Form Customization"), new MultiDisablerIfAllEnabled((PermissionDisabler)TblDrivenMainBossApplication.Instance.GetInterface<ITblDrivenApplication>().PermissionsManager.GetPermission(Root.Rights.Action.Customize))
+				, EnableCustomizationsItem = new BoolCheckMenuItem(KB.K("Enable"), null)
+				, new CommandMenuItem(KB.K("Customize Main Menu"), new CallDelegateCommand(KB.K("Select which entries in the main menu are visible"),
 					delegate () {
 						MainMenuCustomizationForm.RunFormCustomizationForm(UIFactory);
 					}))
-				, UIFactory.CreateCommandMenuItem(KB.K("Publish"), new MultiCommandIfAllEnabled(new CallDelegateCommand(KB.K("Publish all currently applied form customizations to the database for all users"),
+				, new CommandMenuItem(KB.K("Publish"), new MultiCommandIfAllEnabled(new CallDelegateCommand(KB.K("Publish all currently applied form customizations to the database for all users"),
 					delegate () {
 						IApplicationWithCustomizations customizer = Thinkage.Libraries.Application.Instance.QueryInterface<IApplicationWithCustomizations>();
 						if (customizer != null) {
@@ -529,7 +531,7 @@ namespace Thinkage.MainBoss.Application {
 							NoUnPublishedCustomizationsExistDisabler.Enabled = false;
 						}
 					}), NoUnPublishedCustomizationsExistDisabler))
-				, UIFactory.CreateCommandMenuItem(KB.K("Restore from published"), new CallDelegateCommand(KB.K("Reset form customizations as currently published, discarding any unsaved changes you have made"),
+				, new CommandMenuItem(KB.K("Restore from published"), new CallDelegateCommand(KB.K("Reset form customizations as currently published, discarding any unsaved changes you have made"),
 					delegate () {
 						IApplicationWithCustomizations customizer = Thinkage.Libraries.Application.Instance.QueryInterface<IApplicationWithCustomizations>();
 						if (customizer != null) {
@@ -538,7 +540,7 @@ namespace Thinkage.MainBoss.Application {
 							NoUnPublishedCustomizationsExistDisabler.Enabled = false;
 						}
 					}))
-				, UIFactory.CreateCommandMenuItem(KB.K("Clear all customization"), new CallDelegateCommand(KB.K("Remove all form customizations, discarding any unsaved changes you have made"),
+				, new CommandMenuItem(KB.K("Clear all customization"), new CallDelegateCommand(KB.K("Remove all form customizations, discarding any unsaved changes you have made"),
 					delegate () {
 						IApplicationWithCustomizations customizer = Thinkage.Libraries.Application.Instance.QueryInterface<IApplicationWithCustomizations>();
 						if (customizer != null) {
@@ -547,13 +549,13 @@ namespace Thinkage.MainBoss.Application {
 							NoUnPublishedCustomizationsExistDisabler.Enabled = true;
 						}
 					}))
-				, UIFactory.CreateCommandMenuItem(KB.K("Export"), new CallDelegateCommand(KB.K("Export the current form customizations to an external file"),
+				, new CommandMenuItem(KB.K("Export"), new CallDelegateCommand(KB.K("Export the current form customizations to an external file"),
 					delegate () {
 						IApplicationWithCustomizations customizer = Thinkage.Libraries.Application.Instance.QueryInterface<IApplicationWithCustomizations>();
 						if (customizer != null)
 							((MainBossCustomizations)customizer).Export(UIFactory);
 					}))
-				, UIFactory.CreateCommandMenuItem(KB.K("Replace from file"), new CallDelegateCommand(KB.K("Replace current form customizations from an external file, discarding any unsaved changes you have made"),
+				, new CommandMenuItem(KB.K("Replace from file"), new CallDelegateCommand(KB.K("Replace current form customizations from an external file, discarding any unsaved changes you have made"),
 					delegate () {
 						IApplicationWithCustomizations customizer = Thinkage.Libraries.Application.Instance.QueryInterface<IApplicationWithCustomizations>();
 						if (customizer != null && ((MainBossCustomizations)customizer).Import(UIFactory, false)) {
@@ -561,7 +563,7 @@ namespace Thinkage.MainBoss.Application {
 							NoUnPublishedCustomizationsExistDisabler.Enabled = true;
 						}
 					}))
-				, UIFactory.CreateCommandMenuItem(KB.K("Add from file"), new CallDelegateCommand(KB.K("Add form customizations from an external file"),
+				, new CommandMenuItem(KB.K("Add from file"), new CallDelegateCommand(KB.K("Add form customizations from an external file"),
 					delegate () {
 						IApplicationWithCustomizations customizer = Thinkage.Libraries.Application.Instance.QueryInterface<IApplicationWithCustomizations>();
 						if (customizer != null && ((MainBossCustomizations)customizer).Import(UIFactory, true)) {
@@ -592,37 +594,35 @@ namespace Thinkage.MainBoss.Application {
 					EnableCustomizationsItem.Value = weakSubscriber.Enabled;
 			};
 			#endregion
-			return UIFactory.CreateSubMenu(KB.K("View"), null
+			return new SubMenuItem(KB.K("View")
 				// TODO: Disable this item if the current treeview selection is not zoomable (requires altering the IExplorerCommand interface to
 				// supply the information)
-				, ZoomMenuItem = UIFactory.CreateBoolCheckMenuItem(KB.K("Zoom in on View"), null)
-				, UIFactory.CreateCommandMenuItem(KB.K("Open in New Window"), new CallDelegateCommand(KB.K("Open a new main window showing the same data"), new EventHandler(OpenInNewWindow_Click)))
-				, UIFactory.CreateCommandMenuItem(KB.K("Change Active Filter"), new CallDelegateCommand(KB.K("Change the number of days back that records are displayed"), new EventHandler(ChangeLastUpdateEditor)))
-				, CompactBrowsersItem = UIFactory.CreateBoolCheckMenuItem(KB.K("Show compact browsers"), null)
+				, ZoomMenuItem = new BoolCheckMenuItem(KB.K("Zoom in on View"), null)
+				, new CommandMenuItem(KB.K("Open in New Window"), new CallDelegateCommand(KB.K("Open a new main window showing the same data"), new EventHandler(OpenInNewWindow_Click)))
+				, new CommandMenuItem(KB.K("Change Active Filter"), new CallDelegateCommand(KB.K("Change the number of days back that records are displayed"), new EventHandler(ChangeLastUpdateEditor)))
+				, CompactBrowsersItem = new BoolCheckMenuItem(KB.K("Show compact browsers"), null)
 				, customizeMenu
 				);
 		}
-		private IContainableMenuItem BuildActionMenu() {
+		private MenuItem BuildActionMenu() {
 			// The Actions menu items are filled in depending on the current context.
 			// The menu must have some content (the separator) or the containing menu is not created so no popup action can occur!
-			ISubMenu result = UIFactory.CreateSubMenu(KB.K("Actions"), null,
-				UIFactory.CreateMenuSeparator()
-			);
+			var result = new DynamicSubMenuItem(KB.K("Actions"));
 			MainControlPanel.ActionsMenu = result;
 			return result;
 		}
-		private IContainableMenuItem BuildHelpMenu() {
-			return UIFactory.CreateSubMenu(KB.K("Help"), null
-				, UIFactory.CreateCommandMenuItem(KB.K("Help"), ContextHelpCommand)
-				, UIFactory.CreateCommandMenuItem(KB.K("Table of Contents"), new CallDelegateCommand(KB.K("Go to Help Table of Contents"), new EventHandler(HelpContents_Click)))
-				, UIFactory.CreateCommandMenuItem(KB.K("Index"), new CallDelegateCommand(KB.K("Go to Help Index"), new EventHandler(HelpIndex_Click)))
-				, UIFactory.CreateMenuSeparator()
-				, UIFactory.CreateCommandMenuItem(KB.K("Get Technical Support"), new CallDelegateCommand(KB.K("Go to technical support information"), new EventHandler(Support_Click)))
-				, UIFactory.CreateCommandMenuItem(KB.K("Start Support Connection"), new CallDelegateCommand(KB.K("Start the Teamviewer support connection with Thinkage"), new EventHandler((object s, EventArgs a) => {
+		private MenuItem BuildHelpMenu() {
+			return new SubMenuItem(KB.K("Help")
+				, new CommandMenuItem(KB.K("Help"), ContextHelpCommand)
+				, new CommandMenuItem(KB.K("Table of Contents"), new CallDelegateCommand(KB.K("Go to Help Table of Contents"), new EventHandler(HelpContents_Click)))
+				, new CommandMenuItem(KB.K("Index"), new CallDelegateCommand(KB.K("Go to Help Index"), new EventHandler(HelpIndex_Click)))
+				, new SeparatorMenuItem()
+				, new CommandMenuItem(KB.K("Get Technical Support"), new CallDelegateCommand(KB.K("Go to technical support information"), new EventHandler(Support_Click)))
+				, new CommandMenuItem(KB.K("Start Support Connection"), new CallDelegateCommand(KB.K("Start the Teamviewer support connection with Thinkage"), new EventHandler((object s, EventArgs a) => {
 					MBAboutForm.StartTeamviewer();
 				})))
-				, UIFactory.CreateMenuSeparator()
-				, UIFactory.CreateCommandMenuItem(KB.K("About..."), new CallDelegateCommand(KB.K("Show information about this application"), new EventHandler(About_Click)))
+				, new SeparatorMenuItem()
+				, new CommandMenuItem(KB.K("About..."), new CallDelegateCommand(KB.K("Show information about this application"), new EventHandler(About_Click)))
 				);
 		}
 		#endregion
@@ -631,14 +631,12 @@ namespace Thinkage.MainBoss.Application {
 		/// <summary>
 		/// Set the new menu checked state equal to that of the given old menu
 		/// </summary>
-		private static void SetMenuState(IMenuItemContainer newItems, IMenuItemContainer oldItems) {
+		private static void SetMenuState(IReadOnlyList<MenuItem> newItems, IReadOnlyList<MenuItem> oldItems) {
 			for (int i = 0; i < newItems.Count; ++i) {
-				var newm = newItems[i] as IBasicDataControl;
-				if (oldItems[i] is IBasicDataControl oldm && newm != null && oldm.ValueStatus == null)
+				if (oldItems[i] is IBasicDataControl oldm && oldm.ValueStatus == null && newItems[i] is IBasicDataControl newm)
 					newm.Value = oldm.Value;
-				var nchildren = newItems[i] as IMenuItemContainer;
-				if (oldItems[i] is IMenuItemContainer ochildren && nchildren != null)
-					SetMenuState(nchildren, ochildren);
+				if (oldItems[i] is SubMenuItem ochildren && newItems[i] is SubMenuItem nchildren)
+					SetMenuState(nchildren.Items, ochildren.Items);
 			}
 		}
 
@@ -866,7 +864,7 @@ namespace Thinkage.MainBoss.Application {
 					foreach (Guid principalId in v)
 						session.ViewAdditionalRows(ds, dsPermission_1_1_4_2.Schema.T.Permission, new SqlExpression(dsPermission_1_1_4_2.Path.T.Permission.F.PrincipalID).Eq(principalId));
 
-					foreach (dsMB.PermissionRow row in ds.T.Permission)
+					foreach (var row in ds.T.Permission.Rows)
 						manager.SetPermission(row.F.PermissionPathPattern.ToLower(), true);
 				}
 				CloseForm(UIDialogResult.OK);
@@ -880,11 +878,11 @@ namespace Thinkage.MainBoss.Application {
 				session.ViewOnlyRows(ds, dsMB.Schema.T.Role, null, null, null);
 				session.ViewOnlyRows(ds, dsMB.Schema.T.CustomRole, null, null, null);
 				// TODO: Sort by code
-				foreach (dsMB.RoleRow r in ds.T.Role) {
+				foreach (var r in ds.T.Role.Rows) {
 					picker.Insert(r.F.Id);
 					column.SetValue(r.F.Code);
 				}
-				foreach (dsMB.CustomRoleRow r in ds.T.CustomRole) {
+				foreach (var r in ds.T.CustomRole.Rows) {
 					picker.Insert(r.F.Id);
 					column.SetValue(r.F.Code);
 				}
@@ -893,7 +891,7 @@ namespace Thinkage.MainBoss.Application {
 				session.ViewOnlyRows(ds, dsMB.Schema.T.UserRole, new SqlExpression(dsMB.Path.T.UserRole.F.UserID).Eq(TblDrivenMainBossApplication.Instance.AppConnectionMixIn.UserRecordIDForPermissions), null,
 					new DBI_PathToRow[] { dsMB.Path.T.UserRole.F.PrincipalID.PathToReferencedRow });
 				// TODO: Sort by code
-				foreach (dsMB.UserRoleRow r in ds.T.UserRole)
+				foreach (var r in ds.T.UserRole.Rows)
 					currentMembership.AddUnique(r.PrincipalIDParentRow.F.RoleID ?? r.PrincipalIDParentRow.F.CustomRoleID);
 				picker.Value = currentMembership;
 			}

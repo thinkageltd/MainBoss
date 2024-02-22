@@ -1,0 +1,80 @@
+﻿@using Thinkage.Web.Mvc.Html;
+@using Thinkage.MainBoss.WebAccess;
+@using Thinkage.MainBoss.WebAccess.Models;
+@using Thinkage.MainBoss.Database
+@using Thinkage.Libraries.MVC.Models
+@using Thinkage.Libraries.TypeInfo;
+
+@model IEnumerable<ItemCountValueEntities.ItemPhysicalCount>
+@{
+	Layout = "~/Views/Shared/_LayoutLabelValueView.cshtml";
+	if (Model.Count() > 0) {
+		ViewBag.Title = T.Text("Physical Count for {0}", ViewData["StoreroomIdentification"]);
+	}
+	else {
+		ViewBag.Title = T.Text("There are no item assignments for this storeroom");
+	}
+	var adjustments = (SelectListWithEmpty)ViewData["ItemAdjustmentPickList"];
+}
+@section LabelValueViewPanel {
+	@(Html.LabelValueRow(dsMB.Path.T.Location.F.Code, ViewData["StoreroomPath"]))
+}
+@section LabelValueViewTrailer {
+	@using (Html.BeginForm("Apply", "ItemCountValue")) {
+	@Html.AntiForgeryToken()
+<fieldset>
+	@(Html.Hidden("OriginalValuesModel", SerializationUtils.Serialize(Model.ToList())))
+	@(Html.Hidden("StoreroomID", ViewData["StoreroomID"]))
+<div>
+	@(Html.LabelValueRow(dsMB.Path.T.ItemCountValue.F.ItemAdjustmentCodeID, @Html.DropDownList("ItemAdjustmentCodeID", adjustments), valueIsHtml: true))
+<p/>
+</div>
+	@foreach (var item in Model) {
+		string checkId = String.Format("CheckBox_{0}", item.StorageAssignmentID);
+		string inputId = String.Format("Input_{0}", item.StorageAssignmentID);
+		<div class="viewPanel">
+			@(Html.LabelValueRowCodeDesc(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID.F.Code.Key().Translate(), StringTypeInfo.Universe, item.ItemCode, item.ItemDesc, false))
+			@(Html.LabelValueRow(T.Text("Days since last Count"), Thinkage.Libraries.TypeInfo.IntegralTypeInfo.Universe, item.DaysSinceLastPhysicalCount, false, "IntegralValue"))
+			@(Html.LabelValueRow(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID.F.OnHand, item.OnHand))
+			@if ((bool)ViewData["ViewCost"]) {
+				@Html.LabelValueRow(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID.F.UnitCost, item.UnitCost)
+				@Html.LabelValueRow(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID.F.TotalCost, item.TotalCost)
+			}
+			<div class="ResourceRow">
+				<div class="ResourceLabel">@T.Text("New Count")</div>
+				<div class="ResourceValue">@(Html.TextBox(inputId))@(Html.ValidationMessage(inputId))</div>
+				<div class="ResourceCheckbox">@Html.CheckBox(checkId)</div>
+			</div>
+		</div>
+	}
+	@{
+		string whyCantWe = null; @* are their conditions where this will be disabled ? *@
+		if (whyCantWe == null) {
+			<p><input type="submit" value="@(T.Text("Apply"))" /></p>
+		}
+		else {
+			<p>@T.Text("Apply is disabled.")<br />@whyCantWe</p>
+		}
+	}
+</fieldset>
+	}
+}
+@section BackToContent {
+	@(Html.BackOperation(T.Text("Back to Storeroom counting"), TempData))
+}
+@section scripts {
+	<script>
+		$(function () {
+			$("input[type='text']").focus(function () {
+				$(this).css("background-color", "yellow");
+				var inputId = $(this).attr("id");
+				var checkId = inputId.replace(/Input_/gi, "CheckBox_");
+				var selector = "input[id='" + checkId + "']";
+				$(selector).attr("checked", "true");
+			});
+			$("input[type='text']").blur(function () {
+				$(this).css("background-color", "white");
+			});
+		});
+	</script>
+}

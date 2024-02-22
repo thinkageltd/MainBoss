@@ -3147,13 +3147,16 @@ namespace RequestEntities
 		private System.DateTime _EntryDate;
 		private System.Guid? _UserID;
 		private bool _EffectiveDateReadonly;
+		private System.Guid? _PreviousRequestStateHistoryID;
 		private System.Guid _RequestStateID;
 		private System.Guid? _RequestStateHistoryStatusID;
 		private string _CommentToRequestor;
 		private System.DateTime? _PredictedCloseDate;
 		private EntitySet<Request> _RequestCurrentRequestStateHistory;
+		private EntitySet<RequestStateHistory> _RequestStateHistoryPreviousRequestStateHistory;
 		private EntityRef<User> _User;
 		private EntityRef<Request> _Request;
+		private EntityRef<RequestStateHistory> _PreviousRequestStateHistory;
 		private EntityRef<RequestState> _RequestState;
 		private EntityRef<RequestStateHistoryStatus> _RequestStateHistoryStatus;
 	#region Extensibility Method Definitions
@@ -3174,6 +3177,8 @@ namespace RequestEntities
 	partial void OnUserIDChanged();
 	partial void OnEffectiveDateReadonlyChanging(bool value);
 	partial void OnEffectiveDateReadonlyChanged();
+	partial void OnPreviousRequestStateHistoryIDChanging(System.Guid? value);
+	partial void OnPreviousRequestStateHistoryIDChanged();
 	partial void OnRequestStateIDChanging(System.Guid value);
 	partial void OnRequestStateIDChanged();
 	partial void OnRequestStateHistoryStatusIDChanging(System.Guid? value);
@@ -3187,8 +3192,10 @@ namespace RequestEntities
 		public RequestStateHistory()
 		{
 			this._RequestCurrentRequestStateHistory = new EntitySet<Request>(new Action<Request>(this.attach_RequestCurrentRequestStateHistory), new Action<Request>(this.detach_RequestCurrentRequestStateHistory));
+			this._RequestStateHistoryPreviousRequestStateHistory = new EntitySet<RequestStateHistory>(new Action<RequestStateHistory>(this.attach_RequestStateHistoryPreviousRequestStateHistory), new Action<RequestStateHistory>(this.detach_RequestStateHistoryPreviousRequestStateHistory));
 			this._User = default(EntityRef<User>);
 			this._Request = default(EntityRef<Request>);
+			this._PreviousRequestStateHistory = default(EntityRef<RequestStateHistory>);
 			this._RequestState = default(EntityRef<RequestState>);
 			this._RequestStateHistoryStatus = default(EntityRef<RequestStateHistoryStatus>);
 			OnCreated();
@@ -3360,6 +3367,32 @@ namespace RequestEntities
 				}
 			}
 		}
+		/// Denotes the RequestStateHistory's PreviousRequestStateHistoryID column with type link(field RequestStateHistory.Id) with labelkey='Previous State History'
+		static public string RequestStateHistory_PreviousRequestStateHistoryID{ get{return RequestLabelKdsMBLabel.K("Previous State History").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(RequestEntities.RequestStateHistory),Name="RequestStateHistory_PreviousRequestStateHistoryID")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PreviousRequestStateHistoryID", DbType="UNIQUEIDENTIFIER")]
+		public System.Guid? PreviousRequestStateHistoryID
+		{
+			get
+			{
+				return this._PreviousRequestStateHistoryID;
+			}
+			set
+			{
+				if ((this._PreviousRequestStateHistoryID != value))
+				{
+					if (this._PreviousRequestStateHistory.HasLoadedOrAssignedValue )
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnPreviousRequestStateHistoryIDChanging(value);
+					this.SendPropertyChanging();
+					this._PreviousRequestStateHistoryID = value;
+					this.SendPropertyChanged();
+					this.OnPreviousRequestStateHistoryIDChanged();
+				}
+			}
+		}
 		/// Denotes the RequestStateHistory's RequestStateID column with type link(nonnull, field RequestState.Id) with labelkey='State'
 		static public string RequestStateHistory_RequestStateID{ get{return RequestLabelKdsMBLabel.K("State").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(RequestEntities.RequestStateHistory),Name="RequestStateHistory_RequestStateID")]		
@@ -3469,6 +3502,18 @@ namespace RequestEntities
 				this._RequestCurrentRequestStateHistory.Assign(value);
 			}
 		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="RequestStateHistory_RequestStateHistory", Storage="_RequestStateHistoryPreviousRequestStateHistory", ThisKey="Id", OtherKey="PreviousRequestStateHistoryID")]
+		public EntitySet<RequestStateHistory> RequestStateHistoryPreviousRequestStateHistory
+		{
+			get
+			{
+				return this._RequestStateHistoryPreviousRequestStateHistory;
+			}
+			set
+			{
+				this._RequestStateHistoryPreviousRequestStateHistory.Assign(value);
+			}
+		}
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_RequestStateHistory", Storage="_User", ThisKey="UserID", OtherKey="Id", IsForeignKey=true)]
 		public User User
 		{
@@ -3530,6 +3575,39 @@ namespace RequestEntities
 					else
 					{
 						this._RequestID = default(System.Guid);
+					}
+					this.SendPropertyChanged();
+				}
+			}
+		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="PreviousRequestStateHistory_RequestStateHistory", Storage="_PreviousRequestStateHistory", ThisKey="PreviousRequestStateHistoryID", OtherKey="Id", IsForeignKey=true)]
+		public RequestStateHistory PreviousRequestStateHistory
+		{
+			get
+			{
+				return this._PreviousRequestStateHistory.Entity;
+			}
+			set
+			{
+				RequestStateHistory previousValue = this._PreviousRequestStateHistory.Entity;
+				if (((previousValue != value)
+							|| (this._PreviousRequestStateHistory.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._PreviousRequestStateHistory.Entity = null;
+						previousValue.RequestStateHistoryPreviousRequestStateHistory.Remove(this);
+					}
+					this._PreviousRequestStateHistory.Entity = value;
+					if ((value != null))
+					{
+						value.RequestStateHistoryPreviousRequestStateHistory.Add(this);
+						this._PreviousRequestStateHistoryID = value.Id;
+					}
+					else
+					{
+						this._PreviousRequestStateHistoryID = default(System.Guid?);
 					}
 					this.SendPropertyChanged();
 				}
@@ -3630,6 +3708,17 @@ namespace RequestEntities
 		{
 			this.SendPropertyChanging();
 			entity.CurrentRequestStateHistory = null;
+		}
+
+		private void attach_RequestStateHistoryPreviousRequestStateHistory(RequestStateHistory entity)
+		{
+			this.SendPropertyChanging();
+			entity.PreviousRequestStateHistory = this;
+		}
+		private void detach_RequestStateHistoryPreviousRequestStateHistory(RequestStateHistory entity)
+		{
+			this.SendPropertyChanging();
+			entity.PreviousRequestStateHistory = null;
 		}
 	}
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Requestor")]

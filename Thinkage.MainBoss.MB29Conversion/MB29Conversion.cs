@@ -12,10 +12,10 @@ using Thinkage.Libraries.Xml;
 
 namespace Thinkage.MainBoss.MB29Conversion {
 	public class MBConverter : DBConverter {
-		private ManifestXmlResolver xmlResolver;
+		private readonly ManifestXmlResolver xmlResolver;
 		public static string Version = KB.I("2.966"); // Version of MB 29 exported schema we support
 		public static string MB29SchemaNamespace = KB.I("http://thinkage.ca/MB29/dsMB29.xsd");
-		private IServer ServerObject;
+		private readonly IServer ServerObject;
 		protected SqlClient.Connection srcSqlConnection;
 
 		public MBConverter(SqlClient.Connection baseConnection, string src_dbname, string dest_dbname)
@@ -25,7 +25,6 @@ namespace Thinkage.MainBoss.MB29Conversion {
 			xmlResolver = new ManifestXmlResolver(System.Reflection.Assembly.GetExecutingAssembly());
 		}
 		private System.Xml.Schema.ValidationEventHandler externalXmlValidationEventHandler;
-		private int XmlValidationEventCount = 0;
 		/// <summary>
 		/// Load the 29 XML instance document into the MB29 dataset. We validate the input data during Xml processing and do not proceed with the import
 		/// if any validation events are observed. This avoids getting errors trying to write 'bad' data to the Sql database and receiving even more
@@ -164,11 +163,11 @@ namespace Thinkage.MainBoss.MB29Conversion {
 								toConvert.Add(columnSchema);
 						}
 						if (toConvert.Count > 0) {
-							DataTable t = dsMB29.GetDataTable(tableSchema);
+							DBIDataTable t = dsMB29.GetDataTable(tableSchema);
 							for (int i = 0; i < t.Rows.Count; ++i) {
-								DataRow r = t.Rows[i];
+								DBIDataRow r = t.Rows[i];
 								foreach (DBI_Column columnSchema in toConvert) {
-									r.ToDBIDataRow()[columnSchema] = r.ToDBIDataRow()[columnSchema];
+									r[columnSchema] = r[columnSchema];
 								}
 							}
 						}
@@ -189,21 +188,22 @@ namespace Thinkage.MainBoss.MB29Conversion {
 				db.CloseDatabase();
 			}
 		}
+#pragma warning disable CA1822 // Mark members as static
 		void DeleteSrcDB() {
+#pragma warning restore CA1822 // Mark members as static
 #if !DEBUG
 			ServerObject.DeleteDatabase(srcSqlConnection);
 #endif
 		}
 
 		private void SchemaReaderSettings_ValidationEventHandler(object sender, System.Xml.Schema.ValidationEventArgs e) {
-			++XmlValidationEventCount;
 			externalXmlValidationEventHandler(sender, e);
 		}
 		public void Convert29() {
-			SqlClient db = null;
+			ISession db = null;
 			try {
 				// We use the Source database as the operating context so we can create temporary procedures that don't pollute our New imported database
-				db = (SqlClient)ServerObject.OpenSession(srcSqlConnection, MB29.Schema);
+				db = ServerObject.OpenSession(srcSqlConnection, MB29.Schema);
 				Convert(srcSqlConnection.DBName, db, "manifest://localhost/Thinkage/MainBoss/MB29Conversion/dbconversion.xml", xmlResolver);
 			}
 			finally {

@@ -1,11 +1,24 @@
 @echo on
-set WINWORD=%ProgramFiles(x86)%\Microsoft Office\root\Office16\WINWORD.EXE
+rem find the Work 2016 executable
+if exist "%ProgramFiles%\Microsoft Office\Office16\WINWORD.EXE" (
+	set WINWORD=%ProgramFiles%\Microsoft Office\Office16\WINWORD.EXE
+) else (
+	set WINWORD=%ProgramFiles%\Microsoft Office\root\Office16\WINWORD.EXE
+)
+rem clean up junk from previous runs
 rd /s /q html\0000
+del /q print0000man.docx html0000man.docx online.dotm
+rem make output structure
 md html
 md html\0000
+rem Get copies of input
 copy manual\Resources\*.* html\0000
-copy manual\online42.docx print0000man.docx
+copy manual\online.docx print0000man.docx
+attrib -r print0000man.docx
+copy manual\online.dotm online.dotm
+attrib -r online.dotm
 "%WINWORD%" /mConvertMBDocToHTMLCoverClose print0000man.docx
+if not exist html0000man.docx goto :EOF
 "%WINWORD%" /mConvertMBDocToHTMLCoverClose2 html0000man.docx
 "%WINWORD%" /mBreakUpHTMLFile30Cover html0000man.docx
 "%WINWORD%" /mSaveWebPictures print0000man.docx

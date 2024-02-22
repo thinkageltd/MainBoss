@@ -17,7 +17,7 @@ namespace Thinkage.MainBoss.Database {
 		static KB() {
 			DeclareAssemblyProvidesTranslationsUsingResource(K(null), System.Reflection.Assembly.GetExecutingAssembly());
 		}
-		static KB Instance = new KB();
+		static readonly KB Instance = new KB();
 		public static SimpleKey K([Context(Level = 1)] string s) {
 			return Instance.BuildKey(s);
 		}
@@ -28,7 +28,7 @@ namespace Thinkage.MainBoss.Database {
 	public class UK : GeneralKeyBuilder {
 		const string MainBossServiceContext = "MainBossService";
 
-		static UK Instance = new UK();
+		static readonly UK Instance = new UK();
 		protected UK() {
 		}
 		protected override ContextReference GetContext() {
@@ -41,7 +41,7 @@ namespace Thinkage.MainBoss.Database {
 	public class RequestClosePreferenceK : GeneralKeyBuilder {
 		public const string RequestClosePreference = "RequestClosePreference";
 
-		static RequestClosePreferenceK Instance = new RequestClosePreferenceK();
+		static readonly RequestClosePreferenceK Instance = new RequestClosePreferenceK();
 		protected RequestClosePreferenceK() {
 		}
 		protected override ContextReference GetContext() {
@@ -153,10 +153,11 @@ namespace Thinkage.MainBoss.Database {
 		public override Key.ITranslationEnumerator AllTranslations(string context, string localKey, CultureInfo ci, Set<string> qualifiers) {
 			int penalty = int.MaxValue;
 			string translated = Translate(context, localKey, ci, null, ref penalty, qualifiers);
-			return new Key.SingleTranslationEnumerable(new Key.Translation(translated, penalty));
+			if (string.IsNullOrEmpty(translated))
+				return new Key.EmptyTranslationEnumerable();
+			else
+				return new Key.SingleTranslationEnumerable(new Key.Translation(translated, penalty));
 		}
-		private static readonly Key.Translation[] Nothing = new Key.Translation[0];
-
 		#endregion
 		#region IDisposable Members
 		public void Dispose() {
@@ -186,7 +187,7 @@ namespace Thinkage.MainBoss.Database {
 				using (dsMB ds = new dsMB(db)) {
 					ds.EnsureDataTableExists(dsMB.Schema.T.UserMessageTranslation, dsMB.Schema.T.UserMessageKey);
 					db.ViewAdditionalRows(ds, dsMB.Schema.T.UserMessageTranslation, null, null, new DBI_PathToRow[] { dsMB.Path.T.UserMessageTranslation.F.UserMessageKeyID.PathToReferencedRow });
-					foreach (dsMB.UserMessageTranslationRow r in ds.GetDataTable(dsMB.Schema.T.UserMessageTranslation)) {
+					foreach (dsMB.UserMessageTranslationRow r in ds.GetDataTable(dsMB.Schema.T.UserMessageTranslation).Rows) {
 						var key = new SimpleKey(ContextReference.New(r.UserMessageKeyIDParentRow.F.Context), r.UserMessageKeyIDParentRow.F.Key);
 						t.Add(key, new CultureInfo(r.F.LanguageLCID), r.F.Translation);
 					}

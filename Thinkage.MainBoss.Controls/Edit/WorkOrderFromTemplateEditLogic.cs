@@ -78,8 +78,9 @@ namespace Thinkage.MainBoss.Controls {
 						new ECol(Fmt.SetNotifyT<WorkOrderFromTemplateEditLogic>(editor => editor.FillInWorkOrderRecord))),
 					TblColumnNode.New(dsMB.Path.T.WorkOrder.F.StartDateEstimate,
 						new ECol(Fmt.SetNotifyT<WorkOrderFromTemplateEditLogic>(editor => editor.FillInWorkOrderRecord))),
-					TblUnboundControlNode.New(dsMB.Path.T.ScheduledWorkOrder.F.SlackDays.Key(), dsMB.Schema.T.ScheduledWorkOrder.F.SlackDays.EffectiveType,
+					TblUnboundControlNode.New(TIWorkOrder.SlackDaysKey, TIWorkOrder.SlackDaysType,
 						new ECol(
+							Fmt.SetId(TIWorkOrder.WorkOrderSlackDaysId),
 							Fmt.SetNotifyT<WorkOrderFromTemplateEditLogic>(editor => editor.FillInWorkOrderRecord),
 							Fmt.SetCreatedT<WorkOrderFromTemplateEditLogic>((editor, valueCtrl) => { editor.SlackDaysControl = valueCtrl; }),
 							Fmt.SetIsSetting(TimeSpan.Zero)
@@ -102,7 +103,8 @@ namespace Thinkage.MainBoss.Controls {
 						CommonNodeAttrs.PermissionToViewAccounting,
 						CommonNodeAttrs.PermissionToEditAccounting,
 						TIGeneralMB3.AccountingFeatureArg)
-				)
+				),
+				Init.OnLoadNew(new ControlTarget(TIWorkOrder.WorkOrderSlackDaysId), new VariableValue(dsMB.Schema.V.WODefaultSlackDays))
 			);
 		});
 		#endregion
@@ -114,15 +116,14 @@ namespace Thinkage.MainBoss.Controls {
 			base.SetupDataset();
 			WorkOrderRowAccessor = RecordManager.GetDirectRowAccessor(dsMB.Path.T.WorkOrder.F.Id, 0, true);
 			woGenerator = new WorkOrderBuilder((dsMB)DataSet);
+			ObjectsToDispose.Add(woGenerator);
 		}
 		protected override void SetupStateHistoryTransitionCommands() {
 			// Since we are always in New mode, the state transition commands can never become enabled so we avoid generating them with this do-nothing override.
 		}
 		public override void Teardown() {
-			if (woGenerator != null) {
-				woGenerator.Destroy();
-				woGenerator = null;
-			}
+			woGenerator?.Destroy();
+			woGenerator = null;
 			base.Teardown();
 		}
 		#endregion
@@ -131,7 +132,7 @@ namespace Thinkage.MainBoss.Controls {
 			ICheckpointData woGeneratorData = woGenerator.Checkpoint();
 			try {
 				woGenerator.PopulateChildLookupTables();
-				woGenerator.FillInWorkOrderChildRecordsFromTemplate(WOInitialStateValue, Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().UserRecordID);
+				woGenerator.FillInWorkOrderChildRecordsFromTemplate(WOInitialStateValue, null, null, Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().UserRecordID);
 				return base.SaveRecord(updateOptions);
 			}
 			catch {
@@ -158,7 +159,7 @@ namespace Thinkage.MainBoss.Controls {
 			// TODO: we really should catch all exceptions during doFillInWorkOrder and use them to somehow disable the Save button. Perhaps
 			// we could also use a TextDisplay to show the exception message.
 			Thinkage.Libraries.Application.Instance.GetInterface<IIdleCallback>().ScheduleIdleCallback(this,
-				delegate() {
+				delegate () {
 					if (!IsDisposed)
 						DoFillInWorkOrderRecord();
 				}
@@ -215,6 +216,7 @@ namespace Thinkage.MainBoss.Controls {
 		#region Properties & Variables
 		// ID of template we are creating the workorder from
 		// The class that can produce the workorder contents from a template
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Part of ObjectsToDispose")]
 		public WorkOrderBuilder woGenerator;
 
 		private IBasicDataControl TemplateControl;
@@ -227,9 +229,9 @@ namespace Thinkage.MainBoss.Controls {
 		private IBasicDataControl SubjectControl;
 		private IBasicDataControl WorkOrderExpenseModelControl;
 
-		private SettableDisablerProperties SubjectChangeEnabler = new SettableDisablerProperties(null, KB.K("The template already provides a Subject"), true);
+		private readonly SettableDisablerProperties SubjectChangeEnabler = new SettableDisablerProperties(null, KB.K("The template already provides a Subject"), true);
 		private object userSuppliedSubject = null;
-		private SettableDisablerProperties WorkOrderExpenseModelChangeEnabler = new SettableDisablerProperties(null, KB.K("The template already provides an Expense Model"), true);
+		private readonly SettableDisablerProperties WorkOrderExpenseModelChangeEnabler = new SettableDisablerProperties(null, KB.K("The template already provides an Expense Model"), true);
 		private object userSuppliedWorkOrderExpenseModel = null;
 
 		private RecordManager.DirectRowAccessor WorkOrderRowAccessor;

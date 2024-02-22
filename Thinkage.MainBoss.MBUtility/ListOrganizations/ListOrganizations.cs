@@ -51,7 +51,8 @@ namespace Thinkage.MainBoss.MBUtility {
 			Options = options;
 		}
 		private readonly Definition Options;
-		struct Names {
+
+		private struct Names {
 			public NamedOrganization Real;
 			public string Database;
 			public string Application;
@@ -60,34 +61,37 @@ namespace Thinkage.MainBoss.MBUtility {
 			public string Version;
 			public string Defaults;
 		}
-		class Column {
-			string title;
-			int width;
-			bool needed;
-			const int maxwidth = 50;
-			public Column(Key Title, bool Needed = true ) {
+
+		private class Column {
+			private readonly string title;
+			private int width;
+			private readonly bool needed;
+			private const int maxwidth = 50;
+			public Column(Key Title, bool Needed = true) {
 				title = Title.Translate();
 				needed = Needed;
 				width = title.Length;
 			}
-			public void Contains(string v ) {
+			public void Contains(string v) {
 				width = Math.Min(maxwidth, Math.Max(width, v.Length));
 			}
 			public string Title {
 				get { return Display(title); }
 			}
 			public string Display([Invariant]string v) {
-				if (v == null) v = "";
-				if (!needed) return "";
+				if (v == null)
+					v = "";
+				if (!needed)
+					return "";
 				if (v.Length > maxwidth - 3)
 					v = v.Substring(maxwidth) + KB.I("...");
-				return v + " ".PadRight(width - v.Length+1);
+				return v + " ".PadRight(width - v.Length + 1);
 			}
 		}
 
 		private void Run() {
 			DBVersionHandler vh = new DBVersionHandler();
-			MainBossNamedOrganizationStorage connections = new MainBossNamedOrganizationStorage(Options.AllUsersOption.Value ? (IConnectionInformation) new SavedOrganizationSessionAllUsers.Connection(writeAccess:false) : new SavedOrganizationSession.Connection());
+			MainBossNamedOrganizationStorage connections = new MainBossNamedOrganizationStorage(Options.AllUsersOption.Value ? (IConnectionInformation)new SavedOrganizationSessionAllUsers.Connection(writeAccess: false) : new SavedOrganizationSession.Connection());
 			var names = new List<Names>();
 			var organization = new Column(KB.K("Organization"));
 			var application = new Column(KB.K("Application"));
@@ -108,7 +112,7 @@ namespace Thinkage.MainBoss.MBUtility {
 				n.Server = def.DBServer;
 				n.Probe = "";
 				n.Version = "";
-				if( n.Real.Id == startname )
+				if (n.Real.Id == startname)
 					n.Defaults = KB.K("Start").Translate();
 				else
 					n.Defaults = "";
@@ -116,7 +120,7 @@ namespace Thinkage.MainBoss.MBUtility {
 					MB3Client probeSession = null;
 					try {
 						probeSession = new MB3Client(def);
-						vh.CurrentVersion = MBUpgrader.UpgradeInformation.LatestDBVersion;	// give vh a starting point for looking at version info
+						vh.CurrentVersion = MBUpgrader.UpgradeInformation.LatestDBVersion;  // give vh a starting point for looking at version info
 						vh.LoadDBVersion(probeSession);
 						n.Version = vh.CurrentVersion.ToString();
 						n.Probe = Strings.Format(KB.K("Access OK"));
@@ -139,21 +143,21 @@ namespace Thinkage.MainBoss.MBUtility {
 				// probestatus.Contains(n.Probe); // error message can be multiple lines don't register, always prints as last so its not a problem
 				names.Add(n);
 			}
-			if( names.Count <= 0 ) 
+			if (names.Count <= 0)
 				System.Console.WriteLine(Strings.Format(KB.K("There are no saved organizations")));
 			else {
 				var format = "{0}{1}{2}{3}{4}{5}{6}{7}";
 				System.Console.WriteLine(Strings.IFormat(format, organization.Title, database.Title, server.Title, application.Title, defaults.Title, registrykey.Title, databaseversion.Title, probestatus.Title).TrimEnd());
 				var outputorder = names.OrderBy(p => p.Real.DisplayName.ToLower());
-				if( Options.OrderbyDatabaseOption.Value )
-					outputorder = outputorder.OrderBy(p => p.Database.ToLower()); 
-				if( Options.OrderbyServerOption.Value )
-					outputorder = outputorder.OrderBy(p => p.Server.ToLower()); 
+				if (Options.OrderbyDatabaseOption.Value)
+					outputorder = outputorder.OrderBy(p => p.Database.ToLower());
+				if (Options.OrderbyServerOption.Value)
+					outputorder = outputorder.OrderBy(p => p.Server.ToLower());
 				foreach (var n in outputorder) {
 					System.Console.WriteLine(Strings.IFormat(format,
-						organization.Display(n.Real.DisplayName), 
-						database.Display(n.Database), 
-						server.Display(n.Server), 
+						organization.Display(n.Real.DisplayName),
+						database.Display(n.Database),
+						server.Display(n.Server),
 						application.Display(n.Application),
 						defaults.Display(n.Defaults),
 						registrykey.Display(n.Real.Id.ToString()),

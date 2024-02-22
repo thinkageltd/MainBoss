@@ -43,13 +43,13 @@ namespace Thinkage.MainBoss.Database {
 				return null;
 			}
 		}
-		public string Headers => string.Join(Environment.NewLine, Part.Headers.Select(d => d.Value.ToString())); 
+		public string Headers => string.Join(Environment.NewLine, Part.Headers.Select(d => d.Value.ToString()));
 		public static List<EmailPart> PartList(EmailMessage message) {
 			var parts = Linear(message.Parts, -1);
 			//FindPrimary(parts, -1, true, message.IsAlternative);
 			return parts;
 		}
-		public static string  ConstructBody(List<EmailPart> parts) {
+		public static string ConstructBody(List<EmailPart> parts) {
 			var body = new StringBuilder();
 			string separator = String.Empty;
 			foreach (var p in parts)
@@ -65,7 +65,7 @@ namespace Thinkage.MainBoss.Database {
 			var parts = new List<EmailPart>();
 			foreach (var p in partlist) {
 				index++;
-				var ep = new EmailPart(p, parent,  parent+index);
+				var ep = new EmailPart(p, parent, parent + index);
 				parts.Add(ep);
 				if (p is Multipart mp) {
 					var subParts = Linear(mp.Parts, parent + index);

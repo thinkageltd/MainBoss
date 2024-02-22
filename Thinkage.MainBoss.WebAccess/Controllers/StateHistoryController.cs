@@ -32,8 +32,10 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 			// switch the modelstate value for CurrentRequestStateHistoryID to the one updated in Model at time of error
 			return RedirectBack(parentID, id);
 		}
-		delegate ActionResult StateChangedException(Guid parentID, Guid stateHistoryID);
-		StateChangedException StateHistoryChangedException;
+
+		private delegate ActionResult StateChangedException(Guid parentID, Guid stateHistoryID);
+
+		private readonly StateChangedException StateHistoryChangedException;
 		protected override void OnException(ExceptionContext filterContext) {
 			base.OnException(filterContext);
 			if (filterContext.Exception is StateHistoryChangedUnderneathUsException) {

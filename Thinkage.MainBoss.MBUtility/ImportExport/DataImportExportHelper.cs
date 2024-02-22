@@ -1,27 +1,24 @@
-using System.Data;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.Translation;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.MainBoss.Controls;
 using Thinkage.MainBoss.Database;
 
 namespace Thinkage.MainBoss.MBUtility {
 	// Common code required to import basic data tables into MainBoss database
-	public static class DataImportExportHelper
-	{
+	public static class DataImportExportHelper {
 		/// <summary>
 		///  Common code to setup for MainBoss DataImportExport
 		/// </summary>
 		/// 
 		/// <returns></returns>
-		public static void Setup()
-		{
+		public static void Setup() {
 			new ApplicationTblDefaultsNoEditing(Thinkage.Libraries.Application.Instance, new MainBossPermissionsManager(Root.Rights), Root.Rights.Table, Root.RightsSchema, Root.Rights.Action.Customize);
 			new Thinkage.MainBoss.MBUtility.ImportExport.ApplicationImportExport(Thinkage.Libraries.Application.Instance);
 		}
-		public static void SetupDatabaseAccess(string oName, DBClient.Connection c)
-		{
+		public static void SetupDatabaseAccess(string oName, DBClient.Connection c) {
 			MB3Client.ConnectionDefinition connect = (MB3Client.ConnectionDefinition)c;
 			System.Version MinDBVersion = new System.Version(1, 1, 5, 5); // MB 4.2
 			LicenseEnabledFeatureGroups[] FeatureGroups = new LicenseEnabledFeatureGroups[] {
@@ -50,12 +47,11 @@ namespace Thinkage.MainBoss.MBUtility {
 			catch (System.Exception ex) {
 				dbapp.CloseDatabaseSession();
 				if (ex is GeneralException)
-					throw;			// message should be good
+					throw;          // message should be good
 				throw new GeneralException(ex, KB.K("There was a problem validating access to the database {0} on server {1}"), connect.DBName, connect.DBServer);
 			}
 		}
-		public static void CheckAndSaveErrors([Invariant]string errorOutputFile, DataSet errors, GeneralException ex)
-		{
+		public static void CheckAndSaveErrors([Invariant]string errorOutputFile, DBIDataSet errors, GeneralException ex) {
 			if (ex == null)
 				return;
 			if (errorOutputFile != null)

@@ -10,15 +10,14 @@ using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.XAF.UI;
 using Thinkage.MainBoss.Database;
 using Thinkage.MainBoss.Database.Service;
+using System.Collections.Specialized;
 
 namespace Thinkage.MainBoss.Controls {
 	/// <summary>
 	/// Common Active Directory attribute mapping to Contact fields for the Micosoft control
 	/// </summary>
 	internal static class ContactFromDirectoryService {
-		public static Dictionary<string, DBI_Path> AttributeMapping;
-		static ContactFromDirectoryService() {
-			AttributeMapping = new Dictionary<string, DBI_Path> {
+		public static Dictionary<string, DBI_Path> AttributeMapping = new Dictionary<string, DBI_Path> {
 				{ KB.I("mail"), dsMB.Path.T.Contact.F.Email },
 				{ KB.I("telephoneNumber"), dsMB.Path.T.Contact.F.BusinessPhone },
 				{ KB.I("mobile"), dsMB.Path.T.Contact.F.MobilePhone },
@@ -30,40 +29,34 @@ namespace Thinkage.MainBoss.Controls {
 				{ KB.I("displayName"), dsMB.Path.T.Contact.F.Code },
 				{ KB.I("userPrincipalName"), dsMB.Path.T.Contact.F.Code }
 			};
-			// The following are not part of the contact record so are not relevant here
-			//			AttributeMapping.Add("streetAddress", );
-			//			AttributeMapping.Add("st", ); //State
-			//			AttributeMapping.Add("L", ); // City
-			//			AttributeMapping.Add("co", ); // Country
-			//			AttributeMapping.Add("postalCode", );
-		}
+		// The following are not part of the contact record so are not relevant here
+		//			AttributeMapping.Add("streetAddress", );
+		//			AttributeMapping.Add("st", ); //State
+		//			AttributeMapping.Add("L", ); // City
+		//			AttributeMapping.Add("co", ); // Country
+		//			AttributeMapping.Add("postalCode", );
 	}
 	public class FillContactFromUserDirectoryCommand : SettableDisablerProperties, ICommand {
-		bool Update;
+		readonly bool Update;
 		private delegate DBI_Path pathMapper(DBI_Path p);
 		private delegate Sink sinkPutter(DBI_Path p);
 		private FillContactFromUserDirectoryCommand(DBI_Table schema, sinkPutter putter, UIFactory uiFactory, DBClient db)
 			: base(KB.K("Get user or contact information from Active Directory"), KB.K("There must be a valid email address"), false) {
-			DB = db;
 			UIFactory = uiFactory;
 			pathMapper mapper;
-			DBI_Table mainTable;
 			if (schema.IsDefaultTable) {
 				mapper = delegate (DBI_Path p) {
 					return p.DefaultPath;
 				};
-				mainTable = schema.Main;
 			}
 			else {
 				mapper = delegate (DBI_Path p) {
 					return p;
 				};
-				mainTable = schema;
 			}
 			NameSink = putter(mapper(dsMB.Path.T.Contact.F.Code));
 			LDAPGuidSink = putter(mapper(dsMB.Path.T.Contact.F.LDAPGuid));
 			CommentSink = putter(mapper(dsMB.Path.T.Contact.F.Comment));
-			EmailSink = putter(mapper(dsMB.Path.T.Contact.F.Email));
 			AlternateEmailSink = putter(mapper(dsMB.Path.T.Contact.F.AlternateEmail));
 			OtherSinks = new Dictionary<string, Sink>();
 			foreach (var key in ContactFromDirectoryService.AttributeMapping.Keys)
@@ -100,7 +93,7 @@ namespace Thinkage.MainBoss.Controls {
 			var user = users[0];
 			NameSink.SetValue(user.Name); // Set the Code field here; DisplayName will overwrite if non-null in OtherSinks
 			LDAPGuidSink.SetValue(user.ObjectGuid);
-			MoveCoresponding(user, "userPrincipalName");
+			MoveCorresponding(user, "userPrincipalName");
 			var dn = (string)user.FetchSingleAttributeValue("displayName", CommentSink.TypeInfo, typeof(string));
 			var pn = (string)user.FetchSingleAttributeValue("userPrincipalName", CommentSink.TypeInfo, typeof(string));
 			if (on == null || string.Compare(on, dn, true) == 0)
@@ -118,27 +111,27 @@ namespace Thinkage.MainBoss.Controls {
 			// The Contact.F.AlternateEmail is not used.
 			//
 			LDAPEntry.CheckActiveDirectory();
-			IEnumerable<LDAPEntry> ades = null;
+			IEnumerable<LDAPEntry> ades = new List<LDAPEntry>();
 			Guid? LDAPGuid = (Guid?)LDAPGuidSource?.GetValue();
 			var OriginalName = (string)NameSource?.GetValue();
 			var Email = (string)(EmailSource?.GetValue());
 			var AlternateEmailString = (string)(AlternateEmailSource?.GetValue());
-			if (LDAPGuid == null && Email == null && AlternateEmailString == null)
-				throw new GeneralException(KB.K("In order to update the contact there must be either an Active Directory Reference or an Email address"));
-			if (LDAPGuid != null)
+			bool noEmailAddresses = string.IsNullOrEmpty(Email) && string.IsNullOrEmpty(AlternateEmailString);
+			if (LDAPGuid == null && noEmailAddresses)
+				throw new GeneralException(KB.K("In order to update the contact there must be either an Active Directory Reference or an email address"));
+			if (LDAPGuid != null) {
 				ades = LDAPEntry.GetActiveDirectoryGivenGuid(LDAPGuid.Value);
-			if (Email == null && AlternateEmailString == null)
-				throw new GeneralException(KB.K("Cannot update because the Active Directory Reference cannot be found and there is no email address to match"));
-			if (ades == null)
-				ades = LDAPEntry.GetActiveDirectoryGivenPrimaryEmail(Email);
-			if ( !ades.Any() && OriginalName != null)
+				if (!ades.Any() && noEmailAddresses)
+					throw new GeneralException(KB.K("Cannot update because the Active Directory Reference cannot be found and there is no email address to match"));
+			}
+			if (!ades.Any() && !string.IsNullOrEmpty(Email))
+				ades = LDAPEntry.GetActiveDirectoryUsingEmail(Email);
+			if (!ades.Any() && OriginalName != null)
 				ades = LDAPEntry.GetActiveDirectoryGivenPrincipalName(OriginalName);
-			if ( !ades.Any() )
-				ades = LDAPEntry.GetActiveDirectoryGivenEmail(Email);
-			if ( !ades.Any() )
+			if (!ades.Any())
 				foreach (var a in ServiceUtilities.AlternateEmailAddresses(AlternateEmailString))
-					ades = ades.Concat(LDAPEntry.GetActiveDirectoryGivenEmail(a));
-			if ( !ades.Any() )
+					ades = ades.Union(LDAPEntry.GetActiveDirectoryUsingEmail(a), new LDAPEntryComparerByGuid());
+			if (!ades.Any())
 				throw new GeneralException(KB.K("Cannot update because Windows has no login names associated with any of the email addresses"));
 			if (ades.Count() > 1) {
 				var names = ades.Select(sr => sr.DisplayName);
@@ -148,36 +141,31 @@ namespace Thinkage.MainBoss.Controls {
 			var LDAPE = ades.First();
 
 			var user = FillByGuid(LDAPE);
+			if (string.IsNullOrWhiteSpace(user.Name))
+				throw new GeneralException(KB.K("Active Directory does not have any relevant information for email address {0}"), Email);
 			NameSink.SetValue(user.Name);
 			LDAPGuidSink.SetValue(user.ObjectGuid);
-			MoveCoresponding(user);
+			MoveCorresponding(user);
 			//
 			// email is special, we will not over write an email address on an update matches an ldap secondary address, but will add it to the contacts secondary addresses if necessary
-			//
-			string LDAPEmail = LDAPE.Mail;
-			if (Email != null && string.Compare(Email, LDAPEmail, true) != 0) {
-				if (AlternateEmailString == null)
-					AlternateEmailSink.SetValue(Email);
-				else if (!ServiceUtilities.CheckAlternateEmail(AlternateEmailString, Email))
-					AlternateEmailSink.SetValue(Strings.IFormat("{0} {1}", AlternateEmailString, Email));
-			}
+			// we also keep whatever alternate email addresses may have been entered, and add the ones provided (if any) from LDAP.
+			AlternateEmailSink.SetValue(LDAPEntryHelper.BuildAlternateEmail(Email, AlternateEmailString, LDAPE.Mail, LDAPE.AlternateEmail));
 			if (OriginalName == null || string.Compare(LDAPE.DisplayName, OriginalName, true) == 0)
 				CommentSink.SetValue(Strings.IFormat("{0}\nUpdated from Active Directory from Windows User {1} on {2}\n", CommentSource.GetValue(), LDAPE.UserPrincipalName, DateTime.Now));
 			else
 				CommentSink.SetValue(Strings.IFormat("{0}\nUpdated from Active Directory from Windows User {1} on {2}, The Contact's name changed from '{3}'\n", CommentSource.GetValue(), LDAPE.UserPrincipalName, DateTime.Now, OriginalName));
 		}
-		private void MoveCoresponding(UserDirectoryObject user, params string[] skip) {
+		private void MoveCorresponding(UserDirectoryObject user, params string[] skip) {
 			foreach (var key in ContactFromDirectoryService.AttributeMapping.Keys) {
 				if (skip.Any(e => e == key))
 					continue;
 				Sink s = OtherSinks[key];
 				try {
 					if (key.Equals(KB.I("preferredLanguage"))) { // Special case as preferredLanguage is an LCID
-						string language = LDAPString(user, key);
-						if (!System.String.IsNullOrEmpty(language)) {
+						int? language = (int?)user.FetchSingleAttributeValue(key, Thinkage.Libraries.TypeInfo.IntegralTypeInfo.NonNullUniverse, typeof(int));
+						if (language.HasValue) {
 							try {
-								System.Globalization.CultureInfo ci = new System.Globalization.CultureInfo(language);
-								s.SetValue(ci.LCID);
+								s.SetValue(language.Value);
 							}
 							catch (System.Exception) {
 							}
@@ -193,13 +181,8 @@ namespace Thinkage.MainBoss.Controls {
 				}
 			}
 		}
-		private string LDAPString(UserDirectoryObject user, string key) {
-			return (string)user.FetchSingleAttributeValue(key, Thinkage.Libraries.TypeInfo.StringTypeInfo.Universe, typeof(string));
-		}
-		private int? LDAPInt(UserDirectoryObject user, string key) {
-			return (int?)user.FetchSingleAttributeValue(key, Thinkage.Libraries.TypeInfo.IntegralTypeInfo.Universe, typeof(int));
-		}
-		private UserDirectoryObject FillByGuid(LDAPEntry LDAPUser) { // mapping from active direcory 
+
+		private static UserDirectoryObject FillByGuid(LDAPEntry LDAPUser) { // mapping from active direcory 
 			var Code = LDAPUser.DisplayName;
 			var Path = LDAPUser.DistinguishName;
 			var LDAPGuid = LDAPUser.Guid;
@@ -213,29 +196,26 @@ namespace Thinkage.MainBoss.Controls {
 				{ KB.I("wWWHomePage"),                  new object[] { LDAPUser.WWWHomePage} },
 				{ KB.I("displayName"),                  new object[] { LDAPUser.DisplayName} },
 				{ KB.I("preferredLanguage"),            new object[] { LDAPUser.PreferredLanguage} },
-				{ KB.I("userPrincipalName"),             new object[] { LDAPUser.UserPrincipalName} },
+				{ KB.I("userPrincipalName"),            new object[] { LDAPUser.UserPrincipalName} },
+				{ KB.I("proxyAddresses"),               new object[] { LDAPUser.AlternateEmail} }
 			};
 			return new UserDirectoryObject(Code, LDAPGuid, null, Path, oa);
 		}
-		public bool RunElevated {
+		public static bool RunElevated {
 			get {
 				return false;
 			}
 		}
-		private Source NameSource;
-		private Source LDAPGuidSource;
-		private Source CommentSource;
-		private NotifyingSource AlternateEmailSource;
-		private NotifyingSource EmailSource;
-		private readonly DBClient DB;
+		private readonly Source NameSource;
+		private readonly Source LDAPGuidSource;
+		private readonly Source CommentSource;
+		private readonly NotifyingSource AlternateEmailSource;
+		private readonly NotifyingSource EmailSource;
 		private readonly UIFactory UIFactory;
 		private readonly Dictionary<string, Sink> OtherSinks;
 		private readonly Sink NameSink;
 		private readonly Sink LDAPGuidSink;
 		private readonly Sink CommentSink;
-		private readonly Sink EmailSink;
 		private readonly Sink AlternateEmailSink;
-
-		static SettableDisablerProperties IsNotDomainDisableer = new SettableDisablerProperties(null, KB.K("Only available on computer that is a member of a domain"),DomainAndIP.GetDomainName() != null);
 	}
 }

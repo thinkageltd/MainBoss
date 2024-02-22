@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Thinkage.MainBoss.Controls</RootNamespace>
     <AssemblyName>Thinkage.MainBoss.Controls</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <FileUpgradeFlags>
@@ -63,14 +63,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary.MSSql\Thinkage.Libraries.DBILibrary.MSSql.csproj">
-      <Project>{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}</Project>
-      <Name>Thinkage.Libraries.DBILibrary.MSSql</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary\Thinkage.Libraries.DBILibrary.csproj">
-      <Project>{9398F76E-D6FD-4194-9599-CE4B6512D5A2}</Project>
-      <Name>Thinkage.Libraries.DBILibrary</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Thinkage.Libraries.Presentation.MSWindows\Thinkage.Libraries.Presentation.MSWindows.csproj">
       <Project>{0032BCBC-BE62-486D-A78A-8890FDBBC790}</Project>
       <Name>Thinkage.Libraries.Presentation.MSWindows</Name>
@@ -78,6 +70,10 @@
     <ProjectReference Include="..\Thinkage.Libraries.Presentation\Thinkage.Libraries.Presentation.csproj">
       <Project>{DED2C505-EF02-483C-95A6-F2AD5B60A081}</Project>
       <Name>Thinkage.Libraries.Presentation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.Sql\Thinkage.Libraries.Sql.csproj">
+      <Project>{F83BDC83-15EB-4778-A127-80BB86A7ACE3}</Project>
+      <Name>Thinkage.Libraries.Sql</Name>
     </ProjectReference>
     <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Layout\Thinkage.Libraries.XAF.Database.Layout.csproj">
       <Project>{D329682F-5E4C-496D-9DF4-E94896DAEC54}</Project>
@@ -118,7 +114,7 @@
     <Compile Include="Browse\UserFromDirectoryServiceBrowseLogic.cs" />
     <Compile Include="Browse\LicenseBrowseLogic.cs" />
     <Compile Include="Browse\ServiceConfigurationBrowseLogic.cs" />
-    <Compile Include="Browse\SpecificationBrowseLogic.cs" />
+    <Compile Include="Browse\AttachmentSpecificationBrowseLogic.cs" />
     <Compile Include="Browse\StateHistoryBrowseLogic.cs" />
     <Compile Include="Browse\WithHistoryColumnBrowseLogic.cs" />
     <Compile Include="CompanyInfo.cs" />
@@ -128,6 +124,8 @@
     <Compile Include="Edit\DynamicEditLogic.cs" />
     <Compile Include="Edit\PMGenerationBatchEditLogic.cs" />
     <Compile Include="Edit\TemplateFromWorkOrderEditLogic.cs.cs" />
+    <Compile Include="Edit\ValidateMaintenencePlanEditLogic.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Managers\FillContactFromUserDirectoryCommand.cs" />
     <Compile Include="Managers\ShowOnMapCommand.cs" />
     <Compile Include="Edit\WithSequenceCounterEditLogic.cs" />
@@ -151,6 +149,8 @@
     <Compile Include="Services\ServiceControl.cs" />
     <Compile Include="SolutionSettings.cs" />
     <Compile Include="Tables\DataImportExportPackage.cs" />
+    <Compile Include="Tables\TIAttachments.cs" />
+    <Compile Include="Tables\TIContact.cs" />
     <Compile Include="Tbl.cs" />
     <Compile Include="Tables\TId.cs" />
     <Compile Include="Tables\TIMainBossService.cs" />
@@ -206,6 +206,12 @@
     <Content Include="Resources\RequestNew.ico" />
     <Content Include="Resources\RequestInProgress.ico" />
     <Content Include="Resources\RequestClosed.ico" />
+    <Content Include="Resources\VS2017\ProcessServices_16x.png" />
+    <Content Include="Resources\VS2017\ReceiveMail_16x.png" />
+    <Content Include="Resources\VS2017\ValidateDocument_16x.png" />
+    <Content Include="Resources\VS2017\WindowsServiceStop_16x.png" />
+    <Content Include="Resources\VS2017\WindowsServiceWarning_16x.png" />
+    <Content Include="Resources\VS2017\WindowsService_16x.png" />
     <Content Include="Resources\WorkOrderOpen.ico" />
     <Content Include="Resources\WorkOrderDraft.ico" />
     <Content Include="Resources\WorkOrderClosed.ico" />
@@ -254,6 +260,7 @@
     <Content Include="Resources\VoidCountValue.ico" />
     <Content Include="Resources\WorkOrder.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

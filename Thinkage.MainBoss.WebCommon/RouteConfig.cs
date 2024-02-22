@@ -7,7 +7,7 @@ using System.Web.Routing;
 
 namespace Thinkage.MainBoss.WebCommon
 {
-	public class RouteConfig
+	public static class RouteConfig
 	{
 		public static void RegisterUnhandledException(RouteCollection routes)
 		{

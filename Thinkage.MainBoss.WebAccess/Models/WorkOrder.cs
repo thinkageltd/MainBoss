@@ -417,6 +417,12 @@ namespace Thinkage.MainBoss.WebAccess.Models
 			return ((System.DateTime?)(this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod()))).ReturnValue));
 		}
   
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.[_vgetWODefaultSlackDays]", IsComposable=true)]
+		public System.DateTime? _vgetWODefaultSlackDays()
+		{
+			return ((System.DateTime?)(this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod()))).ReturnValue));
+		}
+  
 		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.[_vgetPhonePrefix]", IsComposable=true)]
 		public string _vgetPhonePrefix()
 		{
@@ -2448,7 +2454,6 @@ namespace WorkOrderEntities
 		private System.Guid _Id;
 		private string _Number;
 		private System.Guid _UnitLocationID;
-		private System.Guid? _PMGenerationBatchID;
 		private System.Guid _CurrentWorkOrderStateHistoryID;
 		private string _Subject;
 		private string _Description;
@@ -2472,7 +2477,6 @@ namespace WorkOrderEntities
 		private EntitySet<WorkOrderAssignmentByAssignee> _WorkOrderAssignmentByAssigneeWorkOrder;
 		private EntitySet<WorkOrderStateHistory> _WorkOrderStateHistoryWorkOrder;
 		private EntityRef<Location> _UnitLocation;
-		private EntityRef<PMGenerationBatch> _PMGenerationBatch;
 		private EntityRef<WorkOrderStateHistory> _CurrentWorkOrderStateHistory;
 		private EntityRef<Requestor> _Requestor;
 		private EntityRef<WorkCategory> _WorkCategory;
@@ -2491,8 +2495,6 @@ namespace WorkOrderEntities
 	partial void OnNumberChanged();
 	partial void OnUnitLocationIDChanging(System.Guid value);
 	partial void OnUnitLocationIDChanged();
-	partial void OnPMGenerationBatchIDChanging(System.Guid? value);
-	partial void OnPMGenerationBatchIDChanged();
 	partial void OnCurrentWorkOrderStateHistoryIDChanging(System.Guid value);
 	partial void OnCurrentWorkOrderStateHistoryIDChanged();
 	partial void OnSubjectChanging(string value);
@@ -2539,7 +2541,6 @@ namespace WorkOrderEntities
 			this._WorkOrderAssignmentByAssigneeWorkOrder = new EntitySet<WorkOrderAssignmentByAssignee>(new Action<WorkOrderAssignmentByAssignee>(this.attach_WorkOrderAssignmentByAssigneeWorkOrder), new Action<WorkOrderAssignmentByAssignee>(this.detach_WorkOrderAssignmentByAssigneeWorkOrder));
 			this._WorkOrderStateHistoryWorkOrder = new EntitySet<WorkOrderStateHistory>(new Action<WorkOrderStateHistory>(this.attach_WorkOrderStateHistoryWorkOrder), new Action<WorkOrderStateHistory>(this.detach_WorkOrderStateHistoryWorkOrder));
 			this._UnitLocation = default(EntityRef<Location>);
-			this._PMGenerationBatch = default(EntityRef<PMGenerationBatch>);
 			this._CurrentWorkOrderStateHistory = default(EntityRef<WorkOrderStateHistory>);
 			this._Requestor = default(EntityRef<Requestor>);
 			this._WorkCategory = default(EntityRef<WorkCategory>);
@@ -2620,32 +2621,6 @@ namespace WorkOrderEntities
 					this._UnitLocationID = value;
 					this.SendPropertyChanged();
 					this.OnUnitLocationIDChanged();
-				}
-			}
-		}
-		/// Denotes the WorkOrder's PMGenerationBatchID column with type link(field PMGenerationBatch.Id) with labelkey='PMGenerationBatch'
-		static public string WorkOrder_PMGenerationBatchID{ get{return WorkOrderLabelKdsMBLabel.K("PMGenerationBatch").Translate();}}
-		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderEntities.WorkOrder),Name="WorkOrder_PMGenerationBatchID")]		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PMGenerationBatchID", DbType="UNIQUEIDENTIFIER")]
-		public System.Guid? PMGenerationBatchID
-		{
-			get
-			{
-				return this._PMGenerationBatchID;
-			}
-			set
-			{
-				if ((this._PMGenerationBatchID != value))
-				{
-					if (this._PMGenerationBatch.HasLoadedOrAssignedValue )
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnPMGenerationBatchIDChanging(value);
-					this.SendPropertyChanging();
-					this._PMGenerationBatchID = value;
-					this.SendPropertyChanged();
-					this.OnPMGenerationBatchIDChanged();
 				}
 			}
 		}
@@ -3172,39 +3147,6 @@ namespace WorkOrderEntities
 					else
 					{
 						this._UnitLocationID = default(System.Guid);
-					}
-					this.SendPropertyChanged();
-				}
-			}
-		}
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="PMGenerationBatch_WorkOrder", Storage="_PMGenerationBatch", ThisKey="PMGenerationBatchID", OtherKey="Id", IsForeignKey=true)]
-		public PMGenerationBatch PMGenerationBatch
-		{
-			get
-			{
-				return this._PMGenerationBatch.Entity;
-			}
-			set
-			{
-				PMGenerationBatch previousValue = this._PMGenerationBatch.Entity;
-				if (((previousValue != value)
-							|| (this._PMGenerationBatch.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._PMGenerationBatch.Entity = null;
-						previousValue.WorkOrderPMGenerationBatch.Remove(this);
-					}
-					this._PMGenerationBatch.Entity = value;
-					if ((value != null))
-					{
-						value.WorkOrderPMGenerationBatch.Add(this);
-						this._PMGenerationBatchID = value.Id;
-					}
-					else
-					{
-						this._PMGenerationBatchID = default(System.Guid?);
 					}
 					this.SendPropertyChanged();
 				}
@@ -4345,12 +4287,15 @@ namespace WorkOrderEntities
 		private System.DateTime _EntryDate;
 		private System.Guid? _UserID;
 		private bool _EffectiveDateReadonly;
+		private System.Guid? _PreviousWorkOrderStateHistoryID;
 		private System.Guid _WorkOrderStateID;
 		private System.Guid? _WorkOrderStateHistoryStatusID;
 		private string _Comment;
 		private EntitySet<WorkOrder> _WorkOrderCurrentWorkOrderStateHistory;
+		private EntitySet<WorkOrderStateHistory> _WorkOrderStateHistoryPreviousWorkOrderStateHistory;
 		private EntityRef<User> _User;
 		private EntityRef<WorkOrder> _WorkOrder;
+		private EntityRef<WorkOrderStateHistory> _PreviousWorkOrderStateHistory;
 		private EntityRef<WorkOrderState> _WorkOrderState;
 		private EntityRef<WorkOrderStateHistoryStatus> _WorkOrderStateHistoryStatus;
 	#region Extensibility Method Definitions
@@ -4369,6 +4314,8 @@ namespace WorkOrderEntities
 	partial void OnUserIDChanged();
 	partial void OnEffectiveDateReadonlyChanging(bool value);
 	partial void OnEffectiveDateReadonlyChanged();
+	partial void OnPreviousWorkOrderStateHistoryIDChanging(System.Guid? value);
+	partial void OnPreviousWorkOrderStateHistoryIDChanged();
 	partial void OnWorkOrderStateIDChanging(System.Guid value);
 	partial void OnWorkOrderStateIDChanged();
 	partial void OnWorkOrderStateHistoryStatusIDChanging(System.Guid? value);
@@ -4380,8 +4327,10 @@ namespace WorkOrderEntities
 		public WorkOrderStateHistory()
 		{
 			this._WorkOrderCurrentWorkOrderStateHistory = new EntitySet<WorkOrder>(new Action<WorkOrder>(this.attach_WorkOrderCurrentWorkOrderStateHistory), new Action<WorkOrder>(this.detach_WorkOrderCurrentWorkOrderStateHistory));
+			this._WorkOrderStateHistoryPreviousWorkOrderStateHistory = new EntitySet<WorkOrderStateHistory>(new Action<WorkOrderStateHistory>(this.attach_WorkOrderStateHistoryPreviousWorkOrderStateHistory), new Action<WorkOrderStateHistory>(this.detach_WorkOrderStateHistoryPreviousWorkOrderStateHistory));
 			this._User = default(EntityRef<User>);
 			this._WorkOrder = default(EntityRef<WorkOrder>);
+			this._PreviousWorkOrderStateHistory = default(EntityRef<WorkOrderStateHistory>);
 			this._WorkOrderState = default(EntityRef<WorkOrderState>);
 			this._WorkOrderStateHistoryStatus = default(EntityRef<WorkOrderStateHistoryStatus>);
 			OnCreated();
@@ -4531,6 +4480,32 @@ namespace WorkOrderEntities
 				}
 			}
 		}
+		/// Denotes the WorkOrderStateHistory's PreviousWorkOrderStateHistoryID column with type link(field WorkOrderStateHistory.Id) with labelkey='Previous State History'
+		static public string WorkOrderStateHistory_PreviousWorkOrderStateHistoryID{ get{return WorkOrderLabelKdsMBLabel.K("Previous State History").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderEntities.WorkOrderStateHistory),Name="WorkOrderStateHistory_PreviousWorkOrderStateHistoryID")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PreviousWorkOrderStateHistoryID", DbType="UNIQUEIDENTIFIER")]
+		public System.Guid? PreviousWorkOrderStateHistoryID
+		{
+			get
+			{
+				return this._PreviousWorkOrderStateHistoryID;
+			}
+			set
+			{
+				if ((this._PreviousWorkOrderStateHistoryID != value))
+				{
+					if (this._PreviousWorkOrderStateHistory.HasLoadedOrAssignedValue )
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnPreviousWorkOrderStateHistoryIDChanging(value);
+					this.SendPropertyChanging();
+					this._PreviousWorkOrderStateHistoryID = value;
+					this.SendPropertyChanged();
+					this.OnPreviousWorkOrderStateHistoryIDChanged();
+				}
+			}
+		}
 		/// Denotes the WorkOrderStateHistory's WorkOrderStateID column with type link(nonnull, field WorkOrderState.Id) with labelkey='State'
 		static public string WorkOrderStateHistory_WorkOrderStateID{ get{return WorkOrderLabelKdsMBLabel.K("State").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderEntities.WorkOrderStateHistory),Name="WorkOrderStateHistory_WorkOrderStateID")]		
@@ -4618,6 +4593,18 @@ namespace WorkOrderEntities
 				this._WorkOrderCurrentWorkOrderStateHistory.Assign(value);
 			}
 		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="WorkOrderStateHistory_WorkOrderStateHistory", Storage="_WorkOrderStateHistoryPreviousWorkOrderStateHistory", ThisKey="Id", OtherKey="PreviousWorkOrderStateHistoryID")]
+		public EntitySet<WorkOrderStateHistory> WorkOrderStateHistoryPreviousWorkOrderStateHistory
+		{
+			get
+			{
+				return this._WorkOrderStateHistoryPreviousWorkOrderStateHistory;
+			}
+			set
+			{
+				this._WorkOrderStateHistoryPreviousWorkOrderStateHistory.Assign(value);
+			}
+		}
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_WorkOrderStateHistory", Storage="_User", ThisKey="UserID", OtherKey="Id", IsForeignKey=true)]
 		public User User
 		{
@@ -4679,6 +4666,39 @@ namespace WorkOrderEntities
 					else
 					{
 						this._WorkOrderID = default(System.Guid);
+					}
+					this.SendPropertyChanged();
+				}
+			}
+		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="PreviousWorkOrderStateHistory_WorkOrderStateHistory", Storage="_PreviousWorkOrderStateHistory", ThisKey="PreviousWorkOrderStateHistoryID", OtherKey="Id", IsForeignKey=true)]
+		public WorkOrderStateHistory PreviousWorkOrderStateHistory
+		{
+			get
+			{
+				return this._PreviousWorkOrderStateHistory.Entity;
+			}
+			set
+			{
+				WorkOrderStateHistory previousValue = this._PreviousWorkOrderStateHistory.Entity;
+				if (((previousValue != value)
+							|| (this._PreviousWorkOrderStateHistory.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._PreviousWorkOrderStateHistory.Entity = null;
+						previousValue.WorkOrderStateHistoryPreviousWorkOrderStateHistory.Remove(this);
+					}
+					this._PreviousWorkOrderStateHistory.Entity = value;
+					if ((value != null))
+					{
+						value.WorkOrderStateHistoryPreviousWorkOrderStateHistory.Add(this);
+						this._PreviousWorkOrderStateHistoryID = value.Id;
+					}
+					else
+					{
+						this._PreviousWorkOrderStateHistoryID = default(System.Guid?);
 					}
 					this.SendPropertyChanged();
 				}
@@ -4779,6 +4799,17 @@ namespace WorkOrderEntities
 		{
 			this.SendPropertyChanging();
 			entity.CurrentWorkOrderStateHistory = null;
+		}
+
+		private void attach_WorkOrderStateHistoryPreviousWorkOrderStateHistory(WorkOrderStateHistory entity)
+		{
+			this.SendPropertyChanging();
+			entity.PreviousWorkOrderStateHistory = this;
+		}
+		private void detach_WorkOrderStateHistoryPreviousWorkOrderStateHistory(WorkOrderStateHistory entity)
+		{
+			this.SendPropertyChanging();
+			entity.PreviousWorkOrderStateHistory = null;
 		}
 	}
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Location")]
@@ -6361,7 +6392,6 @@ namespace WorkOrderEntities
 		static public string PMGenerationBatchLabelKey { get{return WorkOrderLabelKdsMBLabel.K("PMGenerationBatch").Translate();}}
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 		private System.Guid _Id;
-		private EntitySet<WorkOrder> _WorkOrderPMGenerationBatch;
 	#region Extensibility Method Definitions
 	partial void OnLoaded();
 	partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -6372,7 +6402,6 @@ namespace WorkOrderEntities
 
 		public PMGenerationBatch()
 		{
-			this._WorkOrderPMGenerationBatch = new EntitySet<WorkOrder>(new Action<WorkOrder>(this.attach_WorkOrderPMGenerationBatch), new Action<WorkOrder>(this.detach_WorkOrderPMGenerationBatch));
 			OnCreated();
 		}
 		/// Denotes the PMGenerationBatch's Id column with type id(nonnull) with labelkey='Id'
@@ -6398,18 +6427,6 @@ namespace WorkOrderEntities
 				}
 			}
 		}
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="PMGenerationBatch_WorkOrder", Storage="_WorkOrderPMGenerationBatch", ThisKey="Id", OtherKey="PMGenerationBatchID")]
-		public EntitySet<WorkOrder> WorkOrderPMGenerationBatch
-		{
-			get
-			{
-				return this._WorkOrderPMGenerationBatch;
-			}
-			set
-			{
-				this._WorkOrderPMGenerationBatch.Assign(value);
-			}
-		}
 		public event PropertyChangingEventHandler PropertyChanging;
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -6428,17 +6445,6 @@ namespace WorkOrderEntities
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
-		}
-
-		private void attach_WorkOrderPMGenerationBatch(WorkOrder entity)
-		{
-			this.SendPropertyChanging();
-			entity.PMGenerationBatch = this;
-		}
-		private void detach_WorkOrderPMGenerationBatch(WorkOrder entity)
-		{
-			this.SendPropertyChanging();
-			entity.PMGenerationBatch = null;
 		}
 	}
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.ActualItemLocation")]

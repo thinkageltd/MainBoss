@@ -1,0 +1,41 @@
+@model HomeModel
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.Libraries.Translation
+@using Thinkage.Web.Mvc.Html
+@using Thinkage.MainBoss.WebAccess.Models;
+
+@{
+	ViewBag.Title = T.Text("MainBoss Web Access Home");
+}
+@section MainContent{
+	@{
+		var instance = (Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance;
+<div class="ActivityBlock">
+	@if (instance.IsMainBossUser) {
+		<div class="ActivityLink">
+			@(Html.ActionLink(T.Text("View your assignments"), "Index", "Assignment"))
+			<span class="HelpPopup">@T.Text("Show all request and work order assignments attributed to you, or to see unassigned work that you may assign to yourself.")</span>
+		</div>
+		if (((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance).HasInventoryLicense) {
+			<div class="ActivityLink">
+				@(Html.ActionLink(T.Text("View your Inventory"), "Index", "Inventory"))
+				<span class="HelpPopup">@T.Text("Provide access to inventory items and item assignments.")</span>
+			</div>
+		}
+		if (((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance).HasWebRequestsLicense) {
+			<div class="ActivityLink">
+				@(Html.ActionLink(T.Text("Create a Request"), "Index", "Home"))
+				<span class="HelpPopup">@T.Text("Goto enter a request page.")</span>
+			</div>
+		}
+	}
+	else {
+		<div class="ActivityLink">
+			@(Html.ActionLink(T.Text("Login as MainBoss User to work with MainBoss"), "Index", "Home"))
+			<span class="HelpPopup">@T.Text("You need to authenticate as a MainBoss User to access this page.")</span>
+		</div>
+	}
+</div>
+	}
+}
+

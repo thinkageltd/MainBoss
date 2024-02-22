@@ -73,25 +73,6 @@
 	<extension name="lastupdate">CurrentRequestStateHistoryID.EffectiveDate</extension>
 	<extension name="equate">CurrentRequestStateHistoryID.RequestID=Id</extension>
   </table>
-  <object class="function" name="mbfn_Request_CurrentRequestStateHistory">
-	<doc>
-	  Return the RequestStateHistory record that represents the Current state for a workorder
-	</doc>
-	<extension name="body">
-	  (
-	  @WID uniqueidentifier -- Request
-	  )
-	  RETURNS	uniqueidentifier
-	  as
-	  begin
-	  return (
-	  select top 1 ID from RequestStateHistory
-	  where RequestStateHistory.RequestID = @WID
-	  order by EffectiveDate desc
-	  )
-	  end
-	</extension>
-  </object>
   <object class="function" name="mbfn_Request_CreationDate">
 	<!-- TODO: Get rid of this, no one uses it -->
 	<doc>

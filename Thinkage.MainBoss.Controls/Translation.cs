@@ -8,7 +8,7 @@ namespace Thinkage.MainBoss.Controls {
 		static KB() {
 			DeclareAssemblyProvidesTranslationsUsingResource(K(null), System.Reflection.Assembly.GetExecutingAssembly());
 		}
-		static KB Instance = new KB();
+		static readonly KB Instance = new KB();
 		public static SimpleKey K([Context(Level = 1)] string s) {
 #if FINDMISSINGTIPS
 			System.Diagnostics.Debug.Assert(!String.IsNullOrEmpty(s));
@@ -43,7 +43,7 @@ namespace Thinkage.MainBoss.Controls {
 			return ident.Compose("ControlPanel {0}");
 		}
 		public static Key TOBrowsetteTip(Thinkage.Libraries.Presentation.Tbl.TblIdentification master, Thinkage.Libraries.Presentation.Tbl.TblIdentification target) {
-			return master.Compose("Display the {1} for this {0}", target );
+			return master.Compose("Display the {1} for this {0}", target);
 		}
 		public static Key TOBrowsetteLabel(Thinkage.Libraries.Presentation.Tbl.TblIdentification master, Thinkage.Libraries.Presentation.Tbl.TblIdentification target) {
 			return master.Compose("{1} in context of {0}", target);
@@ -52,11 +52,9 @@ namespace Thinkage.MainBoss.Controls {
 	/// <summary>
 	/// ControlPanel verbs are segregated from regular controls for translation context assistance
 	/// </summary>
-	public class ControlPanelContext : Thinkage.Libraries.Translation.KB
-	{
-		static ControlPanelContext Instance = new ControlPanelContext();
-		public static SimpleKey K([Context("ControlPanel", Level = 1)] string s)
-		{
+	public class ControlPanelContext : Thinkage.Libraries.Translation.KB {
+		static readonly ControlPanelContext Instance = new ControlPanelContext();
+		public static SimpleKey K([Context("ControlPanel", Level = 1)] string s) {
 			return Instance.BuildKey(s);
 		}
 	}

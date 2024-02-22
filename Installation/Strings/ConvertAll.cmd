@@ -11,8 +11,6 @@ del %SRC%a\output\FormatQualifiers.*.xml /f /q
 call resxconversion.cmd "Thinkage.Libraries," "..\..\Thinkage.Libraries"
 call resxconversion.cmd Thinkage.Libraries.MVC
 call resxconversion.cmd Thinkage.Libraries.DBAccess
-call resxconversion.cmd "Thinkage.Libraries.DBILibrary," "..\..\Thinkage.Libraries.DBILibrary"
-call resxconversion.cmd Thinkage.Libraries.DBILibrary.MSSql
 call resxconversion.cmd "Thinkage.Libraries.Presentation," "..\..\Thinkage.Libraries.Presentation"
 call resxconversion.cmd Thinkage.Libraries.Presentation.MSWindows
 call resxconversion.cmd Thinkage.Libraries.RDLReports

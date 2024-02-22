@@ -8,6 +8,8 @@ using Thinkage.MainBoss.WebAccess.Models.interfaces;
 namespace Thinkage.MainBoss.WebAccess.Models {
 	#region NoPermissionException
 	[System.Serializable]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "No need for other constructors")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2229:Implement serialization constructors", Justification = "No need for other constructors")]
 	public class NoPermissionException : System.Exception {
 		public NoPermissionException([Invariant]string roleRequired)
 			: base(roleRequired) {
@@ -19,15 +21,14 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 	/// </summary>
 	public abstract partial class BaseRepository : Thinkage.Libraries.MVC.Models.Repository, IBaseRepository {
 		protected static System.Guid UnassignedGuid = new System.Guid("A0000000-0000-0000-0000-00000000000A");
-		public BaseRepository([Invariant] string governingTableRight)
+		protected BaseRepository([Invariant] string governingTableRight)
 			: this(governingTableRight, null) {
 		}
-		public BaseRepository([Invariant] string governingTableRight, FormMap formDefinition)
+		protected BaseRepository([Invariant] string governingTableRight, FormMap formDefinition)
 			: base(formDefinition) {
 			GoverningTableRight = GetTableRightsGroup(governingTableRight);
 		}
 		private readonly TableOperationRightsGroup GoverningTableRight;
-
 		public DatabaseConnection Connection {
 			get {
 				return ((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance).Connection;
@@ -50,14 +51,23 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 					throw new NoPermissionException(pd.DisablerTip);
 			}
 		}
-		protected Thinkage.MainBoss.Database.MB3Client MB3DB {
-			get {
-				return (Thinkage.MainBoss.Database.MB3Client)((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance).GetInterface<ISessionDatabaseFeature>().Session;
-			}
+		protected static Thinkage.MainBoss.Database.MB3Client MB3DB => (Thinkage.MainBoss.Database.MB3Client)((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance).GetInterface<ISessionDatabaseFeature>().Session;
+		#region Accounting/Cost Right Support
+		public bool HasViewCostRight([Invariant]string rightName, out string disablerReason) {
+			Right right = Root.Rights.ViewCost.FindRightByName(rightName);
+			var pd = (MainBossPermissionDisabler)PermissionsManager.GetPermission(right);
+			disablerReason = pd.DisablerTip;
+			return pd.Enabled;
 		}
+		public bool HasActionRight([Invariant]string rightName, out string disablerReason) {
+			Right right = Root.Rights.Action.FindRightByName(rightName);
+			var pd = (MainBossPermissionDisabler)PermissionsManager.GetPermission(right);
+			disablerReason = pd.DisablerTip;
+			return pd.Enabled;
+		}
+		#endregion
 		#region Table Right support
-
-		protected TableOperationRightsGroup GetTableRightsGroup([Invariant]string tableName) {
+		protected static TableOperationRightsGroup GetTableRightsGroup([Invariant]string tableName) {
 			return (TableOperationRightsGroup)Root.Rights.Table.FindDirectChild(tableName);
 		}
 		public Right ViewRight {
@@ -76,6 +86,5 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			}
 		}
 		#endregion
-
 	}
 }

@@ -1,18 +1,14 @@
 using System;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Thinkage.Libraries;
-using Thinkage.Libraries.Collections;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.Translation;
 using Thinkage.Libraries.TypeInfo;
-using Thinkage.Libraries.XAF.Database.Service;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.XAF.UI;
-using Thinkage.MainBoss.Controls.Resources;
 using Thinkage.MainBoss.Database;
 using Thinkage.MainBoss.Database.Service;
 
@@ -64,29 +60,11 @@ namespace Thinkage.MainBoss.Controls {
 					throw;
 				}
 			}
-			static protected string BuildSqlConnectString(DBClient db) {
-				var ci = ((MB3Client)db).ConnectionInfo;
-				var cs = new SqlConnectionStringBuilder();
-				try {
-					cs.DataSource = ci.DBServer;
-					cs.InitialCatalog = ci.DBName;
-					cs.Authentication = (SqlAuthenticationMethod)ci.DBCredentials.Type; //TODO: This ASSUMES the AuthenticationCredential enum values are the SAME as the SqlAuthenticationMethod enum values; This mapping should be somewhere in one of our MSSql assemblies, NOT referenced here directly. Even the SqlConnectionStringBuilder should not be used in this assembly....
-					if (ci.DBCredentials.Type != AuthenticationMethod.WindowsAuthentication) {
-						cs.UserID = ci.DBCredentials.Username;
-						cs.Password = ci.DBCredentials.Password;
-					}
-				}
-				catch (System.Exception e) {
-					throw new GeneralException(e, KB.K("Could not construct a valid SQL Server Connection string"));
-				}
-				return cs.ConnectionString;
-			}
-
 		}
 		internal class ServiceCommand : ServiceConfigurationApplicationCommand {
 			public ServiceCommand([Invariant]string command, [Invariant]string serviceName, DBClient db) :
 				base(KB.I(ServiceCommonBrowseLogic.ServiceConfigurationCommand), Strings.IFormat("{0} /ServiceCode:\"{1}\" /Connection:{2}"
-					, command, serviceName, ServiceConfiguration.EscapeArg(BuildSqlConnectString(db)))) {
+					, command, serviceName, ServiceConfiguration.EscapeArg(db.ConnectionInfo.ConnectionInformation.DatabaseConnectionString))) {
 			}
 		}
 		internal class ClearEventLog : ServiceConfigurationApplicationCommand {
@@ -97,7 +75,7 @@ namespace Thinkage.MainBoss.Controls {
 		internal class ManualServiceExecution : ServiceConfigurationApplicationCommand {
 			public ManualServiceExecution([Invariant]string command, [Invariant]string serviceName, DBClient db) :
 				base(KB.I("Thinkage.MainBoss.Service.exe"), Strings.IFormat("/{0}  /ServiceCode:\"{1}\" /Connection:{2}"
-					, command, serviceName, ServiceConfiguration.EscapeArg(BuildSqlConnectString(db)))) {
+					, command, serviceName, ServiceConfiguration.EscapeArg(db.ConnectionInfo.ConnectionInformation.DatabaseConnectionString))) {
 			}
 		}
 		public class ProcessEmailServiceCommand {
@@ -116,7 +94,7 @@ namespace Thinkage.MainBoss.Controls {
 				try {
 					ipdo.Update(KB.K("Creating Requests from Email."), 1);
 					var log = new LogAndDatabaseAndError(DB.ConnectionInfo);
-					RequestProcessor.DoAllRequestProcessing(log, (MB3Client)DB, Trace, Trace, SendingEmailOk);
+					RequestProcessor.DoAllRequestProcessing(log, (MB3Client)DB, Trace, Trace, SendingEmailOk, force: false);
 					if (SendingEmailOk) {
 						ipdo.Update(KB.K("Notifying Requestors"), 2);
 						RequestorNotificationProcessor.DoAllRequestorNotifications(log, (MB3Client)DB, Trace, Trace);
@@ -135,6 +113,11 @@ namespace Thinkage.MainBoss.Controls {
 
 		#region NodeIds
 		private static readonly object IncomingMailServerTypeId = KB.I("IncomingMailServerTypeId");
+		private static readonly object IncomingMailAuthenticationTypeId = KB.I("IncomingMailAuthenticationTypeId");
+		private static readonly object MailEncryptedPasswordId = KB.I("MailEncryptedPasswordId");
+		private static readonly object MailClientIDId = KB.I("MailClientIDId");
+		private static readonly object MailEncryptedClientSecretId = KB.I("MailEncryptedClientSecretId");
+		private static readonly object MailClientCertificateNameId = KB.I("MailClientCertificateNameId");
 		private static readonly object IncomingMailEncryptionId = KB.I("IncomingMailEncryptionId");
 		private static readonly object IncomingMailServerPortId = KB.I("IncomingMailServerPortId");
 		private static readonly object OutgoingMailServerAuthenticationId = KB.I("OutgoingMailServerAuthenticationId");
@@ -147,8 +130,15 @@ namespace Thinkage.MainBoss.Controls {
 		private static readonly object OutgoingMailServerUsernameId = KB.I("OutgoingMailServerUsernameId");
 		private static readonly object OutgoingMailServerPasswordId = KB.I("OutgoingMailServerPasswordId");
 		protected static readonly Key BecauseOutgoingMailServerAuthenticationIsNotCustom = KB.K("Readonly because the Outgoing SMTP server authentication is not using the specified SMTP domain, username and password");
+		protected static readonly Key BecauseWrongAuthentication = KB.K("Readonly because the selected Authentication Type does not use this value");
 		private static readonly EditorCalculatedInitValue.CalculationDelegate OutgoingMailServerAuthenticationControlReadonly = delegate (object[] inputs) {
 			return (inputs[0] != null && (DatabaseEnums.SMTPCredentialType)(int)IntegralTypeInfo.AsNativeType(inputs[0], typeof(int)) != DatabaseEnums.SMTPCredentialType.CUSTOM);
+		};
+		private static readonly EditorCalculatedInitValue.CalculationDelegate UsingPlainAuthentication = delegate (object[] inputs) {
+			return (inputs[0] != null && (DatabaseEnums.MailServerAuthentication)(int)IntegralTypeInfo.AsNativeType(inputs[0], typeof(int)) == DatabaseEnums.MailServerAuthentication.Plain);
+		};
+		private static readonly EditorCalculatedInitValue.CalculationDelegate UsingOAuth2Authentication = delegate (object[] inputs) {
+			return (inputs[0] != null && (DatabaseEnums.MailServerAuthentication)(int)IntegralTypeInfo.AsNativeType(inputs[0], typeof(int)) == DatabaseEnums.MailServerAuthentication.OAuth2);
 		};
 		#endregion
 
@@ -202,7 +192,7 @@ namespace Thinkage.MainBoss.Controls {
 				KB.K("IMAP4S"),
 			},
 			new Key[] {
-				KB.K("Try in order POP3 with TLS, IMAP4 with TLS, POP3S, IMAP4S, POP3 and IMAP4"),
+				KB.K("Try all server types that spport the requested Encryption"),
 				KB.K("Post Office Protocol version 3"),
 				KB.K("Internet Message Access Protocol version 4 revision 1"),
 				KB.K("Post Office Protocol version 3 over SSL"),
@@ -236,6 +226,20 @@ namespace Thinkage.MainBoss.Controls {
 				(int)DatabaseEnums.MailServerEncryption.None
 			}, 4
 		);
+		public static EnumValueTextRepresentations EmailServerAuthenticationProvider = new EnumValueTextRepresentations(
+			new Key[] {
+				KB.K("Plain"),
+				KB.K("OAuth2")
+			},
+			new Key[] {
+				KB.K("Plain authentication using a password"),
+				KB.K("Open Authentication 2.0")
+			},
+			new object[] {
+				(int)DatabaseEnums.MailServerAuthentication.Plain,
+				(int)DatabaseEnums.MailServerAuthentication.OAuth2
+			}, 4
+		);
 
 		public static EnumValueTextRepresentations SMTPCredentialTypeProvider = new EnumValueTextRepresentations(
 			new Key[] {
@@ -257,7 +261,7 @@ namespace Thinkage.MainBoss.Controls {
 		#endregion
 
 		public static DelayedCreateTbl MainBossServiceManageTblCreator = null;
-		private static DelayedCreateTbl MainBossServiceConfigurationEditTblCreator = null;
+		private static readonly DelayedCreateTbl MainBossServiceConfigurationEditTblCreator = null;
 
 		#region EmailRequestTbl
 		private static Tbl EmailRequestBrowseTbl() {
@@ -404,7 +408,6 @@ namespace Thinkage.MainBoss.Controls {
 						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.EmailRequestReport))
 					)
 				},
-				null,
 				CompositeView.ChangeEditTbl(editTbl),
 				CompositeView.ExtraNewVerb(FindDelayedEditTbl(dsMB.Schema.T.Request),
 					NoNewMode,
@@ -427,7 +430,7 @@ namespace Thinkage.MainBoss.Controls {
 						//TODO: The following filter shows Requestors that have a NULL email address field in the contact record; the user might expect the email value to be set in the contact record (but there is no structure to permit this)
 						//TODO: THe email address field in the Contact record might be more than a simple EMAIL address (it might be in the form "Display Name <display@email.com>" in which case the filter will not find it.
 						//		we are considering separating the Display Name and Address into distinct fields in the Contact and EmailRequest records.
-						new CompositeView.Init(new InSubBrowserTarget(TIGeneralMB3.RequestorPickerNodeId, new BrowserFilterTarget(TIGeneralMB3.RequestorEmailFilterNodeId)), dsMB.Path.T.EmailRequest.F.RequestorEmailAddress)
+						new CompositeView.Init(new InSubBrowserTarget(TIContact.RequestorPickerNodeId, new BrowserFilterTarget(TIContact.RequestorEmailFilterNodeId)), dsMB.Path.T.EmailRequest.F.RequestorEmailAddress)
 					})) //
 			);
 		}
@@ -468,8 +471,15 @@ namespace Thinkage.MainBoss.Controls {
 				: base(browser, KB.K("Only valid for an Email Attachment"), () => (string)emailPartType.GetValue() == "message/rfc822") { }
 		}
 
-		static System.CodeDom.Compiler.TempFileCollection temporaryFiles = new System.CodeDom.Compiler.TempFileCollection();
+		static readonly System.CodeDom.Compiler.TempFileCollection temporaryFiles = new System.CodeDom.Compiler.TempFileCollection();
 		#region EmailPartTblCreator
+		private static Fmt.ArrangerInformationProviderDelegate CalculateAI(float screenFraction) {
+			// This is complicated because Size does not have a scaling function of any sort.
+			return delegate (UIFactory factory) {
+				var screenSize = factory.FormParameters.WorkingArea.Size;
+				return new Libraries.XAF.UI.Arranger.ArrangerInformation(new System.Drawing.Size(10, 10), System.Drawing.Size.Round(new System.Drawing.SizeF(screenSize.Width * screenFraction, screenSize.Height*screenFraction)));
+			};
+		}
 		private static CompositeTbl EmailPartTbl() {
 			var unknownViewerTbl = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.EmailPart, TId.EmailPart,
@@ -547,20 +557,27 @@ namespace Thinkage.MainBoss.Controls {
 				);
 			});
 			var imageViewerTbl = new DelayedCreateTbl(delegate () {
+				// Note that we are only ever a browsette, never a browser, so the controls have to fit beside the list.
+				// We can afford to be wider for the editor because we don't have to fit beside the browsette list.
 				return new Tbl(dsMB.Schema.T.EmailPart, TId.EmailPart,
 					new Tbl.IAttr[] {
-					MainBossServiceGroup,
-					new ETbl(ETbl.EditorDefaultAccess(false), ETbl.EditorAccess(true, EdtMode.View, EdtMode.Delete))
-				},
+						MainBossServiceGroup,
+						new ETbl(ETbl.EditorDefaultAccess(false), ETbl.EditorAccess(true, EdtMode.View, EdtMode.Delete))
+					},
 					new TblLayoutNodeArray(
-					TblColumnNode.New(dsMB.Path.T.EmailPart.F.Order, DCol.Normal, ECol.AllReadonly),
-					TblColumnNode.New(dsMB.Path.T.EmailPart.F.ContentType, DCol.Normal, ECol.AllReadonly),
-					TblColumnNode.New(dsMB.Path.T.EmailPart.F.Header, DCol.Normal, ECol.AllReadonly),
-					TblColumnNode.New(dsMB.Path.T.EmailPart.F.ContentLength, DCol.Normal, ECol.AllReadonly),
-					TblColumnNode.New(dsMB.Path.T.EmailPart.F.Name, DCol.Normal, ECol.Normal),
-					TblGroupNode.New(KB.K("Image Content"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-						TblColumnNode.New(null, dsMB.Path.T.EmailPart.F.Content, DCol.Image, new ECol(ECol.AllReadonlyAccess, Fmt.SetUsage(DBI_Value.UsageType.Image)))
-					)
+						TblColumnNode.New(dsMB.Path.T.EmailPart.F.Order, DCol.Normal, ECol.AllReadonly),
+						TblColumnNode.New(dsMB.Path.T.EmailPart.F.ContentType, DCol.Normal, ECol.AllReadonly),
+						TblColumnNode.New(dsMB.Path.T.EmailPart.F.Header, DCol.Normal, ECol.AllReadonly),
+						TblColumnNode.New(dsMB.Path.T.EmailPart.F.ContentLength, DCol.Normal, ECol.AllReadonly),
+						TblColumnNode.New(dsMB.Path.T.EmailPart.F.Name, DCol.Normal, ECol.Normal),
+						TblGroupNode.New(KB.K("Image Content"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
+							TblColumnNode.New(null, dsMB.Path.T.EmailPart.F.Content,
+								new DCol(Fmt.SetUsage(DBI_Value.UsageType.Image),
+									Fmt.SetImageArrangerInformation(CalculateAI(0.4f))),
+								new ECol(ECol.AllReadonlyAccess, Fmt.SetUsage(DBI_Value.UsageType.Image),
+									Fmt.SetImageArrangerInformation(CalculateAI(0.7f)))
+							)
+						)
 					)
 				);
 			});
@@ -716,24 +733,22 @@ namespace Thinkage.MainBoss.Controls {
 						)
 					)
 				},
-				null,
 				// The order of the Composite Views matter; The recognition conditions are searched from the END of the list of views to the beginning, so any 'default' recognition condition should be FIRST in the list
-				new CompositeView(
-					unknownViewerTbl, dsMB.Path.T.EmailPart.F.Id, CompositeView.AddRecognitionCondition(SqlExpression.Constant(true))
-					),
-				new CompositeView(
-					imageViewerTbl, dsMB.Path.T.EmailPart.F.Id, CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.EmailPart.F.ContentType).Like(SqlExpression.Constant("image%")))
-					// TODO: If recognition condition added for image, need a another final catchall CompositeView;
-					),
-				new CompositeView(
-					AttachedMailMessageViewerTbl, dsMB.Path.T.EmailPart.F.Id, CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.EmailPart.F.ContentType).Eq(SqlExpression.Constant("message/rfc822")))
-					),
-				new CompositeView(
-					plainTextViewerTbl, dsMB.Path.T.EmailPart.F.Id, CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.EmailPart.F.ContentType).Eq(SqlExpression.Constant("text/plain")))
-					),
-				new CompositeView(
-					htmlViewerTbl, dsMB.Path.T.EmailPart.F.Id, CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.EmailPart.F.ContentType).Eq(SqlExpression.Constant("text/html")))
-					)
+				CompositeView.ChangeEditTbl(unknownViewerTbl,
+					CompositeView.AddRecognitionCondition(SqlExpression.Constant(true))
+				),
+				CompositeView.ChangeEditTbl(imageViewerTbl,
+					CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.EmailPart.F.ContentType).Like(SqlExpression.Constant("image%")))
+				),
+				CompositeView.ChangeEditTbl(AttachedMailMessageViewerTbl,
+					CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.EmailPart.F.ContentType).Eq(SqlExpression.Constant("message/rfc822")))
+				),
+				CompositeView.ChangeEditTbl(plainTextViewerTbl,
+					CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.EmailPart.F.ContentType).Eq(SqlExpression.Constant("text/plain")))
+				),
+				CompositeView.ChangeEditTbl(htmlViewerTbl,
+					CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.EmailPart.F.ContentType).Eq(SqlExpression.Constant("text/html")))
+				)
 			);
 		}
 		#endregion
@@ -771,26 +786,25 @@ namespace Thinkage.MainBoss.Controls {
 						BTbl.ListColumn(dsMB.Path.T.ServiceLog.F.Message)
 						)
 					},
-					null,
-					new CompositeView(panelTblCreator, dsMB.Path.T.ServiceLog.F.Id,
-						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ServiceLog.F.EntryType).Eq(SqlExpression.Constant((int)DatabaseEnums.ServiceLogEntryType.Error))),
-						CompositeView.IdentificationOverride(TId.ServiceLogError)),
-					new CompositeView(panelTblCreator, dsMB.Path.T.ServiceLog.F.Id,
-						CompositeView.UseSamePanelAs(0),
-						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ServiceLog.F.EntryType).Eq(SqlExpression.Constant((int)DatabaseEnums.ServiceLogEntryType.Warn))),
-						CompositeView.IdentificationOverride(TId.ServiceLogWarning)),
-					new CompositeView(panelTblCreator, dsMB.Path.T.ServiceLog.F.Id,
-						CompositeView.UseSamePanelAs(0),
-						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ServiceLog.F.EntryType).Eq(SqlExpression.Constant((int)DatabaseEnums.ServiceLogEntryType.Info))),
-						CompositeView.IdentificationOverride(TId.ServiceLogInformation)),
-					new CompositeView(panelTblCreator, dsMB.Path.T.ServiceLog.F.Id,
-						CompositeView.UseSamePanelAs(0),
-						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ServiceLog.F.EntryType).Eq(SqlExpression.Constant((int)DatabaseEnums.ServiceLogEntryType.Activity))),
-						CompositeView.IdentificationOverride(TId.ServiceLogActivity)),
-					new CompositeView(panelTblCreator, dsMB.Path.T.ServiceLog.F.Id,
-						CompositeView.UseSamePanelAs(0),
-						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ServiceLog.F.EntryType).Eq(SqlExpression.Constant((int)DatabaseEnums.ServiceLogEntryType.Trace))),
-						CompositeView.IdentificationOverride(TId.ServiceLogTrace))
+				CompositeView.ChangeEditTbl(panelTblCreator,
+					CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ServiceLog.F.EntryType).Eq(SqlExpression.Constant((int)DatabaseEnums.ServiceLogEntryType.Error))),
+					CompositeView.IdentificationOverride(TId.ServiceLogError)),
+				CompositeView.ChangeEditTbl(panelTblCreator,
+					CompositeView.UseSamePanelAs(0),
+					CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ServiceLog.F.EntryType).Eq(SqlExpression.Constant((int)DatabaseEnums.ServiceLogEntryType.Warn))),
+					CompositeView.IdentificationOverride(TId.ServiceLogWarning)),
+				CompositeView.ChangeEditTbl(panelTblCreator,
+					CompositeView.UseSamePanelAs(0),
+					CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ServiceLog.F.EntryType).Eq(SqlExpression.Constant((int)DatabaseEnums.ServiceLogEntryType.Info))),
+					CompositeView.IdentificationOverride(TId.ServiceLogInformation)),
+				CompositeView.ChangeEditTbl(panelTblCreator,
+					CompositeView.UseSamePanelAs(0),
+					CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ServiceLog.F.EntryType).Eq(SqlExpression.Constant((int)DatabaseEnums.ServiceLogEntryType.Activity))),
+					CompositeView.IdentificationOverride(TId.ServiceLogActivity)),
+				CompositeView.ChangeEditTbl(panelTblCreator,
+					CompositeView.UseSamePanelAs(0),
+					CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ServiceLog.F.EntryType).Eq(SqlExpression.Constant((int)DatabaseEnums.ServiceLogEntryType.Trace))),
+					CompositeView.IdentificationOverride(TId.ServiceLogTrace))
 					);
 		}
 		#endregion
@@ -798,6 +812,7 @@ namespace Thinkage.MainBoss.Controls {
 		private static Tbl MainBossServiceManageTbl() {
 			return new Tbl(dsMB.Schema.T.ServiceConfiguration, TId.MainBossService,
 				new Tbl.IAttr[] {
+					new MinimumDBVersionTbl(new Version(1, 1, 5, 15)),
 					MainBossServiceAdminGroup,
 					new BTbl(
 						new MB3BTbl.WithManageServiceLogicArg(typeof(MainBossServiceDefinition),
@@ -852,65 +867,11 @@ namespace Thinkage.MainBoss.Controls {
 			);
 		}
 		#endregion
-		#region Helper Classes
-		private static Fmt.ICtorArg getPasswordCreatorAttribute() {
-			// This returns a password control using a special TypeEditTextHandler to encrypt/decrypt the password; the bound value is the encrypted password.
-			return Fmt.SetEditTextHandler((type) => new EncryptingEditTextHandler(type));
-		}
-		private class EncryptingEditTextHandler : TypeEditTextHandler {
-			public EncryptingEditTextHandler(TypeInfo tinfo) {
-				pTypeInfo = (BlobTypeInfo)tinfo;
-				object minlen = pTypeInfo.SizeType.NativeMinLimit(typeof(int));
-				if (minlen != null) {
-					System.Diagnostics.Debug.Assert((int)minlen % 2 == 0);
-					minlen = (int)minlen / 2;
-				}
-				object maxlen = pTypeInfo.SizeType.NativeMaxLimit(typeof(int));
-				if (maxlen != null) {
-					System.Diagnostics.Debug.Assert((int)maxlen % 2 == 0);
-					maxlen = (int)maxlen / 2;
-				}
-				innerHandler = new StringTypeInfo(minlen, maxlen, 0, pTypeInfo.AllowNull, true, true).GetTypeEditTextHandler(Thinkage.Libraries.Application.InstanceFormatCultureInfo);
-			}
-			private BlobTypeInfo pTypeInfo;
-			private TypeEditTextHandler innerHandler;
-
-			public string FormatForEdit(object val) {
-				if (val != null)
-					val = ServicePassword.Decode((Byte[])val);
-				return innerHandler.FormatForEdit(val);
-			}
-			public object ParseEditText(string str) {
-				object result = innerHandler.ParseEditText(str);
-				if (result != null)
-					result = ServicePassword.Encode((string)result);
-				return result;
-			}
-			public Thinkage.Libraries.TypeInfo.TypeInfo GetTypeInfo() {
-				return pTypeInfo;
-			}
-			public string Format(object val) {
-				if (val != null)
-					val = ServicePassword.Decode((Byte[])val);
-				return innerHandler.Format(val);
-			}
-			public System.Drawing.StringAlignment PreferredAlignment {
-				get {
-					return System.Drawing.StringAlignment.Near;
-				}
-			}
-			public SizingInformation SizingInformation {
-				get {
-					return innerHandler.SizingInformation;
-				}
-			}
-		}
-		public static string EmailViewer = null;
-		#endregion
 		#region MainBoss Service Configuration
 		private static Tbl MainBossServiceConfigurationBrowseTbl() {
 			return new CompositeTbl(dsMB.Schema.T.ServiceConfiguration, TId.MainBossServiceConfiguration,
 				new Tbl.IAttr[] {
+					new MinimumDBVersionTbl(new Version(1, 1, 5, 15)),
 					MainBossServiceAdminGroup,
 					new BTbl(
 						BTbl.ListColumn(KB.K("Service Name"), dsMB.Path.T.ServiceConfiguration.F.Code), BTbl.ListColumn(dsMB.Path.T.ServiceConfiguration.F.Desc),
@@ -934,7 +895,6 @@ namespace Thinkage.MainBoss.Controls {
 						))
 					)
 				},
-				null,
 				CompositeView.ChangeEditTbl(MainBossServiceConfigurationEditTblCreator)
 			//,
 			//	CompositeView.AdditionalVerb(KB.K("Set Service Parameters"),
@@ -943,20 +903,37 @@ namespace Thinkage.MainBoss.Controls {
 			);
 		}
 		// Special TBL used to fixup the ServiceName/ServiceMachineName values in a ServiceConfiguration record to match the installed service on the machine.
-		private static DelayedCreateTbl FixUpMainBossServiceConfigurationEditTblCreator = new DelayedCreateTbl(
+		private static readonly DelayedCreateTbl FixUpMainBossServiceConfigurationEditTblCreator = new DelayedCreateTbl(
 			delegate () {
 				return new Tbl(dsMB.Schema.T.ServiceConfiguration, TId.MainBossServiceConfiguration,
 					new Tbl.IAttr[] {
+						new MinimumDBVersionTbl(new Version(1, 1, 5, 15)),
 						MainBossServiceAdminGroup,
 						new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete))
 					},
 					new TblLayoutNodeArray()
 				);
 			});
-
+		private static StringTypeInfo PasswordPlaintextTypeInfo(TypeInfo tinfo) {
+			var sizeTinfo = ((BlobTypeInfo)tinfo).SizeType;
+			// The byte lengths of the blob are 8*(1+floor(plaintextLen/4)).
+			// Thus plaintextLen = 4 * (bytelen/8 - 1) == 4*bytelen/8 - 4.
+			// The division by 8 should round up for the lower bounds, and down for the upper bounds.
+			int? minlen = 4 * (((int?)sizeTinfo.NativeMinLimit(typeof(int?)) + 7) / 8) - 4;
+			if (minlen < 0)
+				minlen = 0;
+			int? maxlen = 4 * ((int?)sizeTinfo.NativeMaxLimit(typeof(int?)) / 8) - 4;
+			return new StringTypeInfo(minlen, maxlen, 0, tinfo.AllowNull, true, true);
+		}
 		private static Tbl MainBossServiceConfigurationEditTbl() {
+			// Here is where the length of theplaintext passwords is coded.
+			// The size of the blob fields must be calculated as 8*(1+floor(plaintextLen)/4) and coded into ServiceConfiguration.xafdb.
+			// For 256 characters that required 520 bytes of binary data.
+			Libraries.DataFlow.TransformingNotifyingValue.SetTransform encryptor = (plaintext => plaintext == null ? null : ServicePassword.Encode((string)plaintext));
+			Libraries.DataFlow.TransformingNotifyingValue.GetTransform decryptor = (bytes => bytes == null ? bytes : ServicePassword.Decode((byte[])bytes));
 			return new Tbl(dsMB.Schema.T.ServiceConfiguration, TId.MainBossServiceConfiguration,
 				new Tbl.IAttr[] {
+					new MinimumDBVersionTbl(new Version(1, 1, 5, 15)),
 					MainBossServiceAdminGroup,
 					new ETbl(
 						ETbl.SetAllowMultiRecordEditing(false),
@@ -989,10 +966,21 @@ namespace Thinkage.MainBoss.Controls {
 					),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.Encryption, DCol.Normal),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailServer, DCol.Normal, ECol.Normal),
-					TblColumnNode.New(KB.K("Override Default Port"), dsMB.Path.T.ServiceConfiguration.F.MailPort, DCol.Normal, new ECol(Fmt.SetId(IncomingMailServerPortId))),
-					TblColumnNode.New(KB.K("Override Default MailBox"), dsMB.Path.T.ServiceConfiguration.F.MailboxName, DCol.Normal, ECol.Normal),
+					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailPort, DCol.Normal, new ECol(Fmt.SetId(IncomingMailServerPortId))),
+					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailboxName, DCol.Normal, ECol.Normal),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailUserName, DCol.Normal, ECol.Normal),
-					TblColumnNode.New(KB.K("Mail User's Password"), dsMB.Path.T.ServiceConfiguration.F.MailEncryptedPassword, new ECol(getPasswordCreatorAttribute())),
+					TblGroupNode.New(dsMB.Path.T.ServiceConfiguration.F.MailAuthenticationType, new TblLayoutNode.ICtorArg[] { ECol.Normal },
+						TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailAuthenticationType, new ECol(Fmt.SetId(IncomingMailAuthenticationTypeId)))
+					),
+					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailAuthenticationType, DCol.Normal),
+					// Flip panel, page 1:
+					TblCustomTypedColumnNode.New(KB.K("Mail User's Password"), PasswordPlaintextTypeInfo(dsMB.Schema.T.ServiceConfiguration.F.MailEncryptedPassword.EffectiveType),
+						decryptor, encryptor, dsMB.Path.T.ServiceConfiguration.F.MailEncryptedPassword, 0, ECol.Normal, Fmt.SetId(MailEncryptedPasswordId)),
+					// Page 2: Client ID, Client Secret, Client Certificate Name
+					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailClientID, DCol.Normal, ECol.Normal, Fmt.SetId(MailClientIDId)),
+					TblCustomTypedColumnNode.New(KB.K("Mail Client Secret"), PasswordPlaintextTypeInfo(dsMB.Schema.T.ServiceConfiguration.F.MailEncryptedClientSecret.EffectiveType),
+						decryptor, encryptor, dsMB.Path.T.ServiceConfiguration.F.MailEncryptedClientSecret, 0, ECol.Normal, Fmt.SetId(MailEncryptedClientSecretId)),
+					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MailClientCertificateName, DCol.Normal, ECol.Normal, Fmt.SetId(MailClientCertificateNameId)),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.WakeUpInterval, DCol.Normal, ECol.Normal),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.MaxMailSize, DCol.Normal, ECol.Normal),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.ManualProcessingTimeAllowance, DCol.Normal, ECol.Normal)
@@ -1013,7 +1001,8 @@ namespace Thinkage.MainBoss.Controls {
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.SMTPCredentialType, DCol.Normal),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.SMTPUserDomain, DCol.Normal, new ECol(Fmt.SetId(OutgoingMailServerUserDomainId))),
 					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.SMTPUserName, DCol.Normal, new ECol(Fmt.SetId(OutgoingMailServerUsernameId))),
-					TblColumnNode.New(dsMB.Path.T.ServiceConfiguration.F.SMTPEncryptedPassword, new ECol(getPasswordCreatorAttribute(), Fmt.SetId(OutgoingMailServerPasswordId)))
+					TblCustomTypedColumnNode.New(PasswordPlaintextTypeInfo(dsMB.Schema.T.ServiceConfiguration.F.SMTPEncryptedPassword.EffectiveType),
+						decryptor, encryptor, dsMB.Path.T.ServiceConfiguration.F.SMTPEncryptedPassword, 0, ECol.Normal, Fmt.SetId(OutgoingMailServerPasswordId))
 				),
 				TblTabNode.New(KB.TOc(TId.Message), KB.K("User custom text for email messages"), new TblLayoutNode.ICtorArg[] { new FeatureGroupArg(MainBossServiceAsWindowsServiceGroup), DCol.Normal, ECol.Normal },
 					TblColumnNode.NewBrowsette(TIGeneralMB3.UserMessageKeyPickerTblCreator, DCol.Normal, ECol.Normal, Fmt.SetBrowserFilter(BTbl.EqFilter(dsMB.Path.T.UserMessageKey.F.Context, KB.I("MainBossService"))))
@@ -1066,6 +1055,17 @@ namespace Thinkage.MainBoss.Controls {
 						}
 						return null;
 					}).Operand1(RejectPattern),
+
+				// Make the irrelevant incoming mail authentication fields readonly
+				Init.Continuous(new ControlReadonlyTarget(MailEncryptedPasswordId, BecauseWrongAuthentication)
+						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, UsingOAuth2Authentication, new ControlValue(IncomingMailAuthenticationTypeId))),
+				Init.Continuous(new ControlReadonlyTarget(MailClientIDId, BecauseWrongAuthentication)
+						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, UsingPlainAuthentication, new ControlValue(IncomingMailAuthenticationTypeId))),
+				Init.Continuous(new ControlReadonlyTarget(MailEncryptedClientSecretId, BecauseWrongAuthentication)
+						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, UsingPlainAuthentication, new ControlValue(IncomingMailAuthenticationTypeId))),
+				Init.Continuous(new ControlReadonlyTarget(MailClientCertificateNameId, BecauseWrongAuthentication)
+						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, UsingPlainAuthentication, new ControlValue(IncomingMailAuthenticationTypeId))),
+				// Make the irrelevant outgoing mail authentication fields readonly
 				Init.Continuous(new ControlReadonlyTarget(OutgoingMailServerUserDomainId, BecauseOutgoingMailServerAuthenticationIsNotCustom)
 						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, OutgoingMailServerAuthenticationControlReadonly, new ControlValue(OutgoingMailServerAuthenticationId))),
 				Init.Continuous(new ControlReadonlyTarget(OutgoingMailServerUsernameId, BecauseOutgoingMailServerAuthenticationIsNotCustom)
@@ -1073,7 +1073,34 @@ namespace Thinkage.MainBoss.Controls {
 				Init.Continuous(new ControlReadonlyTarget(OutgoingMailServerPasswordId, BecauseOutgoingMailServerAuthenticationIsNotCustom)
 						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, OutgoingMailServerAuthenticationControlReadonly, new ControlValue(OutgoingMailServerAuthenticationId))),
 				Init.OnLoadNew(new PathTarget(dsMB.Path.T.ServiceConfiguration.F.Code), new ConstantValue(KB.I("MainBossService"))),
-				Init.OnLoadNew(new PathTarget(dsMB.Path.T.ServiceConfiguration.F.Encryption), new ConstantValue(DatabaseEnums.MailServerEncryption.RequireEncryption))
+				Init.OnLoadNew(new PathTarget(dsMB.Path.T.ServiceConfiguration.F.Encryption), new ConstantValue(DatabaseEnums.MailServerEncryption.RequireEncryption)),
+
+				new Check2<int, int>(
+					(stype, enc) => (stype == (int)DatabaseEnums.MailServerType.POP3S || stype == (int)DatabaseEnums.MailServerType.IMAP4S) && enc == (int)DatabaseEnums.MailServerEncryption.None
+						? EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("Selected Server Type requires encryption")))
+						: null
+					).Operand1(IncomingMailServerTypeId)
+					.Operand2(IncomingMailEncryptionId),
+				// Force a Client ID if using OAuth2 (don't error-flag the auth type)
+				new Check2<int, string>(
+					(authtype, clientid) => authtype == (int)DatabaseEnums.MailServerAuthentication.OAuth2 && clientid == null
+						? new EditLogic.ValidatorAndCorrector.ValidatorStatus(1, new GeneralException(KB.K("OAuth2 requires a Client ID")))
+						: null
+					).Operand1(IncomingMailAuthenticationTypeId)
+					.Operand2(MailClientIDId),
+				// Force exactly one of CLient Secret or Certificate Name if using OAuth2 (don't error-flag the auth type)
+				new Check3<int, string, string>(
+					(authtype, secret, certname) => {
+						if (authtype != (int)DatabaseEnums.MailServerAuthentication.OAuth2 || (secret == null) != (certname == null))
+							return null;
+						var e = new GeneralException(KB.K("OAuth2 requires either a Client Secret or a Client Certificate Name, but not both"));
+						return new EditLogic.ValidatorAndCorrector.ValidatorStatus(1, e, 2, e);
+					}).Operand1(IncomingMailAuthenticationTypeId)
+					.Operand2(MailEncryptedClientSecretId)
+					.Operand3(MailClientCertificateNameId)
+				// TODO: Other checks:
+				// OAuth2 but no Client ID
+				// OAuth2 but not exactly one of Certificate or Secret
 				);
 		}
 		#endregion

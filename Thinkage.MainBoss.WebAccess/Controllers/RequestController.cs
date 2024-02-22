@@ -6,7 +6,7 @@ using Thinkage.MainBoss.WebAccess.Models;
 
 namespace Thinkage.MainBoss.WebAccess.Controllers {
 	public class RequestController : BaseControllerWithRulesViolationCheck<RequestEntities.Request> {
-		RequestEntities.Request Model;
+		private RequestEntities.Request Model;
 		protected override RequestEntities.Request GetModelForModelStateErrors() {
 			return Model;
 		}
@@ -14,10 +14,12 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 			ViewData["ResultMessage"] = "";
 			ViewData["UnAssigned"] = false;
 			ViewData["Refresh"] = "";
+			ViewData["Home"] = "WebAccess";
 			ViewData["CanSelfAssign"] = false;
 		}
 		#region UnAssigned
 		// GET: /Request/UnAssigned
+		[HttpGet]
 		[MainBossAuthorization]
 		public ActionResult UnAssigned([Translated]string resultMessage) {
 			InitViewData();
@@ -32,6 +34,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		#endregion
 		#region Index
 		// GET: /Request/
+		[HttpGet]
 		[MainBossAuthorization]
 		public ActionResult Index([Translated]string resultMessage) {
 			InitViewData();
@@ -47,6 +50,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		#region View
 		//
 		// GET: /Request/View/5
+		[HttpGet]
 		[MainBossAuthorization]
 		public ActionResult View(Guid id, [Translated] string resultMessage) {
 			InitViewData();
@@ -62,6 +66,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		#region ViewUnAssigned
 		//
 		// GET: /Request/ViewUnAssigned/5
+		[HttpGet]
 		[MainBossAuthorization]
 		public ActionResult ViewUnAssigned(Guid id, [Translated] string resultMessage) {
 			InitViewData();
@@ -71,7 +76,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 			repository.CheckPermission(repository.ViewRight);
 			Model = repository.View(id);
 			ViewData["UnAssigned"] = true;
-			ViewData["CanSelfAssign"] = repository.CanSelfAssign();
+			ViewData["CanSelfAssign"] = UnAssignedRequestRepository.CanSelfAssign();
 			ViewData["ResultMessage"] = resultMessage;
 			return View("View", Model); // Share the same View as above
 		}
@@ -79,6 +84,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		#region Create
 		#region Create (GET)
 		// GET: /Request/Create
+		[HttpGet]
 		[MainBossAuthorization(MainBossAuthorized.Requestor)]
 		public ActionResult Create(Guid requestorID) {
 			var createRepository = NewRepository<CreateRequestRepository>();
@@ -88,6 +94,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 			createRepository.PrepareForNewRequest(Model);
 			Model.RequestPriorityPickList = createRepository.RequestPriorityPickList(Model.RequestPriorityID);
 			SetCancelURL();
+			ViewData["Home"] = "Index";
 			return View(Model);
 		}
 		#endregion
@@ -96,6 +103,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		// POST: /Request/Create
 		[MainBossAuthorization(MainBossAuthorized.Requestor)]
 		[AcceptVerbs(HttpVerbs.Post)]
+		[ValidateAntiForgeryToken]
 		public ActionResult Create(FormCollectionWithType collection) {
 			var repository = NewRepository<CreateRequestRepository>();
 			// repository.CheckPermission( ?? );
@@ -106,6 +114,20 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 			return RedirectToAction("Index", "Home");
 		}
 		#endregion
+		#endregion
+		#region RequestorList
+		[HttpGet]
+		[MainBossAuthorization(MainBossAuthorized.Requestor)]
+		public ActionResult RequestorList(Guid requestorID, string resultMessage) {
+			InitViewData();
+			SetCancelURL();
+			RequestRepository repository = NewRepository<RequestRepository>();
+			var requests = repository.BrowseRequestorPendingRequests(requestorID);
+			ViewData["Refresh"] = "";
+			ViewData["Home"] = "Index";
+			ViewData["ResultMessage"] = resultMessage;
+			return View(requests);
+		}
 		#endregion
 	}
 }

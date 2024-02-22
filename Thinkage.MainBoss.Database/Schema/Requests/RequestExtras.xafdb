@@ -58,16 +58,17 @@
 	  ) as (
 		select
 		    Request.Id
-		  , (select min(EffectiveDate) as CreateDate from RequestStateHistory where Request.Id = RequestStateHistory.RequestID	)
+		  , FRSH.EffectiveDate
 		  , (select min(EffectiveDate) as OpenDate from RequestStateHistory
 				join RequestState on RequestStateHistory.RequestStateID = RequestState.Id
 				where RequestState.FilterAsInProgress = 1 and Request.Id = RequestStateHistory.RequestID
 			)
 		  , case when RequestState.FilterAsClosed = 1 then RequestStateHistory.EffectiveDate end
-		  , dbo._DClosestValue(getdate(),2,100)
+		  , dbo._DClosestDivisions(getdate(), 100)
 		from Request
 		join RequestStateHistory on RequestStateHistory.Id = Request.CurrentRequestStateHistoryID
 		join RequestState on RequestState.Id = RequestStateHistory.RequestStateID
+		join RequestStateHistory as FRSH on FRSH.RequestID = Request.Id and FRSH.PreviousRequestStateHistoryID is null
 	  ),
 	  Z (
 		  RequestID

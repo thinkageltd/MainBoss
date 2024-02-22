@@ -39,7 +39,7 @@ namespace Thinkage.MainBoss.MBUtility {
 		public class Definition : UtilityVerbWithDatabaseDefinition {
 			public Definition()
 				: base() {
-				Add(AuthenticationCredential = new StringValueOption("AuthenticationCredential", KB.K("Specify the SQL authentication credential of the MainBoss user").Translate(), true));
+				Optable.Add(AuthenticationCredential = new StringValueOption("AuthenticationCredential", KB.K("Specify the SQL authentication credential of the MainBoss user").Translate(), true));
 			}
 			public readonly StringValueOption AuthenticationCredential;
 			public override string Verb {
@@ -58,7 +58,7 @@ namespace Thinkage.MainBoss.MBUtility {
 		private readonly Definition Options;
 		private void Run() {
 			System.Version minDBVersionForRolesTable = new System.Version(1, 0, 4, 38); // The roles table appeared in its current form at this version
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out string oName);
+			MB3Client.ConnectionDefinition connect = Options.ConnectionDefinition(out string oName);
 			// Get a connection to the database that we are referencing
 			var dbapp = new ApplicationWithSingleDatabaseConnection(Thinkage.Libraries.Application.Instance);
 			try {
@@ -100,7 +100,7 @@ namespace Thinkage.MainBoss.MBUtility {
 				// See if we can break in
 				int? result = null;
 				try {
-					result = (int?)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(db.Session.ExecuteCommandReturningScalar(Thinkage.Libraries.XAF.Database.Service.MSSql.Server.INT_NULLABLE_TypeInfo, new MSSqlLiteralCommandSpecification("select has_perms_by_name(db_name(), 'DATABASE', 'CONTROL')")), typeof(int?));
+					result = (int?)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(db.Session.ExecuteCommandReturningScalar(Thinkage.Libraries.XAF.Database.Service.MSSql.Server.INT_NULLABLE_TypeInfo, new Libraries.XAF.Database.Layout.DBSpecificCommandSpecification("select has_perms_by_name(db_name(), 'DATABASE', 'CONTROL')")), typeof(int?));
 				}
 				catch {
 				}
@@ -110,7 +110,7 @@ namespace Thinkage.MainBoss.MBUtility {
 				// We managed to "break in". Copy our command line into a Database History record.
 				using (dsMB updateDs = new dsMB(db)) {
 					// TODO: Use the VersionHandler to do this.
-					dsMB.DatabaseHistoryRow row = (dsMB.DatabaseHistoryRow)db.AddNewRowAndBases(updateDs, dsMB.Schema.T.DatabaseHistory);
+					var row = updateDs.GetDataTable<dsMB.DatabaseHistoryDataTable>().AddNewRow();
 					row.F.Subject = KB.K("User table change attempt using SQL CONTROL permission").Translate();
 					System.Text.StringBuilder argumentLine = new System.Text.StringBuilder();
 					argumentLine.Append(Strings.IFormat("/{0}:{1}", Options.AuthenticationCredential.OptionName, Options.AuthenticationCredential.Value));
@@ -119,16 +119,15 @@ namespace Thinkage.MainBoss.MBUtility {
 				}
 			}
 			using (dsMB updateDs = new dsMB(db)) {
-				dsMB.UserRow uRow = (dsMB.UserRow)db.AddNewRowAndBases(updateDs, dsMB.Schema.T.User);
-				dsMB.PrincipalRow pRow = uRow.PrincipalIDParentRow;
-				dsMB.ContactRow cRow = (dsMB.ContactRow)db.AddNewRowAndBases(updateDs, dsMB.Schema.T.Contact);
+				var uRow = updateDs.GetDataTable<dsMB.UserDataTable>().AddNewRow();
+				var cRow = updateDs.GetDataTable<dsMB.ContactDataTable>().AddNewRow();
 				DatabaseCreation.ParseUserIdentification(Options.AuthenticationCredential.Value, out string userName, out string realm);
 				cRow.F.Code = userName;
 				uRow.F.AuthenticationCredential = Options.AuthenticationCredential.Value;
 				if (failedPermission != null) {
 					// Since we logged the attempt, we should also log that it completed.
 					// TODO: Use the VersionHandler to do this.
-					dsMB.DatabaseHistoryRow row = (dsMB.DatabaseHistoryRow)db.AddNewRowAndBases(updateDs, dsMB.Schema.T.DatabaseHistory);
+					var row = updateDs.GetDataTable<dsMB.DatabaseHistoryDataTable>().AddNewRow();
 					row.F.Subject = KB.K("User table change using SQL CONTROL permission completed").Translate();
 				}
 				db.Update(updateDs);

@@ -9,7 +9,8 @@ using Thinkage.Libraries.XAF.Database.Service;
 
 namespace Thinkage.MainBoss.Database {
 	public class SqlServersSession : EnumerableDrivenSession<DataRow, DataRow> {
-		private static readonly Thinkage.Libraries.Translation.Key forceLoadTranslations = KB.K(""); // this static will make sure KB.K registers the translation tables when this class is referenced.
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0052:Remove unread private members", Justification = " this static will make sure KB.K registers the translation tables when this class is referenced.")]
+		private static readonly Thinkage.Libraries.Translation.Key forceLoadTranslations = KB.K("");
 		#region Connection
 		public class Connection : IConnectionInformation {
 			public Connection() {
@@ -41,6 +42,8 @@ namespace Thinkage.MainBoss.Database {
 					throw new NotImplementedException();
 				}
 			}
+
+			public string DatabaseConnectionString => throw new NotImplementedException();
 			#endregion
 		}
 		#endregion
@@ -155,20 +158,7 @@ namespace Thinkage.MainBoss.Database {
 		#endregion
 		#region - GetItemEnumerable (returns an enumerable of the ItemT containing the driving data)
 		protected override IEnumerable<DataRow> GetItemEnumerable(DBI_Table dbit) {
-			//
-			// https://connect.microsoft.com/SQLServer/feedback/details/146323/enumavailablesqlservers-or-sqldatasourceenumerator-incorrect-list-of-available-databases
-			// states that trying SqlDataSourceEnumerator.Instance.GetDataSources twice will give a better list. 
-			// If the sql server is idle it will not respond, but the request wakes it up and the second will get the data.
-			// Even after invoking it twice sql servers are still missing, but the resulting list is better. 
-			//
-			// SqlDataSourceEnumerator.Instance.GetDataSources does not give a correct list of local sql server instances if sql browser is not running
-			// Local sql server instances are found from the directory and added to the list.
-			//
-			using (System.Data.Sql.SqlDataSourceEnumerator.Instance.GetDataSources()) {
-			}  // first call ignored and thrown away
-			DataTable dt = System.Data.Sql.SqlDataSourceEnumerator.Instance.GetDataSources();
-			// Effective with Windows 10 and .NET 4.6, the above line will FAIL to return anything. Microsoft is aware (via https://connect.microsoft.com/VisualStudio/feedback/details/1633740/system-data-sql-sqldatasourceenumerator-doesnt-work-on-windows-10-with-net-framework-4-x)
-			// Appears to be a problem in .NET 4.6
+			DataTable dt = Thinkage.Libraries.XAF.Database.Service.MSSql.SqlClient.SqlServer.ListDatabaseServers();
 			ServerNameColumn = dt.Columns["ServerName"];
 			InstanceNameColumn = dt.Columns["InstanceName"];
 			IsClusteredColumn = dt.Columns["IsClustered"];

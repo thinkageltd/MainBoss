@@ -47,9 +47,11 @@ namespace Thinkage.MainBoss.MainBoss {
 #if DEBUG
 			new MSWindowsDebugProvider(this, KB.I("MainBoss Debug Form"));
 			DebugProvider.AddStatus("DB");
+			// The following sets up a debug tab used by Tbl generation. This has to be doen now so the user has a chance to clear the "suppress" checkbox.
+			Controls.TIGeneralMB3Debug.Setup();
 #endif
-			new StandardApplicationIdentification(this, ApplicationParameters.RegistryLocation, "MainBoss");
-			new GUIApplicationIdentification(this, "Thinkage.MainBoss.MainBoss.Resources.MainBoss400.ico");
+			new StandardApplicationIdentification(this, ApplicationParameters.RegistryLocation, ApplicationParameters.ApplicationDisplayName);
+			new GUIApplicationIdentification(this, new Libraries.Drawing.StaticImage(Resources.Images.MainBoss400_16_16, Resources.Images.MainBoss400_32_32, Resources.Images.MainBoss400_48_48, Resources.Images.MainBoss400_256_256));
 			new Thinkage.Libraries.XAF.UI.MSWindows.UserInterface(this);
 			new Thinkage.Libraries.Presentation.MSWindows.UserInterface(this);
 			new MSWindowsUIFactory(this);
@@ -133,14 +135,10 @@ namespace Thinkage.MainBoss.MainBoss {
 				if( behavior != 0)
 					return new PickOrganizationApplication(behavior);
 
-				NamedOrganization o = Options.ResolvedSavedOrganization();
+				NamedOrganization o = Options.ResolveSavedOrganization();
 				Libraries.Application app;
 				if(o != null && (app = MainBossApplication.CreateMainBossApplication(o)) != null)
 					return app;
-			}
-			catch (MB3Client.OptionSupport.NoOrganizationException)
-			{
-				// Ignore this error and just goto PickOrganizationApplication()
 			}
 			catch (GeneralException ex)
 			{

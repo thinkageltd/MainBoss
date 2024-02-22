@@ -2,7 +2,7 @@
 
 namespace Thinkage.MainBoss.WebAccess.Models.interfaces
 {
-	interface IAssignmentRepository : IBaseRepository
+	internal interface IAssignmentRepository : IBaseRepository
 	{
 		Models.Assignment GetAssignment(Guid UserId);
 	}

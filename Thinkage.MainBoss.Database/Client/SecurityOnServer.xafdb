@@ -2,7 +2,7 @@
 <database labelcontext="dsSecurityOnServerLabel" name="http://thinkage.ca/MB3/dsCultureInfo.xsd:dsSecurityOnServer" xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
   <table name="SecurityOnServer" defaults="false" log="false" id="Id" xid="DBUserName" labelkey="Authentication Credential">
 	<field name="Id" read="id(nonnull)" />
-	<field name="CredentialAuthenticationMethod" type="integer(nonnull, min 0, max 3)" labelkey="Authentication">
+	<field name="CredentialAuthenticationMethod" type="integer(nonnull, min 0, max 4)" labelkey="Authentication">
 	  <!-- XAF.Database.Service.AuthenticationMethod -->
 	  <extension name="controlprovider">Thinkage.Libraries.XAF.Database.Service.AuthenticationCredentials.AuthenticationMethodProvider,Thinkage.Libraries.XAF.Database.Service</extension>
 	</field>

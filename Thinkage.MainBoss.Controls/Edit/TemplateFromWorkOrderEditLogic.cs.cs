@@ -78,7 +78,7 @@ namespace Thinkage.MainBoss.Controls {
 					// Query all the temporary storage and convert it to template temporary storage; preserve a mapping from TS ID to TTS ID
 					var TempStorageMap = new Dictionary<Guid, Guid>();
 					DB.ViewAdditionalRows(DataSet, dsMB.Schema.T.TemporaryStorage, new SqlExpression(dsMB.Path.T.TemporaryStorage.F.WorkOrderID).Eq(workOrderID), null, new[] { dsMB.Path.T.TemporaryStorage.F.LocationID.PathToReferencedRow });
-					foreach (dsMB.TemporaryStorageRow temporaryStorageRow in ((dsMB)DataSet).T.TemporaryStorage) {
+					foreach (dsMB.TemporaryStorageRow temporaryStorageRow in ((dsMB)DataSet).T.TemporaryStorage.Rows) {
 						if (temporaryStorageRow.F.WorkOrderID != workOrderID)
 							continue;
 						var templateTemporaryStorageRow = (dsMB.TemplateTemporaryStorageRow)DB.AddNewRowAndBases(DataSet, dsMB.Schema.T.TemplateTemporaryStorage);
@@ -100,7 +100,7 @@ namespace Thinkage.MainBoss.Controls {
 						dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.PathToReferencedRow
 					}
 					);
-					foreach (dsMB.TemporaryItemLocationRow temporaryItemLocationRow in ((dsMB)DataSet).T.TemporaryItemLocation) {
+					foreach (dsMB.TemporaryItemLocationRow temporaryItemLocationRow in ((dsMB)DataSet).T.TemporaryItemLocation.Rows) {
 						if (temporaryItemLocationRow.F.WorkOrderID != workOrderID)
 							continue;
 						var templateItemLocationRow = (dsMB.TemplateItemLocationRow)DB.AddNewRowAndBases(DataSet, dsMB.Schema.T.TemplateItemLocation);
@@ -124,7 +124,7 @@ namespace Thinkage.MainBoss.Controls {
 						dsMB.Path.T.Demand.F.DemandMiscellaneousWorkOrderCostID.PathToReferencedRow
 					}
 					);
-					foreach (dsMB.DemandRow demandRow in ((dsMB)DataSet).T.Demand) {
+					foreach (dsMB.DemandRow demandRow in ((dsMB)DataSet).T.Demand.Rows) {
 						if (demandRow.F.WorkOrderID != workOrderID)
 							continue;
 						dsMB.DemandTemplateRow demandTemplateRow = null;

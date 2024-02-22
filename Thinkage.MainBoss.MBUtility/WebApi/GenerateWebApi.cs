@@ -9,17 +9,13 @@ using Thinkage.Libraries.Translation;
 using Thinkage.MainBoss.Controls;
 using Thinkage.MainBoss.Database;
 using System.Linq;
-namespace Thinkage.MainBoss.MBUtility
-{
+namespace Thinkage.MainBoss.MBUtility {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
 	// One use class terminates after task is done.
-	internal class GenerateWebApi
-	{
-		public class Definition : Thinkage.Libraries.CommandLineParsing.Optable, UtilityVerbDefinition
-		{
+	internal class GenerateWebApi {
+		public class Definition : Thinkage.Libraries.CommandLineParsing.Optable, UtilityVerbDefinition {
 			public Definition()
-				: base()
-			{
+				: base() {
 				Add(WebApiProjectDirectory = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("ProjectDirectory"), KB.I("Directory where the WebApi project root is"), true));
 				Add(ErrorOutputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("ErrorOutput"), KB.I("File containing the errors encountered during generate."), false));
 
@@ -27,33 +23,26 @@ namespace Thinkage.MainBoss.MBUtility
 			}
 			public readonly StringValueOption WebApiProjectDirectory;
 			public readonly StringValueOption ErrorOutputFile;
-			public string Verb
-			{
+			public string Verb {
 				[return: Thinkage.Libraries.Translation.Invariant]
-				get
-				{
+				get {
 					return "GenerateWebApi";
 				}
 			}
-			public void RunVerb()
-			{
+			public void RunVerb() {
 				new GenerateWebApi(this).Run();
 			}
-			public Thinkage.Libraries.CommandLineParsing.Optable Optable
-			{
-				get
-				{
+			public Thinkage.Libraries.CommandLineParsing.Optable Optable {
+				get {
 					return this;
 				}
 			}
 		}
-		private GenerateWebApi(Definition options)
-		{
+		private GenerateWebApi(Definition options) {
 			Options = options;
 		}
 		private readonly Definition Options;
-		private void Run()
-		{
+		private void Run() {
 			new ApplicationTblDefaultsNoEditing(Thinkage.Libraries.Application.Instance, new MainBossPermissionsManager(Root.Rights), Root.Rights.Table, Root.RightsSchema, Root.Rights.Action.Customize);
 			var registry = new MainBossTblRegistry();
 #if !NOTALL
@@ -65,21 +54,17 @@ namespace Thinkage.MainBoss.MBUtility
 #endif
 		}
 		#region Generation
-		private string MakeModelPath(string name)
-		{
+		private string MakeModelPath(string name) {
 			return System.IO.Path.Combine(Options.WebApiProjectDirectory.Value, KB.I("Models"), KB.I("Tables"), Strings.IFormat("{0}Model.cs", name));
 		}
-		private string MakeRepositoryPath(string name)
-		{
+		private string MakeRepositoryPath(string name) {
 			return System.IO.Path.Combine(Options.WebApiProjectDirectory.Value, KB.I("Models"), KB.I("Tables"), Strings.IFormat("{0}Repository.cs", name));
 		}
-		private string MakeControllerPath(string name)
-		{
+		private string MakeControllerPath(string name) {
 			return System.IO.Path.Combine(Options.WebApiProjectDirectory.Value, KB.I("Controllers"), KB.I("Tables"), Strings.IFormat("{0}Controller.cs", name));
 		}
 
-		private void GenerateApi(Tbl editTbl)
-		{
+		private void GenerateApi(Tbl editTbl) {
 			if (editTbl == null)
 				return;
 			// Build the Model first
@@ -88,7 +73,7 @@ namespace Thinkage.MainBoss.MBUtility
 			GenerateWebApiController(editTbl);
 		}
 		#region ModelGeneration
-		static string ModelPreamble = KB.I(@"using System;
+		private static readonly string ModelPreamble = KB.I(@"using System;
 using System.Runtime.Serialization;
 using Thinkage.MainBoss.Database;
 
@@ -100,31 +85,27 @@ namespace Thinkage.MainBoss.WebApi.Models
 	public partial class {0} : IRepositoryWrapper<{0}, dsMB.{0}Row>
 	{{
 ");
-		static string ModelPostamble = KB.I(@"	}
+		private static readonly string ModelPostamble = KB.I(@"	}
 #pragma warning restore 1591
 }");
 		private System.IO.StreamWriter Writer;
-		int TabLevel = 1;
-		ModelMember ModelMemberCollection;
+		private int TabLevel = 1;
+		private ModelMember ModelMemberCollection;
 		#region ModelMember
 		[System.Diagnostics.DebuggerDisplay("{Name}")]
-		class ModelMember
-		{
-			static Dictionary<int, ModelMember> RecordSetDictionary;
+		private class ModelMember {
+			private static Dictionary<int, ModelMember> RecordSetDictionary;
 			public readonly string Type;
 			public readonly string Name;
 			public readonly string Doc;
 			public readonly bool IsReadonly;
 			public readonly List<ModelMember> Members;
-			public bool IsContainer
-			{
-				get
-				{
+			public bool IsContainer {
+				get {
 					return Type == null;
 				}
 			}
-			private ModelMember(string name, string type, string doc, bool isReadonly)
-			{
+			private ModelMember(string name, string type, string doc, bool isReadonly) {
 				Name = name;
 				Type = type;
 				Doc = doc;
@@ -132,20 +113,17 @@ namespace Thinkage.MainBoss.WebApi.Models
 				IsReadonly = isReadonly;
 			}
 			private ModelMember(DBI_Value c, ModelMember parent)
-				: this(c.Name, c.EffectiveType.GenericMinimalNativeType().FullName, c.Doc, !c.IsWriteable)
-			{
+				: this(c.Name, c.EffectiveType.GenericMinimalNativeType().FullName, c.Doc, !c.IsWriteable) {
 			}
 			public ModelMember(DBI_Table t)
-				: this(t.Name, null, t.Doc, false)
-			{
+				: this(t.Name, null, t.Doc, false) {
 				RecordSetDictionary = new Dictionary<int, ModelMember> {
 					{ 0, this }
 				};
 				Add(new ModelMember(t.InternalId.ReferencedColumn, this));
 			}
 
-			private string IdentifyingNameAsIdentifier(TblValueNode n)
-			{
+			private static string IdentifyingNameAsIdentifier(TblValueNode n) {
 				var parts = new List<string>();
 				StringBuilder identifier = new StringBuilder();
 				if (n is TblColumnNode) {
@@ -156,7 +134,7 @@ namespace Thinkage.MainBoss.WebApi.Models
 							|| x.AllColumns[i].LinkageType == DBI_Relation.LinkageTypes.Derived
 							|| x.AllColumns[i] == x.AllColumns[i].Table.Id)  // This includes the case of what a derived linkage looks like within a path.
 							continue;
-						if (parts.Count > 0 && i == 0 && !string.IsNullOrEmpty(x.AllColumns[i].Table.SqlQueryText))
+						if (parts.Count > 0 && i == 0 && x.AllColumns[i].Table.HasSqlQueryText)
 							// Do not name linking columns that occur in a view if it is the first column in the path.
 							// This removes all the linking columns in the report driver views. Note that reports sometimes contain secondary views for instance to find the Task in a WorkOrderFormReport.
 							continue;
@@ -169,15 +147,14 @@ namespace Thinkage.MainBoss.WebApi.Models
 				else
 					parts.Add(n.Label.IdentifyingName);
 
-				for( int i = parts.Count; --i >= 0; ) {
+				for (int i = parts.Count; --i >= 0;) {
 					if (identifier.Length > 0)
 						identifier.Append("_");
-					identifier.Append(parts[i].Replace(" ", "").Replace("/",""));
+					identifier.Append(parts[i].Replace(" ", "").Replace("/", ""));
 				}
 				return identifier.ToString();
 			}
-			public ModelMember New(TblValueNode n)
-			{
+			public ModelMember New(TblValueNode n) {
 				StringBuilder comment = new StringBuilder();
 				int recordSet = 0;
 				DBI_Value v = n.ReferencedValue;
@@ -198,17 +175,15 @@ namespace Thinkage.MainBoss.WebApi.Models
 				var m = new ModelMember(identifierName, v.EffectiveType.GenericMinimalNativeType().FullName, comment.ToString(), !v.IsWriteable);
 				return container.Add(m);
 			}
-			private ModelMember Add(ModelMember mToAdd)
-			{
+			private ModelMember Add(ModelMember mToAdd) {
 				System.Diagnostics.Debug.Assert(this.IsContainer);
-				if ( !Members.Any( m => m.Name == mToAdd.Name ))
+				if (!Members.Any(m => m.Name == mToAdd.Name))
 					Members.Add(mToAdd);
 				return mToAdd;
 			}
 		}
 		#endregion
-		private void GenerateWebApiModel(Tbl editTbl)
-		{
+		private void GenerateWebApiModel(Tbl editTbl) {
 			Writer = new System.IO.StreamWriter(MakeModelPath(editTbl.Schema.Name), false);
 			System.Diagnostics.Debug.Assert(editTbl.Schema == editTbl.Schema);
 			ModelMemberCollection = new ModelMember(editTbl.Schema);
@@ -220,9 +195,8 @@ namespace Thinkage.MainBoss.WebApi.Models
 			Writer = null;
 			ModelMemberCollection = null;
 		}
-		private void GenerateMembers(TblLayoutNodeArray columns)
-		{
-			foreach( TblLayoutNode c in columns ) {
+		private void GenerateMembers(TblLayoutNodeArray columns) {
+			foreach (TblLayoutNode c in columns) {
 				if (TblLayoutNode.GetInNonDefault(c) == false)
 					continue;
 				ECol ecol = TblLayoutNode.GetECol(c);
@@ -235,37 +209,31 @@ namespace Thinkage.MainBoss.WebApi.Models
 				}
 			}
 		}
-		private void EmitCollection(DBI_Table root)
-		{
+		private void EmitCollection(DBI_Table root) {
 			++TabLevel;
 			WriteMembers(ModelMemberCollection);
 			--TabLevel;
 		}
-		private string Tabs()
-		{
+		private string Tabs() {
 			return new String('\t', TabLevel);
 		}
-		private void WriteLineWithTabs([Invariant]string x)
-		{
+		private void WriteLineWithTabs([Invariant]string x) {
 			Writer.Write(Tabs());
 			Writer.WriteLine(x);
 		}
-		private void WriteMembers(ModelMember n)
-		{
+		private void WriteMembers(ModelMember n) {
 			System.Diagnostics.Debug.Assert(n.IsContainer);
 			foreach (ModelMember m in n.Members)
 				WriteMember(m);
 		}
 
-		private void WriteMember(ModelMember n)
-		{
+		private void WriteMember(ModelMember n) {
 			if (n.IsContainer)
 				WriteContainerMember(n);
 			else
 				WriteDataMember(n);
 		}
-		private void WriteContainerMember(ModelMember n)
-		{
+		private void WriteContainerMember(ModelMember n) {
 			WriteLineWithTabs(Strings.IFormat("public struct _{0} {{", n.Name));
 			++TabLevel;
 			WriteMembers(n);
@@ -274,9 +242,8 @@ namespace Thinkage.MainBoss.WebApi.Models
 			WriteLineWithTabs("[DataMember]");
 			WriteLineWithTabs(Strings.IFormat("public _{0} {0};", n.Name));
 		}
-		private void WriteDataMember(ModelMember n)
-		{
-			if( n.Doc != null )
+		private void WriteDataMember(ModelMember n) {
+			if (n.Doc != null)
 				Writer.Write(FormatDocSummary(n.Doc));
 			WriteLineWithTabs("[DataMember]");
 			if (n.IsReadonly)
@@ -285,8 +252,7 @@ namespace Thinkage.MainBoss.WebApi.Models
 				WriteLineWithTabs(Strings.IFormat("public {0} {1};", n.Type, n.Name));
 		}
 		#endregion
-		private string FormatDocSummary([Invariant]string docString)
-		{
+		private string FormatDocSummary([Invariant]string docString) {
 			if (String.IsNullOrEmpty(docString))
 				return "";
 			System.Text.StringBuilder doc = new System.Text.StringBuilder();
@@ -305,7 +271,7 @@ namespace Thinkage.MainBoss.WebApi.Models
 			return doc.ToString();
 		}
 		#region ControllerGeneration
-		private static string ControllerTemplate = @"namespace Thinkage.MainBoss.WebApi.Controllers.Tables
+		private const string ControllerTemplate = @"namespace Thinkage.MainBoss.WebApi.Controllers.Tables
 {{
 	/// <summary>
 	/// This is the General documentation for the {0} controller
@@ -319,8 +285,7 @@ namespace Thinkage.MainBoss.WebApi.Models
 		}
     }
 }";
-		private void GenerateWebApiController(Tbl editTbl)
-		{
+		private void GenerateWebApiController(Tbl editTbl) {
 			string identification = editTbl.Schema.Name;
 
 			Writer = new System.IO.StreamWriter(MakeControllerPath(identification), false);
@@ -330,13 +295,14 @@ namespace Thinkage.MainBoss.WebApi.Models
 			Writer.Close();
 			Writer = null;
 		}
+
 		// NOTE: the following applies to the Controller class
 		// To get specific documentation for XmlDocumentation requires all methods in the base class to be virtual (that does nothing except call the base implementation) so there is a method on which to hang an XmlDocument that
 		// will get generated specifically for the derived Get method for the API documentation
 		// This is the only way to auto generate the documentation with Build XmlDocumentation output option on.
 		#endregion
 		#region RepositoryGeneration
-		string RepositoryTemplate = KB.I(@"using Thinkage.Libraries.XAF.Database.Layout;
+		private readonly string RepositoryTemplate = KB.I(@"using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.MainBoss.Database;
 namespace Thinkage.MainBoss.WebApi.Models
 {{
@@ -383,8 +349,7 @@ namespace Thinkage.MainBoss.WebApi.Models
 	}
 }
 ");
-		private void GenerateWebApiRepository(Tbl editTbl)
-		{
+		private void GenerateWebApiRepository(Tbl editTbl) {
 			string identification = editTbl.Schema.Name;
 
 			Writer = new System.IO.StreamWriter(MakeRepositoryPath(identification), false);
@@ -397,18 +362,14 @@ namespace Thinkage.MainBoss.WebApi.Models
 		#endregion
 		#endregion
 		#region MainBossTblRegistry
-		public class MainBossTblRegistry : TIGeneralMB3
-		{
-			public MainBossTblRegistry()
-			{
+		public class MainBossTblRegistry : TIGeneralMB3 {
+			public MainBossTblRegistry() {
 			}
 
-			public Tbl GetBrowseTbl(DBI_Table schema)
-			{
+			public Tbl GetBrowseTbl(DBI_Table schema) {
 				return FindBrowseTbl(schema);
 			}
-			public Tbl GetEditTbl(DBI_Table schema)
-			{
+			public Tbl GetEditTbl(DBI_Table schema) {
 				return FindEditTbl(schema);
 			}
 		}
@@ -416,10 +377,8 @@ namespace Thinkage.MainBoss.WebApi.Models
 
 	}
 	#region Extensions
-	public static class Extensions
-	{
-		private static void AddParentRelativeNodeName(this TblLayoutNode n, System.Text.StringBuilder sb)
-		{
+	public static class Extensions {
+		private static void AddParentRelativeNodeName(this TblLayoutNode n, System.Text.StringBuilder sb) {
 			// TODO: For layout nodes not assigned to a Tbl (e.g. unbound parameter controls in a browser) there is no container, and IndexInParent is zero in the node and any children
 			// TODO: For the case of unbound parameter controls in a browser, call AssignToTbl(null) ???? so the IndexInParent gets set on all children. Technically the "container" should be all the controls
 			// created for a particular command, and the name of the container should be the hierarchy of command node names to get to that command. Perhaps this could be done by creating group layout nodes appropriately named...
@@ -429,7 +388,7 @@ namespace Thinkage.MainBoss.WebApi.Models
 				string name = n.Label.IdentifyingName;
 				int duplicates = 0;
 				if (container != null) {
-					for (int i = n.IndexInParent; --i >= 0; )
+					for (int i = n.IndexInParent; --i >= 0;)
 						if (container.ColumnArray[i].Label is Key && ((Key)container.ColumnArray[i].Label).IdentifyingName == name)
 							++duplicates;
 					sb.Append("_");
@@ -470,8 +429,7 @@ namespace Thinkage.MainBoss.WebApi.Models
 				}
 			}
 		}
-		public static void BuildNodeName(this TblLayoutNode n, System.Text.StringBuilder sb)
-		{
+		public static void BuildNodeName(this TblLayoutNode n, System.Text.StringBuilder sb) {
 			if (n.Parent != null)
 				n.Parent.AddTblRelativeNodeName(sb);
 			AddParentRelativeNodeName(n, sb);

@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Thinkage.MainBoss.MainBoss§¯SQL Servers Enumerator" xml:space="preserve">
-    <value>Servidores SQL enumerador</value>
-  </data>
   <data name="Thinkage.MainBoss.MainBoss§A password is not required for this authentication method" xml:space="preserve">
     <value>No se requiere una contraseña para este método de autenticación</value>
   </data>
@@ -390,11 +387,21 @@
   <data name="Thinkage.MainBoss.MainBoss§Security roles will be set back to the logged in user name" xml:space="preserve">
     <value>Las funciones de seguridad se establecerán de nuevo al iniciar sesión nombre de usuario</value>
   </data>
-  <data name="Thinkage.MainBoss.MainBoss§Select from available database servers" xml:space="preserve">
-    <value>Elija entre los servidores de bases de datos disponibles</value>
+  <data name="Thinkage.MainBoss.MainBoss§Select database" xml:space="preserve">
+    <value>Select database</value>
+    <comment>New!</comment>
   </data>
-  <data name="Thinkage.MainBoss.MainBoss§Select from available databases" xml:space="preserve">
-    <value>Seleccione las bases de datos disponibles</value>
+  <data name="Thinkage.MainBoss.MainBoss§Select database server" xml:space="preserve">
+    <value>Select database server</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Select from the databases avaiable on the server" xml:space="preserve">
+    <value>Select from the databases avaiable on the server</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.MainBoss§Select from the Sql servers visible on the network" xml:space="preserve">
+    <value>Select from the Sql servers visible on the network</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.MainBoss§Session" xml:space="preserve">
     <value>Sesión</value>
@@ -419,9 +426,6 @@
   </data>
   <data name="Thinkage.MainBoss.MainBoss§SQL Script completed with errors {0}" xml:space="preserve">
     <value>Comandos SQL completados tiene errores {0}</value>
-  </data>
-  <data name="Thinkage.MainBoss.MainBoss§SQL servers enumerator" xml:space="preserve">
-    <value>Servidores SQL enumerador</value>
   </data>
   <data name="Thinkage.MainBoss.MainBoss§Start" xml:space="preserve">
     <value>Comenzar</value>
@@ -462,14 +466,8 @@
   <data name="Thinkage.MainBoss.MainBoss§This is not a MainBoss DataBase" xml:space="preserve">
     <value>Esto no es una base de datos MainBoss</value>
   </data>
-  <data name="Thinkage.MainBoss.MainBoss§Unable to determine ActivationURI from network deployment" xml:space="preserve">
-    <value>No se puede determinar ActivationURI desde la implementación de red</value>
-  </data>
   <data name="Thinkage.MainBoss.MainBoss§Unable to import organization into database {0} on server {1}" xml:space="preserve">
     <value>Imposible importa la organización en la base de datos {0} en el servidor {1}</value>
-  </data>
-  <data name="Thinkage.MainBoss.MainBoss§Unknown source column in ColumnEvaluator" xml:space="preserve">
-    <value>Columna de origen desconocido en ColumnEvaluator</value>
   </data>
   <data name="Thinkage.MainBoss.MainBoss§Upgrade" xml:space="preserve">
     <value>Modernizar</value>

@@ -1,52 +1,72 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
   <types uri="..\Types.xafdb"/>
-
-  <table name="WorkOrderPurchaseOrderLinkage" log="false" id="Id" labelkey="">
-	<doc>Find all explicit and implicit linkages between a workorder and a purchase order.</doc>
+  <table name="WorkOrderPurchaseOrderView" defaults="false" log="false" id="Id" xid="WorkOrderID PurchaseOrderID" labelkey="">
+	<doc>All explicit and implicit linkages between WorkOrder records and PurchaseOrder records along with any potential parent WorkOrder and PurchaseOrder records</doc>
 	<field name="Id" read="RequiredGUID" />
-	<field name="TableEnum" type="integer(min 0, max 4, nonnull)">
-	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderPurchaseOrderLinkageProvider,Thinkage.MainBoss.Controls</extension>
-	</field>
 	<field name="LinkedWorkOrderID" type="GUIDREF" link="WorkOrder">
+	  <doc>The unified ID of the linked WorkOrder for linking records</doc>
 	</field>
 	<field name="LinkedPurchaseOrderID" type="GUIDREF" link="PurchaseOrder">
+	  <doc>The unified ID of the linked PurchaseOrder for linking records</doc>
+	</field>
+	<!-- Linkages to the variant records in this view -->
+	<field name="WorkOrderID" type="GUIDREF" link="WorkOrder">
+	  <doc>Link to a WorkOrder record</doc>
+	</field>
+	<field name="PurchaseOrderID" type="GUIDREF" link="PurchaseOrder">
+	  <doc>Link to a PurchaseOrder record</doc>
 	</field>
 	<field name="WorkOrderPurchaseOrderID" type="GUIDREF" link="WorkOrderPurchaseOrder">
+	  <doc>Link to an explicit linkage record in WorkOrderPurchaseOrder</doc>
 	</field>
 	<field name="POLineID" type="GUIDREF" link="POLine">
+	  <doc>Link to a POLine that connects the PO with a WO, either via a work Demand or by reference to TemporaryStorage</doc>
 	</field>
 	<field name="AccountingTransactionID" type="GUIDREF" link="AccountingTransaction">
+	  <doc>Link to the base AccountingTransaction of a ReceiveItem that receives to TemporaryStorage</doc>
 	</field>
 	<extension name="query">
-	  <!-- See ViewRecordTypes.WorkOrderPurchaseOrderLinkage for TableEnum values -->
-		select WOPO.ID, 0, WOPO.WorkOrderID, WOPO.PurchaseOrderID, WOPO.ID, null, null	<!--ViewRecordTypes.WorkOrderPurchaseOrderLinkage.Explicit -->
-			from WorkOrderPurchaseOrder as WOPO
-	union all
-		select  POL.ID, 1, D.WorkOrderID, POL.PurchaseOrderID, null, POL.ID, null		<!--ViewRecordTypes.WorkOrderPurchaseOrderLinkage.UsingLaborDemand -->
-			from POLineLabor as POLL
-			join POLine as POL on POL.Id = POLL.POLineID
- 			join DemandLaborOutside as DLO on DLO.Id = POLL.DemandLaborOutsideID
-			join Demand as D on D.Id = DLO.DemandID
-	union all
-		select  POL.ID, 2, D.WorkOrderID, POL.PurchaseOrderID, null, POL.ID, null		<!--ViewRecordTypes.WorkOrderPurchaseOrderLinkage.UsingOtherWorkDemand -->
-			from POLineOtherWork as POLOW
-			join POLine as POL on POL.Id = POLOW.POLineID
-			join DemandOtherWorkOutside as DOWO on DOWO.Id = POLOW.DemandOtherWorkOutsideID
-			join Demand as D on D.Id = DOWO.DemandID
-	union all
-		select POL.ID, 3, TS.WorkOrderID, POL.PurchaseOrderID, null, POL.ID, null		<!--ViewRecordTypes.WorkOrderPurchaseOrderLinkage.UsingPOLineItemToTemporary -->
-			from POLineItem as POLI
-			join POLine as POL on POL.Id = POLI.POLineID
-			join ItemLocation as IL on IL.Id = POLI.ItemLocationID
-			join TemporaryStorage as TS on TS.LocationID = IL.LocationID
-	union all
-		select RI.AccountingTransactionID, 4, TS.WorkOrderID, POL.PurchaseOrderID, null, null, RI.AccountingTransactionID <!--ViewRecordTypes.WorkOrderPurchaseOrderLinkage.UsingReceiveItemToTemporary -->
-			from ReceiveItemPO as RI
-			join POLineItem as POLI on POLI.Id = RI.POLineItemID
-			join POLine as POL on POL.Id = POLI.POLineID
-			join ItemLocation as IL on IL.Id = RI.ItemLocationId
- 			join TemporaryStorage as TS on TS.LocationID = IL.LocationID
+	  with WorkOrderPurchaseOrderLinkage(ID, LinkedWorkOrderID, LinkedPurchaseOrderID, WorkOrderPurchaseOrderID, POLineID, AccountingTransactionID) as
+	  (
+			select WOPO.ID, WOPO.WorkOrderID, WOPO.PurchaseOrderID, WOPO.ID, null, null
+				from WorkOrderPurchaseOrder as WOPO
+		union all
+			select  POL.ID, D.WorkOrderID, POL.PurchaseOrderID, null, POL.ID, null
+				from POLineLabor as POLL
+				join POLine as POL on POL.Id = POLL.POLineID
+ 				join DemandLaborOutside as DLO on DLO.Id = POLL.DemandLaborOutsideID
+				join Demand as D on D.Id = DLO.DemandID
+		union all
+			select  POL.ID, D.WorkOrderID, POL.PurchaseOrderID, null, POL.ID, null
+				from POLineOtherWork as POLOW
+				join POLine as POL on POL.Id = POLOW.POLineID
+				join DemandOtherWorkOutside as DOWO on DOWO.Id = POLOW.DemandOtherWorkOutsideID
+				join Demand as D on D.Id = DOWO.DemandID
+		union all
+			select POL.ID, TS.WorkOrderID, POL.PurchaseOrderID, null, POL.ID, null
+				from POLineItem as POLI
+				join POLine as POL on POL.Id = POLI.POLineID
+				join ItemLocation as IL on IL.Id = POLI.ItemLocationID
+				join TemporaryStorage as TS on TS.LocationID = IL.LocationID
+		union all
+			select RI.AccountingTransactionID, TS.WorkOrderID, POL.PurchaseOrderID, null, null, RI.AccountingTransactionID
+				from ReceiveItemPO as RI
+				join POLineItem as POLI on POLI.Id = RI.POLineItemID
+				join POLine as POL on POL.Id = POLI.POLineID
+				join ItemLocation as IL on IL.Id = RI.ItemLocationId
+ 				join TemporaryStorage as TS on TS.LocationID = IL.LocationID
+	  )
+		select A.ID, A.LinkedWorkOrderID, A.LinkedPurchaseOrderID, null, null, A.WorkOrderPurchaseOrderID, A.POLineID, A.AccountingTransactionID
+		  from WorkOrderPurchaseOrderLinkage as A
+	  union all
+		select WO.ID, null, null, WO.ID, null, null, null, null
+		  <!-- TODO: Is it worth filtering the WorkOrder records here? We don't do similar for Items in WorkOrderItems etc. -->
+		  from WorkOrder as WO where WO.ID in (Select LinkedWorkOrderID from WorkOrderPurchaseOrderLinkage)
+	  union all
+		select PO.ID, null, null, null, PO.ID, null, null, null
+		  <!-- TODO: Is it worth filtering the PurchaseOrder records here? We don't do similar for Items in WorkOrderItems etc. -->
+		  from PurchaseOrder as PO where PO.ID in (Select LinkedPurchaseOrderID from WorkOrderPurchaseOrderLinkage)
 	</extension>
 	<extension name="dependson">WorkOrderPurchaseOrder</extension>
 	<extension name="dependson">POLineLabor</extension>
@@ -59,40 +79,6 @@
 	<extension name="dependson">Demand</extension>
 	<extension name="dependson">ItemLocation</extension>
 	<extension name="dependson">TemporaryStorage</extension>
-  </table>
-  <table name="WorkOrderPurchaseOrderView" defaults="false" log="false" id="Id" xid="WorkOrderID PurchaseOrderID" labelkey="">
-	<doc>Find all explicit and implicit linkages between a workorder and a purchase order with records denoting the WorkOrder and PurchaseOrder they are linked to.</doc>
-	<field name="Id" read="RequiredGUID" />
-	<field name="TableEnum" type="integer(min 0, max 6, nonnull)">
-	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderPurchaseOrderViewProvider,Thinkage.MainBoss.Controls</extension>
-	</field>
-	<field name="LinkedWorkOrderID" type="GUIDREF" link="WorkOrder">
-	  <doc>Used both for common browser filtering and for tree parentage</doc>
-	</field>
-	<field name="LinkedPurchaseOrderID" type="GUIDREF" link="PurchaseOrder">
-	  <doc>Used both for common browser filtering and for tree parentage</doc>
-	</field>
-	<field name="WorkOrderID" type="GUIDREF" link="WorkOrder">
-	</field>
-	<field name="PurchaseOrderID" type="GUIDREF" link="PurchaseOrder">
-	</field>
-	<field name="WorkOrderPurchaseOrderID" type="GUIDREF" link="WorkOrderPurchaseOrder">
-	</field>
-	<field name="POLineID" type="GUIDREF" link="POLine">
-	</field>
-	<field name="AccountingTransactionID" type="GUIDREF" link="AccountingTransaction">
-	</field>
-	<extension name="query">
-	  select A.ID, A.TableEnum+2, A.LinkedWorkOrderID, A.LinkedPurchaseOrderID, null, null, A.WorkOrderPurchaseOrderID, A.POLineID, A.AccountingTransactionID
-		  from WorkOrderPurchaseOrderLinkage as A
-	  union all
-	  select WO.ID, 0, null, null, WO.ID, null, null, null, null
-		  from WorkOrder as WO where WO.ID in (Select LinkedWorkOrderID from WorkOrderPurchaseOrderLinkage)
-	  union all
-	  select PO.ID, 1, null, null, null, PO.ID, null, null, null
-		  from PurchaseOrder as PO where PO.ID in (Select LinkedPurchaseOrderID from WorkOrderPurchaseOrderLinkage)
-	</extension>
-	<extension name="dependson">WorkOrderPurchaseOrderLinkage</extension>
 	<extension name="dependson">WorkOrder</extension>
 	<extension name="dependson">PurchaseOrder</extension>
   </table>
@@ -103,15 +89,12 @@
 	</field>
 	<field name="DisplayID" type="GUIDREF" link="WorkOrderPurchaseOrderView">
 	</field>
-	<!--TODO: delete this-->
-	<field name="IsPrimary" type="RequiredBool">
-	</field>
 	<extension name="query">
-		  select WOPO.ID, WOPO.ID, WOPO.ID, 1
+		  select WOPO.ID, WOPO.ID, WOPO.ID
 			from
 			  WorkOrderPurchaseOrderView as WOPO
 		union all
-		  select WOPO.LinkedPurchaseOrderID, WOPO.ID, WOPO.LinkedPurchaseOrderID, 0
+		  select WOPO.LinkedPurchaseOrderID, WOPO.ID, WOPO.LinkedPurchaseOrderID
 			from
 			  WorkOrderPurchaseOrderView as WOPO
 			where WOPO.LinkedPurchaseOrderID is not null
@@ -125,15 +108,12 @@
 	</field>
 	<field name="DisplayID" type="GUIDREF" link="WorkOrderPurchaseOrderView">
 	</field>
-	<!--TODO: delete this-->
-	<field name="IsPrimary" type="RequiredBool">
-	</field>
 	<extension name="query">
-		  select WOPO.ID, WOPO.ID, WOPO.ID, 1
+		  select WOPO.ID, WOPO.ID, WOPO.ID
 			from
 			  WorkOrderPurchaseOrderView as WOPO
 		union all
-		  select WOPO.LinkedWorkOrderID, WOPO.ID, WOPO.LinkedWorkOrderID, 0
+		  select WOPO.LinkedWorkOrderID, WOPO.ID, WOPO.LinkedWorkOrderID
 			from
 			  WorkOrderPurchaseOrderView as WOPO
 			where WOPO.LinkedWorkOrderID is not null

@@ -6,7 +6,7 @@
 	<doc>Time interval from current time over which workorders should be generated stored in format dddddd.00:00:00</doc>
   </variable>
 
-  <table name="ScheduledWorkOrder" defaults="true" log="false" id="Id" xid="UnitLocationID ScheduleID" labelkey="Unit Maintenance Plan">
+  <table name="ScheduledWorkOrder" defaults="true" log="false" id="Id" xid="UnitLocationID ScheduleID WorkOrderTemplateID" labelkey="Unit Maintenance Plan">
 	<doc>
 	  This record defines that a given Work Order Template (Task) should be generated for a given Unit on a given Schedule.
 	</doc>
@@ -20,7 +20,7 @@
 	<field name="ScheduleID" type="RequiredGUIDREF" link="Schedule" labelkey="Maintenance Timing">
 	  <doc>The schedule which determines how to generate future scheduling points based on the scheduling history</doc>
 	  <extension name="pickfrom">Schedule</extension>
-	  <extension name="linkage">captive</extension>
+	  <extension name="linkage">property</extension>
 	</field>
 	<field name="WorkOrderTemplateID" type="RequiredGUIDREF" link="WorkOrderTemplate">
 	  <doc>The ID of the Work Order Template (task definition) which defines what work constitutes the scheduled procedure</doc>
@@ -30,6 +30,13 @@
 	  <doc>
 		Extra days to add to the EstimatedWorkEnd to form the WorkDueDate
 	  </doc>
+	</field>
+	<field name="InitialWOStatusID" type="GUIDREF" link="WorkOrderStateHistoryStatus" labelkey="Initial WO Status">
+	  <doc>The status to be set in the first Work Order history.</doc>
+		<extension name="linkage">property</extension>
+	</field>
+	<field name="InitialWOComment" type="Comment" labelkey="Initail WO History Comment">
+		<doc>Comment as to why this particular history record exists</doc>
 	</field>
 	<field name="Inhibit" type="RequiredBool">
 	  <doc>This flag inhibits scheduling of this particular Task/Unit combination. Note that unlike the weekday and seasonal
@@ -45,9 +52,28 @@
 	  <result hosting="cached">
 		(select id from PMGenerationDetail)
 	  </result>
-	  <extension name="dependson">PMGenerationDetail</extension>
-	  <extension name="dependson">PMGenerationBatch</extension>
+	  <extension name="dependson">PMGenerationDetail@PMGenerationDetail.ScheduledWorkOrderID->ScheduledWorkOrder.Id</extension>
+	  <extension name="dependson">PMGenerationBatch.SessionID</extension>
 	</field>
+	<field name="StatusPMGenerationDetailID" read="GUIDREF"  link="PMGenerationDetail" labelkey="Last Work Order or Last Error Condition">
+	  <doc>ID of the most recent PMGenerationDetail that either created a work order or caused an error</doc>
+	  <!-- Note: must change hosting to "server" (or "builtin"?) when this field is changed to an automatically-calculated field -->
+	  <result hosting="cached">
+		(select id from PMGenerationDetail)
+	  </result>
+	  <extension name="dependson">PMGenerationDetail@PMGenerationDetail.ScheduledWorkOrderID->ScheduledWorkOrder.Id</extension>
+	  <extension name="dependson">PMGenerationBatch.SessionID</extension>
+	</field>
+	<field name="LastPMGenerationDetailID" read="GUIDREF"  link="PMGenerationDetail" labelkey="Last Generation Result">
+	  <doc>ID of the most recent PMGenerationDetail that either created a work order or caused an error</doc>
+	  <!-- Note: must change hosting to "server" (or "builtin"?) when this field is changed to an automatically-calculated field -->
+	  <result hosting="cached">
+		(select id from PMGenerationDetail)
+	  </result>
+	  <extension name="dependson">PMGenerationDetail@PMGenerationDetail.ScheduledWorkOrderID->ScheduledWorkOrder.Id</extension>
+	  <extension name="dependson">PMGenerationBatch.SessionID</extension>
+	</field>
+
 	<extension name="costrights">UnitValue</extension>
 	<extension name="deletemethod">hide</extension>
   </table>
@@ -74,8 +100,42 @@
 	<extension name="dependson">PMGenerationDetail.DetailType</extension>
 	<extension name="references">PMGenerationBatch</extension>
   </object>
+  <object class="function" name="mbfn_ScheduledWorkOrder_StatusPMGenerationDetail">
+	<doc>This function calculates the value for the CurrentPMGenerationDetail field in a given record</doc>
+	<extension name="body">
+	  (@ScheduledWorkOrderID UNIQUEIDENTIFIER)
+		returns UNIQUEIDENTIFIER
+		as
+		begin
+			return (select top 1 PMGenerationDetail.ID
+				from PMGenerationDetail
+				join PMGenerationBatch on PMGenerationBatch.ID = PMGenerationDetail.PMGenerationBatchID
+				where PMGenerationDetail.ScheduledWorkOrderID = @ScheduledWorkOrderID
+					and PMGenerationDetail.DetailType > 2 and PMGenerationDetail.DetailType &lt; 6
+					order by PMGenerationBatch.EntryDate DESC, PMGenerationDetail.Sequence DESC)	  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_ScheduledWorkOrder_LastPMGenerationDetail">
+	  <doc>This function calculates the effect of he last generate  used the LastPMGenerationDetail field in a given record</doc>
+	  <extension name="body">
+		(@ScheduledWorkOrderID UNIQUEIDENTIFIER)
+		returns UNIQUEIDENTIFIER
+		as
+		begin
+		return (select top 1 PMGenerationDetail.ID
+			from PMGenerationDetail
+			join PMGenerationBatch on PMGenerationBatch.ID = PMGenerationDetail.PMGenerationBatchID
+			where PMGenerationDetail.ScheduledWorkOrderID = @ScheduledWorkOrderID
+			order by PMGenerationBatch.EntryDate DESC, (case when PMGenerationDetail.DetailType != 0 then 0 else 1 end), PMGenerationDetail.Sequence DESC)
+		end
+	</extension><extension name="dependson">PMGenerationDetail</extension>
+	<extension name="dependson">PMGenerationBatch.SessionID</extension>
+	<extension name="dependson">PMGenerationDetail.FirmScheduleData</extension>
+	<extension name="dependson">PMGenerationDetail.DetailType</extension>
+	<extension name="references">PMGenerationBatch</extension>
+  </object>
   <object class="trigger" name="mbtg_SetCurrentPMGenerationDetail1">
-	<doc>This trigger sets the value for the CurrentPMGenerationDetail when a batch record is changed</doc>
+	<doc>This trigger sets the value for the *PMGenerationDetail fields when a batch record is changed</doc>
 	<extension name="body">
 	  on PMGenerationBatch
 	  after insert, update
@@ -84,6 +144,7 @@
 	  BEGIN
 		  update ScheduledWorkOrder
 			  set CurrentPMGenerationDetailID = dbo.mbfn_ScheduledWorkOrder_CurrentPMGenerationDetail(ID)
+			  , StatusPMGenerationDetailID  = dbo.mbfn_ScheduledWorkOrder_StatusPMGenerationDetail(ID)
 			  where [ID] in (
 				  select DISTINCT PMGenerationDetail.ScheduledWorkOrderID
 					  from PMGenerationDetail
@@ -119,10 +180,12 @@
   <table name="Location"/>
   <table name="WorkOrderTemplate"/>
   <table name="PMGenerationDetail">
-	<field name="FirmScheduleData"/>
-	<field name="DetailType"/>
+		<field name="FirmScheduleData"/>
+		<field name="DetailType"/>
+		<field name="ScheduledWorkOrderID"/>
   </table>
-  <table name="PMGenerationBatch">
-	<field name="SessionID"/>
-  </table>
+	<table name="PMGenerationBatch">
+		<field name="SessionID"/>
+	</table>
+  <table name="WorkOrderStateHistoryStatus"/>
 </database>

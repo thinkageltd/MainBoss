@@ -22,9 +22,9 @@ namespace Thinkage.MainBoss.MBUtility {
 			}
 		}
 		private ListImportSchemasVerb(Definition options) {
-			Options = options;
+//			Options = options;
 		}
-		private readonly Definition Options;
+//		private readonly Definition Options;
 		private void Run() {
 			DataImportExportHelper.Setup(); // establish Tbl definition requirements
 			System.Collections.Generic.List<Thinkage.Libraries.Translation.Key> sorted = new System.Collections.Generic.List<Thinkage.Libraries.Translation.Key>(TIGeneralMB3.RegisteredImportKeys.Keys);

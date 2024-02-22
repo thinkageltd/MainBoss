@@ -15,37 +15,39 @@ using Thinkage.Libraries.XAF.UI.MSWindows;
 using Thinkage.MainBoss.Database;
 using Thinkage.MainBoss.Database.Service;
 using Thinkage.Libraries.XAF.Database.Service.MSSql;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 	#region CommanLine Setup and Processing
-	public interface IServiceVerbDefinition	{
-		Thinkage.Libraries.CommandLineParsing.Optable Optable	{
+	public interface IServiceVerbDefinition {
+		Thinkage.Libraries.CommandLineParsing.Optable Optable {
 			get;
 		}
-		string Verb	{
+		string Verb {
 			[return: Thinkage.Libraries.Translation.Invariant]
 			get;
 		}
 		void RunVerb();
 	}
-	public abstract class ServiceVerbDefinition : Thinkage.Libraries.CommandLineParsing.Optable, IServiceVerbDefinition	{
-		public ServiceVerbDefinition([Invariant]string verb)	: base() {
+	public abstract class ServiceVerbDefinition : Thinkage.Libraries.CommandLineParsing.Optable, IServiceVerbDefinition {
+		protected ServiceVerbDefinition([Invariant]string verb) : base() {
 			Verb = verb;
 		}
-		public Optable Optable	{
-			get	{
+		public Optable Optable {
+			get {
 				return this;
 			}
 		}
-		public string Verb	{
+		public string Verb {
 			[return: Thinkage.Libraries.Translation.Invariant]
-			get;  set;
+			get; set;
 		}
 		public abstract void RunVerb();
 	}
 	public abstract class ServiceVerbWithServiceNameDefinition : ServiceVerbDefinition, IServiceVerbDefinition {
-		public ServiceVerbWithServiceNameDefinition([Invariant]string verb) : base(verb)	{
-			Add(ServiceCodeOption		= new StringValueOption(KB.I("ServiceCode"), KB.K("The service name to perform operation on").Translate(), true));
+		protected ServiceVerbWithServiceNameDefinition([Invariant]string verb) : base(verb) {
+			Add(ServiceCodeOption = new StringValueOption(KB.I("ServiceCode"), KB.K("The service name to perform operation on").Translate(), true));
 			Add(SqlConnectionOption = new StringValueOption(KB.I("Connection"), KB.K("The SQL server connection string").Translate(), true));
 		}
 		public readonly StringValueOption ServiceCodeOption;
@@ -104,10 +106,11 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 		protected override void CreateUIFactory() {
 			new ApplicationTblDefaultsUsingWindows(this, new ETbl(), new AllowAllTablesAllOperationsPermissionsManager(Root.Table), Root.Table, null, null);
 			new StandardApplicationIdentification(this, ApplicationParameters.RegistryLocation, "MainBoss Service Control");
-			new GUIApplicationIdentification(this, "Thinkage.MainBoss.MainBossServiceConfiguration.Resources.ServiceIcon.ico");
+			new GUIApplicationIdentification(this, Resources.Images.ServiceIcon);
 			new Thinkage.Libraries.XAF.UI.MSWindows.UserInterface(this);
 			new Thinkage.Libraries.Presentation.MSWindows.UserInterface(this);
-			var uiFactory = new MSWindowsUIFactory(this) {
+
+			_ = new MSWindowsUIFactory(this) {
 				FixedPitchControlFontFamily = Configuration.MonospaceFontFamilyForDisplay,
 				ProportionalControlFontFamily = Configuration.RegularFontFamilyForDisplay
 			};
@@ -120,12 +123,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 		private class Optable : Thinkage.Libraries.CommandLineParsing.Optable {
 			public Optable(params ServiceVerbDefinition[] subapps) {
 				Subapps = subapps;
-				object[] arg = new object[subapps.Length * 2];
-				for (int i = 0; i < subapps.Length; i++) {
-					arg[2 * i] = subapps[i].Verb;
-					arg[2 * i + 1] = subapps[i];
-				}
-				DefineVerbs(true, arg);
+				DefineVerbs(true, subapps.Select(svd => new KeyValuePair<string, Libraries.CommandLineParsing.Optable>(svd.Verb, svd.Optable)));
 			}
 			private readonly ServiceVerbDefinition[] Subapps;
 			public void RunVerb() {
@@ -147,7 +145,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 		protected string ServiceName;
 		protected ServiceParms dbParms;
 		protected ServiceVerbWithServiceNameDefinition Options = null;
-		protected string ServiceBinary {
+		protected static string ServiceBinary {
 			get {
 				string currentExecutingPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
 				return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(currentExecutingPath), KB.I("Thinkage.MainBoss.Service.exe"));
@@ -158,7 +156,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 		protected ServiceController Controller = null;
 		protected ServiceConfiguration ServiceParameters = null;
 		protected MB3Client.ConnectionDefinition DBConnection;
-		protected Version MinServerVersion = new Version(0,0,0,0);
+		protected Version MinServerVersion = new Version(0, 0, 0, 0);
 		protected String MBVersion = Thinkage.Libraries.VersionInfo.ProductVersion.ToString();
 
 		public enum ServiceOpType { Create, Delete, Use };
@@ -169,7 +167,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			Options = options;
 			Action = action;
 			ServiceName = Options.ServiceCodeOption.Value;
-			SQLConnectionInfo sqlConnectionInfo = null;
+			SQLConnectionInfo sqlConnectionInfo;
 			try {
 				sqlConnectionInfo = new SQLConnectionInfo(Options.SqlConnectionOption.Value);
 			}
@@ -199,14 +197,17 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 					dbParms = CheckServiceCmdLine(ServiceParameters, dbParms, OperationType == ServiceOpType.Delete ? null : ServiceBinary, ServiceUtilities.MinRequiredServiceVersion(DBConnection));
 			}
 			catch (System.Exception ex) {
-				if (!(ex is GeneralException))
-					ex = new GeneralException(ex, KB.K("Errors in MainBoss Service configuration. The Windows Service for MainBoss must be reconfigured"));
-				Log.LogError(Thinkage.Libraries.Exception.FullMessage(ex));
-				throw ex;
+				var rex = ex;
+				if (!(rex is GeneralException))
+					rex = new GeneralException(ex, KB.K("Errors in MainBoss Service configuration. The Windows Service for MainBoss must be reconfigured"));
+				Log.LogError(Thinkage.Libraries.Exception.FullMessage(rex));
+				if (rex != ex)
+					throw rex;
+				throw;
 			}
 		}
 		protected void VerifyDatabaseServer(string computer) {
-			if (! DomainAndIP.HasIPAddresses(computer) ) {
+			if (!DomainAndIP.HasIPAddresses(computer)) {
 				Thinkage.Libraries.Application.Instance.DisplayError(Thinkage.Libraries.Strings.Format(KB.K("Cannot find the IP address of the computer where the SQL Server '{0}' runs"), computer));
 				Environment.Exit(1);
 			}
@@ -255,19 +256,19 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 										), Environment.UserName, dbParms.ConnectionInfo.DatabaseName, dbParms.ConnectionInfo.DatabaseServer);
 			}
 		}
-		public VerifyServiceAccessToDatabase VerifyServiceUserPermissions(MB3Client.ConnectionDefinition dbConnection, ServiceConfiguration config, AuthenticationCredentials credentials) {
-			GeneralException error = null;
-			bool sameComputer = DomainAndIP.IsThisComputer(dbParms.ServiceComputer);
+		public VerifyServiceAccessToDatabase VerifyServiceUserPermissions(ServiceConfiguration config, AuthenticationCredentials credentials) {
 			var sqlServerUserid = new VerifyServiceAccessToDatabase(dbParms, config, DBSession.ConnectionInfo, false);
-			if (sqlServerUserid.HasAccessToDatabase && sqlServerUserid.IsMainBossUser) return sqlServerUserid;
-			error = sqlServerUserid.ReportAccessError();
+			if (sqlServerUserid.HasAccessToDatabase && sqlServerUserid.IsMainBossUser)
+				return sqlServerUserid;
+			GeneralException error = sqlServerUserid.ReportAccessError();
 			if (credentials.Type != AuthenticationMethod.WindowsAuthentication && config != null)
 				error = ServiceUtilities.TryAccessToDatabase(config, dbParms);
 			//
 			// still need check if right version
 			// check if correct executable.
 			//
-			if (error != null) throw error;
+			if (error != null)
+				throw error;
 			return sqlServerUserid;
 		}
 		protected TimeSpan ServiceOperationTimeOut = TimeSpan.FromMinutes(2);
@@ -309,15 +310,14 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			catch (System.Exception e) {
 				ex = e;
 			}
-			if ( Controller.WaitForStatus(wantedStatus) )
+			if (Controller.WaitForStatus(wantedStatus))
 				return; // all errors will be forgiven if the service is in desired state
 			ex = ex ?? (System.Exception)Controller.LastStatusError;
 			Log.LogError(Strings.IFormat("{0}  {1}", Strings.Format(Thinkage.Libraries.Service.Application.InstanceMessageCultureInfo, KB.K("Cannot {0} Windows Service for MainBoss '{1}' on computer '{2}'."), operation, dbParms.ServiceCode, dbParms.ServiceComputer), ex == null ? "" : Thinkage.Libraries.Exception.FullMessage(ex)));
 			throw new GeneralException(ex, KB.K("Cannot {0} Windows Service for MainBoss '{1}' on computer '{2}'."), operation, dbParms.ServiceCode, dbParms.ServiceComputer);
 		}
 		protected static ServiceParms CheckServiceCmdLine(ServiceConfiguration sc, ServiceParms parms, string serviceBinary, Version minVersion) {
-			Libraries.Exception baseError = null;
-			baseError = ServiceUtilities.TestForValidMainBossService(sc, parms);
+			Libraries.Exception baseError = ServiceUtilities.TestForValidMainBossService(sc, parms);
 			// If a user creates another database from a backup on the both database will have the same Service Configuration
 			// The one from the second database will be wrong. The user has to be able to delete the service configuration 
 			// on the new database without deleting the service that belongs to the other one.
@@ -333,8 +333,9 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 				Thinkage.Libraries.Application.Instance.DisplayWarning(Strings.Format(KB.K("The Windows Service for MainBoss '{0}' is configured to run as user {1} but the MainBoss Service configuration record shows the service to be running as '{2}'."), sc.ServiceName, sc.StartName, parms.WorkingServiceUserid));
 			return parms;
 		}
-		protected string CheckServiceStartup(ServiceConfiguration sc, ServiceParms parms ) {
-			if (sc == null) return null;
+		protected string CheckServiceStartup(ServiceConfiguration sc, ServiceParms parms) {
+			if (sc == null)
+				return null;
 			string problemText = null;
 			if (sc.StartType == System.ServiceProcess.ServiceStartMode.Disabled) {
 				var p = AddError(problemText, Strings.Format(KB.K("The Windows Service for MainBoss '{0}' on computer '{1}' can not be run because it has been disabled"), sc.ServiceName, sc.ServiceComputer));
@@ -347,15 +348,15 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 				problemText = AddError(problemText, p);  // not sure if it should be an error, or just a warning
 			}
 			if (parms.ServiceUserid != null && Utilities.UseridToDisplayName(sc.StartName) != parms.ServiceUserid) {
-				var p = Strings.Format(KB.K("The Service Configuration expects the service to be running as user '{0}'. The MainBoss Service is configured to be running as {1}")
+				var p = Strings.Format(KB.K("The Service Configuration expected the service to be running as user '{0}'. The MainBoss Service is configured to be running as '{1}'")
 					, parms.ServiceUserid, Utilities.UseridToDisplayName(sc.StartName));
-				Log.LogWarning(p);
-				problemText = AddError(problemText, p);
+				Log.LogInfo(p);
 			}
 			return problemText;
 		}
-		protected string AddError(string old, string e) {
-			if (old == null) return e;
+		protected static string AddError(string old, string e) {
+			if (old == null)
+				return e;
 			return old + Environment.NewLine + Environment.NewLine + e;
 		}
 		protected void AccessQuestion(VerifyServiceAccessToDatabase accessToDatabase) {
@@ -391,19 +392,19 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 				new ConfigureServiceVerb(this).Run();
 			}
 		}
-		private ConfigureServiceVerb(Definition options) : base(ServiceOpType.Create, KB.K("Configure Service"), options) {}
+		private ConfigureServiceVerb(Definition options) : base(ServiceOpType.Create, KB.K("Configure Service"), options) { }
 		private void Run() {
 			bool oKToContinue = false;
 			bool sameComputer = DomainAndIP.IsThisComputer(dbParms.ServiceComputer);
-			if( ! sameComputer )
+			if (!sameComputer)
 				throw new GeneralException(KB.K("The Windows Service for MainBoss must be configured from the computer that it is to be run on."), dbParms.ServiceCode);
-			try { 
-				ServiceParameters = ServiceConfiguration.AcquireServiceConfiguration(true, true, dbParms.ServiceComputer??DomainAndIP.MyDnsName, dbParms.ServiceCode);
+			try {
+				ServiceParameters = ServiceConfiguration.AcquireServiceConfiguration(true, true, dbParms.ServiceComputer ?? DomainAndIP.MyDnsName, dbParms.ServiceCode);
 			}
-			catch(System.Exception e ) {
-					throw e as GeneralException ?? new GeneralException(e, KB.K("Cannot access Windows Service properties"), dbParms.ServiceComputer);
+			catch (System.Exception e) {
+				throw e as GeneralException ?? new GeneralException(e, KB.K("Cannot access Windows Service properties"), dbParms.ServiceComputer);
 			}
-			if ( ServiceParameters != null && !ServiceParameters.ServiceDetailsAvailable )
+			if (ServiceParameters != null && !ServiceParameters.ServiceDetailsAvailable)
 				throw new GeneralException(KB.K("Insufficient permissions to examine the details of the Windows Service for MainBoss '{0}'"), dbParms.ServiceCode);
 			if (ServiceParameters != null) {
 				//
@@ -413,7 +414,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 				// 3) The service record was removed from the database with out removing the record
 				//    (delete service will do this, but only after asking, the functionality is need when a computer will no longer be available.
 				//    in this case we quietly re add the service)
-				if( ServiceParameters.ConnectionInfo == null ) {
+				if (ServiceParameters.ConnectionInfo == null) {
 					if (!ServiceParameters.IsMainBossDatabase)
 						throw new GeneralException(KB.K("There is already a Windows Service named '{0}' on this computer"), dbParms.ServiceCode);
 					else
@@ -423,7 +424,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 							|| string.Compare(ServiceParameters.ConnectionInfo.DatabaseName, dbParms.ConnectionInfo.DatabaseName, true) != 0)
 					throw new GeneralException(KB.K("A Windows Service for MainBoss '{0}' exists for this computer but the Service is for Database '{1}' on SQL Server '{2}'")
 						, dbParms.ServiceCode, ServiceParameters.DatabaseName, ServiceParameters.DatabaseServer);
-				if( dbParms.MBVersion == null ) { // no service record exists, but a service exists and is for our database, create a service record for it.
+				if (dbParms.MBVersion == null) { // no service record exists, but a service exists and is for our database, create a service record for it.
 					dbParms.ServiceComputer = DomainAndIP.MyDnsName;
 					dbParms.ServiceUserid = ServiceParameters.ServiceUserid;
 					dbParms.ConnectionInfo = ServiceParameters.ConnectionInfo;
@@ -442,7 +443,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 					var questiontextc = Strings.Format(KB.K("There is an existing Windows Service for MainBoss using {0}. Do you wish to change the credentials to {1}?"),
 						ServiceParameters.ConnectionInfo.Credentials.ToString(), dbParms.ConnectionInfo.Credentials.ToString());
 					needsUpdate = true;
-					if (Thinkage.Libraries.Application.Instance.AskQuestion(questiontextc, Strings.Format(KB.K("Change MainBoss Service Credentials")), Ask.Questions.YesNo) == Ask.Result.Yes) 
+					if (Thinkage.Libraries.Application.Instance.AskQuestion(questiontextc, Strings.Format(KB.K("Change MainBoss Service Credentials")), Ask.Questions.YesNo) == Ask.Result.Yes)
 						ServiceParameters.ConnectionInfo = dbParms.ConnectionInfo;
 					else
 						dbParms.ConnectionInfo = ServiceParameters.ConnectionInfo;
@@ -460,15 +461,14 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			var problem = accessToDatabase.ReportAccessPermissionOnDatabase();
 			if (problem != null)
 				Thinkage.Libraries.Application.Instance.DisplayWarning(problem);
-			if ( !sameComputer &&  ServiceParameters == null) {
+			if (!sameComputer && ServiceParameters == null) {
 				var questiontext1 = KB.K("The service was installed on computer '{0}', but is no longer installed there.{1}Do you want to install a Windows Service for MainBoss '{2}' on this computer?");
-				oKToContinue = Thinkage.Libraries.Application.Instance.AskQuestion(Strings.Format(questiontext1,dbParms.ServiceComputer, Environment.NewLine, dbParms.ServiceCode), Strings.Format(KB.K("Create Windows Service for MainBoss '{0}'"), dbParms.ServiceCode), Ask.Questions.YesNo) == Ask.Result.Yes;
+				oKToContinue = Thinkage.Libraries.Application.Instance.AskQuestion(Strings.Format(questiontext1, dbParms.ServiceComputer, Environment.NewLine, dbParms.ServiceCode), Strings.Format(KB.K("Create Windows Service for MainBoss '{0}'"), dbParms.ServiceCode), Ask.Questions.YesNo) == Ask.Result.Yes;
 				if (!oKToContinue) {
 					ServiceUtilities.DeleteServiceFromDatabase(DBConnection, dbParms, Log);
 					throw new GeneralException(KB.K("Creation of Windows Service for MainBoss '{0}' on computer '{1}' canceled"), dbParms.ServiceCode);
 				}
 				dbParms.ServiceComputer = DomainAndIP.MyDnsName;
-				sameComputer = true;
 			}
 			if (String.Compare(accessToDatabase.SqlUserid, Utilities.LOCALADMIN_DISPLAYNAME, ignoreCase: true) == 0)
 				Log.LogWarning(Strings.Format(KB.K("Windows Service for MainBoss should not run as user {0}. Use 'NT AUTHORITY\\Network Service' instead"), accessToDatabase.SqlUseridFormatted));
@@ -551,7 +551,8 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			if (accessErrors != null)
 				AccessQuestion(accessToDatabase);
 			string startupErrors = CheckServiceStartup(ServiceParameters, dbParms);
-			var p = accessToDatabase.ReportAccessPermissionOnDatabase();
+
+			_ = accessToDatabase.ReportAccessPermissionOnDatabase();
 			if (startupErrors != null)
 				Thinkage.Libraries.Application.Instance.DisplayError(startupErrors);
 			else if (sameComputer)
@@ -577,9 +578,9 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 		}
 		private void Run() {
 			var sameComputer = DomainAndIP.IsThisComputer(dbParms.ServiceComputer);
-			bool canDeleteService = false;
 			bool serviceComputerExists = false;
 			Libraries.Exception NotMainBossService = null;
+			bool canDeleteService;
 			try {
 				ServiceParameters = ServiceConfiguration.AcquireServiceConfiguration(true, true, dbParms.ServiceComputer, dbParms.ServiceCode);
 				if (ServiceParameters != null) {
@@ -627,7 +628,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			bool okToDelete = DeleteServiceQuestion(canDeleteService, sameComputer, NotMainBossService, dbParms);
 			if (!okToDelete)
 				Thinkage.Libraries.Application.Instance.DisplayInfo(Strings.Format(KB.K("The Windows Service for MainBoss '{0}' has not been removed from computer '{1}'"), dbParms.ServiceCode, dbParms.ServiceComputer));
-			else { 
+			else {
 				if (dbParms.ServiceComputer == null) // in case a service exists but no service record
 					dbParms.ServiceComputer = DomainAndIP.MyDnsName;
 				if (ServiceParameters != null) { // service does no actual exist but MainBoss thinks it does.
@@ -637,7 +638,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 					Controller = null;
 				}
 				dbParms.MBVersion = null;
-				if (dbParms.ServiceCode != null && ServiceParameters != null ) {
+				if (dbParms.ServiceCode != null && ServiceParameters != null) {
 					try {
 						//System.Diagnostics.Debug.Assert(false, "Service delete testing");
 						ServiceInstaller.Uninstall(dbParms.ServiceCode, dbParms.ServiceComputer);
@@ -652,30 +653,31 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			}
 			Log.LogClose(null);
 		}
-		bool DeleteServiceQuestion(bool canDeleteService, bool sameComputer, Thinkage.Libraries.Exception serviceError, ServiceParms dbParms) {
+
+		private static bool DeleteServiceQuestion(bool canDeleteService, bool sameComputer, Thinkage.Libraries.Exception serviceError, ServiceParms dbParms) {
 			if (canDeleteService) {
 				string questionText = sameComputer ? Strings.Format(KB.K("Remove the Windows Service for MainBoss '{0}'"), dbParms.ServiceCode)
 					: Strings.Format(KB.K("Remove the Windows Service for MainBoss '{0}' installed on computer '{1}'"), dbParms.ServiceCode, dbParms.ServiceComputer);
 				if (serviceError != null)
 					questionText = string.Concat(Thinkage.Libraries.Exception.FullMessage(serviceError), Environment.NewLine + Environment.NewLine, questionText);
-				return canDeleteService = Thinkage.Libraries.Application.Instance.AskQuestion(questionText, Strings.Format(KB.K("Delete the MainBoss Service")), Ask.Questions.YesNo) != Ask.Result.No;
+				return Thinkage.Libraries.Application.Instance.AskQuestion(questionText, Strings.Format(KB.K("Delete the MainBoss Service")), Ask.Questions.YesNo) != Ask.Result.No;
 			}
-			else if (!canDeleteService && !sameComputer )
+			else if (!canDeleteService && !sameComputer)
 				throw new GeneralException(KB.K("Login to computer '{0}' to delete the Windows Service for MainBoss '{1}'"), dbParms.ServiceComputer, dbParms.ServiceCode);
 			throw new GeneralException(KB.K("You do not have permission to access windows services on computer '{0}'"), dbParms.ServiceComputer);
 		}
 	}
 	#endregion
 	#region StartService
-	internal class StartServiceVerb: MainBossServiceVerb	{
+	internal class StartServiceVerb : MainBossServiceVerb {
 		public class Definition : ServiceVerbWithServiceNameDefinition {
-			public Definition()	: base("StartService") {}
-			public override void RunVerb()	{
+			public Definition() : base("StartService") { }
+			public override void RunVerb() {
 				new StartServiceVerb(this).Run();
 			}
 		}
 		private StartServiceVerb(Definition options) : base(ServiceOpType.Use, KB.K("Start Service"), options) {
-			if (dbParms.ServiceComputer != null && !DomainAndIP.HasIPAddresses(dbParms.ServiceComputer) )
+			if (dbParms.ServiceComputer != null && !DomainAndIP.HasIPAddresses(dbParms.ServiceComputer))
 				throw new GeneralException(KB.K("Cannot find an IP address for the computer '{0}' referenced in the MainBoss Service configuration information"), dbParms.ServiceComputer);
 		}
 		private void Run() {
@@ -683,7 +685,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			CheckEnvironment();
 			if (DBSession != null && ServiceParameters.ServiceFound) {// if we can't get to the database or get the to the registry we can't verify the user.
 				ServiceUtilities.VerifyServiceParameters(ServiceParameters, dbParms, Log);
-				VerifyServiceUserPermissions(DBConnection, ServiceParameters, ServiceParameters.Credentials);
+				VerifyServiceUserPermissions(ServiceParameters, ServiceParameters.Credentials);
 			}
 			DoServiceOperation(KB.K("Start"), ServiceController.Statuses.Running);
 			Controller.Dispose();
@@ -692,18 +694,18 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 	}
 	#endregion
 	#region StopService
-	internal class StopServiceVerb : MainBossServiceVerb	{
+	internal class StopServiceVerb : MainBossServiceVerb {
 		public class Definition : ServiceVerbWithServiceNameDefinition {
-			public Definition() 	: base("StopService") {}
-			public override void RunVerb()	{
+			public Definition() : base("StopService") { }
+			public override void RunVerb() {
 				new StopServiceVerb(this).Run();
 			}
 		}
 		private StopServiceVerb(Definition options) : base(ServiceOpType.Use, KB.K("Stop Service"), options) {
-			if (dbParms.ServiceComputer != null && !DomainAndIP.HasIPAddresses(dbParms.ServiceComputer) )
+			if (dbParms.ServiceComputer != null && !DomainAndIP.HasIPAddresses(dbParms.ServiceComputer))
 				throw new GeneralException(KB.K("Cannot find an IP address for the computer '{0}' referenced in the MainBoss Service configuration information"), dbParms.ServiceComputer);
 		}
-		private void Run()	{
+		private void Run() {
 			ObtainController();
 			CheckEnvironment();
 			DoServiceOperation(KB.K("Stop"), ServiceController.Statuses.Stopped);
@@ -713,7 +715,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 	}
 	#endregion
 	#region RestartService
-	internal class RestartServiceVerb: MainBossServiceVerb {
+	internal class RestartServiceVerb : MainBossServiceVerb {
 		public class Definition : ServiceVerbWithServiceNameDefinition {
 			public Definition() : base("RestartService") { }
 			public override void RunVerb() {
@@ -721,17 +723,17 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 			}
 		}
 		private RestartServiceVerb(Definition options) : base(ServiceOpType.Use, KB.K("Restart Service"), options) {
-			if (dbParms.ServiceComputer != null && !DomainAndIP.HasIPAddresses(dbParms.ServiceComputer) )
+			if (dbParms.ServiceComputer != null && !DomainAndIP.HasIPAddresses(dbParms.ServiceComputer))
 				throw new GeneralException(KB.K("Cannot find an IP address for the computer '{0}' referenced in the MainBoss Service configuration information"), dbParms.ServiceComputer);
 		}
 		private void Run() {
 			ObtainController();
 			CheckEnvironment();
-			if (DBSession != null && ServiceParameters.ServiceFound ) {// if we can't get to the database or get the to the registry we can't verify the user.
+			if (DBSession != null && ServiceParameters.ServiceFound) {// if we can't get to the database or get the to the registry we can't verify the user.
 				ServiceUtilities.VerifyServiceParameters(ServiceParameters, dbParms, Log);
-				VerifyServiceUserPermissions(DBConnection, ServiceParameters, ServiceParameters.Credentials);
+				VerifyServiceUserPermissions(ServiceParameters, ServiceParameters.Credentials);
 			}
-			if( ServiceParameters.StartType == System.ServiceProcess.ServiceStartMode.Disabled) 
+			if (ServiceParameters.StartType == System.ServiceProcess.ServiceStartMode.Disabled)
 				throw new GeneralException(KB.K("The Windows Service for MainBoss '{0}' on computer '{1}' can not be run because it has been disabled"), Controller.ServiceName, Controller.ServiceComputer);
 			else {
 				DoServiceOperation(KB.K("Stop"), ServiceController.Statuses.Stopped);
@@ -744,9 +746,9 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 	#endregion
 
 	#region AllowAllTablesAllOperationsPermissionManager
-	public class AllowAllTablesAllOperationsPermissionsManager : PermissionsManager, IRightGrantor	{
+	public class AllowAllTablesAllOperationsPermissionsManager : PermissionsManager, IRightGrantor {
 		public AllowAllTablesAllOperationsPermissionsManager(TableRightsGroup namedGroup)
-			: base(true,(PermissionsManager creator, PermissionsGroup owner, string name)=> new Thinkage.Libraries.XAF.UI.PermissionDisabler(owner, name))	{
+			: base(true, (PermissionsManager creator, PermissionsGroup owner, string name) => new Thinkage.Libraries.XAF.UI.PermissionDisabler(owner, name)) {
 			FindPermissionGroup(namedGroup.QualifiedName).SetPermission(Strings.IFormat("{0}.*.*", namedGroup.QualifiedName), true);
 		}
 		#region IRightGrantor Members
@@ -756,13 +758,13 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 		public GeneralException ValidatePermission(string permissionPattern) {
 			throw new NotImplementedException();
 		}
-			#endregion
+		#endregion
 	}
 	#region EmptyTableRights - The Rights structure that defines all the controlled operations in this app for Tables
 	public class EmptyTableRights : NamedRightsGroup {
-#region Constructor
-		public EmptyTableRights() 	: base() {}
-#endregion
+		#region Constructor
+		public EmptyTableRights() : base() { }
+		#endregion
 		public readonly TableRightsGroup Table;
 	}
 	#endregion

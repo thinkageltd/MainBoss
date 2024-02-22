@@ -51,7 +51,8 @@ namespace Thinkage.MainBoss.Database
 			public readonly Right ViewAccounting;								// Permission to view accounting-related information
 			public readonly Right EditAccounting;								// Permission to edit accounting-related information
 			public readonly Right UpgradeDatabase;								// Permission to upgraded this database
-			public readonly Right Customize;									// Permission to Customize the UI
+			public readonly Right Customize;                                    // Permission to Customize the UI
+			public readonly Right MergeContacts;									// Permission to Merge Contacts
 		}
 		#endregion
 		#region TransitionGroupClass
@@ -171,7 +172,7 @@ namespace Thinkage.MainBoss.Database
 			return null;
 
 		}
-		private string GetChoices(RightsGroup g, [Invariant] string separator = ", ") {
+		private static string GetChoices(RightsGroup g, [Invariant] string separator = ", ") {
 			// Didn't find in our RightsGroup, return the set that is allowed
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
 			int counter = 0;

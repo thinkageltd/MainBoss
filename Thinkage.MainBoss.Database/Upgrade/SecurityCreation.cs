@@ -8,14 +8,9 @@ using Thinkage.Libraries.XAF.Database.Layout.Security;
 using Thinkage.Libraries.XAF.Database.Service;
 
 namespace Thinkage.MainBoss.Database {
-	public class SecurityCreation {
+	public static class SecurityCreation {
 		public static readonly string RightSetLocation = KB.I("manifest://localhost/Thinkage.MainBoss.Database,Thinkage/MainBoss/Database/Schema/Security/rightset.xml");
 
-		/// <summary>
-		/// Static class no instance creation allowed
-		/// </summary>
-		private SecurityCreation() {
-		}
 		/// <summary>
 		/// Populate the necessary security data tables according to a given XML definition of rights and roles.
 		/// </summary>
@@ -60,7 +55,7 @@ namespace Thinkage.MainBoss.Database {
 				Guid knownRoleId = KnownIds.RoleAndPrincipalIDFromRoleRight(p.Role.Id, out Guid knownPrincipalId);
 				dsMB.RoleRow row;
 				// locate an existing known role/principal
-				dsMB.PrincipalRow prow = (dsMB.PrincipalRow)updateDs.T.Principal.RowFind(knownPrincipalId);
+				dsMB.PrincipalRow prow = (dsMB.PrincipalRow)updateDs.T.Principal.Rows.Find(knownPrincipalId);
 				if (prow == null) {
 					// make a new role and set the linkage Ids to the known ids
 					row = (dsMB.RoleRow)db.AddNewRowAndBases(updateDs, dsMB.Schema.T.Role);
@@ -133,11 +128,11 @@ namespace Thinkage.MainBoss.Database {
 			// want to avoid duplicates in the database.
 			foreach (Security.RightSet.RoleAndPermission p in securitySet.RolesAndPermissionsFor(roleSet)) {
 				dsMB.UserRoleRow row;
-				Guid roleId = KnownIds.RoleAndPrincipalIDFromRoleRight(p.Role.Id, out Guid roleKnownPrincipalId);
-				System.Data.DataRow[] hits = updateDs.T.UserRole.Select(
-					new ColumnExpressionUnparser().UnParse(
+
+				_ = KnownIds.RoleAndPrincipalIDFromRoleRight(p.Role.Id, out Guid roleKnownPrincipalId);
+				dsMB.UserRoleRow[] hits = updateDs.T.UserRole.Rows.Select(
 						new SqlExpression(dsMB.Path.T.UserRole.F.UserID).Eq(SqlExpression.Constant(databaseCreatorId))
-						.And(new SqlExpression(dsMB.Path.T.UserRole.F.PrincipalID).Eq(SqlExpression.Constant(roleKnownPrincipalId)))));
+						.And(new SqlExpression(dsMB.Path.T.UserRole.F.PrincipalID).Eq(SqlExpression.Constant(roleKnownPrincipalId))));
 				if (hits.Length > 0)
 					continue;
 				row = (dsMB.UserRoleRow)updateDs.DB.AddNewRowAndBases(updateDs, dsMB.Schema.T.UserRole);

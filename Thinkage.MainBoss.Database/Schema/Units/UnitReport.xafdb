@@ -52,11 +52,11 @@
 			ID
 			, RelativeLocationID
 			, PurchaseDate
-			, CASE WHEN ReplacementCost is not null then COALESCE(ReplacementCostLastDate, dbo._DClosestValue(getdate(),2,100)) else COALESCE(PurchaseDate, dbo._DClosestValue(getdate(),2,100)) END
+			, CASE WHEN ReplacementCost is not null then COALESCE(ReplacementCostLastDate, dbo._DClosestDivisions(getdate(), 100)) else COALESCE(PurchaseDate, dbo._DClosestDivisions(getdate(), 100)) END
 			, COALESCE(Unit.ReplacementCost, Unit.OriginalCost)
 			, COALESCE(dbo._IDateDiff(PurchaseDate,ScrapDate), DateAdd(year, TypicalLife, '1900-01-01T00:00:00.000'))
 			, COALESCE(ScrapDate, DateAdd(year, TypicalLife, PurchaseDate))
-			, dbo._DClosestValue(getdate(), 0, 846000000000) <!-- TimeSpan.TicksPerDay -->
+			, cast(cast(getdate() as date) as datetime)
 		  from Unit
 		),
 		unitCalculations2(
@@ -130,20 +130,31 @@ RETURNS nvarchar(max)
 as
 begin
 	declare @result as nvarchar(max)
-	declare @speccode as nvarchar(60)
+	declare @speccode as nvarchar(50)
+	declare @specdesc as nvarchar(150)
+	declare @speccomment as nvarchar(max)
 	declare @spectext as nvarchar(max)
 	declare speccursor cursor scroll
 	for
-		select Code, ReportText from Specification
-		where [UnitLocationID] = @IID
+		select A.Code, A.[Desc], A.[Comment], S.ReportText from UnitAttachment as UA
+		join Specification as S on S.AttachmentID = UA.AttachmentID
+		join Attachment as A on A.Id = UA.AttachmentID
+		where UA.[UnitLocationID] = @IID
+		order by A.Code
 
 	set @result = ''
 	open speccursor
-	fetch first from speccursor into @speccode, @spectext
+	fetch first from speccursor into @speccode, @specdesc, @speccomment, @spectext
 	while @@FETCH_STATUS = 0
 	begin
-		set @result = @result + '[' + @speccode + ']' + char(13) + char(10) + @spectext + char(13) + char(10)
-		fetch next from speccursor into @speccode, @spectext
+		set @result = @result + '[' + @speccode + ']' + char(13) + char(10)
+		if @specdesc is not null 
+			set @result = @result + @specdesc + CHAR(13) + CHAR(10)
+		if @speccomment is not null
+			set @result = @result + @speccomment + CHAR(13) + CHAR(10)
+		set @result = @result + '============================================================' + char(13) + char(10)
+		set @result = @result + @spectext + char(13) + char(10)
+		fetch next from speccursor into @speccode, @specdesc, @speccomment, @spectext
 	end
 	close speccursor
 	if len(@result) > 2
@@ -173,8 +184,11 @@ begin
 	declare @path as nvarchar(max)
 	declare acursor cursor scroll
 	for
-		select Code, [Desc], Comment, [Path] from Attachment
-		where [UnitLocationID] = @IID
+		select A.Code, A.[Desc], A.Comment, AP.[Path] from UnitAttachment as UA
+		join AttachmentPath as AP on UA.AttachmentID = AP.AttachmentID
+		join Attachment as A on AP.AttachmentID = A.Id
+		where UA.[UnitLocationID] = @IID
+		order by A.Code
 
 	set @result = ''
 	open acursor

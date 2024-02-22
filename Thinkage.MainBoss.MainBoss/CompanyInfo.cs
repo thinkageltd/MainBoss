@@ -7,4 +7,4 @@ using System.Reflection;
 // associated with an assembly.
 //
 [assembly: AssemblyCompany("Thinkage Ltd.")]
-[assembly: AssemblyCopyright("Copyright © 2018, Thinkage Ltd.")]
+[assembly: AssemblyCopyright("Copyright © 2024, Thinkage Ltd.")]

@@ -8,31 +8,26 @@
 	<field name="Id" read="RequiredGUID">
 	  <doc>ID of the Location or ItemLocation record</doc>
 	</field>
-	<field name="TableEnum" type="integer(min 0, max 1, nonnull)">
-	  <doc>Record type identification. See DatabaseLayout.ViewRecordTypes.ActiveTemporaryStorageWithItemAssignments for values.</doc>
-	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIItem.ActiveTemporaryStorageWithItemAssignmentsProvider,Thinkage.MainBoss.Controls</extension>
-	</field>
-	<field name="LocationID" type="RequiredGUIDREF" link="Location">
+	<field name="LocationID" type="GUIDREF" link="Location">
 	  <doc>ID of the base LocationID record for temp storage records</doc>
 	</field>
-	<field name="ItemLocationID" type="RequiredGUIDREF" link="ItemLocation">
+	<field name="ItemLocationID" type="GUIDREF" link="ItemLocation">
 	  <doc>ID of the base ItemLocationID record for temp storage assignment records</doc>
 	</field>
 	<field name="ContainingLocationID" type="GUIDREF" link="Location">
-	  <doc>The ID of the base Location record of the location that contains the temp storage</doc>
-	</field>
-	<field name="ParentID" type="GUIDREF" link="ActiveTemporaryStorageWithItemAssignments" labelkey="Active Temporary Storage With Item Assignments">
-	  <doc>The tree parent (null for temp storage, and the temp storage for temp storage assignments)</doc>
+	  <doc>The ID of the base Location record of the location that contains the temp storage, used for browsette filtering</doc>
+	  <extension name="dependson">TemporaryStorage.ContainingLocationID</extension>
+	  <extension name="dependson">ItemLocation.LocationID</extension>
 	</field>
 	<extension name="query">
-			select TS.LocationID, 0, TS.LocationID, NULL, TS.ContainingLocationID, NULL						<!-- DatabaseLayout.ViewRecordTypes.ActiveTemporaryStorageWithItemAssignments.TemporaryStorage -->
+			select TS.LocationID, TS.LocationID, NULL, TS.ContainingLocationID
 				from TemporaryStorage as TS
 				join WorkOrder as WO on WO.ID = TS.WorkOrderID
 				join WorkOrderStateHistory as WOSH on WOSH.ID = WO.CurrentWorkOrderStateHistoryID
 				join WorkOrderState as WOS on WOS.ID = WOSH.WorkOrderStateID
 				where WOS.TemporaryStorageActive != 0
 		  union all
-			select IL.ID, 1, NULL, IL.ID, TS.ContainingLocationID, IL.LocationID	<!-- DatabaseLayout.ViewRecordTypes.ActiveTemporaryStorageWithItemAssignments.TemporaryItemLocation -->
+			select IL.ID, NULL, IL.ID, TS.ContainingLocationID
 				from TemporaryItemLocation as TIL
 				join ActualItemLocation as AIL on AIL.ID = TIL.ActualItemLocationID
 				join ItemLocation as IL on IL.ID = AIL.ItemLocationID
@@ -42,19 +37,24 @@
 				join WorkOrderState as WOS on WOS.ID = WOSH.WorkOrderStateID
 				where WOS.TemporaryStorageActive != 0
 	</extension>
-	<extension name="dependson">Location</extension>
-	<extension name="dependson">WorkOrder</extension>
-	<extension name="dependson">WorkOrderStateHistory</extension>
-	<extension name="dependson">WorkOrderState</extension>
-	<extension name="dependson">ItemLocation</extension>
+	<extension name="dependson">TemporaryStorage.Id</extension>  <!-- to prevent augmenting with all fields being dependencies -->
 	<extension name="dependson">TemporaryItemLocation</extension>
 	<extension name="dependson">TemporaryStorage</extension>
+	<extension name="references">Location</extension>
+	<extension name="references">WorkOrder</extension>
+	<extension name="references">WorkOrderStateHistory</extension>
+	<extension name="references">WorkOrderState</extension>
+	<extension name="references">ItemLocation</extension>
   </table>
   <table name="Location"/>
   <table name="WorkOrder"/>
   <table name="WorkOrderStateHistory"/>
   <table name="WorkOrderState"/>
-  <table name="ItemLocation"/>
+  <table name="ItemLocation">
+	<field name="LocationID"/>
+  </table>
   <table name="TemporaryItemLocation"/>
-  <table name="TemporaryStorage"/>
+  <table name="TemporaryStorage">
+	<field name="ContainingLocationID"/>
+  </table>
 </database>

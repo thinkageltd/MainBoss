@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Thinkage.MainBoss.MainBossServiceConfiguration</RootNamespace>
     <AssemblyName>Thinkage.MainBoss.MainBossServiceConfiguration</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -65,13 +65,23 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CompanyInfo.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MainBossServiceConfigurationApplication.cs" />
     <Compile Include="ProductInfo.cs" />
+    <Compile Include="Resources\Images.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Images.resx</DependentUpon>
+    </Compile>
     <Compile Include="SolutionSettings.cs" />
     <Compile Include="Translation.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\ServiceIcon.ico" />
+    <EmbeddedResource Include="Resources\Images.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Images.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Resources\ServiceIcon.ico" />
     <EmbeddedResource Include="TranslationResources\messages.en.resx" />
     <EmbeddedResource Include="TranslationResources\messages.es.resx" />
     <EmbeddedResource Include="TranslationResources\messages.fr.resx" />

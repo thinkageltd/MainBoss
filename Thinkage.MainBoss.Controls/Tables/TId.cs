@@ -21,10 +21,10 @@ namespace Thinkage.MainBoss.Controls {
 		protected TId(Key ident, System.Drawing.Icon primaryIcon = null, System.Drawing.Icon secondaryIcon = null)
 			: base(ident, primaryIcon, secondaryIcon) {
 		}
-		protected TId([Context("TableObjects", Translatable = true)] string ident, System.Drawing.Image image)
+		protected TId([Context("TableObjects", Translatable = true)] string ident, Libraries.Drawing.Image image)
 			: base(ident, image) {
 		}
-		protected TId(Key ident, System.Drawing.Image image)
+		protected TId(Key ident, Libraries.Drawing.Image image)
 			: base(ident, image) {
 		}
 		#region Variants
@@ -113,6 +113,8 @@ namespace Thinkage.MainBoss.Controls {
 		public static readonly TId AssetCode = new TId("Asset Code");
 		public static readonly TId AssignedGroup = new TId("Assigned Group");
 		public static readonly TId Attachment = new TId("Attachment");
+		public static readonly TId AttachmentPath = new TId("Attachment Path");
+		public static readonly TId AttachmentImage = new TId("Attachment Image");
 		public static readonly TId Backup = new TId("Backup");
 		public static readonly TId BillableRequestor = new TId("Billable Requestor", Images.RequestBillable);
 		public static readonly TId CalendarPeriod = new TId("Calendar Period");
@@ -166,13 +168,13 @@ namespace Thinkage.MainBoss.Controls {
 		public static readonly TId GenerationDetailPredictedWorkOrder = new TId("The Start Date for the work was uncertain so no Work Order is made", Images.WorkOrder, Images.Predicted);
 		public static readonly TId GenerationDetailError = new TId("An error occurred while scheduling the work", Images.Error);
 		public static readonly TId GenerationDetailErrorMakingWorkOrder = new TId("An error occurred creating the Work Order", Images.WorkOrder, Images.Error);
-		public static readonly TId GenerationDetailCommittedMakeWorkOrder = new TId("A Work Order was generated", Images.WorkOrder, Images.Successful);
+		public static readonly TId GenerationDetailCommittedMakeWorkOrder = new TId("Generated Work Order", Images.WorkOrder, Images.Successful);
 		public static readonly TId GenerationDetailMakeUnscheduledWorkOrder = new TId("An unplanned Work Order was created directly from the Unit Maintenance Plan", Images.WorkOrder, Images.Unscheduled);
 		public static readonly TId GenerationDetailInhibited = new TId("The scheduled Work Start Date fell on a date inhibited by the Schedule", Images.Inhibited);
 		public static readonly TId GenerationDetailManualReschedule = new TId("A new Scheduling Basis was manually entered", Images.ManualReschedule);
 		public static readonly TId GenerationDetailCommittedMakeSharedWorkOrder = new TId("A single Work Order was generated for several Schedule Dates that have been deferred to the same date", Images.WorkOrder, Images.Shared);
-		public static readonly TId GenerationDetailMakeWorkOrder = new TId("A Work Order will be generated", Images.WorkOrder, Images.Successful);
-		public static readonly TId GenerationDetailMakeSharedWorkOrder = new TId("A single Work Order will be generated for several Schedule Dates that have been deferred to the same date", Images.WorkOrder, Images.Shared);
+		public static readonly TId GenerationDetailUncommittedMakeWorkOrder = new TId("A Work Order will be generated", Images.WorkOrder, Images.Successful);
+		public static readonly TId GenerationDetailUncommittedMakeSharedWorkOrder = new TId("A single Work Order will be generated for several Schedule Dates that have been deferred to the same date", Images.WorkOrder, Images.Shared);
 		public static readonly TId GenerationDetailWithContainers = new TId("Generation Detail with containers", Images.PMGenerationDetail);
 		public static readonly TId HourlyInside = new TId("Hourly Inside", Images.LaborInside);
 		public static readonly TId HourlyOutside = new TId("Hourly Outside", Images.LaborOutside);
@@ -200,7 +202,9 @@ namespace Thinkage.MainBoss.Controls {
 		public static readonly TId ItemUsageAsParts = new TId("Item Usage as Parts");
 		public static readonly TId LaborForecast = new TId("Labor Forecast");
 		public static readonly TId License = new TId("License");
+		public static readonly TId LinkedAttachment = new TId("Linked Attachment");
 		public static readonly TId LinkedWorkOrder = new TId("Linked Work Order");
+		public static readonly TId LinkedRequest = new TId("Linked Request");
 		public static readonly TId Location = new TId("Location", Images.PostalAddress);
 		public static readonly TId MainBossService = new TId("MainBoss Service");
 		public static readonly TId MainBossServiceConfiguration = new TId("MainBoss Service Configuration");
@@ -323,6 +327,7 @@ namespace Thinkage.MainBoss.Controls {
 		public static readonly TId TemporaryStorageAssignment = new TId("Temporary Storage Assignment", Images.Item);
 		public static readonly TId TimingPeriod = new TId("Timing Period");
 		public static readonly TId Trade = new TId("Trade", Images.Trade);
+		public static readonly TId UnspecifiedTrade = new TId("Unspecified Trade", Images.Trade);
 		public static readonly TId Unit = new TId("Unit", Images.Unit);
 		public static readonly TId UnassignedRequest = new TId("Unassigned Request", Images.Request);
 		public static readonly TId UnassignedPurchaseOrder = new TId("Unassigned Purchase Order", Images.PurchaseOrder);
@@ -330,7 +335,13 @@ namespace Thinkage.MainBoss.Controls {
 		public static readonly TId UnitCategory = new TId("Unit Category");
 		public static readonly TId UnitContactRelationship = new TId("Unit Contact Relationship");
 		public static readonly TId UnitMaintenancePlan = new TId("Unit Maintenance Plan", Images.Task, Images.PMGenerationDetail);
+		public static readonly TId UnitMaintenancePlanNeedScheduleBases = new TId("A schedule basis is need", Images.LaborInside);
+		public static readonly TId UnitMaintenancePlanWorkOrderOk = new TId("Work Orders have been generated ", Images.WorkOrderOpen);
+		public static readonly TId UnitMaintenancePlanWorkInhibited = new TId("Maintenance plan is inhibited", Images.Inhibited);
+		public static readonly TId UnitMaintenancePlanWorkError = new TId("Maintenance plan has an error", Images.Error);
+		public static readonly TId UnitMaintenancePlanWorkErrorMakingWorkorder = new TId("Error while making a Work Order", Images.WorkOrder, Images.Error);
 		public static readonly TId UnitOfMeasure = new TId("Unit of Measure");
+		public static readonly TId UnitAttachment = new TId("Unit Attachment");
 		public static readonly TId UnitRelatedContact = new TId("Unit Related Contact");
 		public static readonly TId UnitRelatedUnit = new TId("Unit Related Unit");
 		public static readonly TId UnitRelation = new TId("Unit Relation");
@@ -340,14 +351,23 @@ namespace Thinkage.MainBoss.Controls {
 		public static readonly TId UnitUsage = new TId("Unit Usage");
 		public static readonly TId User = new TId("MainBoss User", Images.User);
 		public static readonly TId UserSecurityRole = new TId("User Security Role");
+		public static readonly TId ValidateUnitMaintenencePlan = new TId("Validate Unit Maintenance Plan");
 		public static readonly TId Vendor = new TId("Vendor", Images.Vendor);
+		public static readonly TId VendorSalesContact = new TId("Vendor Sales");
+		public static readonly TId VendorServiceContact = new TId("Vendor Service");
+		public static readonly TId VendorAccountingContact = new TId("Vendor Accounting");
+		public static readonly TId VendorSalesServiceContact = new TId("Vendor Sales and Service");
+		public static readonly TId VendorSalesAccountingContact = new TId("Vendor Sales and Accounting");
+		public static readonly TId VendorServiceAccountingContact = new TId("Vendor Service and Accounting");
 		public static readonly TId VendorCategory = new TId("Vendor Category");
 		public static readonly TId VoidCode = new TId("Void Code");
+		public static readonly TId VoidedPhysicalCount = new TId("Voided Physical Count");
 		public static readonly TId VoidPhysicalCount = new TId("Void Physical Count", Images.Item, Images.VoidCountValue);	// TODO (icons): Why include the Item image? VoidCountValue should include it already????
 		public static readonly TId VoidPurchaseOrder = new TId("Void Purchase Order", Images.PurchaseOrderVoid);
 		public static readonly TId VoidWorkOrder = new TId("Void Work Order", Images.WorkOrderVoid);
 		public static readonly TId WorkCategory = new TId("Work Category");
 		public static readonly TId WorkOrder = new TId("Work Order", Images.WorkOrder);
+		public static readonly TId WorkOrderAttachment = new TId("Work Order Attachment");
 		public static readonly TId WorkOrderAssignee = new TId("Work Order Assignee", Images.WorkOrder, Images.Contact);
 		public static readonly TId WorkOrderAssignment = new TId("Work Order Assignment");
 		public static readonly TId WorkOrderAssignmentByAssignee = new TId("Work Order Assignment By Assignee");
@@ -385,6 +405,7 @@ namespace Thinkage.MainBoss.Controls {
 		public static readonly TId WorkOrderStateHistory = new TId("Work Order State History");
 		public static readonly TId WorkOrderStatistics = new TId("Work Order Statistics");
 		public static readonly TId WorkOrderStatus = new TId("Work Order Status");
+		public static readonly TId WorkOrderTemplateAttachment = new TId("Task Attachment");
 		public static readonly TId WorkOrderTemporaryStorage = new TId("Work Order Temporary Storage");
 		// The set of 'other' table objects for MainBoss.
 		public static readonly TId UnitValue = new TId("Unit Value"); // TODO: This should go away ?
@@ -407,6 +428,7 @@ namespace Thinkage.MainBoss.Controls {
 		public static readonly TId WOChartCountByOpenedDate = new TId("Work Order Count by Opened Date");
 		public static readonly TId WOChartCountByEndedDate = new TId("Work Order Count by Ended Date");
 		public static readonly TId WOChartAverageDuration = new TId("Average Work Order Duration by Grouping");
+		public static readonly TId WOChartAverageSelectedDuration = new TId("Average Selected Duration by Grouping");
 		public static readonly TId WOChartTotalDuration = new TId("Total Work Order Duration by Grouping");
 		public static readonly TId WOChartLifetime = new TId("Work Order Lifetime");
 		public static readonly TId WOChartCount = new TId("Work Order Count by Grouping");

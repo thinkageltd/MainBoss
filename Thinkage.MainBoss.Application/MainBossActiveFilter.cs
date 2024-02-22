@@ -10,10 +10,8 @@ using Thinkage.Libraries.XAF.UI;
 using Thinkage.MainBoss.Controls;
 using Thinkage.MainBoss.Database;
 
-namespace Thinkage.MainBoss.Application
-{
-	public class MainBossActiveFilter : ApplicationWithLastUpdateFilter
-	{
+namespace Thinkage.MainBoss.Application {
+	public class MainBossActiveFilter : ApplicationWithLastUpdateFilter {
 		public DateTime? ActiveFilterSinceDate;
 		public TimeSpan? ActiveFilterInterval;
 		#region ActiveFilterEditLogic
@@ -31,11 +29,9 @@ namespace Thinkage.MainBoss.Application
 				filter.ActiveFilterSinceDate = (DateTime?)ActiveFilterSinceDateControl.Value;
 				filter.ActiveFilterInterval = (TimeSpan?)ActiveFilterIntervalControl.Value;
 				filter.LastUpdateFilterChanged();
-				return new object[0];
+				return Array.Empty<object>();
 			}
-			public static Tbl EditTbl;
-			static ActiveFilterEditLogic() {
-				EditTbl = new Tbl(null, TId.ActiveFilter,
+			public static readonly Tbl EditTbl = new Tbl(null, TId.ActiveFilter,
 					new Tbl.IAttr[] {
 							xyzzy.LocationGroup,
 							new ETbl(ETbl.EditorDefaultAccess(false), ETbl.EditorAccess(true, EdtMode.Edit, EdtMode.View), ETbl.LogicClass(typeof(ActiveFilterEditLogic)))
@@ -49,7 +45,7 @@ namespace Thinkage.MainBoss.Application
 								Fmt.SetInitialValue(() => ((MainBossActiveFilter)Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithLastUpdateFilter>()).ActiveFilterInterval),
 								ECol.SetUserChangeNotify(),
 								Fmt.SetCreatedT<ActiveFilterEditLogic>(
-									delegate(ActiveFilterEditLogic editor, IBasicDataControl valueCtrl) {
+									delegate (ActiveFilterEditLogic editor, IBasicDataControl valueCtrl) {
 										editor.ActiveFilterIntervalControl = valueCtrl;
 									}
 								)
@@ -60,7 +56,7 @@ namespace Thinkage.MainBoss.Application
 								Fmt.SetInitialValue(() => ((MainBossActiveFilter)Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithLastUpdateFilter>()).ActiveFilterSinceDate),
 								ECol.SetUserChangeNotify(),
 								Fmt.SetCreatedT<ActiveFilterEditLogic>(
-									delegate(ActiveFilterEditLogic editor, IBasicDataControl valueCtrl) {
+									delegate (ActiveFilterEditLogic editor, IBasicDataControl valueCtrl) {
 										editor.ActiveFilterSinceDateControl = valueCtrl;
 									}
 								)
@@ -68,19 +64,16 @@ namespace Thinkage.MainBoss.Application
 						)
 					)
 				);
-			}
 		}
 		#endregion
 
 		public MainBossActiveFilter(GroupedInterface<IApplicationInterfaceGroup> attachTo, DateTime? initialSinceDate, TimeSpan? initialInterval)
-			: base(attachTo)
-		{
+			: base(attachTo) {
 			ActiveFilterSinceDate = initialSinceDate;
 			ActiveFilterInterval = initialInterval;
 		}
 
-		public override SqlExpression GetLastUpdateFilter(SqlExpression lastUpdatePathExpression)
-		{
+		public override SqlExpression GetLastUpdateFilter(SqlExpression lastUpdatePathExpression) {
 			SqlExpression retExpr = SqlExpression.Constant(true);
 			if (ActiveFilterSinceDate.HasValue || ActiveFilterInterval.HasValue) {
 				if (ActiveFilterSinceDate.HasValue)
@@ -115,11 +108,10 @@ namespace Thinkage.MainBoss.Application
 			}
 			return retExpr;
 		}
-		public void CreateEditor(UIFactory uiFactory, UIForm parentForm, DBClient session)
-		{
+		public void CreateEditor(UIFactory uiFactory, UIForm parentForm, DBClient session) {
 			// TODO: EditLogic should now behave with no Client object, so get rid of all this junk passing it around.
 			ITblDrivenApplication appInstance = Libraries.Application.Instance.GetInterface<ITblDrivenApplication>();
-			appInstance.GetInterface<ITblDrivenApplication>().PerformMultiEdit(uiFactory, session, ActiveFilterEditLogic.EditTbl, EdtMode.Edit, new object[][] { new object[] { } }, ApplicationTblDefaults.NoModeRestrictions, null, parentForm, true, null);
+			appInstance.GetInterface<ITblDrivenApplication>().PerformMultiEdit(uiFactory, session, ActiveFilterEditLogic.EditTbl, EdtMode.Edit, new object[][] { Array.Empty<object>() }, ApplicationTblDefaults.NoModeRestrictions, null, parentForm, true, null);
 		}
 	}
 }

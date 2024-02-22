@@ -6,13 +6,9 @@
 	  This represents a price quote or past pricing from a receiving record
 	</doc>
     <field name="Id" read="RequiredGUID" />
-	<field name="TableEnum" type="integer(min 0, max 2,nonnull)">
-	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIItem.ItemPricingProvider,Thinkage.MainBoss.Controls</extension>
-	</field>
 	<!-- The Edit linkages for the underlying records-->
 	<field name="ItemPriceID" type="GUIDREF" link="ItemPrice" labelkey=""/>
-	<field name="ReceiveItemPOID" type="GUIDREF" link="ReceiveItemPO" labelkey=""/>
-	<field name="ReceiveItemNonPOID" type="GUIDREF" link="ReceiveItemNonPO" labelkey=""/>
+	<field name="AccountingTransactionID" type="GUIDREF" link="AccountingTransaction" labelkey=""/>
 	<!-- The following fields are for filtering on this table-->
 	<field name="ItemID" type="RequiredGUIDREF" link="Item"/>
 	<field name="VendorID" type="GUIDREF" link="Vendor"/>
@@ -20,45 +16,40 @@
 	<field name="PurchaseOrderText" type="LineText"/>
 	<field name="Quantity" type="integer(unsigned 31, nonnull)"/>
 	<field name="Cost" type="currency(min 0.00, max 922337203685477.5807, by 0.01, nonnull)"/>
-	<!-- Required to show uniform UnitCosts in ListColumns since all underlying records do not provide one-->
-	<field name="UnitCost" type="UnitCost"/>
 	<extension name="query">
-		select [Id], 0, [ID], null, null, ItemID, VendorID, PurchaseOrderText, Quantity, Cost, UnitCost <!-- ViewRecordTypes.ItemPricing.PriceQuote-->
+		select Id, Id, null, ItemID, VendorID, PurchaseOrderText, Quantity, Cost
 			from ItemPrice
 	  union all
-		select IR.[Id], 1, null, IR.[ID], null, IL.ItemID, PO.VendorId, POL.PurchaseOrderText, RIPO.CorrectedQuantity, RIPO.CorrectedCost, dbo.mbfn_CalculateUnitCost(RIPO.CorrectedCost, RIPO.CorrectedQuantity, 1) <!-- ViewRecordTypes.ItemPricing.ReceivePO-->
-		  from ItemReceiving as IR
-			join ReceiveItemPO as RIPO on RIPO.ID = IR.ID
+		select RIPO.Id, null, RIPO.Id, IL.ItemID, PO.VendorId, POL.PurchaseOrderText, RIPO.CorrectedQuantity, RIPO.CorrectedCost
+		  from ReceiveItemPO as RIPO
 			join POLineItem as POLI on POLI.ID = RIPO.POLineItemID
 			join POLine as POL on POL.ID = POLI.POLineID
 			join PurchaseOrder as PO on PO.ID = POL.PurchaseOrderID
 			join ItemLocation as IL on IL.ID = RIPO.ItemLocationID
-		  where IR.TableEnum = 0 or IR.TableEnum = 1 <!-- ViewRecordTypes.ItemReceiving.ReceivePermanentPO and ViewRecordTypes.ItemReceiving.ReceiveTemporaryPO-->
+		  where RIPO.CorrectionID = RIPO.Id
 	  union all
-		select IR.[Id], 2, null, null, IR.[ID], IL.ItemID, RINPO.VendorId, null, RINPO.CorrectedQuantity, RINPO.CorrectedCost, dbo.mbfn_CalculateUnitCost( RINPO.CorrectedCost, RINPO.CorrectedQuantity, 1 ) <!-- ViewRecordTypes.ItemPricing.ReceiveNonPO-->
-		  from ItemReceiving as IR
-			join ReceiveItemNonPO as RINPO on RINPO.ID = IR.ID
+		select RINPO.Id, null, RINPO.Id, IL.ItemID, RINPO.VendorId, null, RINPO.CorrectedQuantity, RINPO.CorrectedCost
+		  from ReceiveItemNonPO as RINPO
 			join ItemLocation as IL on IL.ID = RINPO.ItemLocationID
-		  where IR.TableEnum = 2 or IR.TableEnum = 3<!-- ViewRecordTypes.ItemReceiving.ReceivePermanentNonPO and ViewRecordTypes.ItemReceiving.ReceiveTemporaryNonPO-->
+		  where RINPO.CorrectionID = RINPO.Id
 	</extension>
-	<extension name="dependson">ItemReceiving</extension>
-	<extension name="dependson">ItemLocation</extension>
 	<extension name="dependson">ItemPrice</extension>
-	<extension name="dependson">POLineItem</extension>
-	<extension name="dependson">POLine</extension>
 	<extension name="dependson">ReceiveItemNonPO</extension>
 	<extension name="dependson">ReceiveItemPO</extension>
+	<extension name="dependson">POLineItem</extension>
+	<extension name="dependson">POLine</extension>
 	<extension name="dependson">PurchaseOrder</extension>
+	<extension name="dependson">ItemLocation</extension>
 	<extension name="costrights">InventoryActivity</extension>
   </table>
-  <table name="ItemReceiving"/>
-  <table name="ItemLocation"/>
+  <table name="ReceiveItemNonPO"/>
+  <table name="ReceiveItemPO"/>
   <table name="ItemPrice"/>
   <table name="POLineItem"/>
   <table name="POLine"/>  
-  <table name="ReceiveItemNonPO"/>
-  <table name="ReceiveItemPO"/>
   <table name="PurchaseOrder"/>
   <table name="Item"/>
+  <table name="ItemLocation"/>
   <table name="Vendor"/>
+  <table name="AccountingTransaction"/>
 </database>

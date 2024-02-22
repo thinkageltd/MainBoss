@@ -39,9 +39,7 @@
 
   <internal name="LocationBase">
 	<tableright name="Location"/>
-	<tableright name="LocationAndContainers"/>
 	<tableright name="LocationContainment"/>
-	<tableright name="LocationDerivations"/>
 	<tableright name="LocationDerivationsAndItemLocations"/>
 	<tableright name="LocationReport"/>
 	<tableright name="RelativeLocation"/>
@@ -147,7 +145,6 @@
 	<tableright name="RequestState"/>
 	<tableright name="RequestStateTransition"/>
 	<tableright name="RequestStateHistory"/>
-	<tableright name="RequestStateHistoryReport"/>
 	<tableright name="RequestReport"/>
 	<tableright name="RequestExtras"/>
 	<tableright name="UnassignedRequest"/>
@@ -210,7 +207,6 @@
 	<tableright name="ItemCountValue"/>
 	<tableright name="ItemCountValueVoid"/>
 	<tableright name="ItemLocation"/>
-	<tableright name="ItemLocationAndContainers"/>
 	<tableright name="ItemLocationContainment"/>
 	<tableright name="PermanentItemLocation"/>
 	<tableright name="TemporaryItemLocation"/>
@@ -258,7 +254,7 @@
 	<include>Specification</include>
 	<tableright name="ActiveTemporaryStorageWithItemAssignments"/>
 	<tableright name="AssetCode">VB</tableright>
-	<tableright name="Attachment"/>
+	<tableright name="UnitAttachment"/>
 	<tableright name="MeterReading"/>
 	<tableright name="Ownership">VB</tableright>
 	<tableright name="ServiceContract"/>
@@ -339,10 +335,8 @@
 	<tableright name="PurchaseOrderAssigneeStatistics"/>
 	<tableright name="PurchaseOrderState"/>
 	<tableright name="PurchaseOrderLinkedWorkOrdersTreeview"></tableright>
-	<tableright name="WorkOrderPurchaseOrderLinkage"/>
 	<tableright name="PurchaseOrderFormReport"/>
 	<tableright name="PurchaseOrderExtras"/>
-	<tableright name="PurchaseOrderStateHistoryReport"/>
 	<tableright name="UnassignedPurchaseOrder"/>
 	<purchaseorder/>
   </right>
@@ -379,7 +373,6 @@
   <right name="PurchaseOrderTemplate">
 	<tableright name="PurchaseOrderTemplate"/>
 	<tableright name="PurchaseOrderTemplateReport"/>
-	<tableright name="PurchaseOrderTemplateLine"/>
 	<tableright name="PurchaseOrderTemplateLinkedWorkOrderTemplatesTreeview"/>
 	<tableright name="POLineTemplate"/>
 	<tableright name="POLineOtherWorkTemplate"/>
@@ -416,7 +409,6 @@
   </internal>
   <right name="WorkOrderChargeback">
 	<tableright name="Chargeback"/>
-	<tableright name="ChargebackActivity"/>
 	<tableright name="ChargebackFormReport"/>
 	<tableright name="ChargebackLine"/>
 	<tableright name="ChargebackLineCategory">VB</tableright>
@@ -536,6 +528,7 @@
 	<tableright name="TemporaryItemLocation"></tableright>
 	<tableright name="WorkCategory">VB</tableright>
 	<tableright name="WorkOrder"/>
+	<tableright name="WorkOrderAttachment">VB</tableright>
 	<tableright name="AssignedWorkOrderEndDateHistogram"/>
 	<tableright name="WorkOrderEndDateHistogram"/>
 	<tableright name="WorkOrderCountsByPriority"/>
@@ -571,6 +564,7 @@
 	<tableright name="MeterReading"/>
 	<tableright name="MiscellaneousWorkOrderCost">VB</tableright>
 	<tableright name="TemplateItemLocation"/>
+	<tableright name="WorkOrderAttachment"/>
 	<tableright name="WorkOrderAssignmentByAssignee"/>
 	<tableright name="WorkOrderAssignment"/>
 	<tableright name="WorkOrderAssignmentReport"/>
@@ -580,11 +574,9 @@
 	<tableright name="WorkOrderExpenseModel">VB</tableright>
 	<tableright name="WorkOrderFormReport"/>
 	<tableright name="WorkOrderExtras"/>
-	<tableright name="WorkOrderStateHistoryReport"/>
 	<tableright name="WorkOrderStateTransition"/>
 	<tableright name="WorkOrderAssigneeStatistics"/>
 	<tableright name="WorkOrderAssignmentAndUnassignedWorkOrder"/>
-	<tableright name="WorkOrderPurchaseOrderLinkage"/>
 	<tableright name="WorkOrderPurchaseOrder"/>
 	<tableright name="PurchaseOrderLinkedWorkOrdersTreeview"></tableright>
 	<tableright name="WorkOrderStateHistory"/>
@@ -606,7 +598,7 @@
 	<include demote="true">TemporaryStorage</include>
 	<include>ItemUse</include>
 	<tableright name="AssignedWorkOrder">VB</tableright>
-	<tableright name="Attachment">VB</tableright>
+	<tableright name="UnitAttachment">VB</tableright>
 	<tableright name="DemandItem">View</tableright>
 	<tableright name="DemandLaborInside">View</tableright>
 	<tableright name="DemandLaborOutside">View</tableright>
@@ -670,7 +662,6 @@
 	<tableright name="WorkOrderTemplatePurchaseOrderTemplateLinkage"/>
 	<tableright name="WorkOrderTemplatePurchaseOrderTemplateView"/>
 	<tableright name="WorkOrderTemplateReport"/>
-	<tableright name="WorkOrderTemplateWithContainers"/>
 	<tableright name="DemandTemplate"/>
 	<tableright name="DemandItemTemplate"/>
 	<tableright name="DemandLaborInsideTemplate"/>
@@ -687,6 +678,7 @@
 	<tableright name="WorkOrderTemplateStorageTreeView"/>
 	<tableright name="DemandOtherWorkInsideTemplate"/>
 	<tableright name="DemandOtherWorkOutsideTemplate"/>
+	<tableright name="WorkOrderTemplateAttachment"/>
   </right>
   <right name="WorkOrderTemplateView">
 	<include demote="true">WorkOrderTemplate</include>
@@ -783,6 +775,7 @@
   <right name="Administration">
 	<action>UpgradeDatabase</action>
 	<action>Customize</action>
+ <action>MergeContacts</action>
 	<include>Requestor</include>
 	<tableright name="CompanyInformation"/>
 	<tableright name="DatabaseHistory"/>
@@ -803,6 +796,9 @@
 	<tableright name="Permission"/>
 	<tableright name="Session"/>
 	<tableright name="ExternalTag"/>
+	<tableright name="Attachment"/>
+	<tableright name="AttachmentPath"/>
+	<!--<tableright name="AttachmentImage"/>-->
 	<tableright name="SingleRecordNoDataTable"/>
 	<tableright name="User"/>
 	<tableright name="UserPrincipal"/>
@@ -837,6 +833,7 @@
 	<workorder/>
 	<tableright name="*"/>
 	<action>UpgradeDatabase</action>
+	<action>MergeContacts</action>
 	<action>EditAccounting</action>
 	<action>ViewAccounting</action>
 	<action>Customize</action>

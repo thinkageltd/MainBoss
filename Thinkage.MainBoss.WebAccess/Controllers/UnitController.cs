@@ -7,6 +7,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		#region View
 		//
 		// GET: /Unit/View?id=
+		[HttpGet]
 		[MainBossAuthorization]
 		public ActionResult View(Guid id) {
 			var repository = NewRepository<UnitRepository>();
@@ -17,6 +18,8 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		#endregion
 		#region Autocomplete
 		[AcceptVerbs(HttpVerbs.Post)]
+		[Web.Mvc.Json.ValidateJsonAntiForgeryTokenAttribute]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA3147:Mark Verb Handlers With Validate Antiforgery Token", Justification = "We have a JSON attribute for validation")]
 		public JsonResult Autocomplete(string term, string pattern) {
 			var repository = NewRepository<UnitRepository>();
 			return Json(repository.Autocomplete(term, pattern), JsonRequestBehavior.AllowGet);

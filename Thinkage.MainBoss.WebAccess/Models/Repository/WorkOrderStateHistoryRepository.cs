@@ -7,6 +7,8 @@ using Thinkage.MainBoss.Database;
 
 namespace Thinkage.MainBoss.WebAccess.Models {
 	[Serializable]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "No need for other constructors")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2229:Implement serialization constructors", Justification = "No need for other constructors")]
 	public class NotRegisteredAsWorkOrderAssigneeException : System.Exception {
 	}
 
@@ -75,8 +77,9 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 				throw new ActionNotPermittedForCurrentStateException();
 			}
 		}
-		delegate void OtherInstruction(CustomInstructions instruction);
-		private void ProcessCustomInstructions(dsMB ds, WorkOrderStateHistoryModel model, IEnumerable<CustomInstructions> instructions, OtherInstruction other) {
+
+		private delegate void OtherInstruction(CustomInstructions instruction);
+		private void ProcessCustomInstructions(dsMB ds, IEnumerable<CustomInstructions> instructions, OtherInstruction other) {
 			if (instructions != null) {
 				foreach (var instruction in instructions) {
 					if (instruction == CustomInstructions.CheckUserIsAssignee) {
@@ -100,7 +103,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 				model.CurrentStatusCode = pDefaultStateHistoryStatusRowCode;
 
 				bool defaultToExisting = false;
-				ProcessCustomInstructions(ds, model, customInstructions, (CustomInstructions instruction) => {
+				ProcessCustomInstructions(ds, customInstructions, (CustomInstructions instruction) => {
 					if (instruction == CustomInstructions.SelfAssign) {
 						if (model.Comment != null)
 							model.Comment += Environment.NewLine;
@@ -140,8 +143,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 					{
 						CommonInit(ds, updatedModel, allowedStates);
 						bool closeWorkOrder = false;
-						ProcessCustomInstructions(ds, updatedModel, instructions, (CustomInstructions instruction) =>
-						{
+						ProcessCustomInstructions(ds, instructions, (CustomInstructions instruction) => {
 							if (instruction == CustomInstructions.CloseWorkOrder)
 								closeWorkOrder = true;
 							if (instruction == CustomInstructions.SelfAssign) {
@@ -149,7 +151,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 								if (assigneeID == Guid.Empty)
 									throw new NotRegisteredAsWorkOrderAssigneeException();
 								ds.EnsureDataTableExists(dsMB.Schema.T.WorkOrderAssignment);
-								var assignToWorkOrderRow = ds.T.WorkOrderAssignment.AddNewWorkOrderAssignmentRow();
+								var assignToWorkOrderRow = ds.T.WorkOrderAssignment.AddNewRow();
 								assignToWorkOrderRow.F.WorkOrderAssigneeID = assigneeID;
 								assignToWorkOrderRow.F.WorkOrderID = updatedModel.WorkOrderID;
 							}
@@ -187,8 +189,9 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 				}
 			}
 		}
+
 		// we keep a static definition so we only execute the filling once. We do not anticipate changes to happen in the StateTransition definitions underneath us.
-		static List<Transition> pTransitions = new List<Transition>();
+		private static readonly List<Transition> pTransitions = new List<Transition>();
 
 		public void GetCurrentStateHistory(dsMB ds, Guid parentID) {
 			ds.DB.ViewOnlyRows(ds, dsMB.Schema.T.WorkOrder, new SqlExpression(dsMB.Path.T.WorkOrder.F.Id).Eq(SqlExpression.Constant(parentID)), null, new DBI_PathToRow[] {

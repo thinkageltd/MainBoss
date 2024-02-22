@@ -1,0 +1,64 @@
+@model ItemCountValueEntities.Item
+@using System
+@using Thinkage.MainBoss.Database
+@using Thinkage.MainBoss.WebAccess
+@using Thinkage.Web.Mvc.Html
+@{
+	Layout = "~/Views/Shared/_LayoutLabelValueView.cshtml";
+	ViewBag.Title = T.Text("View Item {0}", Model.Code);
+}
+@section LabelValueViewPanel {
+	@(Html.LabelValueRow(dsMB.Path.T.Item.F.Code, Model.Code))
+	@(Html.LabelValueRow(dsMB.Path.T.Item.F.Desc, Model.Desc))
+	@(Html.LabelValueRowCodeDesc(dsMB.Path.T.Item.F.UnitOfMeasureID, Model.UnitOfMeasure))
+	@(Html.LabelValueRowCodeDesc(dsMB.Path.T.Item.F.ItemCategoryID, Model.ItemCategory))
+	@(Html.LabelValueRow(dsMB.Path.T.Item.F.OnHand, Model.OnHand))
+	@if ((bool)ViewData["ViewCost"]) {
+		@Html.LabelValueRow(dsMB.Path.T.Item.F.UnitCost, Model.UnitCost, valueIsHtml: false, cssClasses: "UnitCostValue")
+		@Html.LabelValueRow(dsMB.Path.T.Item.F.TotalCost, Model.TotalCost, valueIsHtml: false, cssClasses: "CostValue")
+	}
+	@(Html.LabelValueRow(dsMB.Path.T.Item.F.OnOrder, Model.OnOrder))
+	@(Html.LabelValueRow(dsMB.Path.T.Item.F.OnReserve, Model.OnReserve))
+	@(Html.LabelValueRow(dsMB.Path.T.Item.F.Available, Model.Available))
+	@(Html.LabelValueRowMultiLine(dsMB.Path.T.Item.F.Comment, Model.Comment, true))
+}
+@section LabelValueViewTrailer {
+	@{
+		var storerooms = Model.ItemLocationItem;
+		if (storerooms.Count() > 0) {
+			<h3>@(T.Text("Storerooms"))</h3>
+			<div class="Storerooms">
+				@foreach (var storeroom in (from itemlocation in storerooms
+										   where itemlocation.DerivedActualItemLocation.DerivedPermanentItemLocation != null
+										   orderby itemlocation.DerivedActualItemLocation.DerivedPermanentItemLocation.BaseActualItemLocation.BaseItemLocation.Code
+										   select itemlocation)) {
+					<div class="AccordianHeaderRow">
+						@(Html.ValueOnlyWithValue2Popup(dsMB.Path.T.PermanentStorage.F.RelativeLocationID.F.Code.ReferencedType, storeroom.Location.DerivedRelativeLocation.Code, storeroom.Location.Code, false, "div"))
+						<div class="Description">@(storeroom.DerivedActualItemLocation.OnHand)</div>
+					</div>
+					<div>
+						@(Html.LabelValueRow(dsMB.Path.T.PermanentItemLocation.F.ExternalTag, storeroom.DerivedActualItemLocation.DerivedPermanentItemLocation.ExternalTag))
+						@(Html.LabelValueRow(dsMB.Path.T.ActualItemLocation.F.OnHand, storeroom.DerivedActualItemLocation.OnHand))
+						@(Html.LabelValueRow(dsMB.Path.T.ActualItemLocation.F.OnOrder, storeroom.DerivedActualItemLocation.OnOrder))
+						@(Html.LabelValueRow(dsMB.Path.T.ActualItemLocation.F.OnReserve, storeroom.DerivedActualItemLocation.OnReserve))
+						@(Html.LabelValueRow(dsMB.Path.T.ActualItemLocation.F.Available, storeroom.DerivedActualItemLocation.Available))
+					</div>
+				}
+			</div>
+		}
+	}
+}
+@section BackToContent {
+	@(Html.BackOperation(T.Text("Back to List"), TempData))
+}
+@section scripts {
+	<script>
+		$(function () {
+			$(".Storerooms").accordion({
+				collapsible: true,
+				heightStyle: "content",
+				active: false
+			});
+		});
+	</script>
+}

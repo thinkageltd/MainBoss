@@ -8,7 +8,10 @@
 	@(Html.ResultMessage(@ViewData["ResultMessage"]))
 	@RenderSection("EditFormContent")
 	@RenderSection("EditFormTrailer", required: false)
-	@(Html.BackOperation(T.Text("Cancel"), TempData))
+	<div class="Actions">
+		@(Html.BackOperation(T.Text("Cancel"), TempData))
+		@RenderSection("BackToContent", required: false)
+	</div>
 }
 @section scripts{
 	@RenderSection("scripts", required: false)

@@ -1,10 +1,12 @@
 using System;
 using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
-using Thinkage.Libraries.RDL2010;
+using Thinkage.Libraries.RDL2016;
 using Thinkage.Libraries.RDLReports;
 using Thinkage.Libraries.Translation;
 using Thinkage.MainBoss.Database;
+using Thinkage.Libraries;
+using System.Collections.Generic;
 
 namespace Thinkage.MainBoss.Controls.Reports {
 	#region Work Order Charts
@@ -14,19 +16,18 @@ namespace Thinkage.MainBoss.Controls.Reports {
 			: base(r, logic, dsMB.Path.T.WorkOrder.F.Number) {
 		}
 		protected override void MakeChartTemplates() {
-			var created = DateTimeField(dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID.F.CreatedDate);
-			var opened = DateTimeField(dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID.F.EarliestOpenDate);
-			var ended = DateTimeField(dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID.F.EarliestEndDate);
-			var actualOpenDate = DateTimeField(dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID.F.FirstOpenedDate);
-			var actualEndedDate = DateTimeField(dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID.F.EndedDateIfEnded);
-			var openingDelay = TimeSpanField(new TblQueryExpression(WOStatisticCalculation.OpeningDelay(dsMB.Path.T.WorkOrder, dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.Id)));
-			var endingDelay = TimeSpanField(new TblQueryExpression(WOStatisticCalculation.EndingDelay(dsMB.Path.T.WorkOrder, dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.Id)));
+			var opened = DateTimeField(new TblQueryExpression(WOStatisticCalculation.MergedOpenDate(dsMB.Path.T.WorkOrder)));
+			var ended = DateTimeField(new TblQueryExpression(WOStatisticCalculation.MergedCompletedDate(dsMB.Path.T.WorkOrder)));
+			var actualOpenDate = DateTimeField(dsMB.Path.T.WorkOrder.F.FirstOpenWorkOrderStateHistoryID.F.EffectiveDate);
+			var actualEndedDate = DateTimeField(dsMB.Path.T.WorkOrder.F.CompletionWorkOrderStateHistoryID.F.EffectiveDate);
+			var openingDelay = TimeSpanField(new TblQueryExpression(WOStatisticCalculation.MergedOpeningDelay(dsMB.Path.T.WorkOrder)));
+			var endingDelay = TimeSpanField(new TblQueryExpression(WOStatisticCalculation.MergedEndDelay(dsMB.Path.T.WorkOrder)));
 
-			var createdDelay = TimeSpanField(new TblQueryExpression(WOStatisticCalculation.CreatedDelay(dsMB.Path.T.WorkOrder, dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.Id)));
+			var createdDelay = TimeSpanField(new TblQueryExpression(WOStatisticCalculation.CreatedDelay(dsMB.Path.T.WorkOrder)));
 			var createdLate = (createdDelay > TimeSpan.Zero).Query(createdDelay, TimeSpan.Zero);
 			var createDateRevised = DateTimeField(new TblQueryExpression(
-				SqlExpression.Select(new SqlExpression(dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID.F.CreatedDate).Gt(new SqlExpression(dsMB.Path.T.WorkOrder.F.StartDateEstimate)),
-										new SqlExpression(dsMB.Path.T.WorkOrder.F.StartDateEstimate), new SqlExpression(dsMB.Path.T.WorkOrder.F.Id.L.WorkOrderExtras.WorkOrderID.F.CreatedDate))));
+				SqlExpression.Select(new SqlExpression(dsMB.Path.T.WorkOrder.F.FirstWorkOrderStateHistoryID.F.EffectiveDate).Gt(new SqlExpression(dsMB.Path.T.WorkOrder.F.StartDateEstimate)),
+										new SqlExpression(dsMB.Path.T.WorkOrder.F.StartDateEstimate), new SqlExpression(dsMB.Path.T.WorkOrder.F.FirstWorkOrderStateHistoryID.F.EffectiveDate))));
 
 			var startEarly = (openingDelay < TimeSpan.Zero & actualOpenDate.IsNotNull).Query(-openingDelay, TimeSpan.Zero);
 			var startLate = (openingDelay > TimeSpan.Zero).Query(openingDelay, TimeSpan.Zero);
@@ -39,7 +40,7 @@ namespace Thinkage.MainBoss.Controls.Reports {
 			// Only show overdue for workorders that have actually not ended but have actually been opened, or have never been opened (i.e. still in draft; the overdue part will be the estimated work duration yet to be done)
 			var overdue = (endingDelay > TimeSpan.Zero & actualEndedDate.IsNull & actualOpenDate.IsNotNull).Query(endingDelay - startLate + createdLate, TimeSpan.Zero);
 
-			var draftDuration = (opened - created) - startLate;
+			var draftDuration = (opened - DateTimeField(dsMB.Path.T.WorkOrder.F.FirstWorkOrderStateHistoryID.F.EffectiveDate)) - startLate;
 			var openDuration = (actualOpenDate.IsNotNull).Query((ended - opened) - startEarly - startLate - endEarly - endLate - overdue, TimeSpan.Zero);
 
 			MakeTimelineChart(createDateRevised, TId.WorkOrder.TranslationKey, KB.TOi(TId.WorkOrderState),
@@ -61,12 +62,17 @@ namespace Thinkage.MainBoss.Controls.Reports {
 	public class WOChartCountBase : GenericChartReport {
 		public WOChartCountBase(Report r, ReportViewLogic logic, DBI_Path groupingPath)
 			: base(r, logic, dsMB.Path.T.WorkOrder.F.Id) {
-			GroupingPath = groupingPath;
+			if (groupingPath != null)
+				GroupingValue = TabularReport.MakeSearchValueFromPath(groupingPath);
 		}
-		private readonly DBI_Path GroupingPath;
+		public WOChartCountBase(Report r, ReportViewLogic logic, TblLeafNode groupingNode)
+			: base(r, logic, dsMB.Path.T.WorkOrder.F.Id) {
+			GroupingValue = TabularReport.MakeSearchValueFromNode(groupingNode);
+		}
+		private SearchValueWithData<InteremCommonReportViewLogic.GroupingValueExtraData> GroupingValue;
 		protected override void MakeChartTemplates() {
 			MakeBarChart(null, Expression.Function.Count,
-				TabularReport.MakeSearchValueFromNode(TIWorkOrder.IsPreventiveValueNodeBuilder(dsMB.Path.T.WorkOrder)), GroupingPath == null ? null : TabularReport.MakeSearchValueFromPath(GroupingPath));
+				TabularReport.MakeSearchValueFromNode(TIWorkOrder.IsPreventiveValueNodeBuilder(dsMB.Path.T.WorkOrder)), GroupingValue);
 		}
 	}
 	#endregion
@@ -85,6 +91,60 @@ namespace Thinkage.MainBoss.Controls.Reports {
 		protected override void MakeChartTemplates() {
 			MakeBarChart(YValueNode, AggregateFunction,
 				TabularReport.MakeSearchValueFromNode(TIWorkOrder.IsPreventiveValueNodeBuilder(dsMB.Path.T.WorkOrder)));
+		}
+	}
+	public class WOChartSelectedDurationBase : GenericChartReport {
+		public WOChartSelectedDurationBase(Report r, ReportViewLogic logic, Expression.Function aggregateFunction)
+			: base(r, logic, dsMB.Path.T.WorkOrder.F.Id) {
+			AggregateFunction = aggregateFunction;
+		}
+		private readonly Expression.Function AggregateFunction;
+		protected override void MakeChartTemplates() {
+			// TODO: Find the Field selection control and see what fields the user wants.
+			var valuesToShow = new List<TblLeafNode>();
+			ShowParameters.Nodes.TraverseLayoutNodes(delegate (TblLayoutNode n) {
+				return true;
+			}, delegate (TblLayoutNode f) {
+				if (!(f is TblLeafNode leafNode))
+					return;
+
+				if (ShowParameters.UltimateShowItem(leafNode)) {
+					valuesToShow.Add(leafNode);
+				}
+			});
+			if (valuesToShow.Count == 0)
+				throw new GeneralException(KB.K("A value must be selected for charting"));
+
+			if (valuesToShow.Count == 1)
+				// If only one value is selected we call MakeBarChart and the user will get Corrective/Preventative separation
+				MakeBarChart(valuesToShow[0], AggregateFunction, TabularReport.MakeSearchValueFromNode(TIWorkOrder.IsPreventiveValueNodeBuilder(dsMB.Path.T.WorkOrder)));
+			else {
+				// Otherwise we make our own multi-value chart.
+				Key horizonalAxisDescription = Expression.FunctionPhrase(AggregateFunction, KB.K("Duration"));
+				StringExpr horizontalAxisLabel = TitleWithIntervalName(horizonalAxisDescription);
+				SearchValueWithData<InteremCommonReportViewLogic.GroupingValueExtraData> categoryGrouping = null;
+				StandardChart chart = MakeChart(categoryGrouping, horizonalAxisDescription);
+				chart.AddLegend();
+				StandardChartCategoryAxis category = MakeCategoryAxis(chart, null);
+				var noDataCheckFields = new List<Expression>();
+
+				foreach (TblLeafNode yValueNode in valuesToShow) {
+					ColumnManager.PreAnalyzeColumn(yValueNode, out InteremCommonReportViewLogic.QueryColumnManager.QueryColumn valueColumn, out _, out _);
+
+					// For time spans we need special code because we want to call ScaleDuration which in turn needs a TimeSpanExpr as an argument.
+					Expression yAggregatedExpression = ScaleDuration(Expression.Func<TimeSpanExpr>(AggregateFunction, Statics.TimeSpanField(valueColumn)));
+					string yValueFormat = RDLReport.QuantityFormatCode;
+					//new StandardChartData(chart, MakeCategoryAxis(chart, null),
+					//	chart.AddSeries(horizontalAxisLabel, new GroupingToApply(this, new SortingGrouping(SqlExpression.CustomLeafNode(valueGrouping), SortingGrouping.Orderings.Ascending)), labelFormat: yValueFormat),
+					//	ChartType.Bar, ChartSubtype.Bar)
+					//	.AddData(Y: yAggregatedExpression);
+					new StandardChartData(chart, category, chart.AddSeries(null, horizontalAxisLabel, yValueNode.Label), ChartType.Bar, ChartSubtype.Bar)
+						.AddData(Y: yAggregatedExpression);
+
+					noDataCheckFields.Add(Statics.Field(valueColumn));
+				}
+				NoDataMessage(noDataCheckFields.ToArray());
+			}
 		}
 	}
 	#endregion
@@ -112,7 +172,7 @@ namespace Thinkage.MainBoss.Controls.Reports {
 		}
 		protected override void MakeChartTemplates() {
 			//TODO: if the effectiveDate of any state history is in the future, we will get negative times on the chart. 
-			var endTimePath = dsMB.Path.T.WorkOrderStateHistory.F.Id.L.WorkOrderStateHistoryReport.PreviousWorkOrderStateHistoryID.F.WorkOrderStateHistoryID.F.EffectiveDate;
+			var endTimePath = dsMB.Path.T.WorkOrderStateHistory.F.Id.L.WorkOrderStateHistory.PreviousWorkOrderStateHistoryID.F.EffectiveDate;
 			MakeStatusChart(TabularReport.MakeSearchValueFromPath(dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderStateHistoryStatusID), TIReports.IntervalDifferenceQueryExpression(new SqlExpression(dsMB.Path.T.WorkOrderStateHistory.F.EffectiveDate), SqlExpression.Coalesce(new SqlExpression(endTimePath), SqlExpression.Now(endTimePath.ReferencedColumn.EffectiveType))));
 		}
 	}

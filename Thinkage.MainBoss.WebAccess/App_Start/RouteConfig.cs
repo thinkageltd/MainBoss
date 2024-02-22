@@ -2,7 +2,7 @@
 using System.Web.Routing;
 
 namespace Thinkage.MainBoss.WebAccess {
-	public class RouteConfig {
+	public static class RouteConfig {
 		public static void RegisterRoutes(RouteCollection routes) {
 			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 			routes.IgnoreRoute("favicon.ico"); // we don't have one, so avoid exceptions when a browser goes looking

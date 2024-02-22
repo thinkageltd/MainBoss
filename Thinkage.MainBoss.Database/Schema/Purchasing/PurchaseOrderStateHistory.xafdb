@@ -28,7 +28,14 @@
       <field name="EffectiveDate"/>
       <field name="PurchaseOrderID"/>
     </unique>
-    <field labelkey="State" name="PurchaseOrderStateID" type="RequiredGUIDREF" link="PurchaseOrderState">
+	<field name="PreviousPurchaseOrderStateHistoryID" read="GUIDREF" link="PurchaseOrderStateHistory" unique="true" where="PreviousPurchaseOrderStateHistoryID is not null" labelkey="Previous State History">
+	  <doc>Calculated reference to the previous PurchaseOrderStateHistory record.</doc>
+	  <result hosting="cached">
+		cast(PurchaseOrderStateHistory.id as link(PurchaseOrderStateHistory, null))
+	  </result>
+	  <extension name="dependson">PurchaseOrderStateHistory@PurchaseOrderStateHistory</extension>
+	</field>
+	<field labelkey="State" name="PurchaseOrderStateID" type="RequiredGUIDREF" link="PurchaseOrderState">
       <doc>The Purchase Order State to which the transition occurred</doc>
       <extension name="linkage">captive</extension>
 		</field>
@@ -54,24 +61,81 @@
 	  after insert
 	  as
 	  begin
-		  -- Theoretically we should do this after updates and before deletes too
-		  -- but those operations are not allowed by the app (at least, not in any
-		  -- manner that alters the result of the calculation). The "before delete" would
-		  -- have to exclude the to-be-deleted records from the subquery and also be
-		  -- prepared to find no records, thus setting the field to null. Because some
-		  -- of the triggers are before and some after, two triggers would be needed.
+		  <!-- Theoretically we should do this after updates and before deletes too
+			but those operations are not allowed by the app (at least, not in any
+			manner that alters the result of the calculation). The "before delete" would
+			have to exclude the to-be-deleted records from the subquery and also be
+			prepared to find no records, thus setting the field to null. Because some
+			of the triggers are before and some after, two triggers would be needed. -->
+		<!-- Verify the new records post-date the latest existing one -->
+		if exists(select * from inserted as NSH
+					join PurchaseOrder as PO on PO.Id = NSH.PurchaseOrderID
+					join PurchaseOrderStateHistory as CSH on CSH.Id = PO.CurrentPurchaseOrderStateHistoryID
+					where CSH.EffectiveDate >= NSH.EffectiveDate) begin
+		  raiserror('EffectiveDate-order of records in table ''%s'' cannot be altered', 16, 1, 'PurchaseOrderStateHistory')
+		  rollback transaction
+		end
+		if (select count(*) from inserted) = (select count(distinct PurchaseOrderID) from inserted) begin
+		  <!-- This is the simple case, only one new record per PurchaseOrder -->
+		  <!-- Link the new StateHistory record to the previous Current -->
+		  update PurchaseOrderStateHistory
+			set PreviousPurchaseOrderStateHistoryID = PO.CurrentPurchaseOrderStateHistoryID
+			from
+				inserted
+			  join
+				PurchaseOrderStateHistory as POSH on POSH.Id = inserted.Id
+			  join
+				PurchaseOrder as PO on PO.Id = POSH.PurchaseOrderID
+		  <!-- Set the new Current -->
 		  update PurchaseOrder
-			  set CurrentPurchaseOrderStateHistoryID = dbo.mbfn_PurchaseOrder_CurrentPurchaseOrderStateHistory(PurchaseOrder.ID)
-			  where PurchaseOrder.ID in (select PurchaseOrderID from inserted)
+			set CurrentPurchaseOrderStateHistoryID = POSH.Id
+			from
+				inserted
+			  join
+				PurchaseOrderStateHistory as POSH on POSH.Id = inserted.Id
+			  join
+				PurchaseOrder as PO on PO.Id = POSH.PurchaseOrderID
+		end
+		else begin
+		  <!-- This is the hard but rare case, more than one new record per PurchaseOrder. We process the records one at a time in ascending EffectiveDate order using a cursor. -->
+		  declare ByDate cursor for select Id from inserted order by PurchaseOrderID, EffectiveDate asc
+		  open ByDate
 
-		  update ActualItemLocation
-			 set OnOrder = dbo.mbfn_ActualItemLocation_OnOrder(ActualItemLocation.ID)
-			  where ActualItemLocation.ItemLocationID in (
-					   select distinct ItemLocationID from POLineItem
-							 join POLine on POLineID = POLine.ID
-							 join PurchaseOrder on PurchaseOrder.ID = POLine.PurchaseOrderID
-							 join inserted on inserted.ID = PurchaseOrder.CurrentPurchaseOrderStateHistoryID
-						)
+		  declare @RSHID Uniqueidentifier
+		  while 1 = 1
+		  begin
+			fetch next from ByDate into @RSHID
+			if @@fetch_status != 0
+			  break
+			<!-- Link the new StateHistory record to the previous Current -->
+			update PurchaseOrderStateHistory
+			  set PreviousPurchaseOrderStateHistoryID = PO.CurrentPurchaseOrderStateHistoryID
+			  from
+				  PurchaseOrderStateHistory as POSH
+				join
+				  PurchaseOrder as PO on PO.Id = POSH.PurchaseOrderID
+			  where POSH.Id = @RSHID
+			<!-- Set the new Current -->
+			update PurchaseOrder
+			  set CurrentPurchaseOrderStateHistoryID = POSH.Id
+			  from
+				  PurchaseOrderStateHistory as POSH
+				join
+				  PurchaseOrder as PO on PO.Id = POSH.PurchaseOrderID
+			  where POSH.Id = @RSHID
+		  end
+		  close ByDate
+		  deallocate ByDate
+		end
+
+		update ActualItemLocation
+			set OnOrder = dbo.mbfn_ActualItemLocation_OnOrder(ActualItemLocation.ID)
+			where ActualItemLocation.ItemLocationID in (
+					  select distinct ItemLocationID from POLineItem
+							join POLine on POLineID = POLine.ID
+							join PurchaseOrder on PurchaseOrder.ID = POLine.PurchaseOrderID
+							join inserted on inserted.ID = PurchaseOrder.CurrentPurchaseOrderStateHistoryID
+					  )
 	  end
 	</extension>
 	<extension name="references">PurchaseOrderStateHistory</extension>
@@ -79,7 +143,6 @@
 	<extension name="references">ActualItemLocation</extension>
 	<extension name="references">POLineItem</extension>
 	<extension name="references">POLine</extension>
-	<extension name="references">mbfn_PurchaseOrder_currentPurchaseOrderStateHistory()</extension>
 	<extension name="references">mbfn_ActualItemLocation_OnOrder()</extension>
   </object>
   <object class="trigger" name="mbtg_EnforcePurchaseOrderStateHistoryOrdering">
@@ -88,74 +151,13 @@
 	  on PurchaseOrderStateHistory
 	  for update
 	  as
-		declare @count int;	<!-- Because we can't use a WITH inside EXISTS(query) we need to query the count into a variable. -->
-		<!-- The following query yields the columns from the history table as they were before the update operation -->
-		with OriginalHistory as (
-			select PurchaseOrderStateHistory.Id, PurchaseOrderStateHistory.PurchaseOrderID, PurchaseOrderStateHistory.EffectiveDate
-			  from PurchaseOrderStateHistory
-			  left join inserted on PurchaseOrderStateHistory.id = inserted.id
-			  where inserted.id is null
-		  union
-			select Id, PurchaseOrderID, EffectiveDate
-			  from deleted
-		)
-		<!-- Count the number of records for which the update causes the predecessor or successor records (same PO) to change -->
-		select @count = count(*)
-		  from
-			(select
-			  Id,
-			  (select top 1 Id from PurchaseOrderStateHistory
-				where PurchaseOrderID = inserted.PurchaseOrderID and EffectiveDate &gt; inserted.EffectiveDate
-				order by EffectiveDate asc),
-			  (select top 1 Id from PurchaseOrderStateHistory
-				where PurchaseOrderID = inserted.PurchaseOrderID and EffectiveDate &lt; inserted.EffectiveDate
-				order by EffectiveDate desc)
-			from inserted) as newNeighbours(id, nextid, previd)
-		  inner join
-			(select
-			  Id,
-			  (select top 1 Id from OriginalHistory
-				where PurchaseOrderID = deleted.PurchaseOrderID and EffectiveDate &gt; deleted.EffectiveDate
-				order by EffectiveDate asc),
-			  (select top 1 Id from OriginalHistory
-				where PurchaseOrderID = deleted.PurchaseOrderID and EffectiveDate &lt; deleted.EffectiveDate
-				order by EffectiveDate desc)
-			from deleted) as oldNeighbours(id, nextid, previd)
-		  on newNeighbours.id = oldneighbours.id
-		  where oldNeighbours.nextId != newNeighbours.nextId
-			or (oldNeighbours.nextId is null and newNeighbours.nextId is not null)
-			or (oldNeighbours.nextId is not null and newNeighbours.nextId is null)
-			or oldNeighbours.previd != newNeighbours.previd
-			or (oldNeighbours.previd is null and newNeighbours.previd is not null)
-			or (oldNeighbours.previd is not null and newNeighbours.previd is null)
-		if @count &gt; 0 begin
+		<!-- If we just looked at the individual POSH records we would need teo queries, one looking at the previous and one at the next record.
+			  Instead, we just validate all the POSH records for the related PurchaseOrder. Note that we only need to look at inserted; deleted will name
+			  PurchaseOrders that history records are removed from, and this operation cannot violate well-ordering. -->
+		if exists(select * from PurchaseOrderStateHistory as SH
+					join PurchaseOrderStateHistory as PSH on PSH.Id = SH.PreviousPurchaseOrderStateHistoryID
+					where PSH.EffectiveDate >= SH.EffectiveDate and SH.PurchaseOrderID in (select PurchaseOrderID from inserted)) begin
 		  raiserror('EffectiveDate-order of records in table ''%s'' cannot be altered', 16, 1, 'PurchaseOrderStateHistory')
-		  rollback transaction
-		end
-	</extension>
-	<extension name="references">PurchaseOrderStateHistory</extension>
-  </object>
-  <object class="trigger" name="mbtg_EnforceNewPurchaseOrderStateHistoryOrdering">
-	<doc>This enforces the rule that new state history records cannot predate (in EffectiveDate order) existing ones for the same PO</doc>
-	<extension name="body">
-	  on PurchaseOrderStateHistory
-	  for insert
-	  as
-		declare @count int;	<!-- Because we can't use a WITH inside EXISTS(query) we need to query the count into a variable. -->
-		<!-- The following query yields the columns from the history table as they were before the insert operation -->
-		with OriginalHistory as (
-		  select PurchaseOrderStateHistory.Id, PurchaseOrderStateHistory.PurchaseOrderID, PurchaseOrderStateHistory.EffectiveDate
-			from PurchaseOrderStateHistory
-			left join inserted on PurchaseOrderStateHistory.id = inserted.id
-			where inserted.id is null
-		)
-		<!-- Count the number of History records that post-date any newly inserted ones on the same work orders -->
-		select @count = count(*)
-		  from OriginalHistory
-		  inner join inserted on OriginalHistory.PurchaseOrderID = inserted.PurchaseOrderID
-		  where OriginalHistory.EffectiveDate &gt; inserted.EffectiveDate
-		if @count &gt; 0 begin
-		  raiserror('EffectiveDate-order of new records in table ''%s'' must be later than those of existing records for the same %s', 16, 1, 'PurchaseOrderStateHistory', 'Purchase Order')
 		  rollback transaction
 		end
 	</extension>

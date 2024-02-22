@@ -13,6 +13,7 @@
 		  from AccountingTransaction
 	</extension>
 	<extension name="dependson">AccountingTransaction</extension>
+	<extension name="dependson">AccountingTransaction.Id</extension>  <!-- to prevent augmenting with all fields being dependencies -->
 	<extension name="costrights">WorkOrderItem,WorkOrderInside,WorkOrderOutside,WorkOrderMiscellaneous,InventoryActivity,PurchaseOrderItem,PurchaseOrderLabor,PurchaseOrderMiscellaneous</extension>
 	<extension name="lastupdate">AccountingTransactionID</extension>
   </table>

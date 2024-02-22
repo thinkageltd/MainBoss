@@ -21,7 +21,7 @@ namespace Thinkage.MainBoss.Database.Service {
 		// WarningText contains any warning messages for the MainBoss Administrator
 		// Assuming no error then InfoText with contain generic information messages for the MainBoss Administrator
 		protected MailAddress EmailAddress;
-		private IEnumerable<LDAPEntry> LDAPUsers = null;
+		private readonly IEnumerable<LDAPEntry> LDAPUsers = null;
 		public System.Exception Exception = null;
 		public string WarningText = null;
 		public string InfoText = null;
@@ -30,23 +30,20 @@ namespace Thinkage.MainBoss.Database.Service {
 		public Guid? ContactID = null;
 		public String ContactCode = null;
 		public String ContactEmail = null;
-		private bool CreateFromLDAP;
-		private bool CreateFromEmail;
-		int? PreferredLanguage;
 
 		public AcquireContact(DBClient DB, IEnumerable<LDAPEntry> aLDAPUsers, MailAddress emailAddress, bool createFromLDAP, bool createFromEmail, int? preferredLanguage) {
 			EmailAddress = emailAddress;
-			CreateFromLDAP = createFromLDAP;
-			CreateFromEmail = createFromEmail;
 			LDAPUsers = aLDAPUsers;
-			PreferredLanguage = preferredLanguage;
 			if (LDAPUsers == null && emailAddress == null) {
 				ContactError(DatabaseEnums.EmailRequestState.NoContact, ErrorToRequestor.Unknown, KB.K("Cannot find a contact since no email address or Active Directory Reference provided"));
 				return;
 			}
 			try { // try to enhance/find our LDAPUsers list; ignore any errors getting the LDAP list at this level
-				if (emailAddress != null)
-					LDAPUsers = LDAPUsers == null ? LDAPEntry.GetActiveDirectoryGivenEmail(emailAddress.Address) : LDAPUsers.Concat(LDAPEntry.GetActiveDirectoryGivenEmail(emailAddress.Address));
+				if (emailAddress != null) {
+					if (LDAPUsers == null)
+						LDAPUsers = new List<LDAPEntry>();
+					LDAPUsers = LDAPUsers.Union(LDAPEntry.GetActiveDirectoryUsingEmail(emailAddress.Address), new LDAPEntryComparerByGuid());
+				}
 				LDAPUsers = LDAPUsers?.Where(e => !e.Disabled);
 			}
 			catch { }
@@ -61,12 +58,12 @@ namespace Thinkage.MainBoss.Database.Service {
 					Set<object> LDAPguids = null;
 					if (EmailAddress.Address != null)
 						mailtest = new SqlExpression(dsMB.Path.T.Contact.F.Email).Eq(EmailAddress.Address).Or(new SqlExpression(dsMB.Path.T.Contact.F.AlternateEmail).Like(SqlExpression.Constant(Strings.IFormat("%{0}%", EmailAddress.Address))));
-					if (LDAPUsers != null && LDAPUsers.Any() ) {
+					if (LDAPUsers != null && LDAPUsers.Any()) {
 						LDAPguids = new Set<Object>(LDAPUsers.Select(e => (object)e.Guid));
 						LDAPEmail = new Set<Object>(LDAPUsers.Select(e => e.Mail));
 						LDAPAllEmail = new Set<Object>(LDAPUsers.Select(e => e.Mail).Concat(LDAPUsers.SelectMany(e => e.AlternateEmail)));
 						test = new SqlExpression(dsMB.Path.T.Contact.F.LDAPGuid).In(SqlExpression.Constant(LDAPguids));
-						if (LDAPAllEmail.Any() )
+						if (LDAPAllEmail.Any())
 							test = test.Or(new SqlExpression(dsMB.Path.T.Contact.F.Email).In(SqlExpression.Constant(LDAPAllEmail)));
 					}
 					if (mailtest != null && test != null)
@@ -74,7 +71,7 @@ namespace Thinkage.MainBoss.Database.Service {
 					else
 						test = mailtest;
 					ds.DB.ViewAdditionalRows(ds, dsMB.Schema.T.Contact, test, null, null);
-					foreach (dsMB.ContactRow row in ds.T.Contact)
+					foreach (dsMB.ContactRow row in ds.T.Contact.Rows)
 						found.Add(row);
 
 					var contactRow = ContactInformation(ds, found, LDAPguids, LDAPEmail, LDAPAllEmail, false);
@@ -106,7 +103,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			}
 			if (Exception == null)
 				State = DatabaseEnums.EmailRequestState.Completed;
-			else if ( !(Exception is GeneralException))
+			else if (!(Exception is GeneralException))
 				Exception = new GeneralException(Exception, KB.K("Unable to resolve '{0}' to a Contact"), emailAddress);
 
 		}
@@ -174,10 +171,12 @@ namespace Thinkage.MainBoss.Database.Service {
 						InfoText = Strings.Format(KB.K("Restoring Contact '{0}'"), contactRow.F.Code);
 						changed = true;
 					}
-					if (LDAPguids != null  && LDAPguids.Count() == 1) { 
+					if (LDAPguids != null && LDAPguids.Count() == 1) {
 						LDAPEntry LDAPUser = null;
-						if ( contactRow.F.LDAPGuid == null)
+						if (contactRow.F.LDAPGuid == null)
 							LDAPUser = LDAPUsers.First();
+						else
+							LDAPUser = LDAPUsers.Single(e => e.Guid == contactRow.F.LDAPGuid);
 						if (LDAPUser != null && contactRow.F.LDAPGuid == null) {
 							contactRow.F.LDAPGuid = LDAPUser.Guid;
 							changed = true;
@@ -187,10 +186,11 @@ namespace Thinkage.MainBoss.Database.Service {
 						if (contactRow.F.Email != from && !ServiceUtilities.CheckAlternateEmail(contactRow.F.AlternateEmail, from)) {
 							if (contactRow.F.Email == null)
 								contactRow.F.Email = from;
-							else if (contactRow.F.AlternateEmail == null)
-								contactRow.F.AlternateEmail = from;
-							else
-								contactRow.F.AlternateEmail = Strings.IFormat("{0} {1}", contactRow.F.AlternateEmail, from);
+							changed = true;
+						}
+						string newAlternate = LDAPEntryHelper.BuildAlternateEmail(contactRow.F.AlternateEmail, contactRow.F.Email, LDAPUser.Mail, LDAPUser.AlternateEmail);
+						if (LDAPEntryHelper.IsChangedValue(contactRow.F.AlternateEmail, newAlternate)) {
+							contactRow.F.AlternateEmail = newAlternate;
 							changed = true;
 						}
 					}
@@ -215,7 +215,7 @@ namespace Thinkage.MainBoss.Database.Service {
 		#region CreateContact
 		private dsMB.ContactRow CreateContact(dsMB ds, IEnumerable<LDAPEntry> LDAPUsers, System.Net.Mail.MailAddress from, int? preferredLanguage) {
 			LDAPEntry LDAPUser = null;
-			var contactRow = ds.T.Contact.AddNewContactRow();
+			var contactRow = ds.T.Contact.AddNewRow();
 			if (LDAPUsers != null) {  // if we have LDAP info use it.
 				if (LDAPUsers.Count() == 1)
 					LDAPUser = LDAPUsers.First();
@@ -229,7 +229,7 @@ namespace Thinkage.MainBoss.Database.Service {
 					LDAPUser = primary.First();
 				}
 				if (LDAPUser != null)
-					LDAPEntry.SetContactValues(contactRow, LDAPUser);
+					LDAPEntryHelper.SetContactValues(contactRow, LDAPUser);
 			}
 			if (LDAPUser == null) { // use email to try to create a contact with the email address and Code = DisplayName
 				contactRow.F.Code = string.IsNullOrWhiteSpace(from.DisplayName) ? from.Address : from.DisplayName;
@@ -273,14 +273,6 @@ namespace Thinkage.MainBoss.Database.Service {
 			WarningText = null;
 			ErrorToRequestor = errorToRequestor;
 			Exception = new GeneralException(errformat, args);
-			throw Exception;
-		}
-		void ContactError(System.Exception ex, DatabaseEnums.EmailRequestState state, ErrorToRequestor errorToRequestor, Thinkage.Libraries.Translation.Key format, params object[] args) {
-			State = state;
-			WarningText = null;
-			var address = EmailAddress?.Address ?? KB.I("None");
-			ErrorToRequestor = errorToRequestor;
-			Exception = new GeneralException(format, args);
 			throw Exception;
 		}
 		#endregion

@@ -11,6 +11,8 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		public EmailAddressValidityException(string message)
 			: base(message) {
 		}
+		public EmailAddressValidityException() {
+		}
 	}
 	/// <summary>
 	/// A model for use on the home page

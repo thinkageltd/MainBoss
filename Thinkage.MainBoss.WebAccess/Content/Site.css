@@ -16,12 +16,11 @@ Thinkage Colors
 	border-color: #000000;
 	border-width: 1px;
 	border-style: solid;
-	_height: 1px; /* only IE6 applies CSS properties starting with an underscrore */
 }
 
 header {
 	position: relative;
-	margin-bottom: 0px;
+	margin-bottom: 0;
 	color: #000;
 	padding: 0;
 }
@@ -34,17 +33,12 @@ header {
 		border: none;
 		line-height: 2em;
 		font-family: Arial, Helvetica, sans-serif;
-		font-size: 32px !important;
+		font-size: larger;
 	}
 
-	header table {
-		border-width: 0;
-		width: 100%;
-	}
 
 body {
 	background-color: #FFEBA0;
-	font-size: .75em;
 	font-family: Verdana, Helvetica, Sans-Serif;
 	margin: 0;
 	padding: 0;
@@ -57,7 +51,6 @@ footer {
 	float: right;
 	margin: 0;
 	line-height: normal;
-	font-size: .9em;
 }
 
 /* LINKS */
@@ -128,12 +121,6 @@ h5, h6 {
 	font-size: 1em;
 }
 
-/* this rule styles <h2> tags that are the 
-first child of the left and right table columns */
-.rightColumn > h1, .rightColumn > h2, .leftColumn > h1, .leftColumn > h2 {
-	margin-top: 0;
-}
-
 /* PRIMARY LAYOUT ELEMENTS ----------------------------------------------------------*/
 /* you can specify a greater or lesser percentage for the 
 page width. Or, you can specify an exact pixel width. */
@@ -142,15 +129,26 @@ page width. Or, you can specify an exact pixel width. */
 	margin-left: auto;
 	margin-right: auto;
 }
-/* LOGOUT control */
-td.logout {
-	padding: 3px;
-	border-width: 0px;
-	outline-width: 0px;
-	text-align: right;
+/* user id row */
+.UserIdRow {
+	margin-bottom: 10px;
+	display: inline-block;
+	width: 100%;
 }
 
-	td.logout a.StateActionLink {
+.UserId {
+	float: left;
+}
+/* LOGOUT control */
+.logout {
+	padding: 3px;
+	border-width: 0;
+	outline-width: 0;
+	text-align: right;
+	float: right;
+}
+
+	.logout a.StateActionLink {
 		text-decoration: none;
 		background: #385815;
 		color: #FFEBA0;
@@ -159,77 +157,12 @@ td.logout {
 		border: solid 1px #385815;
 	}
 
-		td.logout a.StateActionLink:hover {
+		.logout a.StateActionLink:hover {
 			text-decoration: none;
 			background: #FFFFFF;
 			color: #385815;
 		}
-/* TAB MENU   ---------------------------------------------------------*/
-ul#menu {
-	border-bottom: 1px #5C87B2 solid;
-	padding: 0 0 2px;
-	position: relative;
-	margin: 0;
-	text-align: right;
-}
-
-	ul#menu li {
-		display: inline;
-		list-style: none;
-	}
-
-		ul#menu li#greeting {
-			padding: 10px 20px;
-			font-weight: bold;
-			text-decoration: none;
-			line-height: 2.8em;
-			color: #fff;
-		}
-
-		ul#menu li a {
-			padding: 10px 20px;
-			font-weight: bold;
-			text-decoration: none;
-			line-height: 2.8em;
-			background-color: #e8eef4;
-			color: #034af3;
-		}
-
-			ul#menu li a:hover {
-				background-color: #fff;
-				text-decoration: none;
-			}
-
-			ul#menu li a:active {
-				background-color: #a6e2a6;
-				text-decoration: none;
-			}
-
-		ul#menu li.selected a {
-			background-color: #fff;
-			color: #000;
-		}
-
 /* FORM LAYOUT ELEMENTS   ----------------------------------------------------------*/
-
-fieldset {
-	margin: 1em 0;
-	padding: 1em;
-	border: 1px solid #CCC;
-}
-
-	fieldset p {
-		margin: 2px 12px 10px 10px;
-	}
-
-	fieldset label {
-		display: block;
-	}
-
-		fieldset label.inline {
-			display: inline;
-		}
-
 legend {
 	font-size: 1.1em;
 	font-weight: 600;
@@ -241,24 +174,23 @@ input[type="text"] {
 	border: 1px solid #CCC;
 }
 
-input#EmailAddress {
+#EmailAddress {
 	width: 20em;
 	border: 1px solid #CCC;
 }
 
-input#Subject {
+#Subject {
 	width: 44em;
 	border: 1px solid #CCC;
 }
-
 
 input[readonly="true"] {
 	background-color: #ccc;
 }
 
 textarea {
-	width: 45em; /* keep in 4 to 3 ratio */
 	height: 15em;
+	width: 100%;
 }
 
 input[type="password"] {
@@ -294,6 +226,7 @@ input[type="password"] {
 .StateCode {
 	color: Blue
 }
+
 .StatusCode {
 	color: Red
 }
@@ -306,7 +239,6 @@ input[type="password"] {
 	border: 1px solid #ff0000;
 	background-color: #ffeeee;
 }
-
 
 .validation-summary-errors {
 	font-weight: bold;
@@ -325,93 +257,49 @@ input[type="password"] {
 	white-space: pre-wrap;
 	border-collapse: collapse;
 	font-family: Monospace, serif;
-	width: 100%;
 }
 
 /* ResultMessage - An error that occurred on some action typically shown immediately below the header */
 .ResultMessage {
 	background: Red;
 	color: White;
-	font-size: larger;
 }
-
-/* Panels for View (2 column label on left, value on right) */
-.viewPanel > table {
-	border: solid 1px #a9bed3;
-	border-collapse: collapse;
-	font-size: 1.1em;
-	text-align: left;
-	margin: 5px;
-	color: #000000;
-	width: 100%;
-}
-
-.viewPanel td {
-	border: solid 1px #a9bed3;
-	border-collapse: collapse;
-	padding-top: 2px;
-	padding-left: 2px;
-	padding-bottom: 4px;
-	padding-right: 6px;
-	text-align: left;
-}
-
-	.viewPanel td.Label {
-		background-color: #e8eef4;
-		font-weight: bolder;
-		width: 15%;
-		text-align: right;
-	}
-
-	.viewPanel td.V1 {
-		border-right: none;
-		width: 30%;
-	}
-
-	.viewPanel td.V2 {
-		border-left: none;
-		width: 55%;
-		text-align: right;
-	}
 
 /* Panel for enclosing Requestor contact information identified with id="contactPanel" */
-#contactPanel {
-	font: inherit;
-	border: hidden;
-	border-collapse: inherit;
-	display: block;
+.contactPanel {
+	display: flex;
 	text-align: left;
-	margin: 0px;
+	margin: 0;
 	color: #000000;
-	width: 100%;
+	flex-wrap: wrap;
 }
 
-	#contactPanel td.Name {
-		border: none;
-		padding: 0px;
-		width: 50%;
-		text-align: left;
-	}
+.Phone {
+	padding: 0 0 0 10px;
+}
 
-	#contactPanel td {
-		border: none;
-		padding: 0px;
-		width: 25%;
-		text-align: left;
-	}
+.Email {
+	padding: 0 0 0 10px;
+	font-size: smaller;
+}
+/* Panel used for entering a request */
+#EnterRequestPanel {
+	border: 1px solid #385815;
+	padding: 10px;
+	margin-bottom: 15px;
+}
 /* Panel used for Assignment Status (main page) */
-
 #assignmentPanel {
 	border-color: Black;
 	border-width: 1px;
 	border-collapse: collapse;
 }
 
-	#assignmentPanel table {
+	#assignmentPanel div {
 		border: none;
 	}
 
-	#assignmentPanel caption {
+	#assignmentPanel h3 {
 		padding: 2px;
 		text-align: left;
 		font-size: 125%;
@@ -421,48 +309,30 @@ input[type="password"] {
 		margin-bottom: 15px;
 	}
 
-	#assignmentPanel tr:nth-child(even) {
-		background-color: #ECECEC;
-		border-collapse: collapse;
-	}
-
-	#assignmentPanel td.Label {
-		border: none;
-		padding: 2px;
-		font-weight: normal;
-		text-align: left;
-	}
-
-	#assignmentPanel td {
-		padding: 0 0 0 20px;
-		font-weight: normal;
-		text-align: left;
-	}
-
 /* Panels for browsePanels*/
-#browsePanel {
+.browsePanel {
 	border: none;
 	border-collapse: collapse;
 }
 
-	#browsePanel table {
+	.browsePanel table {
 		width: 100%;
 		border-collapse: collapse;
 	}
 
-	#browsePanel tr {
+	.browsePanel tr {
 		border: 1px solid #385815;
 	}
 
-		#browsePanel tr:nth-child(even) {
+		.browsePanel tr:nth-child(even) {
 			background-color: #ECECEC;
 		}
 
-	#browsePanel td {
-		padding: 2px;
+	.browsePanel td {
+		padding: 4px 2px 4px 2px;
 	}
 
-	#browsePanel th {
+	.browsePanel th {
 		padding: 2px 2px;
 		text-align: left;
 		background-color: #C1B67D;
@@ -470,6 +340,85 @@ input[type="password"] {
 		border: 1px solid #385815;
 	}
 
+.ActivityBlock {
+	width: auto;
+	display: inline-block;
+	text-decoration: none;
+}
+
+.ActivityLink {
+	width: inherit;
+	position: relative;
+	font-size: 1.1em;
+	padding: 5px;
+}
+
+	.ActivityLink:hover .ThePopup {
+		display: block;
+		transition-delay: 1s;
+	}
+	.ActivityLink:hover .HelpPopup {
+		display: block;
+		transition-delay: 1s;
+	}
+
+	.ActivityLink > a {
+		text-decoration: none;
+		background-color: #FFEBA0;
+		color: #385815;
+		padding-left: 3px;
+		padding-right: 3px;
+		border: solid 1px #385815;
+		border-radius: 25px;
+	}
+
+.WithPopup {
+	position: relative;
+}
+
+	.WithPopup:hover .ThePopup {
+		display: block;
+	}
+	.WithPopup:hover .HelpPopup {
+		display: block;
+	}
+
+@media (max-width:800px ) {
+	.SuppressWhenNarrow {
+		display: none;
+	}
+}
+
+.ThePopup {
+	display: none;
+	position: absolute;
+	z-index: 100;
+	border: 1px;
+	background-color: white;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #385815;
+	color: #385815;
+	padding: 5px 5px 5px 5px;
+	top: 30px;
+	left: 10px;
+	width: inherit;
+}
+.HelpPopup {
+	display: none;
+	position: relative;
+	z-index: 100;
+	border: 1px;
+	background-color: lightyellow;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #385815;
+	color: #385815;
+	padding: 1px 1px 1px 1px;
+	top: 5px;
+	left: 10px;
+	width: inherit;
+}
 /* For viewing History Items */
 .viewHistoryItem {
 	position: relative;
@@ -488,19 +437,19 @@ input[type="password"] {
 
 #History .ui-accordion-header {
 	font-weight: bolder;
-	font-size: larger;
 }
+
 .viewHistoryItem div {
 	position: relative;
 }
 
 .viewHistoryItem {
-/*	border: 1px solid #ddd;*/
+	/*	border: 1px solid #ddd;*/
 	margin-top: 5px;
 }
 
 	.viewHistoryItem .body .content {
-		padding: 0px 3px 0px 3px;
+		padding: 0 3px 0 3px;
 		/*width: 					100%;	*/
 		overflow: auto;
 	}
@@ -518,64 +467,206 @@ input[type="password"] {
 }
 
 .Specification h3 {
-	margin: 0px 0px 0px 0px;
+	margin: 0 0 0 0;
 }
 
-#resourcePanel {
+.AttachmentContent {
+	position: relative;
+	margin: 3px;
+	margin-top: 6px;
+	/*	border: 				1px solid #666; */
+	padding: 4px 4px 4px 8px;
+	background-color: #fff;
 }
 
-	#resourcePanel td, table {
-		border: solid 1px #a9bed3;
-		border-collapse: collapse;
-	}
+.IntegralValue {
+	text-align: right;
+}
 
-	#resourcePanel td {
-		padding-left: 4px;
-		padding-right: 4px;
-	}
+.CostValue {
+	text-align: right;
+}
 
-	#resourcePanel th {
-		border: solid 1px #a9bed3;
-		border-collapse: collapse;
-		padding-left: 4px;
-		padding-right: 4px;
-		text-align: left;
-		background-color: #e8eef4;
-		font-weight: bolder;
-	}
+.UnitCostValue {
+	text-align: right;
+}
 
-	#resourcePanel td.IntegralValue {
-		text-align: right;
-	}
-	#resourcePanel td.CostValue {
-		text-align: right;
-	}
-	#resourcePanel td.UnitCostValue {
-		text-align: right;
-	}
+.viewPanel {
+	text-align: left;
+	margin: 5px 0 5px 0;
+	color: #000000;
+	width: 100%;
+}
 
-	#resourcePanel tr:nth-child(even) {
-		background-color: #ECECEC;
-		border-collapse: collapse;
+.ResourceRow {
+	width: 100%;
+	display: inline-flex;
+	flex-direction: column;
+}
+
+.ResourceLabel {
+	width: 30%;
+	display: inline-block;
+	text-align: right;
+	vertical-align: middle;
+	font-weight: bolder;
+}
+
+.ResourceValue {
+	width: 70%;
+	text-align: right;
+	display: inline-block;
+}
+
+.ResourceCheckbox {
+	zoom: 1.5;
+	display: inline-block;
+	text-align: right;
+	vertical-align: middle;
+}
+
+@media (min-width :480px ) {
+	.ResourceRow {
+		flex-direction: row;
 	}
+}
 
 table.tablesorter {
-	margin: 10px 0pt 15px;
+	margin: 10px 0 15px;
 	width: 100%;
 	text-align: left;
 }
 
-	table.tablesorter thead tr .header {
-		background-image: url(/Content/bg.gif);
+	table.tablesorter thead th {
 		background-repeat: no-repeat;
 		background-position: center right;
 		cursor: pointer;
 	}
 
-	table.tablesorter thead tr .headerSortUp {
-		background-image: url(/Content/asc.gif) !important;
+	table.tablesorter thead tr .tablesorter-headerAsc {
+		padding-right: 20px;
+		background-image: url(data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjI8Bya2wnINUMopZAQA7);
 	}
 
-	table.tablesorter thead tr .headerSortDown {
-		background-image: url(/Content/desc.gif) !important;
+	table.tablesorter thead tr .tablesorter-headerDesc {
+		padding-right: 20px;
+		background-image: url(data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjB+gC+jP2ptn0WskLQA7);
 	}
+
+	table.tablesorter thead tr .tablesorter-headerUnSorted {
+		padding-right: 20px;
+		background-image: url(data:image/gif;base64,R0lGODlhFQAJAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAkAAAIXjI+AywnaYnhUMoqt3gZXPmVg94yJVQAAOw==);
+	}
+
+.LabelValueRow {
+	color: black;
+	display: inline-flex;
+	width: 100%;
+	border: solid 1px #a9bed3;
+}
+
+.LabelValueRowMultiLine {
+	color: black;
+	width: 100%;
+	display: inline-block;
+	white-space: pre-wrap;
+	border: solid 1px #a9bed3;
+}
+
+.LabelValueRow + .LabelValueRow {
+	border-top: 0;
+}
+
+.LabelValueRow + .LabelValueRowMultiLine {
+	border-top: 0;
+}
+
+.LabelValueRowMultiLine + .LabelValueRowMultiLine {
+	border-top: 0;
+}
+
+.LabelValueRowMultiLine + .LabelValueRow {
+	border-top: 0;
+}
+
+.Label {
+	width: 30%;
+	text-align: right;
+	vertical-align: middle;
+	background-color: #e8eef4;
+	padding-right: 5px;
+	border-right: solid 1px #a9bed3;
+}
+
+.LabelValueRowMultiLine > .Label {
+	width: auto;
+	text-align: center;
+	vertical-align: middle;
+	border-bottom: solid 1px #a9bed3;
+	border-right: 0;
+}
+
+.LabelValue {
+	width: 70%;
+	display: inline-block;
+}
+
+.LabelValueRowMultiLine > .LabelValue {
+	width: 100%;
+	vertical-align: text-top;
+	white-space: pre-wrap;
+	border-collapse: collapse;
+	font-family: Monospace, serif;
+}
+
+.LabelCodeDescValue {
+	width: 70%;
+	display: flex;
+}
+
+.Code {
+	vertical-align: middle;
+	text-align: left;
+	flex: 1 1 auto;
+}
+
+.Description {
+	vertical-align: middle;
+	text-align: right;
+	flex: 1 1 auto;
+}
+
+.Actions {
+	display: inline-flex;
+	flex-direction: column;
+	margin: 10px 0 10px 0;
+	width: 100%;
+	justify-content: flex-start;
+}
+
+@media (min-width: 480px) {
+	.Actions {
+		flex-direction: row;
+	}
+}
+
+.Action {
+	margin: 5px 5px 0px 0px;
+	display: inline-flex;
+}
+
+.ui-accordion .ui-accordion-header {
+	padding: 0 .5em 0 .7em;
+}
+
+.ui-accordion .ui-accordion-icons {
+	padding-left: 2.2em;
+}
+
+.ui-accordion .ui-accordion-content {
+	padding: 0;
+}
+
+.AccordianHeaderRow {
+	width: inherit;
+}

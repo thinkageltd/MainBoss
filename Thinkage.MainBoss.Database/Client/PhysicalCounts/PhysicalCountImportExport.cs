@@ -4,6 +4,7 @@ using System.Data;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DataFlow;
 using Thinkage.Libraries.DBAccess;
+using Thinkage.Libraries.TypeInfo;
 using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.XAF.Database.Service;
 
@@ -12,9 +13,9 @@ namespace Thinkage.MainBoss.Database {
 		const string macroResource = "PermanentInventoryLocationData.xlsm";
 		const string customizationResource = "MainBossCustomizationPhysicalCount.exportedUI";
 
-		private byte[] Buffer = new byte[1024];
+		private readonly byte[] Buffer = new byte[1024];
 		private DataImportExportHelper DataHelper;
-		private readonly static string directoryName = "MainBossPhysicalCounts";
+		private const string directoryName = "MainBossPhysicalCounts";
 		private readonly string macroPath = System.IO.Path.Combine(directoryName, "PermanentInventoryLocationData.xlsm");
 		private readonly string ribbonCustomizationsPath = System.IO.Path.Combine(directoryName, "MainBossCustomizationPhysicalCount.exportedUI");
 		private readonly string storageAssignmentExportDataFile = System.IO.Path.Combine(directoryName, "PermanentInventoryLocationData.xml");
@@ -33,7 +34,7 @@ namespace Thinkage.MainBoss.Database {
 			SaveManifestResourceInFile(macroPath, macroResource);
 			SaveManifestResourceInFile(ribbonCustomizationsPath, customizationResource);
 			DataSchemaBuilder sb = new DataSchemaBuilder(dsMB.Schema.T.PermanentItemLocation.Name);
-			List<KeyValuePair<DBI_Path, string>> mappings = new List<KeyValuePair<DBI_Path, string>>();
+			List<KeyValuePair<DBI_Path, DBI_Column>> mappings = new List<KeyValuePair<DBI_Path, DBI_Column>>();
 			sb.AddColumn(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID.F.Code, mappings);
 			sb.AddColumn(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID.L.LocationReport.LocationID.F.OrderByRank, mappings);
 			sb.AddColumn(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID.F.Code, mappings);
@@ -49,13 +50,12 @@ namespace Thinkage.MainBoss.Database {
 			using (DataSet rds = FetchData(dh.TableSchema, mbds.DB, mappings)) {
 				rds.WriteXml(storageAssignmentExportDataFile);
 			}
-#endif
 		}
-		private DataSet FetchData(DBI_Table tableSchema, DBClient db, List<KeyValuePair<DBI_Path, string>> mappings) {
+		private DataSet FetchData(DBI_Table tableSchema, DBClient db, List<KeyValuePair<DBI_Path, DBI_Column>> mappings) {
 			// Note that this dataset is only used by the MS report viewer control and thus never needs to be a custom typed dataset.
 			List<SqlExpression> queryColumns = new List<SqlExpression>();
 			// Iterate over all columns and select the ServerExpressionQueryColumn objects only. Alternatively we could iterate through the PathColumns.Values and ServerExpressionColumns but then we would have to duplicate the loop guts.
-			foreach (KeyValuePair<DBI_Path, string> qCol in mappings) {
+			foreach (KeyValuePair<DBI_Path, DBI_Column> qCol in mappings) {
 				var columnExpression = new SqlExpression(qCol.Key);
 				queryColumns.Add(columnExpression); //.Cast(qCol.Key.ReferencedColumn.ReadType).As(qCol.Value));
 			}
@@ -67,6 +67,7 @@ namespace Thinkage.MainBoss.Database {
 			//				dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID.PathToReferencedRow
 			//			});
 			return xds;
+#endif
 		}
 		private void SaveManifestResourceInFile(string outputFile, string resourceName) {
 			try {
@@ -82,7 +83,7 @@ namespace Thinkage.MainBoss.Database {
 				throw new GeneralException(x, KB.K("Cannot save the resource {0} to the file {1}"), resourceName, outputFile);
 			}
 		}
-#region LoadPhysicalCounts
+		#region LoadPhysicalCounts
 		private DataSchemaBuilder PhysicalCountSchema() {
 			DataSchemaBuilder sb = new DataSchemaBuilder(KB.I("PhysicalCount"));
 			sb.AddColumn(dsPhysicalCount.Path.T.PhysicalCount.F.StoreroomAssignmentID);
@@ -107,9 +108,9 @@ namespace Thinkage.MainBoss.Database {
 				}
 			}
 		}
-#endregion
+		#endregion
 
-#region Physical Count Builder
+		#region Physical Count Builder
 		private Guid GetItemLocationID(Guid storeroomAssignmentID) {
 			if (AILValuesIndexedByPermanentItemLocation.TryGetValue(storeroomAssignmentID, out Tuple<Guid, Guid> ailValue))
 				return ailValue.Item1;
@@ -122,11 +123,12 @@ namespace Thinkage.MainBoss.Database {
 		}
 		Guid AdjustmentCodeID;
 		Guid AdjustmentCostCenterID;
-		static DateTime PCEffectiveDate = (DateTime)dsMB.Schema.T.AccountingTransaction.F.EffectiveDate.WriteType.ClosestValueTo(DateTime.Now);
+		static readonly DateTime PCEffectiveDate = (DateTime)dsMB.Schema.T.AccountingTransaction.F.EffectiveDate.WriteType.ClosestValueTo(DateTime.Now);
+
 		/// <summary>
 		/// Keep all the ActualItemLocation data in a dictionary indexed by PermanentItemLocation (the ID used in the physical count reference records feeding us input)
 		/// </summary>
-		Dictionary<Guid?, Tuple<Guid, Guid>> AILValuesIndexedByPermanentItemLocation = new Dictionary<Guid?, Tuple<Guid, Guid>>();
+		readonly Dictionary<Guid?, Tuple<Guid, Guid>> AILValuesIndexedByPermanentItemLocation = new Dictionary<Guid?, Tuple<Guid, Guid>>();
 
 		private void SetupLookValues(dsMB ds, string adjustmentCode) {
 			ds.EnsureDataTableExists(dsMB.Schema.T.ItemAdjustmentCode);
@@ -137,8 +139,8 @@ namespace Thinkage.MainBoss.Database {
 			if (ajTable.Rows.Count != 1)
 				throw new GeneralException(KB.K("Was unable to locate the Adjustment Code record for '{0}'"), adjustmentCode);
 			// Check the associated CostCenter is still valid (i.e. not deleted)
-			var aRecord = ((dsMB.ItemAdjustmentCodeRow)ajTable.Rows[0]);
-			var ccRow = (dsMB.CostCenterRow)ds.T.CostCenter.RowFind(aRecord.F.CostCenterID);
+			dsMB.ItemAdjustmentCodeRow aRecord = ajTable.Rows[0];
+			var ccRow = ds.T.CostCenter.Rows.Find(aRecord.F.CostCenterID);
 			if (ccRow == null || ccRow.F.Hidden.HasValue)
 				throw new GeneralException(KB.K("Cost Center associated with Adjustment Code is missing or has been deleted and cannot be used"));
 
@@ -151,20 +153,20 @@ namespace Thinkage.MainBoss.Database {
 					dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.PathToReferencedRow
 				});
 			var AILTable = ds.T.ActualItemLocation;
-			foreach (dsMB.ActualItemLocationRow row in AILTable) {
+			foreach (dsMB.ActualItemLocationRow row in AILTable.Rows) {
 				AILValuesIndexedByPermanentItemLocation.Add(row.F.PermanentItemLocationID, new Tuple<Guid, Guid>(row.F.ItemLocationID, row.F.CostCenterID));
 			}
 			AILTable.Clear();
 		}
-		public DataSet CreatePhysicalCounts(dsMB ds, string adjustmentCode, Source userIDSource) {
+		public DBIDataSet CreatePhysicalCounts(dsMB ds, string adjustmentCode, Source userIDSource) {
 			SetupLookValues(ds, adjustmentCode);
 			ds.EnsureDataTableExists(dsMB.Schema.T.ItemCountValue);
 			ds.EnsureDataTableExists(dsMB.Schema.T.AccountingTransaction);
 
-			const string ErrorColumnName = "ErrorOnSave";
-			DataSet errorDataSet = DataHelper.DataSet.Clone();
-			DataTable errorDataTable = errorDataSet.Tables[0];
-			errorDataTable.Columns.Add(new DataColumn(ErrorColumnName, typeof(string)));
+			var errorDataSet = (DBIDataSet)DataHelper.DataSet.Clone();
+			var errorDataTable = errorDataSet.OnlyTable;
+			// TODO: The following must refer to a smaller type, limited to what System.String can handle
+			var errorDataColumn = errorDataTable.Columns.AddNewColumnWithSchema("ErrorOnSave", StringTypeInfo.NonNullUniverse);
 
 			DataTablePositioner importPositioner = new DataTablePositioner(DataHelper.DataTable);
 			Source storeroomID = importPositioner.GetDataColumnSource(DataHelper.DataTable.Columns[dsPhysicalCount.Path.T.PhysicalCount.F.StoreroomAssignmentID.Column.Name]);
@@ -181,7 +183,7 @@ namespace Thinkage.MainBoss.Database {
 					continue;
 				try {
 					Guid pilID = (Guid)storeroomID.GetValue();
-					var pcRecord = (dsMB.ItemCountValueRow)itemCountTable.AddNewItemCountValueRow(); // will add AccountingTransaction Base row as well
+					dsMB.ItemCountValueRow pcRecord = itemCountTable.AddNewRow(); // will add AccountingTransaction Base row as well
 					pcRecord.F.Cost = (decimal)(dsMB.Path.T.ItemCountValue.F.Cost.ReferencedColumn.EffectiveType.ClosestValueTo(PCCost.GetValue()));
 					pcRecord.F.Quantity = (int)(dsMB.Path.T.ItemCountValue.F.Quantity.ReferencedColumn.EffectiveType.GenericAsNativeType(checkQuantity, typeof(int)));
 					pcRecord.F.ItemLocationID = GetItemLocationID(pilID);
@@ -197,18 +199,20 @@ namespace Thinkage.MainBoss.Database {
 					ds.DB.Update(ds);
 				}
 				catch (System.Exception ex) {
-					DataRow errorRow = errorDataTable.NewRow();
-					DataRow currentRow = DataHelper.DataTable.RowFind(p.Id);
-					for (int j = DataHelper.DataTable.Columns.Count; --j >= 0;)
-						errorRow[j] = currentRow[j];
-					errorRow[ErrorColumnName] = Thinkage.Libraries.Exception.FullMessage(ex);
-					errorDataTable.Rows.Add(errorRow);
+					DBIDataRow errorRow = errorDataTable.NewUninitializedDetachedRow();
+					DBIDataRow currentRow = DataHelper.DataTable.Rows.Find(p.Id);
+					foreach (DBIDataColumn col in DataHelper.DataTable.Columns)
+						errorRow[col] = currentRow[col];
+//					for (int j = DataHelper.DataTable.Columns.Count; --j >= 0;)
+//						errorRow[j] = currentRow[j];
+					errorRow[errorDataColumn] = Libraries.Exception.FullMessage(ex);
+					errorDataTable.Rows.Attach(errorRow);
 				}
 				itemCountTable.Clear();
 				accountingTransactionTable.Clear();
 			}
 			return errorDataSet;
 		}
-#endregion
+		#endregion
 	}
 }

@@ -25,10 +25,11 @@ namespace Thinkage.MainBoss.Service {
 			}
 		}
 		// For now, statically define the serviceWorkers we support
-		private static System.Type[] pServiceWorkersToCreate = {
+		private static readonly System.Type[] pServiceWorkersToCreate = {
 			 typeof(ServiceLogWorker), typeof(EmailRequestWorker), typeof(RequestorNotificationWorker), typeof(AssignmentNotificationWorker)
 		};
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<Pending>")]
 		public class ServiceOptable : Optable {
 			public StringValueOption DataBaseName;
 			public StringValueOption DataBaseServer;
@@ -233,8 +234,11 @@ namespace Thinkage.MainBoss.Service {
 				LogErrorAndExit(1, Strings.Format(KB.K("'{0}' is configured with Windows Service for MainBoss '{1}' not '{2}'"), DBConnection.DisplayNameLowercase, dbParms.ServiceComputer, DomainAndIP.MyDnsName));
 			if (!DomainAndIP.SameComputer(cmdParms.ServiceComputer, dbParms.ServiceComputer))
 				LogErrorAndExit(1, Strings.Format(KB.K("'{0}' is configured with its Windows Service for MainBoss on computer '{1}' not computer '{2}'"), DBConnection.DisplayNameLowercase, dbParms.ServiceComputer, DomainAndIP.MyDnsName));
-			var isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
-			var workingUserid = Environment.UserName[Environment.UserName.Length - 1] == '$' ? Utilities.NETWORKSERVICE_DISPLAYNAME : isAdmin ? Utilities.LOCALADMIN_DISPLAYNAME : Environment.UserName;
+			var idenity = WindowsIdentity.GetCurrent();
+			var isAdmin = new WindowsPrincipal(idenity).IsInRole(WindowsBuiltInRole.Administrator);
+			var workingUserid = idenity.Name;
+			if (workingUserid[workingUserid.Length - 1] == '$')
+				workingUserid = isAdmin ? Utilities.LOCALADMIN_DISPLAYNAME : Utilities.NETWORKSERVICE_DISPLAYNAME;
 			if (string.Compare(dbParms.ServiceUserid, workingUserid, true) != 0) { // needed in case User change Service Userid using the Windows Server Manager
 				dbParms.ServiceUserid = workingUserid;
 				ServiceUtilities.UpdateServiceRecord(DBConnection, dbParms, ServiceLogging ?? this);
@@ -289,19 +293,23 @@ namespace Thinkage.MainBoss.Service {
 				if (ServiceLogging == null)
 					Exit(-1); // there will have been an error
 			}
+#pragma warning disable CA1031 // Do not catch general exception types
 			catch (System.Exception ex) {
 				LogErrorAndExit(1, Thinkage.Libraries.Exception.FullMessage(ex));
 			}
+#pragma warning restore CA1031 // Do not catch general exception types
 			//
 			// get the service record
 			//
 			try {
 				dbParms = ServiceUtilities.AcquireServiceRecordInfo(cmdParms.ConnectionInfo, DBConnection, cmdParms.ServiceCode, null);
 			}
+#pragma warning disable CA1031 // Do not catch general exception types
 			catch (System.Exception ex) {
 				if (!ServiceOptions.DeleteService)  // no MainBoss Service record but a MainBoss Service may actually exist.
 					LogErrorAndExit(1, Thinkage.Libraries.Exception.FullMessage(ex));
 			}
+#pragma warning restore CA1031 // Do not catch general exception types
 			//
 			// check if service record is consistent with command line.
 			//
@@ -486,7 +494,6 @@ namespace Thinkage.MainBoss.Service {
 			}
 			if (serviceConfiguration != null)
 				serviceConfiguration.Dispose();
-			serviceConfiguration = null;
 		}
 		#endregion
 		#region CheckServiceUserPermissions
@@ -509,7 +516,15 @@ namespace Thinkage.MainBoss.Service {
 														), sqlServerUserid.SqlUserid, cmdParms.ConnectionInfo.DatabaseServer, sqlServerUserid.Error == null ? sqlServerUserid.SqlUseridFormatted : "domain\\machine$"));
 		}
 		#endregion
-
+		#region Destruction
+		protected override void Dispose(bool disposing) {
+			base.Dispose(disposing);
+			if (disposing) {
+				WatchDog?.Stop();
+				WatchDog?.Dispose();
+			}
+		}
+		#endregion
 		#region WatchDog
 		System.Timers.Timer WatchDog;
 		IEnumerable<ServiceWorker> StillActive = null;
@@ -551,6 +566,7 @@ namespace Thinkage.MainBoss.Service {
 				else
 					ServiceLogging.LogTrace(Logging.Tracing, Strings.Format(KB.K("Checked for changes in MainBoss Service Configuration")));
 			}
+#pragma warning disable CA1031 // Do not catch general exception types
 			catch (System.Exception e) {
 				if (e is GeneralException)
 					ServiceLogging.LogError(Thinkage.Libraries.Exception.FullMessage(e));
@@ -566,6 +582,7 @@ namespace Thinkage.MainBoss.Service {
 				doingWatchDogtest = false;
 				return;
 			} // we can't get the configuration, most likely the sql server is not available.
+#pragma warning restore CA1031 // Do not catch general exception types
 			if (StillActive != null) {
 				StillActive = StillActive.Where(e => e.IsActive).ToList();
 				if (WorkerShutdownTime + new TimeSpan(0, 10, 0) < DateTime.Now) {
@@ -620,7 +637,6 @@ namespace Thinkage.MainBoss.Service {
 		#endregion
 		#region Create Service
 		private void CreateService(ServiceParms dbParms, ServiceParms cmdParms) {
-			ServiceConfiguration serviceConfiguration = null;
 			try {
 				dbParms.UpdateWith(cmdParms);
 				if (ServiceOptions.Force)
@@ -630,7 +646,7 @@ namespace Thinkage.MainBoss.Service {
 				if (!dbParms.WindowsAccountExists)      // ToDo: don't know how to check if the userid has "Login as a service" set.
 					throw new GeneralException(KB.K("The Windows Service for MainBoss is being configured to run as user '{0}' which is not a valid user"), cmdParms.ServiceUserid);
 				dbParms = ServiceUtilities.CreateMainBossService(DBConnection, dbParms, System.Reflection.Assembly.GetExecutingAssembly().Location, ServiceLogging);
-				serviceConfiguration = ServiceConfiguration.AcquireServiceConfiguration(true, true, dbParms.ServiceComputer, dbParms.ServiceCode);
+				ServiceConfiguration serviceConfiguration = ServiceConfiguration.AcquireServiceConfiguration(true, true, dbParms.ServiceComputer, dbParms.ServiceCode);
 				if (serviceConfiguration == null)
 					throw new GeneralException(KB.K("Cannot install Windows Service for MainBoss"));
 				if (serviceConfiguration.LastError != null)
@@ -647,6 +663,7 @@ namespace Thinkage.MainBoss.Service {
 		}
 		#endregion
 		#region Service Commands
+		public readonly bool Force;
 		Task ServiceEnvironment = null;
 		ServiceOptions ServiceOptions;
 		MainBossServiceApplication MainBossServiceApplication;
@@ -734,7 +751,9 @@ namespace Thinkage.MainBoss.Service {
 					Console.WriteLine(Strings.Format(KB.K("Press any key to end program")));
 					Console.ReadKey(true);
 				}
+#pragma warning disable CA1031 // Do not catch general exception types
 				catch (System.Exception) {; }
+#pragma warning restore CA1031 // Do not catch general exception types
 			}
 			Environment.Exit(status);
 		}
@@ -748,8 +767,9 @@ namespace Thinkage.MainBoss.Service {
 		#endregion
 		#region Constructor
 
-		public MainBossService(Thinkage.Libraries.Service.Application appObject)
+		public MainBossService(Thinkage.Libraries.Service.Application appObject, bool force)
 			: base(appObject) {
+			Force = force;
 			AutoLog = false; // We do not want automatic logging from ServiceProcess.ServiceBase (nor can the ServiceBase write to a service with a custom log)
 		}
 		#endregion
@@ -775,13 +795,17 @@ namespace Thinkage.MainBoss.Service {
 									canAccess = KB.K("Can Access").Translate();
 							}
 						}
+#pragma warning disable CA1031 // Do not catch general exception types
 						catch (System.Exception) {; }
+#pragma warning restore CA1031 // Do not catch general exception types
 						output.AppendLine(Strings.IFormat(lineFormat, s, serviceInfo.ServiceUserid, canAccess, serviceInfo.DatabaseName, serviceInfo.DatabaseServer));
 					}
 				}
+#pragma warning disable CA1031 // Do not catch general exception types
 				catch (System.Exception e) {
 					output.AppendLine(Strings.Format(KB.K("'{0:20}' Error:{1}"), s, Thinkage.Libraries.Exception.FullMessage(e)));
 				}
+#pragma warning restore CA1031 // Do not catch general exception types
 			}
 			System.Console.WriteLine(Strings.Format(KB.K("List of Windows Services for MainBoss on computer '{0}' follows:"), machineName));
 			Console.WriteLine(Strings.IFormat(lineFormat, KB.K("Service Name"), KB.K("Service User Name"), KB.K("Access"), KB.K("Database Name"), KB.K("Database Server")));
@@ -799,7 +823,9 @@ namespace Thinkage.MainBoss.Service {
 			try {
 				PopUpConsole = System.Console.CursorLeft == 0 && System.Console.CursorTop == 0;
 			}
+#pragma warning disable CA1031 // Do not catch general exception types
 			catch (System.Exception) {; }
+#pragma warning restore CA1031 // Do not catch general exception types
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((o, a) => {
 				System.Exception e = (System.Exception)a.ExceptionObject;
 				if (e is GeneralException eg)

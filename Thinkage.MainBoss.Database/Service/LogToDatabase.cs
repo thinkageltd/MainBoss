@@ -40,10 +40,8 @@ namespace Thinkage.MainBoss.Database.Service {
 			loggingTask = System.Threading.Tasks.Task.Factory.StartNew(() => ProcessLogThread());
 		}
 		public void CloseLog() {
-			if (loggingTask != null) {
-				loggingTask.Wait();
-				loggingTask = null;
-			}
+			loggingTask?.Wait();
+			loggingTask = null;
 		}
 		/// <summary>
 		/// Allow a secondary log to be created. Used to message to terminal window when, or to present error screens to user.
@@ -59,14 +57,15 @@ namespace Thinkage.MainBoss.Database.Service {
 		}
 		public void Log(Database.DatabaseEnums.ServiceLogEntryType type, string s) {
 			// If database connection, log the message in the database table; otherwise use the base Log method
-			if (loggingTask == null && s == null) return; // don't create log for a null message.
+			if (loggingTask == null && s == null)
+				return; // don't create log for a null message.
 			string source = System.Threading.Thread.CurrentThread.Name;
 			if (source == null)
 				source = KB.I("MainBossService");
 			LogMessage msg = new LogMessage(type, source, s);
 			if (loggingTask != null && loggingTask.IsCompleted)
 				loggingTask = null;
-			if( loggingTask == null) 
+			if (loggingTask == null)
 				ProcessLog();
 			if (!LogMessages.TryAdd(msg))
 				SecondaryLogging(msg);
@@ -102,8 +101,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				if (!string.IsNullOrWhiteSpace(msg.Message)) {
 					if (nextLogCleanup < DateTime.Now) // once a day (and once per running of the program) delete all log entries over 90 days old.
 						try {
-							if (LogDs == null)
-								GetServiceLog();
+							GetServiceLog();
 							nextLogCleanup = DateTime.Today.AddDays(1);
 							var sqlcmd = new DeleteSpecification(dsMB.Schema.T.ServiceLog, new SqlExpression(dsMB.Path.T.ServiceLog.F.EntryDate).Lt(DateTime.Now.AddDays(-90)));
 							LogSession.Session.ExecuteCommand(sqlcmd);
@@ -116,12 +114,14 @@ namespace Thinkage.MainBoss.Database.Service {
 					foreach (int pass in new int[] { 0, 1 }) {
 						lasterror = null;
 						try {
-							if (LogDs == null)
-								GetServiceLog();
+							GetServiceLog();
 							dsMB.ServiceLogDataTable log = LogDs.T.ServiceLog;
-							dsMB.ServiceLogRow entry = log.AddNewServiceLogRow();
+							dsMB.ServiceLogRow entry = log.AddNewRow();
 							entry.F.Source = msg.Source;
-							entry.F.Message = msg.Message;
+							var m = msg.Message ?? "";
+							if (m.Length > 5000) // we have seen megabytes in error message from dart.
+								m = m.Substring(0, 5000) + "...";
+							entry.F.Message = m;
 							entry.F.EntryType = (byte)mtype;
 							LogDs.DB.Update(LogDs);
 							log.Clear(); // work is done, remove all rows for this action
@@ -150,48 +150,44 @@ namespace Thinkage.MainBoss.Database.Service {
 		}
 		private dsMB LogDs;
 		MB3Client LogSession;
-		DBClient.Connection DBConnection;
+		readonly DBClient.Connection DBConnection;
 		private void GetServiceLog() {
-			LogSession = null;
-			LogDs = null;
-			try {
-				LogSession = new MB3Client(DBConnection);
-				LogSession.ObtainSession((int)DatabaseEnums.ApplicationModeID.MainBossService);
-				LogDs = new dsMB(LogSession);
-				LogDs.EnsureDataTableExists(dsMB.Schema.T.ServiceLog);
+			if (LogDs == null) {
+				try {
+					LogSession = new MB3Client(DBConnection);
+					LogSession.ObtainSession((int)DatabaseEnums.ApplicationModeID.MainBossService);
+					LogDs = new dsMB(LogSession);
+					LogDs.EnsureDataTableExists(dsMB.Schema.T.ServiceLog);
+				}
+				catch (GeneralException e) {
+					LogDs = null;
+					SecondaryLogging(new LogMessage(DatabaseEnums.ServiceLogEntryType.Error, null, Thinkage.Libraries.Exception.FullMessage(e)));
+					throw;
+				}
 			}
-			catch (GeneralException e) {
-				LogDs = null;
-				SecondaryLogging(new LogMessage(DatabaseEnums.ServiceLogEntryType.Error, null, Thinkage.Libraries.Exception.FullMessage(e)));
-				throw;
-			}
-			return;
 		}
 		private void CloseServiceLog() {
 			try {
-				if (LogSession != null)
-					LogSession.CloseDatabase();
+				LogSession?.CloseDatabase();
 			}
 			catch (System.Exception) { }
 			LogSession = null;
+			LogDs?.Dispose();
 			LogDs = null;
 		}
 		public System.Exception LogFailure { get; private set; } = null;
 		public DateTime? LogFailureTime { get; private set; } = null;
-		public void Dispose()
-		{
-			Dispose(!inDispose);
+		public void Dispose() {
+			Dispose(true);
 			GC.SuppressFinalize(this);
 		}
-		private bool inDispose = false;
 		protected virtual void Dispose(bool disposing) {
-			if (disposing) return;
-			disposing = true;
-			if (disposing && LogSession != null ) {
+			if (disposing) {
 				LogClose(null);
+				CloseServiceLog();
+				LogMessages.Dispose();
 			}
 		}
-
 	}
 	public class LogToUserAndDatabase : LogToDatabase {
 		public void LogLoggingParameters() {
@@ -207,41 +203,47 @@ namespace Thinkage.MainBoss.Database.Service {
 		}
 		public override void SecondaryLogging(LogMessage mesg) {
 			base.SecondaryLogging(mesg);
-			if (string.IsNullOrWhiteSpace(mesg.Message)) return;
+			if (string.IsNullOrWhiteSpace(mesg.Message))
+				return;
 			if (!UserInterface.IsRunningAsAService) {
 				var k = Database.DatabaseEnums.ServiceLogEntryTypeProvider.GetLabel(mesg.Type, new EnumTypeInfo(typeof(Database.DatabaseEnums.ServiceLogEntryType))).Translate();
-				System.Console.WriteLine(Strings.IFormat("{0}{1,-24} {2,-8}: {3}", System.Environment.NewLine, mesg.Source,  k, mesg.Message));
+				System.Console.WriteLine(Strings.IFormat("{0}{1,-24} {2,-8}: {3}", System.Environment.NewLine, mesg.Source, k, mesg.Message));
 			}
 		}
 		protected override void Dispose(bool disposing) {
-			if (disposing && eventLogging != null) {
-				base.Dispose(disposing);
-				var v = eventLogging;
+			if (disposing) {
+				eventLogging?.Dispose();
 				eventLogging = null;
-				v.Dispose();
 			}
+			base.Dispose(disposing);
 		}
 	}
-	public class LogAndDatabaseAndError : LogToDatabase, IDisposable {
+	public class LogAndDatabaseAndError : LogToDatabase {
 		public void LogLoggingParameters() {
 			string s = Logging.GetTranslatedLoggingParameterMessage();
 			if (!System.String.IsNullOrEmpty(s))
 				LogInfo(Thinkage.Libraries.Strings.Format(KB.K("MainBoss Service Logging set to show: {0}"), s));
 		}
-		ServiceBase eventLogging = null;
+		// TODO: This field is not apparently referenced so it is confusing as to why it is here.
+		readonly ServiceBase eventLogging = null;
 		public LogAndDatabaseAndError(DBClient.Connection dbConnection)
 			: base(dbConnection) {
 			if (UserInterface.IsRunningAsAService)
 				eventLogging = new ServiceBase();
 		}
+		protected override void Dispose(bool disposing) {
+			base.Dispose(disposing);
+			if (disposing)
+				eventLogging?.Dispose();
+		}
 		public override void SecondaryLogging(LogMessage mesg) {
 			base.SecondaryLogging(mesg);
-			if (string.IsNullOrWhiteSpace(mesg.Message)) return;
+			if (string.IsNullOrWhiteSpace(mesg.Message))
+				return;
 			if (mesg.Type == DatabaseEnums.ServiceLogEntryType.Error)
 				Thinkage.Libraries.Application.Instance.DisplayError(new GeneralException(KB.T("{0}"), mesg.Message));
 			else if (mesg.Type == DatabaseEnums.ServiceLogEntryType.Warn)
 				Thinkage.Libraries.Application.Instance.DisplayError(new GeneralException(KB.T("{0}"), mesg.Message));
 		}
 	}
-
 }

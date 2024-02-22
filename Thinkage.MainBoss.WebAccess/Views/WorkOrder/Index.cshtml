@@ -1,7 +1,7 @@
 @model IEnumerable<WorkOrderEntities.WorkOrder>
 @using Thinkage.MainBoss.WebAccess
 @using Thinkage.Web.Mvc.Html
-
+@using Thinkage.MainBoss.Database
 @{
 	Layout = "~/Views/Shared/_LayoutBrowse.cshtml";
 	ViewBag.Title = T.Text("Assigned Work Orders");
@@ -9,54 +9,37 @@
 @section BrowseContent {
 	<thead>
 		<tr>
-			<th>
-				@Html.NBSP()
-			</th>
-			<th>
-				@(T.Text("Number"))
-			</th>
-			<th>
-				@(T.Text("Priority"))
-			</th>
-			<th>
-				@(T.Text("Status"))
-			</th>
-			@*			@if (! Request.Browser.IsMobileDevice) { *@
-			<th class="Subject">
-				@(T.Text("Subject"))
-			</th>
-			@*			} *@
+			<th />
+			@Html.LabelOnly(dsMB.Path.T.WorkOrder.F.Number, "th")
+			@Html.LabelOnly(dsMB.Path.T.WorkOrder.F.Subject, "th", new string[] { "SuppressWhenNarrow" })
+			@Html.LabelOnly(dsMB.Path.T.WorkOrder.F.WorkOrderPriorityID, "th")
+			@Html.LabelOnly(T.Text("Current Status"), "th")
+
 		</tr>
 	</thead>
 	<tbody>
 		@foreach (var item in Model) {
-			<tr class="Info">
+			<tr>
 				<td>
-					@(Html.ActionLink(T.Text("Close"), "Close", "WorkOrderStateHistory", new
-				{
-					ParentID = item.Id,
-					CurrentStateHistoryID = item.CurrentWorkOrderStateHistoryID
-				}, new
-				{
-					@class = "StateActionLink"
-				}))
-			</td>
-			<td>@(Html.ActionLink(item.Number, "View", new
-				{
-					id = item.Id,
-					resultMessage = ""
-				}))</td>
-			@(Html.CodeValue(item.WorkOrderPriority))
-			@(Html.CodeValue(item.CurrentWorkOrderStateHistory.WorkOrderStateHistoryStatus))
-			@*
-				@if (Request.Browser.IsMobileDevice) {
-				</tr>
-				<tr class="Subject">
-					<td>&nbsp;</td>
-				}
-			*@
-			<td class="Subject" colspan="2">@(item.Subject) </td>
-		</tr>
+					@Html.ActionLink(T.Text("Close"), "Close", "WorkOrderStateHistory", new {
+							ParentID = item.Id,
+							CurrentStateHistoryID = item.CurrentWorkOrderStateHistoryID
+						}, new {
+							@class = "StateActionLink"
+						})
+				</td>
+				<td class="WithPopup">
+					@Html.ActionLink(item.Number, "View", new { id = item.Id, resultMessage = "" })
+					<span class="ThePopup">@(item.Subject)</span>
+				</td>
+				<td class="SuppressWhenNarrow">@(item.Subject) </td>
+				@Html.CodeValueForBrowsePanel(item.WorkOrderPriority)
+				@Html.CodeValueForBrowsePanel(item.CurrentWorkOrderStateHistory.WorkOrderStateHistoryStatus)
+
+			</tr>
 		}
 	</tbody>
+}
+@section BackToContent {
+	<div class="Action">@(Html.ActionLink(T.Text(" Assignments"), "Index", "Assignment"))</div>
 }

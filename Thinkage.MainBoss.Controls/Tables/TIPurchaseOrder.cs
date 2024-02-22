@@ -11,50 +11,27 @@ using Thinkage.MainBoss.Controls.Resources;
 using Thinkage.MainBoss.Database;
 using Thinkage.Libraries.DBAccess;
 
-namespace Thinkage.MainBoss.Controls
-{
+namespace Thinkage.MainBoss.Controls {
 	/// <summary>
 	/// Register Tbl and/or DelayedCreateTbl objects for Purchase Orders.
 	/// </summary>
-	public class TIPurchaseOrder : TIGeneralMB3
-	{
-		#region Record-type providers
-		#region - ReceiptActivityProvider and PurchaseOrderLineProvider
-		public static EnumValueTextRepresentations ReceiptActivityProvider = new EnumValueTextRepresentations(
-			new Key[] {
-				KB.K("Item Purchase Line"),
-				KB.TOi(TId.ReceiveItemWithPO),
-				KB.TOi(TId.CorrectionofReceiveItemWithPO),
-				KB.K("Hourly Purchase Line"),
-				KB.K("Actual Hourly (with PO)"),
-				KB.K("Correction of Actual Hourly (with PO)"),
-				KB.K("Per Job Purchase Line"),
-				KB.K("Actual Per Job (with PO)"),
-				KB.K("Correction of Actual Per Job (with PO)"),
-				KB.K("Miscellaneous Purchase Line"),
-				KB.TOi(TId.ReceiveMiscellaneous),
-				KB.TOi(TId.CorrectionofReceiveMiscellaneous)
-			},
-			null,
-			new object[] {
-				(int)ViewRecordTypes.ReceiptActivity.POLineItem,
-				(int)ViewRecordTypes.ReceiptActivity.ReceiveItemPO,
-				(int)ViewRecordTypes.ReceiptActivity.ReceiveItemPOCorrection,
-				(int)ViewRecordTypes.ReceiptActivity.POLineLabor,
-				(int)ViewRecordTypes.ReceiptActivity.ActualLaborOutsidePO,
-				(int)ViewRecordTypes.ReceiptActivity.ActualLaborOutsidePOCorrection,
-				(int)ViewRecordTypes.ReceiptActivity.POLineOtherWork,
-				(int)ViewRecordTypes.ReceiptActivity.ActualOtherWorkOutsidePO,
-				(int)ViewRecordTypes.ReceiptActivity.ActualOtherWorkOutsidePOCorrection,
-				(int)ViewRecordTypes.ReceiptActivity.POLineMiscellaneous,
-				(int)ViewRecordTypes.ReceiptActivity.ReceiveMiscellaneousPO,
-				(int)ViewRecordTypes.ReceiptActivity.ReceiveMiscellaneousPOCorrection
-			}
-		);
-		/// <summary>
-		/// This view uses the SAME enum values as Receipt activity Provider
-		/// </summary>
-		public static EnumValueTextRepresentations PurchaseOrderLineProvider = ReceiptActivityProvider;
+	public class TIPurchaseOrder : TIGeneralMB3 {
+		#region View Record Types
+		#region - PurchaseOrderLines Names
+		public enum PurchaseOrderLine {
+			POLineItem,
+			ReceiveItemPO,
+			ReceiveItemPOCorrection,
+			POLineLabor,
+			ActualLaborOutsidePO,
+			ActualLaborOutsidePOCorrection,
+			POLineOtherWork,
+			ActualOtherWorkOutsidePO,
+			ActualOtherWorkOutsidePOCorrection,
+			POLineMiscellaneous,
+			ReceiveMiscellaneousPO,
+			ReceiveMiscellaneousPOCorrection
+		}
 		#endregion
 		#endregion
 		#region NodeIds
@@ -75,7 +52,7 @@ namespace Thinkage.MainBoss.Controls
 
 		#endregion
 		#region Common list column caption keys
-		private static Key CommonOrderLineColumnKey = dsMB.Path.T.POLineItemTemplate.F.ItemLocationID.F.ItemPriceID.F.PurchaseOrderText.Key(); // Common to all Purchase objects
+		private static readonly Key CommonOrderLineColumnKey = dsMB.Path.T.POLineItemTemplate.F.ItemLocationID.F.ItemPriceID.F.PurchaseOrderText.Key(); // Common to all Purchase objects
 		#endregion
 		#region Named Tbls
 		public static DelayedCreateTbl PurchaseOrderInProgressAssignedToBrowseTbl;
@@ -93,14 +70,14 @@ namespace Thinkage.MainBoss.Controls
 		public static DelayedCreateTbl PurchaseOrderEditTblCreator;
 		public static DelayedCreateTbl PurchaseOrderWithPOLineItemEditTbl;
 
-		public static DelayedCreateTbl PurchaseOrderTemplateEditTbl;
+		public static DelayedCreateTbl PurchaseOrderTemplateEditTblCreator;
 
 		private static readonly DelayedCreateTbl POLineItemTblCreator;
 		private static readonly DelayedCreateTbl POLineItemTemplateTblCreator;
 		private static readonly DelayedCreateTbl AssociatedWorkOrdersTbl;
 		private static readonly DelayedCreateTbl AssociatedWorkOrderTemplatesTbl;
 
-		public static readonly DelayedCreateTbl POLineItemWithItemLocationInitTblCreator;	// TODO: There is no way to write PO lines from any ItemLocation editor; there should be and it should use this tbl for editing new records.
+		public static readonly DelayedCreateTbl POLineItemWithItemLocationInitTblCreator;   // TODO: There is no way to write PO lines from any ItemLocation editor; there should be and it should use this tbl for editing new records.
 		private static readonly DelayedCreateTbl POLineItemWithPOInitTblCreator;
 		public static readonly DelayedCreateTbl POLineLaborWithDemandInitTblCreator;
 		private static readonly DelayedCreateTbl POLineLaborWithPOInitTblCreator;
@@ -118,10 +95,10 @@ namespace Thinkage.MainBoss.Controls
 		// public static readonly DelayedCreateTbl POLineMiscellaneousTemplateWithMiscellaneousInitTblCreator; // would be needed e.g. from POLine browsette of Miscellaneous Item editor.
 		private static readonly DelayedCreateTbl POLineMiscellaneousTemplateWithPOTemplateInitTblCreator;
 
-		private static DelayedCreateTbl POLineItemDefaultEditorTblCreator;
-		private static DelayedCreateTbl POLineLaborDefaultEditorTblCreator;
-		private static DelayedCreateTbl POLineOtherWorkDefaultEditorTblCreator;
-		private static DelayedCreateTbl POLineMiscellaneousTblCreator;
+		private static readonly DelayedCreateTbl POLineItemDefaultEditorTblCreator;
+		private static readonly DelayedCreateTbl POLineLaborDefaultEditorTblCreator;
+		private static readonly DelayedCreateTbl POLineOtherWorkDefaultEditorTblCreator;
+		private static readonly DelayedCreateTbl POLineMiscellaneousTblCreator;
 		#endregion
 		#region State History with UI definition
 		public static DelayedConstruction<StateHistoryUITable> PurchaseOrderHistoryTable = new DelayedConstruction<StateHistoryUITable>(delegate () {
@@ -147,8 +124,8 @@ namespace Thinkage.MainBoss.Controls
 			list.Add((IDisablerProperties)app.PermissionsManager.GetPermission(rightsGroup.GetTableOperationRight(TableOperationRightsGroup.TableOperation.Create)));
 			return list;
 		}
-		private static Key SelfAssignCommand = KB.K("Self Assign");
-		private static Key SelfAssignTip = KB.K("Add yourself as an assignee to this Purchase Order");
+		private static readonly Key SelfAssignCommand = KB.K("Self Assign");
+		private static readonly Key SelfAssignTip = KB.K("Add yourself as an assignee to this Purchase Order");
 		private static void SelfAssignmentEditor(CommonLogic el, object requestID) {
 			object requestAssigneeID;
 			using (dsMB ds = new dsMB(el.DB)) {
@@ -171,7 +148,7 @@ namespace Thinkage.MainBoss.Controls
 			};
 			Libraries.Application.Instance.GetInterface<ITblDrivenApplication>().GetInterface<ITblDrivenApplication>().PerformMultiEdit(el.CommonUI.UIFactory, el.DB, TblRegistry.FindDelayedEditTbl(dsMB.Schema.T.PurchaseOrderStateHistory),
 				EdtMode.New,
-				new[] { new object[] { } },
+				new[] { Array.Empty<object>() },
 				ApplicationTblDefaults.NoModeRestrictions,
 				new[] { initList },
 				((ICommonUI)el.CommonUI).Form, el.CallEditorsModally,
@@ -179,8 +156,7 @@ namespace Thinkage.MainBoss.Controls
 		}
 
 		private static DelayedCreateTbl PurchaseOrderEditTbl(TblLayoutNodeArray nodes, FeatureGroup featureGroup, bool AssignToSelf) {
-			return new DelayedCreateTbl(delegate()
-			{
+			return new DelayedCreateTbl(delegate () {
 				List<ETbl.ICtorArg> etblArgs = new List<ETbl.ICtorArg> {
 					MB3ETbl.HasStateHistoryAndSequenceCounter(dsMB.Path.T.PurchaseOrder.F.Number, dsMB.Schema.T.PurchaseOrderSequenceCounter, dsMB.Schema.V.POSequence, dsMB.Schema.V.POSequenceFormat, PurchaseOrderHistoryTable),
 					ETbl.EditorDefaultAccess(false),
@@ -189,8 +165,7 @@ namespace Thinkage.MainBoss.Controls
 				};
 				if (AssignToSelf) {
 					etblArgs.Add(ETbl.CustomCommand(
-							delegate(EditLogic el)
-							{
+							delegate (EditLogic el) {
 								var group = new EditLogic.MutuallyExclusiveCommandSetDeclaration {
 									new EditLogic.CommandDeclaration(
 									SelfAssignCommand,
@@ -226,49 +201,39 @@ namespace Thinkage.MainBoss.Controls
 		}
 		#endregion
 		#region POLineItemsTbl
-		private static CompositeTbl POLineItemsBrowseTbl()
-		{
+		private static CompositeTbl POLineItemsBrowseTbl() {
 			Key purchaseNewItemGroup = KB.K("New PO Line Item");
 
 			// For the Purchase Order editor's Lines browsette
-			return new CompositeTbl(dsMB.Schema.T.PurchaseOrderLine, TId.PurchaseOrderLine,
+			return new CompositeTbl(dsMB.Schema.T.POLine, TId.PurchaseOrderLine,
 				new Tbl.IAttr[]
 				{
 					CommonTblAttrs.ViewCostsDefinedBySchema,
 					new BTbl(
-						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.LineNumber),
-						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.PurchaseOrderText),
+						BTbl.ListColumn(dsMB.Path.T.POLine.F.LineNumber),
+						BTbl.ListColumn(dsMB.Path.T.POLine.F.PurchaseOrderText),
 						BTbl.PerViewListColumn(quantityColumnId, quantityColumnId),
 						BTbl.PerViewListColumn(uomColumnId, uomColumnId),
-						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.Cost)
+						BTbl.ListColumn(dsMB.Path.T.POLine.F.Cost)
 					)
 				},
-				dsMB.Path.T.PurchaseOrderLine.F.TableEnum,
-				new CompositeView(POLineItemWithPOInitTblCreator, dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineItemID,			// ViewRecordTypes.PurchaseOrderLine.POLineItem
+				new CompositeView(POLineItemWithPOInitTblCreator, dsMB.Path.T.POLine.F.POLineItemID,
+					CompositeView.RecognizeByValidEditLinkage(),
 					BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineItem.F.Quantity, IntegralFormat),
 					BTbl.PerViewColumnValue(uomColumnId, dsMB.Path.T.POLineItem.F.ItemLocationID.F.ItemID.F.UnitOfMeasureID.F.Code),
-					CompositeView.NewCommandGroup(purchaseNewItemGroup),
-					CompositeView.PathAlias(dsMB.Path.T.PurchaseOrderLine.F.PurchaseOrderID, dsMB.Path.T.POLineItem.F.POLineID.F.PurchaseOrderID)),
-				null,
-				null,
-				new CompositeView(POLineLaborWithPOInitTblCreator, dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineLaborID,			// ViewRecordTypes.PurchaseOrderLine.POLineLabor
+					CompositeView.NewCommandGroup(purchaseNewItemGroup)),
+				new CompositeView(POLineLaborWithPOInitTblCreator, dsMB.Path.T.POLine.F.POLineLaborID,
+					CompositeView.RecognizeByValidEditLinkage(),
 					BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineLabor.F.Quantity, IntervalFormat),
-					CompositeView.NewCommandGroup(purchaseNewItemGroup),
-					CompositeView.PathAlias(dsMB.Path.T.PurchaseOrderLine.F.PurchaseOrderID, dsMB.Path.T.POLineLabor.F.POLineID.F.PurchaseOrderID)),
-				null,
-				null,
-				new CompositeView(POLineOtherWorkWithPOInitTblCreator, dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineOtherWorkID,		// ViewRecordTypes.PurchaseOrderLine.POLineOtherWork
+					CompositeView.NewCommandGroup(purchaseNewItemGroup)),
+				new CompositeView(POLineOtherWorkWithPOInitTblCreator, dsMB.Path.T.POLine.F.POLineOtherWorkID,
+					CompositeView.RecognizeByValidEditLinkage(),
 					BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineOtherWork.F.Quantity, IntegralFormat),
-					CompositeView.NewCommandGroup(purchaseNewItemGroup),
-					CompositeView.PathAlias(dsMB.Path.T.PurchaseOrderLine.F.PurchaseOrderID, dsMB.Path.T.POLineOtherWork.F.POLineID.F.PurchaseOrderID)),
-				null,
-				null,
-				new CompositeView(POLineMiscellaneousWithPOInitTblCreator, dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineMiscellaneousID,	// ViewRecordTypes.PurchaseOrderLine.POLineMiscellaneous
+					CompositeView.NewCommandGroup(purchaseNewItemGroup)),
+				new CompositeView(POLineMiscellaneousWithPOInitTblCreator, dsMB.Path.T.POLine.F.POLineMiscellaneousID,
+					CompositeView.RecognizeByValidEditLinkage(),
 					BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineMiscellaneous.F.Quantity, IntegralFormat),
-					CompositeView.NewCommandGroup(purchaseNewItemGroup),
-					CompositeView.PathAlias(dsMB.Path.T.PurchaseOrderLine.F.PurchaseOrderID, dsMB.Path.T.POLineMiscellaneous.F.POLineID.F.PurchaseOrderID)),
-				null,
-				null
+					CompositeView.NewCommandGroup(purchaseNewItemGroup))
 			);
 		}
 		#endregion
@@ -284,7 +249,7 @@ namespace Thinkage.MainBoss.Controls
 		/// <returns></returns>
 		static DelayedCreateTbl POLineItemTbl(bool filterPO, bool filterResource, bool editDefaults) {
 			return new DelayedCreateTbl(
-				delegate() {
+				delegate () {
 					POLineDerivationTblCreator<long> creator = new POLineDerivationTblCreator<long>(TId.PurchaseItem, dsMB.Schema.T.POLineItem, true, editDefaults, TIGeneralMB3.ItemUnitCostTypeOnClient);
 
 					// Note that the do/don't want to consider transfers from other locations may be a fly in the ointment of database partitioning
@@ -345,7 +310,7 @@ namespace Thinkage.MainBoss.Controls
 		#region POLineLabor
 		static DelayedCreateTbl POLineLaborTbl(bool filterPO, bool filterResource, bool editDefaults) {
 			return new DelayedCreateTbl(
-				delegate() {
+				delegate () {
 					POLineDerivationTblCreator<TimeSpan> creator = new POLineDerivationTblCreator<TimeSpan>(TId.PurchaseHourlyOutside, dsMB.Schema.T.POLineLabor, true, editDefaults, TIGeneralMB3.HourlyUnitCostTypeOnClient);
 					creator.CreateItemNumberControl();
 
@@ -356,8 +321,7 @@ namespace Thinkage.MainBoss.Controls
 						creator.POLineLaborPOFilter();
 						creator.CreatePOControl();
 					}
-					else
-					{
+					else {
 						// otherwise, we pick the PO first, then the resource
 						creator.CreatePOControl();
 						if (filterResource)
@@ -391,19 +355,17 @@ namespace Thinkage.MainBoss.Controls
 		#region POLineOtherWork
 		static DelayedCreateTbl POLineOtherWorkTbl(bool filterPO, bool filterResource, bool editDefaults) {
 			return new DelayedCreateTbl(
-				delegate() {
+				delegate () {
 					POLineDerivationTblCreator<long> creator = new POLineDerivationTblCreator<long>(TId.PurchasePerJobOutside, dsMB.Schema.T.POLineOtherWork, true, editDefaults, TIGeneralMB3.PerJobUnitCostTypeOnClient);
 					creator.CreateItemNumberControl();
-					if (filterPO)
-					{
+					if (filterPO) {
 						// if filtering the PO, we expect to pick the resource first.
 						System.Diagnostics.Debug.Assert(!filterResource);
 						creator.POLineOtherWorkAssignment(ToOrderId);
 						creator.POLineOtherWorkPOFilter();
 						creator.CreatePOControl();
 					}
-					else
-					{
+					else {
 						// otherwise, we pick the PO first, then the resource
 						creator.CreatePOControl();
 						if (filterResource)
@@ -437,7 +399,7 @@ namespace Thinkage.MainBoss.Controls
 		#region POLineMiscellaneous
 		static DelayedCreateTbl POLineMiscellaneousTbl(bool filterPO, bool filterResource, bool editDefaults) {
 			return new DelayedCreateTbl(
-				delegate() {
+				delegate () {
 					POLineDerivationTblCreator<long> creator = new POLineDerivationTblCreator<long>(TId.PurchaseMiscellaneousItem, dsMB.Schema.T.POLineMiscellaneous, true, editDefaults, TIGeneralMB3.POMiscellaneousUnitCostTypeOnClient);
 					creator.CreateItemNumberControl();
 					if (filterPO) {
@@ -524,44 +486,42 @@ namespace Thinkage.MainBoss.Controls
 			Key newPOLineGroup = KB.K("New Line Item");
 			object descriptionColumnId = KB.I("DescriptionId");
 			// For the Purchase Order Template editor's Lines browsette
-			return new CompositeTbl(dsMB.Schema.T.PurchaseOrderTemplateLine, TId.PurchaseOrderTemplateLine,
+			return new CompositeTbl(dsMB.Schema.T.POLineTemplate, TId.PurchaseOrderTemplateLine,
 				new Tbl.IAttr[]
 					{
 						new BTbl(
-							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplateLine.F.POLineTemplateID.F.LineNumberRank),
+							BTbl.ListColumn(dsMB.Path.T.POLineTemplate.F.LineNumberRank),
 							BTbl.PerViewListColumn(CommonOrderLineColumnKey, descriptionColumnId),
 							BTbl.PerViewListColumn(quantityColumnId, quantityColumnId)
 						)
 					},
-				dsMB.Path.T.PurchaseOrderTemplateLine.F.TableEnum,
-				new CompositeView(POLineItemTemplateWithPOTemplateInitTblCreator, dsMB.Path.T.PurchaseOrderTemplateLine.F.POLineTemplateID.F.POLineItemTemplateID,				// Table #0 - Purchase tangible item
+				new CompositeView(POLineItemTemplateWithPOTemplateInitTblCreator, dsMB.Path.T.POLineTemplate.F.POLineItemTemplateID,
+					CompositeView.RecognizeByValidEditLinkage(),
 					BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.POLineItemTemplate.F.ItemLocationID.F.ItemPriceID.F.PurchaseOrderText),
 					BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineItemTemplate.F.Quantity, IntegralFormat),
-					CompositeView.NewCommandGroup(newPOLineGroup),
-					CompositeView.PathAlias(dsMB.Path.T.PurchaseOrderTemplateLine.F.POLineTemplateID.F.PurchaseOrderTemplateID, dsMB.Path.T.POLineItemTemplate.F.POLineTemplateID.F.PurchaseOrderTemplateID)),
-				new CompositeView(POLineLaborTemplateWithPOTemplateInitTblCreator, dsMB.Path.T.PurchaseOrderTemplateLine.F.POLineTemplateID.F.POLineLaborTemplateID,			// Table #1 - Purchase Labor
+					CompositeView.NewCommandGroup(newPOLineGroup)),
+				new CompositeView(POLineLaborTemplateWithPOTemplateInitTblCreator, dsMB.Path.T.POLineTemplate.F.POLineLaborTemplateID,
+					CompositeView.RecognizeByValidEditLinkage(),
 					BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.POLineLaborTemplate.F.DemandLaborOutsideTemplateID.F.LaborOutsideID.F.PurchaseOrderText),
 					BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineLaborTemplate.F.Quantity, IntervalFormat),
-					CompositeView.NewCommandGroup(newPOLineGroup),
-					CompositeView.PathAlias(dsMB.Path.T.PurchaseOrderTemplateLine.F.POLineTemplateID.F.PurchaseOrderTemplateID, dsMB.Path.T.POLineLaborTemplate.F.POLineTemplateID.F.PurchaseOrderTemplateID)),
-				new CompositeView(POLineOtherWorkTemplateWithPOTemplateInitTblCreator, dsMB.Path.T.PurchaseOrderTemplateLine.F.POLineTemplateID.F.POLineOtherWorkTemplateID,		// Table #2 - Purchase Other Work
+					CompositeView.NewCommandGroup(newPOLineGroup)),
+				new CompositeView(POLineOtherWorkTemplateWithPOTemplateInitTblCreator, dsMB.Path.T.POLineTemplate.F.POLineOtherWorkTemplateID,
+					CompositeView.RecognizeByValidEditLinkage(),
 					BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.POLineOtherWorkTemplate.F.DemandOtherWorkOutsideTemplateID.F.OtherWorkOutsideID.F.PurchaseOrderText),
 					BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineOtherWorkTemplate.F.Quantity, IntegralFormat),
-					CompositeView.NewCommandGroup(newPOLineGroup),
-					CompositeView.PathAlias(dsMB.Path.T.PurchaseOrderTemplateLine.F.POLineTemplateID.F.PurchaseOrderTemplateID, dsMB.Path.T.POLineOtherWorkTemplate.F.POLineTemplateID.F.PurchaseOrderTemplateID)),
-				new CompositeView(POLineMiscellaneousTemplateWithPOTemplateInitTblCreator, dsMB.Path.T.PurchaseOrderTemplateLine.F.POLineTemplateID.F.POLineMiscellaneousTemplateID,	// Table #3 - Purchase Miscellaneous charges
+					CompositeView.NewCommandGroup(newPOLineGroup)),
+				new CompositeView(POLineMiscellaneousTemplateWithPOTemplateInitTblCreator, dsMB.Path.T.POLineTemplate.F.POLineMiscellaneousTemplateID,
+					CompositeView.RecognizeByValidEditLinkage(),
 					BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.POLineMiscellaneousTemplate.F.MiscellaneousID.F.PurchaseOrderText),
 					BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineMiscellaneousTemplate.F.Quantity, IntegralFormat),
-					CompositeView.NewCommandGroup(newPOLineGroup),
-					CompositeView.PathAlias(dsMB.Path.T.PurchaseOrderTemplateLine.F.POLineTemplateID.F.PurchaseOrderTemplateID, dsMB.Path.T.POLineMiscellaneousTemplate.F.POLineTemplateID.F.PurchaseOrderTemplateID))
+					CompositeView.NewCommandGroup(newPOLineGroup))
 			);
 		}
 		#endregion
 		#region POLineItemTemplate
-		static DelayedCreateTbl POLineItemTemplateTbl(bool filterPO, bool filterResource)
-		{
+		static DelayedCreateTbl POLineItemTemplateTbl(bool filterPO, bool filterResource) {
 			return new DelayedCreateTbl(
-				delegate() {
+				delegate () {
 					POLineTemplateDerivationTblCreator<long> creator = new POLineTemplateDerivationTblCreator<long>(TId.PurchaseTemplateItem, dsMB.Schema.T.POLineItemTemplate, TIGeneralMB3.ItemUnitCostTypeOnClient);
 #if NEED_NUMBERS_RELATING_TO_TEMPLATE_DEMANDS_AND_POLINES
 					// Pick the resource (ActualItemLocation)
@@ -597,31 +557,29 @@ namespace Thinkage.MainBoss.Controls
 									),
 #endif
 					creator.CreateItemNumberControl();
-					if (filterPO)
-					{
+					if (filterPO) {
 						// if filtering the PO, we expect to pick the resource first.
 						System.Diagnostics.Debug.Assert(!filterResource);
 						creator.POLineItemTemplateStorageAssignment();
-// Not until we allow custom POText in a template						creator.BuildItemPricePickerControl(dsMB.Path.T.POLineItemTemplate.F.ItemLocationID.F.ItemPriceID, dsMB.Path.T.POLineItemTemplate.F.ItemLocationID.F.ItemID, null);
+						// Not until we allow custom POText in a template						creator.BuildItemPricePickerControl(dsMB.Path.T.POLineItemTemplate.F.ItemLocationID.F.ItemPriceID, dsMB.Path.T.POLineItemTemplate.F.ItemLocationID.F.ItemID, null);
 						creator.POLineItemTemplatePOTemplateFilter();
 						creator.CreatePOTemplateControl();
 					}
-					else
-					{
+					else {
 						// otherwise, we pick the PO Template first, then the resource
 						creator.CreatePOTemplateControl();
 						if (filterResource)
 							creator.POLineItemTemplateResourceFilter();
 						creator.POLineItemTemplateStorageAssignment();
-// Not until we allow custom POText in a template						creator.BuildItemPricePickerControl(dsMB.Path.T.POLineItemTemplate.F.ItemLocationID.F.ItemPriceID, dsMB.Path.T.POLineItemTemplate.F.ItemLocationID.F.ItemID, dsMB.Path.T.POLineItemTemplate.F.POLineTemplateID.F.PurchaseOrderTemplateID.F.VendorID);
+						// Not until we allow custom POText in a template						creator.BuildItemPricePickerControl(dsMB.Path.T.POLineItemTemplate.F.ItemLocationID.F.ItemPriceID, dsMB.Path.T.POLineItemTemplate.F.ItemLocationID.F.ItemID, dsMB.Path.T.POLineItemTemplate.F.POLineTemplateID.F.PurchaseOrderTemplateID.F.VendorID);
 					}
 
 					// Following Set from picked ItemPrice above
 					creator.DetailColumns.Add(TblColumnNode.New(dsMB.Path.T.POLineItemTemplate.F.ItemLocationID.F.ItemPriceID.F.PurchaseOrderText, DCol.Normal, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(PrototypeDescriptionId))));
 					creator.HandleSuggestedQuantityAndBuildQuantityControl("Use minimum quantity", ItemLocationMinimumId, "Order Quantity");
 					creator.DetailColumns.Add(TblColumnNode.New(dsMB.Path.T.POLineItemTemplate.F.ItemLocationID.F.ItemID.F.UnitOfMeasureID.F.Code, ECol.AllReadonly));
-// Not until we allow custom POText in a template					creator.BuildPickedItemPriceResultHiddenValues();
-// Not until we allow custom POText in a template					creator.BuildPickedItemPriceResultValueTransfers(PrototypeDescriptionId);
+					// Not until we allow custom POText in a template					creator.BuildPickedItemPriceResultHiddenValues();
+					// Not until we allow custom POText in a template					creator.BuildPickedItemPriceResultValueTransfers(PrototypeDescriptionId);
 
 					// TODO: Make creator do many of the list columns.
 					return creator.GetTbl(
@@ -639,23 +597,19 @@ namespace Thinkage.MainBoss.Controls
 
 		#endregion
 		#region POLineLaborTemplate
-		static DelayedCreateTbl POLineLaborTemplateTbl(bool filterPO, bool filterResource)
-		{
+		static DelayedCreateTbl POLineLaborTemplateTbl(bool filterPO, bool filterResource) {
 			return new DelayedCreateTbl(
-				delegate()
-				{
+				delegate () {
 					POLineTemplateDerivationTblCreator<TimeSpan> creator = new POLineTemplateDerivationTblCreator<TimeSpan>(TId.PurchaseTemplateHourlyOutside, dsMB.Schema.T.POLineLaborTemplate, TIGeneralMB3.HourlyUnitCostTypeOnClient);
 					creator.CreateItemNumberControl();
-					if (filterPO)
-					{
+					if (filterPO) {
 						// if filtering the PO, we expect to pick the resource first.
 						System.Diagnostics.Debug.Assert(!filterResource);
 						creator.POLineLaborTemplateAssignment(ToOrderId);
 						creator.POLineLaborTemplatePOTemplateFilter();
 						creator.CreatePOTemplateControl();
 					}
-					else
-					{
+					else {
 						// otherwise, we pick the PO Template first, then the resource
 						creator.CreatePOTemplateControl();
 						if (filterResource)
@@ -680,22 +634,19 @@ namespace Thinkage.MainBoss.Controls
 		}
 		#endregion
 		#region POLineOtherWorkTemplate
-		static DelayedCreateTbl POLineOtherWorkTemplateTbl(bool filterPO, bool filterResource)
-		{
+		static DelayedCreateTbl POLineOtherWorkTemplateTbl(bool filterPO, bool filterResource) {
 			return new DelayedCreateTbl(
-				delegate() {
+				delegate () {
 					POLineTemplateDerivationTblCreator<long> creator = new POLineTemplateDerivationTblCreator<long>(TId.PurchaseTemplatePerJobOutside, dsMB.Schema.T.POLineOtherWorkTemplate, TIGeneralMB3.PerJobUnitCostTypeOnClient);
 					creator.CreateItemNumberControl();
-					if (filterPO)
-					{
+					if (filterPO) {
 						// if filtering the PO, we expect to pick the resource first.
 						System.Diagnostics.Debug.Assert(!filterResource);
 						creator.POLineOtherWorkTemplateAssignment(ToOrderId);
 						creator.POLineOtherWorkTemplatePOTemplateFilter();
 						creator.CreatePOTemplateControl();
 					}
-					else
-					{
+					else {
 						// otherwise, we pick the PO Template first, then the resource
 						creator.CreatePOTemplateControl();
 						if (filterResource)
@@ -719,15 +670,12 @@ namespace Thinkage.MainBoss.Controls
 		}
 		#endregion
 		#region POLineMiscellaneousTemplate
-		static DelayedCreateTbl POLineMiscellaneousTemplateTbl(bool filterPO, bool filterResource)
-		{
+		static DelayedCreateTbl POLineMiscellaneousTemplateTbl(bool filterPO, bool filterResource) {
 			return new DelayedCreateTbl(
-				delegate()
-				{
+				delegate () {
 					POLineTemplateDerivationTblCreator<long> creator = new POLineTemplateDerivationTblCreator<long>(TId.PurchaseTemplateMiscellaneousItem, dsMB.Schema.T.POLineMiscellaneousTemplate, null);
 					creator.CreateItemNumberControl();
-					if (filterPO)
-					{
+					if (filterPO) {
 						// A - Work Vendor association - DefaultVisibility defined, Miscellaneous item definitions are not vendor-specific.
 						// B - Vendor history:
 						// - only POs for vendors that have previously been done the work
@@ -751,8 +699,7 @@ namespace Thinkage.MainBoss.Controls
 					}
 					creator.CreatePOTemplateControl();
 
-					if (filterResource)
-					{
+					if (filterResource) {
 						// A - Work vendor association - DefaultVisibility defined, Miscellaneous item definitions are not vendor-specific.
 						// B - Vendor history:
 						// - only demands for work that has previously been received
@@ -801,7 +748,7 @@ namespace Thinkage.MainBoss.Controls
 		#region PurchaseOrderAssignment
 		private static DelayedCreateTbl PurchaseOrderAssignmentBrowseTbl(bool fixedPurchaseOrder) {
 			return new DelayedCreateTbl(
-				delegate() {
+				delegate () {
 					List<BTbl.ICtorArg> BTblAttrs = new List<BTbl.ICtorArg> {
 						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID.F.Number),
 						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.Code),
@@ -814,11 +761,10 @@ namespace Thinkage.MainBoss.Controls
 							PurchasingGroup,
 							new BTbl(BTblAttrs.ToArray())
 						},
-						null,
-						new CompositeView(PurchaseOrderAssignmentEditTbl(fixedPurchaseOrder), dsMB.Path.T.PurchaseOrderAssignment.F.Id,
+						CompositeView.ChangeEditTbl(PurchaseOrderAssignmentEditTbl(fixedPurchaseOrder),
 							CompositeView.RecognizeByValidEditLinkage(),
-							CompositeView.AdditionalViewVerb(KB.K("View Purchase Order"),  KB.K("View the assigned Purchase Order"), null, dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID, null, null),
-							CompositeView.AdditionalViewVerb(KB.K("View Assignee"),  KB.K("View the Purchase Order Assignee"), null, dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderAssigneeID, null, null)
+							CompositeView.AdditionalViewVerb(KB.K("View Purchase Order"), KB.K("View the assigned Purchase Order"), null, dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID, null, null),
+							CompositeView.AdditionalViewVerb(KB.K("View Assignee"), KB.K("View the Purchase Order Assignee"), null, dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderAssigneeID, null, null)
 						)
 					);
 				}
@@ -885,14 +831,9 @@ namespace Thinkage.MainBoss.Controls
 				creator.AddPickerFilter(BTbl.ExpressionFilter(
 																new SqlExpression(dsMB.Path.T.PurchaseOrderAssignee.F.ContactID)
 																	.In(new SelectSpecification(
-																		null,
-																		new SqlExpression[] {
-																			new SqlExpression(dsMB.Path.T.PurchaseOrderAssigneeProspect.F.ContactID),
-																		},
-																		new SqlExpression(dsMB.Path.T.PurchaseOrderAssigneeProspect.F.PurchaseOrderID)
-																			.Eq(new SqlExpression(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID, 2)	// outer scope 2 refers to the edit buffer contents
-																		),
-																		null).SetDistinct(true))
+																		new SqlExpression[] {new SqlExpression(dsMB.Path.T.PurchaseOrderAssigneeProspect.F.ContactID),																		},
+																		new SqlExpression(dsMB.Path.T.PurchaseOrderAssigneeProspect.F.PurchaseOrderID).Eq(new SqlExpression(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID, 2)), // outer scope 2 refers to the edit buffer contents
+																		null))
 																.Or(new SqlExpression(dsMB.Path.T.PurchaseOrderAssignee.F.ContactID.L.User.ContactID.F.Id)
 																	.Eq(new SqlExpression(new UserIDSource())))),
 					assigneeFilterChoiceId,
@@ -905,7 +846,7 @@ namespace Thinkage.MainBoss.Controls
 																	.In(new SelectSpecification(
 																		null,
 																		new SqlExpression[] { new SqlExpression(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderAssigneeID) },
-																		new SqlExpression(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID).Eq(new SqlExpression(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID, 2)),	// outer scope 2 refers to the edit buffer contents
+																		new SqlExpression(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID).Eq(new SqlExpression(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID, 2)),   // outer scope 2 refers to the edit buffer contents
 																		null).SetDistinct(true)).Not()),
 					assigneeFilterChoiceId,
 					o => IntegralTypeInfo.Equals(o, 1));
@@ -919,7 +860,7 @@ namespace Thinkage.MainBoss.Controls
 			creator.CreateBoundPickerControl(KB.I("PurchaseOrderAssigneePickerId"), dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderAssigneeID);
 
 			return new DelayedCreateTbl(
-				delegate() {
+				delegate () {
 					return creator.GetTbl(PurchasingGroup);
 				}
 			);
@@ -927,7 +868,7 @@ namespace Thinkage.MainBoss.Controls
 		#endregion
 		#endregion
 
-		private TIPurchaseOrder() {}
+		private TIPurchaseOrder() { }
 		static TIPurchaseOrder() {
 			#region TblCreators
 			POLineItemTblCreator = new DelayedCreateTbl(() => POLineItemsBrowseTbl());
@@ -969,7 +910,7 @@ namespace Thinkage.MainBoss.Controls
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
-						SingleContactGroup(dsMB.Path.T.PurchaseOrderAssignee.F.ContactID),
+						TIContact.SingleContactGroup(dsMB.Path.T.PurchaseOrderAssignee.F.ContactID),
 						TblColumnNode.New(dsMB.Path.T.PurchaseOrderAssignee.F.ReceiveNotification, new FeatureGroupArg(MainBossServiceAsWindowsServiceGroup), DCol.Normal, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.PurchaseOrderAssignee.F.Comment, DCol.Normal, ECol.Normal)
 					),
@@ -1006,9 +947,8 @@ namespace Thinkage.MainBoss.Controls
 							BTbl.SetTreeStructure(null, 2)
 						)
 					},
-					null,
 					// The fake contact row for unassigned work orders; This displays because the XAFDB file specifies a text provider for its own ID field.
-					new CompositeView(assignedToGroup, dsMB.Path.T.PurchaseOrderAssignmentByAssignee.F.Id, ReadonlyView,
+					CompositeView.ChangeEditTbl(assignedToGroup, PanelOnly,
 						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PurchaseOrderAssignmentByAssignee.F.ContactID).IsNull()),
 						BTbl.PerViewColumnValue(assignedToColumnID, dsMB.Path.T.PurchaseOrderAssignmentByAssignee.F.Id)
 					),
@@ -1077,10 +1017,9 @@ namespace Thinkage.MainBoss.Controls
 			});
 		}
 
-		internal static void DefineTblEntries()
-		{
+		internal static void DefineTblEntries() {
 			#region	PaymentTerm
-			DefineTbl(dsMB.Schema.T.PaymentTerm, delegate() {
+			DefineTbl(dsMB.Schema.T.PaymentTerm, delegate () {
 				return new Tbl(dsMB.Schema.T.PaymentTerm, TId.PaymentTerm,
 				new Tbl.IAttr[] {
 					PurchasingGroup,
@@ -1090,11 +1029,11 @@ namespace Thinkage.MainBoss.Controls
 				},
 				new TblLayoutNodeArray(
 					DetailsTabNode.New(
-						TblColumnNode.New(dsMB.Path.T.PaymentTerm.F.Code, DCol.Normal, ECol.Normal ),
-						TblColumnNode.New(dsMB.Path.T.PaymentTerm.F.Desc, DCol.Normal, ECol.Normal ),
-						TblColumnNode.New(dsMB.Path.T.PaymentTerm.F.Comment, DCol.Normal, ECol.Normal )),
+						TblColumnNode.New(dsMB.Path.T.PaymentTerm.F.Code, DCol.Normal, ECol.Normal),
+						TblColumnNode.New(dsMB.Path.T.PaymentTerm.F.Desc, DCol.Normal, ECol.Normal),
+						TblColumnNode.New(dsMB.Path.T.PaymentTerm.F.Comment, DCol.Normal, ECol.Normal)),
 					BrowsetteTabNode.New(TId.PurchaseOrder, TId.PaymentTerm,
-						TblColumnNode.NewBrowsette(dsMB.Path.T.PurchaseOrder.F.PaymentTermID, DCol.Normal, ECol.Normal) )
+						TblColumnNode.NewBrowsette(dsMB.Path.T.PurchaseOrder.F.PaymentTermID, DCol.Normal, ECol.Normal))
 				));
 			});
 			RegisterExistingForImportExport(TId.PaymentTerm, dsMB.Schema.T.PaymentTerm);
@@ -1102,7 +1041,7 @@ namespace Thinkage.MainBoss.Controls
 
 			#region PurchaseOrderLine for Item Receiving which include the receiving lines as well.
 			{
-				Key receiveItemGroup = KB.K("Receive");
+				Key receiveGroup = KB.K("Receive");
 				Key joinedCorrectionsCommand = KB.K("Correct");
 				// This condition can be applied to any ActualLabor or ActualOtherWork record
 				CompositeView.Condition[] DemandMustHaveValidCategory = new CompositeView.Condition[] {
@@ -1115,144 +1054,175 @@ namespace Thinkage.MainBoss.Controls
 				Key costColumnId = dsMB.Path.T.POLineItem.F.POLineID.F.Cost.Key();
 				Key uomColumnId = dsMB.Path.T.Item.F.UnitOfMeasureID.Key();
 				Key quantityColumnId = dsMB.Path.T.POLineItem.F.Quantity.Key();
-				DefineBrowseTbl(dsMB.Schema.T.PurchaseOrderLine, delegate()
-				{
+				DefineBrowseTbl(dsMB.Schema.T.PurchaseOrderLine, delegate () {
 					return new CompositeTbl(dsMB.Schema.T.PurchaseOrderLine, TId.PurchaseOrderLine,
-					new Tbl.IAttr[]	{
-						new BTbl(
-							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.PurchaseOrderText),
-							BTbl.PerViewListColumn(quantityColumnId, quantityColumnId),
-							BTbl.PerViewListColumn(uomColumnId, uomColumnId),
-							BTbl.PerViewListColumn(costColumnId, costColumnId),
-							BTbl.SetTreeStructure(dsMB.Path.T.PurchaseOrderLine.F.ParentID, 2)
-						)
-					},
-					dsMB.Path.T.PurchaseOrderLine.F.TableEnum,
-						// TODO: This browser tries to but fails to allow receiving (actualization) of labor & other work because it does not supply an init for the To C/C;
-						// the data is nota available in the underlying db view either. The ReceiptActivity view and Tbl do this properly.
-					new CompositeView(dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineItemID,									// ViewRecordTypes.PurchaseOrderLine.POLineItem
-						ReadonlyView,
-						BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineItem.F.Quantity, IntegralFormat),
-						BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.POLineItem.F.POLineID.F.Cost),
-						BTbl.PerViewColumnValue(uomColumnId, dsMB.Path.T.POLineItem.F.ItemLocationID.F.ItemID.F.UnitOfMeasureID.F.Code),
-						CompositeView.PathAlias(dsMB.Path.T.PurchaseOrderLine.F.PurchaseOrderID, dsMB.Path.T.POLineItem.F.POLineID.F.PurchaseOrderID)),
-					new CompositeView(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveItemPOID,				// ViewRecordTypes.PurchaseOrderLine.ReceiveItemPO
-						NoNewMode,
-						BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemPO.F.Quantity, IntegralFormat),
-						BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ReceiveItemPO.F.AccountingTransactionID.F.Cost),
-						CompositeView.JoinedNewCommand(receiveItemGroup),
-						CompositeView.ContextualInit((int)ViewRecordTypes.PurchaseOrderLine.POLineItem,
-							new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveItemPO.F.POLineItemID), dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineItemID))
-					),
-					new CompositeView(TIReceive.ReceiveItemPOCorrectionTblCreator, dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveItemPOID,	// ViewRecordTypes.PurchaseOrderLine.ReceiveItemPOCorrection
-						NoNewMode,
-						BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemPO.F.Quantity, IntegralFormat),
-						BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ReceiveItemPO.F.AccountingTransactionID.F.Cost),
-						CompositeView.JoinedNewCommand(joinedCorrectionsCommand),
-						CompositeView.ContextualInit(new int[] {
-								(int)ViewRecordTypes.PurchaseOrderLine.ReceiveItemPO,
-								(int)ViewRecordTypes.PurchaseOrderLine.ReceiveItemPOCorrection
-							},
-							new CompositeView.Init(dsMB.Path.T.ReceiveItemPO.F.CorrectionID, dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveItemPOID.F.CorrectionID),
-							// The automatic dead end disabling does not realize that the correction editor automatically copies several fields including the POLineItemID from the corrected record to
-							// the new record and sets the POLine picker control readonly thus causing the dead end situtation if the PO is in the wrong state.
-							// The following init also sets the picker readonly and allows the browser to know the value in the picker and thus eliminate the dead end.
-							// In the long run, the init isn't really necessary but we need to have some other CompositeView attribute to trigger the dead end.
-							// It could be coded as a condition expression here but that requires duplication of the tip already defined in the DBI_WriteRestriction
-							new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveItemPO.F.POLineItemID), dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveItemPOID.F.POLineItemID) 		// This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
-						)
-					),
-					new CompositeView(dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineLaborID,									// ViewRecordTypes.PurchaseOrderLine.POLineLabor
-						ReadonlyView,
-						BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineLabor.F.Quantity, IntervalFormat),
-						BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.POLineLabor.F.POLineID.F.Cost),
-						CompositeView.PathAlias(dsMB.Path.T.PurchaseOrderLine.F.PurchaseOrderID, dsMB.Path.T.POLineLabor.F.POLineID.F.PurchaseOrderID)),
-					new CompositeView(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualLaborOutsidePOID,			// ViewRecordTypes.PurchaseOrderLine.ActualLaborOutsidePO
-						NoNewMode,
-						BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ActualLaborOutsidePO.F.Quantity, IntervalFormat),
-						BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ActualLaborOutsidePO.F.AccountingTransactionID.F.Cost),
-						CompositeView.JoinedNewCommand(receiveItemGroup),
-						CompositeView.ContextualInit((int)ViewRecordTypes.PurchaseOrderLine.POLineLabor,
-							DemandMustHaveValidCategory,
-							new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualLaborOutsidePO.F.POLineLaborID), dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineLaborID),
-							new CompositeView.Init(dsMB.Path.T.ActualLaborOutsidePO.F.AccountingTransactionID.F.ToCostCenterID, dsMB.Path.T.PurchaseOrderLine.F.WorkOrderExpenseModelEntryID.F.CostCenterID)
+						new Tbl.IAttr[] {
+							new BTbl(
+								BTbl.ListColumn(dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.PurchaseOrderText),
+								BTbl.PerViewListColumn(quantityColumnId, quantityColumnId),
+								BTbl.PerViewListColumn(uomColumnId, uomColumnId),
+								BTbl.PerViewListColumn(costColumnId, costColumnId),
+								BTbl.SetTreeStructure(null, 2)
 							)
-					),
-					new CompositeView(TIWorkOrder.ActualLaborOutsidePOCorrectionTblCreator, dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualLaborOutsidePOID,	// ViewRecordTypes.PurchaseOrderLine.ActualLaborOutsidePOCorrection
-						NoNewMode,
-						BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ActualLaborOutsidePO.F.Quantity, IntervalFormat),
-						BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ActualLaborOutsidePO.F.AccountingTransactionID.F.Cost),
-						CompositeView.JoinedNewCommand(joinedCorrectionsCommand),
-						CompositeView.ContextualInit(new int[] {
-								(int)ViewRecordTypes.PurchaseOrderLine.ActualLaborOutsidePO,
-								(int)ViewRecordTypes.PurchaseOrderLine.ActualLaborOutsidePOCorrection
-							},
-							new CompositeView.Init(dsMB.Path.T.ActualLaborOutsidePO.F.CorrectionID, dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.CorrectionID),
-							new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualLaborOutsidePO.F.POLineLaborID), dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.POLineLaborID)		// This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
-						)
-					),
-					new CompositeView(dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineOtherWorkID,								// ViewRecordTypes.PurchaseOrderLine.POLineOtherWork
-						ReadonlyView,
-						BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineOtherWork.F.Quantity, IntegralFormat),
-						BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.POLineOtherWork.F.POLineID.F.Cost),
-						CompositeView.PathAlias(dsMB.Path.T.PurchaseOrderLine.F.PurchaseOrderID, dsMB.Path.T.POLineOtherWork.F.POLineID.F.PurchaseOrderID)),
-					new CompositeView(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID,		// ViewRecordTypes.PurchaseOrderLine.ActualOtherWorkOutsidePO
-						NoNewMode,
-						BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ActualOtherWorkOutsidePO.F.Quantity, IntegralFormat),
-						BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ActualOtherWorkOutsidePO.F.AccountingTransactionID.F.Cost),
-						CompositeView.JoinedNewCommand(receiveItemGroup),
-						CompositeView.ContextualInit((int)ViewRecordTypes.PurchaseOrderLine.POLineOtherWork,
-							DemandMustHaveValidCategory,
-							new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualOtherWorkOutsidePO.F.POLineOtherWorkID), dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineOtherWorkID),
-							new CompositeView.Init(dsMB.Path.T.ActualOtherWorkOutsidePO.F.AccountingTransactionID.F.ToCostCenterID, dsMB.Path.T.PurchaseOrderLine.F.WorkOrderExpenseModelEntryID.F.CostCenterID)
+						},
+						new CompositeView(dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineItemID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							ReadonlyView,
+							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineItem.F.Quantity, IntegralFormat),
+							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.POLineItem.F.POLineID.F.Cost),
+							BTbl.PerViewColumnValue(uomColumnId, dsMB.Path.T.POLineItem.F.ItemLocationID.F.ItemID.F.UnitOfMeasureID.F.Code)),
+						new CompositeView(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveItemPOID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveItemPOID.F.Id)
+								.Eq(new SqlExpression(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveItemPOID.F.CorrectionID))),
+							CompositeView.SetParentPath(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveItemPOID.F.POLineItemID.F.POLineID),
+							NoNewMode,
+							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemPO.F.Quantity, IntegralFormat),
+							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ReceiveItemPO.F.AccountingTransactionID.F.Cost),
+							CompositeView.JoinedNewCommand(receiveGroup),
+							CompositeView.ContextualInit((int)PurchaseOrderLine.POLineItem,
+								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveItemPO.F.POLineItemID), dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineItemID))
+						),
+						new CompositeView(TIReceive.ReceiveItemPOCorrectionTblCreator, dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveItemPOID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveItemPOID.F.Id)
+								.NEq(new SqlExpression(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveItemPOID.F.CorrectionID))),
+							CompositeView.SetParentPath(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveItemPOID.F.CorrectionID.F.AccountingTransactionID),
+							NoNewMode,
+							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemPO.F.Quantity, IntegralFormat),
+							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ReceiveItemPO.F.AccountingTransactionID.F.Cost),
+							CompositeView.JoinedNewCommand(joinedCorrectionsCommand),
+							CompositeView.ContextualInit(
+								new int[] {
+									(int)PurchaseOrderLine.ReceiveItemPO,
+									(int)PurchaseOrderLine.ReceiveItemPOCorrection
+								},
+								new CompositeView.Init(dsMB.Path.T.ReceiveItemPO.F.CorrectionID, dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveItemPOID.F.CorrectionID),
+								// The automatic dead end disabling does not realize that the correction editor automatically copies several fields including the POLineItemID from the corrected record to
+								// the new record and sets the POLine picker control readonly thus causing the dead end situtation if the PO is in the wrong state.
+								// The following init also sets the picker readonly and allows the browser to know the value in the picker and thus eliminate the dead end.
+								// In the long run, the init isn't really necessary but we need to have some other CompositeView attribute to trigger the dead end.
+								// It could be coded as a condition expression here but that requires duplication of the tip already defined in the DBI_WriteRestriction
+								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveItemPO.F.POLineItemID), dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveItemPOID.F.POLineItemID)      // This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
 							)
-					),
-					new CompositeView(TIWorkOrder.ActualOtherWorkOutsidePOCorrectionTblCreator, dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID,	// ViewRecordTypes.PurchaseOrderLine.ActualOtherWorkOutsidePOCorrection
-						NoNewMode,
-						BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ActualOtherWorkOutsidePO.F.Quantity, IntegralFormat),
-						BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ActualOtherWorkOutsidePO.F.AccountingTransactionID.F.Cost),
-						CompositeView.JoinedNewCommand(joinedCorrectionsCommand),
-						CompositeView.ContextualInit(new int[] {
-								(int)ViewRecordTypes.PurchaseOrderLine.ActualOtherWorkOutsidePO,
-								(int)ViewRecordTypes.PurchaseOrderLine.ActualOtherWorkOutsidePOCorrection
-							},
-							new CompositeView.Init(dsMB.Path.T.ActualOtherWorkOutsidePO.F.CorrectionID, dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.CorrectionID),
-							new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualOtherWorkOutsidePO.F.POLineOtherWorkID), dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.POLineOtherWorkID)		// This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
-						)
-					),
-					new CompositeView(dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineMiscellaneousID,							// ViewRecordTypes.PurchaseOrderLine.POLineMiscellaneous
-						ReadonlyView,
-						BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineMiscellaneous.F.Quantity, IntegralFormat),
-						BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.POLineMiscellaneous.F.POLineID.F.Cost),
-						CompositeView.PathAlias(dsMB.Path.T.PurchaseOrderLine.F.PurchaseOrderID, dsMB.Path.T.POLineMiscellaneous.F.POLineID.F.PurchaseOrderID)),
-					new CompositeView(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID,		// ViewRecordTypes.PurchaseOrderLine.ReceiveMiscellaneousPO
-						NoNewMode,
-						BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveMiscellaneousPO.F.Quantity, IntegralFormat),
-						BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ReceiveMiscellaneousPO.F.AccountingTransactionID.F.Cost),
-						CompositeView.JoinedNewCommand(receiveItemGroup),
-						CompositeView.ContextualInit((int)ViewRecordTypes.PurchaseOrderLine.POLineMiscellaneous,
-							new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveMiscellaneousPO.F.POLineMiscellaneousID), dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineMiscellaneousID))
-					),
-					new CompositeView(TIReceive.ReceiveMiscellaneousPOCorrectionTblCreator, dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID,		// ViewRecordTypes.PurchaseOrderLine.ReceiveMiscellaneousPOCorrection
-						NoNewMode,
-						BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveMiscellaneousPO.F.Quantity, IntegralFormat),
-						BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ReceiveMiscellaneousPO.F.AccountingTransactionID.F.Cost),
-						CompositeView.JoinedNewCommand(joinedCorrectionsCommand),
-						CompositeView.ContextualInit(new int[] {
-								(int)ViewRecordTypes.PurchaseOrderLine.ReceiveMiscellaneousPO,
-								(int)ViewRecordTypes.PurchaseOrderLine.ReceiveMiscellaneousPOCorrection
-							},
-							new CompositeView.Init(dsMB.Path.T.ReceiveMiscellaneousPO.F.CorrectionID, dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.CorrectionID),
-							new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveMiscellaneousPO.F.POLineMiscellaneousID), dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.POLineMiscellaneousID)		// This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
-						)
+						),
+						new CompositeView(dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineLaborID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							ReadonlyView,
+							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineLabor.F.Quantity, IntervalFormat),
+							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.POLineLabor.F.POLineID.F.Cost)),
+						new CompositeView(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualLaborOutsidePOID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.Id)
+								.Eq(new SqlExpression(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.CorrectionID))),
+							CompositeView.SetParentPath(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.POLineLaborID.F.POLineID),
+							NoNewMode,
+							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ActualLaborOutsidePO.F.Quantity, IntervalFormat),
+							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ActualLaborOutsidePO.F.AccountingTransactionID.F.Cost),
+							CompositeView.JoinedNewCommand(receiveGroup),
+							CompositeView.ContextualInit((int)PurchaseOrderLine.POLineLabor,
+								DemandMustHaveValidCategory,
+								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualLaborOutsidePO.F.POLineLaborID), dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineLaborID),
+								new CompositeView.Init(dsMB.Path.T.ActualLaborOutsidePO.F.AccountingTransactionID.F.ToCostCenterID, dsMB.Path.T.PurchaseOrderLine.F.WorkOrderExpenseModelEntryID.F.CostCenterID)
+							)
+						),
+						new CompositeView(TIWorkOrder.ActualLaborOutsidePOCorrectionTblCreator, dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualLaborOutsidePOID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.Id)
+								.NEq(new SqlExpression(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.CorrectionID))),
+							CompositeView.SetParentPath(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.CorrectionID.F.AccountingTransactionID),
+							NoNewMode,
+							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ActualLaborOutsidePO.F.Quantity, IntervalFormat),
+							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ActualLaborOutsidePO.F.AccountingTransactionID.F.Cost),
+							CompositeView.JoinedNewCommand(joinedCorrectionsCommand),
+							CompositeView.ContextualInit(
+								new int[] {
+									(int)PurchaseOrderLine.ActualLaborOutsidePO,
+									(int)PurchaseOrderLine.ActualLaborOutsidePOCorrection
+								},
+									new CompositeView.Init(dsMB.Path.T.ActualLaborOutsidePO.F.CorrectionID, dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.CorrectionID),
+									new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualLaborOutsidePO.F.POLineLaborID), dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.POLineLaborID)
+							)
+						),
+						new CompositeView(dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineOtherWorkID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							ReadonlyView,
+							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineOtherWork.F.Quantity, IntegralFormat),
+							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.POLineOtherWork.F.POLineID.F.Cost)),
+						new CompositeView(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.Id)
+								.Eq(new SqlExpression(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.CorrectionID))),
+							CompositeView.SetParentPath(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.POLineOtherWorkID.F.POLineID),
+							NoNewMode,
+							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ActualOtherWorkOutsidePO.F.Quantity, IntegralFormat),
+							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ActualOtherWorkOutsidePO.F.AccountingTransactionID.F.Cost),
+							CompositeView.JoinedNewCommand(receiveGroup),
+							CompositeView.ContextualInit((int)PurchaseOrderLine.POLineOtherWork,
+								DemandMustHaveValidCategory,
+								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualOtherWorkOutsidePO.F.POLineOtherWorkID), dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineOtherWorkID),
+								new CompositeView.Init(dsMB.Path.T.ActualOtherWorkOutsidePO.F.AccountingTransactionID.F.ToCostCenterID, dsMB.Path.T.PurchaseOrderLine.F.WorkOrderExpenseModelEntryID.F.CostCenterID)
+							)
+						),
+						new CompositeView(TIWorkOrder.ActualOtherWorkOutsidePOCorrectionTblCreator, dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.Id)
+								.NEq(new SqlExpression(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.CorrectionID))),
+							CompositeView.SetParentPath(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.CorrectionID.F.AccountingTransactionID),
+							NoNewMode,
+							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ActualOtherWorkOutsidePO.F.Quantity, IntegralFormat),
+							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ActualOtherWorkOutsidePO.F.AccountingTransactionID.F.Cost),
+							CompositeView.JoinedNewCommand(joinedCorrectionsCommand),
+							CompositeView.ContextualInit(
+								new int[] {
+									(int)PurchaseOrderLine.ActualOtherWorkOutsidePO,
+									(int)PurchaseOrderLine.ActualOtherWorkOutsidePOCorrection
+								},
+								new CompositeView.Init(dsMB.Path.T.ActualOtherWorkOutsidePO.F.CorrectionID, dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.CorrectionID),
+								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualOtherWorkOutsidePO.F.POLineOtherWorkID), dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.POLineOtherWorkID)      // This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
+							)
+						),
+						new CompositeView(dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineMiscellaneousID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							ReadonlyView,
+							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineMiscellaneous.F.Quantity, IntegralFormat),
+							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.POLineMiscellaneous.F.POLineID.F.Cost)),
+						new CompositeView(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.Id)
+								.Eq(new SqlExpression(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.CorrectionID))),
+							CompositeView.SetParentPath(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.POLineMiscellaneousID.F.POLineID),
+							NoNewMode,
+							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveMiscellaneousPO.F.Quantity, IntegralFormat),
+							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ReceiveMiscellaneousPO.F.AccountingTransactionID.F.Cost),
+							CompositeView.JoinedNewCommand(receiveGroup),
+							CompositeView.ContextualInit((int)PurchaseOrderLine.POLineMiscellaneous,
+								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveMiscellaneousPO.F.POLineMiscellaneousID), dsMB.Path.T.PurchaseOrderLine.F.POLineID.F.POLineMiscellaneousID))
+						),
+						new CompositeView(TIReceive.ReceiveMiscellaneousPOCorrectionTblCreator, dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.Id)
+								.NEq(new SqlExpression(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.CorrectionID))),
+							CompositeView.SetParentPath(dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.CorrectionID.F.AccountingTransactionID),
+							NoNewMode,
+							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveMiscellaneousPO.F.Quantity, IntegralFormat),
+							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ReceiveMiscellaneousPO.F.AccountingTransactionID.F.Cost),
+							CompositeView.JoinedNewCommand(joinedCorrectionsCommand),
+							CompositeView.ContextualInit(
+								new int[] {
+									(int)PurchaseOrderLine.ReceiveMiscellaneousPO,
+									(int)PurchaseOrderLine.ReceiveMiscellaneousPOCorrection
+								},
+								new CompositeView.Init(dsMB.Path.T.ReceiveMiscellaneousPO.F.CorrectionID, dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.CorrectionID),
+								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveMiscellaneousPO.F.POLineMiscellaneousID), dsMB.Path.T.PurchaseOrderLine.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.POLineMiscellaneousID)      // This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
+							)
 					)
 				);
 				});
 			}
 			#endregion
 			#region PurchaseOrderState
-			DefineTbl(dsMB.Schema.T.PurchaseOrderState, delegate()
-			{
+			DefineTbl(dsMB.Schema.T.PurchaseOrderState, delegate () {
 				return new Tbl(dsMB.Schema.T.PurchaseOrderState, TId.PurchaseOrderState,
 				new Tbl.IAttr[] {
 					PurchasingGroup,
@@ -1282,8 +1252,7 @@ namespace Thinkage.MainBoss.Controls
 			});
 			#endregion
 			#region PurchaseOrderStateHistoryStatus
-			DefineTbl(dsMB.Schema.T.PurchaseOrderStateHistoryStatus, delegate()
-			{
+			DefineTbl(dsMB.Schema.T.PurchaseOrderStateHistoryStatus, delegate () {
 				return new Tbl(dsMB.Schema.T.PurchaseOrderStateHistoryStatus, TId.PurchaseOrderStatus,
 				new Tbl.IAttr[] {
 					PurchasingGroup,
@@ -1347,11 +1316,11 @@ namespace Thinkage.MainBoss.Controls
 							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderStateHistory.F.Comment)
 						)
 					},
-					null,
 					CompositeView.ChangeEditTbl(FindDelayedEditTbl(dsMB.Schema.T.PurchaseOrderStateHistory), NoNewMode)
 				);
 			}));
 			#endregion
+
 			#region PurchaseOrder
 			BTbl.ICtorArg PurchaseOrderNumberListColumn = BTbl.ListColumn(dsMB.Path.T.PurchaseOrder.F.Number);
 			BTbl.ICtorArg PurchaseOrderVendorListColumn = BTbl.ListColumn(dsMB.Path.T.PurchaseOrder.F.VendorID.F.Code);
@@ -1387,9 +1356,9 @@ namespace Thinkage.MainBoss.Controls
 						// This is to avoid squeezing the browsette into the 'control' column defined by this control in the LCP.
 						TblColumnNode.New(dsMB.Path.T.PurchaseOrder.F.TotalPurchase, new DCol(DCol.LayoutOptions(DCol.Layouts.VisibleInBrowsetteArea)), ECol.AllReadonly)
 					),
-					TblColumnNode.NewBrowsette(POLineItemTblCreator, dsMB.Path.T.PurchaseOrderLine.F.PurchaseOrderID, DCol.Normal, ECol.Normal)
+					TblColumnNode.NewBrowsette(POLineItemTblCreator, dsMB.Path.T.POLine.F.PurchaseOrderID, DCol.Normal, ECol.Normal)
 				),
-				BrowsetteTabNode.New(TId.PurchaseOrderAssignment, TId.PurchaseOrder, 
+				BrowsetteTabNode.New(TId.PurchaseOrderAssignment, TId.PurchaseOrder,
 					TblColumnNode.NewBrowsette(PurchaseOrderAssignmentBrowseTbl(true), dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID, DCol.Normal, ECol.Normal)
 				),
 				BrowsetteTabNode.New(TId.ItemReceiving, TId.PurchaseOrder, new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
@@ -1399,12 +1368,12 @@ namespace Thinkage.MainBoss.Controls
 					),
 					TblColumnNode.NewBrowsette(dsMB.Path.T.PurchaseOrderLine.F.PurchaseOrderID, DCol.Normal, ECol.Normal)
 				),
-				BrowsetteTabNode.New(TId.Receipt, TId.PurchaseOrder, 
+				BrowsetteTabNode.New(TId.Receipt, TId.PurchaseOrder,
 					TblColumnNode.NewBrowsette(dsMB.Path.T.Receipt.F.PurchaseOrderID, DCol.Normal, ECol.Normal)
 				),
 				BrowsetteTabNode.New(TId.WorkOrder, TId.PurchaseOrder,
 					TblColumnNode.NewBrowsette(AssociatedWorkOrdersTbl, dsMB.Path.T.WorkOrderPurchaseOrderView.F.LinkedPurchaseOrderID, DCol.Normal, ECol.Normal)),
-				BrowsetteTabNode.New(TId.PurchaseOrderStateHistory, TId.PurchaseOrder, 
+				BrowsetteTabNode.New(TId.PurchaseOrderStateHistory, TId.PurchaseOrder,
 					TblColumnNode.NewBrowsette(dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderID, DCol.Normal, ECol.Normal)
 				),
 				TblTabNode.New(KB.K("Printed Form"), KB.K("Display settings for printed purchase orders"), new TblLayoutNode.ICtorArg[] { new DefaultOnlyCol(), DCol.Normal, ECol.Normal },
@@ -1416,13 +1385,13 @@ namespace Thinkage.MainBoss.Controls
 			#region - PurchaseOrderEditTblCreator
 			PurchaseOrderEditTblCreator = PurchaseOrderEditTbl(PurchaseOrderNodes, PurchasingGroup, false);
 			DefineEditTbl(dsMB.Schema.T.PurchaseOrder, PurchaseOrderEditTblCreator);
-//			PurchaseOrderEditorByAssigneeTblCreator = PurchaseOrderEditTbl(PurchaseOrderNodes, PurchaseOrdersGroup, false);
+			//			PurchaseOrderEditorByAssigneeTblCreator = PurchaseOrderEditTbl(PurchaseOrderNodes, PurchaseOrdersGroup, false);
 			DelayedCreateTbl PurchaseOrderUnassignedEditorTblCreator = PurchaseOrderEditTbl(PurchaseOrderNodes, PurchasingAssignmentsGroup, true);
 			DelayedCreateTbl PurchaseOrderAssignedToEditorTblCreator = PurchaseOrderEditTbl(PurchaseOrderNodes, PurchasingAssignmentsGroup, false);
 
 			// This is a PO editor which also has a third recordset to create a POLineItem in New mode, and hidden controls to accept init's for pricing basis information.
 			// This is called from the ItemRestocking browser with inits for all the fields of the POLineItem as well as the pricing basis information.
-			PurchaseOrderWithPOLineItemEditTbl = new DelayedCreateTbl(delegate() {
+			PurchaseOrderWithPOLineItemEditTbl = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.PurchaseOrder, TId.PurchaseOrder,
 					new Tbl.IAttr[] {
 						CommonTblAttrs.ViewCostsDefinedBySchema,
@@ -1450,27 +1419,26 @@ namespace Thinkage.MainBoss.Controls
 			#endregion
 
 			// The PurchaseOrder browser is made Composite only to allow specification of an alternative Tbl for editing and provide child record Default editors
-			DefineBrowseTbl(dsMB.Schema.T.PurchaseOrder, delegate() {
+			DefineBrowseTbl(dsMB.Schema.T.PurchaseOrder, delegate () {
 				Key NewPurchaseOrder = TId.PurchaseOrder.ComposeCommand("New {0}");
 				Key GroupDefaultPOLine = TId.PurchaseOrderLine.Compose(Tbl.TblIdentification.TablePhrase_DefaultsFor);
 				return new CompositeTbl(dsMB.Schema.T.PurchaseOrder, TId.PurchaseOrder,
-				new Tbl.IAttr[] {
-					new BTbl(
-							MB3BTbl.HasStateHistory(PurchaseOrderHistoryTable),
-							PurchaseOrderNumberListColumn,
-							PurchaseOrderVendorListColumn,
-							PurchaseOrderStatusListColumn,
-							PurchaseOrderSummaryListColumn,
-							PurchaseOrderStateAuthorListColumn,
-							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderFormReport))
-						)
-				},
-				null,	// no record type
+					new Tbl.IAttr[] {
+						new BTbl(
+								MB3BTbl.HasStateHistory(PurchaseOrderHistoryTable),
+								PurchaseOrderNumberListColumn,
+								PurchaseOrderVendorListColumn,
+								PurchaseOrderStatusListColumn,
+								PurchaseOrderSummaryListColumn,
+								PurchaseOrderStateAuthorListColumn,
+								BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderFormReport))
+							)
+					},
 					CompositeView.ChangeEditTbl(PurchaseOrderEditTblCreator, CompositeView.JoinedNewCommand(NewPurchaseOrder),
 						CompositeView.AddRecognitionCondition(SqlExpression.Constant(KnownIds.PurchaseOrderStateDraftId).Eq(new SqlExpression(dsMB.Path.T.PurchaseOrder.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID))),
 						CompositeView.IdentificationOverride(TId.DraftPurchaseOrder)),
 					CompositeView.ChangeEditTbl(PurchaseOrderEditTblCreator, OnlyViewEdit, CompositeView.JoinedNewCommand(NewPurchaseOrder),
-						CompositeView.UseSamePanelAs(0), 
+						CompositeView.UseSamePanelAs(0),
 						CompositeView.AddRecognitionCondition(SqlExpression.Constant(KnownIds.PurchaseOrderStateIssuedId).Eq(new SqlExpression(dsMB.Path.T.PurchaseOrder.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID))),
 						CompositeView.IdentificationOverride(TId.IssuedPurchaseOrder)),
 					CompositeView.ChangeEditTbl(PurchaseOrderEditTblCreator, OnlyViewEdit, CompositeView.JoinedNewCommand(NewPurchaseOrder),
@@ -1490,7 +1458,7 @@ namespace Thinkage.MainBoss.Controls
 			);
 			});
 			#region PurchaseOrderDraftBrowseTbl
-			PurchaseOrderDraftBrowseTbl = new DelayedCreateTbl(delegate() {
+			PurchaseOrderDraftBrowseTbl = new DelayedCreateTbl(delegate () {
 				return new CompositeTbl(dsMB.Schema.T.PurchaseOrder, TId.DraftPurchaseOrder,
 					new Tbl.IAttr[] {
 						new BTbl(
@@ -1507,13 +1475,12 @@ namespace Thinkage.MainBoss.Controls
 							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderDraftFormReport))
 						)
 					},
-					null,	// no record type
 					CompositeView.ChangeEditTbl(PurchaseOrderEditTblCreator)
 				);
 			});
 			#endregion
 			#region PurchaseOrderIssuedBrowseTbl
-			PurchaseOrderIssuedBrowseTbl = new DelayedCreateTbl(delegate() {
+			PurchaseOrderIssuedBrowseTbl = new DelayedCreateTbl(delegate () {
 				return new CompositeTbl(dsMB.Schema.T.PurchaseOrder, TId.IssuedPurchaseOrder,
 					new Tbl.IAttr[] {
 						new BTbl(
@@ -1527,7 +1494,6 @@ namespace Thinkage.MainBoss.Controls
 							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderIssuedFormReport))
 						)
 					},
-					null,	// no record type
 					CompositeView.ChangeEditTbl(PurchaseOrderEditTblCreator, OnlyViewEdit)
 				);
 			});
@@ -1540,8 +1506,7 @@ namespace Thinkage.MainBoss.Controls
 							new SqlExpression(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderAssigneeID.F.ContactID.L.User.ContactID.F.Id).Eq(new SqlExpression(new UserIDSource()))
 									.And(new SqlExpression(dsMB.Path.T.PurchaseOrderAssignment.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsIssued).IsTrue()),
 							null).SetDistinct(true));
-			PurchaseOrderInProgressAssignedToBrowseTbl = new DelayedCreateTbl(delegate()
-			{
+			PurchaseOrderInProgressAssignedToBrowseTbl = new DelayedCreateTbl(delegate () {
 				return new CompositeTbl(dsMB.Schema.T.PurchaseOrder, TId.IssuedPurchaseOrder,
 					new Tbl.IAttr[] {
 						new UseNamedTableSchemaPermissionTbl("AssignedPurchaseOrder"),
@@ -1558,7 +1523,6 @@ namespace Thinkage.MainBoss.Controls
 							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderIssuedAndAssignedFormReport))
 						)
 					},
-					null,	// no record type
 					CompositeView.ChangeEditTbl(PurchaseOrderAssignedToEditorTblCreator, OnlyViewEdit)
 				);
 			});
@@ -1575,8 +1539,7 @@ namespace Thinkage.MainBoss.Controls
 									.And(new SqlExpression(dsMB.Path.T.PurchaseOrderAssignmentByAssignee.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsIssued)
 										.Or(new SqlExpression(dsMB.Path.T.PurchaseOrderAssignmentByAssignee.F.PurchaseOrderID.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID.F.FilterAsDraft))),
 							null).SetDistinct(true));
-			UnassignedPurchaseOrderBrowseTbl = new DelayedCreateTbl(delegate()
-			{
+			UnassignedPurchaseOrderBrowseTbl = new DelayedCreateTbl(delegate () {
 				var assigneeIdExpression = SqlExpression.ScalarSubquery(new SelectSpecification(dsMB.Schema.T.PurchaseOrderAssignee, new[] { new SqlExpression(dsMB.Path.T.PurchaseOrderAssignee.F.Id) }, new SqlExpression(dsMB.Path.T.PurchaseOrderAssignee.F.ContactID.L.User.ContactID.F.Id).Eq(SqlExpression.Constant(Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().UserRecordID)), null));
 				var notAssigneeTip = KB.K("You are not registered as a Purchase Order Assignee");
 				return new CompositeTbl(dsMB.Schema.T.PurchaseOrder, TId.UnassignedPurchaseOrder,
@@ -1606,7 +1569,6 @@ namespace Thinkage.MainBoss.Controls
 							)
 						)
 					},
-					null,	// no record type
 					CompositeView.ChangeEditTbl(PurchaseOrderUnassignedEditorTblCreator, OnlyViewEdit,
 						CompositeView.AddRecognitionCondition(SqlExpression.Constant(KnownIds.PurchaseOrderStateDraftId).Eq(new SqlExpression(dsMB.Path.T.PurchaseOrder.F.CurrentPurchaseOrderStateHistoryID.F.PurchaseOrderStateID))),
 						CompositeView.IdentificationOverride(TId.DraftPurchaseOrder)),
@@ -1618,7 +1580,7 @@ namespace Thinkage.MainBoss.Controls
 			});
 			#endregion
 			#region PurchaseOrderClosedBrowseTbl
-			PurchaseOrderClosedBrowseTbl = new DelayedCreateTbl(delegate() {
+			PurchaseOrderClosedBrowseTbl = new DelayedCreateTbl(delegate () {
 				return new CompositeTbl(dsMB.Schema.T.PurchaseOrder, TId.ClosedPurchaseOrder,
 					new Tbl.IAttr[] {
 						new BTbl(
@@ -1631,13 +1593,12 @@ namespace Thinkage.MainBoss.Controls
 							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderClosedFormReport))
 						)
 					},
-					null,	// no record type
 					CompositeView.ChangeEditTbl(PurchaseOrderEditTblCreator, OnlyViewEdit)
 				);
 			});
 			#endregion
 			#region PurchaseOrderVoidBrowseTbl
-			PurchaseOrderVoidBrowseTbl = new DelayedCreateTbl(delegate() {
+			PurchaseOrderVoidBrowseTbl = new DelayedCreateTbl(delegate () {
 				return new CompositeTbl(dsMB.Schema.T.PurchaseOrder, TId.VoidPurchaseOrder,
 					new Tbl.IAttr[] {
 						new BTbl(
@@ -1649,41 +1610,10 @@ namespace Thinkage.MainBoss.Controls
 							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderVoidFormReport))
 						)
 					},
-					null,	// no record type
 					CompositeView.ChangeEditTbl(PurchaseOrderEditTblCreator, OnlyViewEdit)
 				);
 			});
 			#endregion
-
-			#endregion
-			#region Miscellaneous
-			DefineTbl(dsMB.Schema.T.Miscellaneous, delegate() {
-				return new Tbl(dsMB.Schema.T.Miscellaneous, TId.MiscellaneousItem,
-				new Tbl.IAttr[] {
-					CommonTblAttrs.ViewCostsDefinedBySchema,
-					PurchasingGroup,
-					new BTbl(
-						BTbl.ListColumn(dsMB.Path.T.Miscellaneous.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.Miscellaneous.F.Desc, NonPerViewColumn),
-						BTbl.ListColumn(dsMB.Path.T.Miscellaneous.F.PurchaseOrderText, BTbl.Contexts.OpenPicker|BTbl.Contexts.ClosedPicker|BTbl.Contexts.SearchAndFilter),
-						BTbl.ListColumn(dsMB.Path.T.Miscellaneous.F.Cost, NonPerViewColumn),
-						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.MiscellaneousReport))
-					),
-					new ETbl()
-				},
-				new TblLayoutNodeArray(
-					DetailsTabNode.New(
-						TblFixedRecordTypeNode.New(),
-						TblColumnNode.New(dsMB.Path.T.Miscellaneous.F.Code, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Miscellaneous.F.Desc, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Miscellaneous.F.PurchaseOrderText, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Miscellaneous.F.CostCenterID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.CostCenter.F.Code)), ECol.Normal, CommonNodeAttrs.PermissionToViewAccounting, CommonNodeAttrs.PermissionToEditAccounting, AccountingFeatureArg),
-						TblColumnNode.New(dsMB.Path.T.Miscellaneous.F.Cost, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Miscellaneous.F.Comment, DCol.Normal, ECol.Normal)
-					)
-				));
-			});
-			RegisterExistingForImportExport(TId.MiscellaneousItem, dsMB.Schema.T.Miscellaneous);
 			#endregion
 			#region POLineItem
 			DefineTbl(dsMB.Schema.T.POLineItem, POLineItemTbl(false, false, false));
@@ -1717,12 +1647,11 @@ namespace Thinkage.MainBoss.Controls
 						TblColumnNode.New(dsMB.Path.T.PurchaseOrderTemplate.F.SelectPrintFlag, DCol.Normal, ECol.Normal)
 					),
 					BrowsetteTabNode.New(TId.PurchaseOrderTemplateLine, TId.PurchaseOrderTemplate,
-						TblColumnNode.NewBrowsette(POLineItemTemplateTblCreator, dsMB.Path.T.PurchaseOrderTemplateLine.F.POLineTemplateID.F.PurchaseOrderTemplateID, DCol.Normal, ECol.Normal)),
-					BrowsetteTabNode.New(TId.Task, TId.PurchaseOrderTemplate, 
+						TblColumnNode.NewBrowsette(POLineItemTemplateTblCreator, dsMB.Path.T.POLineTemplate.F.PurchaseOrderTemplateID, DCol.Normal, ECol.Normal)),
+					BrowsetteTabNode.New(TId.Task, TId.PurchaseOrderTemplate,
 						TblColumnNode.NewBrowsette(AssociatedWorkOrderTemplatesTbl, dsMB.Path.T.WorkOrderTemplatePurchaseOrderTemplateView.F.LinkedPurchaseOrderTemplateID, DCol.Normal, ECol.Normal))
 				);
-			PurchaseOrderTemplateEditTbl = new DelayedCreateTbl(delegate()
-			{
+			PurchaseOrderTemplateEditTblCreator = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.PurchaseOrderTemplate, TId.PurchaseOrderTemplate,
 					new Tbl.IAttr[] {
 						SchedulingAndPurchasingGroup,
@@ -1737,23 +1666,62 @@ namespace Thinkage.MainBoss.Controls
 				);
 			});
 			// The PurchaseOrderTemplate browser is made Composite only to allow specification of an alternative Tbl for editing.
-			DefineBrowseTbl(dsMB.Schema.T.PurchaseOrderTemplate, delegate()
-			{
+			DefineBrowseTbl(dsMB.Schema.T.PurchaseOrderTemplate, delegate () {
 				return new CompositeTbl(dsMB.Schema.T.PurchaseOrderTemplate, TId.PurchaseOrderTemplate,
-				new Tbl.IAttr[] {
-					new BTbl(
-						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.Code),
-						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.Desc),
-						BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.Subject, BTbl.Contexts.OpenPicker|BTbl.Contexts.SearchAndFilter),
-						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderTemplateReport))
-					)
-				},
-				null,	// no record type
-				CompositeView.ChangeEditTbl(PurchaseOrderTemplateEditTbl)
+					new Tbl.IAttr[] {
+						new BTbl(
+							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.Code),
+							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.Desc),
+							BTbl.ListColumn(dsMB.Path.T.PurchaseOrderTemplate.F.Subject, BTbl.Contexts.OpenPicker|BTbl.Contexts.SearchAndFilter),
+							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PurchaseOrderTemplateReport))
+						)
+					},
+					CompositeView.ChangeEditTbl(PurchaseOrderTemplateEditTblCreator)
 			);
 			});
 			#endregion
+			#region POLineItemTemplate
+			DefineTbl(dsMB.Schema.T.POLineItemTemplate, POLineItemTemplateTbl(false, false));
+			#endregion
+			#region POLineLaborTemplate
+			DefineTbl(dsMB.Schema.T.POLineLaborTemplate, POLineLaborTemplateTbl(false, false));
+			#endregion
+			#region POLineOtherWorkTemplate
+			DefineTbl(dsMB.Schema.T.POLineOtherWorkTemplate, POLineOtherWorkTemplateTbl(false, false));
+			#endregion
+			#region POLineMiscellaneousTemplate
+			DefineTbl(dsMB.Schema.T.POLineMiscellaneousTemplate, POLineMiscellaneousTemplateTbl(false, false));
+			#endregion
 
+			#region Miscellaneous
+			DefineTbl(dsMB.Schema.T.Miscellaneous, delegate () {
+				return new Tbl(dsMB.Schema.T.Miscellaneous, TId.MiscellaneousItem,
+				new Tbl.IAttr[] {
+					CommonTblAttrs.ViewCostsDefinedBySchema,
+					PurchasingGroup,
+					new BTbl(
+						BTbl.ListColumn(dsMB.Path.T.Miscellaneous.F.Code),
+						BTbl.ListColumn(dsMB.Path.T.Miscellaneous.F.Desc, NonPerViewColumn),
+						BTbl.ListColumn(dsMB.Path.T.Miscellaneous.F.PurchaseOrderText, BTbl.Contexts.OpenPicker|BTbl.Contexts.ClosedPicker|BTbl.Contexts.SearchAndFilter),
+						BTbl.ListColumn(dsMB.Path.T.Miscellaneous.F.Cost, NonPerViewColumn),
+						BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.MiscellaneousReport))
+					),
+					new ETbl()
+				},
+				new TblLayoutNodeArray(
+					DetailsTabNode.New(
+						TblFixedRecordTypeNode.New(),
+						TblColumnNode.New(dsMB.Path.T.Miscellaneous.F.Code, DCol.Normal, ECol.Normal),
+						TblColumnNode.New(dsMB.Path.T.Miscellaneous.F.Desc, DCol.Normal, ECol.Normal),
+						TblColumnNode.New(dsMB.Path.T.Miscellaneous.F.PurchaseOrderText, DCol.Normal, ECol.Normal),
+						TblColumnNode.New(dsMB.Path.T.Miscellaneous.F.CostCenterID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.CostCenter.F.Code)), ECol.Normal, CommonNodeAttrs.PermissionToViewAccounting, CommonNodeAttrs.PermissionToEditAccounting, AccountingFeatureArg),
+						TblColumnNode.New(dsMB.Path.T.Miscellaneous.F.Cost, DCol.Normal, ECol.Normal),
+						TblColumnNode.New(dsMB.Path.T.Miscellaneous.F.Comment, DCol.Normal, ECol.Normal)
+					)
+				));
+			});
+			RegisterExistingForImportExport(TId.MiscellaneousItem, dsMB.Schema.T.Miscellaneous);
+			#endregion
 			#region PurchaseOrderCategory
 			DefineTbl(dsMB.Schema.T.PurchaseOrderCategory, delegate () {
 				return new Tbl(dsMB.Schema.T.PurchaseOrderCategory, TId.PurchaseOrderCategory,
@@ -1776,21 +1744,8 @@ namespace Thinkage.MainBoss.Controls
 			});
 			RegisterExistingForImportExport(TId.PurchaseOrderCategory, dsMB.Schema.T.PurchaseOrderCategory);
 			#endregion
-
-			#region POLineItemTemplate
-			DefineTbl(dsMB.Schema.T.POLineItemTemplate, POLineItemTemplateTbl(false, false));
-			#endregion
-			#region POLineLaborTemplate
-			DefineTbl(dsMB.Schema.T.POLineLaborTemplate, POLineLaborTemplateTbl(false,false));
-			#endregion
-			#region POLineOtherWorkTemplate
-			DefineTbl(dsMB.Schema.T.POLineOtherWorkTemplate, POLineOtherWorkTemplateTbl(false, false));
-			#endregion
-			#region POLineMiscellaneousTemplate
-			DefineTbl(dsMB.Schema.T.POLineMiscellaneousTemplate, POLineMiscellaneousTemplateTbl(false, false));
-			#endregion
 			#region ShippingMode
-			DefineTbl(dsMB.Schema.T.ShippingMode, delegate() {
+			DefineTbl(dsMB.Schema.T.ShippingMode, delegate () {
 				return new Tbl(dsMB.Schema.T.ShippingMode, TId.ShippingMode,
 				new Tbl.IAttr[] {
 					PurchasingGroup,
@@ -1803,7 +1758,7 @@ namespace Thinkage.MainBoss.Controls
 						TblColumnNode.New(dsMB.Path.T.ShippingMode.F.Code, DCol.Normal, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.ShippingMode.F.Desc, DCol.Normal, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.ShippingMode.F.Comment, DCol.Normal, ECol.Normal)),
-					BrowsetteTabNode.New(TId.PurchaseOrder, TId.ShippingMode, 
+					BrowsetteTabNode.New(TId.PurchaseOrder, TId.ShippingMode,
 						TblColumnNode.NewBrowsette(dsMB.Path.T.PurchaseOrder.F.ShippingModeID, DCol.Normal, ECol.Normal))
 				));
 			});
@@ -1820,17 +1775,17 @@ namespace Thinkage.MainBoss.Controls
 					TblColumnNode.New(dsMB.Path.T.Vendor.F.Code, DCol.Normal, ECol.Normal),
 					TblColumnNode.New(dsMB.Path.T.Vendor.F.Desc, DCol.Normal, ECol.Normal),
 					TblColumnNode.New(dsMB.Path.T.Vendor.F.VendorCategoryID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.VendorCategory.F.Code)), ECol.Normal),
-					ContactGroupTblLayoutNode(
-						ContactGroupRow(dsMB.Path.T.Vendor.F.SalesContactID, ECol.Normal),
-						ContactGroupRow(dsMB.Path.T.Vendor.F.ServiceContactID, ECol.Normal),
-						ContactGroupRow(dsMB.Path.T.Vendor.F.PayablesContactID, ECol.Normal)
+					TIContact.ContactGroupTblLayoutNode(
+						TIContact.ContactGroupRow(dsMB.Path.T.Vendor.F.SalesContactID, ECol.Normal),
+						TIContact.ContactGroupRow(dsMB.Path.T.Vendor.F.ServiceContactID, ECol.Normal),
+						TIContact.ContactGroupRow(dsMB.Path.T.Vendor.F.PayablesContactID, ECol.Normal)
 					),
 					TblColumnNode.New(dsMB.Path.T.Vendor.F.AccountsPayableCostCenterID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.CostCenter.F.Code)), ECol.Normal, CommonNodeAttrs.PermissionToViewAccounting, CommonNodeAttrs.PermissionToEditAccounting, AccountingFeatureArg),
 					TblColumnNode.New(dsMB.Path.T.Vendor.F.AccountNumber, DCol.Normal, ECol.Normal),
 					TblColumnNode.New(dsMB.Path.T.Vendor.F.PaymentTermID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.PaymentTerm.F.Code)), ECol.Normal),
 					TblColumnNode.New(dsMB.Path.T.Vendor.F.Comment, DCol.Normal, ECol.Normal)
 				),
-				BrowsetteTabNode.New(TId.ItemPricing, TId.Vendor, 
+				BrowsetteTabNode.New(TId.ItemPricing, TId.Vendor,
 					TblColumnNode.NewBrowsette(dsMB.Path.T.ItemPrice.F.VendorID, DCol.Normal, ECol.Normal)),
 				BrowsetteTabNode.New(TId.HourlyOutside, TId.Vendor,
 					TblColumnNode.NewBrowsette(dsMB.Path.T.LaborOutside.F.VendorID, DCol.Normal, ECol.Normal)),
@@ -1844,13 +1799,12 @@ namespace Thinkage.MainBoss.Controls
 					TblColumnNode.NewBrowsette(dsMB.Path.T.ServiceContract.F.VendorID, DCol.Normal, ECol.Normal)),
 				BrowsetteTabNode.New(TId.PurchaseOrder, TId.Vendor,
 					TblColumnNode.NewBrowsette(dsMB.Path.T.PurchaseOrder.F.VendorID, DCol.Normal, ECol.Normal)),
-				BrowsetteTabNode.New(TId.PurchaseOrderTemplate, TId.Vendor, 
+				BrowsetteTabNode.New(TId.PurchaseOrderTemplate, TId.Vendor,
 					TblColumnNode.NewBrowsette(dsMB.Path.T.PurchaseOrderTemplate.F.VendorID, DCol.Normal, ECol.Normal)),
 				BrowsetteTabNode.New(TId.Unit, TId.Vendor,
-					TblColumnNode.NewBrowsette(TILocations.UnitBrowseTblCreator, dsMB.Path.T.LocationDerivations.F.LocationID.F.RelativeLocationID.F.UnitID.F.PurchaseVendorID, DCol.Normal, ECol.Normal))
+					TblColumnNode.NewBrowsette(TILocations.UnitBrowseTblCreator, dsMB.Path.T.Location.F.RelativeLocationID.F.UnitID.F.PurchaseVendorID, DCol.Normal, ECol.Normal))
 			);
-			VendorTblCreator = new DelayedCreateTbl(delegate()
-			{
+			VendorTblCreator = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.Vendor, TId.Vendor,
 					new Tbl.IAttr[] {
 						VendorsDependentGroup,
@@ -1861,8 +1815,7 @@ namespace Thinkage.MainBoss.Controls
 				);
 			});
 			// Vendors node under Purchasing group - part of Purchasing Group
-			VendorForPurchaseOrdersTblCreator = new DelayedCreateTbl(delegate()
-			{
+			VendorForPurchaseOrdersTblCreator = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.Vendor, TId.Vendor,
 					new Tbl.IAttr[] {
 						PurchasingGroup,
@@ -1878,7 +1831,7 @@ namespace Thinkage.MainBoss.Controls
 
 			#endregion
 			#region VendorCategory
-			DefineTbl(dsMB.Schema.T.VendorCategory, delegate() {
+			DefineTbl(dsMB.Schema.T.VendorCategory, delegate () {
 				return new Tbl(dsMB.Schema.T.VendorCategory, TId.VendorCategory,
 				new Tbl.IAttr[] {
 					VendorsDependentGroup,

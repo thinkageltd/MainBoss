@@ -5,10 +5,8 @@ using Thinkage.Libraries.XAF.Database.Layout;
 using System.Collections.Generic;
 using Thinkage.Libraries;
 
-namespace Thinkage.MainBoss.Database
-{
-	public static partial class Licensing
-	{
+namespace Thinkage.MainBoss.Database {
+	public static partial class Licensing {
 		private class MBLicensedObject : ILicensedObject {
 			public MBLicensedObject(MBLicenseDefinition definition, DBClient licenseSession) {
 				pDefinition = definition;
@@ -107,7 +105,7 @@ namespace Thinkage.MainBoss.Database
 					}
 				}
 			}
-			private static Dictionary<int, MBLicenseDefinition> AllMainbossLicensesByAppId = new Dictionary<int, MBLicenseDefinition>();
+			private static readonly Dictionary<int, MBLicenseDefinition> AllMainbossLicensesByAppId = new Dictionary<int, MBLicenseDefinition>();
 		}
 		#region The License Definitions
 		private class MBLicenseDefinition : LicenseDefinition {
@@ -143,7 +141,7 @@ namespace Thinkage.MainBoss.Database
 		// counting sessions or clients were special licensing models). For compatibility we force this license to ignore the licensing model and enforce
 		// the count all the time.
 		// TODO: We should be issuing Named Users licenses with the Table Count model. This would allow making of EnforceForAnyLicensingModel = false permanent behaviour.
-		public static readonly LicenseDefinition NamedUsersLicense = new MBLicenseDefinition(ApplicationID.NamedUsers, KB.K("User"), KB.K("Users"), dsMB.Schema.T.User, enforceForAnyLicensingModel: true);	// TODO: Give is a new App Id.
+		public static readonly LicenseDefinition NamedUsersLicense = new MBLicenseDefinition(ApplicationID.NamedUsers, KB.K("User"), KB.K("Users"), dsMB.Schema.T.User, enforceForAnyLicensingModel: true); // TODO: Give is a new App Id.
 		public static readonly LicenseDefinition MainBossServiceLicense = new MBLicenseDefinition(ApplicationID.MainBossService);
 		public static readonly LicenseDefinition WebAccessLicense = new MBLicenseDefinition(ApplicationID.WebAccess);
 		public static readonly LicenseDefinition WebRequestsLicense = new MBLicenseDefinition(ApplicationID.WebRequests);

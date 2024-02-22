@@ -99,6 +99,25 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 #endif
 			return q;
 		}
+		/// <summary>
+		///  Return just requests that are assigned to the assigneeID
+		/// </summary>
+		public IQueryable<RequestEntities.Request> BrowseRequestorPendingRequests(Guid requestorID) {
+
+			var q = from request in DataContext.Request
+					join SH in DataContext.RequestStateHistory on request.CurrentRequestStateHistoryID equals SH.Id
+					join RS in DataContext.RequestState on SH.RequestStateID equals RS.Id
+					join Status in DataContext.RequestStateHistoryStatus on SH.RequestStateHistoryStatusID equals Status.Id into ugj3
+					from RSTATUS in ugj3.DefaultIfEmpty()
+					where request.RequestorID == requestorID && (RS.FilterAsInProgress == true || RS.FilterAsNew == true)
+					orderby SH.EffectiveDate descending
+					select request;
+#if DEBUG
+			System.Data.Common.DbCommand dc = DataContext.GetCommand(q);
+			System.Diagnostics.Debug.WriteLine(Thinkage.Libraries.Strings.IFormat("\nCommand Text: \n{0}", dc.CommandText));
+#endif
+			return q;
+		}
 		public RequestEntities.Request View(Guid Id) {
 			// We may end up viewing a Closed Request (someone closed it underneath the currently user when they were trying to Add a comment or close it themselves)
 			// so we need to look in all requests for the Id given regardless of its state
@@ -115,9 +134,9 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			}
 		}
 		#endregion
-		public bool CanSelfAssign() {
+		public static bool CanSelfAssign() {
 			using (dsMB ds = new dsMB(MB3DB)) {
-				return RequestRepository.GetCurrentUserAsRequestAssignee(ds) != Guid.Empty;
+				return GetCurrentUserAsRequestAssignee(ds) != Guid.Empty;
 			}
 		}
 		public static Guid GetCurrentUserAsRequestAssignee(dsMB ds) {

@@ -105,15 +105,15 @@ namespace Thinkage.MainBoss.Database.Service {
 		/// A predefined prefix on all MainBoss services so we can find them in the service configuration.
 		/// </summary>
 		public static readonly string MainBossServiceTag = KB.I("MainBossService");
-		private DBClient DB;
-		static Dictionary<string,MainBossServiceConfiguration > configs = new Dictionary<string,MainBossServiceConfiguration>();
+		private readonly DBClient DB;
+		static Dictionary<string, MainBossServiceConfiguration> configs = new Dictionary<string, MainBossServiceConfiguration>();
 		public MainBossServiceConfiguration(DBClient db, [Invariant] string serviceCode = null, [Invariant] string machineName = null) {
 			DB = db;
 			if (serviceCode != null)
 				ServiceName = serviceCode;
 			ServiceMachineName = machineName;
 			try {
-				var sRow = getServiceConfigurationRow(DB);
+				var sRow = GetServiceConfigurationRow(DB);
 				SetValues(sRow);
 			}
 			catch (GeneralException e) {
@@ -128,7 +128,8 @@ namespace Thinkage.MainBoss.Database.Service {
 					MainBossServiceConfiguration c;
 					if (configs.ContainsKey(db.ConnectionInfo.DisplayNameLowercase)) {
 						c = configs[db.ConnectionInfo.DisplayNameLowercase];
-						if (c.TestIfEqual((MB3Client)db)) return c;
+						if (c.TestIfEqual((MB3Client)db))
+							return c;
 					}
 					c = new MainBossServiceConfiguration(db, serviceCode);
 					configs[db.ConnectionInfo.DisplayNameLowercase] = c;
@@ -150,32 +151,31 @@ namespace Thinkage.MainBoss.Database.Service {
 				db.CloseDatabase();
 				return c;
 			}
-			catch(System.Exception e) {
+			catch (System.Exception e) {
 				if (e is GeneralException)
 					throw;
 				throw new GeneralException(KB.K("Could not access database {0}"), dbConnection.ToString());
 			}
 		}
 		static public bool CheckForChanges() {
-			if (configs == null || !configs.Any() )
+			if (configs == null || !configs.Any())
 				return true;
 			return configs.Any(e => !e.Value.TestIfEqual());
 		}
 		private bool TestIfEqual() {
-			bool r = true;
 			MB3Client db = new MB3Client(DB.ConnectionInfo);  // have to create a new connection 
-			r = TestIfEqual(db);
+			bool r = TestIfEqual(db);
 			db.CloseDatabase();
 			return r;
 		}
 		private bool TestIfEqual(MB3Client db) {
-			var sRow = getServiceConfigurationRow(db);
+			var sRow = GetServiceConfigurationRow(db);
 			return TestIfEqual(sRow);
 		}
 		static public void Reset() {
 			configs = new Dictionary<string, MainBossServiceConfiguration>();
 		}
-		private dsMB.ServiceConfigurationRow getServiceConfigurationRow(DBClient db) {
+		private static dsMB.ServiceConfigurationRow GetServiceConfigurationRow(DBClient db) {
 			dsMB.ServiceConfigurationRow sRow = null;
 			using (var ds = new dsMB(db)) {
 				ds.EnsureDataTableExists(dsMB.Schema.T.ServiceConfiguration);
@@ -183,7 +183,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				dsMB.ServiceConfigurationDataTable dt = ds.T.ServiceConfiguration;
 				if (dt.Rows.Count == 0)
 					sRow = null;
-				else if (dt.Rows.Count > 1 )
+				else if (dt.Rows.Count > 1)
 					throw new GeneralException(KB.K("More than one service configuration is not currently supported, please remove all except for one"));
 				else {
 					// if more than one and we asked for nothing by name, just take the first one !
@@ -195,9 +195,9 @@ namespace Thinkage.MainBoss.Database.Service {
 					// (ie two services starting up at the same time and the configuration record says local host
 					//  but the worse that could happened is duplicate notifications or duplicate requests being created)
 					// if the program is not running as a service and the configure specifies LocalHost then the rewrite does not occur.
-					if (sRow.F.ServiceMachineName != null  && DomainAndIP.IsThisComputer(sRow.F.ServiceMachineName)) {
-							sRow.F.ServiceMachineName = DomainAndIP.MyDnsName;
-							ds.DB.Update(ds);
+					if (sRow.F.ServiceMachineName != null && DomainAndIP.IsThisComputer(sRow.F.ServiceMachineName)) {
+						sRow.F.ServiceMachineName = DomainAndIP.MyDnsName;
+						ds.DB.Update(ds);
 					}
 				}
 			}
@@ -220,6 +220,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				 AutomaticallyCreateRequestorsFromLDAP = false;
 				 WakeUpInterval = new System.TimeSpan(0);
 				 MailServerType = 0;
+				 MailAuthenticationType = 0;
 				 ProcessNotificationEmail = false;
 				 ProcessRequestorIncomingEmail = false;
 				 MailServer = null;
@@ -228,6 +229,10 @@ namespace Thinkage.MainBoss.Database.Service {
 				 MaxMailSize = null;
 				 MailUserName = null;
 				 MailboxName = null;
+				 MailEncryptedPassword = null;
+				 MailEncryptedClientSecret = null;
+				 MailClientCertificateName = null;
+				 MailClientID = null;
 				 SMTPServer = null;
 				 SMTPPort = 0;
 				 SMTPUseSSL = false;
@@ -235,7 +240,6 @@ namespace Thinkage.MainBoss.Database.Service {
 				 SMTPUserDomain = null;
 				 SMTPUserName = null;
 				 SMTPEncryptedPassword = null;
-				 MailEncryptedPassword = null;
 				 AcceptAutoCreateEmailPattern = null;
 				 RejectAutoCreateEmailPattern = null;
 			 }
@@ -258,6 +262,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				AutomaticallyCreateRequestorsFromEmail = sRow.F.AutomaticallyCreateRequestorsFromEmail;
 				WakeUpInterval = sRow.F.WakeUpInterval;
 				MailServerType = sRow.F.MailServerType;
+				MailAuthenticationType = sRow.F.MailAuthenticationType;
 				ProcessNotificationEmail = sRow.F.ProcessNotificationEmail;
 				ProcessRequestorIncomingEmail = sRow.F.ProcessRequestorIncomingEmail;
 				MailServer = sRow.F.MailServer;
@@ -266,20 +271,30 @@ namespace Thinkage.MainBoss.Database.Service {
 				MaxMailSize = sRow.F.MaxMailSize;
 				MailUserName = sRow.F.MailUserName;
 				MailboxName = sRow.F.MailboxName;
+				MailEncryptedPassword = sRow.F.MailEncryptedPassword;
+				MailEncryptedClientSecret = sRow.F.MailEncryptedClientSecret;
+				MailClientCertificateName = sRow.F.MailClientCertificateName;
+				MailClientID = sRow.F.MailClientID;
 				SMTPServer = sRow.F.SMTPServer;
-				SMTPPort = sRow.F.SMTPPort;
-				SMTPUseSSL = sRow.F.SMTPUseSSL;
 				SMTPCredentialType = sRow.F.SMTPCredentialType;
+				SMTPPort = DetermineSMTPPort(sRow);
+				SMTPUseSSL = sRow.F.SMTPUseSSL;
 				SMTPUserDomain = sRow.F.SMTPUserDomain;
 				SMTPUserName = sRow.F.SMTPUserName;
 				SMTPEncryptedPassword = sRow.F.SMTPEncryptedPassword;
-				MailEncryptedPassword = sRow.F.MailEncryptedPassword;
 				AcceptAutoCreateEmailPattern = sRow.F.AcceptAutoCreateEmailPattern;
 				RejectAutoCreateEmailPattern = sRow.F.RejectAutoCreateEmailPattern;
-			 }
+			}
+		}
+		static int DetermineSMTPPort(dsMB.ServiceConfigurationRow sRow) {
+			if (sRow.F.SMTPPort.HasValue)
+				return sRow.F.SMTPPort.Value;
+			else
+				return sRow.F.SMTPCredentialType == (sbyte)DatabaseEnums.SMTPCredentialType.ANONYMOUS ? 25 : 587;
 		}
 		private bool TestIfEqual(dsMB.ServiceConfigurationRow sRow) {
-			if (sRow == null) return Exists == (sRow != null);
+			if (sRow == null)
+				return Exists == (sRow != null);
 			return new bool[] {
 				ServiceName == sRow.F.Code,
 				ServiceMachineName == sRow.F.ServiceMachineName,
@@ -299,6 +314,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				AutomaticallyCreateRequestorsFromEmail == sRow.F.AutomaticallyCreateRequestorsFromEmail,
 				WakeUpInterval == sRow.F.WakeUpInterval,
 				MailServerType == sRow.F.MailServerType,
+				MailAuthenticationType == sRow.F.MailAuthenticationType,
 				ProcessNotificationEmail == sRow.F.ProcessNotificationEmail,
 				ProcessRequestorIncomingEmail == sRow.F.ProcessRequestorIncomingEmail,
 				MailServer == sRow.F.MailServer,
@@ -307,14 +323,17 @@ namespace Thinkage.MainBoss.Database.Service {
 				MaxMailSize == sRow.F.MaxMailSize,
 				MailUserName == sRow.F.MailUserName,
 				MailboxName == sRow.F.MailboxName,
+				(MailEncryptedPassword??Array.Empty<byte>()).SequenceEqual((sRow.F.MailEncryptedPassword??new byte[]{})),
+				(MailEncryptedClientSecret??Array.Empty<byte>()).SequenceEqual((sRow.F.MailEncryptedClientSecret??new byte[]{})),
+				MailClientCertificateName == sRow.F.MailClientCertificateName,
+				MailClientID == sRow.F.MailClientID,
 				SMTPServer == sRow.F.SMTPServer,
-				SMTPPort == sRow.F.SMTPPort,
+				SMTPPort == DetermineSMTPPort(sRow),
 				SMTPUseSSL == sRow.F.SMTPUseSSL,
 				SMTPCredentialType == sRow.F.SMTPCredentialType,
 				SMTPUserDomain == sRow.F.SMTPUserDomain,
 				SMTPUserName == sRow.F.SMTPUserName,
-				(SMTPEncryptedPassword??new byte[]{}).SequenceEqual((sRow.F.SMTPEncryptedPassword??new byte[]{})),
-				(MailEncryptedPassword??new byte[]{}).SequenceEqual((sRow.F.MailEncryptedPassword??new byte[]{})),
+				(SMTPEncryptedPassword??Array.Empty<byte>()).SequenceEqual((sRow.F.SMTPEncryptedPassword??new byte[]{})),
 				AcceptAutoCreateEmailPattern == sRow.F.AcceptAutoCreateEmailPattern,
 				RejectAutoCreateEmailPattern == sRow.F.RejectAutoCreateEmailPattern
 			}.All(e => e);
@@ -325,22 +344,23 @@ namespace Thinkage.MainBoss.Database.Service {
 		#endregion
 		#region Properties
 		public bool Exists { get; private set; }
-		public string SqlUserid  { get; private set; }
+		public string SqlUserid { get; private set; }
 		public string Desc { get; private set; }
 		public string InstalledServiceVersion { get; private set; }
 		public string GUID { get; set; }
 		public string Comment { get; private set; }
-		public string MainBossRemoteURL  { get; private set; }
-		public bool HtmlEmailNotification  { get; private set; }
-		public System.TimeSpan NotificationInterval  { get; private set; }
-		public string ReturnEmailDisplayName  { get; private set; }
-		public string ReturnEmailAddress  { get; private set; }
+		public string MainBossRemoteURL { get; private set; }
+		public bool HtmlEmailNotification { get; private set; }
+		public System.TimeSpan NotificationInterval { get; private set; }
+		public string ReturnEmailDisplayName { get; private set; }
+		public string ReturnEmailAddress { get; private set; }
 		public TimeSpan? ManualProcessingTimeAllowance { get; private set; }
 		public bool AutomaticallyCreateRequestors { get; private set; }
 		public bool AutomaticallyCreateRequestorsFromEmail { get; private set; }
 		public bool AutomaticallyCreateRequestorsFromLDAP { get; private set; }
 		public System.TimeSpan WakeUpInterval  { get; private set; }
 		public sbyte MailServerType  { get; private set; }
+		public sbyte MailAuthenticationType { get; private set; }
 		public bool ProcessNotificationEmail  { get; private set; }
 		public bool ProcessRequestorIncomingEmail  { get; private set; }
 		public string MailServer  { get; private set; }
@@ -350,15 +370,18 @@ namespace Thinkage.MainBoss.Database.Service {
 		public string MailUserName  { get; private set; }
 		public string MailboxName  { get; private set; }
 		public byte[] MailEncryptedPassword  { get; private set; }
+		public byte[] MailEncryptedClientSecret { get; private set; }
+		public string MailClientCertificateName { get; private set; }
+		public string MailClientID { get; private set; }
 		public string SMTPServer  { get; private set; }
 		public int SMTPPort { get; private set; }
 		public bool SMTPUseSSL { get; private set; }
 		public sbyte SMTPCredentialType { get; private set; }
 		public string SMTPUserDomain { get; private set; }
 		public string SMTPUserName { get; private set; }
-		public byte[] SMTPEncryptedPassword  { get; private set; }
+		public byte[] SMTPEncryptedPassword { get; private set; }
 		public string AcceptAutoCreateEmailPattern { get; private set; }
 		public string RejectAutoCreateEmailPattern { get; private set; }
 	}
-		#endregion
+	#endregion
 }

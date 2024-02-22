@@ -45,6 +45,10 @@
 	  <doc>The type of mail server: Any, POP3, IMAP4, POP3S IMAP4S</doc>
 	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIMainBossService.EmailServerTypeProvider,Thinkage.MainBoss.Controls</extension>
 	</field>
+	<field name="MailAuthenticationType" type="integer(min 0, max 1, nonnull)" labelkey="Mail Authentication Type">
+	  <doc>The type of authentication: Plain (password) or OAuth2</doc>
+	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIMainBossService.EmailServerAuthenticationProvider,Thinkage.MainBoss.Controls</extension>
+	</field>
 	<field name="ProcessNotificationEmail" type="Requiredbool">
 	  <doc>Whether or not the service processes outgoing notifications to Requestors and Assignees</doc>
 	</field>
@@ -54,19 +58,31 @@
 	<field name="MailServer" type="VariableLengthString" >
 	  <doc>The mail server's name or address from which @Requests's Email account can be accessed</doc>
 	</field>
-	<field name="MailPort" type="integer(32)" >
+	<field name="MailPort" type="integer(32)" labelkey="Override Default Port">
 	  <doc>The mail server's port for POP3 and IMAP</doc>
 	</field>
 	<field name="MailUserName" type="VariableLengthString" >
 	  <doc>@Requests' Email account's username</doc>
 	</field>
-	<field name="MailboxName" type="VariableLengthString" >
+	<field name="MailboxName" type="VariableLengthString" labelkey="Override Default MailBox" >
 	  <doc>The name of the mailbox where @Requests' emails are stored (only used for IMAP4 accounts)</doc>
 	</field>
-	<field name="MailEncryptedPassword" type="blob(minlength 8, maxlength 32, null)" >
-	  <!-- encryption always produces 8-byte blocks -->
+	<field name="MailEncryptedPassword" type="blob(minlength 8, maxlength 520, null)" >
+	  <!-- encryption always produces 8-byte blocks, and the size required is 8*(1+floor(plaintextLen/4)) so for 256 plaintext characters we need 520 bytes.
+	  The plaintext length is encoded into the passwordType in function MainBossServiceConfigurationEditTbl in TIMainBossService.cs -->
 	  <doc>@Requests' Email account's password (encrypted)</doc>
 	  <extension name="usage">password</extension>
+	</field>
+	<field name="MailEncryptedClientSecret" type="MaxBlob" labelkey="Mail Client Secret">
+	  <!-- encryption always produces 8-byte blocks, and the size required is 8*(1+floor(plaintextLen/4));  -->
+	  <doc>@Requests' Email account's Client Secret for OAuth2 (encrypted)</doc>
+	  <extension name="usage">password</extension>
+	</field>
+	<field name="MailClientCertificateName" type="SingleLineUnlimited" labelkey="Mail Client Certificate Name">
+	  <doc>@Requests' Email account's Client Certificate name</doc>
+	</field>
+	<field name="MailClientID" type="SingleLineUnlimited" labelkey="Mail Client ID">
+	  <doc>@Requests' Email account's Client ID</doc>
 	</field>
 	<field name="MaxMailSize" type="integer(32)" labelkey="Maximum Mail Size">
 		<doc>Any Mail component larger than this size will be ignored.</doc>	
@@ -74,7 +90,7 @@
 	<field name="SMTPServer" type="VariableLengthString" >
 	  <doc>The Simple-Mail-Transfer-Protocol server's name or address that @Requests can use to send email-acknowledgements</doc>
 	</field>
-	<field name="SMTPPort" type="integer(32, nonnull)" >
+	<field name="SMTPPort" type="integer(32)" labelkey="Override SMTP Port">
 	  <doc>The Simple-Mail-Transfer-Protocol server's port</doc>
 	</field>
 	<field name="SMTPUseSSL" type="Requiredbool">
@@ -90,8 +106,9 @@
 	<field name="SMTPUserName" type="VariableLengthString" >
 	  <doc>@Requests' SMTP username</doc>
 	</field>
-	<field name="SMTPEncryptedPassword" type="blob(minlength 8, maxlength 32, null)" >
-	  <!-- encryption always produces 8-byte blocks -->
+	<field name="SMTPEncryptedPassword" type="blob(minlength 8, maxlength 520, null)" >
+	  <!-- encryption always produces 8-byte blocks, and the size required is 8*(1+floor(plaintextLen)/4) so for 256 plaintext characters we need 520 bytes.
+	  The plaintext length is encoded into the passwordType in function MainBossServiceConfigurationEditTbl in TIMainBossService.cs -->
 	  <doc>@Requests' SMTP password (encrypted)</doc>
 	  <extension name="usage">password</extension>
 	</field>

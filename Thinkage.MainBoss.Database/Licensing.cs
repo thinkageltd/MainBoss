@@ -3,7 +3,7 @@ using Thinkage.Libraries.Translation;
 namespace Thinkage.MainBoss.Database {
 	public static partial class Licensing {
 		#region LicenseModuleIdProvider
-		static Licensing() {
+		private static Libraries.EnumValueTextRepresentations InitializeLicenseModuleProvider() {
 			List<Key> moduleName = new List<Key>();
 			List<object> moduleIds = new List<object>();
 			foreach (int i in (int[])System.Enum.GetValues(typeof(ApplicationID))) {
@@ -19,9 +19,9 @@ namespace Thinkage.MainBoss.Database {
 					break;
 				}
 			}
-			LicenseModuleIdProvider = new Libraries.EnumValueTextRepresentations(moduleName.ToArray(), null, moduleIds.ToArray());
+			return new Libraries.EnumValueTextRepresentations(moduleName.ToArray(), null, moduleIds.ToArray());
 		}
-		public readonly static Libraries.EnumValueTextRepresentations LicenseModuleIdProvider;
+		public readonly static Libraries.EnumValueTextRepresentations LicenseModuleIdProvider = InitializeLicenseModuleProvider();
 		#endregion
 	}
 }

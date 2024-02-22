@@ -1,15 +1,12 @@
 ﻿using System.Collections.Generic;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Permissions;
 using Thinkage.Libraries.Presentation;
-using Thinkage.Libraries.RDL2010;
-using Thinkage.Libraries.RDLReports;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.XAF.UI;
 using Thinkage.MainBoss.Database;
 
-namespace Thinkage.MainBoss.Controls
-{
+namespace Thinkage.MainBoss.Controls {
 	/// <summary>
 	/// MainBoss derived to provide SuppressCostPermissions
 	/// </summary>

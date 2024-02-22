@@ -105,7 +105,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				Logger.LogTrace(traceDetails, Strings.Format(KB.K("Processing {0} {0.IsOne ? {0} Notification : {0} Notifications }"), dsmb.T.AssignmentNotification.Rows.Count));
 				#region Processing Loop
 				#region RequestAssignments
-				foreach (dsMB.RequestAssignmentRow rarow in dsmb.T.RequestAssignment) {
+				foreach (dsMB.RequestAssignmentRow rarow in dsmb.T.RequestAssignment.Rows) {
 					// Ensure no history remains earlier iterations that may end up in someone else's notification
 					// we do it at the top to ensure it is done if we stop processing further down due to some error and end up doing a continue. The history
 					// wouldn't be cleared at the bottom of the loop.
@@ -124,9 +124,9 @@ namespace Thinkage.MainBoss.Database.Service {
 							dsMB.Path.T.RequestStateHistory.F.RequestStateHistoryStatusID.PathToReferencedRow
 					});
 					//Get the Rows fetched above in a sorted order descending order
-					DataRow[] rshrows = dsmb.T.RequestStateHistory.Select(
-							new ColumnExpressionUnparser().UnParse(SqlExpression.Constant(true).Eq(SqlExpression.Constant(true))),
-							new SortExpression(dsMB.Path.T.RequestStateHistory.F.EntryDate, SortExpression.SortOrder.Desc).ToDataExpressionString());
+					DataRow[] rshrows = dsmb.T.RequestStateHistory.Rows.Select(
+							SqlExpression.Constant(true),
+							new SortExpression(dsMB.Path.T.RequestStateHistory.F.EntryDate, SortExpression.SortOrder.Desc));
 
 					// The last aknowledgement date is the date of the last history record (which is the first in our list)
 					DateTime ackdate = ((dsMB.RequestStateHistoryRow)rshrows[0]).F.EntryDate;
@@ -162,7 +162,7 @@ namespace Thinkage.MainBoss.Database.Service {
 								iInfo = new InitialNotificationInformation(requestRow.F.Description, uInfo, rInfo);
 							}
 
-							smtp.BuildMailMessageBody(mm, BuildRequestNotificationEmail(new TextNotificationEmail(preferredLanguage), dsmb, requestRow, iInfo, rshrows),
+							SMTPClient.BuildMailMessageBody(mm, BuildRequestNotificationEmail(new TextNotificationEmail(preferredLanguage), dsmb, requestRow, iInfo, rshrows),
 								BuildRequestNotificationEmail(smtp.GetHtmlEmailBuilder(preferredLanguage), dsmb, requestRow, iInfo, rshrows));
 							try {
 								smtp.Send(mm);
@@ -193,7 +193,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				#endregion
 
 				#region WorkOrderAssignments
-				foreach (dsMB.WorkOrderAssignmentNotificationRow rarow in dsmb.T.WorkOrderAssignmentNotification) {
+				foreach (dsMB.WorkOrderAssignmentNotificationRow rarow in dsmb.T.WorkOrderAssignmentNotification.Rows) {
 					// Ensure no history remains earlier iterations that may end up in someone else's notification
 					// we do it at the top to ensure it is done if we stop processing further down due to some error and end up doing a continue. The history
 					// wouldn't be cleared at the bottom of the loop.
@@ -209,9 +209,9 @@ namespace Thinkage.MainBoss.Database.Service {
 							dsMB.Path.T.WorkOrderStateHistory.F.WorkOrderStateHistoryStatusID.PathToReferencedRow
 					});
 					//Get the Rows fetched above in a sorted descending entry date order
-					DataRow[] shrows = dsmb.T.WorkOrderStateHistory.Select(
-							new ColumnExpressionUnparser().UnParse(SqlExpression.Constant(true).Eq(SqlExpression.Constant(true))),
-							new SortExpression(dsMB.Path.T.WorkOrderStateHistory.F.EntryDate, SortExpression.SortOrder.Desc).ToDataExpressionString());
+					DataRow[] shrows = dsmb.T.WorkOrderStateHistory.Rows.Select(
+							SqlExpression.Constant(true),
+							new SortExpression(dsMB.Path.T.WorkOrderStateHistory.F.EntryDate, SortExpression.SortOrder.Desc));
 					// The last aknowledgement date is the date of the last history record (which is the first in our list)
 					DateTime ackdate = ((dsMB.WorkOrderStateHistoryRow)shrows[0]).F.EntryDate;
 
@@ -249,7 +249,7 @@ namespace Thinkage.MainBoss.Database.Service {
 								uInfo = new UnitInformation(orderRow.UnitLocationIDParentRow.RelativeLocationIDParentRow.F.Hidden.HasValue, orderRow.UnitLocationIDParentRow.F.Code);
 								iInfo = new InitialNotificationInformation(orderRow.F.Description, uInfo, rInfo);
 							}
-							smtp.BuildMailMessageBody(mm, BuildWorkOrderNotificationEmail(new TextNotificationEmail(preferredLanguage), preferredLanguage, dsmb, orderRow, iInfo, shrows),
+							SMTPClient.BuildMailMessageBody(mm, BuildWorkOrderNotificationEmail(new TextNotificationEmail(preferredLanguage), preferredLanguage, dsmb, orderRow, iInfo, shrows),
 								BuildWorkOrderNotificationEmail(smtp.GetHtmlEmailBuilder(preferredLanguage), preferredLanguage, dsmb, orderRow, iInfo, shrows));
 							try {
 								smtp.Send(mm);
@@ -279,7 +279,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				}
 				#endregion
 				#region PurchaseOrderAssignments
-				foreach (dsMB.PurchaseOrderAssignmentRow rarow in dsmb.T.PurchaseOrderAssignment) {
+				foreach (dsMB.PurchaseOrderAssignmentRow rarow in dsmb.T.PurchaseOrderAssignment.Rows) {
 					// Ensure no history remains earlier iterations that may end up in someone else's notification
 					// we do it at the top to ensure it is done if we stop processing further down due to some error and end up doing a continue. The history
 					// wouldn't be cleared at the bottom of the loop.
@@ -295,9 +295,9 @@ namespace Thinkage.MainBoss.Database.Service {
 							dsMB.Path.T.PurchaseOrderStateHistory.F.PurchaseOrderStateHistoryStatusID.PathToReferencedRow
 					});
 					//Get the Rows fetched above in a sorted order descending order
-					DataRow[] rshrows = dsmb.T.PurchaseOrderStateHistory.Select(
-							new ColumnExpressionUnparser().UnParse(SqlExpression.Constant(true).Eq(SqlExpression.Constant(true))),
-							new SortExpression(dsMB.Path.T.PurchaseOrderStateHistory.F.EntryDate, SortExpression.SortOrder.Desc).ToDataExpressionString());
+					DataRow[] rshrows = dsmb.T.PurchaseOrderStateHistory.Rows.Select(
+							SqlExpression.Constant(true),
+							new SortExpression(dsMB.Path.T.PurchaseOrderStateHistory.F.EntryDate, SortExpression.SortOrder.Desc));
 					// The last aknowledgement date is the date of the last history record (which is the first in our list)
 					DateTime ackdate = ((dsMB.PurchaseOrderStateHistoryRow)rshrows[0]).F.EntryDate;
 
@@ -323,7 +323,7 @@ namespace Thinkage.MainBoss.Database.Service {
 						using (MailMessage mm = smtp.NewMailMessage(recipient)) {
 							mm.Subject = UK.K("ANPurchaseOrderSubjectPrefix").Translate(preferredLanguage);
 							mm.Subject += orderRow.F.Subject.Replace("\r\n", ""); // Exception is thrown if there are newlines in the subject.
-							smtp.BuildMailMessageBody(mm, BuildPurchaseOrderNotificationEmail(new TextNotificationEmail(preferredLanguage), dsmb, orderRow, rshrows),
+							SMTPClient.BuildMailMessageBody(mm, BuildPurchaseOrderNotificationEmail(new TextNotificationEmail(preferredLanguage), dsmb, orderRow, rshrows),
 								BuildPurchaseOrderNotificationEmail(smtp.GetHtmlEmailBuilder(preferredLanguage), dsmb, orderRow, rshrows));
 							try {
 								smtp.Send(mm);

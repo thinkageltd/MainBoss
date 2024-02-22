@@ -3,15 +3,12 @@
   <types uri="..\Types.xafdb"/>
   <table name="PurchaseOrderAssigneeProspect" defaults="false" log="false" id="Id" labelkey="">
 	<doc>
-	  This view locates all probably prospects to be assigned as a PurchaseOrderAssignee to workorders that have modifiable demands (CanModifyDemands). It is the
-	  basis for a picker filter on PurchaseOrderAssignee assignment to provide a list of likely assignees for that particular workorder.
-	  The 
+	  This view locates all probable prospects to be assigned to a PurchaseOrder.
+	  It is the basis for a picker filter on PurchaseOrderAssignee assignment to provide a list of likely assignees for that particular purchase order.
+	  Note that this can return duplicate records and in particular duplicate ID fields.
+	  Note also that it returns Contacts that may or may not already be a RequestAssignee.
 	</doc>
 	<field name="Id" read="RequiredGUID">
-	</field>
-	<field name="TableEnum" type="integer(min 0, max 3, nonnull)">
-	  <doc>The type of resource record</doc>
-	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIPurchaseOrder.PurchaseOrderAssigneeProspectProvider,Thinkage.MainBoss.Controls</extension>
 	</field>
 	<field name="PurchaseOrderID" type="RequiredGUIDREF" link="PurchaseOrder">
 	  <doc>The PurchaseOrder to which the assignee is a prospect (for filtering)</doc>
@@ -20,55 +17,38 @@
 	  <doc>The Contact to which the assignee is a prospect (for picker filtering)</doc>
 	</field>
 	<extension name="query">
-	  <!--
-	  A view to locate all likely PurchaseOrderAssignees for Draft/Open PurchaseOrders, includes all the
-	  contacts for assoicated with any workorder associated with this PurchaseOrder
-	  Note that the unioned values within RqContacts may generate duplicates but the outer SELECT DISTINCT clears them out.
-	  TODO: What is the point of all thse JOINs in the main query? None of them will exclude any records and none of the joined tables
-	  are used in any column-expressions.
-	  -->
-		with POContacts(TableEnum, PurchaseOrderID, ContactID) AS
-		(
-			select 5, P.ID, V.SalesContactID
+			select V.SalesContactID, P.ID, V.SalesContactID
 				from
 					PurchaseOrder as P
 					join Vendor as V  on P.VendorID = V.Id
+			where V.SalesContactID is not null
 		union all
-			select 1, P.ID, V.ServiceContactID
+			select V.ServiceContactID, P.ID, V.ServiceContactID
 				from
 					PurchaseOrder as P
 					join Vendor as V  on P.VendorID = V.Id
+			where V.ServiceContactID is not null
 		union all
-			select 6, P.ID, V.PayablesContactID
+			select V.PayablesContactID, P.ID, V.PayablesContactID
 				from
 					PurchaseOrder as P
 					join Vendor as V  on P.VendorID = V.Id
+			where V.PayablesContactID is not null
 		union all
-			select A.TableEnum, P.ID, A.ContactId
+			select A.ContactId, P.ID, A.ContactId
 				from
 					PurchaseOrder as P 
 					join WorkOrderPurchaseOrderView as WP on WP.LinkedPurchaseOrderID = P.ID
 					join WorkOrderAssigneeProspect as A on A.WorkOrderID = WP.LinkedWorkOrderID
-		)
-		select DISTINCT PC.ContactId, PC.TableEnum, PC.PurchaseOrderID, PC.ContactID from POContacts as PC
-		join Contact as C on C.ID = PC.ContactID
-		join PurchaseOrder as P on P.ID = PC.PurchaseOrderID
-		join PurchaseOrderStateHistory as PSH on PSH.ID = P.CurrentPurchaseOrderStateHistoryID
-		join PurchaseOrderState as PS on PS.ID = PSH.PurchaseOrderStateID
 	</extension>
 	<extension name="dependson">PurchaseOrder</extension>
-	<extension name="dependson">PurchaseOrderState</extension>
-	<extension name="dependson">PurchaseOrderStateHistory</extension>
-	<extension name="dependson">Contact</extension>
 	<extension name="dependson">Vendor</extension>
 	<extension name="dependson">WorkOrderAssigneeProspect</extension>
 	<extension name="dependson">WorkOrderPurchaseOrderView</extension>
-	</table>
+  </table>
+  <table name="Contact"/>
   <table name="PurchaseOrder"/>
-	<table name="PurchaseOrderState"/>
-	<table name="PurchaseOrderStateHistory"/>
-	<table name="WorkOrderAssigneeProspect"/>
-	<table name="WorkOrderPurchaseOrderView"/>
-	<table name="Contact"/>
-	<table name="Vendor"/>
-  </database>
+  <table name="WorkOrderAssigneeProspect"/>
+  <table name="WorkOrderPurchaseOrderView"/>
+  <table name="Vendor"/>
+</database>

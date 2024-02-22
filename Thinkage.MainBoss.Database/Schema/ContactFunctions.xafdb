@@ -2,90 +2,62 @@
 <database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
   <types uri="Types.xafdb"/>
   <table name="ContactFunctions" defaults="false" log="false" id="Id" labelkey="Contact Function">
-	<doc>
-			This view provides Path information from each Contact record to each record in other tables that
-			define contact 'functions'.  E.g. the Requestor table essentially gives a given contact the 'Requestor'
-			function.  Similarly for other tables.
-			This is a flat composite view which allows editing of all record types.
-		</doc>
-	<field name="Id" read="RequiredGUID">
-	  <doc>ID of root Contact record</doc>
-	</field>
-	<field name="TableEnum" labelkey="Contact Function" type="integer(min 0, max 14,nonnull)">
-	  <doc>Record type identification. See DatabaseLayout.ViewRecordTypes for values.</doc>
-	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIGeneralMB3.ContactFunctionProvider,Thinkage.MainBoss.Controls</extension>
-	</field>
-	<field name="ParentContactID" type="GUIDREF" link="Contact"/>
+	<field name="Id" read="RequiredGUID"/>
 	<field name="ContactID" type="RequiredGUIDREF" link="Contact"/>
-	<field name="RequestorID" type="RequiredGUIDREF" link="Requestor"/>
-	<field name="BillableRequestorID" type="RequiredGUIDREF" link="BillableRequestor"/>
-	<field name="EmployeeID" type="RequiredGUIDREF" link="Employee"/>
-	<field name="VendorID" type="RequiredGUIDREF" link="Vendor"/>
-	<field name="RequestAssigneeID" type="RequiredGUIDREF" link="RequestAssignee"/>
-	<field name="WorkOrderAssigneeID" type="RequiredGUIDREF" link="WorkOrderAssignee"/>
-	<field name="PurchaseOrderAssigneeID" type="RequiredGUIDREF" link="PurchaseOrderAssignee"/>
+	<field name="RequestorID" type="GUIDREF" link="Requestor"/>
+	<field name="BillableRequestorID" type="GUIDREF" link="BillableRequestor"/>
+	<field name="EmployeeID" type="GUIDREF" link="Employee"/>
+	<field name="VendorID" type="GUIDREF" link="Vendor"/>
+	<field name="RequestAssigneeID" type="GUIDREF" link="RequestAssignee"/>
+	<field name="WorkOrderAssigneeID" type="GUIDREF" link="WorkOrderAssignee"/>
+	<field name="PurchaseOrderAssigneeID" type="GUIDREF" link="PurchaseOrderAssignee"/>
 	<field name="UserID" type="GUIDREF" link="User"/>
 	<extension name="query">
-			select C.ID, 0, NULL, C.ID, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL from Contact as C
-			union all
-			select R.ID, 1, C.ID, NULL, R.ID, NULL, NULL, NULL, NULL, NULL, NULL, NULL from Requestor as R
-				join Contact as C on R.ContactID = C.ID
-			union all
-			select BR.ID, 2, C.ID, NULL, NULL, BR.ID, NULL, NULL, NULL, NULL, NULL, NULL from BillableRequestor as BR
-				join Contact as C on BR.ContactID = C.ID
-			union all
-			select E.ID,  3, C.ID, NULL, NULL, NULL, E.ID, NULL, NULL, NULL, NULL, NULL from Employee as E
-				join Contact as C on E.ContactID = C.ID
-			union all
-			select V.ID,  4, C.ID, NULL, NULL, NULL, NULL, V.ID, NULL, NULL, NULL, NULL from Vendor as V
-				join Contact as C on V.SalesContactID = C.ID
-				where (V.ServiceContactID IS NULL or V.ServiceContactID &lt;&gt; C.ID) and (V.PayablesContactID IS NULL or V.PayablesContactID &lt;&gt; C.ID)
-			union all
-			select V.ID,  5, C.ID, NULL, NULL, NULL, NULL, V.ID, NULL, NULL, NULL, NULL from Vendor as V
-				join Contact as C on V.ServiceContactID = C.ID
-				where (V.SalesContactID IS NULL or V.SalesContactID &lt;&gt; C.ID) and (V.PayablesContactID IS NULL or V.PayablesContactID &lt;&gt; C.ID)
-			union all
-			select V.ID,  6, C.ID, NULL, NULL, NULL, NULL, V.ID, NULL, NULL, NULL, NULL from Vendor as V
-				join Contact as C on V.PayablesContactID = C.ID
-				where (V.SalesContactID IS NULL or V.SalesContactID &lt;&gt; C.ID) and (V.ServiceContactID IS NULL or V.ServiceContactID &lt;&gt; C.ID)
-			union all
-			select V.ID,  7, C.ID, NULL, NULL, NULL, NULL, V.ID, NULL, NULL, NULL, NULL from Vendor as V
-				join Contact as C on V.SalesContactID = C.ID and V.ServiceContactID = C.ID 
-				where V.PayablesContactID IS NULL or V.PayablesContactID &lt;&gt; C.ID
-			union all
-			select V.ID,  8, C.ID, NULL, NULL, NULL, NULL, V.ID, NULL, NULL, NULL, NULL from Vendor as V
-				join Contact as C on V.SalesContactID = C.ID and V.PayablesContactID = C.ID
-				where V.ServiceContactID IS NULL or V.ServiceContactID &lt;&gt; C.ID
-			union all
-			select V.ID,  9, C.ID, NULL, NULL, NULL, NULL, V.ID, NULL, NULL, NULL, NULL from Vendor as V
-				join Contact as C on V.ServiceContactID = C.ID and V.PayablesContactID = C.ID
-				where V.SalesContactID IS NULL or V.SalesContactID &lt;&gt; C.ID
-			union all
-			select V.ID, 10, C.ID, NULL, NULL, NULL, NULL, V.ID, NULL, NULL, NULL, NULL from Vendor as V
-				join Contact as C on V.SalesContactID = C.ID and V.ServiceContactID = C.ID and V.PayablesContactID = C.ID
-			union all
-			select RA.ID, 11, C.ID, NULL, NULL, NULL, NULL, NULL, RA.ID, NULL, NULL, NULL from RequestAssignee as RA
-				join Contact as C on RA.ContactID = C.ID
-			union all
-			select WA.ID, 12, C.ID, NULL, NULL, NULL, NULL, NULL, NULL, WA.ID, NULL, NULL from WorkOrderAssignee as WA
-				join Contact as C on WA.ContactID = C.ID
-			union all
-			select PA.ID, 13, C.ID, NULL, NULL, NULL, NULL, NULL, NULL, NULL, PA.ID, NULL from PurchaseOrderAssignee as PA
-				join Contact as C on PA.ContactID = C.ID
-			union all
-			select U.ID, 14, C.ID, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, U.ID from [User] as U
-				join Contact as C on U.ContactID = C.ID
-		</extension>
-		<extension name="dependson">Contact</extension>
-		<extension name="dependson">Requestor</extension>
-		<extension name="dependson">BillableRequestor</extension>
-		<extension name="dependson">Employee</extension>
-		<extension name="dependson">Vendor</extension>
-		<extension name="dependson">RequestAssignee</extension>
-		<extension name="dependson">WorkOrderAssignee</extension>
-		<extension name="dependson">PurchaseOrderAssignee</extension>
-		<extension name="dependson">User</extension>
-	</table>
+		select R.ID, R.ContactID, R.ID, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+		  from Requestor as R
+	  union all
+		select BR.ID, BR.ContactID, NULL, BR.ID, NULL, NULL, NULL, NULL, NULL, NULL
+		  from BillableRequestor as BR
+	  union all
+		select E.ID, E.ContactID, NULL, NULL, E.ID, NULL, NULL, NULL, NULL, NULL
+		  from Employee as E
+	  union all
+	  (
+		  select V.ID, V.SalesContactID, NULL, NULL, NULL, V.ID, NULL, NULL, NULL, NULL
+			from Vendor as V
+			where V.SalesContactID is not null
+		union -- distinct
+		  select V.ID, V.ServiceContactID, NULL, NULL, NULL, V.ID, NULL, NULL, NULL, NULL
+			from Vendor as V
+			where V.ServiceContactID is not null
+		union -- distinct
+		  select V.ID, V.PayablesContactID, NULL, NULL, NULL, V.ID, NULL, NULL, NULL, NULL
+			from Vendor as V
+			where V.PayablesContactID is not null
+	  )
+	  union all
+		select RA.ID, RA.ContactID, NULL, NULL, NULL, NULL, RA.ID, NULL, NULL, NULL
+		  from RequestAssignee as RA
+	  union all
+		select WA.ID, WA.ContactID, NULL, NULL, NULL, NULL, NULL, WA.ID, NULL, NULL
+		  from WorkOrderAssignee as WA
+	  union all
+		select PA.ID, PA.ContactID, NULL, NULL, NULL, NULL, NULL, NULL, PA.ID, NULL
+		  from PurchaseOrderAssignee as PA
+	  union all
+		select U.ID, U.ContactID, NULL, NULL, NULL, NULL, NULL, NULL, NULL, U.ID
+		  from [User] as U
+	</extension>
+	<extension name="dependson">Requestor.Id</extension>  <!-- to prevent augmenting with all fields being dependencies -->
+	<extension name="dependson">Requestor</extension>
+	<extension name="dependson">BillableRequestor</extension>
+	<extension name="dependson">Employee</extension>
+	<extension name="dependson">Vendor</extension>
+	<extension name="dependson">RequestAssignee</extension>
+	<extension name="dependson">WorkOrderAssignee</extension>
+	<extension name="dependson">PurchaseOrderAssignee</extension>
+	<extension name="dependson">User</extension>
+  </table>
   <table name="Contact"/>
   <table name="Requestor"/>
   <table name="User"/>

@@ -11,7 +11,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				return pPreferredLanguage;
 			}
 		}
-		private System.Globalization.CultureInfo pPreferredLanguage;
+		private readonly System.Globalization.CultureInfo pPreferredLanguage;
 		public TextNotificationEmail(System.Globalization.CultureInfo preferredLanguage) {
 			pPreferredLanguage = preferredLanguage;
 			body = new StringBuilder();

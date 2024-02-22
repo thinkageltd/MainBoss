@@ -178,7 +178,7 @@ namespace Thinkage.MainBoss.Controls
 					throw new Thinkage.Libraries.GeneralException(KB.K("At least one of the selected licenses has a License Id different from the new Named User License {0}"), newNamedUserLicense.LicenseStr);
 
 				// Note our updates go to the Original existing DBClient DB for the license table.
-				using (DBDataSet dsUpdate = DBDataSet.New(dsMB.Schema.T.License.Database, Browser.Session.ExistingDB)) {
+				using (var dsUpdate = new dsMB(Browser.Session.ExistingDB)) {
 					dsUpdate.EnforceConstraints = false;
 					dsUpdate.DataSetName = KB.I("LicenseUpdaterBrowseLogic.dsUpdate");
 					// Build a list of the current licenses to prepare to make decision on resolution. Since the licenses are unique we can use them for 'ids' in locating records later
@@ -188,7 +188,7 @@ namespace Thinkage.MainBoss.Controls
 					List<License> AddThese = new List<License>();
 					// get the existing licenses in the database
 					dsUpdate.DB.ViewAdditionalRows(dsUpdate, dsMB.Schema.T.License); // fetch all the current licenses
-					foreach (dsMB.LicenseRow lr in dsUpdate.GetDataTable(dsMB.Schema.T.License)) {
+					foreach (dsMB.LicenseRow lr in dsUpdate.GetDataTable(dsMB.Schema.T.License).Rows) {
 						try {
 							existingLicenses.Add(new License(lr.F.License));
 						}
@@ -308,13 +308,13 @@ namespace Thinkage.MainBoss.Controls
 						return;
 					// Change the License table dataset to reflect our changes and save to database
 					dsMB.LicenseDataTable licTable = (dsMB.LicenseDataTable)dsUpdate.GetDataTable(dsMB.Schema.T.License);
-					foreach (dsMB.LicenseRow rowToDelete in licTable) {
+					foreach (dsMB.LicenseRow rowToDelete in licTable.Rows) {
 						if (DeleteThese.Any<License>(l => l.LicenseStr.Equals(rowToDelete.F.License,StringComparison.InvariantCultureIgnoreCase)))
 							rowToDelete.Delete();
 					}
 					// Add the new ones
 					foreach (License l in AddThese) {
-						Thinkage.MainBoss.Database.DatabaseCreation.SetLicenseRow(licTable.AddNewLicenseRow(), l);
+						Thinkage.MainBoss.Database.DatabaseCreation.SetLicenseRow(licTable.AddNewRow(), l);
 					}
 					ServerExtensions.UpdateOptions updateOptions = ServerExtensions.UpdateOptions.Normal;
 					for (; ; ) {
@@ -429,6 +429,8 @@ namespace Thinkage.MainBoss.Controls
 					throw new NotImplementedException();
 				}
 			}
+
+			public string DatabaseConnectionString => throw new NotImplementedException();
 			#endregion
 		}
 		#endregion

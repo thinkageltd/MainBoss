@@ -12,6 +12,8 @@ using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.Libraries.XAF.UI;
 using Thinkage.MainBoss.Controls.Resources;
 using Thinkage.MainBoss.Database;
+using static Thinkage.MainBoss.Database.DatabaseEnums;
+using System.CodeDom;
 
 namespace Thinkage.MainBoss.Controls {
 	/// <summary>
@@ -20,8 +22,34 @@ namespace Thinkage.MainBoss.Controls {
 	public class TISchedule : TIGeneralMB3 {
 		public static EnumValueTextRepresentations UnitMaintenancePlanInhibitEnumText = EnumValueTextRepresentations.NewForBool(KB.K("Unit Maintenance Plan Enabled"), null, KB.K("Unit Maintenance Plan Inhibited"), null);
 		public static EnumValueTextRepresentations DeferInhibitEnumText = EnumValueTextRepresentations.NewForBool(KB.K("Defer"), null, KB.K("Inhibit"), null);
+		#region View Record Types
+		#region - PMGenerationDetailAndScheduledWorkOrderAndLocation types
+		public enum PMGenerationDetailAndScheduledWorkOrderAndLocation {
+			PostalAddress,
+			Unit,
+			PermanentStorage,
+			PlainRelativeLocation,
+			ScheduledWorkOrder
+			// There are other views but no references to them.
+		}
+		#endregion
+		#region - CommittedPMGenerationDetailAndPMGenerationBatch types
+		public enum CommittedPMGenerationDetailAndPMGenerationBatch {
+			PMGenerationBatch,
+			DispositionAfterSchedulingPeriod,
+			Deferred,
+			PredictedWorkOrder,
+			Error,
+			ErrorMakingWorkOrder,
+			MakeWorkOrder,
+			MakeUnscheduledWorkOrder,
+			Inhibited,
+			ManualReschedule,
+			MakeSharedWorkOrder
+		}
+		#endregion
+		#endregion
 		#region NodeIds
-		private static readonly object RescheduleDateId = KB.I("rescheduleDateId");
 		private static readonly object SeasonStartId = KB.I("SeasonStartId");
 		private static readonly object SeasonEndId = KB.I("SeasonEndId");
 		private static readonly object MonId = KB.I("MonId");
@@ -34,6 +62,7 @@ namespace Thinkage.MainBoss.Controls {
 		private static readonly object MaintenancePlansId = KB.I("MaintenancePlansId");
 		#endregion
 		private static readonly Key SetScheduleBasisCommandText = KB.K("Change Schedule Basis");
+		private static readonly Key ValidateScheduledWorkOrderCommandText = KB.K("Validate");
 		#region SeasonStartEndCheck
 		private static Check SeasonStartEndCheck(object startNodeId, object endNodeId) {
 			return new Check2<TimeSpan?, TimeSpan?>(delegate (TimeSpan? start, TimeSpan? end) {
@@ -86,7 +115,7 @@ namespace Thinkage.MainBoss.Controls {
 		private static DelayedCreateTbl PMGenerationDetailPredictedWorkOrderPanelTbl;
 		private static DelayedCreateTbl PMGenerationDetailErrorPanelTbl;
 		private static DelayedCreateTbl PMGenerationDetailErrorMakingWorkOrderPanelTbl;
-		private static DelayedCreateTbl PMGenerationDetailMakeWorkOrderPanelTbl;
+		private static DelayedCreateTbl PMGenerationDetailUncommittedMakeWorkOrderPanelTbl;
 		private static DelayedCreateTbl PMGenerationDetailCommittedMakeWorkOrderPanelTbl;
 		private static DelayedCreateTbl PMGenerationDetailMakeUnscheduledWorkOrderPanelTbl;
 		private static DelayedCreateTbl PMGenerationDetailInhibitedPanelTbl;
@@ -112,6 +141,7 @@ namespace Thinkage.MainBoss.Controls {
 		#region Periodicity Interval
 		// this table is here so the String harvestor will define labels for the Enum values of DatabaseEnums.CalendarUnit.
 		// TODO: Make harvester recognize EnumValueTextRepresentations defined with the EnumTypeInfo signature and extract the values of the Enum within the context specified to EnumValueTextRepresentations to eliminate this array.
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "String harvester needs this")]
 		private static readonly Key[] CalendarUnitLabels = new Key[]
 		{
 			KB.K("Months"),
@@ -164,7 +194,7 @@ namespace Thinkage.MainBoss.Controls {
 		);
 		#endregion
 		#region Tbl Creation for PMGenerationBatch records
-		private static SqlExpression AllNonHiddenScheduledWorkOrders = new SqlExpression(dsMB.Path.T.ScheduledWorkOrder.F.Hidden).IsNull();
+		private static readonly SqlExpression AllNonHiddenScheduledWorkOrders = new SqlExpression(dsMB.Path.T.ScheduledWorkOrder.F.Hidden).IsNull();
 		private static TblUnboundControlNode MultiplePlanPickerControl(SqlExpression filter = null) {
 			var ecolArgs = new List<ECol.ICtorArg> {
 				ECol.OmitInUpdateAccess,
@@ -207,9 +237,19 @@ namespace Thinkage.MainBoss.Controls {
 			};
 			appInstance.GetInterface<ITblDrivenApplication>().PerformMultiEdit(logic.CommonUI.UIFactory, logic.DB, PMGenerationBatchChangeMultipleSchedulingBasisEditTbl,
 				EdtMode.New,
-				new[] { new object[] { } },
+				new[] { Array.Empty<object>() },
 				ApplicationTblDefaults.NoModeRestrictions,
 				new[] { initList },
+				((ICommonUI)logic.CommonUI).Form, logic.CallEditorsModally,
+				null);
+		}
+		static void CallValidationForm(CommonLogic logic, Set<object> planSelection) {
+			ITblDrivenApplication appInstance = Libraries.Application.Instance.GetInterface<ITblDrivenApplication>();
+			appInstance.GetInterface<ITblDrivenApplication>().PerformMultiEdit(logic.CommonUI.UIFactory, logic.DB, ValidateMaintenencePlanEditLogic.ScheduledWorkOrderValidationTbl,
+				EdtMode.View,
+				planSelection.Select(id => new[] { id }).ToArray(),
+				ApplicationTblDefaults.NoModeRestrictions,
+				new[] { new List<TblActionNode>() },
 				((ICommonUI)logic.CommonUI).Form, logic.CallEditorsModally,
 				null);
 		}
@@ -393,21 +433,20 @@ namespace Thinkage.MainBoss.Controls {
 			});
 			DefineBrowseTbl(dsMB.Schema.T.Periodicity, delegate () {
 				return new CompositeTbl(dsMB.Schema.T.Periodicity, TId.Period,
-								new Tbl.IAttr[] {
-									SchedulingGroup,
-									new BTbl(
-										BTbl.ListColumn(dsMB.Path.T.Periodicity.F.Interval),
-										BTbl.ListColumn(dsMB.Path.T.Periodicity.F.CalendarUnit),
-										BTbl.ListColumn(dsMB.Path.T.Periodicity.F.MeterClassID.F.Code)
-									)
-								},
-								null,
-								new CompositeView(meterPeriodTbl, dsMB.Path.T.Periodicity.F.Id,
-									CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.Periodicity.F.MeterClassID).IsNotNull())
-								),
-								new CompositeView(calendarPeriodTbl, dsMB.Path.T.Periodicity.F.Id,
-									CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.Periodicity.F.MeterClassID).IsNull())
-								)
+					new Tbl.IAttr[] {
+						SchedulingGroup,
+						new BTbl(
+							BTbl.ListColumn(dsMB.Path.T.Periodicity.F.Interval),
+							BTbl.ListColumn(dsMB.Path.T.Periodicity.F.CalendarUnit),
+							BTbl.ListColumn(dsMB.Path.T.Periodicity.F.MeterClassID.F.Code)
+						)
+					},
+					CompositeView.ChangeEditTbl(meterPeriodTbl,
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.Periodicity.F.MeterClassID).IsNotNull())
+					),
+					CompositeView.ChangeEditTbl(calendarPeriodTbl,
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.Periodicity.F.MeterClassID).IsNull())
+					)
 				);
 			});
 			// This Tbl is purely for export/import of Timing Periodicity records. The Calendar Unit field is exported/imported to define the type of interval
@@ -434,8 +473,7 @@ namespace Thinkage.MainBoss.Controls {
 						new Tbl.IAttr[] {
 							new BTbl(BTbl.SetNoRefreshCommand(), BTbl.SetTreatAllRecordsAsActive(true)),
 						},
-						null,
-						CompositeView.ChangeEditTbl(PMGenerationDetailCommittedMakeWorkOrderPanelTbl,                                                           // MakeWorkOrder
+						CompositeView.ChangeEditTbl(PMGenerationDetailCommittedMakeWorkOrderPanelTbl,                                                           // MakeWorkOrder or MakeSharedWorkOrder
 							ViewPMGenerationDetailWorkOrderVerb(dsMB.Path.T.PMGenerationDetail),
 							CompositeView.RecognizeByValidEditLinkage(), CompositeView.AddRecognitionCondition(
 								new SqlExpression(dsMB.Path.T.PMGenerationDetail.F.DetailType).Eq(SqlExpression.Constant((int)DatabaseEnums.PMType.MakeWorkOrder))
@@ -447,7 +485,13 @@ namespace Thinkage.MainBoss.Controls {
 						CompositeView.ChangeEditTbl(PMGenerationDetailInhibitedPanelTbl,                                                                        // Inhibited
 							CompositeView.RecognizeByValidEditLinkage(), CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetail.F.DetailType).Eq(SqlExpression.Constant((int)DatabaseEnums.PMType.Inhibited)))),
 						CompositeView.ChangeEditTbl(PMGenerationDetailManualReschedulePanelTbl,                                                                 // ManualReschedule
-							CompositeView.RecognizeByValidEditLinkage(), CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetail.F.DetailType).Eq(SqlExpression.Constant((int)DatabaseEnums.PMType.ManualReschedule))))
+							CompositeView.RecognizeByValidEditLinkage(), CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetail.F.DetailType).Eq(SqlExpression.Constant((int)DatabaseEnums.PMType.ManualReschedule)))),
+						CompositeView.ChangeEditTbl(PMGenerationDetailPredictedWorkOrderPanelTbl,                                                                 // PredictedWorkOrder
+							CompositeView.RecognizeByValidEditLinkage(), CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetail.F.DetailType).Eq(SqlExpression.Constant((int)DatabaseEnums.PMType.PredictedWorkOrder)))),
+						CompositeView.ChangeEditTbl(PMGenerationDetailErrorPanelTbl,                                                                 // Error
+							CompositeView.RecognizeByValidEditLinkage(), CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetail.F.DetailType).Eq(SqlExpression.Constant((int)DatabaseEnums.PMType.Error)))),
+						CompositeView.ChangeEditTbl(PMGenerationDetailErrorMakingWorkOrderPanelTbl,                                                                 // ErrorMakingWorkOrder
+							CompositeView.RecognizeByValidEditLinkage(), CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetail.F.DetailType).Eq(SqlExpression.Constant((int)DatabaseEnums.PMType.ErrorMakingWorkOrder))))
 					);
 				}
 			);
@@ -457,13 +501,18 @@ namespace Thinkage.MainBoss.Controls {
 						TblFixedRecordTypeNode.New(),
 						TblColumnNode.New(dsMB.Path.T.ScheduledWorkOrder.F.WorkOrderTemplateID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.WorkOrderTemplate.F.Code)), ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.ScheduledWorkOrder.F.UnitLocationID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.Location.F.Code)), ECol.Normal),
+						TblColumnNode.New(dsMB.Path.T.ScheduledWorkOrder.F.InitialWOStatusID, DCol.Normal, ECol.Normal),
+						TblColumnNode.New(dsMB.Path.T.ScheduledWorkOrder.F.InitialWOComment, DCol.Normal, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.ScheduledWorkOrder.F.Inhibit, new DCol(Fmt.SetLabelPositioning(Fmt.LabelPositioning.BlankOnSide), Fmt.SetEnumText(UnitMaintenancePlanInhibitEnumText))),
 						TblColumnNode.New(dsMB.Path.T.ScheduledWorkOrder.F.Inhibit, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.ScheduledWorkOrder.F.SlackDays, DCol.Normal, ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.ScheduledWorkOrder.F.ScheduleID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.Schedule.F.Code)), ECol.Normal),
 						TblColumnNode.New(dsMB.Path.T.ScheduledWorkOrder.F.RescheduleBasisAlgorithm, DCol.Normal, ECol.Normal),
-						TblGroupNode.New(dsMB.Path.T.ScheduledWorkOrder.F.CurrentPMGenerationDetailID, new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-							//TblColumnNode.NewBrowsette(detailSingleRecordBrowsetteTblCreator, dsMB.Path.T.ScheduledWorkOrder.F.CurrentPMGenerationDetailID, dsMB.Path.T.PMGenerationDetail.F.Id, DCol.Normal, ECol.Normal,
+						TblColumnNode.New(KB.K("Schedule Basis Date"),dsMB.Path.T.ScheduledWorkOrder.F.CurrentPMGenerationDetailID.F.ScheduleDate, DCol.Normal, ECol.AllReadonly),
+						TblColumnNode.New(KB.K("Last Generation"),dsMB.Path.T.ScheduledWorkOrder.F.LastPMGenerationDetailID.F.PMGenerationBatchID.F.EntryDate, DCol.Normal, ECol.AllReadonly),
+						TblColumnNode.New(dsMB.Path.T.ScheduledWorkOrder.F.LastPMGenerationDetailID.F.DetailType,DCol.Normal, ECol.AllReadonly),
+						TblGroupNode.New(dsMB.Path.T.ScheduledWorkOrder.F.StatusPMGenerationDetailID, new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.AllReadonly },
+							//TblColumnNode.NewBrowsette(detailSingleRecordBrowsetteTblCreator, dsMB.Path.T.ScheduledWorkOrder.F.StatusPMGenerationDetailID, dsMB.Path.T.PMGenerationDetail.F.Id, DCol.Normal, ECol.Normal,
 							// The following filter is redundant (and always true) but it serves to elide the SWO information from the panel.
 							// TODO: This does not work; there is a known problem that additional filters such as this one are applied to the browser after panel and list-column creation
 							// and so elision does not work.
@@ -473,7 +522,7 @@ namespace Thinkage.MainBoss.Controls {
 							// This means the sql query will have redundant WHERE conditions.
 							// We set DCol.Layouts.VisibleInNonBrowsetteArea so the browsette is always created, even if the SWO browser is itself a browsette.
 							TblColumnNode.NewBrowsette(detailSingleRecordBrowsetteTblCreator, dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID, new DCol(DCol.LayoutOptions(DCol.Layouts.VisibleInNonBrowsetteArea)), ECol.Normal,
-								new BrowsetteFilterBind(nodeid, dsMB.Path.T.ScheduledWorkOrder.F.CurrentPMGenerationDetailID),
+								new BrowsetteFilterBind(nodeid, dsMB.Path.T.ScheduledWorkOrder.F.StatusPMGenerationDetailID),
 								Fmt.SetBrowserFilter(BTbl.TaggedEqFilter(dsMB.Path.T.PMGenerationDetail.F.Id, nodeid))
 							)
 						)
@@ -490,6 +539,7 @@ namespace Thinkage.MainBoss.Controls {
 							Fmt.SetBrowserFilter(BTbl.ExpressionFilter(new SqlExpression(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)DatabaseEnums.PMType.Error))
 								.Or(new SqlExpression(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.DetailType).Eq((int)DatabaseEnums.PMType.ErrorMakingWorkOrder))))))
 				);
+			;
 
 			DelayedCreateTbl swoEditTbl = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.ScheduledWorkOrder, TId.UnitMaintenancePlan,
@@ -504,13 +554,28 @@ namespace Thinkage.MainBoss.Controls {
 									EditLogic.StateTransitionCommand.NewSameTargetState(el,
 										null,	// TODO: Put a tip here ?? What about the others, which are (or will be) just AdditionalNewVerbs on browsers??
 										delegate() {
-											Set<object> callerSelection = new Set<object>(el.TInfo.Schema.InternalIdColumn.EffectiveType){
-											el.RootRowIDs[0]
-};
+											Set<object> callerSelection = new Set<object>(el.TInfo.Schema.InternalIdColumn.EffectiveType) { el.RootRowIDs[0] };
 											CallChangeScheduleBasisForm(el, callerSelection);
 										},
 										el.AllStatesWithExistingRecord.ToArray()))
-};
+								};
+								return group;
+							}
+						),
+						ETbl.CustomCommand(
+							// TODO: This might now work because we're calling what is built as an editor on the SWO from an editor for the same SWO.
+							delegate(EditLogic el) {
+								var group = new EditLogic.MutuallyExclusiveCommandSetDeclaration{
+								new EditLogic.CommandDeclaration(
+									ValidateScheduledWorkOrderCommandText,
+									EditLogic.StateTransitionCommand.NewSameTargetState(el,
+										null,	// TODO: Put a tip here ?? What about the others, which are (or will be) just AdditionalNewVerbs on browsers??
+										delegate() {
+											Set<object> callerSelection = new Set<object>(el.TInfo.Schema.InternalIdColumn.EffectiveType) { el.RootRowIDs[0] };
+											CallValidationForm(el, callerSelection);
+										},
+										el.AllStatesWithExistingRecord.ToArray()))
+								};
 								return group;
 							}
 						)
@@ -542,14 +607,55 @@ namespace Thinkage.MainBoss.Controls {
 									);
 								}
 							),
+							BTbl.AdditionalVerb(ValidateScheduledWorkOrderCommandText,
+								delegate(BrowseLogic browserLogic) {
+									return new CallDelegateCommand(	// TODO: Put a tip here ?? What about the others, which are (or will be) just AdditionalNewVerbs on browsers??
+										delegate() {
+											CallValidationForm(browserLogic, browserLogic.BrowseContextRecordIds);
+										}
+									);
+								}
+							),
 							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ScheduledWorkOrderReport))
 						)
 					},
-					null,
-					CompositeView.ChangeEditTbl(swoEditTbl),
+					CompositeView.ChangeEditTbl(swoEditTbl, NoNewMode,              // list processed in reverse order, default must be first
+						CompositeView.AddRecognitionCondition(SqlExpression.Constant(true)),
+						CompositeView.IdentificationOverride(TId.GenerationDetailSchedulingTerminated)
+					),
+					CompositeView.ChangeEditTbl(swoEditTbl, null,
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ScheduledWorkOrder.F.StatusPMGenerationDetailID).IsNull()),
+						CompositeView.UseSamePanelAs(0),
+						CompositeView.IdentificationOverride(TId.UnitMaintenancePlan)
+					),
+					CompositeView.ChangeEditTbl(swoEditTbl, NoNewMode,
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ScheduledWorkOrder.F.CurrentPMGenerationDetailID).IsNull()),
+						CompositeView.UseSamePanelAs(0),
+						CompositeView.IdentificationOverride(TId.UnitMaintenancePlanNeedScheduleBases)
+					),
+					CompositeView.ChangeEditTbl(swoEditTbl, NoNewMode,
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ScheduledWorkOrder.F.StatusPMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.MakeWorkOrder))),
+						CompositeView.UseSamePanelAs(0),
+						CompositeView.IdentificationOverride(TId.UnitMaintenancePlanWorkOrderOk)
+					),
+					CompositeView.ChangeEditTbl(swoEditTbl, NoNewMode,
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ScheduledWorkOrder.F.StatusPMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.Inhibited))),
+						CompositeView.UseSamePanelAs(0),
+						CompositeView.IdentificationOverride(TId.UnitMaintenancePlanWorkInhibited)
+					),
+					CompositeView.ChangeEditTbl(swoEditTbl, NoNewMode,
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ScheduledWorkOrder.F.StatusPMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.Error))),
+						CompositeView.UseSamePanelAs(0),
+						CompositeView.IdentificationOverride(TId.UnitMaintenancePlanWorkError)
+					),
+					CompositeView.ChangeEditTbl(swoEditTbl, NoNewMode,
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ScheduledWorkOrder.F.StatusPMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.ErrorMakingWorkOrder))),
+						CompositeView.UseSamePanelAs(0),
+						CompositeView.IdentificationOverride(TId.UnitMaintenancePlanWorkErrorMakingWorkorder)
+					),
 					CompositeView.ExtraNewVerb(CreateUnscheduledWorkOrderTbl,
 						NoNewMode,
-						CompositeView.ContextualInit(0, new CompositeView.Init(new PathTarget(dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID, 1), dsMB.Path.T.ScheduledWorkOrder.F.Id))
+						CompositeView.ContextualInit(new int[] { 0, 1, 2, 3, 4, 5, 6 }, new CompositeView.Init(new PathTarget(dsMB.Path.T.PMGenerationDetail.F.ScheduledWorkOrderID, 1), dsMB.Path.T.ScheduledWorkOrder.F.Id))
 					)
 				);
 			});
@@ -742,7 +848,6 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.ListColumn(dsMB.Path.T.PMGenerationBatch.F.EndDate)
 						)
 					},
-					null,
 					CompositeView.ChangeEditTbl(PMGenerationBatchEditTbl),
 					CompositeView.ExtraNewVerb(PMGenerationBatchChangeMultipleSchedulingBasisEditTbl, CompositeView.JoinedNewCommand(SetScheduleBasisCommandText))
 				);
@@ -903,9 +1008,10 @@ namespace Thinkage.MainBoss.Controls {
 				));
 			});
 			#endregion
-			#region -   PMGenerationDetailMakeWorkOrderPanelTbl
-			PMGenerationDetailMakeWorkOrderPanelTbl = new DelayedCreateTbl(delegate () {
-				return new Tbl(dsMB.Schema.T.PMGenerationDetail, TId.GenerationDetailMakeWorkOrder,
+			#region -   PMGenerationDetailUncommittedMakeWorkOrderPanelTbl
+			// This panel is used in MakeWorkOrder and MakeSHaredWorkOrder detail records within uncommitted batches, where no WO actually exists (yet)
+			PMGenerationDetailUncommittedMakeWorkOrderPanelTbl = new DelayedCreateTbl(delegate () {
+				return new Tbl(dsMB.Schema.T.PMGenerationDetail, TId.GenerationDetailUncommittedMakeWorkOrder,
 				new Tbl.IAttr[] {
 					SchedulingGroup,
 					new BTbl(
@@ -1068,6 +1174,8 @@ namespace Thinkage.MainBoss.Controls {
 			#endregion
 			#endregion
 			#region PMGenerationDetailAndScheduledWorkOrderAndLocation
+			// Note that MakeWorkOrder and MakeSharedWorkOrder have to variantes, one for uncommitted batches, where it just shows information on the
+			// proposed WO, and one for committed batches, where it shows the actual WO and allows you to view it.
 			DefineBrowseTbl(dsMB.Schema.T.PMGenerationDetailAndScheduledWorkOrderAndLocation, delegate () {
 				object localCodeColumnId = KB.I("Local Code Id");
 				return new CompositeTbl(dsMB.Schema.T.PMGenerationDetailAndScheduledWorkOrderAndLocation, TId.GenerationDetailWithContainers,
@@ -1075,99 +1183,147 @@ namespace Thinkage.MainBoss.Controls {
 						new BTbl(
 							BTbl.PerViewListColumn(CommonCodeColumnKey, localCodeColumnId),
 							BTbl.ListColumn(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.WorkStartDate),
-							BTbl.SetTreeStructure(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.ParentID, 6, uint.MaxValue, dsMB.Schema.T.PMGenerationDetailAndContainers, treatAllRecordsAsPrimary: true)
+							BTbl.SetTreeStructure(null, 6, uint.MaxValue, dsMB.Schema.T.PMGenerationDetailAndContainers, treatAllRecordsAsPrimary: true)
 						)
 					},
-					dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.TableEnum,
-					// Table #0 (PostalAddress)
+					// PostalAddress
 					new CompositeView(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.LocationID.F.PostalAddressID,
+						CompositeView.RecognizeByValidEditLinkage(),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PostalAddress.F.Code),
 						ReadonlyView,
 						CompositeView.ForceNotPrimary()),
-					// Table #1 (TemporaryStorage) - cannot be a container for a Unit
-					null,
-					// Table #2 (Unit)
+					// Unit
 					new CompositeView(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.LocationID.F.RelativeLocationID.F.UnitID,
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.Unit),
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.PermanentStorage),
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.PostalAddress),
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.PlainRelativeLocation),
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.SetParentPath(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.LocationID.F.RelativeLocationID.F.ContainingLocationID),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.Unit),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.PermanentStorage),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.PostalAddress),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.PlainRelativeLocation),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.Unit.F.RelativeLocationID.F.Code),
 						ReadonlyView,
 						CompositeView.ForceNotPrimary()),
-					// Table #3 (PermanentStorage)
+					// PermanentStorage
 					new CompositeView(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.LocationID.F.RelativeLocationID.F.PermanentStorageID,
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.Unit),
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.PermanentStorage),
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.PostalAddress),
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.PlainRelativeLocation),
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.SetParentPath(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.LocationID.F.RelativeLocationID.F.ContainingLocationID),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.Unit),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.PermanentStorage),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.PostalAddress),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.PlainRelativeLocation),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PermanentStorage.F.RelativeLocationID.F.Code),
 						ReadonlyView,
 						CompositeView.ForceNotPrimary()),
-					// Table #4 (PlainRelativeLocation)
+					// PlainRelativeLocation
 					new CompositeView(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.LocationID.F.RelativeLocationID.F.PlainRelativeLocationID,
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.PostalAddress),
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.PlainRelativeLocation),
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.SetParentPath(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.LocationID.F.RelativeLocationID.F.ContainingLocationID),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.PostalAddress),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.PlainRelativeLocation),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PlainRelativeLocation.F.RelativeLocationID.F.Code),
 						ReadonlyView,
 						CompositeView.ForceNotPrimary()),
-					// Table #5 (TemplateTemporaryStorage) - cannot be a container for a Unit
-					null,
-					// Table #6 (ScheduledWorkOrder)
+					// ScheduledWorkOrder
 					new CompositeView(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.ScheduledWorkOrderID,
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.Unit),
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.SetParentPath(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.ScheduledWorkOrderID.F.UnitLocationID),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.Unit),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.ScheduledWorkOrder.F.WorkOrderTemplateID.F.Code),
 						OnlyViewEdit),
 					// Remaining record types are readonly because the edit tbls do not have any ETbl.
-					new CompositeView(PMGenerationDetailSchedulingTerminatedPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,    // Table #7 (SchedulingTerminated)
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
+					// SchedulingTerminated
+					new CompositeView(PMGenerationDetailSchedulingTerminatedPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.SchedulingTerminated))),
+						CompositeView.SetParentPath(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.ScheduledWorkOrderID),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PMGenerationDetail.F.Sequence, SequenceFormat)),
-					new CompositeView(PMGenerationDetailDeferredPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,    // Table #8 (Deferred)
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
+					// Deferred
+					new CompositeView(PMGenerationDetailDeferredPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.Deferred))),
+						CompositeView.SetParentPath(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.ScheduledWorkOrderID),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PMGenerationDetail.F.Sequence, SequenceFormat)),
-					new CompositeView(PMGenerationDetailPredictedWorkOrderPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,  // Table #9 (Predicted Work Order)
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
+					// Predicted Work Order
+					new CompositeView(PMGenerationDetailPredictedWorkOrderPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.PredictedWorkOrder))),
+						CompositeView.SetParentPath(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.ScheduledWorkOrderID),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PMGenerationDetail.F.Sequence, SequenceFormat)),
-					new CompositeView(PMGenerationDetailErrorPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,   // Table #10 (Error)
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
+					// Error
+					new CompositeView(PMGenerationDetailErrorPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.Error))),
+						CompositeView.SetParentPath(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.ScheduledWorkOrderID),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PMGenerationDetail.F.Sequence, SequenceFormat)),
-					new CompositeView(PMGenerationDetailErrorMakingWorkOrderPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,    // Table #11 (ErrorMakingWorkOrder)
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
+					// ErrorMakingWorkOrder
+					new CompositeView(PMGenerationDetailErrorMakingWorkOrderPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.ErrorMakingWorkOrder))),
+						CompositeView.SetParentPath(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.ScheduledWorkOrderID),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PMGenerationDetail.F.Sequence, SequenceFormat)),
-					new CompositeView(PMGenerationDetailCommittedMakeWorkOrderPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,  // Table #12 (MakeWorkOrder committed)
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
-						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.TableEnum).Eq(SqlExpression.Constant((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.MakeWorkOrder))
-															.And(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.PMGenerationBatchID.F.SessionID).IsNull())),
+					// MakeWorkOrder committed
+					new CompositeView(PMGenerationDetailCommittedMakeWorkOrderPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.MakeWorkOrder))),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.PMGenerationBatchID.F.SessionID).IsNull()),
+						CompositeView.SetParentPath(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.ScheduledWorkOrderID),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
 						ViewPMGenerationDetailWorkOrderVerb(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.PathToReferencedRow),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PMGenerationDetail.F.Sequence, SequenceFormat)),
-					new CompositeView(PMGenerationDetailMakeUnscheduledWorkOrderPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,    // Table #13 (MakeUnscheduledWorkOrder)
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
+					// MakeWorkOrder uncommitted
+					new CompositeView(PMGenerationDetailUncommittedMakeWorkOrderPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.MakeWorkOrder))),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.PMGenerationBatchID.F.SessionID).IsNotNull()),
+						CompositeView.SetParentPath(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.ScheduledWorkOrderID),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
+						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PMGenerationDetail.F.Sequence, SequenceFormat)),
+					// MakeUnscheduledWorkOrder
+					new CompositeView(PMGenerationDetailMakeUnscheduledWorkOrderPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.MakeUnscheduledWorkOrder))),
+						CompositeView.SetParentPath(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.ScheduledWorkOrderID),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
 						ViewPMGenerationDetailWorkOrderVerb(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.PathToReferencedRow),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PMGenerationDetail.F.Sequence, SequenceFormat)),
-					new CompositeView(PMGenerationDetailInhibitedPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,   // Table #14 (Inhibited)
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
+					// Inhibited
+					new CompositeView(PMGenerationDetailInhibitedPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.Inhibited))),
+						CompositeView.SetParentPath(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.ScheduledWorkOrderID),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PMGenerationDetail.F.Sequence, SequenceFormat)),
-					new CompositeView(PMGenerationDetailManualReschedulePanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,    // Table #15 (ManualReschedule)
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
+					// ManualReschedule
+					new CompositeView(PMGenerationDetailManualReschedulePanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.ManualReschedule))),
+						CompositeView.SetParentPath(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.ScheduledWorkOrderID),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PMGenerationDetail.F.Sequence, SequenceFormat)),
-					new CompositeView(PMGenerationDetailCommittedMakeWorkOrderPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,  // Table #16 (MakeSharedWorkOrder committed)
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
-						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.TableEnum).Eq(SqlExpression.Constant((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.MakeSharedWorkOrder))
-															.And(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.PMGenerationBatchID.F.SessionID).IsNull())),
+					// MakeSharedWorkOrder committed
+					new CompositeView(PMGenerationDetailCommittedMakeWorkOrderPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.MakeSharedWorkOrder))),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.PMGenerationBatchID.F.SessionID).IsNull()),
+						CompositeView.SetParentPath(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.ScheduledWorkOrderID),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
 						ViewPMGenerationDetailWorkOrderVerb(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.PathToReferencedRow),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PMGenerationDetail.F.Sequence, SequenceFormat),
 						CompositeView.IdentificationOverride(TId.GenerationDetailCommittedMakeSharedWorkOrder)),
-					new CompositeView(PMGenerationDetailMakeWorkOrderPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,   // Table #12 (MakeWorkOrder uncommitted)
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
-						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.TableEnum).Eq(SqlExpression.Constant((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.MakeWorkOrder))
-															.And(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.PMGenerationBatchID.F.SessionID).IsNotNull())),
-						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PMGenerationDetail.F.Sequence, SequenceFormat)),
-					new CompositeView(PMGenerationDetailMakeWorkOrderPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,   // Table #16 (MakeSharedWorkOrder uncommitted)
-						CompositeView.ParentType((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
-						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.TableEnum).Eq(SqlExpression.Constant((int)ViewRecordTypes.PMGenerationDetailAndScheduledWorkOrderAndLocation.MakeSharedWorkOrder))
-															.And(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.PMGenerationBatchID.F.SessionID).IsNotNull())),
+					// MakeSharedWorkOrder uncommitted
+					new CompositeView(PMGenerationDetailUncommittedMakeWorkOrderPanelTbl, dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.MakeSharedWorkOrder))),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.PMGenerationBatchID.F.SessionID).IsNotNull()),
+						CompositeView.SetParentPath(dsMB.Path.T.PMGenerationDetailAndScheduledWorkOrderAndLocation.F.PMGenerationDetailID.F.ScheduledWorkOrderID),
+						CompositeView.ParentType((int)PMGenerationDetailAndScheduledWorkOrderAndLocation.ScheduledWorkOrder),
 						BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PMGenerationDetail.F.Sequence, SequenceFormat),
-						CompositeView.IdentificationOverride(TId.GenerationDetailMakeSharedWorkOrder))
+						CompositeView.IdentificationOverride(TId.GenerationDetailUncommittedMakeSharedWorkOrder))
 				);
 			});
 			#endregion
@@ -1180,44 +1336,74 @@ namespace Thinkage.MainBoss.Controls {
 							new BTbl(
 								BTbl.PerViewListColumn(dsMB.LabelKeyBuilder.K("Generation/Work Start Date"), generationOrWorkStartDateId),
 								BTbl.ListColumn(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.Sequence),	// note that because this field is numeric it sorts properly without the "Seq xxxxx" formatting.
-								BTbl.SetTreeStructure(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.ParentID, 2, 2, dsMB.Schema.T.CommittedPMGenerationDetailAndBatches, treatAllRecordsAsPrimary: true)
+								BTbl.SetTreeStructure(null, 2, 2, dsMB.Schema.T.CommittedPMGenerationDetailAndBatches, treatAllRecordsAsPrimary: true)
 							)
 						},
-						dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.TableEnum,
-						new CompositeView(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationBatchID,    // Table #0 (PMGenerationBatch)
+						new CompositeView(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationBatchID,    // PMGenerationBatch
+							CompositeView.RecognizeByValidEditLinkage(),
 							BTbl.PerViewColumnValue(generationOrWorkStartDateId, dsMB.Path.T.PMGenerationBatch.F.EntryDate),
 							CompositeView.EditorAccess(false, EdtMode.New)),
-						new CompositeView(PMGenerationDetailSchedulingTerminatedPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID,   // Table #1 (SchedulingTerminated)
-							CompositeView.ParentType((int)ViewRecordTypes.CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
+						new CompositeView(PMGenerationDetailSchedulingTerminatedPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID,   // SchedulingTerminated
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.SchedulingTerminated))),
+							CompositeView.SetParentPath(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.PMGenerationBatchID),
+							CompositeView.ParentType((int)CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
 							BTbl.PerViewColumnValue(generationOrWorkStartDateId, dsMB.Path.T.PMGenerationDetail.F.WorkStartDate)),
-						new CompositeView(PMGenerationDetailDeferredPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID,   // Table #2 (Deferred)
-							CompositeView.ParentType((int)ViewRecordTypes.CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
+						new CompositeView(PMGenerationDetailDeferredPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID,   // Deferred
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.Deferred))),
+							CompositeView.SetParentPath(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.PMGenerationBatchID),
+							CompositeView.ParentType((int)CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
 							BTbl.PerViewColumnValue(generationOrWorkStartDateId, dsMB.Path.T.PMGenerationDetail.F.WorkStartDate)),
-						new CompositeView(PMGenerationDetailPredictedWorkOrderPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID, // Table #3 (PredictedWorkOrder)
-							CompositeView.ParentType((int)ViewRecordTypes.CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
+						new CompositeView(PMGenerationDetailPredictedWorkOrderPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID, // PredictedWorkOrder
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.PredictedWorkOrder))),
+							CompositeView.SetParentPath(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.PMGenerationBatchID),
+							CompositeView.ParentType((int)CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
 							BTbl.PerViewColumnValue(generationOrWorkStartDateId, dsMB.Path.T.PMGenerationDetail.F.WorkStartDate)),
-						new CompositeView(PMGenerationDetailErrorPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID,  // Table #4 (Error)
-							CompositeView.ParentType((int)ViewRecordTypes.CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
+						new CompositeView(PMGenerationDetailErrorPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID,  // Error
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.Error))),
+							CompositeView.SetParentPath(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.PMGenerationBatchID),
+							CompositeView.ParentType((int)CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
 							BTbl.PerViewColumnValue(generationOrWorkStartDateId, dsMB.Path.T.PMGenerationDetail.F.WorkStartDate)),
-						new CompositeView(PMGenerationDetailErrorMakingWorkOrderPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID,   // Table #5 (ErrorMakingWorkOrder)
-							CompositeView.ParentType((int)ViewRecordTypes.CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
+						new CompositeView(PMGenerationDetailErrorMakingWorkOrderPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID,   // ErrorMakingWorkOrder
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.ErrorMakingWorkOrder))),
+							CompositeView.SetParentPath(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.PMGenerationBatchID),
+							CompositeView.ParentType((int)CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
 							BTbl.PerViewColumnValue(generationOrWorkStartDateId, dsMB.Path.T.PMGenerationDetail.F.WorkStartDate)),
-						new CompositeView(PMGenerationDetailCommittedMakeWorkOrderPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID, // Table #6 (MakeWorkOrder)
-							CompositeView.ParentType((int)ViewRecordTypes.CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
+						new CompositeView(PMGenerationDetailCommittedMakeWorkOrderPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID, // MakeWorkOrder
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.MakeWorkOrder))),
+							CompositeView.SetParentPath(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.PMGenerationBatchID),
+							CompositeView.ParentType((int)CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
 							ViewPMGenerationDetailWorkOrderVerb(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.PathToReferencedRow),
 							BTbl.PerViewColumnValue(generationOrWorkStartDateId, dsMB.Path.T.PMGenerationDetail.F.WorkStartDate)),
-						new CompositeView(PMGenerationDetailMakeUnscheduledWorkOrderPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID,   // Table #7 (MakeUnscheduledWorkOrder)
-							CompositeView.ParentType((int)ViewRecordTypes.CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
+						new CompositeView(PMGenerationDetailMakeUnscheduledWorkOrderPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID,   // MakeUnscheduledWorkOrder
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.MakeUnscheduledWorkOrder))),
+							CompositeView.SetParentPath(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.PMGenerationBatchID),
+							CompositeView.ParentType((int)CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
 							ViewPMGenerationDetailWorkOrderVerb(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.PathToReferencedRow),
 							BTbl.PerViewColumnValue(generationOrWorkStartDateId, dsMB.Path.T.PMGenerationDetail.F.WorkStartDate)),
-						new CompositeView(PMGenerationDetailInhibitedPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID,  // Table #8 (Inhibited)
-							CompositeView.ParentType((int)ViewRecordTypes.CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
+						new CompositeView(PMGenerationDetailInhibitedPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID,  // Inhibited
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.Inhibited))),
+							CompositeView.SetParentPath(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.PMGenerationBatchID),
+							CompositeView.ParentType((int)CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
 							BTbl.PerViewColumnValue(generationOrWorkStartDateId, dsMB.Path.T.PMGenerationDetail.F.WorkStartDate)),
-						new CompositeView(PMGenerationDetailManualReschedulePanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID,   // Table #9 (ManualReschedule)
-							CompositeView.ParentType((int)ViewRecordTypes.CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
+						new CompositeView(PMGenerationDetailManualReschedulePanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID,   // ManualReschedule
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.ManualReschedule))),
+							CompositeView.SetParentPath(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.PMGenerationBatchID),
+							CompositeView.ParentType((int)CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
 							BTbl.PerViewColumnValue(generationOrWorkStartDateId, dsMB.Path.T.PMGenerationDetail.F.WorkStartDate)),
-						new CompositeView(PMGenerationDetailCommittedMakeWorkOrderPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID, // Table #10 (MakeSharedWorkOrder)
-							CompositeView.ParentType((int)ViewRecordTypes.CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
+						new CompositeView(PMGenerationDetailCommittedMakeWorkOrderPanelTbl, dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID, // MakeSharedWorkOrder
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.DetailType).Eq(SqlExpression.Constant((int)PMType.MakeSharedWorkOrder))),
+							CompositeView.SetParentPath(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.F.PMGenerationBatchID),
+							CompositeView.ParentType((int)CommittedPMGenerationDetailAndPMGenerationBatch.PMGenerationBatch),
 							ViewPMGenerationDetailWorkOrderVerb(dsMB.Path.T.CommittedPMGenerationDetailAndPMGenerationBatch.F.PMGenerationDetailID.PathToReferencedRow),
 							BTbl.PerViewColumnValue(generationOrWorkStartDateId, dsMB.Path.T.PMGenerationDetail.F.WorkStartDate),
 							CompositeView.IdentificationOverride(TId.GenerationDetailCommittedMakeSharedWorkOrder))

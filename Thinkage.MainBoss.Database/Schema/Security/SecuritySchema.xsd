@@ -105,6 +105,7 @@
 		<!-- These correspond to the Right members of MB3RootRights.ActionGroupClass -->
 		<restriction base="string">
 			<enumeration value="UpgradeDatabase"/>
+      <enumeration value="MergeContacts"/>
 			<enumeration value="EditAccounting"/>
 			<enumeration value="ViewAccounting"/>
 			<enumeration value="Customize"/>

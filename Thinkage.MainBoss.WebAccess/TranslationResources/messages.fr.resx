@@ -126,6 +126,12 @@
   <data name="dsMBLabel§Accounting Transaction" xml:space="preserve">
     <value>Transaction de comptabilité</value>
   </data>
+  <data name="dsMBLabel§AccountNumber" type="" mimetype="">
+    <value>Numéro de Compte</value>
+  </data>
+  <data name="dsMBLabel§AccountsPayable Cost Center" type="" mimetype="">
+    <value>Centre de coûts des comptes fournisseurs</value>
+  </data>
   <data name="dsMBLabel§Actual" xml:space="preserve">
     <value>Réel</value>
   </data>
@@ -163,15 +169,13 @@
     <value>Réel par Inside Job Correction</value>
   </data>
   <data name="dsMBLabel§ActualItem" type="" mimetype="">
-    <value>ActualItem</value>
-    <comment>New!</comment>
+    <value>Objet réel</value>
   </data>
   <data name="dsMBLabel§ActualItemLocation" xml:space="preserve">
-    <value>ActualItemLocation</value>
+    <value>Emplacement réel de l'article</value>
   </data>
   <data name="dsMBLabel§ActualQuantity" type="" mimetype="">
-    <value>ActualQuantity</value>
-    <comment>New!</comment>
+    <value>Quantité réelle</value>
   </data>
   <data name="dsMBLabel§AD Reference" type="" mimetype="">
     <value>Référence AD</value>
@@ -183,8 +187,7 @@
     <value>Address2</value>
   </data>
   <data name="dsMBLabel§Adjustment Code" type="" mimetype="">
-    <value>Adjustment Code</value>
-    <comment>New!</comment>
+    <value>Code de Réglage</value>
   </data>
   <data name="dsMBLabel§AffectsFuturePMGeneration" xml:space="preserve">
     <value>Affecte avenir PM génération</value>
@@ -205,8 +208,7 @@
     <value>Attachement</value>
   </data>
   <data name="dsMBLabel§Authentication Credential" type="" mimetype="">
-    <value>Authentication Credential</value>
-    <comment>New!</comment>
+    <value>Informations d'authentification</value>
   </data>
   <data name="dsMBLabel§Available" xml:space="preserve">
     <value>Disponible</value>
@@ -326,14 +328,13 @@
     <value>Coût exigé</value>
   </data>
   <data name="dsMBLabel§DemandItem" type="" mimetype="">
-    <value>DemandItem</value>
-    <comment>New!</comment>
+    <value>Article de Demande</value>
   </data>
   <data name="dsMBLabel§DemandLaborOutside" xml:space="preserve">
-    <value>DemandLaborOutside</value>
+    <value>Demande de travail à l'extérieur</value>
   </data>
   <data name="dsMBLabel§DemandOtherWorkOutside" xml:space="preserve">
-    <value>DemandOtherWorkOutside</value>
+    <value>Demande d'autres travaux à l'extérieur</value>
   </data>
   <data name="dsMBLabel§Depth" xml:space="preserve">
     <value>Profondeur</value>
@@ -411,8 +412,7 @@
     <value>De l'État</value>
   </data>
   <data name="dsMBLabel§GeneralLedgerAccount" type="" mimetype="">
-    <value>General Ledger Account</value>
-    <comment>New!</comment>
+    <value>Compte général</value>
   </data>
   <data name="dsMBLabel§GISLocation" xml:space="preserve">
     <value>SIG Lieu</value>
@@ -436,12 +436,10 @@
     <value>Article</value>
   </data>
   <data name="dsMBLabel§Item Activity" type="" mimetype="">
-    <value>Item Activity</value>
-    <comment>New!</comment>
+    <value>Activité de l'article</value>
   </data>
   <data name="dsMBLabel§Item Adjustment Code" type="" mimetype="">
-    <value>Item Adjustment Code</value>
-    <comment>New!</comment>
+    <value>Code d'ajustement d'article</value>
   </data>
   <data name="dsMBLabel§Item Category" xml:space="preserve">
     <value>Point Catégorie</value>
@@ -449,28 +447,26 @@
   <data name="dsMBLabel§Item Location" xml:space="preserve">
     <value>Point Localisation</value>
   </data>
-  <data name="dsMBLabel§ItemAdjustment" xml:space="preserve">
-    <value>ItemAdjustment</value>
+  <data name="dsMBLabel§Item Price" type="" mimetype="">
+    <value>Prix de l'article</value>
   </data>
-  <data name="dsMBLabel§ItemCategory" type="" mimetype="">
-    <value>ItemCategory</value>
-    <comment>New!</comment>
+  <data name="dsMBLabel§ItemAdjustment" xml:space="preserve">
+    <value>Réglage de l'article</value>
   </data>
   <data name="dsMBLabel§ItemIssue" xml:space="preserve">
-    <value>ItemIssue</value>
+    <value>Question d'article</value>
   </data>
   <data name="dsMBLabel§ItemLocation" xml:space="preserve">
     <value>Lieu</value>
   </data>
   <data name="dsMBLabel§ItemLocationID" type="" mimetype="">
-    <value>ItemLocationID</value>
-    <comment>New!</comment>
+    <value>ID de l'emplacement de l'article</value>
   </data>
   <data name="dsMBLabel§ItemPrice" xml:space="preserve">
-    <value>ItemPrice</value>
+    <value>Prix de l'article</value>
   </data>
   <data name="dsMBLabel§ItemTransfer" xml:space="preserve">
-    <value>ItemTransfer</value>
+    <value>Transfert d'article</value>
   </data>
   <data name="dsMBLabel§LastBackupDate" xml:space="preserve">
     <value>Dernière date de sauvegarde</value>
@@ -595,6 +591,12 @@
   <data name="dsMBLabel§Path" xml:space="preserve">
     <value>Chemin</value>
   </data>
+  <data name="dsMBLabel§Payables Contact" type="" mimetype="">
+    <value>Contact payables</value>
+  </data>
+  <data name="dsMBLabel§PaymentTerm" type="" mimetype="">
+    <value>Terme de paiement</value>
+  </data>
   <data name="dsMBLabel§Per Job Inside" xml:space="preserve">
     <value>Autres intérieur travail</value>
   </data>
@@ -611,8 +613,7 @@
     <value>Comte physique</value>
   </data>
   <data name="dsMBLabel§Physical Count Sheet Rank" type="" mimetype="">
-    <value>Physical Count Sheet Rank</value>
-    <comment>New!</comment>
+    <value>Nombre de feuilles de comptage physique</value>
   </data>
   <data name="dsMBLabel§Physical Count Void" xml:space="preserve">
     <value>Comte physique Void</value>
@@ -630,8 +631,7 @@
     <value>Adresse postale</value>
   </data>
   <data name="dsMBLabel§PostalAddress" type="" mimetype="">
-    <value>PostalAddress</value>
-    <comment>New!</comment>
+    <value>Adresse Postale</value>
   </data>
   <data name="dsMBLabel§PostalCode" xml:space="preserve">
     <value>Code postal</value>
@@ -667,8 +667,7 @@
     <value>Date d'achat</value>
   </data>
   <data name="dsMBLabel§PurchaseOrder" type="" mimetype="">
-    <value>PurchaseOrder</value>
-    <comment>New!</comment>
+    <value>Bon de Commande</value>
   </data>
   <data name="dsMBLabel§PurchaseOrderAssignee" xml:space="preserve">
     <value>PurchaseOrderAssignee</value>
@@ -680,12 +679,13 @@
     <value>PurchaseOrderAssignment</value>
   </data>
   <data name="dsMBLabel§PurchaseOrderState" type="" mimetype="">
-    <value>PurchaseOrderState</value>
-    <comment>New!</comment>
+    <value>Etat de la commande</value>
   </data>
   <data name="dsMBLabel§PurchaseOrderStateHistory" type="" mimetype="">
-    <value>PurchaseOrderStateHistory</value>
-    <comment>New!</comment>
+    <value>Historique d'état des bons de commande</value>
+  </data>
+  <data name="dsMBLabel§PurchaseOrderText" type="" mimetype="">
+    <value>Texte du bon de commande</value>
   </data>
   <data name="dsMBLabel§Quantity" xml:space="preserve">
     <value>Quantité</value>
@@ -697,10 +697,10 @@
     <value>Recevez Accusé</value>
   </data>
   <data name="dsMBLabel§ReceiveItemNonPO" xml:space="preserve">
-    <value>ReceiveItemNonPO</value>
+    <value>Recevoir un article</value>
   </data>
   <data name="dsMBLabel§ReceiveItemPO" xml:space="preserve">
-    <value>ReceiveItemPO</value>
+    <value>Recevoir un article (BC)</value>
   </data>
   <data name="dsMBLabel§ReceiveNotification" xml:space="preserve">
     <value>Avis de réception</value>
@@ -765,6 +765,9 @@
   <data name="dsMBLabel§Role" xml:space="preserve">
     <value>Rôle</value>
   </data>
+  <data name="dsMBLabel§Sales Contact" type="" mimetype="">
+    <value>Contact commercial</value>
+  </data>
   <data name="dsMBLabel§ScrapDate" xml:space="preserve">
     <value>Date de ferraille</value>
   </data>
@@ -777,9 +780,11 @@
   <data name="dsMBLabel§Serial" xml:space="preserve">
     <value>En série</value>
   </data>
+  <data name="dsMBLabel§Service Contact" type="" mimetype="">
+    <value>Contact de service</value>
+  </data>
   <data name="dsMBLabel§ServiceConfiguration" type="" mimetype="">
-    <value>ServiceConfiguration</value>
-    <comment>New!</comment>
+    <value>Configuration du service</value>
   </data>
   <data name="dsMBLabel§Shortage" xml:space="preserve">
     <value>Pénurie</value>
@@ -812,7 +817,7 @@
     <value>Sujet</value>
   </data>
   <data name="dsMBLabel§System Code" xml:space="preserve">
-    <value>System Code</value>
+    <value>Code Système</value>
   </data>
   <data name="dsMBLabel§Task" xml:space="preserve">
     <value>Tâche</value>
@@ -824,8 +829,7 @@
     <value>TemplateItemLocation</value>
   </data>
   <data name="dsMBLabel§TemplateTemporaryStorage" type="" mimetype="">
-    <value>TemplateTemporaryStorage</value>
-    <comment>New!</comment>
+    <value>Stockage temporaire des modèles</value>
   </data>
   <data name="dsMBLabel§Temporary Item Location" xml:space="preserve">
     <value>Temporaire document Localisation</value>
@@ -834,12 +838,10 @@
     <value>Stockage temporaire</value>
   </data>
   <data name="dsMBLabel§TemporaryItemLocation" type="" mimetype="">
-    <value>TemporaryItemLocation</value>
-    <comment>New!</comment>
+    <value>Emplacement temporaire de l'article</value>
   </data>
   <data name="dsMBLabel§TemporaryStorage" type="" mimetype="">
-    <value>TemporaryStorage</value>
-    <comment>New!</comment>
+    <value>Stockage temporaire</value>
   </data>
   <data name="dsMBLabel§TemporaryStorageActive" xml:space="preserve">
     <value>Stockage temporaire active</value>
@@ -895,17 +897,17 @@
   <data name="dsMBLabel§Vendor" xml:space="preserve">
     <value>Vendeur</value>
   </data>
+  <data name="dsMBLabel§VendorCategory" type="" mimetype="">
+    <value>Catégorie de vendeur</value>
+  </data>
   <data name="dsMBLabel§VoidCode" type="" mimetype="">
-    <value>VoidCode</value>
-    <comment>New!</comment>
+    <value>Code d'annulation</value>
   </data>
   <data name="dsMBLabel§Voided Physical Count" type="" mimetype="">
-    <value>Voided Physical Count</value>
-    <comment>New!</comment>
+    <value>Compte physique annulé</value>
   </data>
   <data name="dsMBLabel§Voiding Physical Count Void" type="" mimetype="">
-    <value>Voiding Physical Count Void</value>
-    <comment>New!</comment>
+    <value>Vider le compte physique</value>
   </data>
   <data name="dsMBLabel§VoidingItemCountValueVoidID" type="" mimetype="">
     <value>Annulation de la valeur du nombre d'éléments annulée</value>
@@ -917,14 +919,13 @@
     <value>Travail Catégorie</value>
   </data>
   <data name="dsMBLabel§Work Due Date" type="" mimetype="">
-    <value>Work Due Date</value>
-    <comment>New!</comment>
+    <value>Date d'échéance des travaux</value>
   </data>
   <data name="dsMBLabel§Work End Date" xml:space="preserve">
     <value>Travail Date de fin</value>
   </data>
   <data name="dsMBLabel§Work Order" xml:space="preserve">
-    <value>Work Order</value>
+    <value>Ordre de Travail</value>
   </data>
   <data name="dsMBLabel§Work Order Assignee" xml:space="preserve">
     <value>Travailler cessionnaire de la créance</value>
@@ -933,16 +934,16 @@
     <value>Ordre de Travail Attribution</value>
   </data>
   <data name="dsMBLabel§Work Order Expense Category" xml:space="preserve">
-    <value>Work Order catégorie de dépenses</value>
+    <value>Ordre de Travail catégorie de dépenses</value>
   </data>
   <data name="dsMBLabel§Work Order Expense Model" xml:space="preserve">
-    <value>Work Order frais Modèle</value>
+    <value>Ordre de Travail frais Modèle</value>
   </data>
   <data name="dsMBLabel§Work Order Expense Model Entry" xml:space="preserve">
-    <value>Work Order dépenses modèle d&amp;#39;entrée</value>
+    <value>Ordre de Travail dépenses modèle d&amp;#39;entrée</value>
   </data>
   <data name="dsMBLabel§Work Order Priority" xml:space="preserve">
-    <value>Travail par ordre de priorité</value>
+    <value>Ordre de Travail de priorité</value>
   </data>
   <data name="dsMBLabel§Work Order State" xml:space="preserve">
     <value>Ordre de Travail État</value>
@@ -960,8 +961,7 @@
     <value>Travail Date de début</value>
   </data>
   <data name="dsMBLabel§WorkOrder" type="" mimetype="">
-    <value>WorkOrder</value>
-    <comment>New!</comment>
+    <value>Ordre de Travail</value>
   </data>
   <data name="dsMBLabel§WorkOrderAssigneeStatistics" xml:space="preserve">
     <value>Ordre de Travail Statistiques du cessionnaire</value>
@@ -973,27 +973,34 @@
     <value>Ordre de Travail dépenses Modèle</value>
   </data>
   <data name="dsMBLabel§WorkOrderState" type="" mimetype="">
-    <value>WorkOrderState</value>
-    <comment>New!</comment>
+    <value>Ordre de Travail État</value>
   </data>
   <data name="dsMBLabel§WorkOrderStateHistory" type="" mimetype="">
-    <value>WorkOrderStateHistory</value>
-    <comment>New!</comment>
+    <value>Ordre de Travail État Historia</value>
   </data>
   <data name="dsMBLabel§WorkOrderTemplate" type="" mimetype="">
-    <value>WorkOrderTemplate</value>
-    <comment>New!</comment>
+    <value>Modèle d'ordre de travail</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§ Assignments" xml:space="preserve">
+    <value>Retour à la cession Statut</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§{0} from vendor {1}" type="" mimetype="">
+    <value>{0} du vendeur {1}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§A Web Access license is required to work with MainBoss." type="" mimetype="">
+    <value>Une licence Web Access est requise pour travailler avec MainBoss.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§A Web Request license is required to submit requests." type="" mimetype="">
+    <value>Une licence Web Request est requise pour soumettre des demandes..</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Activity" type="" mimetype="">
-    <value>Activity</value>
-    <comment>New!</comment>
+    <value>Activité</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Actual" xml:space="preserve">
     <value>Réel</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Actual Item" type="" mimetype="">
-    <value>Actual Item</value>
-    <comment>New!</comment>
+    <value>Objet réel</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Actual Quantity has been changed before your actualization submission" xml:space="preserve">
     <value>Actual quantité a été modifiée avant la soumission de votre actualisation</value>
@@ -1019,6 +1026,9 @@
   <data name="Thinkage.MainBoss.WebAccess§Add Remarks to Request {0}" xml:space="preserve">
     <value>Ajouter Remarques à la Demande de {0}</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§AddComment" type="" mimetype="">
+    <value>Ajouter un Commentaire</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§All History" xml:space="preserve">
     <value>Tous Histoire</value>
   </data>
@@ -1027,6 +1037,12 @@
   </data>
   <data name="Thinkage.MainBoss.WebAccess§An unexpected error occurred" xml:space="preserve">
     <value>Une erreur inattendue se est produite</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Apply" type="" mimetype="">
+    <value>Appliquer</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Apply is disabled." type="" mimetype="">
+    <value>Appliquer est désactivé.</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Assigned Requests" xml:space="preserve">
     <value>Demandes Assignées</value>
@@ -1037,11 +1053,17 @@
   <data name="Thinkage.MainBoss.WebAccess§Attachments" xml:space="preserve">
     <value>Pièces jointes</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§Back to Assignment Status" xml:space="preserve">
-    <value>Retour à la cession Statut</value>
+  <data name="Thinkage.MainBoss.WebAccess§Back to Inventory" type="" mimetype="">
+    <value>Retour à l'inventaire</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Back to List" xml:space="preserve">
     <value>Retour à la liste</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Back to Storeroom counting" type="" mimetype="">
+    <value>Retour au comptage</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Back to Storeroom list" type="" mimetype="">
+    <value>Retour à la liste des magasins</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Cancel" xml:space="preserve">
     <value>Annuler</value>
@@ -1080,28 +1102,22 @@
     <value>Confirmez votre adresse e-mail</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Correction of Actual Item" type="" mimetype="">
-    <value>Correction of Actual Item</value>
-    <comment>New!</comment>
+    <value>Correction de l'élément réel</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Correction of Item Transfer From" type="" mimetype="">
-    <value>Correction of Item Transfer From</value>
-    <comment>New!</comment>
+    <value>Correction de transfert d'article à partir de</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Correction of Item Transfer To" type="" mimetype="">
-    <value>Correction of Item Transfer To</value>
-    <comment>New!</comment>
+    <value>Correction du transfert d'article à</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Correction of ItemIssue" type="" mimetype="">
-    <value>Correction of ItemIssue</value>
-    <comment>New!</comment>
+    <value>Correction du problème de l'article</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Correction of Receive Item" type="" mimetype="">
-    <value>Correction of Receive Item</value>
-    <comment>New!</comment>
+    <value>Correction de l'objet de réception</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Correction of Receive Item With PO" type="" mimetype="">
-    <value>Correction of Receive Item With PO</value>
-    <comment>New!</comment>
+    <value>Correction de l'objet de réception avec commande d'achat</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Cost cannot be zero" xml:space="preserve">
     <value>Le coût ne peut pas être égal à zéro.</value>
@@ -1109,17 +1125,26 @@
   <data name="Thinkage.MainBoss.WebAccess§Cost must not exceed value on hand" xml:space="preserve">
     <value>Le coût ne doit pas excéder la valeur en main.</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§Count" type="" mimetype="">
+    <value>Compter</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§Create" xml:space="preserve">
     <value>Créer</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§Create a Request" type="" mimetype="">
+    <value>Créer une demande</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§Current History" xml:space="preserve">
-    <value>Current History</value>
+    <value>Histoire actuelle</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Current State" xml:space="preserve">
     <value>État actuel</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Current Status" xml:space="preserve">
     <value>Statut actuel</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Days since last Count" type="" mimetype="">
+    <value>Jours depuis le dernier compte</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Demanded" xml:space="preserve">
     <value>Exigé</value>
@@ -1129,10 +1154,6 @@
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Draft" xml:space="preserve">
     <value>Ébauche</value>
-  </data>
-  <data name="Thinkage.MainBoss.WebAccess§Effective Date" type="" mimetype="">
-    <value>Effective Date</value>
-    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Email Address" xml:space="preserve">
     <value>Adresse e-mail</value>
@@ -1153,49 +1174,49 @@
     <value>Erreur calcul du coût total</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§External tag '{0}' not found." type="" mimetype="">
-    <value>External tag '{0}' not found.</value>
-    <comment>New!</comment>
+    <value>La balise externe '{0}' est introuvable.</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§From Cost Center" type="" mimetype="">
-    <value>From Cost Center</value>
-    <comment>New!</comment>
+  <data name="Thinkage.MainBoss.WebAccess§Goto enter a request page." type="" mimetype="">
+    <value>Aller à une page de demande.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Goto the activity page for MainBoss Users." type="" mimetype="">
+    <value>Aller à la page d'activité pour les utilisateurs de MainBoss.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Goto the Web Access start page." type="" mimetype="">
+    <value>Aller à la page d'accueil de Web Access.</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§History" xml:space="preserve">
     <value>Histoire</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§Home" type="" mimetype="">
+    <value>Page d'accueil</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§In Progress" xml:space="preserve">
     <value>En Cours</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§Inventory" type="" mimetype="">
-    <value>Inventory</value>
-    <comment>New!</comment>
-  </data>
-  <data name="Thinkage.MainBoss.WebAccess§Item Activity" type="" mimetype="">
-    <value>Item Activity</value>
-    <comment>New!</comment>
+  <data name="Thinkage.MainBoss.WebAccess§Inventory Activity" type="" mimetype="">
+    <value>Activité d'inventaire</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Item Adjustment" type="" mimetype="">
-    <value>Item Adjustment</value>
-    <comment>New!</comment>
+    <value>Réglage de l'article</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Item assignments for {0}" type="" mimetype="">
+    <value>Affectations d'élément pour {0}</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Item Issue" type="" mimetype="">
-    <value>Item Issue</value>
-    <comment>New!</comment>
+    <value>Question d'article</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Item Transfer From" type="" mimetype="">
-    <value>Item Transfer From</value>
-    <comment>New!</comment>
+    <value>Transfert d'article à partir de</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Item Transfer To" type="" mimetype="">
-    <value>Item Transfer To</value>
-    <comment>New!</comment>
+    <value>Transfert d'article à</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§ItemAssignment '{0}' not found." type="" mimetype="">
-    <value>ItemAssignment '{0}' not found.</value>
-    <comment>New!</comment>
+    <value>Affectation d'élément '{0}' introuvable.</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§Login as MainBoss User to view your assignments" xml:space="preserve">
-    <value>Connectez-vous comme utilisateur MainBoss pour voir vos missions</value>
+  <data name="Thinkage.MainBoss.WebAccess§Login as MainBoss User to work with MainBoss" type="" mimetype="">
+    <value>Connectez-vous en tant qu'utilisateur MainBoss pour travailler avec MainBoss</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Logout" xml:space="preserve">
     <value>Déconnexion</value>
@@ -1212,6 +1233,9 @@
   <data name="Thinkage.MainBoss.WebAccess§New" xml:space="preserve">
     <value>Nouveau</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§New Count" type="" mimetype="">
+    <value>Nouveau comte</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§New Request" xml:space="preserve">
     <value>Nouvelle demande</value>
   </data>
@@ -1225,8 +1249,7 @@
     <value>Non affecté</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Not Specified" type="" mimetype="">
-    <value>Not Specified</value>
-    <comment>New!</comment>
+    <value>Non précisé</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Number" xml:space="preserve">
     <value>Numéro</value>
@@ -1234,19 +1257,20 @@
   <data name="Thinkage.MainBoss.WebAccess§on" xml:space="preserve">
     <value>sur</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§On Hand" type="" mimetype="">
+    <value>Inventaire en main</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§Open" xml:space="preserve">
     <value>Ouvert</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Physical Count" type="" mimetype="">
-    <value>Physical Count</value>
-    <comment>New!</comment>
+    <value>Comptage physique</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§Priority" xml:space="preserve">
-    <value>Priorité</value>
+  <data name="Thinkage.MainBoss.WebAccess§Physical Count for {0}" type="" mimetype="">
+    <value>Nombre physique pour {0}</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§Quantity" type="" mimetype="">
-    <value>Quantity</value>
-    <comment>New!</comment>
+  <data name="Thinkage.MainBoss.WebAccess§Provide access to inventory items and item assignments." type="" mimetype="">
+    <value>Fournir un accès aux articles d'inventaire et aux affectations d'articles.</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Quantity has been changed before your actualization submission" xml:space="preserve">
     <value>La quantité a été changé avant la soumission de votre actualisation</value>
@@ -1255,12 +1279,10 @@
     <value>La quantité ne doit pas excéder la quantité en main.</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Receive Item" type="" mimetype="">
-    <value>Receive Item</value>
-    <comment>New!</comment>
+    <value>Recevoir un article</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Receive Item With PO" type="" mimetype="">
-    <value>Receive Item With PO</value>
-    <comment>New!</comment>
+    <value>Recevoir un article avec BC</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Refresh" xml:space="preserve">
     <value>Rafraîchir</value>
@@ -1304,6 +1326,9 @@
   <data name="Thinkage.MainBoss.WebAccess§Save Remarks was unsuccessful. Please correct the errors and try again." xml:space="preserve">
     <value>Enregistrer Remarques a échoué. Se il vous plaît corriger les erreurs et d'essayer à nouveau.</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§See my Requests" type="" mimetype="">
+    <value>Voir mes demandes</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§Self Assign" xml:space="preserve">
     <value>Auto Assign</value>
   </data>
@@ -1319,8 +1344,17 @@
   <data name="Thinkage.MainBoss.WebAccess§Self assigned" xml:space="preserve">
     <value>Auto attribué</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§Show all request and work order assignments attributed to you, or to see unassigned work that you may assign to yourself." type="" mimetype="">
+    <value>Affiche toutes les assignations de demandes et de bons de travail qui vous sont attribuées ou pour voir le travail non assigné que vous pouvez vous attribuer.</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§Show on Map" xml:space="preserve">
     <value>Afficher sur la carte</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Show your inventory item list." type="" mimetype="">
+    <value>Afficher votre liste d'articles en inventaire.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Show your permanent storage locations." type="" mimetype="">
+    <value>Montrez vos emplacements de stockage permanents.</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Specifications" xml:space="preserve">
     <value>Caractéristiques</value>
@@ -1328,14 +1362,11 @@
   <data name="Thinkage.MainBoss.WebAccess§Start Date must be on or before End Date" xml:space="preserve">
     <value>Date de début doit être le ou avant la date de fin</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§State" xml:space="preserve">
-    <value>État</value>
-  </data>
   <data name="Thinkage.MainBoss.WebAccess§State history has changed before we could save your information. Please review any changed information and try again" xml:space="preserve">
     <value>l'histoire de l'État a changé avant que nous puissions enregistrer votre information. Se il vous plaît examiner toute information modifiée et essayez à nouveau</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§Status" xml:space="preserve">
-    <value>Statut</value>
+  <data name="Thinkage.MainBoss.WebAccess§Storerooms" type="" mimetype="">
+    <value>Débarras</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Subject" xml:space="preserve">
     <value>Objet</value>
@@ -1345,6 +1376,9 @@
   </data>
   <data name="Thinkage.MainBoss.WebAccess§The email address is not valid" xml:space="preserve">
     <value>L'adresse e-mail ne est pas valide</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§The item with Id '{0}' was not found." type="" mimetype="">
+    <value>L'article avec l'ID '{0}' n'a pas été trouvé.</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§The request comment history has been changed, possibly by someone else adding comments. Your remarks were not saved." xml:space="preserve">
     <value>L'histoire demande de commentaire a été changé, peut-être par quelqu'un d'autre l'ajout de commentaires. Vos remarques ne ont pas été enregistrés.</value>
@@ -1364,6 +1398,12 @@
   <data name="Thinkage.MainBoss.WebAccess§The work order with Id '{0}' was not found." xml:space="preserve">
     <value>L'Ordre de Travail avec l'ID '{0}' n'a pas été trouvé.</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§There are no item assignments for {0}" type="" mimetype="">
+    <value>Aucune affectation d'élément pour {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§There are no item assignments for this storeroom" type="" mimetype="">
+    <value>Il n'y a pas d'affectation d'articles pour ce magasin</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§There is no MainBoss Requestor with this email address." xml:space="preserve">
     <value>Il n'y a pas MainBoss demandeur avec cette adresse email.</value>
   </data>
@@ -1373,23 +1413,11 @@
   <data name="Thinkage.MainBoss.WebAccess§This would set quantity on hand to zero but leave non-zero value" xml:space="preserve">
     <value>Cette opération donnerait zéro comme quantité en main sans que la valeur soit aussi zéro.</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§To Cost Center" type="" mimetype="">
-    <value>To Cost Center</value>
-    <comment>New!</comment>
-  </data>
-  <data name="Thinkage.MainBoss.WebAccess§Total Cost" type="" mimetype="">
-    <value>Total Cost</value>
-    <comment>New!</comment>
-  </data>
   <data name="Thinkage.MainBoss.WebAccess§UnAssigned Requests" xml:space="preserve">
     <value>Les demandes non affectés</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§UnAssigned Work Orders" xml:space="preserve">
     <value>Ordres de Travail non affectés</value>
-  </data>
-  <data name="Thinkage.MainBoss.WebAccess§Unit Cost" type="" mimetype="">
-    <value>Unit Cost</value>
-    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Unit Location" xml:space="preserve">
     <value>Unité Localisation</value>
@@ -1403,12 +1431,23 @@
   <data name="Thinkage.MainBoss.WebAccess§View Assignment Status" xml:space="preserve">
     <value>Voir Attribution Statut</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§View Inventory" type="" mimetype="">
+    <value>Voir l'inventaire</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§View Item {0}" type="" mimetype="">
+    <value>Afficher l'élément {0}</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§View Item Assignment {0}" type="" mimetype="">
-    <value>View Item Assignment {0}</value>
-    <comment>New!</comment>
+    <value>Afficher l'affectation d'élément {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§View Item list" type="" mimetype="">
+    <value>Voir la liste des articles</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§View Request {0}" xml:space="preserve">
     <value>Voir demande {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§View Storeroom list" type="" mimetype="">
+    <value>Voir la liste des réserves</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§View Unit {0}" xml:space="preserve">
     <value>Voir Unité {0}</value>
@@ -1419,9 +1458,11 @@
   <data name="Thinkage.MainBoss.WebAccess§View your assignments" xml:space="preserve">
     <value>Voir vos missions</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§View your Inventory" type="" mimetype="">
+    <value>Voir votre inventaire</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§Void Physical Count" type="" mimetype="">
-    <value>Void Physical Count</value>
-    <comment>New!</comment>
+    <value>Annulez le compte physique</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Welcome MainBoss user" xml:space="preserve">
     <value>Bienvenue utilisateur MainBoss</value>
@@ -1431,6 +1472,9 @@
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Work Orders" xml:space="preserve">
     <value>Ordres de Travail</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Work with MainBoss" type="" mimetype="">
+    <value>Travailler avec MainBoss</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§You cannot add a comment to the request in its current state" xml:space="preserve">
     <value>Vous ne pouvez pas ajouter un commentaire à la demande dans son état actuel</value>
@@ -1442,15 +1486,13 @@
     <value>Vous ne pouvez pas ajouter une remarque à la demande dans son état actuel</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§You cannot change the request to Closed from its current state" type="" mimetype="">
-    <value>You cannot change the request to Closed from its current state</value>
-    <comment>New!</comment>
+    <value>Vous ne pouvez pas changer la demande en Fermé à partir de son état actuel</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§You cannot change the request to In Progress from its current state" xml:space="preserve">
     <value>Vous ne pouvez pas changer la demande de En cours de son état actuel</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§You cannot change the work order to Closed from its current state" type="" mimetype="">
-    <value>You cannot change the work order to Closed from its current state</value>
-    <comment>New!</comment>
+    <value>Vous ne pouvez pas changer l'ordre de travail en état fermé à partir de son état actuel</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§You cannot change the work order to Open from its current state" xml:space="preserve">
     <value>Vous ne pouvez pas changer l'Ordre de Travail pour ouvrir de son état actuel</value>
@@ -1470,17 +1512,20 @@
   <data name="Thinkage.MainBoss.WebAccess§You cannot submit requests." xml:space="preserve">
     <value>Vous ne pouvez pas soumettre des demandes.</value>
   </data>
+  <data name="Thinkage.MainBoss.WebAccess§You must be a MainBoss User to view Inventory" type="" mimetype="">
+    <value>Vous devez être un utilisateur MainBoss pour voir l'inventaire</value>
+  </data>
   <data name="Thinkage.MainBoss.WebAccess§You must be a MainBoss User to view your Assignment status" xml:space="preserve">
     <value>Vous devez être un utilisateur MainBoss pour afficher votre statut d'attribution</value>
   </data>
-  <data name="Thinkage.MainBoss.WebAccess§You require a Web Access license to view your MainBoss assignments." xml:space="preserve">
-    <value>Vous avez besoin d'une licence d'accès Web pour afficher vos assignations de MainBoss.</value>
-  </data>
-  <data name="Thinkage.MainBoss.WebAccess§You require a Web Requests license to submit requests." xml:space="preserve">
-    <value>Vous avez besoin d'un permis de demandes Web à soumettre des demandes.</value>
+  <data name="Thinkage.MainBoss.WebAccess§You need to authenticate as a MainBoss User to access this page." type="" mimetype="">
+    <value>Vous devez vous authentifier en tant qu'utilisateur MainBoss pour accéder à cette page.</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Your email address does not match that of the originator of this request." xml:space="preserve">
     <value>Votre adresse de messagerie ne correspond pas à celle de l'auteur de cette demande.</value>
+  </data>
+  <data name="Thinkage.MainBoss.WebAccess§Your pending requests" type="" mimetype="">
+    <value>Vos demandes en attente</value>
   </data>
   <data name="Thinkage.MainBoss.WebAccess§Your Remarks" xml:space="preserve">
     <value>Vos Remarques</value>

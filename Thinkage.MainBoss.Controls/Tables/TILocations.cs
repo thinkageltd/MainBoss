@@ -11,36 +11,38 @@ using Thinkage.Libraries.XAF.UI;
 using Thinkage.MainBoss.Controls.Resources;
 using Thinkage.MainBoss.Database;
 
-namespace Thinkage.MainBoss.Controls
-{
+namespace Thinkage.MainBoss.Controls {
 	/// <summary>
 	/// Register Tbl and/or DelayedCreateTbl objects for Location Browsers and pickers
 	/// </summary>
-	public class TILocations : TIGeneralMB3
-	{
-		#region Record-type providers
-		#region - AllLocationProvider
-		private static object[] AllLocationValues = new object[] {
-			(int)ViewRecordTypes.LocationDerivationsAndItemLocations.PostalAddress,
-			(int)ViewRecordTypes.LocationDerivationsAndItemLocations.TemporaryStorage,
-			(int)ViewRecordTypes.LocationDerivationsAndItemLocations.Unit,
-			(int)ViewRecordTypes.LocationDerivationsAndItemLocations.PermanentStorage,
-			(int)ViewRecordTypes.LocationDerivationsAndItemLocations.PlainRelativeLocation,
-			(int)ViewRecordTypes.LocationDerivationsAndItemLocations.PermanentItemLocation,
-			(int)ViewRecordTypes.LocationDerivationsAndItemLocations.TemporaryItemLocation,
-			(int)ViewRecordTypes.LocationDerivationsAndItemLocations.TemporaryItemLocationTemplate
-		};
-		private static Key[] AllLocationLabels = new Key[] {
-			KB.TOi(TId.PostalAddress),
-			KB.TOi(TId.TemporaryStorage),
-			KB.TOi(TId.Unit),
-			KB.TOi(TId.Storeroom),
-			KB.TOi(TId.SubLocation),
-			KB.TOi(TId.StoreroomAssignment),
-			KB.TOi(TId.TemporaryStorageAssignment),
-			KB.K("Task Temporary Storage Assignment")
-		};
-		public static EnumValueTextRepresentations AllLocationsProvider = new EnumValueTextRepresentations(AllLocationLabels, null, AllLocationValues);
+	public class TILocations : TIGeneralMB3 {
+		#region ViewRecordTypes
+		#region - LocationDerivations
+		public enum LocationDerivations {
+			PostalAddress = 0,
+			TemporaryStorage,
+			Unit,
+			PermanentStorage,
+			PlainRelativeLocation,
+			TemplateTemporaryStorage
+		}
+		#endregion
+		#region - LocationDerivationsAndItemLocations
+		/// <summary>
+		/// Types of Locations
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1027:Mark enums with FlagsAttribute", Justification = "Non contiguous values")]
+		public enum LocationDerivationsAndItemLocations {
+			PostalAddress,
+			TemporaryStorage,
+			Unit,
+			PermanentStorage,
+			PlainRelativeLocation,
+			TemplateTemporaryStorage,
+			PermanentItemLocation,
+			TemporaryItemLocation,
+			TemporaryItemLocationTemplate
+		}
 		#endregion
 		#endregion
 		#region Helpers for creating Location and ItemLocation composite Tbl's
@@ -72,7 +74,7 @@ namespace Thinkage.MainBoss.Controls
 			None
 		};
 		/// <summary>
-		/// Generate the composite view for a specific Location derivation for use in a LocationAndContainers composite tbl. Note that the distinction between Full and
+		/// Generate the composite view for a specific Location derivation for use in a composite tbl. Note that the distinction between Full and
 		/// ActiveOnly is done by our caller's choice of editTblCreator.
 		/// </summary>
 		/// <param name="derivedTable"></param>
@@ -81,158 +83,132 @@ namespace Thinkage.MainBoss.Controls
 		/// <returns></returns>
 		private static CompositeView LACLocationView(DBI_Table derivedTable, DelayedCreateTbl editTblCreator, CompositeView.ICtorArg codeColumnDefinition, ViewUse use, params CompositeView.ICtorArg[] attrsForFullUse) {
 			switch (use) {
-				case ViewUse.None:
-					return null;
+			case ViewUse.None:
+				return CompositeView.MakeFilteredOutView(new SqlExpression(dsMB.Schema.T.Location.PathToVariantIndirectDerived(derivedTable).PathToReferencedRowId).IsNotNull());
 
-				case ViewUse.Secondary:
-					attrsForFullUse = new CompositeView.ICtorArg[] {
+			case ViewUse.Secondary:
+				attrsForFullUse = new CompositeView.ICtorArg[] {
 						ReadonlyView,
 						CompositeView.ForceNotPrimary()
 					};
-					break;
-				case ViewUse.FullOnlyExisting:
-					attrsForFullUse = new CompositeView.ICtorArg[] {
+				break;
+			case ViewUse.FullOnlyExisting:
+				attrsForFullUse = new CompositeView.ICtorArg[] {
 						CompositeView.EditorAccess(false, EdtMode.New, EdtMode.Clone, EdtMode.EditDefault, EdtMode.ViewDefault)
 					};
-					break;
+				break;
 			}
 
 			List<CompositeView.ICtorArg> overallAttrs = new List<CompositeView.ICtorArg>(attrsForFullUse) {
+				CompositeView.RecognizeByValidEditLinkage(),
 				codeColumnDefinition
 			};
 			return new CompositeView(
 				// TODO: DBI_Path has a reorient from related table that changes the *start* of a path but no method to modify the *end* of a path to point to a related table.
 				// This would likely be called RetargetToRelatedTable. Even at that DBI_Path's Reorient etc doesn't like using paths that might be null (including derived-table linkages)
 				editTblCreator ?? TIGeneralMB3.FindDelayedEditTbl(derivedTable),
-				new DBI_PathToRow(dsMB.Path.T.LocationDerivations.F.LocationID.PathToReferencedRow, dsMB.Schema.T.Location.PathToVariantIndirectDerived(derivedTable)).PathToReferencedRowId,
+				dsMB.Schema.T.Location.PathToVariantIndirectDerived(derivedTable),
 				overallAttrs.ToArray());
 		}
-		#region Individual CompositeViews for the ItemLocationAndContainers tbls
-		// TODO: It may be possible to collapse these into a single method ILACItemLocationView similar to LACLocationView fold the remaining differences into the (only) call point.
-		#region Table 7 (TemplateItemLocation)
-		private static CompositeView ILACTemporaryTaskItemLocation(params CompositeView.ICtorArg[] otherParams)
-		{
-			List<CompositeView.ICtorArg> viewArgs = new List<CompositeView.ICtorArg>();
-			viewArgs.AddRange(new CompositeView.ICtorArg[] {
-				CompositeView.PathAlias(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ItemID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.ItemID),
-				CompositeView.PathAlias(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.LocationID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.LocationID),
-				// If the current selection happens to be a temporary storage location, helpfully pick it in the new ItemLocation editor.
-				CompositeView.ContextualInit(new int[] {
-					(int)ViewRecordTypes.LocationDerivationsAndItemLocations.Unit,
-					(int)ViewRecordTypes.LocationDerivationsAndItemLocations.PermanentStorage,
-					(int)ViewRecordTypes.LocationDerivationsAndItemLocations.PostalAddress,
-					(int)ViewRecordTypes.LocationDerivationsAndItemLocations.PlainRelativeLocation
-					},
-					dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.LocationID),
-				// If the current selection happens to be an ItemLocation in temporary storage, helpfully pick the same Item in the new ItemLocation editor.
-				CompositeView.ContextualInit((int)ViewRecordTypes.LocationDerivationsAndItemLocations.TemporaryItemLocationTemplate, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.TemplateItemLocationID.F.ItemLocationID.F.ItemID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.ItemID),
-				CompositeView.ContextualInit((int)ViewRecordTypes.LocationDerivationsAndItemLocations.TemporaryItemLocationTemplate, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.TemplateItemLocationID.F.ItemLocationID.F.LocationID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.LocationID),
-				CompositeView.ContextualInit((int)ViewRecordTypes.LocationDerivationsAndItemLocations.PermanentItemLocation, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID.F.ActualItemLocationID.F.ItemLocationID.F.ItemID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.ItemID),
-				CompositeView.ContextualInit((int)ViewRecordTypes.LocationDerivationsAndItemLocations.PermanentItemLocation, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID.F.ActualItemLocationID.F.ItemLocationID.F.LocationID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.LocationID)
-			});
-			if (otherParams != null)
-				viewArgs.AddRange(otherParams);
-			return new CompositeView(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.TemplateItemLocationID,
-						viewArgs.ToArray());
-		}
-		#endregion
-		#endregion
+
 		#region Overall CompositeTbls
 		internal static CompositeTbl LACComposite(Tbl.TblIdentification tableName, DBI_Table permission,
 			ViewUse postal, ViewUse temporaryStorage, ViewUse unit, ViewUse permanentStorage, ViewUse plainRelativeLocation, ViewUse templateTemporaryStorage, params BTbl.ICtorArg[] btblArgs) {
 			object localCodeColumnId = KB.I("Local Code Id");
 			List<BTbl.ICtorArg> btblAttrs = new List<BTbl.ICtorArg>(btblArgs) {
 				BTbl.PerViewListColumn(dsMB.LabelKeyBuilder.K("Code"), localCodeColumnId, NonPerViewColumn),
-				BTbl.ListColumn(dsMB.Path.T.LocationDerivations.F.LocationID.F.Code, BTbl.Contexts.ClosedPicker | BTbl.Contexts.SearchAndFilter),
-				BTbl.ListColumn(dsMB.Path.T.LocationDerivations.F.LocationID.F.Desc, NonPerViewColumn),
-				BTbl.SetTreeStructure(dsMB.Path.T.LocationDerivations.F.ContainingLocationID, 4, uint.MaxValue,
-				dsMB.Path.T.LocationContainment.F.ContainedLocationID.L.LocationDerivations.Id, dsMB.Path.T.LocationContainment.F.ContainingLocationID.L.LocationDerivations.Id)
+				BTbl.ListColumn(dsMB.Path.T.Location.F.Code, BTbl.Contexts.ClosedPicker | BTbl.Contexts.SearchAndFilter),
+				BTbl.ListColumn(dsMB.Path.T.Location.F.Desc, NonPerViewColumn),
+				BTbl.SetTreeStructure(null, 4, uint.MaxValue,
+					dsMB.Path.T.LocationContainment.F.ContainedLocationID.PathToReferencedRow, dsMB.Path.T.LocationContainment.F.ContainingLocationID.PathToReferencedRow)
 			};
 
 			List<Tbl.IAttr> attrs = new List<Tbl.IAttr> {
 				new BTbl(btblAttrs.ToArray())
 			};
 
-			if ( permission != null )
+			if (permission != null)
 				attrs.Add(new UseNamedTableSchemaPermissionTbl(permission));
 
 			var viewOnMapKey = KB.K("Show on map");
-			CompositeView.CreateVerbCommandDelegate viewOnMapDelegate =
-				delegate(BrowseLogic browserLogic, int viewIndex) {
-					return new ShowOnMapCommand(browserLogic, viewIndex);
-				};
+			ICommand viewOnMapDelegate(BrowseLogic browserLogic, int viewIndex) {
+				return new ShowOnMapCommand(browserLogic, viewIndex);
+			}
 			List<CompositeView> viewList = new List<CompositeView>();
-			viewList.AddRange( new CompositeView[] {
+			viewList.AddRange(new CompositeView[] {
 				// Table #0 (PostalAddress)
 				LACLocationView(dsMB.Schema.T.PostalAddress, null, BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PostalAddress.F.Code), postal, new CompositeView.ICtorArg[] {
 						CompositeView.AdditionalVerb(viewOnMapKey, viewOnMapDelegate)
 					}),
 				// Table #1 (TemporaryStorage)
 				LACLocationView(dsMB.Schema.T.TemporaryStorage, temporaryStorage == ViewUse.ActiveOnly ? TIItem.ActiveTemporaryStorageEditTblCreator : TIItem.AllTemporaryStorageEditTblCreator, BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.TemporaryStorage.F.WorkOrderID.F.Number), temporaryStorage, new CompositeView.ICtorArg[] {
-						CompositeView.ContextFreeInit(dsMB.Path.T.LocationDerivations.F.LocationID, dsMB.Path.T.TemporaryStorage.F.ContainingLocationID)
+						CompositeView.SetParentPath(dsMB.Path.T.Location.F.TemporaryStorageID.F.ContainingLocationID),
+						CompositeView.ContextFreeInit(dsMB.Path.T.Location.F.Id, dsMB.Path.T.TemporaryStorage.F.ContainingLocationID)
 					}),
 				// Table #2 (Unit)
 				LACLocationView(dsMB.Schema.T.Unit, null, BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.Unit.F.RelativeLocationID.F.Code), unit, new CompositeView.ICtorArg[] {
+						CompositeView.SetParentPath(dsMB.Path.T.Location.F.RelativeLocationID.F.ContainingLocationID),
 						CompositeView.AdditionalVerb(viewOnMapKey, viewOnMapDelegate),
 						CompositeView.ContextualInit(
 							new int[] {
-								(int)ViewRecordTypes.LocationDerivations.Unit,
-								(int)ViewRecordTypes.LocationDerivations.PostalAddress,
-								(int)ViewRecordTypes.LocationDerivations.PermanentStorage,
-								(int)ViewRecordTypes.LocationDerivations.PlainRelativeLocation
+								(int)LocationDerivations.Unit,
+								(int)LocationDerivations.PostalAddress,
+								(int)LocationDerivations.PermanentStorage,
+								(int)LocationDerivations.PlainRelativeLocation
 							},
-							new CompositeView.Init(new PathTarget(dsMB.Path.T.Unit.F.RelativeLocationID.F.ContainingLocationID), dsMB.Path.T.LocationDerivations.F.LocationID)
+							new CompositeView.Init(new PathTarget(dsMB.Path.T.Unit.F.RelativeLocationID.F.ContainingLocationID), dsMB.Path.T.Location.F.Id)
 						)
 					}),
 				// Table #3 (PermanentStorage)
 				LACLocationView(dsMB.Schema.T.PermanentStorage, null, BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PermanentStorage.F.RelativeLocationID.F.Code), permanentStorage, new CompositeView.ICtorArg[] {
+						CompositeView.SetParentPath(dsMB.Path.T.Location.F.RelativeLocationID.F.ContainingLocationID),
 						CompositeView.AdditionalVerb(viewOnMapKey, viewOnMapDelegate),
 						CompositeView.ContextualInit(
 							new int[] {
-								(int)ViewRecordTypes.LocationDerivations.PostalAddress,
-								(int)ViewRecordTypes.LocationDerivations.PermanentStorage,
-								(int)ViewRecordTypes.LocationDerivations.PlainRelativeLocation
+								(int)LocationDerivations.PostalAddress,
+								(int)LocationDerivations.PermanentStorage,
+								(int)LocationDerivations.PlainRelativeLocation
 							},
-							new CompositeView.Init(new PathTarget(dsMB.Path.T.PermanentStorage.F.RelativeLocationID.F.ContainingLocationID), dsMB.Path.T.LocationDerivations.F.LocationID)
+							new CompositeView.Init(new PathTarget(dsMB.Path.T.PermanentStorage.F.RelativeLocationID.F.ContainingLocationID), dsMB.Path.T.Location.F.Id)
 						)
 					}),
 				// Table #4 (PlainRelativeLocation)
 				LACLocationView(dsMB.Schema.T.PlainRelativeLocation, null, BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PlainRelativeLocation.F.RelativeLocationID.F.Code), plainRelativeLocation, new CompositeView.ICtorArg[] {
+						CompositeView.SetParentPath(dsMB.Path.T.Location.F.RelativeLocationID.F.ContainingLocationID),
 						CompositeView.AdditionalVerb(viewOnMapKey, viewOnMapDelegate),
 						CompositeView.ContextualInit(
 							new int[] {
-								(int)ViewRecordTypes.LocationDerivations.PostalAddress,
-								(int)ViewRecordTypes.LocationDerivations.PlainRelativeLocation
+								(int)LocationDerivations.PostalAddress,
+								(int)LocationDerivations.PlainRelativeLocation
 							},
-							new CompositeView.Init(new PathTarget(dsMB.Path.T.PlainRelativeLocation.F.RelativeLocationID.F.ContainingLocationID), dsMB.Path.T.LocationDerivations.F.LocationID)
+							new CompositeView.Init(new PathTarget(dsMB.Path.T.PlainRelativeLocation.F.RelativeLocationID.F.ContainingLocationID), dsMB.Path.T.Location.F.Id)
 						)
 					}),
 				// Table #5 (TemplateStorageLocation)
 				LACLocationView(dsMB.Schema.T.TemplateTemporaryStorage, null, BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.TemplateTemporaryStorage.F.WorkOrderTemplateID.F.Code), templateTemporaryStorage, new CompositeView.ICtorArg[] {
+						CompositeView.SetParentPath(dsMB.Path.T.Location.F.TemplateTemporaryStorageID.F.ContainingLocationID),
 						CompositeView.ContextualInit(
 							new int[] {
-								(int)ViewRecordTypes.LocationDerivations.PostalAddress,
-								(int)ViewRecordTypes.LocationDerivations.PlainRelativeLocation,
-								(int)ViewRecordTypes.LocationDerivations.PermanentStorage,
-								(int)ViewRecordTypes.LocationDerivations.Unit
+								(int)LocationDerivations.PostalAddress,
+								(int)LocationDerivations.PlainRelativeLocation,
+								(int)LocationDerivations.PermanentStorage,
+								(int)LocationDerivations.Unit
 							},
-							new CompositeView.Init(new PathTarget(dsMB.Path.T.TemplateTemporaryStorage.F.ContainingLocationID), dsMB.Path.T.LocationDerivations.F.LocationID)
+							new CompositeView.Init(new PathTarget(dsMB.Path.T.TemplateTemporaryStorage.F.ContainingLocationID), dsMB.Path.T.Location.F.Id)
 						)
 					})
 				}
 			);
 			// Now add EditDefault options depending on the type of Location
-			if (tableName == TId.Unit)
-				viewList.Add(CompositeView.AdditionalEditDefault(TIUnit.AttachmentTblCreator));
+			//			if (tableName == TId.Unit)
+			//				viewList.Add(CompositeView.AdditionalEditDefault(TIUnit.AttachmentTblCreator));
 
-			return new CompositeTbl(dsMB.Schema.T.LocationDerivations,
+			return new CompositeTbl(dsMB.Schema.T.Location,
 				tableName,
 				attrs.ToArray(),
-				dsMB.Path.T.LocationDerivations.F.TableEnum,
 				viewList.ToArray()
 			);
 		}
-		private delegate List<CompositeView.ICtorArg> InitILACViewArgsT(bool isPrimary, DBI_Table editTableSchema, CompositeView.ICtorArg pathAlias, params CompositeView.ICtorArg[] contextualInits);
 		private static CompositeTbl ILACComposite(Tbl.TblIdentification tableName, DBI_Table permission, bool groupNewCommands, bool onlyActiveTemporaryItemLocations, bool permanentIL, bool temporaryIL, bool templateIL, params BTbl.ICtorArg[] btblArgs) {
 			Key newItemLocationButtonGroupKey = KB.K("New Location Assignment");
 			object localCodeColumnId = KB.I("Local Code Id");
@@ -245,7 +221,7 @@ namespace Thinkage.MainBoss.Controls
 						BTbl.ListColumn(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.Shortage, BTbl.Contexts.SearchAndFilter),
 						BTbl.PerViewListColumn(CommonDescColumnKey, descriptionColumnId, NonPerViewColumn),
 						BTbl.ListColumn(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.Available, NonPerViewColumn, new BTbl.ListColumnArg.FeatureGroupArg(StoreroomGroup)),
-						BTbl.SetTreeStructure(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ContainingLocationID, 5, uint.MaxValue,
+						BTbl.SetTreeStructure(null, 5, uint.MaxValue,
 							dsMB.Path.T.ItemLocationContainment.F.ContainedLocationID.L.LocationDerivationsAndItemLocations.Id, dsMB.Path.T.ItemLocationContainment.F.ContainingLocationID.L.LocationDerivationsAndItemLocations.Id)
 			});
 			List<Tbl.IAttr> attrs = new List<Tbl.IAttr> {
@@ -261,43 +237,56 @@ namespace Thinkage.MainBoss.Controls
 			// Table #0 (PostalAddress)
 			views.Add(new CompositeView(dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID.F.PostalAddressID,
 				ReadonlyView,
+				CompositeView.RecognizeByValidEditLinkage(),
 				BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PostalAddress.F.Code),
 				BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.PostalAddress.F.LocationID.F.Desc),
 				CompositeView.ForceNotPrimary()));
 			// Table #1 (TemporaryStorage)
 			views.Add(new CompositeView(TIItem.AllTemporaryStorageEditTblCreator, dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID.F.TemporaryStorageID,
+				CompositeView.RecognizeByValidEditLinkage(),
+				CompositeView.SetParentPath(dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID.F.TemporaryStorageID.F.ContainingLocationID),
 				BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.TemporaryStorage.F.WorkOrderID.F.Number),
 				BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.TemporaryStorage.F.LocationID.F.Desc),
 				ReadonlyView,
 				CompositeView.ForceNotPrimary()));
 			// Table #2 (Unit)
 			views.Add(new CompositeView(dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID.F.RelativeLocationID.F.UnitID,
+				CompositeView.RecognizeByValidEditLinkage(),
+				CompositeView.SetParentPath(dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID.F.RelativeLocationID.F.ContainingLocationID),
 				BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.Unit.F.RelativeLocationID.F.Code),
 				BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.Unit.F.RelativeLocationID.F.LocationID.F.Desc),
 				ReadonlyView,
 				CompositeView.ForceNotPrimary()));
 			// Table #3 (PermanentStorage)
 			views.Add(new CompositeView(dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID.F.RelativeLocationID.F.PermanentStorageID,
+				CompositeView.RecognizeByValidEditLinkage(),
+				CompositeView.SetParentPath(dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID.F.RelativeLocationID.F.ContainingLocationID),
 				BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PermanentStorage.F.RelativeLocationID.F.Code),
 				BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.PermanentStorage.F.RelativeLocationID.F.LocationID.F.Desc),
 				ReadonlyView,
 				CompositeView.ForceNotPrimary()));
 			// Table #4 (PlainRelativeLocation)
 			views.Add(new CompositeView(dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID.F.RelativeLocationID.F.PlainRelativeLocationID,
+				CompositeView.RecognizeByValidEditLinkage(),
+				CompositeView.SetParentPath(dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID.F.RelativeLocationID.F.ContainingLocationID),
 				BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.PlainRelativeLocation.F.RelativeLocationID.F.Code),
 				BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.PlainRelativeLocation.F.RelativeLocationID.F.LocationID.F.Desc),
 				ReadonlyView,
 				CompositeView.ForceNotPrimary()));
 			// Table #5 (TemplateTemporaryStorage)
 			views.Add(new CompositeView(dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID.F.TemplateTemporaryStorageID,
+				CompositeView.RecognizeByValidEditLinkage(),
+				CompositeView.SetParentPath(dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID.F.TemplateTemporaryStorageID.F.ContainingLocationID),
 				BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.TemplateTemporaryStorage.F.WorkOrderTemplateID.F.Code),
 				BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.TemplateTemporaryStorage.F.LocationID.F.Desc),
 				ReadonlyView,
 				CompositeView.ForceNotPrimary()));
 
-			// This is as close to a nested function as I can get. The only thing is that the delegate type must be declared with a name and outside the function.
-			InitILACViewArgsT InitILACViewArgs = delegate(bool isPrimary, DBI_Table editTableSchema, CompositeView.ICtorArg pathAlias, CompositeView.ICtorArg[] contextualInits) {
+			// TODO: In C# 8 they allow static nested functions which cannot refer to variables in the outer function they are nested in
+			List<CompositeView.ICtorArg> InitILACViewArgs(bool isPrimary, DBI_Table editTableSchema, CompositeView.ICtorArg pathAlias, params CompositeView.ICtorArg[] contextualInits) {
 				var result = new List<CompositeView.ICtorArg> {
+					CompositeView.RecognizeByValidEditLinkage(),
+					CompositeView.SetParentPath(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.LocationID),
 					BTbl.PerViewColumnValue(localCodeColumnId, dsMB.Path.T.ItemLocation.F.ItemID.F.Code.ReOrientFromRelatedTable(editTableSchema)),
 					BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.ItemLocation.F.ItemID.F.Desc.ReOrientFromRelatedTable(editTableSchema)),
 					CompositeView.PathAlias(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ItemID, dsMB.Path.T.ItemLocation.F.ItemID.ReOrientFromRelatedTable(editTableSchema)),
@@ -314,15 +303,15 @@ namespace Thinkage.MainBoss.Controls
 					result.Add(CompositeView.ForceNotPrimary());
 				}
 				return result;
-			};
+			}
 			// Table #6 (PermanentItemLocation)
 			viewArgs = InitILACViewArgs(permanentIL, dsMB.Schema.T.PermanentItemLocation,
 				CompositeView.PathAlias(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.CostCenterID, dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.CostCenterID),
 				// If the current selection happens to be a permanent storage location, helpfully pick it in the new ItemLocation editor.
-				CompositeView.ContextualInit((int)ViewRecordTypes.LocationDerivationsAndItemLocations.PermanentStorage, dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID, dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID),
+				CompositeView.ContextualInit((int)LocationDerivationsAndItemLocations.PermanentStorage, dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID, dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID),
 				// If the current selection happens to be an ItemLocation in permanent storage, helpfully pick the same Item/Storeroom in the new ItemLocation editor.
-				CompositeView.ContextualInit((int)ViewRecordTypes.LocationDerivationsAndItemLocations.PermanentItemLocation, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID.F.ActualItemLocationID.F.ItemLocationID.F.ItemID, dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID),
-				CompositeView.ContextualInit((int)ViewRecordTypes.LocationDerivationsAndItemLocations.PermanentItemLocation, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID.F.ActualItemLocationID.F.ItemLocationID.F.LocationID, dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID)
+				CompositeView.ContextualInit((int)LocationDerivationsAndItemLocations.PermanentItemLocation, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID.F.ActualItemLocationID.F.ItemLocationID.F.ItemID, dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID),
+				CompositeView.ContextualInit((int)LocationDerivationsAndItemLocations.PermanentItemLocation, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID.F.ActualItemLocationID.F.ItemLocationID.F.LocationID, dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID)
 			);
 			views.Add(new CompositeView(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID, viewArgs.ToArray()));
 
@@ -330,10 +319,10 @@ namespace Thinkage.MainBoss.Controls
 			viewArgs = InitILACViewArgs(temporaryIL, dsMB.Schema.T.TemporaryItemLocation,
 				CompositeView.PathAlias(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.CostCenterID, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.CostCenterID),
 				// If the current selection happens to be a temporary storage location, helpfully pick it in the new ItemLocation editor.
-				CompositeView.ContextualInit((int)ViewRecordTypes.LocationDerivationsAndItemLocations.TemporaryStorage, dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID),
+				CompositeView.ContextualInit((int)LocationDerivationsAndItemLocations.TemporaryStorage, dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID),
 				// If the current selection happens to be an ItemLocation in temporary storage, helpfully pick the same Item in the new ItemLocation editor.
-				CompositeView.ContextualInit((int)ViewRecordTypes.LocationDerivationsAndItemLocations.TemporaryItemLocation, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID.F.ActualItemLocationID.F.ItemLocationID.F.ItemID, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID),
-				CompositeView.ContextualInit((int)ViewRecordTypes.LocationDerivationsAndItemLocations.TemporaryItemLocation, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID.F.ActualItemLocationID.F.ItemLocationID.F.LocationID, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID)
+				CompositeView.ContextualInit((int)LocationDerivationsAndItemLocations.TemporaryItemLocation, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID.F.ActualItemLocationID.F.ItemLocationID.F.ItemID, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID),
+				CompositeView.ContextualInit((int)LocationDerivationsAndItemLocations.TemporaryItemLocation, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID.F.ActualItemLocationID.F.ItemLocationID.F.LocationID, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID)
 			);
 			views.Add(new CompositeView(onlyActiveTemporaryItemLocations ? TIItem.ActiveTemporaryItemLocationTblCreator : TIItem.AllTemporaryItemLocationTblCreator,
 				dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID, viewArgs.ToArray()));
@@ -343,24 +332,23 @@ namespace Thinkage.MainBoss.Controls
 				null,
 				// If the current selection happens to be a temporary storage location, helpfully pick it in the new ItemLocation editor.
 				CompositeView.ContextualInit(new int[] {
-					(int)ViewRecordTypes.LocationDerivationsAndItemLocations.Unit,
-					(int)ViewRecordTypes.LocationDerivationsAndItemLocations.PermanentStorage,
-					(int)ViewRecordTypes.LocationDerivationsAndItemLocations.PostalAddress,
-					(int)ViewRecordTypes.LocationDerivationsAndItemLocations.PlainRelativeLocation
+					(int)LocationDerivationsAndItemLocations.Unit,
+					(int)LocationDerivationsAndItemLocations.PermanentStorage,
+					(int)LocationDerivationsAndItemLocations.PostalAddress,
+					(int)LocationDerivationsAndItemLocations.PlainRelativeLocation
 					},
 					dsMB.Path.T.LocationDerivationsAndItemLocations.F.LocationID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.LocationID),
 				// If the current selection happens to be an ItemLocation in temporary storage, helpfully pick the same Item in the new ItemLocation editor.
-				CompositeView.ContextualInit((int)ViewRecordTypes.LocationDerivationsAndItemLocations.TemporaryItemLocationTemplate, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.TemplateItemLocationID.F.ItemLocationID.F.ItemID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.ItemID),
-				CompositeView.ContextualInit((int)ViewRecordTypes.LocationDerivationsAndItemLocations.TemporaryItemLocationTemplate, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.TemplateItemLocationID.F.ItemLocationID.F.LocationID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.LocationID),
-				CompositeView.ContextualInit((int)ViewRecordTypes.LocationDerivationsAndItemLocations.PermanentItemLocation, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID.F.ActualItemLocationID.F.ItemLocationID.F.ItemID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.ItemID),
-				CompositeView.ContextualInit((int)ViewRecordTypes.LocationDerivationsAndItemLocations.PermanentItemLocation, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID.F.ActualItemLocationID.F.ItemLocationID.F.LocationID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.LocationID)
+				CompositeView.ContextualInit((int)LocationDerivationsAndItemLocations.TemporaryItemLocationTemplate, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.TemplateItemLocationID.F.ItemLocationID.F.ItemID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.ItemID),
+				CompositeView.ContextualInit((int)LocationDerivationsAndItemLocations.TemporaryItemLocationTemplate, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.TemplateItemLocationID.F.ItemLocationID.F.LocationID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.LocationID),
+				CompositeView.ContextualInit((int)LocationDerivationsAndItemLocations.PermanentItemLocation, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID.F.ActualItemLocationID.F.ItemLocationID.F.ItemID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.ItemID),
+				CompositeView.ContextualInit((int)LocationDerivationsAndItemLocations.PermanentItemLocation, dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID.F.ActualItemLocationID.F.ItemLocationID.F.LocationID, dsMB.Path.T.TemplateItemLocation.F.ItemLocationID.F.LocationID)
 			);
 			views.Add(new CompositeView(dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.TemplateItemLocationID, viewArgs.ToArray()));
 
 			return new CompositeTbl(dsMB.Schema.T.LocationDerivationsAndItemLocations,
 				tableName,
 				attrs.ToArray(),
-				dsMB.Path.T.LocationDerivationsAndItemLocations.F.TableEnum,
 				views.ToArray()
 			);
 		}
@@ -372,44 +360,215 @@ namespace Thinkage.MainBoss.Controls
 		// first check for "pickfrom" extensions and change these as appropriate as well.
 
 		#region Location Picker Tbl Creators
-		public static readonly DelayedCreateTbl TemplateTemporaryStoragePickerTblCreator = null;
-		public static readonly DelayedCreateTbl PermanentLocationPickerTblCreator = null;
-		public static readonly DelayedCreateTbl AllShipToLocationPickerTblCreator = null;
-		public static readonly DelayedCreateTbl ShipToLocationForPurchaseOrderTemplatePickerTblCreator = null;
-		public static readonly DelayedCreateTbl CompanyLocationPickerTblCreator = null;
-		public static readonly DelayedCreateTbl AllTemporaryStoragePickerTblCreator = null;
+		/// <summary>
+		/// For picking a non-temporary location, e.g. for temporary storage (task), contact
+		/// </summary>
+		public static readonly DelayedCreateTbl PermanentLocationPickerTblCreator = new DelayedCreateTbl(delegate () {
+			return LACComposite(TId.NonTemporaryLocation, null,
+				ViewUse.Full,   // Table 0 (PostalAddress)
+				ViewUse.None,   // Table 1 (TemporaryStorage)
+				ViewUse.Full,   // Table 2 (Unit)
+				ViewUse.Full,   // Table 3 (PermanentStorage)
+				ViewUse.Full,   // Table 4 (PlainRelativeLocation)
+				ViewUse.None    // Table 5 (TemplateTemporaryStorage)
+			);
+		});
+		/// <summary>
+		/// For picking a location where items can be shipped to (for a PurchaseOrder)
+		/// </summary>
+		public static readonly DelayedCreateTbl AllShipToLocationPickerTblCreator = new DelayedCreateTbl(delegate () {
+			return LACComposite(TId.AllowedShipToLocation, null,
+				ViewUse.Full,       // Table 0 (PostalAddress)
+				ViewUse.Full,       // Table 1 (TemporaryStorage)
+				ViewUse.Full,       // Table 2 (Unit)
+				ViewUse.Full,       // Table 3 (PermanentStorage)
+				ViewUse.Full,   // Table 4 (PlainRelativeLocation)
+				ViewUse.None    // Table 5 (TemplateTemporaryStorage)
+			);
+		});
+		/// <summary>
+		/// For picking a location where items can be shipped to (for a PurchaseOrderTemplate)
+		/// </summary>
+		public static readonly DelayedCreateTbl ShipToLocationForPurchaseOrderTemplatePickerTblCreator = new DelayedCreateTbl(delegate () {
+			return LACComposite(TId.AllowedShipToLocation, null,
+				ViewUse.Full,   // Table 0 (PostalAddress)
+				ViewUse.None,   // Table 1 (TemporaryStorage)
+				ViewUse.Full,   // Table 2 (Unit)
+				ViewUse.Full,   // Table 3 (PermanentStorage)
+				ViewUse.Full,   // Table 4 (PlainRelativeLocation)
+				ViewUse.None    // Table 5 (TemplateTemporaryStorage)
+			);
+		});
+		/// <summary>
+		/// For picking a location to use for the Purchaser's address on Purchase Orders
+		/// </summary>
+		public static readonly DelayedCreateTbl CompanyLocationPickerTblCreator = new DelayedCreateTbl(delegate () {
+			return LACComposite(TId.PostalAddress, null,
+				ViewUse.Full,   // Table 0 (PostalAddress)
+				ViewUse.None,   // Table 1 (TemporaryStorage)
+				ViewUse.None,   // Table 2 (Unit)
+				ViewUse.None,   // Table 3 (PermanentStorage)
+				ViewUse.None,   // Table 4 (PlainRelativeLocation)
+				ViewUse.None    // Table 5 (TemplateTemporaryStorage)
+			);
+		});
+		/// <summary>
+		/// For picking a temporary storage location
+		/// </summary>
+		public static readonly DelayedCreateTbl AllTemporaryStoragePickerTblCreator = new DelayedCreateTbl(delegate () {
+			return LACComposite(TId.TemporaryStorage, null,
+				ViewUse.Secondary,  // Table 0 (PostalAddress)
+				ViewUse.Full,       // Table 1 (TemporaryStorage)
+				ViewUse.Secondary,  // Table 2 (Unit)
+				ViewUse.Secondary,  // Table 3 (PermanentStorage)
+				ViewUse.Secondary,  // Table 4 (PlainRelativeLocation)
+				ViewUse.None        // Table 5 (TemplateTemporaryStorage)
+			);
+		});
+		/// <summary>
+		///  For picking the containing location of a permanent storage location
+		/// </summary>
+		public static readonly DelayedCreateTbl TemplateTemporaryStoragePickerTblCreator = new DelayedCreateTbl(delegate () {
+			return LACComposite(TId.TemplateTemporaryStorage, null,
+				ViewUse.Secondary,  // Table 0 (PostalAddress)
+				ViewUse.None,       // Table 1 (TemporaryStorage)
+				ViewUse.Secondary,  // Table 2 (Unit)
+				ViewUse.Secondary,  // Table 3 (PermanentStorage)
+				ViewUse.Secondary,  // Table 4 (PlainRelativeLocation)
+				ViewUse.Full        // Table 5 (TemplateTemporaryStorage)
+			);
+		});
 		#endregion
 		#region ItemLocation Picker Tbl Creators
-		public static readonly DelayedCreateTbl AllActualItemLocationPickerTblCreator = null;
-		public static readonly DelayedCreateTbl ActiveActualItemLocationBrowseTblCreator = null;
-		public static readonly DelayedCreateTbl PermanentItemLocationPickerTblCreator = null;
-		public static readonly DelayedCreateTbl ActiveTemporaryItemLocationBrowseTblCreator = null;
-		public static readonly DelayedCreateTbl PermanentOrTemporaryTaskItemLocationPickerTblCreator = null;
+		/// <summary>
+		/// For picking an ItemLocation for an item located in actual (permanent or temporary) storage
+		/// </summary>
+		public static readonly DelayedCreateTbl AllActualItemLocationPickerTblCreator = new DelayedCreateTbl(delegate () {
+			return ILACComposite(TId.StoreroomOrTemporaryStorageAssignment, null, false, false,
+				true,   // Table #5 (PermanentItemLocation)
+				true,   // Table #6 (TemporaryItemLocation)
+				false   // Table #7 (TemplateItemLocation)
+			);
+		});
+		/// <summary>
+		/// For picking an ItemLocation for an item located in permanent storage or temporary storage for a particular work order.
+		/// </summary>
+		public static readonly DelayedCreateTbl ActiveActualItemLocationBrowseTblCreator = new DelayedCreateTbl(delegate () {
+			return ILACComposite(TId.StoreroomOrTemporaryStorageAssignment, null, false, true,
+				true,   // Table #5 (PermanentItemLocation)
+				true,   // Table #6 (TemporaryItemLocation)
+				false   // Table #7 (TemplateItemLocation)
+			);
+		});
+		/// <summary>
+		/// For picking an ItemLocation for an item located in permanent storage
+		/// </summary>
+		public static readonly DelayedCreateTbl PermanentItemLocationPickerTblCreator = new DelayedCreateTbl(delegate () {
+			return ILACComposite(TId.StoreroomAssignment, dsMB.Schema.T.PermanentItemLocation,
+				false, false,
+				true,   // Table #5 (PermanentItemLocation)
+				false,  // Table #6 (TemporaryItemLocation)
+				false,   // Table #7 (TemplateItemLocation)
+				BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PermanentInventoryLocation),
+					matchingRowInBrowser: dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID.PathToReferencedRow)
+			);
+		});
+		public static readonly DelayedCreateTbl ActiveTemporaryItemLocationBrowseTblCreator = new DelayedCreateTbl(delegate () {
+			return ILACComposite(TId.TemporaryStorageAssignment, dsMB.Schema.T.TemporaryItemLocation,
+				false, true,
+				false,  // Table #5 (PermanentItemLocation)
+				true,   // Table #6 (TemporaryItemLocation)
+				false,   // Table #7 (TemplateItemLocation)
+				BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.TemporaryInventoryLocation),
+					matchingRowInBrowser: dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID.PathToReferencedRow)
+			);
+		});
+		/// <summary>
+		/// For picking an ItemLocation for an item located in permanent storage or template temporary storage
+		/// </summary>
+		public static readonly DelayedCreateTbl PermanentOrTemporaryTaskItemLocationPickerTblCreator = new DelayedCreateTbl(delegate () {
+			return ILACComposite(TId.TaskStoreroomorTemporaryStorageAssignment, dsMB.Schema.T.TemporaryItemLocation, false, false,
+				true,   // Table #5 (PermanentItemLocation)
+				false,  // Table #6 (TemporaryItemLocation)
+				true    // Table #7 (TemplateItemLocation)
+			);
+		});
 		#endregion
 		#endregion
-		#region Declarations for Browse/Browsette Tbl Creators
+
 		#region Location Browse Tbl Creators
-		public static readonly DelayedCreateTbl LocationBrowseTblCreator = null;
-		public static readonly DelayedCreateTbl LocationPickerTblCreator = null;
-		public static readonly DelayedCreateTbl LocationOrganizerBrowseTblCreator = null;
+		/// <summary>
+		/// For browsing normal locations (postal/relative)
+		/// </summary>
+		public static readonly DelayedCreateTbl LocationBrowseTblCreator = new DelayedCreateTbl(delegate () {
+			return LACComposite(TId.Location, dsMB.Schema.T.Location,
+				ViewUse.Full,       // Table 0 (PostalAddress)
+				ViewUse.None,       // Table 1 (TemporaryStorage)
+				ViewUse.None,       // Table 2 (Unit)
+				ViewUse.None,       // Table 3 (PermanentStorage)
+				ViewUse.Full,       // Table 4 (PlainRelativeLocation)
+				ViewUse.None,        // Table 5 (TemplateTemporaryStorage)
+				BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.LocationReport))
+			);
+		});
+		/// <summary>
+		/// For picking normal locations (postal/relative)
+		/// </summary>
+		public static readonly DelayedCreateTbl LocationPickerTblCreator = new DelayedCreateTbl(delegate () {
+			return LACComposite(TId.Location, dsMB.Schema.T.Location,
+				ViewUse.Full,       // Table 0 (PostalAddress)
+				ViewUse.None,       // Table 1 (TemporaryStorage)
+				ViewUse.None,       // Table 2 (Unit)
+				ViewUse.None,       // Table 3 (PermanentStorage)
+				ViewUse.Full,       // Table 4 (PlainRelativeLocation)
+				ViewUse.None        // Table 5 (TemplateTemporaryStorage)
+			);
+		});
+		/// <summary>
+		/// Requires Unit table permissions since it is Units that are what are commonly 'organized'
+		/// </summary>
+		public static readonly DelayedCreateTbl LocationOrganizerBrowseTblCreator = new DelayedCreateTbl(delegate () {
+			object targetLocationId = KB.I("Target LocationID");
+			return LACComposite(TId.Location, dsMB.Schema.T.Unit,
+				ViewUse.Secondary,          // Table 0 (PostalAddress)
+				ViewUse.None,               // Table 1 (TemporaryStorage)
+				ViewUse.FullOnlyExisting,   // Table 2 (Unit)
+				ViewUse.FullOnlyExisting,   // Table 3 (PermanentStorage)
+				ViewUse.FullOnlyExisting,   // Table 4 (PlainRelativeLocation)
+				ViewUse.None,               // Table 5 (TemplateTemporaryStorage)
+					BTbl.AdditionalVerb(null,
+					delegate (BrowseLogic browserLogic) {
+						var cmd = new MoveLocationsCommand(browserLogic, targetLocationId);
+						browserLogic.Commands.AddCommand(KB.K("Move to Destination"), null, cmd, null, null,
+								TblUnboundControlNode.New(KB.K("Destination"), dsMB.Schema.T.RelativeLocation.F.ContainingLocationID.EffectiveType,
+									new DCol(Fmt.SetId(targetLocationId)),
+									Fmt.SetPickFrom(TILocations.PermanentLocationPickerTblCreator, new SettableDisablerProperties(KB.K("Choose the location where the selected records will be moved to"))),
+									Fmt.SetCreated(
+										delegate (IBasicDataControl c) {
+											c.Notify += cmd.TargetPickerChanged;
+										})));
+						return null;
+					}
+				)
+			);
+		});
 		#region MoveLocationsCommand - part of Reorganize locations
 		private class MoveLocationsCommand : BrowseLogic.MultiBrowserCommand {
 			public MoveLocationsCommand(BrowseLogic browser, object targetId)
 				: base(browser) {
 				IDisablerProperties NeedPrimaryRecordDisabler = new BrowseLogic.NeedPrimaryRecordDisablerClass(Browser, ref Notification);
 				Disablers = new IDisablerProperties[Browser.NQueryCompositeViews];
-				SourceForIDOfRelativeLocationRowToModify = Browser.GetTblPathDisplaySource(dsMB.Path.T.LocationDerivations.F.LocationID.F.RelativeLocationID, -1);
-				SourceForIDOfPlainRelativeLocationRowToModify = Browser.GetTblPathDisplaySource(dsMB.Path.T.LocationDerivations.F.LocationID.F.RelativeLocationID.F.PlainRelativeLocationID, -1);
+				SourceForIDOfRelativeLocationRowToModify = Browser.GetTblPathDisplaySource(dsMB.Path.T.Location.F.RelativeLocationID, -1);
 				NoRelativeLocationsInPermanentStorageDisabler = new SettableDisablerProperties(null, TId.SubLocation.Compose("{0} cannot be contained in a Storeroom"), false);
 				NoRelativeLocationsInUnitsDisabler = new SettableDisablerProperties(null, TId.SubLocation.Compose("{0} cannot be contained in a Unit"), false);
-				for (int viewIndex = Browser.NQueryCompositeViews; --viewIndex >= 0; ) {
+				for (int viewIndex = Browser.NQueryCompositeViews; --viewIndex >= 0;) {
 					CompositeView cv = Browser.CompositeViews[viewIndex];
 					if (!Browser.ViewMightShowPrimaryRecords[viewIndex] || cv.EditTbl.Schema == null) {
 						Disablers[viewIndex] = new SettableDisablerProperties(null, cv.Identification.Compose("{0} cannot be moved"), false);
 						continue;
 					}
 					var moveThisViewDisabler = new MultiDisablerIfAllEnabled(NeedPrimaryRecordDisabler);
-					if (viewIndex == (int)ViewRecordTypes.LocationDerivations.PlainRelativeLocation) {
+					if (viewIndex == (int)LocationDerivations.PlainRelativeLocation) {
 						moveThisViewDisabler.Add(NoRelativeLocationsInUnitsDisabler);
 						moveThisViewDisabler.Add(NoRelativeLocationsInPermanentStorageDisabler);
 					}
@@ -423,10 +582,10 @@ namespace Thinkage.MainBoss.Controls
 
 				UpdateEnabling(Libraries.DataFlow.DataChangedEvent.Reset, null);
 
-				Browser.ControlCreationCompletedNotificationRecipients += delegate() {
+				Browser.ControlCreationCompletedNotificationRecipients += delegate () {
 					TargetLocationIdSource = new ControlValue(targetId).GetSourceForInit(Browser, -1, out bool NeedsContext);
-					TargetUnitIdSource = new InSubBrowserValue( targetId, new BrowserPathValue(dsMB.Path.T.LocationDerivations.F.LocationID.F.RelativeLocationID.F.UnitID)).GetSourceForInit(Browser, -1, out NeedsContext);
-					TargetPermanentStorageIdSource = new InSubBrowserValue(targetId, new BrowserPathValue(dsMB.Path.T.LocationDerivations.F.LocationID.F.RelativeLocationID.F.PermanentStorageID)).GetSourceForInit(Browser, -1, out NeedsContext);
+					TargetUnitIdSource = new InSubBrowserValue(targetId, new BrowserPathValue(dsMB.Path.T.Location.F.RelativeLocationID.F.UnitID)).GetSourceForInit(Browser, -1, out NeedsContext);
+					TargetPermanentStorageIdSource = new InSubBrowserValue(targetId, new BrowserPathValue(dsMB.Path.T.Location.F.RelativeLocationID.F.PermanentStorageID)).GetSourceForInit(Browser, -1, out NeedsContext);
 				};
 			}
 			public void TargetPickerChanged() {
@@ -439,13 +598,12 @@ namespace Thinkage.MainBoss.Controls
 			private Libraries.DataFlow.Source TargetLocationIdSource;
 			private Libraries.DataFlow.Source TargetUnitIdSource;
 			private Libraries.DataFlow.Source TargetPermanentStorageIdSource;
-			private BrowseLogic.RowContentChangedHandler Notification;
+			private readonly BrowseLogic.RowContentChangedHandler Notification;
 			// The following arrays are all indexed by view index.
 			// The enablers that control whether deletion is allowed.
 			private readonly IDisablerProperties[] Disablers;
 			// The source in the browser for the ID of the row within TableToModify that we would have to modify to perform the deletion
 			private readonly Libraries.DataFlow.Source SourceForIDOfRelativeLocationRowToModify;
-			private readonly Libraries.DataFlow.Source SourceForIDOfPlainRelativeLocationRowToModify;
 			protected override Key AnalyzeSingleRecord(int enabledCount) {
 				// TODO: We still must subscribe to external disablers such as the PermissionBasedDisabler; if it notifies we must re-evaluate from scratch.
 				Notification();
@@ -466,7 +624,7 @@ namespace Thinkage.MainBoss.Controls
 				// the overall Enabled would be false if *any* or *all* of the named id's were being edited. Either that, or we would have to make one such notifier for each record
 				// in the selection, and figure out how to keep it somewhere.
 				if (!Browser.IterateOverContextRecords(
-					delegate() {
+					delegate () {
 						viewIndex = Browser.CompositeRecordType ?? int.MaxValue;
 						++count;
 						IUIModifyingRecord modifier = Application.Instance.GetInterface<ITblDrivenApplication>().FindRecordModifier(new object[] { Browser.CompositeRecordEditIDSource.GetValue() }, new DBI_Table[] { Browser.CompositeViews[viewIndex].EditTbl.Schema });
@@ -487,12 +645,12 @@ namespace Thinkage.MainBoss.Controls
 					dsMove.EnforceConstraints = false;
 					dsMove.DataSetName = KB.I("BrowseBaseControl.MoveRecord.dsMove");
 					Browser.IterateOverContextRecords(
-						delegate() {
-							var rowToModify = (dsMB.RelativeLocationRow) dsMove.DB.ViewAdditionalRow(dsMove, dsMB.Schema.T.RelativeLocation, new SqlExpression(dsMB.Path.T.RelativeLocation.F.Id).Eq(SqlExpression.Constant(SourceForIDOfRelativeLocationRowToModify.GetValue())));
+						delegate () {
+							var rowToModify = (dsMB.RelativeLocationRow)dsMove.DB.ViewAdditionalRow(dsMove, dsMB.Schema.T.RelativeLocation, new SqlExpression(dsMB.Path.T.RelativeLocation.F.Id).Eq(SqlExpression.Constant(SourceForIDOfRelativeLocationRowToModify.GetValue())));
 							if (rowToModify == null) // already deleted (if we can't find now, perhaps someone else moved or deleted it while we were browsing)
 								return true; // nothing further we can do
 
-							rowToModify.F.ContainingLocationID = (System.Guid) TargetLocationIdSource.GetValue();
+							rowToModify.F.ContainingLocationID = (System.Guid)TargetLocationIdSource.GetValue();
 							return true;
 						}
 					);
@@ -514,11 +672,11 @@ namespace Thinkage.MainBoss.Controls
 				}
 			}
 
-			public override bool RunElevated {
-				get {
-					return false;
-				}
-			}
+			//public override bool RunElevated {
+			//	get {
+			//		return false;
+			//	}
+			//}
 			protected override Key TipWhenEnabled {
 				get {
 					return KB.K("Change the parent location of the selected records to be the destination location");
@@ -526,298 +684,94 @@ namespace Thinkage.MainBoss.Controls
 			}
 		}
 		#endregion
-		public static readonly DelayedCreateTbl UnitBrowseTblCreator = null;
-		public static readonly DelayedCreateTbl PermanentStorageBrowseTblCreator = null;
-		public static readonly DelayedCreateTbl AllStorageBrowseTblCreator = null;
+		/// <summary>
+		/// For browsing units
+		/// </summary>
+		public static readonly DelayedCreateTbl UnitBrowseTblCreator = new DelayedCreateTbl(delegate () {
+			return LACComposite(TId.Unit, dsMB.Schema.T.Unit,
+				ViewUse.Secondary,  // Table 0 (PostalAddress)
+				ViewUse.None,       // Table 1 (TemporaryStorage)
+				ViewUse.Full,       // Table 2 (Unit)
+				ViewUse.Secondary,  // Table 3 (PermanentStorage)
+				ViewUse.Secondary,  // Table 4 (PlainRelativeLocation)
+				ViewUse.None,       // Table 5 (TemplateTemporaryStorage)
+				BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.UnitReport), matchingRowInBrowser: dsMB.Path.T.Location.F.RelativeLocationID.F.UnitID.PathToReferencedRow)
+			);
+		});
+		/// <summary>
+		/// For browsing/picking a permanent storage template location
+		/// </summary>
+		public static readonly DelayedCreateTbl PermanentStorageBrowseTblCreator = new DelayedCreateTbl(delegate () {
+			return LACComposite(TId.Storeroom, dsMB.Schema.T.PermanentStorage,
+				ViewUse.Secondary,  // Table 0 (PostalAddress)
+				ViewUse.None,       // Table 1 (TemporaryStorage)
+				ViewUse.Secondary,  // Table 2 (Unit)
+				ViewUse.Full,       // Table 3 (PermanentStorage)
+				ViewUse.Secondary,  // Table 4 (PlainRelativeLocation)
+				ViewUse.None,        // Table 5 (TemplateTemporaryStorage)
+				BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PermanentStorageReport))
+			);
+		});
+		/// <summary>
+		/// For browsing/picking a All storage template location
+		/// </summary>
+		public static readonly DelayedCreateTbl AllStorageBrowseTblCreator = new DelayedCreateTbl(delegate () {
+			return LACComposite(TId.Storeroom, dsMB.Schema.T.RelativeLocation,
+				ViewUse.Secondary,  // Table 0 (PostalAddress)
+				ViewUse.Full,       // Table 1 (TemporaryStorage)
+				ViewUse.Secondary,  // Table 2 (Unit)
+				ViewUse.Full,       // Table 3 (PermanentStorage)
+				ViewUse.Secondary,  // Table 4 (PlainRelativeLocation)
+				ViewUse.None,        // Table 5 (TemplateTemporaryStorage)
+				BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.StorageLocationStatus))
+			);
+		});
 		#endregion
 		#region ItemLocation Browse Tbl Creators
-		public static readonly DelayedCreateTbl TemporaryTaskItemLocationBrowseTblCreator = null;
-		public static readonly DelayedCreateTbl PermanentItemLocationBrowseTblCreator = null;
-		public static readonly DelayedCreateTbl TemporaryItemLocationBrowseTblCreator = null;
+		/// <summary>
+		/// For browsing/picking an ItemLocation for an item located in template temporary storage
+		/// </summary>
+		public static readonly DelayedCreateTbl TemporaryTaskItemLocationBrowseTblCreator = new DelayedCreateTbl(delegate () {
+			return ILACComposite(TId.TaskTemporaryStorageAssignment, dsMB.Schema.T.TemplateItemLocation,
+				false, false,
+				false,  // Table #5 (PermanentItemLocation)
+				false,  // Table #6 (TemporaryItemLocation)
+				true,    // Table #7 (TemplateItemLocation)
+				BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.TemplateInventoryLocation),
+					matchingRowInBrowser: dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.TemplateItemLocationID.PathToReferencedRow)
+			);
+		});
+		/// <summary>
+		///  For browsing an ItemLocation for an item located in permanent storage
+		/// </summary>
+		public static readonly DelayedCreateTbl PermanentItemLocationBrowseTblCreator = new DelayedCreateTbl(delegate () {
+			return ILACComposite(TId.StoreroomAssignment, dsMB.Schema.T.PermanentItemLocation,
+				false, false,
+				true,   // Table #5 (PermanentItemLocation)
+				false,  // Table #6 (TemporaryItemLocation)
+				false,   // Table #7 (TemplateItemLocation)
+				BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PermanentInventoryLocation),
+					matchingRowInBrowser: dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID.PathToReferencedRow)
+			);
+		});
+		/// <summary>
+		/// For browsing an ItemLocation for an item located in temporary storage
+		/// </summary>
+		public static readonly DelayedCreateTbl TemporaryItemLocationBrowseTblCreator = new DelayedCreateTbl(delegate () {
+			return ILACComposite(TId.TemporaryStorageAssignment, dsMB.Schema.T.TemporaryItemLocation,
+				false, false,
+				false,  // Table #5 (PermanentItemLocation)
+				true,   // Table #6 (TemporaryItemLocation)
+				false,   // Table #7 (TemplateItemLocation)
+				BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.TemporaryInventoryLocation),
+					matchingRowInBrowser: dsMB.Path.T.LocationDerivationsAndItemLocations.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID.PathToReferencedRow)
+			);
+		});
 		#endregion
-		#endregion
 
-		static TILocations() {
-			#region Location Tbl Creators
-			#region PermanentLocationPickerTblCreator
-			// For picking a non-temporary location, e.g. for temporary storage (task), contact
-			PermanentLocationPickerTblCreator = new DelayedCreateTbl(delegate() {
-				return LACComposite(TId.NonTemporaryLocation, null,
-					ViewUse.Full,	// Table 0 (PostalAddress)
-					ViewUse.None,	// Table 1 (TemporaryStorage)
-					ViewUse.Full,	// Table 2 (Unit)
-					ViewUse.Full,	// Table 3 (PermanentStorage)
-					ViewUse.Full,	// Table 4 (PlainRelativeLocation)
-					ViewUse.None	// Table 5 (TemplateTemporaryStorage)
-				);
-			});
-			#endregion
-			#region AllShipToLocationPickerTblCreator
-			// For picking a location where items can be shipped to (for a PurchaseOrder)
-			AllShipToLocationPickerTblCreator = new DelayedCreateTbl(delegate() {
-				return LACComposite(TId.AllowedShipToLocation, null,
-					ViewUse.Full, 		// Table 0 (PostalAddress)
-					ViewUse.Full,		// Table 1 (TemporaryStorage)
-					ViewUse.Full,	 	// Table 2 (Unit)
-					ViewUse.Full, 		// Table 3 (PermanentStorage)
-					ViewUse.Full,	// Table 4 (PlainRelativeLocation)
-					ViewUse.None	// Table 5 (TemplateTemporaryStorage)
-				);
-			});
-			#endregion
-			#region ShipToLocationForPurchaseOrderTemplatePickerTblCreator
-			// For picking a location where items can be shipped to (for a PurchaseOrderTemplate)
-			ShipToLocationForPurchaseOrderTemplatePickerTblCreator = new DelayedCreateTbl(delegate() {
-				return LACComposite(TId.AllowedShipToLocation, null,
-					ViewUse.Full, 	// Table 0 (PostalAddress)
-					ViewUse.None, 	// Table 1 (TemporaryStorage)
-					ViewUse.Full, 	// Table 2 (Unit)
-					ViewUse.Full, 	// Table 3 (PermanentStorage)
-					ViewUse.Full,	// Table 4 (PlainRelativeLocation)
-					ViewUse.None	// Table 5 (TemplateTemporaryStorage)
-				);
-			});
-			#endregion
-			#region CompanyLocationPickerTblCreator
-			// For picking a location to use for the Purchaser's address on Purchase Orders
-			CompanyLocationPickerTblCreator = new DelayedCreateTbl(delegate() {
-				return LACComposite(TId.PostalAddress, null,
-					ViewUse.Full, 	// Table 0 (PostalAddress)
-					ViewUse.None, 	// Table 1 (TemporaryStorage)
-					ViewUse.None, 	// Table 2 (Unit)
-					ViewUse.None, 	// Table 3 (PermanentStorage)
-					ViewUse.None,	// Table 4 (PlainRelativeLocation)
-					ViewUse.None	// Table 5 (TemplateTemporaryStorage)
-				);
-			});
-			#endregion
-			#region AllTemporaryStoragePickerTblCreator
-			// For picking a temporary storage location
-			AllTemporaryStoragePickerTblCreator = new DelayedCreateTbl(delegate() {
-				return LACComposite(TId.TemporaryStorage, null,
-					ViewUse.Secondary, 	// Table 0 (PostalAddress)
-					ViewUse.Full,		// Table 1 (TemporaryStorage)
-					ViewUse.Secondary, 	// Table 2 (Unit)
-					ViewUse.Secondary, 	// Table 3 (PermanentStorage)
-					ViewUse.Secondary,	// Table 4 (PlainRelativeLocation)
-					ViewUse.None        // Table 5 (TemplateTemporaryStorage)
-				);
-			});
-			#endregion
-			#region TemplateTemporaryStoragePickerTblCreator
-			// For picking the containing location of a permanent storage location
-			TemplateTemporaryStoragePickerTblCreator = new DelayedCreateTbl(delegate() {
-				return LACComposite(TId.TemplateTemporaryStorage, null,
-					ViewUse.Secondary, 	// Table 0 (PostalAddress)
-					ViewUse.None, 		// Table 1 (TemporaryStorage)
-					ViewUse.Secondary, 	// Table 2 (Unit)
-					ViewUse.Secondary, 	// Table 3 (PermanentStorage)
-					ViewUse.Secondary,	// Table 4 (PlainRelativeLocation)
-					ViewUse.Full		// Table 5 (TemplateTemporaryStorage)
-				);
-			});
-			#endregion
-
-			#region LocationBrowseTblCreator
-			// For browsing normal locations (postal/relative)
-			LocationBrowseTblCreator = new DelayedCreateTbl(delegate()
-			{
-				return LACComposite(TId.Location, dsMB.Schema.T.Location,
-					ViewUse.Full,       // Table 0 (PostalAddress)
-					ViewUse.None,       // Table 1 (TemporaryStorage)
-					ViewUse.None,       // Table 2 (Unit)
-					ViewUse.None,       // Table 3 (PermanentStorage)
-					ViewUse.Full,       // Table 4 (PlainRelativeLocation)
-					ViewUse.None,        // Table 5 (TemplateTemporaryStorage)
-					BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.LocationReport))
-				);
-			});
-			#endregion
-			#region LocationPickerTblCreator
-			// For picking normal locations (postal/relative)
-			LocationPickerTblCreator = new DelayedCreateTbl(delegate () {
-				return LACComposite(TId.Location, dsMB.Schema.T.Location,
-					ViewUse.Full,       // Table 0 (PostalAddress)
-					ViewUse.None,       // Table 1 (TemporaryStorage)
-					ViewUse.None,       // Table 2 (Unit)
-					ViewUse.None,       // Table 3 (PermanentStorage)
-					ViewUse.Full,       // Table 4 (PlainRelativeLocation)
-					ViewUse.None        // Table 5 (TemplateTemporaryStorage)
-				);
-			});
-			#endregion
-			#region LocationOrganizerBrowseTblCreator
-			// Requires Unit table permissions since it is Units that are what are commonly 'organized'
-			LocationOrganizerBrowseTblCreator = new DelayedCreateTbl(delegate() {
-				object targetLocationId = KB.I("Target LocationID");
-				return LACComposite(TId.Location, dsMB.Schema.T.Unit,
-					ViewUse.Secondary, 			// Table 0 (PostalAddress)
-					ViewUse.None, 				// Table 1 (TemporaryStorage)
-					ViewUse.FullOnlyExisting, 	// Table 2 (Unit)
-					ViewUse.FullOnlyExisting, 	// Table 3 (PermanentStorage)
-					ViewUse.FullOnlyExisting,	// Table 4 (PlainRelativeLocation)
-					ViewUse.None,				// Table 5 (TemplateTemporaryStorage)
-						BTbl.AdditionalVerb(null,
-						delegate(BrowseLogic browserLogic) {
-							var cmd = new MoveLocationsCommand(browserLogic, targetLocationId);
-						browserLogic.Commands.AddCommand(KB.K("Move to Destination"), null, cmd, null, null,
-								TblUnboundControlNode.New(KB.K("Destination"), dsMB.Schema.T.RelativeLocation.F.ContainingLocationID.EffectiveType,
-									new DCol(Fmt.SetId(targetLocationId)),
-									Fmt.SetPickFrom(TILocations.PermanentLocationPickerTblCreator, new SettableDisablerProperties(KB.K("Choose the location where the selected records will be moved to"))),
-									Fmt.SetCreated(
-										delegate(IBasicDataControl c) {
-											c.Notify += cmd.TargetPickerChanged;
-										})));
-							return null;
-						}
-					)
-				);
-			});
-
-			#endregion
-
-			#region UnitBrowseTblCreator
-			// For browsing units
-			UnitBrowseTblCreator = new DelayedCreateTbl(delegate()
-			{
-				return LACComposite(TId.Unit, dsMB.Schema.T.Unit,
-					ViewUse.Secondary, 	// Table 0 (PostalAddress)
-					ViewUse.None, 		// Table 1 (TemporaryStorage)
-					ViewUse.Full, 		// Table 2 (Unit)
-					ViewUse.Secondary, 	// Table 3 (PermanentStorage)
-					ViewUse.Secondary,	// Table 4 (PlainRelativeLocation)
-					ViewUse.None,       // Table 5 (TemplateTemporaryStorage)
-					BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.UnitReport), matchingRowInBrowser: dsMB.Path.T.LocationDerivations.F.LocationID.F.RelativeLocationID.F.UnitID.PathToReferencedRow)
-				);
-			});
-			#endregion
-			#region PermanentStorageBrowseTblCreator
-			// For browsing/picking a permanent storage template location
-			PermanentStorageBrowseTblCreator = new DelayedCreateTbl(delegate()
-			{
-				return LACComposite(TId.Storeroom, dsMB.Schema.T.PermanentStorage,
-					ViewUse.Secondary,  // Table 0 (PostalAddress)
-					ViewUse.None,       // Table 1 (TemporaryStorage)
-					ViewUse.Secondary,  // Table 2 (Unit)
-					ViewUse.Full,       // Table 3 (PermanentStorage)
-					ViewUse.Secondary,  // Table 4 (PlainRelativeLocation)
-					ViewUse.None,        // Table 5 (TemplateTemporaryStorage)
-					BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PermanentStorageReport))
-				);
-			});
-			#endregion
-			#region AllStorageBrowseTblCreator
-			// For browsing/picking a All storage template location
-			AllStorageBrowseTblCreator = new DelayedCreateTbl(delegate () {
-				return LACComposite(TId.Storeroom, dsMB.Schema.T.RelativeLocation,
-					ViewUse.Secondary,  // Table 0 (PostalAddress)
-					ViewUse.Full,       // Table 1 (TemporaryStorage)
-					ViewUse.Secondary,  // Table 2 (Unit)
-					ViewUse.Full,       // Table 3 (PermanentStorage)
-					ViewUse.Secondary,  // Table 4 (PlainRelativeLocation)
-					ViewUse.None,        // Table 5 (TemplateTemporaryStorage)
-					BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.StorageLocationStatus))
-				);
-			});
-			#endregion
-			#endregion
-			#region ItemLocation Tbl Creators
-			#region AllActualItemLocationPickerTblCreator
-			// For picking an ItemLocation for an item located in actual (permanent or temporary) storage
-			AllActualItemLocationPickerTblCreator = new DelayedCreateTbl(delegate() {
-				return ILACComposite(TId.StoreroomOrTemporaryStorageAssignment, null, false, false,
-					true,	// Table #5 (PermanentItemLocation)
-					true,	// Table #6 (TemporaryItemLocation)
-					false	// Table #7 (TemplateItemLocation)
-				);
-			});
-			#endregion
-			#region ActiveActualItemLocationBrowseTblCreator
-			// For picking an ItemLocation for an item located in permanent storage or temporary storage for a particular work order.
-			ActiveActualItemLocationBrowseTblCreator = new DelayedCreateTbl(delegate() {
-				return ILACComposite(TId.StoreroomOrTemporaryStorageAssignment, null, false, true,
-					true,	// Table #5 (PermanentItemLocation)
-					true,	// Table #6 (TemporaryItemLocation)
-					false	// Table #7 (TemplateItemLocation)
-				);
-			});
-			#endregion
-			#region PermanentItemLocationPickerTblCreator
-			// For picking an ItemLocation for an item located in permanent storage
-			PermanentItemLocationPickerTblCreator = new DelayedCreateTbl(delegate() {
-				return ILACComposite(TId.StoreroomAssignment, dsMB.Schema.T.PermanentItemLocation,
-					false, false,
-					true,	// Table #5 (PermanentItemLocation)
-					false,	// Table #6 (TemporaryItemLocation)
-					false	// Table #7 (TemplateItemLocation)
-				);
-			});
-			#endregion
-			#region PermanentItemLocationBrowseTblCreator
-			// For browsing an ItemLocation for an item located in permanent storage
-			PermanentItemLocationBrowseTblCreator = new DelayedCreateTbl(delegate()
-			{
-				return ILACComposite(TId.StoreroomAssignment, dsMB.Schema.T.PermanentItemLocation,
-					false, false,
-					true,   // Table #5 (PermanentItemLocation)
-					false,  // Table #6 (TemporaryItemLocation)
-					false,   // Table #7 (TemplateItemLocation)
-					BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.PermanentInventoryLocation))
-				);
-			});
-			#endregion
-			#region PermanentOrTemporaryTaskItemLocationPickerTblCreator
-			// For picking an ItemLocation for an item located in permanent storage or template temporary storage
-			PermanentOrTemporaryTaskItemLocationPickerTblCreator = new DelayedCreateTbl(delegate()
-			{
-				return ILACComposite(TId.TaskStoreroomorTemporaryStorageAssignment, dsMB.Schema.T.TemporaryItemLocation, false, false,
-					true,	// Table #5 (PermanentItemLocation)
-					false,	// Table #6 (TemporaryItemLocation)
-					true	// Table #7 (TemplateItemLocation)
-				);
-			});
-			#endregion
-			#region ActiveTemporaryItemLocationBrowseTblCreator
-			ActiveTemporaryItemLocationBrowseTblCreator = new DelayedCreateTbl(delegate() {
-				return ILACComposite(TId.TemporaryStorageAssignment, dsMB.Schema.T.TemporaryItemLocation,
-					false, true,
-					false,	// Table #5 (PermanentItemLocation)
-					true,	// Table #6 (TemporaryItemLocation)
-					false	// Table #7 (TemplateItemLocation)
-				);
-			});
-			#endregion
-			#region TemporaryItemLocationBrowseTblCreator
-			// For browsing an ItemLocation for an item located in temporary storage
-			TemporaryItemLocationBrowseTblCreator = new DelayedCreateTbl(delegate()
-			{
-				return ILACComposite(TId.TemporaryStorageAssignment, dsMB.Schema.T.TemporaryItemLocation,
-					false, false,
-					false,	// Table #5 (PermanentItemLocation)
-					true,	// Table #6 (TemporaryItemLocation)
-					false	// Table #7 (TemplateItemLocation)
-				);
-			});
-			#endregion
-			#region TemporaryTaskItemLocationBrowseTblCreator
-			// For browsing/picking an ItemLocation for an item located in template temporary storage
-			TemporaryTaskItemLocationBrowseTblCreator = new DelayedCreateTbl(delegate() {
-				return ILACComposite(TId.TaskTemporaryStorageAssignment, dsMB.Schema.T.TemplateItemLocation,
-					false, false,
-					false,  // Table #5 (PermanentItemLocation)
-					false,  // Table #6 (TemporaryItemLocation)
-					true,    // Table #7 (TemplateItemLocation)
-					BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.TemplateInventoryLocation))
-				);
-			});
-			#endregion
-			#endregion
+		internal static void DefineTblEntries() {
 		}
-		internal static void DefineTblEntries()
-		{
-		}
-		private TILocations()
-		{
+		private TILocations() {
 		}
 	}
 }

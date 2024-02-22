@@ -6,9 +6,9 @@ using System.DirectoryServices.AccountManagement;
 
 namespace Thinkage.MainBoss.WebAccess.Controllers {
 	[HandleError]
-	public class HomeController : ErrorHandlingController // Not based on FormCollectionWithType collection as we are not using the database for storage
-	{
+	public class HomeController : ErrorHandlingController { // Not based on FormCollectionWithType collection as we are not using the database for storage
 		#region Logout
+		[HttpGet]
 		[MainBossAuthorization(MainBossAuthorized.Anyone)]
 		public ActionResult Logout() {
 			var application = (Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance;
@@ -19,7 +19,17 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 			return View("Logout");
 		}
 		#endregion
+		#region WebAccess
+		[HttpGet]
+		[MainBossAuthorization(MainBossAuthorized.MainBossUser)]
+		public ActionResult WebAccess() {
+			if (!((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance).HasWebAccessLicense)
+				throw new NoPermissionException(KB.K("A Web Access license is required to work with MainBoss.").Translate());
+			return View("WebAccess");
+		}
+		#endregion
 		#region Index (GET)
+		[HttpGet]
 		[MainBossAuthorization(MainBossAuthorized.Anyone)]
 		public ActionResult Index() {
 			var application = (Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance;
@@ -34,7 +44,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 				}
 			}
 			if (application.IsMainBossUser && application.HasWebAccessLicense && application.HasWebRequestsLicense == false) {
-				return RedirectToAction("Index", "Assignment");
+				return RedirectToAction("WebAccess", "Home");
 			}
 			var model = new HomeModel();
 			try {
@@ -60,6 +70,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		}
 		#endregion
 		#region Index (POST)
+		[ValidateAntiForgeryToken]
 		[MainBossAuthorization(MainBossAuthorized.Requestor)]
 		[AcceptVerbs(HttpVerbs.Post)]
 		public ActionResult Index(FormCollection formValues) {
@@ -69,9 +80,15 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 				if (!model.IsValid)
 					throw new Exception();
 				Cookies.CreateRequestorEmail(Response, model.EmailAddress);
-				return RedirectToAction("Create", "Request", new {
-					 model.RequestorID
-				});
+				if (formValues.GetValue("SeeRequests") != null)
+					return RedirectToAction("RequestorList", "Request", new {
+						model.RequestorID,
+						ResultMessage = ""
+					});
+				else
+					return RedirectToAction("Create", "Request", new {
+						model.RequestorID
+					});
 			}
 			catch {
 				CollectRuleViolations(model);
@@ -80,6 +97,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		}
 		#endregion
 		#region About
+		[HttpGet]
 		[MainBossAuthorization(MainBossAuthorized.Anyone)]
 		public ActionResult About() {
 			Version v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
@@ -87,6 +105,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		}
 		#endregion
 		#region NoPermission
+		[HttpGet]
 		public ActionResult NoPermission(NoPermissionException exception) {
 			return View("NoPermission", exception);
 		}

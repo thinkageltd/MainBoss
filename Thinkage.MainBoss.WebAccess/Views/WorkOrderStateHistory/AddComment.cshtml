@@ -11,13 +11,9 @@
 @section EditFormContent {
 	@(Html.ValidationSummary(true))
 	<div class="viewPanel">
-		<table>
-			<tbody>
-				@(Html.LabelValue(T.Text("Number"), dsMB.Schema.T.WorkOrder.F.Number.EffectiveType, Model.WorkOrderNumber))
-				@(Html.LabelValue(T.Text("Current State"), dsMB.Schema.T.WorkOrderState.F.Code.EffectiveType, Model.CurrentStateCode))
-				@(Html.LabelValue(T.Text("Current Status"), dsMB.Schema.T.WorkOrderStateHistoryStatus.F.Code.EffectiveType, Model.CurrentStatusCode))
-			</tbody>
-		</table>
+		@(Html.LabelValueRow(T.Text("Number"), dsMB.Schema.T.WorkOrder.F.Number.EffectiveType, Model.WorkOrderNumber))
+		@(Html.LabelValueRow(T.Text("Current State"), dsMB.Schema.T.WorkOrderState.F.Code.EffectiveType, Model.CurrentStateCode))
+		@(Html.LabelValueRow(T.Text("Current Status"), dsMB.Schema.T.WorkOrderStateHistoryStatus.F.Code.EffectiveType, Model.CurrentStatusCode))
 		<div id="LastComment">
 			<h2>@(T.Text("Most Recent Comments"))</h2>
 			<div class="MultiLine">@(Model.LastComment)</div>
@@ -25,6 +21,7 @@
 	</div>
 	<br />
 	@using (Html.BeginForm()) {
+		@Html.AntiForgeryToken()
 		FormMap<WorkOrderStateHistoryModel> f = Thinkage.MainBoss.WebAccess.Models.WorkOrderStateHistoryRepository.StateHistoryForm;
 
 		<fieldset>
@@ -40,7 +37,7 @@
 					@(Html.ValidationMessageFor(s => s.WorkOrderStateHistoryStatusID))
 				</p>
 			}
-			@(Html.InputControlFor(f, s => s.Comment))
+				@(Html.InputControlFor(f, s => s.Comment))
 			<p>
 				<input type="submit" value="@(T.Text("Save Comment"))" />
 			</p>
@@ -48,7 +45,7 @@
 	}
 }
 @section scripts {
-	<script type="text/javascript">
+	<script>
 		$(function () {
 			$(".selector").accordion({ header: "h2" });
 			$("#LastComment").accordion({

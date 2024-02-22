@@ -18,119 +18,34 @@ using Thinkage.MainBoss.Database;
 
 namespace Thinkage.MainBoss.Application {
 	#region DataImportExportSupport
-	public class ApplicationImportExport : GroupedInterface<IApplicationInterfaceGroup>, IApplicationDataImportExport, IDataImportExport {
+	public class ApplicationImportExport : ApplicationDataImportExport {
 		public ApplicationImportExport(GroupedInterface<IApplicationInterfaceGroup> attachTo)
-			: base(attachTo) {
+			: base(attachTo, dsMB.Schema) {
 			RegisterService<IApplicationDataImportExport>(this);
 			RegisterService<IDataImportExport>(this);
 		}
-
-		#region IApplicationDataImportExport Members
-		public string DataSetNamespace {
+		#region IDataImportExport Members
+		public override string DataSetNamespace {
 			get {
 				return KB.I("thinkage.ca/MainBoss");
 			}
 		}
-		public IServer ServerProperties {
+		public override IServer ServerProperties {
 			get {
 				// Use the database connection for serverProperties (if exists)
-				var databaseAppConnection = Thinkage.Libraries.Application.Instance.QueryInterface<IApplicationWithSingleDatabaseConnection>();
-				return databaseAppConnection != null ? databaseAppConnection.Session.Session.Server : new Thinkage.Libraries.XAF.Database.Service.MSSql.SqlClient.SqlServer();
+				var databaseAppConnection = Libraries.Application.Instance.QueryInterface<IApplicationWithSingleDatabaseConnection>();
+				return databaseAppConnection != null ? databaseAppConnection.Session.Session.Server : new Libraries.XAF.Database.Service.MSSql.SqlClient.SqlServer();
 			}
 		}
 		#endregion
-
-
 		#region IApplicationDataImportExport Members
-		private System.Text.StringBuilder validationErrors;
-		public void Import(UIFactory uiFactory, DBClient DB, Tuple<string, DelayedCreateTbl> info) {
-			UIFileSelectorPattern[] importFilter = new UIFileSelectorPattern[] {
-				new UIFileSelectorPattern(KB.K("Import files (*.xml)"), KB.I("*.xml")),
-				new UIFileSelectorPattern(KB.K("All files (*.*)"), KB.I("*.*")) };
-
-			var filename = uiFactory.SelectFileToOpen(null, importFilter);
-			if (filename != null) {
-				using (DataImportExport importer = new DataImportExport(info)) {
-					validationErrors = new System.Text.StringBuilder();
-					try {
-						importer.LoadDataSetFromXmlFile(filename.Value.Pathname, new System.Xml.Schema.ValidationEventHandler(xml_ValidationEventHandler));
-					}
-					catch (GeneralException e) {
-						if (validationErrors.Length > 0) {
-							validationErrors.Insert(0, Environment.NewLine);
-							Thinkage.Libraries.Exception.AddContext(e, new Thinkage.Libraries.MessageExceptionContext(KB.K("XML Validation Errors {0}"), validationErrors));
-						}
-						throw;
-					}
-					System.Data.DataSet errorDataSet;
-					IProgressDisplay ipd = uiFactory.CreateProgressDisplay(KB.K("Importing Data"), importer.DataHelper.DataTable.Rows.Count);
-					using (dsMB mbds = new dsMB(DB)) {
-						mbds.DisableUpdatePropagation();
-						try {
-							errorDataSet = importer.SaveDataSetToDatabase(mbds, ipd);
-						}
-						finally {
-							ipd.Complete();
-						}
-						GeneralException ex = DataImportExport.CheckErrorDataSet(errorDataSet);
-						if (ex != null) {
-							System.Text.StringBuilder question = new System.Text.StringBuilder();
-							question.AppendLine(Thinkage.Libraries.Exception.FullMessage(ex));
-							question.AppendLine();
-							question.AppendLine(KB.K("Do you want to save all errors into a file for later analysis?").Translate());
-
-							if (Thinkage.Libraries.Application.Instance.AskQuestion(question.ToString(), KB.K("Import Errors").Translate(), Ask.Questions.YesNo) == Ask.Result.Yes) {
-								UIFileSelectorPattern[] saveErrorFilter = new UIFileSelectorPattern[] {
-								new UIFileSelectorPattern(KB.K("XML file (*.xml)"), KB.I("*.xml")),
-								new UIFileSelectorPattern(KB.K("All files (*.*)"), KB.I("*.*")) };
-								var errorOutputFile = uiFactory.SelectFileToSaveTo(null, saveErrorFilter);
-								if (errorOutputFile != null)
-									errorDataSet.WriteXml(errorOutputFile.Value.Pathname);
-							}
-						}
-					}
-				}
-			}
-		}
-		void xml_ValidationEventHandler(object sender, System.Xml.Schema.ValidationEventArgs e) {
-			validationErrors.AppendLine(Strings.Format(KB.K("Line {0}, Position {1}:{2}"), e.Exception.LineNumber, e.Exception.LinePosition, e.Message));
-		}
-
-		public void Export(UIFactory uiFactory, DBClient DB, Tuple<string, DelayedCreateTbl> info) {
-			UIFileSelectorPattern[] exportFilter = new UIFileSelectorPattern[] {
-				new UIFileSelectorPattern(KB.K("Export for Excel (includes schema in other file)  (*.xml)"), KB.I("*.xml")),
-				new UIFileSelectorPattern(KB.K("Export with embedded schema  (*.xml)"), KB.I("*.xml")),
-				new UIFileSelectorPattern(KB.K("Export with no embedded schema (*.xml)"), KB.I("*.xml")),
-				new UIFileSelectorPattern(KB.K("All files (*.*)"), KB.I("*.*")) };
-			var saveInfo = uiFactory.SelectFileToSaveTo(null, exportFilter);
-			if (saveInfo != null) {
-				using (DataImportExport exporter = new DataImportExport(info)) {
-					System.Data.DataSet exportDataSet = exporter.LoadDataSetFromDatabase(DB, dsMB.Schema);
-					exporter.WriteDataSetToFile(saveInfo.Value.Pathname, exportDataSet, saveInfo.Value.FileSelectorPatternIndex == 2, saveInfo.Value.FileSelectorPatternIndex == 1);
-				}
-			}
-		}
-		public void GenerateXmlSchema(UIFactory uiFactory, Tuple<string, DelayedCreateTbl> info) {
-			UIFileSelectorPattern[] schemaFilter = new UIFileSelectorPattern[] {
-				new UIFileSelectorPattern(KB.K("For Excel (*.xml)"), KB.I("*.xml")),
-				new UIFileSelectorPattern(KB.K("Normal (*.xml)"), KB.I("*.xml")),
-				new UIFileSelectorPattern(KB.K("All files (*.*)"), KB.I("*.*")) };
-			var saveInfo = uiFactory.SelectFileToSaveTo(null, schemaFilter);
-			if (saveInfo != null) {
-				using (DataImportExport exporter = new DataImportExport(info)) {
-					bool forExcel = saveInfo.Value.FileSelectorPatternIndex == 1;
-					System.IO.File.WriteAllText(saveInfo.Value.Pathname, forExcel ? exporter.DataHelper.ExcelSchemaText : exporter.DataHelper.StandardSchemaText, System.Text.Encoding.Unicode);
-				}
-			}
-		}
-
-		public Tuple<string, DelayedCreateTbl> FindImportExportInformation(Tbl.TblIdentification tid) {
+		public override Tuple<string, DelayedCreateTbl> FindImportExportInformation(Tbl.TblIdentification tid) {
 			return TIGeneralMB3.FindImport(tid);
 		}
-		public Tuple<string, DelayedCreateTbl> FindImportExportInformation(string identifyingName) {
+		public override Tuple<string, DelayedCreateTbl> FindImportExportInformation(string identifyingName) {
 			return TIGeneralMB3.FindImport(identifyingName);
 		}
-		public string FindImportExportNameFromSchemaIdentification(string schemaIdentification) {
+		public override string FindImportExportNameFromSchemaIdentification(string schemaIdentification) {
 			return TIGeneralMB3.FindImportNameFromSchemaIdentification(schemaIdentification);
 		}
 		#endregion
@@ -139,7 +54,7 @@ namespace Thinkage.MainBoss.Application {
 	#region Customization Support
 	// TODO: This uses a mix of Execute methods and DBClient methods. Migrate everything to the latter.
 	public class MainBossCustomizations : ApplicationWithCustomizations {
-		static UIFileSelectorPattern[] ImportExportFileFilter = new UIFileSelectorPattern[] {
+		static readonly UIFileSelectorPattern[] ImportExportFileFilter = new UIFileSelectorPattern[] {
 			new UIFileSelectorPattern(KB.K("Customization files (*.xml)"), KB.I("*.xml")),
 			new UIFileSelectorPattern(KB.K("All files (*.*)"), KB.I("*.*")) };
 		public MainBossCustomizations(TblDrivenMainBossApplication attachTo, bool supportsPersonalSettings)
@@ -270,7 +185,7 @@ namespace Thinkage.MainBoss.Application {
 			EnumerationPositioner.CurrentPosition = EnumerationPositioner.StartPosition;
 		}
 		private FilteringPositioner EnumerationPositioner;
-		private Dictionary<object, string> SettingsNameMap = new Dictionary<object, string>(dsMB.Schema.T.Settings.InternalIdColumn.EffectiveType); 
+		private readonly Dictionary<object, string> SettingsNameMap = new Dictionary<object, string>(dsMB.Schema.T.Settings.InternalIdColumn.EffectiveType);
 		public override bool NextSettingsEnumeration() {
 			EnumerationPositioner.CurrentPosition = EnumerationPositioner.CurrentPosition.Next;
 			return !EnumerationPositioner.CurrentPosition.IsEnd;
@@ -311,21 +226,35 @@ namespace Thinkage.MainBoss.Application {
 			DBClient db = GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
 
 			try {
-				var nameRrow = (dsMB.SettingsNameRow)db.ViewAdditionalRow(DS, dsMB.Schema.T.SettingsName, new SqlExpression(dsMB.Path.T.SettingsName.F.Code).Eq(SqlExpression.Constant(settingsName)));
+				var nameRrow = db.ViewAdditionalRow<dsMB.SettingsNameRow>(DS, new SqlExpression(dsMB.Path.T.SettingsName.F.Code).Eq(SqlExpression.Constant(settingsName)));
 				if (nameRrow == null) {
-					nameRrow = (dsMB.SettingsNameRow)db.AddNewRowAndBases(DS, dsMB.Schema.T.SettingsName);
+					nameRrow = DS.T.SettingsName.AddNewRow();
 					nameRrow.F.Code = settingsName;
 				}
 				// Create a new Settings record with SettingsNameId <- nameRrow.F.Id, Code as passed, UserId <- IsGlobal ? null : current userid, Value <- new Byte[0]
-				var row = (dsMB.SettingsRow)db.AddNewRowAndBases(DS, dsMB.Schema.T.Settings);
+				var row = DS.GetDataTable<dsMB.SettingsDataTable>().AddNewRow();
 				row.F.SettingsNameID = nameRrow.F.Id;
-				if (!isGlobal)
+				if (!isGlobal) {
 					// The caller should not ask to create personal settings if there is no current user.
 					row.F.UserID = TblDrivenMainBossApplication.Instance.AppConnectionMixIn.UserRecordID;
+					if (row.F.UserID == null)
+						throw new GeneralException(KB.K("Only GLobal settings can be saved when there is no current User"));
+				}
 				row.F.Code = Code;
 				row.F.Version = TblDrivenMainBossApplication.Instance.AppConnectionMixIn.VersionHandler.CurrentVersion.ToString();
-				row.F.Value = new Byte[0];
-				db.Update(DS);
+				row.F.Value = Array.Empty<byte>();
+				try {
+					db.Update(DS);
+				}
+				catch (ColumnRelatedDBException vuc) {
+					if (vuc.InterpretedErrorCode == InterpretedDbExceptionCodes.ViolationUniqueConstraint)
+						// We don't check the fields involved, there is only one unique constraint that can possibly be violated.
+						if (isGlobal)
+							throw new GeneralException(KB.K("Global settings '{0}' already exist"), Code);
+						else
+							throw new GeneralException(KB.K("Personal settings '{0}' already exist for the current user"), Code);
+					throw;
+				}
 				return row.F.Id;
 			}
 			finally {
@@ -362,7 +291,7 @@ namespace Thinkage.MainBoss.Application {
 						new SqlExpression(dsMB.Path.T.DefaultSettings.F.SettingsNameID).Eq(SqlExpression.Constant(settingsNameId))
 							.And(new SqlExpression(dsMB.Path.T.DefaultSettings.F.UserID).Eq(SqlExpression.Constant(userId))));
 				if (defaultSettingsRow == null) {
-					defaultSettingsRow = (dsMB.DefaultSettingsRow)db.AddNewRowAndBases(DS, dsMB.Schema.T.DefaultSettings);
+					defaultSettingsRow = DS.T.DefaultSettings.AddNewRow();
 					defaultSettingsRow.F.SettingsNameID = (Guid)settingsNameId;
 					defaultSettingsRow.F.UserID = (Guid)userId;
 				}
@@ -395,10 +324,10 @@ namespace Thinkage.MainBoss.Application {
 			try {
 				// Delete any DefaultSettings records that refer to this Settings. For a personal Settings there should be only one but for global Settings there could be up to one per user.
 				db.Edit(DS, dsMB.Schema.T.DefaultSettings, new SqlExpression(dsMB.Path.T.DefaultSettings.F.SettingsID).Eq(SqlExpression.Constant(id)));
-				foreach (dsMB.DefaultSettingsRow defaultSettingsRow in DS.T.DefaultSettings)
+				foreach (var defaultSettingsRow in DS.T.DefaultSettings.Rows)
 					defaultSettingsRow.Delete();
 				// delete the Settings record for the given Id.
-				var settingsRow = (dsMB.SettingsRow)db.EditSingleRow(DS, dsMB.Schema.T.Settings, new SqlExpression(dsMB.Path.T.Settings.F.Id).Eq(SqlExpression.Constant(id)));
+				var settingsRow = db.EditSingleRow<dsMB.SettingsRow>(DS, new SqlExpression(dsMB.Path.T.Settings.F.Id).Eq(SqlExpression.Constant(id)));
 				if (settingsRow != null)
 					settingsRow.Delete();
 				db.Update(DS);
@@ -413,8 +342,8 @@ namespace Thinkage.MainBoss.Application {
 	}
 	#endregion
 	// This application class is for apps that run logged on to a current MainBoss database.
-	public abstract class TblDrivenMainBossApplication : Thinkage.Libraries.Application {
-		public static new TblDrivenMainBossApplication Instance { get { return (TblDrivenMainBossApplication)Thinkage.Libraries.Application.Instance; } }
+	public abstract class TblDrivenMainBossApplication : Libraries.Application {
+		public static new TblDrivenMainBossApplication Instance { get { return (TblDrivenMainBossApplication)Libraries.Application.Instance; } }
 
 		#region Creation and teardown
 		protected abstract FormProxy CreateMainForm(MB3Client db);
@@ -425,10 +354,10 @@ namespace Thinkage.MainBoss.Application {
 			Thinkage.MainBoss.Database.MBRestrictions.DefineRestrictions();
 
 			var extraHandlers = new List<SearchExpressionControl.UIHandler>();
-			foreach (DBI_PathToRow pathToValue in new[] {
-					(DBI_PathToRow)dsMB.Path.T.Location,
-					(DBI_PathToRow)dsMB.Path.T.Location.F.RelativeLocationID.F.UnitID.PathToReferencedRow,
-					(DBI_PathToRow)dsMB.Path.T.Location.F.RelativeLocationID.F.PermanentStorageID.PathToReferencedRow
+			foreach (var pathToValue in new DBI_PathToRow[] {
+					dsMB.Path.T.Location,
+					dsMB.Path.T.Location.F.RelativeLocationID.F.UnitID.PathToReferencedRow,
+					dsMB.Path.T.Location.F.RelativeLocationID.F.PermanentStorageID.PathToReferencedRow
 				})
 				extraHandlers.Add(
 					// This UIHandler adds a recursive containment filter to all Link(Locationderivation) type values. It uses the PermanentLocationPickerTblCreator, which is correct for most cases,
@@ -448,17 +377,17 @@ namespace Thinkage.MainBoss.Application {
 						new SearchExpressionControl.UIHandler.ParameterInfoNode(
 							(searchValue) => new SetTypeInfo(false, dsMB.Schema.T.LocationContainment.F.ContainingLocationID.EffectiveType, 1),
 							(searchValue) => new Fmt(Fmt.SetPickFrom(TILocations.PermanentLocationPickerTblCreator)),
-							null, null, null, null)
+							null, null, null, null, null)
 					)
 				);
 			FormsPresentationMixIn = new FormsPresentationApplication(this, !o.MBConnectionParameters.CompactBrowsers, extraHandlers.ToArray());
-			new Thinkage.MainBoss.Database.RaiseErrorTranslationKeyBuilder(this);
+			new RaiseErrorTranslationKeyBuilder(this);
 			var permManager = new MainBossPermissionsManager(Root.Rights);
 			new ApplicationTblDefaultsUsingWindows(this, new ETbl(), permManager, Root.Rights.Table, Root.RightsSchema, Root.Rights.Action.Customize);
 			var uiFactory = GetInterface<UIFactory>();
 
 			// Copy the help parameters from the app that is creating us.
-			HelpUsingFolderOfHtml.CopyFromOtherApplication(this, Thinkage.Libraries.Application.Instance);
+			HelpUsingFolderOfHtml.CopyFromOtherApplication(this, Libraries.Application.Instance);
 			// TODO: What should happen here is we open a database under a minimal schema in order to extract from it version information.
 			// If the version information is satisfactory we create a full MB3Client; if the version information names an old version
 			// we offer to upgrade it
@@ -474,7 +403,7 @@ namespace Thinkage.MainBoss.Application {
 					AppConnectionMixIn.CheckLicensesAndSetFeatureGroups(mode.MainKeys, mode.FeatureGroupLicensing, new Licensing.MBLicensedObjectSet(session), AppConnectionMixIn.VersionHandler.GetLicenses(session), null, Licensing.ExpiryWarningDays);
 					// Check DBEffectiveServerVersion against actual server version and warn that special processing may be required.
 					if (DBVersionInformation.GetServerVersionUpgradersIndex(session.Session.EffectiveDBServerVersion) < DBVersionInformation.GetServerVersionUpgradersIndex(session.Session.ServerVersion))
-						Thinkage.Libraries.Application.Instance.DisplayInfo(Strings.Format(KB.K("This database uses features available in SQL server version {0} but your server is version {1} which has additional features which would enhance performance. Use the 'Upgrade' operation to update the database to use these newer features."), session.Session.EffectiveDBServerVersion, session.Session.ServerVersion));
+						Libraries.Application.Instance.DisplayInfo(Strings.Format(KB.K("This database uses features available in SQL server version {0} but your server is version {1} which has additional features which would enhance performance. Use the 'Upgrade' operation to update the database to use these newer features."), session.Session.EffectiveDBServerVersion, session.Session.ServerVersion));
 					AppConnectionMixIn.InitializeUserId();
 
 					permManager.InitializeRolesGrantingPermission(session);
@@ -494,16 +423,16 @@ namespace Thinkage.MainBoss.Application {
 					throw new GeneralException(ex, KB.K("There was a problem validating access to {0}"), o.MBConnectionParameters.Connection.DisplayNameLowercase);
 				}
 			}
-			catch (Thinkage.Libraries.Licensing.NoLicenseException e) {
+			catch (Libraries.Licensing.NoLicenseException e) {
 				throw new GeneralException(e, KB.K("There are no licenses for the application '{0}'. Use the 'Administration' application to add the required licenses."), mode.FullName);
 			}
-			catch (Thinkage.Libraries.DBAccess.DatabaseUpgradeRequiredException e) {
+			catch (DatabaseUpgradeRequiredException e) {
 				throw new GeneralException(e, KB.K("The database requires upgrading for the application '{0}'. Use the 'Upgrade' operation to upgrade the database."), mode.FullName);
 			}
 			if (AppConnectionMixIn.VersionHandler.CurrentVersion >= new Version(1, 0, 10, 31)) {
 				notifierBuffer = new DynamicBufferManager(AppConnectionMixIn.Session, dsMB.Schema, false);
 				q = notifierBuffer.Add(dsMB.Schema.T.UserRole, true, null);
-				dtp = new Thinkage.Libraries.DataFlow.DataTablePositioner(q.DataTable);
+				Positioner = new DataTablePositioner(q.DataTable);
 				AppConnectionMixIn.UserForPermissionsChangeNotify += delegate () {
 					// Note the lifetime of the Application object and the AppConnectionMixIn object match so we do not need to unsubscribe the event
 					UserForPermissionsCheckingChanged();
@@ -528,9 +457,9 @@ namespace Thinkage.MainBoss.Application {
 				AppCustomizationsMixIn.RestoreFromPublished();
 		}
 		public readonly string ApplicationFullName;
-		public abstract Thinkage.Libraries.Application CreateSetupApplication();
+		public abstract Libraries.Application CreateSetupApplication();
 
-		public override void TeardownApplication(Thinkage.Libraries.Application nextApplication) {
+		public override void TeardownApplication(Libraries.Application nextApplication) {
 			if (BarcodeScannerHandler != null) {
 				BarcodeScannerHandler.Dispose();
 				BarcodeScannerHandler = null;
@@ -549,16 +478,16 @@ namespace Thinkage.MainBoss.Application {
 		public readonly FormsPresentationApplication FormsPresentationMixIn;
 
 		#region Permission Notification Handling
-		DynamicBufferManager notifierBuffer;
-		DynamicBufferManager.Query q;
-		Thinkage.Libraries.DataFlow.DataTablePositioner dtp;
+		readonly DynamicBufferManager notifierBuffer;
+		readonly DynamicBufferManager.Query q;
+		readonly DataTablePositioner Positioner;
 		private void UserForPermissionsCheckingChanged() {
-			dtp.Changed -= new Thinkage.Libraries.DataFlow.DataChanged(dtp_Changed);
+			Positioner.Changed -= new DataChanged(Positioner_Changed);
 			q.SetFilter(new SqlExpression(dsMB.Path.T.UserRole.F.UserID).Eq(SqlExpression.Constant(AppConnectionMixIn.UserRecordIDForPermissions)));
 			notifierBuffer.SetAllKeepUpdated(true);
-			dtp.Changed += new Thinkage.Libraries.DataFlow.DataChanged(dtp_Changed);
+			Positioner.Changed += new DataChanged(Positioner_Changed);
 		}
-		void dtp_Changed(Thinkage.Libraries.DataFlow.DataChangedEvent whatHappened, Thinkage.Libraries.DataFlow.Position affectedRecordPosition) {
+		void Positioner_Changed(DataChangedEvent whatHappened, Position affectedRecordPosition) {
 			// Since we might get more than one notification we defer this until idle.
 			GetInterface<IIdleCallback>().ScheduleIdleCallback(this,
 				delegate () {

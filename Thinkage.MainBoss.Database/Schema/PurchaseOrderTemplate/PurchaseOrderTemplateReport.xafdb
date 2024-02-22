@@ -8,13 +8,13 @@
 		<field name="Quantity" type="Quantity"/>
 		<field name="Labor" type="interval(min 00:01:00, max 36500.00:00:00, by 00:01:00, nonnull)"/>
 		<field name="UnitOfMeasureID" type="GUIDREF" link="UnitOfMeasure"/>
-		<field name="POLineTemplateID" type="RequiredGUIDREF" link="POLineTemplate"/>
-		<field name="PurchaseOrderTemplateID" type="RequiredGUIDREF" link="PurchaseOrderTemplate" labelkey=""/>
-		<field name="ItemLocationID" type="RequiredGUIDREF" link="ItemLocation"/>
-		<field name="Item" type="RequiredGUIDREF" link="Item"/>
-		<field name="LaborOutsideID" type="RequiredGUIDREF" link="LaborOutside"/>
-		<field name="OtherWorkOutsideID" type="RequiredGUIDREF" link="OtherWorkOutside"/>
-		<field name="MiscellaneousID" type="RequiredGUIDREF" link="Miscellaneous"/>
+		<field name="POLineTemplateID" type="GUIDREF" link="POLineTemplate"/>
+		<field name="PurchaseOrderTemplateID" type="GUIDREF" link="PurchaseOrderTemplate" labelkey=""/>
+		<field name="ItemLocationID" type="GUIDREF" link="ItemLocation"/>
+		<field name="Item" type="GUIDREF" link="Item"/>
+		<field name="LaborOutsideID" type="GUIDREF" link="LaborOutside"/>
+		<field name="OtherWorkOutsideID" type="GUIDREF" link="OtherWorkOutside"/>
+		<field name="MiscellaneousID" type="GUIDREF" link="Miscellaneous"/>
 		<extension name="query">
 			with MyPurchaseOrderLineTemplate (
 		POLineItemTemplateID,

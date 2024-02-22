@@ -6,11 +6,6 @@
 	<field name="Id" read="RequiredGUID">
 	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderGroupNameProvider,Thinkage.MainBoss.Controls</extension>
 	</field>
-	<field name="TableEnum" type="integer(min 0, max 5, nonnull)">
-	  <!-- DatabaseEnums.WorkOrderOutside -->
-	  <doc>The type of resource record</doc>
-	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderOutsideProvider,Thinkage.MainBoss.Controls</extension>
-	</field>
 	<!-- the base linkages of the unified records -->
 	<field name="TradeID" type="GUIDREF" link="Trade">
 	  <doc>the Trade record linkage (the 'agent')</doc>
@@ -27,26 +22,18 @@
 	  <doc>the Id of the WorkOrderExpenseModelEntry associated with a Demand record based on the WorkOrder's expense model which determines the C/C to actualize to.
 	  This will be null if there is no model entry (preventing actualization) and for all non-Demand and non-Actual record types.</doc>
 	</field>
-	<!-- Other fields required for filtering/parentage -->
-	<field name="ParentID" type="GUIDREF" link="WorkOrderOutside" labelkey="Work Order Outside">
-	  <!-- This must remain until we have some way of expressing the row parent on a per-view basis -->
-	  <doc>the Id of another record in this table that is the parent of this record in the tree view
-	  For Demands this is the Trade ID or the magic no-agent Id</doc>
-	</field>
 	<extension name="query">
 		<!-- fabricated record: Unspecified Trade -->
-		select '60000000-0000-0000-0000-000000000006', 0,	<!-- WorkOrderOutside.UnassignedTrade--><!--KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId-->
-				null, null, null, null, null
+		select '60000000-0000-0000-0000-000000000006',	<!--KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId-->
+				null, null, null, null
 	  union all
 		<!-- Trade -->
-		select T.ID, 1,					<!-- WorkOrderOutside.Trade -->
-			T.ID, NULL, NULL, NULL, NULL
+		select T.ID, T.ID, NULL, NULL, NULL
 		from
 			Trade as T
 	  union all
 		<!-- Demand Hourly Outside -->
-		select D.ID, 2,				<!-- WorkOrderOutside.LaborOutside -->
-			NULL, D.ID, NULL, WOXME.ID, coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006') <!-- KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId -->
+		select D.ID, NULL, D.ID, NULL, WOXME.ID
 		  from
 				Demand as D
 		  join
@@ -61,8 +48,7 @@
 					and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
 	  union all
 		<!-- Demand Other Work Outside -->
-		select D.ID, 3,				<!-- WorkOrderOutside.OtherWorkOutside -->
-			NULL, D.ID, NULL, WOXME.ID, coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006') <!-- KnownIds.WorkOrderGroupNameProviderUnspecifiedTradeId -->
+		select D.ID, NULL, D.ID, NULL, WOXME.ID
 		  from
 				Demand as D
 		  join
@@ -77,8 +63,7 @@
 					and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
 	  union all
 		<!-- PO Line Labor -->
-		select POLL.POLineID, 4,				<!-- WorkOrderOutside.POLineLabor -->
-			NULL, DLO.DemandID, POLL.POLineID, WOXME.ID, DLO.DemandID
+		select POLL.POLineID, NULL, DLO.DemandID, POLL.POLineID, WOXME.ID
 		  from
 				POLineLabor as POLL
 		  join
@@ -93,8 +78,7 @@
 					and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
 	  union all
 		<!-- PO Line Other Work -->
-		select POLOW.POLineID, 5,				<!-- WorkOrderOutside.POLineOtherWork -->
-			NULL, DOWO.DemandID, POLOW.POLineID, WOXME.ID, DOWO.DemandID
+		select POLOW.POLineID, NULL, DOWO.DemandID, POLOW.POLineID, WOXME.ID
 		  from
 				POLineOtherWork as POLOW
 		  inner join
@@ -126,48 +110,45 @@
 	</field>
 	<field name="DisplayID" type="GUIDREF" link="WorkOrderOutside">
 	</field>
-	<!--TODO: delete this-->
-	<field name="IsPrimary" type="RequiredBool">
-	</field>
 	<extension name="query">
 	  <!-- We don't need self-containment for the Labor records since they are never primary -->
-		select DLO.DemandID, DLO.DemandID, DLO.DemandID, 1
+		select DLO.DemandID, DLO.DemandID, DLO.DemandID
 		  from DemandLaborOutside as DLO
 	  union all
-		select DOWO.DemandID, DOWO.DemandID, DOWO.DemandID, 1
+		select DOWO.DemandID, DOWO.DemandID, DOWO.DemandID
 		  from DemandOtherWorkOutside as DOWO
 	  union all
-		select POLL.POLineID, POLL.POLineID, POLL.POLineID, 1
+		select POLL.POLineID, POLL.POLineID, POLL.POLineID
 			from POLineLabor as POLL
 		union all
-		select POLOW.POLineID, POLOW.POLineID, POLOW.POLineID, 1
+		select POLOW.POLineID, POLOW.POLineID, POLOW.POLineID
 			from POLineOtherWork as POLOW
 	  union all
-		select coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006'), DLO.DemandID, coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006'), 0
+		select coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006'), DLO.DemandID, coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006')
 		  from
 			DemandLaborOutside as DLO
 		  join
 			LaborOutside as LO on LO.ID = DLO.LaborOutsideID
 	  union all
-		select coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006'), DOWO.DemandID, coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006'), 0
+		select coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006'), DOWO.DemandID, coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006')
 		  from
 			DemandOtherWorkOutside as DOWO
 		  join
 			OtherWorkOutside as OWO on OWO.ID = DOWO.OtherWorkOutsideID
 		union all
-		select DLO.DemandID, POLL.POLineID, DLO.DemandID, 0
+		select DLO.DemandID, POLL.POLineID, DLO.DemandID
 			from
 				POLineLabor as POLL
 			join
 				DemandLaborOutside as DLO on POLL.DemandLaborOutsideID = DLO.ID
 		union all
-		select DOWO.DemandID, POLOW.POLineID, DOWO.DemandID, 0
+		select DOWO.DemandID, POLOW.POLineID, DOWO.DemandID
 			from
 				POLineOtherWork as POLOW
 			join
 				DemandOtherWorkOutside as DOWO on POLOW.DemandOtherWorkOutsideID = DOWO.ID
 	  union all
-		select coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006'), POLL.POLineID, coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006'), 0
+		select coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006'), POLL.POLineID, coalesce(LO.TradeID, '60000000-0000-0000-0000-000000000006')
 		  from
 				POLineLabor as POLL
 			join
@@ -175,7 +156,7 @@
 		  join
 				LaborOutside as LO on LO.ID = DLO.LaborOutsideID
 	  union all
-		select coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006'), POLOW.POLineID, coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006'), 0
+		select coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006'), POLOW.POLineID, coalesce(OWO.TradeID, '60000000-0000-0000-0000-000000000006')
 			from
 				POLineOtherWork as POLOW
 			join

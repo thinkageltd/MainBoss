@@ -6,9 +6,9 @@ using Thinkage.Libraries.Translation;
 namespace Thinkage.MainBoss.Database.Service {
 	public class HtmlNotificationEmail : INotificationEmail {
 		delegate void ContentAppend();
-		private static readonly string SiteCss;
+		private static readonly string SiteCss = InitializeSiteCss();
 		private readonly StringBuilder body;
-		private bool ended = false;
+		private readonly bool ended = false;
 
 		private string Encode(string value) {
 			return (!String.IsNullOrEmpty(value)) ? System.Net.WebUtility.HtmlEncode(value) : String.Empty;
@@ -18,7 +18,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				return pPreferredLanguage;
 			}
 		}
-		private System.Globalization.CultureInfo pPreferredLanguage;
+		private readonly System.Globalization.CultureInfo pPreferredLanguage;
 
 		public HtmlNotificationEmail(System.Globalization.CultureInfo preferredLanguage) {
 			pPreferredLanguage = preferredLanguage;
@@ -38,7 +38,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				return body.ToString();
 			}
 		}
-		static HtmlNotificationEmail() {
+		static string InitializeSiteCss() {
 			StringBuilder cssBody = new StringBuilder();
 			System.IO.Stream cssStream = null;
 			try {
@@ -64,7 +64,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			compressed = compressed.Replace("\t", "");
 			compressed = compressed.Replace("  ", "");
 			compressed = compressed.Replace("    ", "");
-			SiteCss = compressed;
+			return compressed;
 		}
 		[Invariant]
 		public void AppendMultiLine([Invariant] string css, string content) {
@@ -132,18 +132,18 @@ namespace Thinkage.MainBoss.Database.Service {
 			NewLine();
 		}
 		public void LabelValueLine(Key label, [Invariant] string value) {
-			LabelValueLine(label, null, delegate() {
+			LabelValueLine(label, null, delegate () {
 				body.Append(value);
 			});
 		}
 		public void AppendInitialInformation(InitialNotificationInformation value) {
 			if (value.UnitInformation != null) {
-				LabelValueLine(KB.K("Unit"), value.UnitInformation.IsDeleted ? "Deleted" : null, delegate() {
+				LabelValueLine(KB.K("Unit"), value.UnitInformation.IsDeleted ? "Deleted" : null, delegate () {
 					body.Append(value.UnitInformation.Unit);
 				});
 			}
 			if (value.RequestorInformation != null) {
-				LabelValueLine(KB.K("Requestor"), null, delegate() {
+				LabelValueLine(KB.K("Requestor"), null, delegate () {
 					string name = Strings.IFormat("<td class=\"{1}\">{0}</td>", value.RequestorInformation.Name, value.RequestorInformation.IsDeleted ? KB.I("Deleted Name") : "Name");
 					string phone = Strings.IFormat("<td{1}>{0}</td>", value.RequestorInformation.Phone, value.RequestorInformation.IsDeleted ? KB.I(" class=\"Deleted\"") : "");
 					string email = Strings.IFormat("<td{1}>{0}</td>", String.IsNullOrEmpty(value.RequestorInformation.MailTo) ? "" : value.RequestorInformation.MailTo, value.RequestorInformation.IsDeleted ? KB.I(" class=\"Deleted\"") : "");
@@ -170,7 +170,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			NewLine();
 		}
 		public void LabelValueMultiLine(Key label, [Invariant] string css, string value) {
-			LabelValueLine(label, null, delegate() {
+			LabelValueLine(label, null, delegate () {
 				AppendMultiLine(css, value);
 			});
 		}

@@ -15,6 +15,12 @@ using Thinkage.Libraries.XAF.UI;
 using Thinkage.MainBoss.Database;
 
 namespace Thinkage.MainBoss.Controls {
+#if DEBUG
+	public static class TIGeneralMB3Debug {
+		public static void Setup() {
+		}
+	}
+#endif
 	/// <summary>
 	/// This class doesn't really *do* anything other than provide a scope full of identifiers for all the MB Tbl creation,
 	/// holding stuff like common NodeId values, methods to make Check objects, and unqualified exposure of TblRegistry's DefineTbl methods.
@@ -179,8 +185,6 @@ namespace Thinkage.MainBoss.Controls {
 		#endregion
 		internal static readonly SimpleKey OverdueLabelKey = KB.K("Days Overdue");
 		internal static readonly object StateHistoryEffectiveDateId = KB.I("StateHistoryEffectiveDateId");
-		internal static readonly object StateHistoryPreviousEffectiveDateId = KB.I("StateHistoryPreviousEffectiveDateId");
-		internal static readonly object StateHistoryNextEffectiveDateId = KB.I("StateHistoryNextEffectiveDateId");
 		internal static readonly object CurrentStateHistoryIdWhenCalledId = KB.I("CurrentStateHistoryIdWhenCalledId");
 		internal static readonly object CurrentStateHistoryCodeWhenLoadedId = KB.I("CurrentStateHistoryCodeWhenLoadedId");
 		internal static readonly object ItemLocationMinimumId = KB.I("ItemLocationMinimumId");
@@ -224,6 +228,36 @@ namespace Thinkage.MainBoss.Controls {
 		public static readonly TypeInfo POMiscellaneousUnitCostTypeOnClient = new CurrencyTypeInfo(0.01m, decimal.MinValue, decimal.MaxValue, true);
 		public static readonly TypeInfo ItemUnitCostTypeOnServer = new Libraries.TypeInfo.CurrencyTypeInfo(0.0001m, Int64.MinValue / 10000m, Int64.MaxValue / 10000m, true);    // TODO: This includes SQL knowledge as to the allowed range and precision.
 		public static readonly TypeInfo HourlyCostTypeOnServer = new Libraries.TypeInfo.CurrencyTypeInfo(0.01m, Int64.MinValue / 10000m, Int64.MaxValue / 10000m, true);    // TODO: This includes SQL knowledge as to the allowed range and precision.
+		public static decimal? ResourceIntervalUnitCostCalculator(TimeSpan? quantity, decimal? cost) {
+			if (!cost.HasValue || !quantity.HasValue || quantity.Value == TimeSpan.Zero)
+				return null;
+			// Note that Decimal.Round will reduce but not increase the scale of a decimal, so we first add a scaled zero to increase the scale if needed.
+			return Decimal.Round(cost.Value / quantity.Value.Ticks * ResourceUnitCostIntervalBasisQuantity.Ticks + 0.00m, 2);
+		}
+		public static object ResourceIntervalUnitCostCalculator(object[] values) { // Cost, Quantity => Unit Cost with decimal scale == 2.
+			return ResourceIntervalUnitCostCalculator((TimeSpan?)IntervalTypeInfo.AsNativeType(values[1], typeof(TimeSpan?)), (decimal?)values[0]);
+		}
+		public static decimal? ResourceCountUnitCostCalculator(long? quantity, decimal? cost) {
+			if (!cost.HasValue || !quantity.HasValue || quantity.Value == 0)
+				return null;
+			return Decimal.Round(cost.Value / quantity.Value + 0.0000m, 4);
+		}
+		public static object ResourceCountUnitCostCalculator(object[] values) { // Cost, Quantity => Unit Cost with decimal scale == 4.
+			return ResourceCountUnitCostCalculator((long?)IntegralTypeInfo.AsNativeType(values[1], typeof(long?)), (decimal?)values[0]);
+		}
+		public static BrowserInitValue ResourceCountUnitCostInitValue(DBI_Path pathToCost, DBI_Path pathToQuantity) {
+			return new BrowserCalculatedInitValue(ItemUnitCostTypeOnClient, ResourceCountUnitCostCalculator,
+					new BrowserPathValue(pathToCost),
+					new BrowserPathValue(pathToQuantity));
+		}
+		public static BrowserInitValue ResourceIntervalUnitCostInitValue(DBI_Path pathToCost, DBI_Path pathToQuantity) {
+			return new BrowserCalculatedInitValue(HourlyUnitCostTypeOnClient, ResourceIntervalUnitCostCalculator,
+					new BrowserPathValue(pathToCost),
+					new BrowserPathValue(pathToQuantity));
+		}
+		#endregion
+		#region Resource Quantity Types
+		public static readonly TimeSpan ResourceUnitCostIntervalBasisQuantity = new TimeSpan(1, 0, 0);	// 1 hour
 		#endregion
 		#region Node Ids and common multi table layout columns
 		protected static readonly object AvailableQuantityId = KB.I("AvailableQuantityId");
@@ -303,89 +337,6 @@ namespace Thinkage.MainBoss.Controls {
 			return schema.Columns[KB.I(ActualQuantityColumnName)];
 		}
 		#endregion
-		#region Contact Group
-		// TODO: The following various contact groups should perhaps be changed to follow the model of CurrentStateHistoryGroup,
-		// except to allow several paths to contact rows. This would eliminate the need for all the explicit column labels and the combinatorial explosion
-		// of methods based on what columns should be shown.
-		/// <summary>
-		/// Create the Layout Node for a multicolumn layout of one of more rows of Contact information, specifically the Name, Business Phone, and Email for the contact.
-		/// </summary>
-		/// <param name="nodes">Definitions for the individual rows, typically the return values from ContactRowGroup</param>
-		/// <returns></returns>
-		protected static TblContainerNode ContactGroupTblLayoutNode(params TblRowNode[] nodes) {
-			return TblMultiColumnNode.New(
-				new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-				new Key[] { KB.K("Name"), KB.K("Business Phone"), KB.K("Email") },
-				nodes
-			);
-		}
-		protected static TblContainerNode ContactGroupPreferredLanguageTblLayoutNode(params TblRowNode[] nodes) {
-			return TblMultiColumnNode.New(
-				new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-				new Key[] { KB.K("Name"), KB.K("Email"), KB.K("Preferred Language") },
-				nodes
-			);
-		}
-		/// <summary>
-		/// Define a single row for a multicolumn contact row group, where the editor should be able to pick a Contact directly
-		/// </summary>
-		/// <param name="pathToContact">Path from the Tbl root to the Contact record</param>
-		/// <param name="nameEcolAttr">ECol attribute to use on the Name entry in the row</param>
-		/// <returns></returns>
-		protected static TblRowNode ContactGroupRow(DBI_Path pathToContact, ECol nameEcolAttr) {
-			return ContactGroupRow(pathToContact, dsMB.Path.T.Contact, nameEcolAttr);
-		}
-		/// <summary>
-		/// Define a single row for a multicolumn contact row group, where the editor should be able to pick a record that refers to and is identified by a Contact record.
-		/// </summary>
-		/// <param name="pathToRecord">Path from the Tbl root to the picked record</param>
-		/// <param name="pathRecordToContact">Path from the picked record to its identifying Contact</param>
-		/// <param name="nameEcolAttr">ECol attribute to use on the Name entry in the row</param>
-		/// <returns></returns>
-		protected static TblRowNode ContactGroupRow(DBI_Path pathToRecord, DBI_PathToRow pathRecordToContact, ECol nameEcolAttr) {
-			return TblRowNode.New(pathToRecord.Key(), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-					TblColumnNode.New(pathToRecord, new NonDefaultCol(), new DCol(Fmt.SetDisplayPath(new DBI_Path(pathRecordToContact, dsMB.Path.T.Contact.F.Code))), nameEcolAttr),
-					TblColumnNode.New(new DBI_Path(pathToRecord.PathToReferencedRow, new DBI_Path(pathRecordToContact, dsMB.Path.T.Contact.F.BusinessPhone)), DCol.Normal, ECol.AllReadonly),
-					TblColumnNode.New(new DBI_Path(pathToRecord.PathToReferencedRow, new DBI_Path(pathRecordToContact, dsMB.Path.T.Contact.F.Email)), DCol.Normal, ECol.AllReadonly));
-		}
-		/// <summary>
-		/// Make a multicolumn Contact row group that represents a Requestor, with phone and email information
-		/// </summary>
-		/// <param name="pathToRequestor"></param>
-		/// <param name="editable"></param>
-		/// <returns></returns>
-		public static readonly object RequestorPickerNodeId = KB.I("RequestorPickerNodeId");
-		public static readonly object RequestorEmailFilterNodeId = KB.I("RequestorEmailFilterNodeId");
-		protected static TblContainerNode SingleRequestorGroup(DBI_Path pathToRequestor, bool editable) {
-			return ContactGroupTblLayoutNode(
-					ContactGroupRow(pathToRequestor, dsMB.Path.T.Requestor.F.ContactID.PathToReferencedRow, editable
-						? new ECol(ECol.NormalAccess, Fmt.SetId(RequestorPickerNodeId), Fmt.SetBrowserFilter(BTbl.TaggedEqFilter(dsMB.Path.T.Requestor.F.ContactID.F.Email, RequestorEmailFilterNodeId, true)))
-						: ECol.AllReadonly)
-				);
-		}
-		/// <summary>
-		/// Make a multicolumn Contact row group that represents a Requestor, with email information and language preference
-		/// </summary>
-		/// <param name="pathToRequestor"></param>
-		/// <returns></returns>
-		protected static TblContainerNode SingleRequestorLanguagePreferenceGroup(DBI_Path pathToRequestor) {
-			return ContactGroupPreferredLanguageTblLayoutNode(TblRowNode.New(KB.TOi(TId.Requestor), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-					TblColumnNode.New(pathToRequestor, new NonDefaultCol(), new DCol(Fmt.SetDisplayPath(new DBI_Path(dsMB.Path.T.Requestor.F.ContactID.PathToReferencedRow, dsMB.Path.T.Contact.F.Code))), ECol.AllReadonly),
-					TblColumnNode.New(new DBI_Path(pathToRequestor.PathToReferencedRow, new DBI_Path(dsMB.Path.T.Requestor.F.ContactID.PathToReferencedRow, dsMB.Path.T.Contact.F.Email)), new NonDefaultCol(), DCol.Normal, ECol.AllReadonly),
-					TblColumnNode.New(new DBI_Path(pathToRequestor.PathToReferencedRow, new DBI_Path(dsMB.Path.T.Requestor.F.ContactID.PathToReferencedRow, dsMB.Path.T.Contact.F.PreferredLanguage)), new NonDefaultCol(), DCol.Normal, ECol.AllReadonly)
-				));
-		}
-		#endregion
-		#region Requestor Assignee Group
-		/// <summary>
-		/// Return a List of nodes to add to a TblLayoutNode Array display common Contact information for an Assignee
-		/// </summary>
-		protected static TblContainerNode SingleContactGroup(DBI_Path pathToContact) {
-			return ContactGroupTblLayoutNode(
-				ContactGroupRow(pathToContact, ECol.Normal)
-			);
-		}
-		#endregion
 		#region CurrentStateGroup
 		/// <summary>
 		/// Return a TblContainerNode construct to display the given State History information in a compact form.
@@ -439,7 +390,6 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		#endregion
 
-
 		#region ColumnSourceWrappers
 		/// <summary>
 		/// PerViewColumn format specifiers for items that may differ in formatting requirements in the same list; return an Interval formatted as string
@@ -469,7 +419,7 @@ namespace Thinkage.MainBoss.Controls {
 		#region DerivationTblCreatorBase
 		protected abstract class DerivationTblCreatorBase {
 			#region Construction
-			public DerivationTblCreatorBase(Tbl.TblIdentification identification, DBI_Table mostDerivedTable) {
+			protected DerivationTblCreatorBase(Tbl.TblIdentification identification, DBI_Table mostDerivedTable) {
 				Identification = identification;
 				MostDerivedTable = mostDerivedTable;
 			}
@@ -703,7 +653,7 @@ namespace Thinkage.MainBoss.Controls {
 			#region Picker Pieces
 			List<TblLayoutNode> PickerGroupContents = new List<TblLayoutNode>();
 			Stack<List<TblLayoutNode>> PickerGroupingStack;
-			List<ECol.ICtorArg> PickerEColAttrs = new List<ECol.ICtorArg>();
+			readonly List<ECol.ICtorArg> PickerEColAttrs = new List<ECol.ICtorArg>();
 			struct PickerFilterInfo {
 				public PickerFilterInfo(object filterId, EditorInitValue controllingInitValue, Init.ValueMapperDelegate valueMapper) {
 					FilterId = filterId;
@@ -714,7 +664,8 @@ namespace Thinkage.MainBoss.Controls {
 				public readonly EditorInitValue ControllingInitValue;
 				public readonly Init.ValueMapperDelegate ValueMapper;
 			}
-			List<PickerFilterInfo> PickerFilters = new List<PickerFilterInfo>();
+
+			readonly List<PickerFilterInfo> PickerFilters = new List<PickerFilterInfo>();
 			#endregion
 			#endregion
 			#region - The NodeId's we use
@@ -734,7 +685,7 @@ namespace Thinkage.MainBoss.Controls {
 		/// </summary>
 		protected abstract class DerivationTblCreatorWithQuantityAndCostBase : DerivationTblCreatorBase {
 			#region Construction
-			public DerivationTblCreatorWithQuantityAndCostBase(Tbl.TblIdentification identification, bool correction, DBI_Table mostDerivedTable, DBI_Path costPath, TypeInfo unitCostTypeInfo)
+			protected DerivationTblCreatorWithQuantityAndCostBase(Tbl.TblIdentification identification, bool correction, DBI_Table mostDerivedTable, DBI_Path costPath, TypeInfo unitCostTypeInfo)
 				: base(identification, mostDerivedTable) {
 				DBI_Column qColumn = TIGeneralMB3.QuantityColumn(MostDerivedTable);
 				pQuantityPath = qColumn == null ? null : new DBI_Path(qColumn);
@@ -767,7 +718,7 @@ namespace Thinkage.MainBoss.Controls {
 									.Eq(new SqlExpression(vendorPathForFilter, 1))), vendorControlId, null);
 				}
 				object historyPricingControlId = AddPickerFilterControl(KB.K("Do not include Purchasing History"), new BoolTypeInfo(false), Fmt.SetIsSetting(false));
-				AddPickerFilter(BTbl.ExpressionFilter(new SqlExpression(dsMB.Path.T.ItemPricing.F.TableEnum).Eq(SqlExpression.Constant((int)ViewRecordTypes.ItemPricing.PriceQuote))), historyPricingControlId, null);
+				AddPickerFilter(BTbl.ExpressionFilter(new SqlExpression(dsMB.Path.T.ItemPricing.F.ItemPriceID).IsNotNull()), historyPricingControlId, null);
 				object filterId = KB.I("itemPricingFilterId");
 				CreateAndCompleteUnboundPickerControl(ItemPricePickerId, KB.K("Item Pricing and Purchasing History"), Thinkage.Libraries.TypeInfo.IdTypeInfo.Universe,
 					Fmt.SetBrowserFilter(BTbl.TaggedEqFilter(dsMB.Path.T.ItemPricing.F.ItemID, filterId)),
@@ -1000,7 +951,7 @@ namespace Thinkage.MainBoss.Controls {
 			private void AddNewModeOriginalCorrectionNetSummingTriple<T>(Key oldNetLabel, DBI_Path oldNetPath, object thisControlId, object newNetControlId)
 				where T : struct, System.IComparable<T> {
 				Actions.Add(new Check3<T?, T?, T?>()
-					.Operand1(oldNetLabel, oldNetPath)
+					.Operand1(oldNetLabel, new EditorPathValue(oldNetPath))
 					.Operand2(thisControlId,
 						delegate (T? original, T? net) {
 							return !original.HasValue || !net.HasValue ? null : checked(Compute.Subtract<T>(net, original));
@@ -1014,7 +965,7 @@ namespace Thinkage.MainBoss.Controls {
 			#endregion
 
 			#region SuggestedQuantity handling
-			private List<SuggestedValueSource> SuggestedQuantitySources = new List<SuggestedValueSource>();
+			private readonly List<SuggestedValueSource> SuggestedQuantitySources = new List<SuggestedValueSource>();
 			public void AddQuantitySuggestion(SuggestedValueSource info) {
 				SuggestedQuantitySources.Add(info);
 			}
@@ -1040,7 +991,7 @@ namespace Thinkage.MainBoss.Controls {
 			}
 			#endregion
 			#region SuggestedCost handling
-			private List<SuggestedValueSource> SuggestedCostSources = new List<SuggestedValueSource>();
+			private readonly List<SuggestedValueSource> SuggestedCostSources = new List<SuggestedValueSource>();
 			public void AddCostSuggestion(SuggestedValueSource info) {
 				SuggestedCostSources.Add(info);
 			}
@@ -1738,7 +1689,7 @@ namespace Thinkage.MainBoss.Controls {
 						return null;
 					}, TblActionNode.Activity.Disabled, TblActionNode.SelectiveActivity(TblActionNode.Activity.Continuous, EdtMode.New))
 					.Operand1(ThisCostId)
-					.Operand2(KB.K("Value On Hand"), new DBI_Path(pathToSR, dsMB.Path.T.ItemLocation.F.ActualItemLocationID.F.TotalCost))
+					.Operand2(KB.K("Value On Hand"), new EditorPathValue(new DBI_Path(pathToSR, dsMB.Path.T.ItemLocation.F.ActualItemLocationID.F.TotalCost)))
 				);
 				// This/Only: sign*# <= SR.OnHand
 				Actions.Add(new Check2<QT?, QT?>(
@@ -1748,7 +1699,7 @@ namespace Thinkage.MainBoss.Controls {
 						return null;
 					}, TblActionNode.Activity.Disabled, TblActionNode.SelectiveActivity(TblActionNode.Activity.Continuous, EdtMode.New))
 					.Operand1(ThisQuantityId)
-					.Operand2(KB.K("Quantity On Hand"), new DBI_Path(pathToSR, dsMB.Path.T.ItemLocation.F.ActualItemLocationID.F.OnHand))
+					.Operand2(KB.K("Quantity On Hand"), new EditorPathValue(new DBI_Path(pathToSR, dsMB.Path.T.ItemLocation.F.ActualItemLocationID.F.OnHand)))
 				);
 				// This/Only: $ == SR.TotalCost || sign*# < SR.OnHand (no stranded value)
 				Actions.Add(new Check4<decimal?, QT?, decimal?, QT?>(
@@ -1760,8 +1711,8 @@ namespace Thinkage.MainBoss.Controls {
 					}, TblActionNode.Activity.Disabled, TblActionNode.SelectiveActivity(TblActionNode.Activity.Continuous, EdtMode.New))
 					.Operand1(ThisCostId)
 					.Operand2(ThisQuantityId)
-					.Operand3(KB.K("Value On Hand"), new DBI_Path(pathToSR, dsMB.Path.T.ItemLocation.F.ActualItemLocationID.F.TotalCost))
-					.Operand4(KB.K("Quantity On Hand"), new DBI_Path(pathToSR, dsMB.Path.T.ItemLocation.F.ActualItemLocationID.F.OnHand))
+					.Operand3(KB.K("Value On Hand"), new EditorPathValue(new DBI_Path(pathToSR, dsMB.Path.T.ItemLocation.F.ActualItemLocationID.F.TotalCost)))
+					.Operand4(KB.K("Quantity On Hand"), new EditorPathValue(new DBI_Path(pathToSR, dsMB.Path.T.ItemLocation.F.ActualItemLocationID.F.OnHand)))
 				);
 			}
 			// This could be made public for transactions that reference ItemLocations but for some reason the IL path
@@ -1773,7 +1724,8 @@ namespace Thinkage.MainBoss.Controls {
 							return EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("Effective date must be after latest Physical Count's effective date of {0}"), lastPCDate));
 						return null;
 					}, EffectiveDateRestrictionDefaultActivity, TblActionNode.SelectiveActivity(TblActionNode.Activity.Continuous, EdtMode.New, EdtMode.Clone))
-					.Operand1(KB.K("Latest Physical Count"), new DBI_Path(pathToItemLocation, dsMB.Path.T.ItemLocation.F.ActualItemLocationID.F.PermanentItemLocationID.F.CurrentItemCountValueID.F.AccountingTransactionID.F.EffectiveDate))
+					.Operand1(KB.K("Latest Physical Count"),
+						new EditorPathValue(new DBI_Path(pathToItemLocation, dsMB.Path.T.ItemLocation.F.ActualItemLocationID.F.PermanentItemLocationID.F.CurrentItemCountValueID.F.AccountingTransactionID.F.EffectiveDate)))
 					.Operand2(EffectiveDateId));
 			}
 			/// <summary>
@@ -1827,7 +1779,7 @@ namespace Thinkage.MainBoss.Controls {
 				Check4<QT?, CT?, CT?, CT?> checker = new Check4<QT?, CT?, CT?, CT?>();
 				checker.Operand1(testOp);
 				checker.Operand2(ifPositiveOp);
-				checker.Operand3(ifNegativeOp.Key(), ifNegativeOp);
+				checker.Operand3(ifNegativeOp.Key(), new EditorPathValue(ifNegativeOp));
 				if (zeroCountsPositive)
 					checker.Operand4(resultId,
 						delegate (QT? n, CT? normal, CT? reverse) {
@@ -1938,9 +1890,7 @@ namespace Thinkage.MainBoss.Controls {
 			private static readonly object RemainingUnitCostId = KB.I("RemainingUnitCostId");
 			private static readonly object RemainingQuantityId = KB.I("RemainingQuantityId");
 			#endregion
-			#region - Our readonly message keys
-			private static readonly Key UsingSuggestedQuantity = KB.K("The calculated quantity is being used");
-			#endregion
+
 			#endregion
 		}
 		#endregion
@@ -1949,7 +1899,7 @@ namespace Thinkage.MainBoss.Controls {
 		protected abstract class POLineDerivationTblCreatorBase<QT> : DerivationTblCreatorWithQuantityAndCostBase
 			where QT : struct, System.IComparable<QT> {
 			#region Construction
-			public POLineDerivationTblCreatorBase(Tbl.TblIdentification identification, DBI_Table mostDerivedTable, DBI_Path costPath, TypeInfo unitCostTypeInfo)
+			protected POLineDerivationTblCreatorBase(Tbl.TblIdentification identification, DBI_Table mostDerivedTable, DBI_Path costPath, TypeInfo unitCostTypeInfo)
 				: base(identification, false, mostDerivedTable, costPath, unitCostTypeInfo) {
 				pQuantityId = KB.I("QuantityId - ") + Identification.TableNameKeyLocalPart + CorrectionIdentification;
 				// Create the start of the layout: Record type and date information from the base POLine record
@@ -3526,7 +3476,7 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		#endregion
 		#endregion
-		#region Calculators
+		#region Calculator Check operations
 		#region Quantity/Unit/Total Triple Control Calculators
 		public static Check QuantityUnitTotalTripleCalculator<T>(object quantityCol, object unitCostCol, object totalCostCol)
 			where T : struct, System.IComparable<T> {
@@ -3600,10 +3550,9 @@ namespace Thinkage.MainBoss.Controls {
 		internal static List<TblActionNode> StateHistoryInits(MB3Client.StateHistoryTable histInfo, out TblLayoutNodeArray extraNodes) {
 			TypeInfo dateLimitType = histInfo.HistEffectiveDatePath.ReferencedColumn.EffectiveType.UnionCompatible(NullTypeInfo.Universe);
 			extraNodes = new TblLayoutNodeArray(
-				TblUnboundControlNode.StoredEditorValue(TIGeneralMB3.StateHistoryPreviousEffectiveDateId, dateLimitType),
-				TblUnboundControlNode.StoredEditorValue(TIGeneralMB3.StateHistoryNextEffectiveDateId, dateLimitType),
 				TblUnboundControlNode.StoredEditorValue(TIGeneralMB3.CurrentStateHistoryIdWhenCalledId, histInfo.MainToCurrentStateHistoryPath.ReferencedColumn.EffectiveType)
 			);
+			var currentHistDatePath = new DBI_Path(histInfo.HistToMainPath.PathToReferencedRow, new DBI_Path(histInfo.MainToCurrentStateHistoryPath.PathToReferencedRow, histInfo.HistEffectiveDatePath));
 
 			var result = new List<TblActionNode> {
 				// Verify that the current state history record has not been changed since the caller's enablers were refreshed.
@@ -3622,40 +3571,28 @@ namespace Thinkage.MainBoss.Controls {
 							: EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("The current state has changed")))
 				)
 				.Operand1(TIGeneralMB3.CurrentStateHistoryIdWhenCalledId)                           // This is supplied by the caller and was the basis for the enabling of the Edit command
-				.Operand2(KB.K("Current State History Id"), new DBI_Path(histInfo.HistToMainPath.PathToReferencedRow, histInfo.MainToCurrentStateHistoryPath)) // This is the current state ID when the record was loaded, which will be concurrency-checked on save
+				.Operand2(KB.K("Current State History Id"), new EditorPathValue(new DBI_Path(histInfo.HistToMainPath.PathToReferencedRow, histInfo.MainToCurrentStateHistoryPath))) // This is the current state ID when the record was loaded, which will be concurrency-checked on save
 				.Operand3(TIGeneralMB3.CurrentStateHistoryCodeWhenLoadedId),                       // We just use this as a place to put the error flag
 				Init.OnLoad(
 				new ControlReadonlyTarget(TIGeneralMB3.StateHistoryEffectiveDateId, KB.K("Readonly because this state history record was generated by MainBoss")),
 				new EditorPathValue(histInfo.HistEffectiveDateReadonlyPath)),
 				Init.OnLoadNew(histInfo.HistUserIDPath, new UserIDValue()),
 				// When editing an existing record the lower date limit (if any) comes from the previous record on the same PO (if any).
-				Init.OnLoadEditUndelete(new ControlTarget(TIGeneralMB3.StateHistoryPreviousEffectiveDateId), new EditorCalculatedInitValue(dateLimitType,
-				delegate (object[] inputs) {
-					// inputs[0] is the id of the history record being edited; inputs[1] is the id of the PO record.
-					var innerQuery = new SelectSpecification(histInfo.HistTable, new SqlExpression[] { new SqlExpression(histInfo.HistEffectiveDatePath) },
-						new SqlExpression(histInfo.HistTable.InternalId).Eq(SqlExpression.Constant(inputs[0])), null);
-					var outerQuery = new SelectSpecification(histInfo.HistTable, new SqlExpression[] { new SqlExpression(histInfo.HistEffectiveDatePath).Max() },
-						new SqlExpression(histInfo.HistToMainPath).Eq(SqlExpression.Constant(inputs[1]))
-							.And(new SqlExpression(histInfo.HistEffectiveDatePath).Lt(SqlExpression.ScalarSubquery(innerQuery))), null);
-					return Libraries.Application.Instance.GetInterface<Libraries.DBAccess.IApplicationWithSingleDatabaseConnection>().Session.Session.ExecuteCommandReturningScalar(histInfo.HistEffectiveDatePath.ReferencedColumn.EffectiveType.UnionCompatible(NullTypeInfo.Universe), outerQuery);
-				}, new EditorPathValue(histInfo.HistTable.InternalId), new EditorPathValue(histInfo.HistToMainPath))),
-				// In New/Clone mode the lower bound (if any) comes from the current history record (if any).
-				Init.OnLoadNewClone(new ControlTarget(TIGeneralMB3.StateHistoryPreviousEffectiveDateId), new EditorPathValue(new DBI_Path(histInfo.HistToMainPath.PathToReferencedRow, new DBI_Path(histInfo.MainToCurrentStateHistoryPath.PathToReferencedRow, histInfo.HistEffectiveDatePath)))),
-				// When editing an existing record the upper date limit (if any) comes from the next record on the same PO (if any).
-				Init.OnLoadEditUndelete(new ControlTarget(TIGeneralMB3.StateHistoryNextEffectiveDateId), new EditorCalculatedInitValue(dateLimitType,
-				delegate (object[] inputs) {
-					// inputs[0] is the id of the history record being edited; inputs[1] is the id of the PO record.
-					var innerQuery = new SelectSpecification(histInfo.HistTable, new SqlExpression[] { new SqlExpression(histInfo.HistEffectiveDatePath) },
-						new SqlExpression(histInfo.HistTable.InternalId).Eq(SqlExpression.Constant(inputs[0])), null);
-					var outerQuery = new SelectSpecification(histInfo.HistTable, new SqlExpression[] { new SqlExpression(histInfo.HistEffectiveDatePath).Min() },
-						new SqlExpression(histInfo.HistToMainPath).Eq(SqlExpression.Constant(inputs[1]))
-							.And(new SqlExpression(histInfo.HistEffectiveDatePath).Gt(SqlExpression.ScalarSubquery(innerQuery))), null);
-					return Libraries.Application.Instance.GetInterface<Libraries.DBAccess.IApplicationWithSingleDatabaseConnection>().Session.Session.ExecuteCommandReturningScalar(histInfo.HistEffectiveDatePath.ReferencedColumn.EffectiveType.UnionCompatible(NullTypeInfo.Universe), outerQuery);
-				}, new EditorPathValue(histInfo.HistTable.InternalId), new EditorPathValue(histInfo.HistToMainPath))),
-				// In new/clone mode there is no upper bound.
-				Init.OnLoadNewClone(new ControlTarget(TIGeneralMB3.StateHistoryNextEffectiveDateId), new ConstantValue(null)),
+				new Check2<DateTime, DateTime?>(
+						delegate (DateTime edate, DateTime? latestDate) {
+							// When we are not editing an existing record (i.e. we're in New/Clone mode) the only requirement is that the date be after the current state history date.
+							// TODO: For these error messages, we really want the date formatted the same as in the date control...
+							// The ToString calls are here because whatever ToString operation Strings.Format applies is really ugly.
+							if (latestDate.HasValue && edate <= latestDate.Value)
+								return EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("Date must be after {0}."), latestDate.Value.ToString()));
+							return null;
+						}, TblActionNode.SelectiveActivity(TblActionNode.Activity.Disabled, EdtMode.Edit, EdtMode.View))
+						.Operand1(TIGeneralMB3.StateHistoryEffectiveDateId)
+						.Operand2(currentHistDatePath.Key(), new EditorPathValue(currentHistDatePath)),
 				new Check3<DateTime, DateTime?, DateTime?>(
 						delegate (DateTime edate, DateTime? prevdate, DateTime? nextdate) {
+							// prevDate is null when editing the earliest existing record, in which case we want no lower limit
+							// nextDate is null when editing the latest (Current) State history record, in which case we want no upper limit.
 							// TODO: For these error messages, we really want the date formatted the same as in the date control...
 							// The ToString calls are here because whatever ToString operation Strings.Format applies is really ugly.
 							if ((prevdate.HasValue && edate <= prevdate.Value)
@@ -3668,10 +3605,10 @@ namespace Thinkage.MainBoss.Controls {
 									return EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("Date must be after {0}."), prevdate.Value.ToString()));
 							}
 							return null;
-						})
+						}, TblActionNode.SelectiveActivity(TblActionNode.Activity.Disabled, EdtMode.New, EdtMode.Clone))
 						.Operand1(TIGeneralMB3.StateHistoryEffectiveDateId)
-						.Operand2(TIGeneralMB3.StateHistoryPreviousEffectiveDateId)
-						.Operand3(TIGeneralMB3.StateHistoryNextEffectiveDateId)
+						.Operand2(histInfo.HistPreviousEffectiveDatePath.Key(), new EditorPathValue(histInfo.HistPreviousEffectiveDatePath))
+						.Operand3(histInfo.HistNextEffectiveDatePath.Key(), new EditorPathValue(histInfo.HistNextEffectiveDatePath))
 			};
 			return result;
 		}
@@ -3730,7 +3667,6 @@ namespace Thinkage.MainBoss.Controls {
 
 		#endregion
 		#region General Tbl definitions
-		public static readonly DelayedCreateTbl ContactFunctionsBrowsetteTblCreator = null;
 		public static readonly DelayedCreateTbl AccountingTransactionDerivationsTblCreator;
 		public static readonly DelayedCreateTbl CompanyInformationTblCreator;
 		public static readonly DelayedCreateTbl NewsPanelTblCreator;
@@ -3740,43 +3676,6 @@ namespace Thinkage.MainBoss.Controls {
 		public static readonly DelayedCreateTbl UserMessageKeyWithEditAbilityTblCreator;
 		public static readonly DelayedCreateTbl UserMessageKeyPickerTblCreator;
 		public static readonly DelayedCreateTbl DatabaseManagementTblCreator;
-		#region ContactFunctionProvider
-		private static object[] ContactFunctionValues = new object[] {
-			(int)ViewRecordTypes.ContactFunctions.Contact,
-			(int)ViewRecordTypes.ContactFunctions.Requestor,
-			(int)ViewRecordTypes.ContactFunctions.BillableRequestor,
-			(int)ViewRecordTypes.ContactFunctions.Employee,
-			(int)ViewRecordTypes.ContactFunctions.SalesVendor,
-			(int)ViewRecordTypes.ContactFunctions.ServiceVendor,
-			(int)ViewRecordTypes.ContactFunctions.AccountsPayableVendor,
-			(int)ViewRecordTypes.ContactFunctions.SalesServiceVendor,
-			(int)ViewRecordTypes.ContactFunctions.SalesAccountsPayableVendor,
-			(int)ViewRecordTypes.ContactFunctions.ServiceAccountsPayableVendor,
-			(int)ViewRecordTypes.ContactFunctions.SalesServiceAccountsPayableVendor,
-			(int)ViewRecordTypes.ContactFunctions.RequestAssignee,
-			(int)ViewRecordTypes.ContactFunctions.WorkOrderAssignee,
-			(int)ViewRecordTypes.ContactFunctions.PurchaseOrderAssignee,
-			(int)ViewRecordTypes.ContactFunctions.User
-		};
-		private static Key[] ContactFunctionLabels = new Key[] {
-			KB.K("Contact"),
-			KB.TOi(TId.Requestor),
-			KB.TOi(TId.BillableRequestor),
-			KB.TOi(TId.Employee),
-			KB.K("Sales Vendor"),
-			KB.K("Service Vendor"),
-			KB.K("Accounts Payable Vendor"),
-			KB.K("Sales Service Vendor"),
-			KB.K("Sales Accounts Payable Vendor"),
-			KB.K("Service Accounts Payable Vendor"),
-			KB.K("Sales Service Accounts Payable Vendor"),
-			KB.TOi(TId.RequestAssignee),
-			KB.TOi(TId.WorkOrderAssignee),
-			KB.TOi(TId.PurchaseOrderAssignee),
-			KB.TOi(TId.User)
-		};
-		public static EnumValueTextRepresentations ContactFunctionProvider = new EnumValueTextRepresentations(ContactFunctionLabels, null, ContactFunctionValues);
-		#endregion
 		#region Name Providers
 		public static EnumValueTextRepresentations UnassignedNameProvider = new EnumValueTextRepresentations(
 			new Key[] {
@@ -3846,11 +3745,19 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		#endregion
 		#region RecordTypeViewColumnValue for ListColumn Views
-		private static object RecordTypeColumnTagID = KB.I("RecordType");
-		private static CompositeView.ICtorArg RecordTypeViewColumnValue() {
-			return BTbl.PerViewColumnValue(RecordTypeColumnTagID, new BrowserCalculatedInitValue(TranslationKeyTypeInfo.NonNullUniverse, (args => ((Tbl.TblIdentification)args[0]).Compose("{0} Record Type")),
+		public static CompositeView.ICtorArg RecordTypePerViewColumnValue(object columnTag) {
+			return BTbl.PerViewColumnValue(columnTag,
+				new BrowserCalculatedInitValue(TranslationKeyTypeInfo.NonNullUniverse, (args => ((Tbl.TblIdentification)args[0]).Compose("{0} Record Type")),
 					new BrowseRecordTblIdentificationValue()), null);
 		}
+		public static CompositeView.ICtorArg StringRecordTypePerViewColumnValue(object columnTag) {
+			return BTbl.PerViewColumnValue(columnTag,
+				new BrowserCalculatedInitValue(StringTypeInfo.NonNullUniverse, (args => ((Tbl.TblIdentification)args[0]).Compose("{0} Record Type").Translate()),
+					new BrowseRecordTblIdentificationValue()), null);
+		}
+		public static readonly object RecordTypeColumnTagID = KB.I("RecordType");
+		public static CompositeView.ICtorArg RecordTypeViewColumnValue() => RecordTypePerViewColumnValue(RecordTypeColumnTagID);
+		public static CompositeView.ICtorArg StringRecordTypeViewColumnValue() => StringRecordTypePerViewColumnValue(RecordTypeColumnTagID);
 		#endregion
 		private static TblLeafNode SingleWorkOrdersByEndDateHistogramNode(FeatureGroup featureGroup, DBI_Table tableSchema, List<BTbl.ICtorArg> otherBTblArgs) {
 			otherBTblArgs.Add(
@@ -3969,7 +3876,6 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.AccountingTransactionReport))
 						)
 					},
-					null,
 					new CompositeView(dsMB.Path.T.AccountingTransaction.F.ActualItemID, CompositeView.RecognizeByValidEditLinkage(), ReadonlyView, RecordTypeViewColumnValue()),
 					new CompositeView(dsMB.Path.T.AccountingTransaction.F.ActualLaborInsideID, CompositeView.RecognizeByValidEditLinkage(), ReadonlyView, RecordTypeViewColumnValue()),
 					new CompositeView(dsMB.Path.T.AccountingTransaction.F.ActualLaborOutsideNonPOID, CompositeView.RecognizeByValidEditLinkage(), ReadonlyView, RecordTypeViewColumnValue()),
@@ -3990,46 +3896,6 @@ namespace Thinkage.MainBoss.Controls {
 				);
 			});
 
-			#endregion
-			#region ContactFunctions
-			ContactFunctionsBrowsetteTblCreator = new DelayedCreateTbl(delegate () {
-				Key assigneeGroup = KB.K("New Assignee");
-				return new CompositeTbl(dsMB.Schema.T.ContactFunctions, TId.ContactFunction,
-					new Tbl.IAttr[] {
-						new BTbl(BTbl.ListColumn(dsMB.Path.T.ContactFunctions.F.TableEnum))
-					},
-					dsMB.Path.T.ContactFunctions.F.TableEnum,
-					null,               // Table 0 (Contact)
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.RequestorID,               // Table 1 (Requestor)
-						CompositeView.PathAlias(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.Requestor.F.ContactID)),
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.BillableRequestorID,       // Table 2 (BillableRequestor)
-						CompositeView.PathAlias(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.BillableRequestor.F.ContactID)),
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.EmployeeID,                // Table 3 (Employee)
-						CompositeView.PathAlias(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.Employee.F.ContactID)),
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.VendorID,                  // Table 4 (Sales Vendor)
-						CompositeView.ContextFreeInit(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.Vendor.F.SalesContactID),
-						CompositeView.ContextFreeInit(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.Vendor.F.ServiceContactID),
-						CompositeView.ContextFreeInit(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.Vendor.F.PayablesContactID)),
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.VendorID, NoNewMode),// Table 5 (Service Vendor)
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.VendorID, NoNewMode),// Table 6 (Accounts Payable Vendor)
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.VendorID, NoNewMode),// Table 7 (Sales & Service Vendor)
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.VendorID, NoNewMode),// Table 8 (Sales & Accounts Payable Vendor)
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.VendorID, NoNewMode),// Table 9 (Service & Accounts Payable Vendor)
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.VendorID, NoNewMode),// Table 10 (Sales, Service & Accounts Payable Vendor)
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.RequestAssigneeID,     // Table 11 (RequestAssignee)
-						CompositeView.PathAlias(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.RequestAssignee.F.ContactID),
-						CompositeView.NewCommandGroup(assigneeGroup)),
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.WorkOrderAssigneeID,   // Table 12(WorkOrderAssignee)
-						CompositeView.PathAlias(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.WorkOrderAssignee.F.ContactID),
-						CompositeView.NewCommandGroup(assigneeGroup)),
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.PurchaseOrderAssigneeID,// Table 13 (PurchaseOrderRequestAssignee)
-						CompositeView.PathAlias(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.PurchaseOrderAssignee.F.ContactID),
-						CompositeView.NewCommandGroup(assigneeGroup)),
-					new CompositeView(dsMB.Path.T.ContactFunctions.F.UserID,                // Table 14 (User)
-						CompositeView.PathAlias(dsMB.Path.T.ContactFunctions.F.ParentContactID, dsMB.Path.T.User.F.ContactID),
-						NoNewMode)
-				);
-			});
 			#endregion
 			#region UserMessageKey & UserMessageTranslation
 			DefineTbl(dsMB.Schema.T.UserMessageKey, UserMessageKeyTblCreator(false, false));
@@ -4075,6 +3941,7 @@ namespace Thinkage.MainBoss.Controls {
 			TIUnit.DefineTblEntries();
 			TIItem.DefineTblEntries();
 			TIWorkOrder.DefineTblEntries();
+			TIContact.DefineTblEntries();
 			#endregion
 
 			#region AccessCode
@@ -4097,7 +3964,7 @@ namespace Thinkage.MainBoss.Controls {
 					BrowsetteTabNode.New(TId.Request, TId.AccessCode,
 						TblColumnNode.NewBrowsette(dsMB.Path.T.Request.F.AccessCodeID, DCol.Normal, ECol.Normal)),
 					BrowsetteTabNode.New(TId.Unit, TId.AccessCode,
-						TblColumnNode.NewBrowsette(TILocations.UnitBrowseTblCreator, dsMB.Path.T.LocationDerivations.F.LocationID.F.RelativeLocationID.F.UnitID.F.AccessCodeID, DCol.Normal, ECol.Normal)),
+						TblColumnNode.NewBrowsette(TILocations.UnitBrowseTblCreator, dsMB.Path.T.Location.F.RelativeLocationID.F.UnitID.F.AccessCodeID, DCol.Normal, ECol.Normal)),
 					BrowsetteTabNode.New(TId.WorkOrder, TId.AccessCode,
 						TblColumnNode.NewBrowsette(dsMB.Path.T.WorkOrder.F.AccessCodeID, DCol.Normal, ECol.Normal)),
 					BrowsetteTabNode.New(TId.Task, TId.AccessCode,
@@ -4287,112 +4154,6 @@ namespace Thinkage.MainBoss.Controls {
 			});
 			#endregion
 
-			#region Contact
-			Tbl contactCreatorFromDirectoryServiceTbl = new Tbl(dsUserPrincipal.Schema.T.UserPrincipal, TId.UserPrincipalInformation,
-				new Tbl.IAttr[] {
-					new UseNamedTableSchemaPermissionTbl(dsMB.Schema.T.Contact),
-					xyzzy.ContactsDependentGroup,
-					new BTbl(
-						BTbl.LogicClass(typeof(ContactFromDirectoryServiceBrowseLogic)),
-						BTbl.ListColumn(dsUserPrincipal.Path.T.UserPrincipal.F.Name),
-						BTbl.ListColumn(dsUserPrincipal.Path.T.UserPrincipal.F.DisplayName),
-						BTbl.ListColumn(dsUserPrincipal.Path.T.UserPrincipal.F.BusPhone),
-						BTbl.ListColumn(dsUserPrincipal.Path.T.UserPrincipal.F.EmailAddress)
-					),
-					new ETbl(ETbl.EditorDefaultAccess(false)),
-					new CustomSessionTbl(delegate(DBClient existingDatabaseAccess, DBI_Database schema, out bool callerHasCustody) {
-						callerHasCustody = true;
-						return new DBClient(existingDatabaseAccess.ConnectionInfo, new UserFromDirectoryServiceSession(existingDatabaseAccess));
-					})
-				},
-				new TblLayoutNodeArray(
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.Name, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.DisplayName, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.BusPhone, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.EmailAddress, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.HomePhone, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.PagerPhone, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.MobilePhone, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.FaxPhone, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.WebURL, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.PreferredLanguage, DCol.Normal),
-					TblColumnNode.New(dsUserPrincipal.Path.T.UserPrincipal.F.LDAPPath, DCol.Normal)
-				)
-			);
-			DefineTbl(dsMB.Schema.T.Contact, delegate () {
-				return new Tbl(dsMB.Schema.T.Contact, TId.Contact,
-				new Tbl.IAttr[] {
-						ContactsDependentGroup,
-						// Note that there was up until Oct 24/08 a ContactBrowseControl which contained #if'ed-off inoperational code to import from Outlook Contacts
-						new BTbl(
-							BTbl.ListColumn(dsMB.Path.T.Contact.F.Code),
-							BTbl.ListColumn(dsMB.Path.T.Contact.F.BusinessPhone, BTbl.Contexts.List|BTbl.Contexts.SearchAndFilter),
-							BTbl.ListColumn(dsMB.Path.T.Contact.F.MobilePhone, BTbl.Contexts.List|BTbl.Contexts.SearchAndFilter),
-							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.ContactReport)),
-							BTbl.AdditionalVerb(KB.K("Create from Active Directory"),
-								delegate(BrowseLogic browserLogic) {
-									return new CallDelegateCommand(
-										delegate() {
-											BrowseForm.NewBrowseForm(browserLogic.CommonUI.UIFactory, browserLogic.DB, contactCreatorFromDirectoryServiceTbl).ShowForm();
-										}
-									);
-								}
-							)
-						),
-						new ETbl(
-							ETbl.CustomCommand(delegate(EditLogic editorLogic) {
-								if (editorLogic.WillBeEditingDefaults)
-									return null;
-								Source CommentSource = editorLogic.GetPathNotifyingValue(dsMB.Path.T.Contact.F.Comment, 0);
-								var userDirectory = new EditLogic.CommandDeclaration(KB.K("Initialize all from Active Directory"), new FillContactFromUserDirectoryCommand(editorLogic, false));
-								var useActiveDirectoryGroup = new EditLogic.MutuallyExclusiveCommandSetDeclaration{
-								userDirectory
-};
-								return useActiveDirectoryGroup;
-							}),
-							ETbl.CustomCommand(delegate(EditLogic editorLogic) {
-								if (editorLogic.WillBeEditingDefaults)
-									return null;
-								var userDirectory = new EditLogic.CommandDeclaration(KB.K("Update all from Active Directory"), new FillContactFromUserDirectoryCommand(editorLogic, true));
-								var useActiveDirectoryGroup = new EditLogic.MutuallyExclusiveCommandSetDeclaration{
-								userDirectory
-};
-								return useActiveDirectoryGroup;
-							})
-						)
-				},
-				new TblLayoutNodeArray(
-					DetailsTabNode.New(
-						TblColumnNode.New(dsMB.Path.T.Contact.F.Code, DCol.Normal, new ECol(Fmt.SetId(ContactNameId))),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.BusinessPhone, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.Email, DCol.Normal, new ECol(Fmt.SetId(EmailAddressId))),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.AlternateEmail, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.HomePhone, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.PagerPhone, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.MobilePhone, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.FaxPhone, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.WebURL, DCol.Normal, new ECol(Fmt.SetId(WebUrlAddressId))),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.LocationID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.Location.F.Code)), ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.LocationID.F.Desc, DCol.Normal),
-						// TODO: In the following we only really need the version check for the ECol since the edit buffer fetches the entire record and the schema must match even for fields we don't use,
-						// but MinimumDBVersionTbl is not an ECol.ICtorArg
-						TblColumnNode.New(dsMB.Path.T.Contact.F.Id.L.User.ContactID.F.AuthenticationCredential, ECol.AllReadonly, new MinimumDBVersionTbl(new Version(1, 1, 4, 2)), DCol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.PreferredLanguage, DCol.Normal, ECol.Normal),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.LDAPGuid, DCol.Normal, ECol.AllReadonly),
-						TblColumnNode.New(dsMB.Path.T.Contact.F.Comment, DCol.Normal, ECol.Normal)
-					),
-					// NOTE: Currently the Requestors tab appears blank because the only information that the Requestor
-					// Tbl entry displays comes from the Contact record, and these fields get removed since this is
-					// a browsette on the Contact table.
-					BrowsetteTabNode.New(TId.ContactFunction, TId.Contact,
-						TblColumnNode.NewBrowsette(TIGeneralMB3.ContactFunctionsBrowsetteTblCreator, dsMB.Path.T.ContactFunctions.F.ParentContactID, DCol.Normal, ECol.Normal)),
-					BrowsetteTabNode.New(TId.ContactRelation, TId.Contact,
-						TblColumnNode.NewBrowsette(TIRelationship.ContactRelatedRecordsBrowseTbl, dsMB.Path.T.ContactRelatedRecords.F.ThisContactID, DCol.Normal, ECol.Normal))
-				), EmailAddressValidator, WebUrlAddressValidator
-				);
-			});
-			RegisterExistingForImportExport(TId.Contact, dsMB.Schema.T.Contact);
-			#endregion
 			#region CostCenter
 			DefineTbl(dsMB.Schema.T.CostCenter, delegate () {
 				return new Tbl(dsMB.Schema.T.CostCenter, TId.CostCenter,
@@ -4501,29 +4262,28 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.BackupFileReport))
 						)
 					},
-					null,
-					new CompositeView(editorTblCreator, dsMB.Path.T.BackupFileName.F.Id,
+					CompositeView.ChangeEditTbl(editorTblCreator,
 						CompositeView.AdditionalVerb(KB.K("Backup"),
-								delegate (BrowseLogic browserLogic, int viewIndex) {
-									Source pathSource = browserLogic.GetTblPathDisplaySource(dsMB.Path.T.BackupFileName.F.FileName, -1);
-									return new CallDelegateCommand(KB.K("Backup the organization data to a file"),
-										delegate () {
-											try {
-												using (Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().VersionHandler.GetUnfetteredDatabaseAccess(browserLogic.DB)) {
-													((MB3Client)browserLogic.DB).BackupDatabase((string)pathSource.GetValue());
-												}
+							delegate (BrowseLogic browserLogic, int viewIndex) {
+								Source pathSource = browserLogic.GetTblPathDisplaySource(dsMB.Path.T.BackupFileName.F.FileName, -1);
+								return new CallDelegateCommand(KB.K("Backup the organization data to a file"),
+									delegate () {
+										try {
+											using (Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().VersionHandler.GetUnfetteredDatabaseAccess(browserLogic.DB)) {
+												((MB3Client)browserLogic.DB).BackupDatabase((string)pathSource.GetValue());
 											}
-											catch (System.Exception e) {
-												Thinkage.Libraries.Application.Instance.DisplayError(e);
-											}
-											// Although BackupDatabase ultimately uses DBClient to back up the database, it does so using a subset schema. Since the
-											// schema is not object-identical to dsMB, we don't get cache propagation of the change, so we need an explicit refresh here.
-											// Note that the last backup on the main status page will not see the change either (even if we refresh here) nor will any other Backup browsers in other main windows.
-											// It would be nice if we could just synthesize the cache broadcast here, or if (since you can only backup a current-version db???)
-											// MB3Client.BackupDatabase did the updating itself using the proper schema.
-											browserLogic.SetAllOutOfDate();
-										});
-								}))
+										}
+										catch (System.Exception e) {
+											Thinkage.Libraries.Application.Instance.DisplayError(e);
+										}
+										// Although BackupDatabase ultimately uses DBClient to back up the database, it does so using a subset schema. Since the
+										// schema is not object-identical to dsMB, we don't get cache propagation of the change, so we need an explicit refresh here.
+										// Note that the last backup on the main status page will not see the change either (even if we refresh here) nor will any other Backup browsers in other main windows.
+										// It would be nice if we could just synthesize the cache broadcast here, or if (since you can only backup a current-version db???)
+										// MB3Client.BackupDatabase did the updating itself using the proper schema.
+										browserLogic.SetAllOutOfDate();
+									});
+							}))
 				);
 			}));
 			#endregion
@@ -4626,7 +4386,7 @@ namespace Thinkage.MainBoss.Controls {
 									new SqlExpression[] {
 										SqlExpression.CountRows(null)
 									},
-									CommonExpressions.OverdueWorkOrderExpression,
+									WOStatisticCalculation.IsIncompleteOverdueWorkOrder(dsMB.Path.T.WorkOrder),
 								null))), DCol.Normal)
 						),
 						TblRowNode.New(KB.K("Unassigned"), new TblLayoutNode.ICtorArg[] { DCol.Normal },
@@ -4742,7 +4502,7 @@ namespace Thinkage.MainBoss.Controls {
 				}
 				licensingNodes.Add(
 					TblUnboundControlNode.New(KB.K("Deemed Release Date for license validation"),
-						DateTimeTypeInfo.NullableOneDayEpsilon.IntersectCompatible(ObjectTypeInfo.NonNullUniverse),
+						DateTimeTypeInfo.NonNullableOneDayEpsilon,
 						new DCol(Fmt.SetInitialValue(Thinkage.MainBoss.Database.Licensing.DeemedReleaseDate))
 					)
 				);
@@ -4818,7 +4578,7 @@ namespace Thinkage.MainBoss.Controls {
 				object userSettingID = KB.I("userSettingID");
 				object settingID = KB.K("settingID");
 				return new CompositeTbl(dsMB.Schema.T.SettingsAdministration, Libraries.Presentation.MSWindows.TId.Settings,
-						new Tbl.IAttr[] {
+					new Tbl.IAttr[] {
 							AdminGroup,
 							new MinimumDBVersionTbl(new System.Version(1,0,10,58)),
 							new BTbl(
@@ -4828,24 +4588,24 @@ namespace Thinkage.MainBoss.Controls {
 								BTbl.SetTreeStructure(dsMB.Path.T.SettingsAdministration.F.ParentID, 3)
 							)
 						},
-						null,
-						new CompositeView(settingsUser, dsMB.Path.T.SettingsAdministration.F.Id, CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.SettingsAdministration.F.UserID).IsNull().And
+					CompositeView.ChangeEditTbl(settingsUser,
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.SettingsAdministration.F.UserID).IsNull().And
 														(new SqlExpression(dsMB.Path.T.SettingsAdministration.F.SettingsID).IsNull()).And
 														(new SqlExpression(dsMB.Path.T.SettingsAdministration.F.SettingsNameID).IsNull())),
-										ReadonlyView,
-										BTbl.PerViewColumnValue(userSettingID, dsMB.Path.T.SettingsAdministration.F.Id)
+						ReadonlyView,
+						BTbl.PerViewColumnValue(userSettingID, dsMB.Path.T.SettingsAdministration.F.Id)
 						),
-						new CompositeView(dsMB.Path.T.SettingsAdministration.F.UserID,
-										CompositeView.RecognizeByValidEditLinkage(), ReadonlyView,
-											BTbl.PerViewColumnValue(userSettingID, dsMB.Path.T.User.F.ContactID.F.Code)
+					new CompositeView(dsMB.Path.T.SettingsAdministration.F.UserID,
+						CompositeView.RecognizeByValidEditLinkage(), ReadonlyView,
+						BTbl.PerViewColumnValue(userSettingID, dsMB.Path.T.User.F.ContactID.F.Code)
 						),
-						new CompositeView(settingsNamePanelTbl, dsMB.Path.T.SettingsAdministration.F.SettingsNameID,
-										CompositeView.RecognizeByValidEditLinkage(), ReadonlyView,
-											BTbl.PerViewColumnValue(userSettingID, dsMB.Path.T.SettingsName.F.Code)
+					new CompositeView(settingsNamePanelTbl, dsMB.Path.T.SettingsAdministration.F.SettingsNameID,
+						CompositeView.RecognizeByValidEditLinkage(), ReadonlyView,
+						BTbl.PerViewColumnValue(userSettingID, dsMB.Path.T.SettingsName.F.Code)
 						),
-						new CompositeView(settingsPanelTbl, dsMB.Path.T.SettingsAdministration.F.SettingsID,
-										CompositeView.RecognizeByValidEditLinkage(), ReadonlyView,
-											BTbl.PerViewColumnValue(userSettingID, dsMB.Path.T.Settings.F.Code)
+					new CompositeView(settingsPanelTbl, dsMB.Path.T.SettingsAdministration.F.SettingsID,
+						CompositeView.RecognizeByValidEditLinkage(), ReadonlyView,
+						BTbl.PerViewColumnValue(userSettingID, dsMB.Path.T.Settings.F.Code)
 						)
 					);
 			}
@@ -4867,7 +4627,7 @@ namespace Thinkage.MainBoss.Controls {
 			});
 			DatabaseManagementTblCreator = new DelayedCreateTbl(delegate () {
 				return new CompositeTbl(dsMB.Schema.T.DatabaseHistory, TId.DatabaseManagement,
-				new Tbl.IAttr[] {
+					new Tbl.IAttr[] {
 						AdminGroup,
 						new BTbl(
 							BTbl.ListColumn(dsMB.Path.T.DatabaseHistory.F.EntryDate, BTbl.Contexts.SortInitialDescending),
@@ -4875,9 +4635,8 @@ namespace Thinkage.MainBoss.Controls {
 							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.DatabaseHistoryReport))
 						)
 					},
-				null,
-				CompositeView.ChangeEditTbl(UpdateStatisticsTbl,
-					CompositeView.AdditionalVerb(KB.K("Update Database Statistics"),
+					CompositeView.ChangeEditTbl(UpdateStatisticsTbl,
+						CompositeView.AdditionalVerb(KB.K("Update Database Statistics"),
 							delegate (BrowseLogic browserLogic, int viewIndex) {
 								var session = ((DBClient)browserLogic.DB).Session;
 								return new MultiCommandIfAllEnabled(new CallDelegateCommand(KB.K("Update the database statistics to improve performance"),
@@ -4885,7 +4644,7 @@ namespace Thinkage.MainBoss.Controls {
 										try {
 											using (Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().VersionHandler.GetUnfetteredDatabaseAccess(browserLogic.DB)) {
 
-												var sqlCommand = new Thinkage.Libraries.XAF.Database.Service.MSSql.MSSqlLiteralCommandSpecification(KB.I("EXEC sp_updatestats"));
+												var sqlCommand = new DBSpecificCommandSpecification(KB.I("EXEC sp_updatestats"));
 												System.Text.StringBuilder output = new System.Text.StringBuilder();
 												session.ExecuteCommand(sqlCommand, output);
 												var vh = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().VersionHandler;
@@ -4915,16 +4674,14 @@ namespace Thinkage.MainBoss.Controls {
 								TblInitSourceNode.New(null,
 									new DualCalculatedInitValue(StringTypeInfo.Universe,
 										delegate (object[] inputs) {
-											var defaultURL = Strings.IFormat("http://mainboss.com/MainBossNews/{0}.{1}.{2}/index.htm?version={0}.{1}.{2}.{3}&language={4}", VersionInfo.ProductVersion.Major, VersionInfo.ProductVersion.Minor, VersionInfo.ProductVersion.Build, VersionInfo.ProductVersion.Revision, Thinkage.Libraries.Application.InstanceFormatCultureInfo.TwoLetterISOLanguageName);
+											var defaultURL = Strings.IFormat("http://mainboss.com/MainBossNews/{0}.{1}.{2}/index.htm?version={0}.{1}.{2}.{3}&language={4}&id={5}", VersionInfo.ProductVersion.Major, VersionInfo.ProductVersion.Minor, VersionInfo.ProductVersion.Build, VersionInfo.ProductVersion.Revision, Thinkage.Libraries.Application.InstanceFormatCultureInfo.TwoLetterISOLanguageName, Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().OrganizationId);
 											return new System.Uri((string)inputs[0] ?? defaultURL);
 										},
 										new VariableValue(dsMB.Schema.V.NewsURL)),
 									new DCol(Fmt.SetUsage(DBI_Value.UsageType.Html), Fmt.SetHtmlDisplaySettings(new HtmlDisplaySettings() { ValueIsURI = true, SuppressScriptErrors = true })))
 							))
 						)
-					},
-					null
-				);
+					});
 			});
 
 			#endregion
@@ -5321,7 +5078,7 @@ namespace Thinkage.MainBoss.Controls {
 							new DCol(Fmt.SetDisplayPath(dsMB.Path.T.Location.F.Code)),
 							new ECol(
 								Fmt.SetPickFrom(TILocations.LocationPickerTblCreator),
-								FilterOutContainedLocations(dsMB.Path.T.PlainRelativeLocation.F.RelativeLocationID.F.LocationID, dsMB.Path.T.LocationDerivations.F.LocationID)
+								FilterOutContainedLocations(dsMB.Path.T.PlainRelativeLocation.F.RelativeLocationID.F.LocationID, dsMB.Path.T.Location.F.Id)
 							)),
 						TblColumnNode.New(dsMB.Path.T.PlainRelativeLocation.F.RelativeLocationID.F.ContainingLocationID,
 							new DefaultOnlyCol(),
@@ -5435,7 +5192,6 @@ namespace Thinkage.MainBoss.Controls {
 								BTbl.ListColumn(dsMB.Path.T.ExternalTag.F.ExternalTag)
 							),
 					},
-					null,
 					new CompositeView(dsMB.Path.T.ExternalTag.F.RequestID,
 						CompositeView.RecognizeByValidEditLinkage(),
 						OnlyViewEdit, Fmt.SetExport(false)
@@ -5678,6 +5434,7 @@ namespace Thinkage.MainBoss.Controls {
 			// constructors can reference other Tbl objects through tInfo[xxx].
 			TILocations.DefineTblEntries();
 			TIRelationship.DefineTblEntries();
+			TIAttachments.DefineTblEntries();
 		}
 		internal static readonly object ContactNameId = KB.I("ContactNameId");
 		#endregion
@@ -5718,11 +5475,7 @@ namespace Thinkage.MainBoss.Controls {
 		#region CheckTableInfo
 #if DEBUG
 		[Invariant]
-		public class TableInfoDebug {
-			private TableInfoDebug() {
-			}
-
-
+		public static class TableInfoDebug {
 			// TODO: This code still complains about far too many "unused" tbl's, most of which are not the registered Tbl for their own schema.
 			public static void CheckTableInfo(MenuDef menuRoot) {
 				var tblDepths = new Dictionary<Tbl, int>(ObjectByReferenceEqualityComparer<Tbl>.Instance);
@@ -5827,9 +5580,8 @@ namespace Thinkage.MainBoss.Controls {
 			private static void CheckReportTbls() {
 				System.Reflection.FieldInfo[] reportTbls = typeof(TIReports).GetFields(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Public);
 				foreach (System.Reflection.FieldInfo f in reportTbls) {
-					Tbl tbl = f.GetValue(null) as Tbl;
 					var fieldName = "TIReports." + f.Name;
-					if (tbl == null)
+					if (!(f.GetValue(null) is Tbl tbl))
 						continue;
 					try {
 						int nodeIndex = 0;
@@ -5861,8 +5613,7 @@ namespace Thinkage.MainBoss.Controls {
 							possibleNonReportableColumns.Add(column);
 
 					foreach (var c in tbl.Columns) {
-						var cn = c as TblColumnNode;
-						if (cn == null)
+						if (!(c is TblColumnNode cn))
 							continue;
 						if (cn.Label != null) {
 							if (labelDuplicates.Contains(cn.Label.IdentifyingName))
@@ -6005,6 +5756,8 @@ namespace Thinkage.MainBoss.Controls {
 				if (missingXids.Length > 0)
 					TblAnnotation(pickerTbl, Strings.IFormat("No ListArg in closed context for XID identified by name(s) {0}", missingXids.ToString()));
 			}
+
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 			private static string IdentifyPermissionAttributes(List<PermissionToView> listOfAttrs) {
 				System.Text.StringBuilder identity = new System.Text.StringBuilder();
 				for (int i = 0; i < listOfAttrs.Count; ++i) {
@@ -6015,8 +5768,7 @@ namespace Thinkage.MainBoss.Controls {
 				return identity.ToString();
 			}
 			private static void CheckTblLeafNode(Tbl ownerTbl, string additionalIdentification, TblLayoutNode node) {
-				TblLeafNode leafNode = node as TblLeafNode;
-				if (leafNode == null)
+				if (!(node is TblLeafNode leafNode))
 					return;
 				if (leafNode.ReferencedType is CurrencyTypeInfo) {
 					List<PermissionToView> listOfPermissionToViewAttributes = new List<PermissionToView>();
@@ -6036,13 +5788,13 @@ namespace Thinkage.MainBoss.Controls {
 				Fmt.ShowReferencesArg ebrn = ec == null ? null : Fmt.GetShowReferences(ec);
 				if (brn != null || dbrn != null || ebrn != null) {
 					if (brn != null) {
-						Tbl t = brn.BasisTbl;
+						_ = brn.BasisTbl;
 					}
 					if (ebrn != null) {
-						Tbl t = ebrn.BasisTbl;
+						_ = ebrn.BasisTbl;
 					}
 					if (dbrn != null) {
-						Tbl t = dbrn.BasisTbl;
+						_ = dbrn.BasisTbl;
 					}
 				}
 				else {

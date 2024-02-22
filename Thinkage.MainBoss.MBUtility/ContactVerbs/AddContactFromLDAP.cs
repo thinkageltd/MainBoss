@@ -26,7 +26,7 @@ namespace Thinkage.MainBoss.MBUtility {
 		public class Definition : UtilityVerbWithDatabaseDefinition {
 			public Definition()
 				: base() {
-				Add(EmailAddresses = new StringValueOption("Emailaddresses", KB.K("The email addresses used to find the Active Directory entry for the users").Translate(), false));
+				Optable.Add(EmailAddresses = new StringValueOption("Emailaddresses", KB.K("The email addresses used to find the Active Directory entry for the users").Translate(), false));
 			}
 			public StringValueOption EmailAddresses;
 			public override string Verb {
@@ -45,9 +45,9 @@ namespace Thinkage.MainBoss.MBUtility {
 		private readonly Definition Options;
 
 		private void Run() {
-			LDAPEntry.CheckActiveDirectory(KB.I("AddContactfromactivedirectory"));
+			LDAPEntry.CheckActiveDirectory(Options.Verb);
 			System.Version minDBVersionForRolesTable = new System.Version(1, 0, 4, 38); // The roles table appeared in its current form at this version
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out string oName);
+			MB3Client.ConnectionDefinition connect = Options.ConnectionDefinition(out string oName);
 			// Get a connection to the database that we are referencing
 			new ApplicationTblDefaultsNoEditing(Thinkage.Libraries.Application.Instance, new MainBossPermissionsManager(Root.Rights), Root.Rights.Table, Root.RightsSchema, Root.Rights.Action.Customize);
 			var dbapp = new ApplicationWithSingleDatabaseConnection(Thinkage.Libraries.Application.Instance);
@@ -67,15 +67,15 @@ namespace Thinkage.MainBoss.MBUtility {
 			catch (System.Exception ex) {
 				dbapp.CloseDatabaseSession();
 				if (ex is GeneralException)
-					throw;			// message should be good
+					throw;          // message should be good
 				throw new GeneralException(ex, KB.K("There was a problem validating access to the database {0} on server {1}"), connect.DBName, connect.DBServer);
 			}
 			DBClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
-			var EmailAddresses = Options.EmailAddresses.Value.Split(new char[]{' ',',',';'});
+			var EmailAddresses = Options.EmailAddresses.Value.Split(new char[] { ' ', ',', ';' });
 			System.Net.Mail.MailAddress se = null;
 			foreach (var EmailAddress in EmailAddresses) {
 				var e = EmailAddress.Trim();
-		
+
 				if (string.IsNullOrWhiteSpace(e))
 					continue;
 				try {
@@ -90,10 +90,10 @@ namespace Thinkage.MainBoss.MBUtility {
 						System.Console.WriteLine(Strings.Format(KB.K("Error: {0}"), Thinkage.Libraries.Exception.FullMessage(ContactInfo.Exception)));
 					if (ContactInfo.WarningText != null)
 						System.Console.WriteLine(Strings.Format(KB.K("Warning: {0}"), ContactInfo.WarningText));
-					if( ContactInfo.InfoText != null )
+					if (ContactInfo.InfoText != null)
 						System.Console.WriteLine(ContactInfo.InfoText);
 					else
-						System.Console.WriteLine(Strings.Format(KB.K("Contact '{0}' with email address '{1}' already existed"), ContactInfo.ContactCode, e));		
+						System.Console.WriteLine(Strings.Format(KB.K("Contact '{0}' with email address '{1}' already existed"), ContactInfo.ContactCode, e));
 				}
 			}
 		}

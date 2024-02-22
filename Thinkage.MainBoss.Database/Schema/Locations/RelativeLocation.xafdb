@@ -141,8 +141,9 @@
 		  fetch next from cc into @ed, @ing
 		  while @@fetch_status = 0 begin
 			insert into LocationContainment select newid(), ed.ContainedLocationID, ing.ContainingLocationID, ed.Depth+ing.Depth+1
-				from LocationContainment as ed, LocationContainment as ing
-				  where ed.ContainingLocationID = @ed and ing.ContainedLocationID = @ing
+				from LocationContainment as ed 
+				join LocationContainment as ing
+				on ed.ContainingLocationID = @ed and ing.ContainedLocationID = @ing
 			  fetch next from cc into @ed, @ing
 		  end
 	  end

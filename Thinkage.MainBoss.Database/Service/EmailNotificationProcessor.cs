@@ -9,13 +9,13 @@ namespace Thinkage.MainBoss.Database.Service {
 		protected SMTPClient smtp = null;
 		public bool Unavailable = true; // cannot send messages, can be fixed by changes in the configuration record
 		#region Constructors, Destructor
-		public EmailNotificationProcessor(IServiceLogging serviceBase, MB3Client dbClient, bool allowOutgoingEmail)	: base(serviceBase, dbClient) {
+		public EmailNotificationProcessor(IServiceLogging serviceBase, MB3Client dbClient, bool allowOutgoingEmail) : base(serviceBase, dbClient) {
 			if (!allowOutgoingEmail) {
 				Unavailable = true;
 				return;
 			}
 			if (!ServiceConfiguration.ProcessNotificationEmail) {
-				if( oldProcessNotificationEmail != ServiceConfiguration.ProcessNotificationEmail )
+				if (oldProcessNotificationEmail != ServiceConfiguration.ProcessNotificationEmail)
 					Logger.LogInfo(KB.K("The Outgoing Email Notification service has been disabled").Translate());
 				oldProcessNotificationEmail = ServiceConfiguration.ProcessNotificationEmail;
 				return;

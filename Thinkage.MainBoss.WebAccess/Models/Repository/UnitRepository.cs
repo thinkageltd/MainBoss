@@ -29,11 +29,11 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		/// <returns></returns>
 		public List<KeyValuePair<Guid, string>> Autocomplete(string term, string pattern) {
 			System.Text.RegularExpressions.Regex searchTerm = null;
-			if( pattern != null ){
-				try{
+			if (!String.IsNullOrEmpty(pattern)) {
+				try {
 					searchTerm = new System.Text.RegularExpressions.Regex(pattern);
 				}
-				catch( ArgumentException x ){
+				catch (ArgumentException x) {
 					Thinkage.Libraries.Exception.AddContext(x, new Thinkage.Libraries.MessageExceptionContext(KB.T("RequestCreateUnitCodePattern error")));
 					throw;
 				}
@@ -58,7 +58,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		#endregion
 		#region IView
 		/// <summary>
-		/// 
+		/// Unit View
 		/// </summary>
 		/// <param name="Id">The UnitLocationID from the Request/WorkOrder</param>
 		/// <returns></returns>
@@ -122,13 +122,14 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 				u.UnitGISLocationURL = null;
 			else
 				u.UnitGISLocationURL = GoogleGISShowMap.Format(new GISMap(code, GISLocation, null,
-					postalAddress.Address1,
-					postalAddress.Address2,
-					postalAddress.City,
-					postalAddress.Territory,
-					postalAddress.Country,
-					postalAddress.PostalCode));
+					postalAddress?.Address1,
+					postalAddress?.Address2,
+					postalAddress?.City,
+					postalAddress?.Territory,
+					postalAddress?.Country,
+					postalAddress?.PostalCode));
 		}
 		#endregion
+
 	}
 }

@@ -8,10 +8,8 @@ using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.XAF.Database.Service;
 
-namespace Thinkage.MainBoss.Controls
-{
-	public class WithSequenceCounterEditLogic : WithHistoryColumnEditLogic
-	{
+namespace Thinkage.MainBoss.Controls {
+	public class WithSequenceCounterEditLogic : WithHistoryColumnEditLogic {
 		private MB3ETbl.WithStateHistoryAndSequenceCounterLogicArg SequenceCountingInfo;
 
 		// The following are only set for normal record editing.
@@ -22,11 +20,9 @@ namespace Thinkage.MainBoss.Controls
 		private Source CounterVariableOriginalSource;
 
 		public WithSequenceCounterEditLogic(IEditUI control, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
-			: base(control, db, tbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, initLists)
-		{
+			: base(control, db, tbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, initLists) {
 		}
-		protected override void SetupDataset()
-		{
+		protected override void SetupDataset() {
 			base.SetupDataset();
 
 			SequenceCountingInfo = (MB3ETbl.WithStateHistoryAndSequenceCounterLogicArg)ETbl.EditorLogicClassArg;
@@ -38,7 +34,7 @@ namespace Thinkage.MainBoss.Controls
 			else {
 				SequenceCounter = new SequenceCountManager(DB, SequenceCountingInfo.SpoilTable, SequenceCountingInfo.CounterVariable, SequenceCountingInfo.FormatVariable);
 				InitList.Add(Init.OnLoadNewClone(SequenceCountingInfo.SequenceTargetPath, new SequenceCountValue(SequenceCounter)));
-				SequenceTargetSource = RecordManager.GetPathSource(SequenceCountingInfo.SequenceTargetPath, 0);	// TODO: May need the recordSet as another ctor argument
+				SequenceTargetSource = RecordManager.GetPathSource(SequenceCountingInfo.SequenceTargetPath, 0); // TODO: May need the recordSet as another ctor argument
 			}
 		}
 		protected override System.Data.IsolationLevel SaveTransactionIsolationLevel {
@@ -50,7 +46,7 @@ namespace Thinkage.MainBoss.Controls
 				return base.SaveTransactionIsolationLevel;
 			}
 		}
-		protected override void SaveMultipleRecords(ServerExtensions.UpdateOptions updateOptions, EditorState postSaveState, IProgress<IProgressDisplay> rP = null, CancellationToken cT = default(CancellationToken)) {
+		protected override void SaveMultipleRecords(ServerExtensions.UpdateOptions updateOptions, EditorState postSaveState, IProgress<IProgressDisplay> rP = null, CancellationToken cT = default) {
 			switch (State.EditRecordState) {
 			default:
 				base.SaveMultipleRecords(updateOptions, postSaveState, rP, cT);

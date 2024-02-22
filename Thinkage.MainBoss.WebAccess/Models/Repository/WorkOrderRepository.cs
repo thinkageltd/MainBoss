@@ -31,7 +31,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		/// <summary>
 		/// The right required to Actualize resources
 		/// </summary>
-		private Right ActualizeRight {
+		private static Right ActualizeRight {
 			get {
 				return GetTableRightsGroup(KB.I("ActualItem")).GetTableOperationRight(TableOperationRightsGroup.TableOperation.Create);
 			}
@@ -142,9 +142,9 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		}
 		#endregion
 
-		public bool CanSelfAssign() {
+		public static bool CanSelfAssign() {
 			using (dsMB ds = new dsMB(MB3DB)) {
-				return WorkOrderRepository.GetCurrentUserAsWorkOrderAssignee(ds) != Guid.Empty;
+				return GetCurrentUserAsWorkOrderAssignee(ds) != Guid.Empty;
 			}
 		}
 
@@ -199,7 +199,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		public IEnumerable<WOResource> Resources(Guid parentId) {
 			return Resources(ResourceInfos(parentId));
 		}
-		private IEnumerable<WOResource> Resources(IEnumerable<IWOResourceInfo> ri) {
+		private static IEnumerable<WOResource> Resources(IEnumerable<IWOResourceInfo> ri) {
 			return ri.Select(p => p.MakeWOResource());
 		}
 		public void ActualizeResources(Guid ParentId, WorkOrderEntities.WorkOrder originalModel, IDictionary<Guid, System.Web.Mvc.ValueProviderResult> toActualize, AddActualizeError processError) {

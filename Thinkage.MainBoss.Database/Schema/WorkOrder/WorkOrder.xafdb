@@ -9,7 +9,10 @@
 	<doc>The format specification for producing the new Work Order Number</doc>
   </variable>
   <variable name="WODefaultDuration" type="WorkOrderDuration">
-	<doc>The duration default for new manually-entered workorders. PM-generated Work Orders are not affected by this.</doc>
+	<doc>The duration default for new manually-entered workorders. PM-generated Work Orders are not affected by this, where the Duration comes from the Task(s).</doc>
+  </variable>
+  <variable name="WODefaultSlackDays" type="WorkOrderDuration">
+	<doc>The default for Slack Days for new manually-entered workorders. PM-generated Work Orders are not affected by this, where the Slack Days come from the Maintenance Plan (SWO).</doc>
   </variable>
 
   <table name="WorkOrder" defaults="true" log="false" id="Id" xid="Number" xunique="true" labelkey="Work Order">
@@ -30,6 +33,30 @@
 	  <extension name="dependson">WorkOrderStateHistory@WorkOrderStateHistory.WorkOrderID->WorkOrder.ID</extension>
 	  <extension name="dependson">WorkOrderStateHistory.WorkOrderID@WorkOrderStateHistory.WorkOrderID->WorkOrder.ID</extension>
 	  <extension name="dependson">WorkOrderStateHistory.EffectiveDate@WorkOrderStateHistory.WorkOrderID->WorkOrder.ID</extension>
+	</field>
+	<field name="FirstWorkOrderStateHistoryID" read="RequiredGUIDREF"  link="WorkOrderStateHistory" labelkey="First State History">
+	  <doc>Calculated link to the first WorkOrderStateHistory record</doc>
+	  <result hosting="cached">
+		cast(workorder.id as link(WorkOrderStateHistory, nonnull))
+	  </result>
+	  <extension name="dependson">WorkOrderStateHistory@WorkOrderStateHistory.WorkOrderID->WorkOrder.ID</extension>
+	  <extension name="dependson">WorkOrderStateHistory.WorkOrderID@WorkOrderStateHistory.WorkOrderID->WorkOrder.ID</extension>
+	</field>
+	<field name="FirstOpenWorkOrderStateHistoryID" read="GUIDREF"  link="WorkOrderStateHistory" labelkey="First State History">
+	  <doc>Calculated link to the first WorkOrderStateHistory record in the Open state</doc>
+	  <result hosting="cached">
+		cast(null as link(WorkOrderStateHistory, null))
+	  </result>
+	  <extension name="dependson">WorkOrderStateHistory@WorkOrderStateHistory.WorkOrderID->WorkOrder.ID</extension>
+	  <extension name="dependson">WorkOrderStateHistory.WorkOrderID@WorkOrderStateHistory.WorkOrderID->WorkOrder.ID</extension>
+	</field>
+	<field name="CompletionWorkOrderStateHistoryID" read="GUIDREF"  link="WorkOrderStateHistory" labelkey="Work Completion State History">
+	  <doc>Calculated link to the WorkOrderStateHistory record that marks the completion of the work</doc>
+	  <result hosting="cached">
+		cast(null as link(WorkOrderStateHistory, null))
+	  </result>
+	  <extension name="dependson">WorkOrderStateHistory@WorkOrderStateHistory.WorkOrderID->WorkOrder.ID</extension>
+	  <extension name="dependson">WorkOrderStateHistory.WorkOrderID@WorkOrderStateHistory.WorkOrderID->WorkOrder.ID</extension>
 	</field>
 	<field name="Subject" type="RequiredSubject">
 	  <doc>A 1-line description of the work to be done</doc>
@@ -76,14 +103,14 @@
 		the downtime caused by a failure prior to the start of the work in this work order.
 	  </doc>
 	</field>
-	<field name="StartDateEstimate" type="RequiredDate" labelkey="Work Start Date">
+	<field name="StartDateEstimate" type="RequiredDate" labelkey="Planned Start Date">
 	  <doc>
 		an estimate (and eventually a firm value) for when the work actually starts. Ultimately all resource actuals
 		must occur on or after this date.
 	  </doc>
 	  <extension name="servergetsDateTime"/>
 	</field>
-	<field name="EndDateEstimate" type="RequiredDate" labelkey="Work End Date">
+	<field name="EndDateEstimate" type="RequiredDate" labelkey="Planned End Date">
 	  <doc>
 		an estimate (and eventually a firm value) for the last day work is done. Ultimately all resource actuals must occur
 		on or before this date.
@@ -95,6 +122,18 @@
 		The work order can be considered overdue before this date if the remaining work interval
 		goes beyond the due date.
 	  </doc>
+	</field>
+	<field name="PreviousWorkedDays" read="RequiredDaySpan">
+	  <doc>This is the count of days since the StartDateEstimate that the Work Order has been Open, not including open time for
+	  the Current State History record. In particular, if the current state history is Open, this count does NOT include
+	  the day of the effective date of the current state history record.</doc>
+	  <result hosting="cached">
+		cast(42 as RequiredDaySpan)
+	  </result>
+	  <extension name="dependson">WorkOrderStateHistory@WorkOrderStateHistory.WorkOrderID->WorkOrder.ID</extension>
+	  <extension name="dependson">WorkOrderStateHistory.WorkOrderID@WorkOrderStateHistory.WorkOrderID->WorkOrder.ID</extension>
+	  <extension name="dependson">WorkOrderStateHistory.EffectiveDate@WorkOrderStateHistory.WorkOrderID->WorkOrder.ID</extension>
+	  <extension name="dependson">WorkOrder.StartDateEstimate@WorkOrder</extension>
 	</field>
 	<field name="SelectPrintFlag" type="Requiredbool" labelkey="Select for Printing">
 	  <doc>Interim flag for support of a SelectForPrint operation; will migrate to general flags model in future</doc>
@@ -131,37 +170,54 @@
 	<extension name="lastupdate">CurrentWorkOrderStateHistoryID.EffectiveDate</extension>
 	<extension name="equate">CurrentWorkOrderStateHistoryID.WorkOrderID=Id</extension>
   </table>
-  <object class="function" name="mbfn_WorkOrder_CurrentWorkOrderStateHistory">
+  <object class="function" name="mbfn_WorkOrder_PreviousWorkedDays">
 	<doc>
-	  Return the WorkOrderStateHistory record that represents the Current state for a workorder
-	</doc>
-	<extension name="body">
-	  (
-	  @WID uniqueidentifier -- WorkOrder
-	  )
-	  RETURNS	uniqueidentifier
-	  as
-	  begin
-	  return (
-	  select top 1 ID from WorkOrderStateHistory
-	  where WorkOrderStateHistory.WorkOrderID = @WID
-	  order by EffectiveDate desc
-	  )
-	  end
-	</extension>
-  </object>
-  <object class="function" name="mbfn_WorkOrder_CreationDate">
-	<doc>
-	  Gets the minimum StateHistory EntryDate for the creation of a work order
+	  Calculates PreviousWorkedDays from scratch for cases when the StartDateEstimate or state history EffectiveDates change.
+	  New state history records maintain that field incrementally.
 	</doc>
 	<extension name="body">
 	  (
 	  @ID		uniqueidentifier	-- WorkOrderID
 	  )
-	  RETURNS DateTime
+	  RETURNS XAFInterval
 	  as
 	  begin
-	  return (select min(EntryDate) from WorkOrderStateHistory where WorkOrderID = @ID)
+		declare @Result integer;
+		<!-- Join the State History to its following record and return all the inclusive dates that each WO was open at least
+			  during part of the day, ignoring any dates before the work start date.
+			  Note that we also return a row for the current state history if it is Open, in which case E has no position and we return a
+			  crossed end-date so it counts as zero days.
+			  These date ranges are all ones in which we assume work has occurred. -->
+		with WorkIntervalsSoFar(FirstIntervalDate, LastIntervalDate, seq) as (
+			select
+				case when cast(S.EffectiveDate as Date) > wo.StartDateEstimate then cast(S.EffectiveDate as Date) else cast(wo.StartDateEstimate as date) end,
+				case when E.EffectiveDate is null
+				  then dateadd(day, -1, case when cast(S.EffectiveDate as Date) > wo.StartDateEstimate then cast(S.EffectiveDate as Date) else cast(wo.StartDateEstimate as date) end)
+				  else cast(E.EffectiveDate as Date) end,
+				row_number() over (order by S.EffectiveDate asc)
+			from WorkOrderStateHistory as S
+			join WorkOrder as wo on wo.Id = S.WorkOrderID
+			join WorkOrderState as SS on SS.Id = S.WorkOrderStateID
+			left join WorkOrderStateHistory as E on E.PreviousWorkOrderStateHistoryID = s.Id
+			where ss.FilterAsOpen != 0
+				and (cast(E.EffectiveDate as Date) >= wo.StartDateEstimate)
+				and S.WorkOrderID = @ID
+		)
+		<!-- This calculates the number of days open for each record from WorkIntervalsSoFar. Each open interval counts as end - start + 1 because
+			  the count is inclusive, but if the next record for the same WO starts on the day this one ended, one less is counted
+			  so the shared day does not get double-counted. This includes the special record for the current WOSH if it is open.
+			  We can't use exists to check if the next record has the same start as our end because MS Sql does not allow subqueries
+			  within aggregate functions. Instead we use a left join to look ahead. Unfortunately we need a sequence number to reliably find the next record.
+			  anything else e.g. looking for an effective date higher than our ending effective date, will not work. -->
+		select @result = sum(case when iNext.seq is not null
+				then datediff(day, I.FirstIntervalDate, I.LastIntervalDate)			<!-- The next work interval starts on our end date -->
+				else datediff(day, I.FirstIntervalDate, I.LastIntervalDate) + 1 end)	<!-- The next work interval if any starts at least a day later -->
+			from
+				WorkIntervalsSoFar as I
+				left join WorkIntervalsSoFar as INext
+					on I.seq = inext.seq - 1
+						and I.LastIntervalDate = inext.FirstIntervalDate
+		return coalesce(dbo._INew(@result, 0, 0, 0, 0), 0)
 	  end
 	</extension>
 	<extension name="dependson">WorkOrderStateHistory</extension>
@@ -251,6 +307,20 @@
 	</extension>
 	<extension name="references">Location</extension>
 	<extension name="references">TemporaryStorage</extension>
+	<extension name="references">WorkOrder</extension>
+  </object>
+  <object class="trigger" name="mbtg_WorkOrder_PreviousWorkedDays">
+	<extension name="body">
+	  on WorkOrder
+	  for update
+	  as
+		if update(StartDateEstimate) begin
+		  update WorkOrder
+			set PreviousWorkedDays = dbo.mbfn_WorkOrder_PreviousWorkedDays(Id)
+			where Id in (select inserted.Id from inserted join deleted on inserted.Id = deleted.Id where inserted.StartDateEstimate != deleted.StartDateEstimate)
+		end
+	</extension>
+	<extension name="references">WorkOrder</extension>
 	<extension name="references">WorkOrder</extension>
   </object>
   <table name="Location"/>

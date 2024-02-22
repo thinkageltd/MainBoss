@@ -13,6 +13,10 @@
 	<field name="EffectiveDate" type="RequiredDateTime">
 	  <extension name="servergetsDateTime"/>
 	</field>
+	<field name="UserID" type="GUIDREF" link="User">
+		<doc>Link to the originator of this record; may be null because previous meter readings did not have this field</doc>
+		<extension name="linkage">captive</extension>
+	</field>
 	<field name="MeterID" type="RequiredGUIDREF" link="Meter">
 	  <doc>The meter to which this reading is associated</doc>
 	  <extension name="linkage">captive</extension>
@@ -26,6 +30,9 @@
 	  <result hosting="cached">
 		  cast(42000 as RequiredMeterReadingValue)
 	  </result>
+	</field>
+	<field name="Comment" type="Comment">
+		<doc>Users can enter comments about the meter reading. May be used by some customers to record other information at time of reading (e.g. a tolerance measurement)</doc>
 	</field>
 	<extension name="costrights">UnitValue</extension>
 	<extension name="deletemethod">hide</extension>
@@ -99,4 +106,5 @@
   </object>
   <table name="Meter"/>
   <table name="WorkOrder"/>
+  <table name="User"/>
 </database>

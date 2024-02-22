@@ -10,7 +10,7 @@ namespace Thinkage.MainBoss.WebAccess.Models
 	/// A means to view a record identified by Id
 	/// </summary>
 	/// <typeparam name="VT"></typeparam>
-	interface IView<VT>
+	internal interface IView<VT>
 	{
 		VT View(Guid Id);
 	}

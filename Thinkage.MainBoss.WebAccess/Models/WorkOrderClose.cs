@@ -337,6 +337,12 @@ namespace Thinkage.MainBoss.WebAccess.Models
 			return ((System.DateTime?)(this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod()))).ReturnValue));
 		}
   
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.[_vgetWODefaultSlackDays]", IsComposable=true)]
+		public System.DateTime? _vgetWODefaultSlackDays()
+		{
+			return ((System.DateTime?)(this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod()))).ReturnValue));
+		}
+  
 		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.[_vgetManageRequestStates]", IsComposable=true)]
 		public bool _vgetManageRequestStates()
 		{
@@ -2526,7 +2532,6 @@ namespace WorkOrderCloseEntities
 		private System.Guid _Id;
 		private string _Number;
 		private System.Guid _UnitLocationID;
-		private System.Guid? _PMGenerationBatchID;
 		private System.Guid _CurrentWorkOrderStateHistoryID;
 		private string _Subject;
 		private string _Description;
@@ -2548,7 +2553,6 @@ namespace WorkOrderCloseEntities
 		private bool _TemporaryStorageEmpty;
 		private EntitySet<WorkOrderStateHistory> _WorkOrderStateHistoryWorkOrder;
 		private EntityRef<Location> _UnitLocation;
-		private EntityRef<PMGenerationBatch> _PMGenerationBatch;
 		private EntityRef<WorkOrderStateHistory> _CurrentWorkOrderStateHistory;
 		private EntityRef<Requestor> _Requestor;
 		private EntityRef<WorkCategory> _WorkCategory;
@@ -2570,8 +2574,6 @@ namespace WorkOrderCloseEntities
 	partial void OnNumberChanged();
 	partial void OnUnitLocationIDChanging(System.Guid value);
 	partial void OnUnitLocationIDChanged();
-	partial void OnPMGenerationBatchIDChanging(System.Guid? value);
-	partial void OnPMGenerationBatchIDChanged();
 	partial void OnCurrentWorkOrderStateHistoryIDChanging(System.Guid value);
 	partial void OnCurrentWorkOrderStateHistoryIDChanged();
 	partial void OnSubjectChanging(string value);
@@ -2692,38 +2694,11 @@ namespace WorkOrderCloseEntities
 				}
 			}
 		}
-		/// Denotes the WorkOrder's PMGenerationBatchID column with type link(field PMGenerationBatch.Id) with labelkey='PMGenerationBatch'
-		static public string WorkOrder_PMGenerationBatchID{ get{return WorkOrderCloseLabelKdsMBLabel.K("PMGenerationBatch").Translate();}}
-		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_PMGenerationBatchID")]		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PMGenerationBatchID", DbType="UNIQUEIDENTIFIER")]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1)]
-		public System.Guid? PMGenerationBatchID
-		{
-			get
-			{
-				return this._PMGenerationBatchID;
-			}
-			set
-			{
-				if ((this._PMGenerationBatchID != value))
-				{
-					if (this._PMGenerationBatch.HasLoadedOrAssignedValue )
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnPMGenerationBatchIDChanging(value);
-					this.SendPropertyChanging();
-					this._PMGenerationBatchID = value;
-					this.SendPropertyChanged();
-					this.OnPMGenerationBatchIDChanged();
-				}
-			}
-		}
 		/// Denotes the WorkOrder's CurrentWorkOrderStateHistoryID column with type link(nonnull, field WorkOrderStateHistory.Id) with labelkey='Current State History'
 		static public string WorkOrder_CurrentWorkOrderStateHistoryID{ get{return WorkOrderCloseLabelKdsMBLabel.K("Current State History").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_CurrentWorkOrderStateHistoryID")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CurrentWorkOrderStateHistoryID", DbType="UNIQUEIDENTIFIER", CanBeNull=false)]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1)]
 		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
 		public System.Guid CurrentWorkOrderStateHistoryID
 		{
@@ -2751,7 +2726,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_Subject{ get{return WorkOrderCloseLabelKdsMBLabel.K("Subject").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_Subject")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Subject", DbType="NVARCHAR (100)", CanBeNull=false)]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1)]
 		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
 		public string Subject
 		{
@@ -2775,7 +2750,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_Description{ get{return WorkOrderCloseLabelKdsMBLabel.K("Description").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_Description")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Description", DbType="NVARCHAR(MAX)")]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1)]
 		public string Description
 		{
 			get
@@ -2798,7 +2773,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_ClosingComment{ get{return WorkOrderCloseLabelKdsMBLabel.K("Comment").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_ClosingComment")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ClosingComment", DbType="NVARCHAR(MAX)")]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1)]
 		public string ClosingComment
 		{
 			get
@@ -2821,7 +2796,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_RequestorID{ get{return WorkOrderCloseLabelKdsMBLabel.K("Requestor").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_RequestorID")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RequestorID", DbType="UNIQUEIDENTIFIER")]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1)]
 		public System.Guid? RequestorID
 		{
 			get
@@ -2848,7 +2823,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_WorkCategoryID{ get{return WorkOrderCloseLabelKdsMBLabel.K("Work Category").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_WorkCategoryID")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_WorkCategoryID", DbType="UNIQUEIDENTIFIER")]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1)]
 		public System.Guid? WorkCategoryID
 		{
 			get
@@ -2875,7 +2850,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_WorkOrderExpenseModelID{ get{return WorkOrderCloseLabelKdsMBLabel.K("Expense Model").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_WorkOrderExpenseModelID")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_WorkOrderExpenseModelID", DbType="UNIQUEIDENTIFIER", CanBeNull=false)]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1)]
 		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
 		public System.Guid WorkOrderExpenseModelID
 		{
@@ -2903,7 +2878,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_AccessCodeID{ get{return WorkOrderCloseLabelKdsMBLabel.K("Access Code").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_AccessCodeID")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_AccessCodeID", DbType="UNIQUEIDENTIFIER")]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1)]
 		public System.Guid? AccessCodeID
 		{
 			get
@@ -2930,7 +2905,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_ProjectID{ get{return WorkOrderCloseLabelKdsMBLabel.K("Project").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_ProjectID")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ProjectID", DbType="UNIQUEIDENTIFIER")]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1)]
 		public System.Guid? ProjectID
 		{
 			get
@@ -2957,7 +2932,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_WorkOrderPriorityID{ get{return WorkOrderCloseLabelKdsMBLabel.K("Priority").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_WorkOrderPriorityID")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_WorkOrderPriorityID", DbType="UNIQUEIDENTIFIER")]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1)]
 		public System.Guid? WorkOrderPriorityID
 		{
 			get
@@ -2984,7 +2959,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_CloseCodeID{ get{return WorkOrderCloseLabelKdsMBLabel.K("Close Code").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_CloseCodeID")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CloseCodeID", DbType="UNIQUEIDENTIFIER")]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
 		public System.Guid? CloseCodeID
 		{
 			get
@@ -3011,7 +2986,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_Downtime{ get{return WorkOrderCloseLabelKdsMBLabel.K("Downtime").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_Downtime")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Downtime", DbType="DATETIME")]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
 		public System.DateTime? Downtime
 		{
 			get
@@ -3034,7 +3009,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_StartDateEstimate{ get{return WorkOrderCloseLabelKdsMBLabel.K("Work Start Date").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_StartDateEstimate")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_StartDateEstimate", DbType="DATETIME", CanBeNull=false)]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
 		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
 		public System.DateTime StartDateEstimate
 		{
@@ -3058,7 +3033,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_EndDateEstimate{ get{return WorkOrderCloseLabelKdsMBLabel.K("Work End Date").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_EndDateEstimate")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EndDateEstimate", DbType="DATETIME", CanBeNull=false)]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
 		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
 		public System.DateTime EndDateEstimate
 		{
@@ -3082,7 +3057,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_WorkDueDate{ get{return WorkOrderCloseLabelKdsMBLabel.K("Work Due Date").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_WorkDueDate")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_WorkDueDate", DbType="DATETIME")]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
 		public System.DateTime? WorkDueDate
 		{
 			get
@@ -3105,7 +3080,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_SelectPrintFlag{ get{return WorkOrderCloseLabelKdsMBLabel.K("Select for Printing").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_SelectPrintFlag")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SelectPrintFlag", DbType="BIT", CanBeNull=false)]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
 		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
 		public bool SelectPrintFlag
 		{
@@ -3129,7 +3104,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_TotalDemand{ get{return WorkOrderCloseLabelKdsMBLabel.K("TotalDemand").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_TotalDemand")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TotalDemand", DbType="MONEY", CanBeNull=false)]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
 		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
 		public System.Decimal TotalDemand
 		{
@@ -3153,7 +3128,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_TotalActual{ get{return WorkOrderCloseLabelKdsMBLabel.K("TotalActual").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_TotalActual")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TotalActual", DbType="MONEY", CanBeNull=false)]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
 		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
 		public System.Decimal TotalActual
 		{
@@ -3177,7 +3152,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrder_TemporaryStorageEmpty{ get{return WorkOrderCloseLabelKdsMBLabel.K("TemporaryStorageEmpty").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrder),Name="WorkOrder_TemporaryStorageEmpty")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TemporaryStorageEmpty", DbType="BIT", CanBeNull=false)]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1)]
 		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
 		public bool TemporaryStorageEmpty
 		{
@@ -3199,7 +3174,7 @@ namespace WorkOrderCloseEntities
 		}
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="WorkOrder_WorkOrderStateHistory", Storage="_WorkOrderStateHistoryWorkOrder", ThisKey="Id", OtherKey="WorkOrderID")]
 		
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1, EmitDefaultValue=false)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1, EmitDefaultValue=false)]
 		public EntitySet<WorkOrderStateHistory> WorkOrderStateHistoryWorkOrder
 		{
 			get
@@ -3244,39 +3219,6 @@ namespace WorkOrderCloseEntities
 					else
 					{
 						this._UnitLocationID = default(System.Guid);
-					}
-					this.SendPropertyChanged();
-				}
-			}
-		}
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="PMGenerationBatch_WorkOrder", Storage="_PMGenerationBatch", ThisKey="PMGenerationBatchID", OtherKey="Id", IsForeignKey=true)]
-		public PMGenerationBatch PMGenerationBatch
-		{
-			get
-			{
-				return this._PMGenerationBatch.Entity;
-			}
-			set
-			{
-				PMGenerationBatch previousValue = this._PMGenerationBatch.Entity;
-				if (((previousValue != value)
-							|| (this._PMGenerationBatch.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._PMGenerationBatch.Entity = null;
-						previousValue.WorkOrderPMGenerationBatch.Remove(this);
-					}
-					this._PMGenerationBatch.Entity = value;
-					if ((value != null))
-					{
-						value.WorkOrderPMGenerationBatch.Add(this);
-						this._PMGenerationBatchID = value.Id;
-					}
-					else
-					{
-						this._PMGenerationBatchID = default(System.Guid?);
 					}
 					this.SendPropertyChanged();
 				}
@@ -3580,7 +3522,6 @@ namespace WorkOrderCloseEntities
 		{
 			this._WorkOrderStateHistoryWorkOrder = new EntitySet<WorkOrderStateHistory>(new Action<WorkOrderStateHistory>(this.attach_WorkOrderStateHistoryWorkOrder), new Action<WorkOrderStateHistory>(this.detach_WorkOrderStateHistoryWorkOrder));
 			this._UnitLocation = default(EntityRef<Location>);
-			this._PMGenerationBatch = default(EntityRef<PMGenerationBatch>);
 			this._CurrentWorkOrderStateHistory = default(EntityRef<WorkOrderStateHistory>);
 			this._Requestor = default(EntityRef<Requestor>);
 			this._WorkCategory = default(EntityRef<WorkCategory>);
@@ -3750,12 +3691,15 @@ namespace WorkOrderCloseEntities
 		private System.DateTime _EntryDate;
 		private System.Guid? _UserID;
 		private bool _EffectiveDateReadonly;
+		private System.Guid? _PreviousWorkOrderStateHistoryID;
 		private System.Guid _WorkOrderStateID;
 		private System.Guid? _WorkOrderStateHistoryStatusID;
 		private string _Comment;
 		private EntitySet<WorkOrder> _WorkOrderCurrentWorkOrderStateHistory;
+		private EntitySet<WorkOrderStateHistory> _WorkOrderStateHistoryPreviousWorkOrderStateHistory;
 		private EntityRef<User> _User;
 		private EntityRef<WorkOrder> _WorkOrder;
+		private EntityRef<WorkOrderStateHistory> _PreviousWorkOrderStateHistory;
 		private EntityRef<WorkOrderState> _WorkOrderState;
 		private EntityRef<WorkOrderStateHistoryStatus> _WorkOrderStateHistoryStatus;
 #pragma warning disable 0414
@@ -3777,6 +3721,8 @@ namespace WorkOrderCloseEntities
 	partial void OnUserIDChanged();
 	partial void OnEffectiveDateReadonlyChanging(bool value);
 	partial void OnEffectiveDateReadonlyChanged();
+	partial void OnPreviousWorkOrderStateHistoryIDChanging(System.Guid? value);
+	partial void OnPreviousWorkOrderStateHistoryIDChanged();
 	partial void OnWorkOrderStateIDChanging(System.Guid value);
 	partial void OnWorkOrderStateIDChanged();
 	partial void OnWorkOrderStateHistoryStatusIDChanging(System.Guid? value);
@@ -3940,11 +3886,38 @@ namespace WorkOrderCloseEntities
 				}
 			}
 		}
+		/// Denotes the WorkOrderStateHistory's PreviousWorkOrderStateHistoryID column with type link(field WorkOrderStateHistory.Id) with labelkey='Previous State History'
+		static public string WorkOrderStateHistory_PreviousWorkOrderStateHistoryID{ get{return WorkOrderCloseLabelKdsMBLabel.K("Previous State History").Translate();}}
+		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrderStateHistory),Name="WorkOrderStateHistory_PreviousWorkOrderStateHistoryID")]		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PreviousWorkOrderStateHistoryID", DbType="UNIQUEIDENTIFIER")]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1)]
+		public System.Guid? PreviousWorkOrderStateHistoryID
+		{
+			get
+			{
+				return this._PreviousWorkOrderStateHistoryID;
+			}
+			set
+			{
+				if ((this._PreviousWorkOrderStateHistoryID != value))
+				{
+					if (this._PreviousWorkOrderStateHistory.HasLoadedOrAssignedValue )
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnPreviousWorkOrderStateHistoryIDChanging(value);
+					this.SendPropertyChanging();
+					this._PreviousWorkOrderStateHistoryID = value;
+					this.SendPropertyChanged();
+					this.OnPreviousWorkOrderStateHistoryIDChanged();
+				}
+			}
+		}
 		/// Denotes the WorkOrderStateHistory's WorkOrderStateID column with type link(nonnull, field WorkOrderState.Id) with labelkey='State'
 		static public string WorkOrderStateHistory_WorkOrderStateID{ get{return WorkOrderCloseLabelKdsMBLabel.K("State").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrderStateHistory),Name="WorkOrderStateHistory_WorkOrderStateID")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_WorkOrderStateID", DbType="UNIQUEIDENTIFIER", CanBeNull=false)]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1)]
 		[System.ComponentModel.DataAnnotations.Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Thinkage.Libraries.MVC.Models.FieldValidationResource))]
 		public System.Guid WorkOrderStateID
 		{
@@ -3972,7 +3945,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrderStateHistory_WorkOrderStateHistoryStatusID{ get{return WorkOrderCloseLabelKdsMBLabel.K("Status").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrderStateHistory),Name="WorkOrderStateHistory_WorkOrderStateHistoryStatusID")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_WorkOrderStateHistoryStatusID", DbType="UNIQUEIDENTIFIER")]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1)]
 		public System.Guid? WorkOrderStateHistoryStatusID
 		{
 			get
@@ -3999,7 +3972,7 @@ namespace WorkOrderCloseEntities
 		static public string WorkOrderStateHistory_Comment{ get{return WorkOrderCloseLabelKdsMBLabel.K("Comment").Translate();}}
 		[System.ComponentModel.DataAnnotations.Display(ResourceType=typeof(WorkOrderCloseEntities.WorkOrderStateHistory),Name="WorkOrderStateHistory_Comment")]		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Comment", DbType="NVARCHAR(MAX)")]
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1)]
 		public string Comment
 		{
 			get
@@ -4020,7 +3993,7 @@ namespace WorkOrderCloseEntities
 		}
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="WorkOrderStateHistory_WorkOrder", Storage="_WorkOrderCurrentWorkOrderStateHistory", ThisKey="Id", OtherKey="CurrentWorkOrderStateHistoryID")]
 		
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1, EmitDefaultValue=false)]
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1, EmitDefaultValue=false)]
 		public EntitySet<WorkOrder> WorkOrderCurrentWorkOrderStateHistory
 		{
 			get
@@ -4035,6 +4008,25 @@ namespace WorkOrderCloseEntities
 			set
 			{
 				this._WorkOrderCurrentWorkOrderStateHistory.Assign(value);
+			}
+		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="WorkOrderStateHistory_WorkOrderStateHistory", Storage="_WorkOrderStateHistoryPreviousWorkOrderStateHistory", ThisKey="Id", OtherKey="PreviousWorkOrderStateHistoryID")]
+		
+		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1+1+1+1+1+1+1+1+1+1+1, EmitDefaultValue=false)]
+		public EntitySet<WorkOrderStateHistory> WorkOrderStateHistoryPreviousWorkOrderStateHistory
+		{
+			get
+			{
+				if ((this.serializing 
+							&& (this._WorkOrderStateHistoryPreviousWorkOrderStateHistory.HasLoadedOrAssignedValues == false)))
+				{
+					return null;
+				}
+				return this._WorkOrderStateHistoryPreviousWorkOrderStateHistory;
+			}
+			set
+			{
+				this._WorkOrderStateHistoryPreviousWorkOrderStateHistory.Assign(value);
 			}
 		}
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_WorkOrderStateHistory", Storage="_User", ThisKey="UserID", OtherKey="Id", IsForeignKey=true)]
@@ -4098,6 +4090,39 @@ namespace WorkOrderCloseEntities
 					else
 					{
 						this._WorkOrderID = default(System.Guid);
+					}
+					this.SendPropertyChanged();
+				}
+			}
+		}
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="PreviousWorkOrderStateHistory_WorkOrderStateHistory", Storage="_PreviousWorkOrderStateHistory", ThisKey="PreviousWorkOrderStateHistoryID", OtherKey="Id", IsForeignKey=true)]
+		public WorkOrderStateHistory PreviousWorkOrderStateHistory
+		{
+			get
+			{
+				return this._PreviousWorkOrderStateHistory.Entity;
+			}
+			set
+			{
+				WorkOrderStateHistory previousValue = this._PreviousWorkOrderStateHistory.Entity;
+				if (((previousValue != value)
+							|| (this._PreviousWorkOrderStateHistory.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._PreviousWorkOrderStateHistory.Entity = null;
+						previousValue.WorkOrderStateHistoryPreviousWorkOrderStateHistory.Remove(this);
+					}
+					this._PreviousWorkOrderStateHistory.Entity = value;
+					if ((value != null))
+					{
+						value.WorkOrderStateHistoryPreviousWorkOrderStateHistory.Add(this);
+						this._PreviousWorkOrderStateHistoryID = value.Id;
+					}
+					else
+					{
+						this._PreviousWorkOrderStateHistoryID = default(System.Guid?);
 					}
 					this.SendPropertyChanged();
 				}
@@ -4199,11 +4224,24 @@ namespace WorkOrderCloseEntities
 			this.SendPropertyChanging();
 			entity.CurrentWorkOrderStateHistory = null;
 		}
+
+		private void attach_WorkOrderStateHistoryPreviousWorkOrderStateHistory(WorkOrderStateHistory entity)
+		{
+			this.SendPropertyChanging();
+			entity.PreviousWorkOrderStateHistory = this;
+		}
+		private void detach_WorkOrderStateHistoryPreviousWorkOrderStateHistory(WorkOrderStateHistory entity)
+		{
+			this.SendPropertyChanging();
+			entity.PreviousWorkOrderStateHistory = null;
+		}
 		private void Initialize()
 		{
 			this._WorkOrderCurrentWorkOrderStateHistory = new EntitySet<WorkOrder>(new Action<WorkOrder>(this.attach_WorkOrderCurrentWorkOrderStateHistory), new Action<WorkOrder>(this.detach_WorkOrderCurrentWorkOrderStateHistory));
+			this._WorkOrderStateHistoryPreviousWorkOrderStateHistory = new EntitySet<WorkOrderStateHistory>(new Action<WorkOrderStateHistory>(this.attach_WorkOrderStateHistoryPreviousWorkOrderStateHistory), new Action<WorkOrderStateHistory>(this.detach_WorkOrderStateHistoryPreviousWorkOrderStateHistory));
 			this._User = default(EntityRef<User>);
 			this._WorkOrder = default(EntityRef<WorkOrder>);
+			this._PreviousWorkOrderStateHistory = default(EntityRef<WorkOrderStateHistory>);
 			this._WorkOrderState = default(EntityRef<WorkOrderState>);
 			this._WorkOrderStateHistoryStatus = default(EntityRef<WorkOrderStateHistoryStatus>);
 			OnCreated();		
@@ -4715,7 +4753,6 @@ namespace WorkOrderCloseEntities
 		static public string PMGenerationBatchLabelKey { get{return WorkOrderCloseLabelKdsMBLabel.K("PMGenerationBatch").Translate();}}
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 		private System.Guid _Id;
-		private EntitySet<WorkOrder> _WorkOrderPMGenerationBatch;
 #pragma warning disable 0414
 		private bool serializing;
 #pragma warning restore 0414
@@ -4755,25 +4792,6 @@ namespace WorkOrderCloseEntities
 				}
 			}
 		}
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="PMGenerationBatch_WorkOrder", Storage="_WorkOrderPMGenerationBatch", ThisKey="Id", OtherKey="PMGenerationBatchID")]
-		
-		[global::System.Runtime.Serialization.DataMemberAttribute(Order=0+1+1, EmitDefaultValue=false)]
-		public EntitySet<WorkOrder> WorkOrderPMGenerationBatch
-		{
-			get
-			{
-				if ((this.serializing 
-							&& (this._WorkOrderPMGenerationBatch.HasLoadedOrAssignedValues == false)))
-				{
-					return null;
-				}
-				return this._WorkOrderPMGenerationBatch;
-			}
-			set
-			{
-				this._WorkOrderPMGenerationBatch.Assign(value);
-			}
-		}
 		public event PropertyChangingEventHandler PropertyChanging;
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -4793,20 +4811,8 @@ namespace WorkOrderCloseEntities
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
-
-		private void attach_WorkOrderPMGenerationBatch(WorkOrder entity)
-		{
-			this.SendPropertyChanging();
-			entity.PMGenerationBatch = this;
-		}
-		private void detach_WorkOrderPMGenerationBatch(WorkOrder entity)
-		{
-			this.SendPropertyChanging();
-			entity.PMGenerationBatch = null;
-		}
 		private void Initialize()
 		{
-			this._WorkOrderPMGenerationBatch = new EntitySet<WorkOrder>(new Action<WorkOrder>(this.attach_WorkOrderPMGenerationBatch), new Action<WorkOrder>(this.detach_WorkOrderPMGenerationBatch));
 			OnCreated();		
 		}
 		

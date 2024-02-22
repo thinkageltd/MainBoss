@@ -10,13 +10,30 @@ namespace Thinkage.MainBoss.Controls
 	/// Register Tbl and/or DelayedCreateTbl objects for Receiving.
 	/// </summary>
 	public class TIReceive : TIGeneralMB3 {
+		#region View Record Types
+		#region - ReceiptActivity
+		public enum ReceiptActivity {
+			POLineItem,
+			ReceiveItemPO,
+			ReceiveItemPOCorrection,
+			POLineLabor,
+			ActualLaborOutsidePO,
+			ActualLaborOutsidePOCorrection,
+			POLineOtherWork,
+			ActualOtherWorkOutsidePO,
+			ActualOtherWorkOutsidePOCorrection,
+			POLineMiscellaneous,
+			ReceiveMiscellaneousPO,
+			ReceiveMiscellaneousPOCorrection
+		}
+		#endregion
+		#endregion
 		#region NodeIds
 		internal static readonly Key costColumnId = dsMB.Path.T.POLineItem.F.POLineID.F.Cost.Key();
 		internal static readonly Key uomColumnId = dsMB.Path.T.Item.F.UnitOfMeasureID.Key();
 		internal static readonly Key quantityColumnId = dsMB.Path.T.POLineItem.F.Quantity.Key();
 		#endregion
 		#region Named Tbls
-		private static readonly Key ReceivingItemLocation = KB.K("Receiving Storage Assignment");
 		public static DelayedCreateTbl ReceiveItemPOCorrectionTblCreator = null;
 		public static DelayedCreateTbl ReceiveItemPOFromActivityTblCreator = null;
 		public static DelayedCreateTbl ReceiveItemNonPOCorrectionTblCreator = null;
@@ -170,6 +187,8 @@ namespace Thinkage.MainBoss.Controls
 			#endregion
 
 			#region ReceiptActivity
+			// TODO: ReceiptActivity and PurchaseOrderLine are identical except that one provides a ReceiptID and the other a PurchaseOrderID for browsette filtering purposes.
+			// These should probably just be combined into a single view with a single Tbl.
 			{
 				Key receiveGroup = KB.K("Receive");
 				Key joinedCorrectionsCommand = KB.K("Correct");
@@ -180,128 +199,168 @@ namespace Thinkage.MainBoss.Controls
 						KB.K("The Demand associated with this purchase line item has an Expense Category that is not valid for the Work Order's Expense Model")
 					)
 				};
-				// For the Receipt editor's Activity browsette
-				DefineBrowseTbl(dsMB.Schema.T.ReceiptActivity, delegate()
-				{
+				// For the Receipt editor's Lines browsette
+				DefineBrowseTbl(dsMB.Schema.T.ReceiptActivity, delegate () {
 					return new CompositeTbl(dsMB.Schema.T.ReceiptActivity, TId.ReceiptActivity,
 						new Tbl.IAttr[] {
-							CommonTblAttrs.ViewCostsDefinedBySchema,
 							new BTbl(
 								BTbl.ListColumn(dsMB.Path.T.ReceiptActivity.F.POLineID.F.PurchaseOrderText),
 								BTbl.PerViewListColumn(quantityColumnId, quantityColumnId),
 								BTbl.PerViewListColumn(uomColumnId, uomColumnId),
 								BTbl.PerViewListColumn(costColumnId, costColumnId),
-								BTbl.SetTreeStructure(dsMB.Path.T.ReceiptActivity.F.ParentID, 2)
+								BTbl.SetTreeStructure(null, 2)
 							)
 						},
-						dsMB.Path.T.ReceiptActivity.F.TableEnum,
-						new CompositeView(dsMB.Path.T.ReceiptActivity.F.POLineID.F.POLineItemID,								// ViewRecordTypes.ReceiptActivity.POLineItem
+						new CompositeView(dsMB.Path.T.ReceiptActivity.F.POLineID.F.POLineItemID,                                  // ViewRecordTypes.ReceiptActivity.POLineItem
+							CompositeView.RecognizeByValidEditLinkage(),
 							ReadonlyView,
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineItem.F.Quantity, IntegralFormat),
 							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.POLineItem.F.POLineID.F.Cost),
-							BTbl.PerViewColumnValue(uomColumnId, dsMB.Path.T.POLineItem.F.ItemLocationID.F.ItemID.F.UnitOfMeasureID.F.Code)
-						),
-						new CompositeView(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveItemPOID,				// ViewRecordTypes.ReceiptActivity.ReceiveItemPO
+							BTbl.PerViewColumnValue(uomColumnId, dsMB.Path.T.POLineItem.F.ItemLocationID.F.ItemID.F.UnitOfMeasureID.F.Code)),
+						new CompositeView(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveItemPOID,                // ViewRecordTypes.ReceiptActivity.ReceiveItemPO
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveItemPOID.F.Id)
+								.Eq(new SqlExpression(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveItemPOID.F.CorrectionID))),
+							CompositeView.SetParentPath(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveItemPOID.F.POLineItemID.F.POLineID),
 							NoNewMode,
-							CompositeView.PathAlias(dsMB.Path.T.ReceiptActivity.F.ReceiptID, dsMB.Path.T.ReceiveItemPO.F.ReceiptID),
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemPO.F.Quantity, IntegralFormat),
 							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ReceiveItemPO.F.AccountingTransactionID.F.Cost),
 							CompositeView.JoinedNewCommand(receiveGroup),
-							CompositeView.ContextualInit(new int[] {(int)ViewRecordTypes.ReceiptActivity.POLineItem },
-								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveItemPO.F.POLineItemID), dsMB.Path.T.ReceiptActivity.F.POLineID.F.POLineItemID)
-							)
+							CompositeView.ContextualInit((int)ReceiptActivity.POLineItem,
+								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveItemPO.F.POLineItemID), dsMB.Path.T.ReceiptActivity.F.POLineID.F.POLineItemID))
 						),
-						new CompositeView(TIReceive.ReceiveItemPOCorrectionTblCreator, dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveItemPOID,	// ViewRecordTypes.ReceiptActivity.ReceiveItemPOCorrection
+						new CompositeView(TIReceive.ReceiveItemPOCorrectionTblCreator, dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveItemPOID,   // ViewRecordTypes.ReceiptActivity.ReceiveItemPOCorrection
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveItemPOID.F.Id)
+								.NEq(new SqlExpression(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveItemPOID.F.CorrectionID))),
+							CompositeView.SetParentPath(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveItemPOID.F.CorrectionID.F.AccountingTransactionID),
 							NoNewMode,
-							CompositeView.PathAlias(dsMB.Path.T.ReceiptActivity.F.ReceiptID, dsMB.Path.T.ReceiveItemPO.F.ReceiptID),
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemPO.F.Quantity, IntegralFormat),
 							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ReceiveItemPO.F.AccountingTransactionID.F.Cost),
 							CompositeView.JoinedNewCommand(joinedCorrectionsCommand),
-							CompositeView.ContextualInit(new int[] {(int)ViewRecordTypes.ReceiptActivity.ReceiveItemPO, (int)ViewRecordTypes.ReceiptActivity.ReceiveItemPOCorrection},
+							CompositeView.ContextualInit(
+								new int[] {
+									(int)ReceiptActivity.ReceiveItemPO,
+									(int)ReceiptActivity.ReceiveItemPOCorrection
+								},
 								new CompositeView.Init(dsMB.Path.T.ReceiveItemPO.F.CorrectionID, dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveItemPOID.F.CorrectionID),
-								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveItemPO.F.POLineItemID), dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveItemPOID.F.POLineItemID)		// This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
+								// The automatic dead end disabling does not realize that the correction editor automatically copies several fields including the POLineItemID from the corrected record to
+								// the new record and sets the POLine picker control readonly thus causing the dead end situtation if the PO is in the wrong state.
+								// The following init also sets the picker readonly and allows the browser to know the value in the picker and thus eliminate the dead end.
+								// In the long run, the init isn't really necessary but we need to have some other CompositeView attribute to trigger the dead end.
+								// It could be coded as a condition expression here but that requires duplication of the tip already defined in the DBI_WriteRestriction
+								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveItemPO.F.POLineItemID), dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveItemPOID.F.POLineItemID)      // This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
 							)
 						),
-						new CompositeView(dsMB.Path.T.ReceiptActivity.F.POLineID.F.POLineLaborID,								// ViewRecordTypes.ReceiptActivity.POLineLabor
+						new CompositeView(dsMB.Path.T.ReceiptActivity.F.POLineID.F.POLineLaborID,                                 // ViewRecordTypes.ReceiptActivity.POLineLabor
+							CompositeView.RecognizeByValidEditLinkage(),
 							ReadonlyView,
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineLabor.F.Quantity, IntervalFormat),
-							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.POLineLabor.F.POLineID.F.Cost)
-						),
-						new CompositeView(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualLaborOutsidePOID,		// ViewRecordTypes.ReceiptActivity.ActualLaborOutsidePO
+							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.POLineLabor.F.POLineID.F.Cost)),
+						new CompositeView(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualLaborOutsidePOID,         // ViewRecordTypes.ReceiptActivity.ActualLaborOutsidePO
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.Id)
+								.Eq(new SqlExpression(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.CorrectionID))),
+							CompositeView.SetParentPath(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.POLineLaborID.F.POLineID),
 							NoNewMode,
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ActualLaborOutsidePO.F.Quantity, IntervalFormat),
 							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ActualLaborOutsidePO.F.AccountingTransactionID.F.Cost),
-							CompositeView.PathAlias(dsMB.Path.T.ReceiptActivity.F.ReceiptID, dsMB.Path.T.ActualLaborOutsidePO.F.ReceiptID),
 							CompositeView.JoinedNewCommand(receiveGroup),
-							CompositeView.ContextualInit(new int[] {(int)ViewRecordTypes.ReceiptActivity.POLineLabor },
+							CompositeView.ContextualInit((int)ReceiptActivity.POLineLabor,
 								DemandMustHaveValidCategory,
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualLaborOutsidePO.F.POLineLaborID), dsMB.Path.T.ReceiptActivity.F.POLineID.F.POLineLaborID),
 								new CompositeView.Init(dsMB.Path.T.ActualLaborOutsidePO.F.AccountingTransactionID.F.ToCostCenterID, dsMB.Path.T.ReceiptActivity.F.WorkOrderExpenseModelEntryID.F.CostCenterID)
 							)
 						),
-						new CompositeView(TIWorkOrder.ActualLaborOutsidePOCorrectionTblCreator, dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualLaborOutsidePOID,	// ViewRecordTypes.ReceiptActivity.ActualLaborOutsidePOCorrection
+						new CompositeView(TIWorkOrder.ActualLaborOutsidePOCorrectionTblCreator, dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualLaborOutsidePOID,   // ViewRecordTypes.ReceiptActivity.ActualLaborOutsidePOCorrection
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.Id)
+								.NEq(new SqlExpression(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.CorrectionID))),
+							CompositeView.SetParentPath(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.CorrectionID.F.AccountingTransactionID),
 							NoNewMode,
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ActualLaborOutsidePO.F.Quantity, IntervalFormat),
 							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ActualLaborOutsidePO.F.AccountingTransactionID.F.Cost),
-							CompositeView.PathAlias(dsMB.Path.T.ReceiptActivity.F.ReceiptID, dsMB.Path.T.ActualLaborOutsidePO.F.ReceiptID),
 							CompositeView.JoinedNewCommand(joinedCorrectionsCommand),
-							CompositeView.ContextualInit(new int[] {(int)ViewRecordTypes.ReceiptActivity.ActualLaborOutsidePO, (int)ViewRecordTypes.ReceiptActivity.ActualLaborOutsidePOCorrection},
+							CompositeView.ContextualInit(
+								new int[] {
+									(int)ReceiptActivity.ActualLaborOutsidePO,
+									(int)ReceiptActivity.ActualLaborOutsidePOCorrection
+								},
 								new CompositeView.Init(dsMB.Path.T.ActualLaborOutsidePO.F.CorrectionID, dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.CorrectionID),
-								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualLaborOutsidePO.F.POLineLaborID), dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.POLineLaborID)		// This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO and WO states.
+								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualLaborOutsidePO.F.POLineLaborID), dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualLaborOutsidePOID.F.POLineLaborID)      // This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
 							)
 						),
-						new CompositeView(dsMB.Path.T.ReceiptActivity.F.POLineID.F.POLineOtherWorkID,							// ViewRecordTypes.ReceiptActivity.POLineOtherWork
+						new CompositeView(dsMB.Path.T.ReceiptActivity.F.POLineID.F.POLineOtherWorkID,                             // ViewRecordTypes.ReceiptActivity.POLineOtherWork
+							CompositeView.RecognizeByValidEditLinkage(),
 							ReadonlyView,
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineOtherWork.F.Quantity, IntegralFormat),
-							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.POLineOtherWork.F.POLineID.F.Cost)
-						),
-						new CompositeView(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID,	// ViewRecordTypes.ReceiptActivity.ActualOtherWorkOutsidePO
+							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.POLineOtherWork.F.POLineID.F.Cost)),
+						new CompositeView(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID,     // ViewRecordTypes.ReceiptActivity.ActualOtherWorkOutsidePO
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.Id)
+								.Eq(new SqlExpression(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.CorrectionID))),
+							CompositeView.SetParentPath(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.POLineOtherWorkID.F.POLineID),
 							NoNewMode,
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ActualOtherWorkOutsidePO.F.Quantity, IntegralFormat),
 							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ActualOtherWorkOutsidePO.F.AccountingTransactionID.F.Cost),
-							CompositeView.PathAlias(dsMB.Path.T.ReceiptActivity.F.ReceiptID, dsMB.Path.T.ActualOtherWorkOutsidePO.F.ReceiptID),
 							CompositeView.JoinedNewCommand(receiveGroup),
-							CompositeView.ContextualInit(new int[] {(int)ViewRecordTypes.ReceiptActivity.POLineOtherWork },
+							CompositeView.ContextualInit((int)ReceiptActivity.POLineOtherWork,
 								DemandMustHaveValidCategory,
 								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualOtherWorkOutsidePO.F.POLineOtherWorkID), dsMB.Path.T.ReceiptActivity.F.POLineID.F.POLineOtherWorkID),
 								new CompositeView.Init(dsMB.Path.T.ActualOtherWorkOutsidePO.F.AccountingTransactionID.F.ToCostCenterID, dsMB.Path.T.ReceiptActivity.F.WorkOrderExpenseModelEntryID.F.CostCenterID)
 							)
 						),
-						new CompositeView(TIWorkOrder.ActualOtherWorkOutsidePOCorrectionTblCreator, dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID,	// ViewRecordTypes.ReceiptActivity.ActualOtherWorkOutsidePOCorrection
+						new CompositeView(TIWorkOrder.ActualOtherWorkOutsidePOCorrectionTblCreator, dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID,   // ViewRecordTypes.ReceiptActivity.ActualOtherWorkOutsidePOCorrection
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.Id)
+								.NEq(new SqlExpression(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.CorrectionID))),
+							CompositeView.SetParentPath(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.CorrectionID.F.AccountingTransactionID),
 							NoNewMode,
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ActualOtherWorkOutsidePO.F.Quantity, IntegralFormat),
 							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ActualOtherWorkOutsidePO.F.AccountingTransactionID.F.Cost),
-							CompositeView.PathAlias(dsMB.Path.T.ReceiptActivity.F.ReceiptID, dsMB.Path.T.ActualOtherWorkOutsidePO.F.ReceiptID),
 							CompositeView.JoinedNewCommand(joinedCorrectionsCommand),
-							CompositeView.ContextualInit(new int[] {(int)ViewRecordTypes.ReceiptActivity.ActualOtherWorkOutsidePO, (int)ViewRecordTypes.ReceiptActivity.ActualOtherWorkOutsidePOCorrection},
+							CompositeView.ContextualInit(
+								new int[] {
+									(int)ReceiptActivity.ActualOtherWorkOutsidePO,
+									(int)ReceiptActivity.ActualOtherWorkOutsidePOCorrection
+								},
 								new CompositeView.Init(dsMB.Path.T.ActualOtherWorkOutsidePO.F.CorrectionID, dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.CorrectionID),
-								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualOtherWorkOutsidePO.F.POLineOtherWorkID), dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.POLineOtherWorkID)		// This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO and WO states.
+								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualOtherWorkOutsidePO.F.POLineOtherWorkID), dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ActualOtherWorkOutsidePOID.F.POLineOtherWorkID)      // This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
 							)
 						),
-						new CompositeView(dsMB.Path.T.ReceiptActivity.F.POLineID.F.POLineMiscellaneousID,						// ViewRecordTypes.ReceiptActivity.POLineMiscellaneous
+						new CompositeView(dsMB.Path.T.ReceiptActivity.F.POLineID.F.POLineMiscellaneousID,                         // ViewRecordTypes.ReceiptActivity.POLineMiscellaneous
+							CompositeView.RecognizeByValidEditLinkage(),
 							ReadonlyView,
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.POLineMiscellaneous.F.Quantity, IntegralFormat),
-							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.POLineMiscellaneous.F.POLineID.F.Cost)
-						),
-						new CompositeView(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID,		// ViewRecordTypes.ReceiptActivity.ReceiveMiscellaneousPO
+							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.POLineMiscellaneous.F.POLineID.F.Cost)),
+						new CompositeView(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID,       // ViewRecordTypes.ReceiptActivity.ReceiveMiscellaneousPO
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.Id)
+								.Eq(new SqlExpression(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.CorrectionID))),
+							CompositeView.SetParentPath(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.POLineMiscellaneousID.F.POLineID),
 							NoNewMode,
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveMiscellaneousPO.F.Quantity, IntegralFormat),
 							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ReceiveMiscellaneousPO.F.AccountingTransactionID.F.Cost),
-							CompositeView.PathAlias(dsMB.Path.T.ReceiptActivity.F.ReceiptID, dsMB.Path.T.ReceiveMiscellaneousPO.F.ReceiptID),
 							CompositeView.JoinedNewCommand(receiveGroup),
-							CompositeView.ContextualInit(new int[] {(int)ViewRecordTypes.ReceiptActivity.POLineMiscellaneous },
-								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveMiscellaneousPO.F.POLineMiscellaneousID), dsMB.Path.T.ReceiptActivity.F.POLineID.F.POLineMiscellaneousID)
-							)
+							CompositeView.ContextualInit((int)ReceiptActivity.POLineMiscellaneous,
+								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveMiscellaneousPO.F.POLineMiscellaneousID), dsMB.Path.T.ReceiptActivity.F.POLineID.F.POLineMiscellaneousID))
 						),
-						new CompositeView(TIReceive.ReceiveMiscellaneousPOCorrectionTblCreator, dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID,	// ViewRecordTypes.ReceiptActivity.ReceiveMiscellaneousPOCorrection
+						new CompositeView(TIReceive.ReceiveMiscellaneousPOCorrectionTblCreator, dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID,     // ViewRecordTypes.ReceiptActivity.ReceiveMiscellaneousPOCorrection
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.Id)
+								.NEq(new SqlExpression(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.CorrectionID))),
+							CompositeView.SetParentPath(dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.CorrectionID.F.AccountingTransactionID),
 							NoNewMode,
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveMiscellaneousPO.F.Quantity, IntegralFormat),
 							BTbl.PerViewColumnValue(costColumnId, dsMB.Path.T.ReceiveMiscellaneousPO.F.AccountingTransactionID.F.Cost),
-							CompositeView.PathAlias(dsMB.Path.T.ReceiptActivity.F.ReceiptID, dsMB.Path.T.ReceiveMiscellaneousPO.F.ReceiptID),
 							CompositeView.JoinedNewCommand(joinedCorrectionsCommand),
-							CompositeView.ContextualInit(new int[] {(int)ViewRecordTypes.ReceiptActivity.ReceiveMiscellaneousPO, (int)ViewRecordTypes.ReceiptActivity.ReceiveMiscellaneousPOCorrection},
+							CompositeView.ContextualInit(
+								new int[] {
+									(int)ReceiptActivity.ReceiveMiscellaneousPO,
+									(int)ReceiptActivity.ReceiveMiscellaneousPOCorrection
+								},
 								new CompositeView.Init(dsMB.Path.T.ReceiveMiscellaneousPO.F.CorrectionID, dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.CorrectionID),
-								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveMiscellaneousPO.F.POLineMiscellaneousID), dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.POLineMiscellaneousID)		// This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
+								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveMiscellaneousPO.F.POLineMiscellaneousID), dsMB.Path.T.ReceiptActivity.F.AccountingTransactionID.F.ReceiveMiscellaneousPOID.F.POLineMiscellaneousID)      // This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
 							)
 						)
 					);

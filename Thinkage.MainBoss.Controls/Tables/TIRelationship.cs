@@ -4,24 +4,22 @@ using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.Translation;
 using Thinkage.MainBoss.Database;
 
-namespace Thinkage.MainBoss.Controls
-{
-	public class TIRelationship : TIGeneralMB3
-	{
+namespace Thinkage.MainBoss.Controls {
+	public class TIRelationship : TIGeneralMB3 {
 		#region Record-type providers
 		#region - RoleTypeProviders
-		private static object[] FromRelationshipRoleTypeValues = new object[] {
+		private static readonly object[] FromRelationshipRoleTypeValues = new object[] {
 			(int)DatabaseEnums.RelationshipRoleType.Unit
 		};
-		private static Key[] FromRelationshipRoleTypeLabels = new Key[] {
+		private static readonly Key[] FromRelationshipRoleTypeLabels = new Key[] {
 			KB.TOi(TId.Unit)
 		};
 		public static EnumValueTextRepresentations FromRoleTypeProvider = new EnumValueTextRepresentations(FromRelationshipRoleTypeLabels, null, FromRelationshipRoleTypeValues);
-		private static object[] ToRelationshipRoleTypeValues = new object[] {
+		private static readonly object[] ToRelationshipRoleTypeValues = new object[] {
 			(int)DatabaseEnums.RelationshipRoleType.Unit,
 			(int)DatabaseEnums.RelationshipRoleType.Contact
 		};
-		private static Key[] ToRelationshipRoleTypeLabels = new Key[] {
+		private static readonly Key[] ToRelationshipRoleTypeLabels = new Key[] {
 			KB.TOi(TId.Unit),
 			KB.K("Contact")
 		};
@@ -47,11 +45,9 @@ namespace Thinkage.MainBoss.Controls
 		}
 		#endregion
 
-		internal static void DefineTblEntries()
-		{
+		internal static void DefineTblEntries() {
 			#region Relationship
-			DefineBrowseTbl(dsMB.Schema.T.Relationship, delegate()
-			{
+			DefineBrowseTbl(dsMB.Schema.T.Relationship, delegate () {
 				return new CompositeTbl(dsMB.Schema.T.Relationship, TId.Relationship,
 					new Tbl.IAttr[] {
 						UnitsDependentGroup,
@@ -61,19 +57,18 @@ namespace Thinkage.MainBoss.Controls
 							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.RelationshipReport))
 						)
 					},
-					null,
-					new CompositeView(UnitUnitRelationshipEditTbl, dsMB.Path.T.Relationship.F.Id,
+					CompositeView.ChangeEditTbl(UnitUnitRelationshipEditTbl,
 						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.Relationship.F.AType).Eq((int)DatabaseEnums.RelationshipRoleType.Unit)
 																.And(new SqlExpression(dsMB.Path.T.Relationship.F.BType).Eq((int)DatabaseEnums.RelationshipRoleType.Unit)))
 					),
-					new CompositeView(UnitContactRelationshipEditTbl, dsMB.Path.T.Relationship.F.Id,
+					CompositeView.ChangeEditTbl(UnitContactRelationshipEditTbl,
 						CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.Relationship.F.AType).Eq((int)DatabaseEnums.RelationshipRoleType.Unit)
 																.And(new SqlExpression(dsMB.Path.T.Relationship.F.BType).Eq((int)DatabaseEnums.RelationshipRoleType.Contact)))
 					)
 				);
 			});
 			// The following is a browser only on relationships that involve Contacts.
-			RelationshipWithContactBrowseTblCreator = new DelayedCreateTbl(delegate() {
+			RelationshipWithContactBrowseTblCreator = new DelayedCreateTbl(delegate () {
 				return new CompositeTbl(dsMB.Schema.T.Relationship, TId.Relationship,
 					new Tbl.IAttr[] {
 						UnitsDependentGroup,
@@ -85,12 +80,11 @@ namespace Thinkage.MainBoss.Controls
 							BTbl.SetReportTbl(new DelayedCreateTbl(() => TIReports.RelationshipReport))
 						)
 					},
-					null,
 					CompositeView.ChangeEditTbl(UnitContactRelationshipEditTbl)
 				);
 			});
 
-			UnitUnitRelationshipEditTbl = new DelayedCreateTbl(delegate() {
+			UnitUnitRelationshipEditTbl = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.Relationship, TId.UnitUnitRelationship,
 					new Tbl.IAttr[] {
 						UnitsDependentGroup,
@@ -110,7 +104,7 @@ namespace Thinkage.MainBoss.Controls
 					Init.OnLoadNewClone(new PathTarget(dsMB.Path.T.Relationship.F.BType), new ConstantValue((int)DatabaseEnums.RelationshipRoleType.Unit))
 				);
 			});
-			UnitContactRelationshipEditTbl = new DelayedCreateTbl(delegate() {
+			UnitContactRelationshipEditTbl = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.Relationship, TId.UnitContactRelationship,
 					new Tbl.IAttr[] {
 						UnitsDependentGroup,
@@ -130,26 +124,25 @@ namespace Thinkage.MainBoss.Controls
 					Init.OnLoadNewClone(new PathTarget(dsMB.Path.T.Relationship.F.BType), new ConstantValue((int)DatabaseEnums.RelationshipRoleType.Contact))
 				);
 			});
-			RegisterForImportExport(TId.Relationship, new DelayedCreateTbl(delegate()
-				{
-					return new Tbl(dsMB.Schema.T.Relationship, TId.Relationship,
-						new Tbl.IAttr[] {
+			RegisterForImportExport(TId.Relationship, new DelayedCreateTbl(delegate () {
+				return new Tbl(dsMB.Schema.T.Relationship, TId.Relationship,
+					new Tbl.IAttr[] {
 						UnitsDependentGroup,
 						new ETbl(ETbl.EditorAccess(false, EdtMode.UnDelete))
-					},
-						new TblLayoutNodeArray(
-							DetailsTabNode.New(
-								TblColumnNode.New(dsMB.Path.T.Relationship.F.Code, ECol.Normal),
-								TblColumnNode.New(dsMB.Path.T.Relationship.F.Desc, ECol.Normal),
-								TblColumnNode.New(dsMB.Path.T.Relationship.F.AType, ECol.Normal),
-								TblColumnNode.New(dsMB.Path.T.Relationship.F.BType, ECol.Normal),
-								TblColumnNode.New(dsMB.Path.T.Relationship.F.BAsRelatedToAPhrase, ECol.Normal),
-								TblColumnNode.New(dsMB.Path.T.Relationship.F.AAsRelatedToBPhrase, ECol.Normal),
-								TblColumnNode.New(dsMB.Path.T.Relationship.F.Comment, ECol.Normal)
-							)
+				},
+					new TblLayoutNodeArray(
+						DetailsTabNode.New(
+							TblColumnNode.New(dsMB.Path.T.Relationship.F.Code, ECol.Normal),
+							TblColumnNode.New(dsMB.Path.T.Relationship.F.Desc, ECol.Normal),
+							TblColumnNode.New(dsMB.Path.T.Relationship.F.AType, ECol.Normal),
+							TblColumnNode.New(dsMB.Path.T.Relationship.F.BType, ECol.Normal),
+							TblColumnNode.New(dsMB.Path.T.Relationship.F.BAsRelatedToAPhrase, ECol.Normal),
+							TblColumnNode.New(dsMB.Path.T.Relationship.F.AAsRelatedToBPhrase, ECol.Normal),
+							TblColumnNode.New(dsMB.Path.T.Relationship.F.Comment, ECol.Normal)
 						)
-					);
-				}
+					)
+				);
+			}
 			));
 			#endregion
 			#region UnitRelatedRecords
@@ -159,12 +152,11 @@ namespace Thinkage.MainBoss.Controls
 
 			// The "forward" and "reverse" ones differ only insofar as the Unit order is reversed and the opposite phrase chosen, and details only included for the second ("other") record.
 			// Also the reverse has no ETbl/ECol since it is only used for a panel.
-			
+
 			// The single edit tbl can be used to make related records with the initialized unit from the calling browsette as the A or B unit. We use an Init to copy the value to both
 			// controls, and since the field are not captive, the user can change either Unit picker to some other unit. This does, however, let them change both units to create a record
 			// that will not show up in the browsette they came from.
-			DefineTbl(dsMB.Schema.T.UnitRelatedUnit, delegate()
-			{
+			DefineTbl(dsMB.Schema.T.UnitRelatedUnit, delegate () {
 				return new Tbl(dsMB.Schema.T.UnitRelatedUnit, TId.UnitRelatedUnit,
 					new Tbl.IAttr[] {
 						UnitsDependentGroup,
@@ -204,7 +196,7 @@ namespace Thinkage.MainBoss.Controls
 				);
 			});
 			RegisterExistingForImportExport(TId.UnitRelatedUnit, dsMB.Schema.T.UnitRelatedUnit);
-			ReverseUnitRelatedUnitPanelTbl = new DelayedCreateTbl(delegate() {
+			ReverseUnitRelatedUnitPanelTbl = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.UnitRelatedUnit, TId.UnitRelatedUnit,
 					new Tbl.IAttr[] {
 						UnitsDependentGroup, new ETbl(ETbl.EditorDefaultAccess(false), ETbl.EditorAccess(true, EdtMode.Delete))
@@ -234,7 +226,7 @@ namespace Thinkage.MainBoss.Controls
 			});
 
 			UnitRelatedRecordsBrowseTbl = new DelayedCreateTbl(
-				delegate() {
+				delegate () {
 					object relationshipColumnId = KB.I("RelationshipId");
 					return new CompositeTbl(dsMB.Schema.T.UnitRelatedRecords, TId.UnitRelation,
 						new Tbl.IAttr[] {
@@ -244,7 +236,6 @@ namespace Thinkage.MainBoss.Controls
 								BTbl.SetTreeStructure(dsMB.Path.T.UnitRelatedRecords.F.ParentID, 2, 2, dsMB.Schema.T.UnitRelatedRecordsContainment)
 							)
 						},
-						null,
 						// When identifying the various Relationship record types, we do monimal checks on AType and BType, relying on the query not sending us
 						// any bogus relationships (so for instance we will not get any reverse Unit/Contact relationships)
 						// Unit/Unit Relationship. Note that these records will always be secondary because this tbl is always UnitLocationID-filtered (but BrowseLogic doesn't realize it)
@@ -274,7 +265,7 @@ namespace Thinkage.MainBoss.Controls
 						// Unit to Unit related records
 						new CompositeView(dsMB.Path.T.UnitRelatedRecords.F.UnitRelatedUnitID,
 							CompositeView.RecognizeByValidEditLinkage(),
-							NoViewEdit,				// Because the reverse related records cannot call editor, make this consistent.
+							NoViewEdit,             // Because the reverse related records cannot call editor, make this consistent.
 							BTbl.PerViewColumnValue(relationshipColumnId, dsMB.Path.T.UnitRelatedUnit.F.BUnitLocationID.F.Code),
 							CompositeView.PathAlias(dsMB.Path.T.UnitRelatedRecords.F.ThisUnitLocationID, dsMB.Path.T.UnitRelatedUnit.F.AUnitLocationID),
 							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.UnitRelatedRecords.F.Reverse).Not())
@@ -282,7 +273,7 @@ namespace Thinkage.MainBoss.Controls
 						// Unit to Unit reverse related records
 						new CompositeView(ReverseUnitRelatedUnitPanelTbl, dsMB.Path.T.UnitRelatedRecords.F.UnitRelatedUnitID,
 							CompositeView.RecognizeByValidEditLinkage(),
-							PanelOnlyWithDelete,	// We can't allow calling an editor because the edit tbl has no ECols. These can be created using the previous view. TODO: Want to specify a different edit Tbl for editing and for panel layout
+							PanelOnlyWithDelete,    // We can't allow calling an editor because the edit tbl has no ECols. These can be created using the previous view. TODO: Want to specify a different edit Tbl for editing and for panel layout
 							BTbl.PerViewColumnValue(relationshipColumnId, dsMB.Path.T.UnitRelatedUnit.F.AUnitLocationID.F.Code),
 							CompositeView.PathAlias(dsMB.Path.T.UnitRelatedRecords.F.ThisUnitLocationID, dsMB.Path.T.UnitRelatedUnit.F.BUnitLocationID),
 							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.UnitRelatedRecords.F.Reverse))
@@ -290,10 +281,10 @@ namespace Thinkage.MainBoss.Controls
 						// Unit to Contact related records
 						new CompositeView(dsMB.Path.T.UnitRelatedRecords.F.UnitRelatedContactID,
 							CompositeView.RecognizeByValidEditLinkage(),
-							NoViewEdit,				// Because the reverse related records cannot call editor, make this consistent.
+							NoViewEdit,             // Because the reverse related records cannot call editor, make this consistent.
 							BTbl.PerViewColumnValue(relationshipColumnId, dsMB.Path.T.UnitRelatedContact.F.ContactID.F.Code),
 							CompositeView.PathAlias(dsMB.Path.T.UnitRelatedRecords.F.ThisUnitLocationID, dsMB.Path.T.UnitRelatedContact.F.UnitLocationID)
-							// If these are UnitRelatedContact records they can't be Reverse.
+						// If these are UnitRelatedContact records they can't be Reverse.
 						)
 					);
 				}
@@ -303,7 +294,7 @@ namespace Thinkage.MainBoss.Controls
 			#region ContactRelatedRecords
 			// The "forward" and "reverse" ones differ only insofar as the Unit and Contact order is reversed and the opposite phrase chosen, and details only included for the second ("other") record.
 			// Also the reverse has no ETbl/ECol since it is only used for a panel.
-			DefineTbl(dsMB.Schema.T.UnitRelatedContact, delegate() {
+			DefineTbl(dsMB.Schema.T.UnitRelatedContact, delegate () {
 				return new Tbl(dsMB.Schema.T.UnitRelatedContact, TId.UnitRelatedContact,
 					new Tbl.IAttr[] {
 						UnitsDependentGroup,
@@ -341,7 +332,7 @@ namespace Thinkage.MainBoss.Controls
 			});
 			RegisterExistingForImportExport(TId.UnitRelatedContact, dsMB.Schema.T.UnitRelatedContact);
 
-			ReverseUnitRelatedContactPanelTbl = new DelayedCreateTbl(delegate() {
+			ReverseUnitRelatedContactPanelTbl = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.UnitRelatedContact, TId.UnitRelatedContact,
 					new Tbl.IAttr[] {
 						UnitsDependentGroup, new ETbl(ETbl.EditorDefaultAccess(false), ETbl.EditorAccess(true, EdtMode.Delete))
@@ -372,7 +363,7 @@ namespace Thinkage.MainBoss.Controls
 			});
 
 			ContactRelatedRecordsBrowseTbl = new DelayedCreateTbl(
-				delegate() {
+				delegate () {
 					object relationshipColumnId = KB.I("RelationshipId");
 					return new CompositeTbl(dsMB.Schema.T.ContactRelatedRecords, TId.ContactRelation,
 						new Tbl.IAttr[] {
@@ -382,7 +373,6 @@ namespace Thinkage.MainBoss.Controls
 								BTbl.SetTreeStructure(dsMB.Path.T.ContactRelatedRecords.F.ParentID, 2, 2, dsMB.Schema.T.ContactRelatedRecordsContainment)
 							)
 						},
-						null,
 						// The BAsRelatedToA relationship role. Note that these records will always be secondary because this tbl is always ContactID-filtered (but BrowseLogic doesn't realize it)
 						new CompositeView(UnitContactRelationshipEditTbl, dsMB.Path.T.ContactRelatedRecords.F.RelationshipID,
 							CompositeView.RecognizeByValidEditLinkage(),
@@ -392,7 +382,7 @@ namespace Thinkage.MainBoss.Controls
 						// The Unit to Contact BAsRelatedToA relationship
 						new CompositeView(ReverseUnitRelatedContactPanelTbl, dsMB.Path.T.ContactRelatedRecords.F.UnitRelatedContactID,
 							CompositeView.RecognizeByValidEditLinkage(),
-							PanelOnlyWithDelete,	// We can't allow calling an editor because the edit tbl has no ECols. TODO: Want to specify a different edit Tbl for editing and for panel layout
+							PanelOnlyWithDelete,    // We can't allow calling an editor because the edit tbl has no ECols. TODO: Want to specify a different edit Tbl for editing and for panel layout
 							BTbl.PerViewColumnValue(relationshipColumnId, dsMB.Path.T.UnitRelatedContact.F.UnitLocationID.F.Code),
 							CompositeView.PathAlias(dsMB.Path.T.ContactRelatedRecords.F.ThisContactID, dsMB.Path.T.UnitRelatedContact.F.ContactID)
 						),

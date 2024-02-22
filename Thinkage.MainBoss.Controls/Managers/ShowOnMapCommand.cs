@@ -68,7 +68,7 @@ namespace Thinkage.MainBoss.Controls {
 #if !SetTopTakesSortOrder
 				CommandBatchSpecification batch = new CommandBatchSpecification();
 				NormalParameterSpecification param = batch.CreateNormalParameter(dsMB.Schema.T.Location.Id.EffectiveType);
-				batch.Commands.Add(new Libraries.XAF.Database.Service.MSSql.MSSqlLiteralCommandSpecification(Strings.IFormat(@"
+				batch.Commands.Add(new DBSpecificCommandSpecification(Strings.IFormat(@"
 							select top 1 L.GISLocation
 								from Location as L
 								join LocationContainment as LC on LC.ContainingLocationID = L.ID

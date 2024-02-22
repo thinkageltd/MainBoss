@@ -6,6 +6,7 @@ using Thinkage.Libraries.DBAccess;
 using Thinkage.Libraries;
 using Thinkage.Libraries.XAF.Database.Service.MSSql;
 using Thinkage.Libraries.Translation;
+using Thinkage.Libraries.XAF.Database.Service;
 
 namespace Thinkage.MainBoss.Database {
 	public static class MeterReadingAnalysis {
@@ -26,7 +27,7 @@ namespace Thinkage.MainBoss.Database {
 			where KType : struct
 			where RType : struct
 			where FuzzyRType : PMGeneration.FuzzyValue<RType> {
-			public Predictor(MB3Client db) {
+			protected Predictor(MB3Client db) {
 				DB = db;
 			}
 			protected readonly MB3Client DB;
@@ -42,7 +43,7 @@ namespace Thinkage.MainBoss.Database {
 			where KType : struct, IComparable
 			where RType : struct
 			where FuzzyRType : PMGeneration.FuzzyValue<RType> {
-			public LinearPredictor(MB3Client db)
+			protected LinearPredictor(MB3Client db)
 				: base(db) {
 			}
 			protected abstract DBI_Path KeyColumn { get; }
@@ -57,7 +58,6 @@ namespace Thinkage.MainBoss.Database {
 			protected abstract FuzzyRType MakeFuzzyRType(RType expected, RType? min, RType? max, Key reasonForUncertainty, params object[] arguments);
 			private FuzzyRType PredictSingle(Guid meterID, KType key) {
 				KType keymax = AddKeyDelta(key);
-				MSSqlUnparser up = new MSSqlUnparser();
 				SqlExpression belowFilter = new SqlExpression(KeyColumn).Lt(SqlExpression.Constant(key));
 				SqlExpression aboveFilter = new SqlExpression(KeyColumn).GEq(SqlExpression.Constant(keymax));
 				SqlExpression meterFilter = new SqlExpression(dsMB.Path.T.MeterReading.F.MeterID).Eq(SqlExpression.Constant(meterID)).And(new SqlExpression(dsMB.Path.T.MeterReading.F.Hidden).IsNull());
@@ -65,18 +65,18 @@ namespace Thinkage.MainBoss.Database {
 				// Actually fetch the data rows >= key and < keymax. We could do this using DB.View but we cannot specify TOP and sorting that way.
 				var query = new SelectSpecification(dsMB.Schema.T.MeterReading, new[] { new SqlExpression(ValueColumn) }, SqlExpression.And(SqlExpression.Or(belowFilter, aboveFilter).Not(), meterFilter), null);
 				query.SetSort(new SqlExpression(KeyColumn), new SqlExpression(ValueColumn));
-				DataRowCollection matchingRows = DB.Session.ExecuteCommandReturningTable(query).Tables[0].Rows;
+				DBIDataTable.RowCollection matchingRows = DB.Session.ExecuteCommandReturningTable(query).OnlyTable.Rows;
 				if (matchingRows.Count > 0) {
-					if (matchingRows.Count > 1 && !ValueColumn.ReferencedColumn.EffectiveType.GenericEquals(matchingRows[0][0], matchingRows[matchingRows.Count - 1][0]))
+					if (matchingRows.Count > 1 && matchingRows[0][ValueColumn.Column] != matchingRows[matchingRows.Count - 1][ValueColumn.Column])
 						// There are multiple different Values between key and up to but not including AddKeyDelta(key). Return the median as the expected value and the min and max values as the range.
 						return MakeFuzzyRType(
-							(RType)ValueColumn.ReferencedColumn.EffectiveType.GenericAsNativeType(matchingRows[matchingRows.Count / 2][0], typeof(RType)),
-							(RType)ValueColumn.ReferencedColumn.EffectiveType.GenericAsNativeType(matchingRows[0][0], typeof(RType)),
-							AddValueDelta((RType)ValueColumn.ReferencedColumn.EffectiveType.GenericAsNativeType(matchingRows[matchingRows.Count - 1][0], typeof(RType))),
+							(RType)ValueColumn.ReferencedColumn.EffectiveType.GenericAsNativeType(matchingRows[matchingRows.Count / 2][ValueColumn.Column], typeof(RType)),
+							(RType)ValueColumn.ReferencedColumn.EffectiveType.GenericAsNativeType(matchingRows[0][ValueColumn.Column], typeof(RType)),
+							AddValueDelta((RType)ValueColumn.ReferencedColumn.EffectiveType.GenericAsNativeType(matchingRows[matchingRows.Count - 1][ValueColumn.Column], typeof(RType))),
 							KB.K("Multiple meter readings match the target"));
 					else
 						// There is only a single value (possibly in multiple readings) for the key range. Return it as definite.
-						return MakeFuzzyRType((RType)ValueColumn.ReferencedColumn.EffectiveType.GenericAsNativeType(matchingRows[0][0], typeof(RType)));
+						return MakeFuzzyRType((RType)ValueColumn.ReferencedColumn.EffectiveType.GenericAsNativeType(matchingRows[0][ValueColumn.Column], typeof(RType)));
 				}
 
 				// No hit on keys in that range; we have to interpolate between entries above and below the range.
@@ -86,26 +86,26 @@ namespace Thinkage.MainBoss.Database {
 					Sorting = new[] { new SortKey<SqlExpression>(new SqlExpression(KeyColumn), true), new SortKey<SqlExpression>(new SqlExpression(ValueColumn), true) },   // Descending sort on both keys
 					TopExpression = SqlExpression.Constant(2)
 				};
-				DataRowCollection belowRows = DB.Session.ExecuteCommandReturningTable(query).Tables[0].Rows;
-				query = new SelectSpecification(dsMB.Schema.T.MeterReading, new [] { new SqlExpression(KeyColumn), new SqlExpression(ValueColumn) }, SqlExpression.And(aboveFilter, meterFilter), null);
+				DBIDataTable.RowCollection belowRows = DB.Session.ExecuteCommandReturningTable(query).OnlyTable.Rows;
+				query = new SelectSpecification(dsMB.Schema.T.MeterReading, new[] { new SqlExpression(KeyColumn), new SqlExpression(ValueColumn) }, SqlExpression.And(aboveFilter, meterFilter), null);
 				query.SetSort(new SqlExpression(KeyColumn), new SqlExpression(ValueColumn));
 				query.TopExpression = SqlExpression.Constant(belowRows.Count == 0 ? 2 : 1);
-				DataRowCollection aboveRows = DB.Session.ExecuteCommandReturningTable(query).Tables[0].Rows;
+				DBIDataTable.RowCollection aboveRows = DB.Session.ExecuteCommandReturningTable(query).OnlyTable.Rows;
 
 				RType val;
 				DataRow nearRow;
 				DataRow farRow;
-				switch (belowRows.Count*3+aboveRows.Count) {
-				case 0*3+0:
+				switch (belowRows.Count * 3 + aboveRows.Count) {
+				case 0 * 3 + 0:
 					// No data at all
-					return MakeFuzzyRType(default(RType), null, null, KB.K("There are no readings for meter"));
-				case 0*3+1:
+					return MakeFuzzyRType(default, null, null, KB.K("There are no readings for meter"));
+				case 0 * 3 + 1:
 					// Only one point above
-					val = (RType)ValueColumn.ReferencedColumn.EffectiveType.GenericAsNativeType(aboveRows[0][1], typeof(RType));
-					return MakeFuzzyRType(default(RType), null, val, KB.K("There is only one reading for this meter"));
-				case 1*3+0:
+					val = (RType)ValueColumn.ReferencedColumn.EffectiveType.GenericAsNativeType(aboveRows[0][ValueColumn.Column], typeof(RType));
+					return MakeFuzzyRType(default, null, val, KB.K("There is only one reading for this meter"));
+				case 1 * 3 + 0:
 					// Only one point below
-					val = (RType)ValueColumn.ReferencedColumn.EffectiveType.GenericAsNativeType(belowRows[0][1], typeof(RType));
+					val = (RType)ValueColumn.ReferencedColumn.EffectiveType.GenericAsNativeType(belowRows[0][ValueColumn.Column], typeof(RType));
 					return MakeFuzzyRType(val, val, null, KB.K("There is only one reading for this meter"));
 				case 0 * 3 + 2:
 					// Only two points above
@@ -119,7 +119,7 @@ namespace Thinkage.MainBoss.Database {
 					break;
 				default:
 					// Points both above and below
-					nearRow = belowRows[0];	// Note that due to reverse sort row 0 is the largest key in the Below set.
+					nearRow = belowRows[0]; // Note that due to reverse sort row 0 is the largest key in the Below set.
 					farRow = aboveRows[0];
 					break;
 				}
@@ -221,7 +221,7 @@ namespace Thinkage.MainBoss.Database {
 				long numerator = givenKey.Ticks - nearKey.Ticks;
 				// We need long*long range here but we don't need exact integral precision so we turn the fraction into a double first rather than
 				// horsing around with decimal.
-				return nearValue+(long)Math.Round((farValue - nearValue) * ((double)numerator / denominator));
+				return nearValue + (long)Math.Round((farValue - nearValue) * ((double)numerator / denominator));
 			}
 			protected override PMGeneration.FuzzyReading MakeFuzzyRType(long expected) {
 				return new PMGeneration.FuzzyReading(expected);

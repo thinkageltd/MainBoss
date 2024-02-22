@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
 using Thinkage.Libraries.XAF.Database.Layout;
-using Thinkage.Libraries.XAF.Database.Service.MSSql;
 using Thinkage.Libraries.Licensing;
 using Thinkage.Libraries.Service;
-using Thinkage.Libraries.XAF.Database.Service;
 
 [assembly: DBVersionHandler.Register("Thinkage.MainBoss.Database.DBVersionRangeHandler_1_0_1_0_To_1_0_2_44")]
 [assembly: DBVersionHandler.Register("Thinkage.MainBoss.Database.DBVersionRangeHandler_1_0_2_45_To_1_0_4_78")]
@@ -37,32 +34,21 @@ namespace Thinkage.MainBoss.Database {
 			: base() {
 		}
 		public override Guid? IdentifyUser(DBClient db) {
-			string system_user = DatabaseCreation.GetDatabaseSystemUser(db);
-
-			using(dsUser_1_1_4_2 dsUser = new dsUser_1_1_4_2(db.Session.Server)) {
+			using (dsUser_1_1_4_2 dsUser = new dsUser_1_1_4_2(db.Session.Server)) {
+				string system_user = SqlExpression.EscapeLiteralTextForLike(DatabaseCreation.GetDatabaseSystemUser(db));
 				dsUser.DataSetName = KB.I("DBVersionHandler30.IdentifyUser.dsUser");
-
 				db.ViewAdditionalRows(dsUser, dsUser_1_1_4_2.Schema.T.User, new SqlExpression(dsUser_1_1_4_2.Path.T.User.F.Hidden).IsNull()
-					.And(new SqlExpression(dsUser_1_1_4_2.Path.T.User.F.AuthenticationCredential).Lower().Eq(SqlExpression.Constant(system_user))));
-
-				// We should have at most one row
-				switch(dsUser.T.User.Rows.Count) {
-					case 0:
-						break;
-					case 1:
-						return ((dsUser_1_1_4_2.UserRow)dsUser.T.User.Rows[0]).F.Id;
-					default:
-						break;
-				}
+					.And(
+						new SqlExpression(dsUser_1_1_4_2.Path.T.User.F.AuthenticationCredential).Eq(SqlExpression.Constant(system_user))
+						.Or(new SqlExpression(dsUser_1_1_4_2.Path.T.User.F.AuthenticationCredential).Like(SqlExpression.Constant(Strings.IFormat("{0};%", system_user))))
+						.Or(new SqlExpression(dsUser_1_1_4_2.Path.T.User.F.AuthenticationCredential).Like(SqlExpression.Constant(Strings.IFormat("%;{0}", system_user))))
+						.Or(new SqlExpression(dsUser_1_1_4_2.Path.T.User.F.AuthenticationCredential).Like(SqlExpression.Constant(Strings.IFormat("%;{0};%", system_user))))
+					));
+				if (dsUser.T.User.Rows.Count == 1)
+					return dsUser.T.User.OnlyRow.F.Id;
+				return null;
 			}
-			return null;
 		}
-		#region UpdateUsersAfterRestore - DEPRECATED
-		public override void UpdateUsersAfterRestore(DBClient client, System.Text.StringBuilder restoreErrors) {
-			// as of conversion to AuthenticationCredentials, post processing of User table is no longer performed after a restore. The SysAdmin restoring the database is responsible
-			// for establishing the proper credentials for the users.
-		}
-		#endregion
 		protected virtual object GetVariableValue(DBClient db, DBDataSet ds, DBI_Variable v) {
 			// This is only called for DBVersion, and any MinAppVersion variables that may exist.
 			// Because we only have a DBClient we cannot use View(..., DBI_Variable) to get at the variables.
@@ -102,7 +88,7 @@ namespace Thinkage.MainBoss.Database {
 			List<License> result = new List<License>();
 			using(dsLicense_1_1_4_2 ds = new dsLicense_1_1_4_2(db.Session.Server)) {
 				db.ViewAdditionalRows(ds, dsLicense_1_1_4_2.Schema.T.License);
-				foreach(dsLicense_1_1_4_2.LicenseRow dr in ds.T.License) {
+				foreach(dsLicense_1_1_4_2.LicenseRow dr in ds.T.License.Rows) {
 					License fromKey = new License(dr.F.License);
 					License fromDecoded = new License(dr.F.ApplicationID,
 						dr.F.Expiry,
@@ -150,7 +136,7 @@ namespace Thinkage.MainBoss.Database {
 				dsPerms.DataSetName = KB.I("Security.LoadPermissions.dsPerms");
 				db.ViewAdditionalRows(dsPerms, dsPermission_1_1_4_2.Schema.T.UserPermission, new SqlExpression(dsPermission_1_1_4_2.Path.T.UserPermission.F.UserID).Eq(currentUserID));
 				// Because we only grant (and never revoke) rights it does not matter what order we process the permission records in.
-				foreach(dsPermission_1_1_4_2.UserPermissionRow row in dsPerms.T.UserPermission)
+				foreach(dsPermission_1_1_4_2.UserPermissionRow row in dsPerms.T.UserPermission.Rows)
 					handler(row.F.PermissionPathPattern.ToLower(), true);
 			}
 		}
@@ -200,115 +186,22 @@ namespace Thinkage.MainBoss.Database {
 					case 0:
 						break;
 					case 1:
-						return ((dsUser_1_0_4_14_To_1_1_4_1.UserRow)dsUser.T.User.Rows[0]).F.Id;
+						return dsUser.T.User.Rows[0].F.Id;
 					default:
 						// Find the one with the non-null scopename
-						DataRow[] rows = dsUser.T.User.Select(new ColumnExpressionUnparser().UnParse(new SqlExpression(dsUser_1_0_4_14_To_1_1_4_1.Path.T.User.F.ScopeName).IsNotNull()));
+						dsUser_1_0_4_14_To_1_1_4_1.UserRow[] rows = dsUser.T.User.Rows.Select(new SqlExpression(dsUser_1_0_4_14_To_1_1_4_1.Path.T.User.F.ScopeName).IsNotNull());
 						if(rows.Length == 1)
-							return ((dsUser_1_0_4_14_To_1_1_4_1.UserRow)rows[0]).F.Id;
+							return rows[0].F.Id;
 						break;
 				}
 			}
 			return null;
 		}
-		#region UpdateUsersAfterRestore
-		public override void UpdateUsersAfterRestore(DBClient client, System.Text.StringBuilder restoreErrors) {
-			ISession db = client.Session;
-			using(dsUser_1_0_4_14_To_1_1_4_1 ds = new dsUser_1_0_4_14_To_1_1_4_1(db.Server)) {
-				DateTime now = DateTime.Now;
-				var errorList = new Dictionary<string, List<UserPermissionsRefreshError>>();
-				// We would prefer to do this in a transaction but the error that occurs when the security change cannot be made kills the transaction and causes any further code
-				// to just get all bungled up.
-				// The trigger should really be an INSTEAD OF rather than a AFTER trigger (and with no ROLLBACK on error) so if it cannot do the request the table just doesn't change.
-				// By not having a TX here we could get interrupted and leave the DB present, no entry in the Organizations table, and some users left hidden.
-				//client.PerformTransaction(true,
-				//	delegate() {
-				client.ViewOnlyRows(ds, dsUser_1_0_4_14_To_1_1_4_1.Schema.T.User, new SqlExpression(dsUser_1_0_4_14_To_1_1_4_1.Path.T.User.F.Hidden).IsNull(), null, null);
-				foreach(dsUser_1_0_4_14_To_1_1_4_1.UserRow r in ds.T.User)
-					r.F.Hidden = now;
-				// TODO: As of db version 1.0.10.21 there is no longer a trigger causing an error when the last user is deleted. At some point we should make a new
-				// version of UpdateAfterRestores that skips the disable/enable trigger used here but it is pretty harmless to leave it in.
-				try {
-					db.ExecuteCommand(new MSSqlLiteralCommandSpecification("disable trigger all on [user]"));
-					client.Update(ds);
-				}
-				finally {
-					db.ExecuteCommand(new MSSqlLiteralCommandSpecification("enable trigger all on [user]"));
-				}
-				//		// Since the TX is still in effect we must accept the just-saved changes ourselves.
-				//		ds.AcceptChanges();
-				// If we were to try to restore all the users in one update call, and were unable to restore some of the users
-				// (e.g. the scope/user has no matching real user name), the whole thing will fail.
-				// We want it to charge on, and leave the unfixable ones hidden.
-				// So we do this part one at a time, and report to the user the ones we could not fix.
-				foreach(dsUser_1_0_4_14_To_1_1_4_1.UserRow r in ds.T.User) {
-					r.F.Hidden = null;
-					try {
-						client.Update(ds);
-						//				// Since the TX is still in effect we must accept the just-saved changes ourselves.
-						//				ds.AcceptChanges();
-					}
-					catch(System.Exception ex) {
-						r.RejectChanges();
-						var errorEntry = new UserPermissionsRefreshError(r.F.ScopeName, r.F.UserName, ex);
-						if (!errorList.TryGetValue(errorEntry.KeyText, out List<UserPermissionsRefreshError> onSameKey))
-							errorList.Add(errorEntry.KeyText, onSameKey = new List<UserPermissionsRefreshError>());
-						onSameKey.Add(errorEntry);
-					}
-				}
-				//	}
-				//);
-				if(errorList.Count > 0) {
-					if(errorList.Count == 1) {
-						// All the exceptions get the same message...
-						// Use the exception for display with the user name(s) as detail information.
-						// Dictionary has no way to get its only entry except by iterating (or knowing the key!)
-						foreach(List<UserPermissionsRefreshError> entry in errorList.Values) {
-							System.Exception exceptionToShow = entry[0].ExceptionObject;
-							Libraries.Exception.AddContext(exceptionToShow, new MessageExceptionContext(KB.T(BuildUserList(entry))));
-							restoreErrors.AppendLine(Thinkage.Libraries.Exception.FullMessage(exceptionToShow));
-						}
-					}
-					else {
-						// Several exception messages...
-						// Concatenate each one and the users is applies to into one lone error message.
-						foreach(List<UserPermissionsRefreshError> entry in errorList.Values) {
-							restoreErrors.AppendLine(entry[0].KeyText);
-							restoreErrors.AppendLine(BuildUserList(entry));
-						}
-					}
-				}
-			}
-		}
-		protected static string BuildUserList(List<UserPermissionsRefreshError> entry) {
-			var result = new System.Text.StringBuilder(Strings.Format(KB.K("The error occurred while trying to update:"), entry[0].UserName, entry[0].ScopeName));
-			for(int i = 0; i < entry.Count; i++) {
-				result.AppendLine(i == 0 ? "" : ",");
-				if(string.IsNullOrEmpty(entry[0].ScopeName))
-					result.Append(Strings.Format(KB.K("user '{0}' with no scope"), entry[i].UserName));
-				else
-					result.Append(Strings.Format(KB.K("user '{0}' in scope '{1}'"), entry[i].UserName, entry[i].ScopeName));
-			}
-			return result.ToString();
-		}
-		protected class UserPermissionsRefreshError {
-			public UserPermissionsRefreshError(string scopeName, string userName, System.Exception ex) {
-				ExceptionObject = ex;
-				KeyText = Libraries.Exception.FullMessage(ExceptionObject);
-				ScopeName = scopeName;
-				UserName = userName;
-			}
-			public readonly string KeyText;
-			public readonly System.Exception ExceptionObject;
-			public readonly string ScopeName;
-			public readonly string UserName;
-		}
-		#endregion
 		public override List<License> GetLicenses(DBClient db) {
 			List<License> result = new List<License>();
 			using(dsLicense_1_0_0_1_To_1_0_4_13 ds = new dsLicense_1_0_0_1_To_1_0_4_13(db.Session.Server)) {
 				db.ViewAdditionalRows(ds, dsLicense_1_0_0_1_To_1_0_4_13.Schema.T.License);
-				foreach(dsLicense_1_0_0_1_To_1_0_4_13.LicenseRow dr in ds.T.License) {
+				foreach(dsLicense_1_0_0_1_To_1_0_4_13.LicenseRow dr in ds.T.License.Rows) {
 					License fromKey = new License(dr.F.License);
 					License fromDecoded = new License(dr.F.ApplicationID,
 						dr.F.Expiry,
@@ -394,7 +287,7 @@ namespace Thinkage.MainBoss.Database {
 				handler(KB.I("Table.*.*").ToLower(), true);
 				handler(KB.I("Action.*").ToLower(), true);
 				handler(KB.I("Action.Administration").ToLower(), DefaultAdministrationPermission);
-				foreach (dsPermission_1_0_0_1_To_1_0_4_13.UserRow userRow in dsPerms.T.User)
+				foreach (dsPermission_1_0_0_1_To_1_0_4_13.UserRow userRow in dsPerms.T.User.Rows)
 					if (Thinkage.Libraries.Application.LoggedInUserActsAs(userRow.F.ScopeName + '\\' + userRow.F.UserName))
 						LoadUserPermissions(dsPerms, userRow.F.Id, handler);
 
@@ -407,8 +300,8 @@ namespace Thinkage.MainBoss.Database {
  		// overrides this to return true.
 		protected virtual bool DefaultAdministrationPermission { get { return false; } }
 		protected static void LoadUserPermissions(dsPermission_1_0_0_1_To_1_0_4_13 dsPerms, Guid userID, HandlePermissionPattern handler) {
-			System.Data.DataRow[] view = dsPerms.T.Permission.Select(new ColumnExpressionUnparser().UnParse(new SqlExpression(dsPermission_1_0_0_1_To_1_0_4_13.Path.T.Permission.F.UserID).Eq(userID)),
-									new ColumnExpressionUnparser().UnParse(new SqlExpression(dsPermission_1_0_0_1_To_1_0_4_13.Path.T.Permission.F.PermissionPathPattern)));
+			System.Data.DataRow[] view = dsPerms.T.Permission.Rows.Select(new SqlExpression(dsPermission_1_0_0_1_To_1_0_4_13.Path.T.Permission.F.UserID).Eq(userID),
+									new SortExpression(dsPermission_1_0_0_1_To_1_0_4_13.Path.T.Permission.F.PermissionPathPattern));
 			foreach (dsPermission_1_0_0_1_To_1_0_4_13.PermissionRow row in view)
 				handler(row.F.PermissionPathPattern.ToLower(), row.F.Grant);
 		}
@@ -435,12 +328,12 @@ namespace Thinkage.MainBoss.Database {
 				case 0:
 					break;
 				case 1:
-					return ((dsUser_1_0_0_1_To_1_0_4_13.UserRow)dsUser.T.User.Rows[0]).F.Id;
+					return dsUser.T.User.Rows[0].F.Id;
 				default:
 					// Find the one with the non-null scopename
-					DataRow[] rows = dsUser.T.User.Select(new ColumnExpressionUnparser().UnParse(new SqlExpression(dsUser_1_0_0_1_To_1_0_4_13.Path.T.User.F.ScopeName).IsNotNull()));
+					dsUser_1_0_0_1_To_1_0_4_13.UserRow[] rows = dsUser.T.User.Rows.Select(new SqlExpression(dsUser_1_0_0_1_To_1_0_4_13.Path.T.User.F.ScopeName).IsNotNull());
 					if (rows.Length == 1)
-						return ((dsUser_1_0_0_1_To_1_0_4_13.UserRow)rows[0]).F.Id;
+						return rows[0].F.Id;
 					break;
 				}
 			}
@@ -469,72 +362,6 @@ namespace Thinkage.MainBoss.Database {
 				throw new GeneralException(KB.K("To upgrade you must have 'Action.UpgradeDatabase' permission on this database"));
 			if (!adminAllowed)
 				throw new GeneralException(KB.K("To upgrade you must have 'Action.Administration' permission on this database"));
-		}
-		public override void UpdateUsersAfterRestore(DBClient client, System.Text.StringBuilder restoreErrors) {
-			ISession db = client.Session;
-			using (dsUser_1_0_0_1_To_1_0_4_13 ds = new dsUser_1_0_0_1_To_1_0_4_13(db.Server)) {
-				DateTime now = DateTime.Now;
-				var errorList = new Dictionary<string, List<UserPermissionsRefreshError>>();
-				// We would prefer to do this in a transaction but the error that occurs when the security change cannot be made kills the transaction and causes any further code
-				// to just get all bungled up.
-				// The trigger should really be an INSTEAD OF rather than a AFTER trigger (and with no ROLLBACK on error) so if it cannot do the request the table just doesn't change.
-				// By not having a TX here we could get interrupted and leave the DB present, no entry in the Organizations table, and some users left hidden.
-				//client.PerformTransaction(true,
-				//	delegate() {
-				client.ViewOnlyRows(ds, dsUser_1_0_0_1_To_1_0_4_13.Schema.T.User, new SqlExpression(dsUser_1_0_0_1_To_1_0_4_13.Path.T.User.F.Hidden).IsNull(), null, null);
-				foreach (dsUser_1_0_0_1_To_1_0_4_13.UserRow r in ds.T.User)
-					r.F.Hidden = now;
-				try {
-					db.ExecuteCommand(new MSSqlLiteralCommandSpecification("disable trigger all on [user]"));
-					client.Update(ds);
-				}
-				finally {
-					db.ExecuteCommand(new MSSqlLiteralCommandSpecification("enable trigger all on [user]"));
-				}
-				//		// Since the TX is still in effect we must accept the just-saved changes ourselves.
-				//		ds.AcceptChanges();
-				// If we were to try to restore all the users in one update call, and were unable to restore some of the users
-				// (e.g. the scope/user has no matching real user name), the whole thing will fail.
-				// We want it to charge on, and leave the unfixable ones hidden.
-				// So we do this part one at a time, and report to the user the ones we could not fix.
-				foreach (dsUser_1_0_0_1_To_1_0_4_13.UserRow r in ds.T.User) {
-					r.F.Hidden = null;
-					try {
-						client.Update(ds);
-						//				// Since the TX is still in effect we must accept the just-saved changes ourselves.
-						//				ds.AcceptChanges();
-					}
-					catch (System.Exception ex) {
-						r.RejectChanges();
-						var errorEntry = new UserPermissionsRefreshError(r.F.ScopeName, r.F.UserName, ex);
-						if (!errorList.TryGetValue(errorEntry.KeyText, out List<UserPermissionsRefreshError> onSameKey))
-							errorList.Add(errorEntry.KeyText, onSameKey = new List<UserPermissionsRefreshError>());
-						onSameKey.Add(errorEntry);
-					}
-				}
-				//	}
-				//);
-				if (errorList.Count > 0) {
-					if (errorList.Count == 1) {
-						// All the exceptions get the same message...
-						// Use the exception for display with the user name(s) as detail information.
-						// Dictionary has no way to get its only entry except by iterating (or knowing the key!)
-						foreach (List<UserPermissionsRefreshError> entry in errorList.Values) {
-							System.Exception exceptionToShow = entry[0].ExceptionObject;
-							Libraries.Exception.AddContext(exceptionToShow, new MessageExceptionContext(KB.T(BuildUserList(entry))));
-							restoreErrors.AppendLine(Thinkage.Libraries.Exception.FullMessage(exceptionToShow));
-						}
-					}
-					else {
-						// Several exception messages...
-						// Concatenate each one and the users is applies to into one lone error message.
-						foreach (List<UserPermissionsRefreshError> entry in errorList.Values) {
-							restoreErrors.AppendLine(entry[0].KeyText);
-							restoreErrors.AppendLine(BuildUserList(entry));
-						}
-					}
-				}
-			}
 		}
 	}
 	public class DBVersionRangeHandler_1_0_1_0_To_1_0_2_44 : DBVersionRangeHandler_1_0_2_45_To_1_0_4_78 {

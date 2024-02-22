@@ -1,5 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <dbconversion xmlns="http://www.thinkage.ca/XmlNamespaces/DBConversion">
+	<table name="SpecificationAttachmentLinkage">
+		<dependency table="ConversionFunctions"/>
+		<data>
+CREATE TABLE <IDB/>.dbo.SpecificationAttachmentLinkage (
+	[ID]		[uniqueidentifier] NOT NULL,-- Specification record ID
+	[AttachmentID]	[uniqueidentifier] NOT NULL,-- BaseAttachment ID for this Specification or AttachmentPath. 
+	) ON [PRIMARY];
+	GO
+
+	INSERT INTO <IDB/>.dbo.SpecificationAttachmentLinkage
+		([ID], [AttachmentID])
+	  SELECT SPEC.[ID], NEWID()
+		from
+		  <IDB/>.dbo.Specifications as SPEC
+</data>
+	</table>
   <table name="Attachment">
 	<dependency table="UnitLinkages"/>
 	<data>
@@ -14,6 +30,7 @@
 GO
 	exec <IDB/>.dbo.FixCodes 50
 GO
+
 <!-- The following statement appears to have a superfluous WHERE clause, since the same condition was used to populate
 	CodeManagement, and the inner join here should accomplish the same exclusion of non-attachment Specifications records.
 	It turns out that MSSQL seems to generate incorrect execution plans for this statement (without the WHERE clause)
@@ -23,12 +40,23 @@ GO
 	1-It may possibly force generation of the correct execution plan
 	2-Even with the incorrect execution plan, it specifically excludes non-Attachment records so their long INFO fields won't cause errors.
 	It seems that even subtle changes to surrounding whitespace and SQL comments alters the execution plan between a correct and incorrect one.-->
-	INSERT INTO <ODB/>.dbo.Attachment ([ID],[Code],[Path],[UnitLocationID])
-	  SELECT SPEC.[ID],CM.[CODE],COALESCE(SPEC.[INFO],''),UL.LocationID
+	INSERT INTO <ODB/>.dbo.Attachment ([ID],[Code])
+	  SELECT SAL.AttachmentID, CM.[CODE]
 	  from <IDB/>.dbo.Specifications as SPEC
 		  join <IDB/>.dbo.CodeManagement as CM on CM.[ID] = SPEC.[ID]
+			join <IDB/>.dbo.SpecificationAttachmentLinkage as SAL on SAL.ID = SPEC.[ID]
+	  where SPEC.[TYPE] = 'P'
+	INSERT INTO <ODB/>.dbo.AttachmentPath ([ID], SAL.[AttachmentID], [Path])
+	  SELECT SPEC.[ID], SAL.AttachmentID, COALESCE(SPEC.[INFO],'')
+	  from <IDB/>.dbo.Specifications as SPEC
+					join <IDB/>.dbo.SpecificationAttachmentLinkage as SAL on SAL.ID = SPEC.[ID]
+	  where SPEC.[TYPE] = 'P'
+	INSERT INTO <ODB/>.dbo.UnitAttachment ([ID],[AttachmentID],[UnitLocationID])
+	  SELECT NEWID(), SAL.AttachmentID, UL.LocationID
+	  from <IDB/>.dbo.Specifications as SPEC
 		  join <IDB/>.dbo.Units as U on SPEC.[ASSOCKEY] = U.[KEY]
 		  join <IDB/>.dbo.UnitLinkages as UL on U.ID = UL.ID
+			join <IDB/>.dbo.SpecificationAttachmentLinkage as SAL on SAL.ID = SPEC.[ID]
 	  where SPEC.[TYPE] = 'P'
 	</data>
   </table>
@@ -203,12 +231,23 @@ GO
   <table name="Specification">
 	<dependency table="SpecificationForm"/>
 	<data>
-	  INSERT INTO <ODB/>.dbo.Specification ([ID],[Code],[UnitLocationID],[SpecificationFormID])
-		  SELECT SPEC.[ID],SPEC.[CODE],UL.LocationID,TP.[ID]
+			INSERT INTO <ODB/>.dbo.Attachment ([ID],[Code])
+		  SELECT SAL.AttachmentID, SPEC.[CODE]
+		  from <IDB/>.dbo.Specifications as SPEC
+				join <IDB/>.dbo.SpecificationAttachmentLinkage as SAL on SAL.ID = SPEC.[ID]
+		  where SPEC.[TYPE] = 'T';
+	  INSERT INTO <ODB/>.dbo.Specification ([ID], [AttachmentID], [SpecificationFormID])
+		  SELECT SPEC.[ID],SAL.AttachmentID,TP.[ID]
+		  from <IDB/>.dbo.Specifications as SPEC
+			  join <IDB/>.dbo.Templates as TP on SPEC.[TKEY] = TP.[KEY]
+				join <IDB/>.dbo.SpecificationAttachmentLinkage as SAL on SAL.ID = SPEC.[ID]
+		  where SPEC.[TYPE] = 'T';
+	  INSERT INTO <ODB/>.dbo.UnitAttachment ([ID],[AttachmentID],[UnitLocationID])
+		  SELECT NEWID(), SAL.AttachmentID, UL.LocationID
 		  from <IDB/>.dbo.Specifications as SPEC
 			  join <IDB/>.dbo.Units as U on SPEC.[ASSOCKEY] = U.[KEY]
-			  join <IDB/>.dbo.Templates as TP on SPEC.[TKEY] = TP.[KEY]
 			  join <IDB/>.dbo.UnitLinkages as UL on U.ID = UL.ID
+				join <IDB/>.dbo.SpecificationAttachmentLinkage as SAL on SAL.ID = SPEC.[ID]
 		  where SPEC.[TYPE] = 'T';
 	</data>
   </table>
@@ -235,7 +274,8 @@ GO
 		  select Specifications.ID, Specifications.Info, Templates.ID
 			from <IDB/>.dbo.Specifications
 			  join <IDB/>.dbo.Templates on Specifications.TKey = Templates.[Key]
-			  join <ODB/>.dbo.Specification on Specification.ID = Specifications.ID	-- included in case we want to set a comment.
+			  join <ODB/>.dbo.Specification on Specification.ID = Specifications.ID
+				join <ODB/>.dbo.Attachment on Attachment.ID = Specification.AttachmentID -- included in case we want to set a comment
 			where Type = 'T'
 
 	  open SpecCursor
@@ -258,7 +298,7 @@ GO
 		  if @fieldWidth = 0
 		  begin
 			-- We didn't find a colon. This is syntactically invalid (too many digits for a field width) but all we can really do is discard the data.
-			UPDATE <ODB/>.dbo.Specification
+			UPDATE <ODB/>.dbo.Attachment
 				set [Comment] = 'Data conversion stopped due to missing : at end of MB2.9 specification data'
 				where current of SpecCursor
 			break
@@ -272,7 +312,7 @@ GO
 			if @specFormFieldID is null
 			begin
 			  -- We didn't find a field. This is likely because there are more data insertions than fields in the template.
-			  UPDATE <ODB/>.dbo.Specification
+			  UPDATE <ODB/>.dbo.Attachment
 				  set [Comment] = 'Data conversion stopped due to having too many data values in MB2.9 specification data'
 				  where current of SpecCursor
 			  break
@@ -298,7 +338,7 @@ GO
 		if @fieldSequence &lt;= (select count(*) from <ODB/>.dbo.SpecificationFormField where SpecificationFormID = @specFormID)
 		begin
 		  -- We didn't find a field. This is likely because there are more data insertions than fields in the template.
-		  UPDATE <ODB/>.dbo.Specification
+		  UPDATE <ODB/>.dbo.Attachment
 			  set [Comment] = case when [Comment] is null then '' else [Comment]+char(13)+char(10) end+'Data conversion found insufficient data values in MB2.9 specification data'
 			  where current of SpecCursor
 		end

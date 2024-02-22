@@ -24,12 +24,8 @@ namespace Thinkage.MainBoss.Database
 				dsEmail.EnsureDataTableExists(dsEmailRequest.Schema.T.EmailPart, dsEmailRequest.Schema.T.EmailRequest);
 				// Get all the RowIds of all the current rows in the table and put them in a list (this is to avoid reading the entire table into memory at one time; these are mail messages with possible large attachments embedded in them)
 				dsEmail.DB.ViewAdditionalRows(dsEmail, dsEmailRequest.Schema.T.EmailRequest, null, new SqlExpression[] { new SqlExpression(dsEmailRequest.Path.T.EmailRequest.F.Id) }, null);
-				dsEmailRequest.EmailRequestDataTable t = dsEmail.T.EmailRequest;
-				List<Guid> ids = new List<Guid>(t.Rows.Count);
-				foreach (dsEmailRequest.EmailRequestRow r in t)
-					ids.Add(r.F.Id);
 
-				foreach (Guid id in ids) {
+				foreach (Guid id in dsEmail.T.EmailRequest.Rows.Select(r => r.F.Id).ToArray()) {
 					dsEmail.T.EmailRequest.Clear();
 					dsEmail.T.EmailPart.Clear();
 					dsEmail.AcceptChanges();
@@ -54,7 +50,7 @@ namespace Thinkage.MainBoss.Database
 										if (p.Length > (int)p.Length)
 											continue;
 										; // we don't want 
-										dsEmailRequest.EmailPartRow part = dsEmail.T.EmailPart.AddNewEmailPartRow();
+										dsEmailRequest.EmailPartRow part = dsEmail.T.EmailPart.AddNewRow();
 										part.F.EmailRequestID = erequestrow.F.Id;
 										part.F.ContentType = p.ContentType.MediaType;
 										part.F.Header = p.Headers.ToString();

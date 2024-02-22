@@ -5,9 +5,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 	/// <summary>
 	/// A class containing common Cookie handling support functions.
 	/// </summary>
-	public class Cookies {
-		private Cookies() {
-		}
+	public static class Cookies {
 		public static void CreateRequestorEmail(HttpResponseBase response, string emailAddress) {
 			HttpCookie mbRemoteCookie = new HttpCookie("MainBossWebAccess") {
 				HttpOnly = true,

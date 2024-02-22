@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using Thinkage.Libraries;
 using Thinkage.Libraries.Collections;
 using Thinkage.Libraries.DBAccess;
@@ -94,13 +93,13 @@ namespace Thinkage.MainBoss.Database {
 		/// task to the inner-most one.
 		/// </summary>
 		protected abstract class Accumulator<WorkingType> : IAccumulator {
-			private DBI_Column templateColumn;
+			private readonly DBI_Column templateColumn;
 
 			protected DBIDataRow destRow;
 			protected DBI_Column destColumn;
 			protected WorkingType workingValue;
 
-			protected virtual WorkingType InitialWorkingValue { get { return default(WorkingType); } }
+			protected virtual WorkingType InitialWorkingValue { get { return default; } }
 			protected virtual object Result(WorkingType workingValue) { return workingValue; }
 
 			/// <summary>
@@ -209,12 +208,12 @@ namespace Thinkage.MainBoss.Database {
 		#endregion
 		#endregion
 		#region Classes for checkpointing and rolling back changes we might make to a DataTable.
-		protected DataTableCheckpointer AddDataTableCheckpointer(DataTable t) {
+		protected DataTableCheckpointer AddDataTableCheckpointer(DBIDataTable t) {
 			if (!CheckpointedTables.TryGetValue(t, out DataTableCheckpointer result))
 				CheckpointedTables.Add(t, result = new DataTableCheckpointer(t));
 			return result;
 		}
-		private Dictionary<DataTable, DataTableCheckpointer> CheckpointedTables = new Dictionary<DataTable, DataTableCheckpointer>(Thinkage.Libraries.ObjectByReferenceEqualityComparer<DataTable>.Instance);
+		private readonly Dictionary<DBIDataTable, DataTableCheckpointer> CheckpointedTables = new Dictionary<DBIDataTable, DataTableCheckpointer>(Thinkage.Libraries.ObjectByReferenceEqualityComparer<DBIDataTable>.Instance);
 		private ICheckpointData[] CheckpointDataTables() {
 			ICheckpointData[] result = new ICheckpointData[CheckpointedTables.Count];
 			int i = 0;
@@ -246,9 +245,9 @@ namespace Thinkage.MainBoss.Database {
 				List<DBI_Table> schemas = new List<DBI_Table>();
 				for (DBI_Table s = schema; s != null; s = s.VariantBaseTable) {
 					schemas.Add(s);
-					DataTable t = DS.GetDataTable(s);
+					DBIDataTable t = DS.GetDataTable(s);
 					ChangedDataTablePositioner dtp = new ChangedDataTablePositioner(t);
-					owner.AddDataTableCheckpointer(t).StartRollbackEvent += delegate (AddChangeDeleteCheckpointer<DataRow, object[]> sender) {
+					owner.AddDataTableCheckpointer(t).StartRollbackEvent += delegate (AddChangeDeleteCheckpointer<DBIDataRow, object[]> sender) {
 						// We can't remove an entry from the dictionary we are iterating over, so we have to remember all the keys of the entries we want deleted.
 						List<object[]> keysToRemove = new List<object[]>();
 						foreach (KeyValuePair<object[], RT> kvp in MergeDictionary)
@@ -317,7 +316,7 @@ namespace Thinkage.MainBoss.Database {
 				int i = 0;
 				object idValue = row[Schemas[0].InternalIdColumn];
 
-				for (;;) {
+				for (; ; ) {
 					Positioners[i].CurrentPosition = Positioners[i].PositionOfId(idValue);
 					if (i >= BaseLinkages.Length)
 						break;
@@ -325,8 +324,8 @@ namespace Thinkage.MainBoss.Database {
 					++i;
 				}
 			}
-			private DataColumn GetDataColumn(DBI_Column c) {
-				return DS.GetDataTable(c.Table)[c];
+			private DBIDataColumn GetDataColumn(DBI_Column c) {
+				return DS.GetDataTable(c.Table).Columns[c];
 			}
 			#endregion
 			#region Members
@@ -595,7 +594,7 @@ namespace Thinkage.MainBoss.Database {
 			poCreationStateIDOverride = poCreationState;
 		}
 		public void SpecifyRecordArguments(Guid templateID, dsMB.PurchaseOrderRow poRow) {
-			purchaseOrderTemplateRow = lookupDs.T.PurchaseOrderTemplate.RowFind<dsMB.PurchaseOrderTemplateRow>(templateID);
+			purchaseOrderTemplateRow = lookupDs.T.PurchaseOrderTemplate.Rows.Find(templateID);
 			purchaseOrderRow = poRow;
 		}
 
@@ -629,7 +628,7 @@ namespace Thinkage.MainBoss.Database {
 			FillInPurchaseOrderChildPOLineRecords(aggregateExceptions);
 		}
 		public void FillInPurchaseOrderChildPOLineRecords(List<System.Exception> aggregateExceptions) {
-			foreach (dsMB.POLineTemplateRow poLineTemplateRow in lookupDs.T.POLineTemplate) {
+			foreach (dsMB.POLineTemplateRow poLineTemplateRow in lookupDs.T.POLineTemplate.Rows) {
 				if (poLineTemplateRow.F.PurchaseOrderTemplateID != purchaseOrderTemplateRow.F.Id)
 					// record is not for the current PO template
 					continue;
@@ -647,7 +646,7 @@ namespace Thinkage.MainBoss.Database {
 		public void RenumberPOLines() {
 			// TODO: For the current PO only?/all PO's generated fix up the numbering for the PO lines.
 		}
-		protected void VerifyColumns(List<System.Exception> aggregateExceptions, DBIDataRow row, DBI_Table schema) {
+		protected static void VerifyColumns(List<System.Exception> aggregateExceptions, DBIDataRow row, DBI_Table schema) {
 			var missingColumns = new Set<DBI_Column>();
 			for (DBI_Table t = schema; row != null;) {
 				foreach (DBI_Column c in t.Columns)
@@ -659,7 +658,7 @@ namespace Thinkage.MainBoss.Database {
 					break;
 				object link = row[t.VariantBaseRecordIDColumn];
 				t = t.VariantBaseTable;
-				row = ((DBIDataSet)row.Table.DataSet).GetDataTable(t).RowFind(link);
+				row = ((DBIDataSet)row.Table.DataSet).GetDataTable(t).Rows.Find(link);
 			}
 			if (missingColumns.Count == 0)
 				return;
@@ -870,13 +869,13 @@ namespace Thinkage.MainBoss.Database {
 				return (CostingInformation<long>)result;
 			}
 			#endregion
-			private Dictionary<Guid, BaseCostingInformation> CostingTable = new Dictionary<Guid, BaseCostingInformation>();
+			private readonly Dictionary<Guid, BaseCostingInformation> CostingTable = new Dictionary<Guid, BaseCostingInformation>();
 		}
 		// Delegate to estimate the cost for a demand row.
-		protected delegate RT GetResourceRow<DT, RT>(DT variantDemandRow) where RT : DataRow where DT : DataRow;
-		protected delegate string GetPOLineText<DT, RT>(DT variantDemandRow, RT resourceRow) where RT : DataRow where DT : DataRow;
-		protected delegate decimal GetCostEstimate<DT, RT>(DT variantDemandRow, RT resourceRow) where RT : DataRow where DT : DataRow;
-		protected delegate IExceptionContext GetRecordIdentificationContext<DT, RT>(DT variantDemandRow, RT resourceRow) where RT : DataRow where DT : DataRow;
+		protected delegate RT GetResourceRow<DT, RT>(DT variantDemandRow) where RT : DBIDataRow where DT : DBIDataRow;
+		protected delegate string GetPOLineText<DT, RT>(DT variantDemandRow, RT resourceRow) where RT : DBIDataRow where DT : DBIDataRow;
+		protected delegate decimal GetCostEstimate<DT, RT>(DT variantDemandRow, RT resourceRow) where RT : DBIDataRow where DT : DBIDataRow;
+		protected delegate IExceptionContext GetRecordIdentificationContext<DT, RT>(DT variantDemandRow, RT resourceRow) where RT : DBIDataRow where DT : DBIDataRow;
 		#endregion
 		#region - Column copying
 		// This class defines a simple copy operation from a template or prototype row to a new instance row.
@@ -915,7 +914,7 @@ namespace Thinkage.MainBoss.Database {
 		/// <param name="destRow">The row to copy to</param>
 		/// <param name="srcRow">The row to copy from</param>
 		/// <param name="columnIndexers">The column indexers for the columns to copy.</param>
-		protected void CopyColumns(DBIDataRow destRow, DBIDataRow srcRow, params ColumnCopier[] columnIndexers) {
+		protected static void CopyColumns(DBIDataRow destRow, DBIDataRow srcRow, params ColumnCopier[] columnIndexers) {
 			foreach (ColumnCopier columnIndexer in columnIndexers)
 				columnIndexer.CopyValue(srcRow, destRow);
 		}
@@ -925,7 +924,7 @@ namespace Thinkage.MainBoss.Database {
 		#region -   Purchase Order state history
 		private void AddPOHistoryRecord(Guid creatorId) {
 			// Setup the PurchaseOrder history record
-			dsMB.PurchaseOrderStateHistoryRow poHistory = workingDs.T.PurchaseOrderStateHistory.AddNewPurchaseOrderStateHistoryRow();
+			dsMB.PurchaseOrderStateHistoryRow poHistory = workingDs.T.PurchaseOrderStateHistory.AddNewRow();
 			poHistory.F.EffectiveDateReadonly = false;
 			poHistory.F.PurchaseOrderID = purchaseOrderRow.F.Id;
 			poHistory.F.UserID = creatorId;
@@ -938,7 +937,7 @@ namespace Thinkage.MainBoss.Database {
 
 		#endregion
 		#region -   POLine derivations
-		protected delegate bool PrescanDerivedTemplateRow(DataRow derivedPOLineTemplateRow);
+		protected delegate bool PrescanDerivedTemplateRow(DBIDataRow derivedPOLineTemplateRow);
 		protected delegate dsMB.ItemPriceRow GetItemPriceRow(dsMB.ItemLocationRow itemLocationRow);
 
 		protected dsMB.ItemPriceRow GetItemPriceRowFromItemLocationRow(dsMB.ItemLocationRow itemLocationRow) {
@@ -948,14 +947,14 @@ namespace Thinkage.MainBoss.Database {
 			else if (itemLocationRow.Table.DataSet == lookupDs)
 				return itemLocationRow.ItemPriceIDParentRow;
 			else
-				return (dsMB.ItemPriceRow)lookupDs.T.ItemPrice.RowFind(itemLocationRow.F.ItemPriceID);
+				return (dsMB.ItemPriceRow)lookupDs.T.ItemPrice.Rows.Find(itemLocationRow.F.ItemPriceID);
 		}
 		private void CopyPOLineRow<POLT, RT>(List<System.Exception> aggregateExceptions, DBIDataRow variantPOLineTemplateRow, dsMB.POLineTemplateRow poLineTemplateRow, RecordBuilder<POLT> recordBuilder,
 			DBI_Table derivedPOLineTemplateTable, DBI_Table derivedPOLineTable,
 			GetResourceRow<POLT, RT> resourceRowFinder, GetPOLineText<POLT, RT> poLineTextProvider, GetCostEstimate<POLT, RT> costCalculator, GetRecordIdentificationContext<POLT, RT> contextProvider, params ColumnCopier[] variantColumnsToCopy) where RT : DBIDataRow where POLT : DBIDataRow {
 
 			POLT variantPOLineRow = (POLT)workingDs.DB.AddNewRowAndBases(workingDs, derivedPOLineTable);
-			dsMB.POLineRow poLineRow = (dsMB.POLineRow)workingDs.T.POLine.RowFind(variantPOLineRow[derivedPOLineTable.VariantBaseRecordIDColumn]);
+			dsMB.POLineRow poLineRow = (dsMB.POLineRow)workingDs.T.POLine.Rows.Find(variantPOLineRow[derivedPOLineTable.VariantBaseRecordIDColumn]);
 
 			// Copy the base poLine info from POLineTemplate to POLine
 			poLineRow.F.PurchaseOrderID = purchaseOrderRow.F.Id;
@@ -985,7 +984,7 @@ namespace Thinkage.MainBoss.Database {
 		}
 		protected void CopyPOLineItemRow(List<System.Exception> aggregateExceptions, dsMB.POLineItemTemplateRow POLineItemTemplateRow, dsMB.POLineTemplateRow POLineTemplateRow, Dictionary<Guid, Guid> itemLocationMap) {
 			CopyPOLineRow<dsMB.POLineItemRow, dsMB.ItemLocationRow>(aggregateExceptions, POLineItemTemplateRow, POLineTemplateRow, POLineItemBuilder, dsMB.Schema.T.POLineItemTemplate, dsMB.Schema.T.POLineItem,
-				(variantPOLine) => (dsMB.ItemLocationRow)lookupDs.T.ItemLocation.RowFind(variantPOLine.F.ItemLocationID) ?? variantPOLine.ItemLocationIDParentRow,
+				(variantPOLine) => (dsMB.ItemLocationRow)lookupDs.T.ItemLocation.Rows.Find(variantPOLine.F.ItemLocationID) ?? variantPOLine.ItemLocationIDParentRow,
 				(variantPOLine, resourceRow) => GetItemPriceRowFromItemLocationRow(resourceRow).F.PurchaseOrderText,
 				(variantPOLine, resourceRow) => Costing.GetCosting(GetItemPriceRowFromItemLocationRow, resourceRow).GetPurchaseCost(dsMB.Schema.T.POLine.F.Cost.EffectiveType, variantPOLine.F.Quantity),
 				(variantPOLine, resourceRow) => new MessageExceptionContext(KB.K("using Purchase Template Item referencing Storage Assignment {0}"), resourceRow.F.Code),
@@ -995,7 +994,7 @@ namespace Thinkage.MainBoss.Database {
 		}
 		protected void CopyPOLineLaborRow(List<System.Exception> aggregateExceptions, dsMB.POLineLaborTemplateRow POLineLaborTemplateRow, dsMB.POLineTemplateRow POLineTemplateRow, Dictionary<Guid, Guid> demandMap) {
 			CopyPOLineRow<dsMB.POLineLaborRow, dsMB.LaborOutsideRow>(aggregateExceptions, POLineLaborTemplateRow, POLineTemplateRow, POLineLaborBuilder, dsMB.Schema.T.POLineLaborTemplate, dsMB.Schema.T.POLineLabor,
-				(variantPOLine) => (dsMB.LaborOutsideRow)lookupDs.T.LaborOutside.RowFind(variantPOLine.DemandLaborOutsideIDParentRow.F.LaborOutsideID),
+				(variantPOLine) => (dsMB.LaborOutsideRow)lookupDs.T.LaborOutside.Rows.Find(variantPOLine.DemandLaborOutsideIDParentRow.F.LaborOutsideID),
 				(variantPOLine, resourceRow) => resourceRow.F.PurchaseOrderText,
 				(variantPOLine, resourceRow) => Costing.GetCosting(resourceRow).GetPurchaseCost(dsMB.Schema.T.POLine.F.Cost.EffectiveType, variantPOLine.F.Quantity),
 				(variantPOLine, resourceRow) => new MessageExceptionContext(KB.K("using Purchase Template Hourly Outside referencing Hourly Outside {0}"), resourceRow.F.Code),
@@ -1005,7 +1004,7 @@ namespace Thinkage.MainBoss.Database {
 		}
 		protected void CopyPOLineOtherWorkRow(List<System.Exception> aggregateExceptions, dsMB.POLineOtherWorkTemplateRow POLineOtherWorkTemplateRow, dsMB.POLineTemplateRow POLineTemplateRow, Dictionary<Guid, Guid> demandMap) {
 			CopyPOLineRow<dsMB.POLineOtherWorkRow, dsMB.OtherWorkOutsideRow>(aggregateExceptions, POLineOtherWorkTemplateRow, POLineTemplateRow, POLineOtherWorkBuilder, dsMB.Schema.T.POLineOtherWorkTemplate, dsMB.Schema.T.POLineOtherWork,
-				(variantPOLine) => (dsMB.OtherWorkOutsideRow)lookupDs.T.OtherWorkOutside.RowFind(variantPOLine.DemandOtherWorkOutsideIDParentRow.F.OtherWorkOutsideID),
+				(variantPOLine) => (dsMB.OtherWorkOutsideRow)lookupDs.T.OtherWorkOutside.Rows.Find(variantPOLine.DemandOtherWorkOutsideIDParentRow.F.OtherWorkOutsideID),
 				(variantPOLine, resourceRow) => resourceRow.F.PurchaseOrderText,
 				(variantPOLine, resourceRow) => Costing.GetCosting(resourceRow).GetPurchaseCost(dsMB.Schema.T.POLine.F.Cost.EffectiveType, variantPOLine.F.Quantity),
 				(variantPOLine, resourceRow) => new MessageExceptionContext(KB.K("using Purchase Template Per Job Outside referencing Per Job Outside {0}"), resourceRow.F.Code),
@@ -1015,7 +1014,7 @@ namespace Thinkage.MainBoss.Database {
 		}
 		protected void CopyPOLineMiscellaneousRow(List<System.Exception> aggregateExceptions, dsMB.POLineMiscellaneousTemplateRow POLineMiscellaneousTemplateRow, dsMB.POLineTemplateRow POLineTemplateRow) {
 			CopyPOLineRow<dsMB.POLineMiscellaneousRow, dsMB.MiscellaneousRow>(aggregateExceptions, POLineMiscellaneousTemplateRow, POLineTemplateRow, POLineMiscellaneousBuilder, dsMB.Schema.T.POLineMiscellaneousTemplate, dsMB.Schema.T.POLineMiscellaneous,
-				(variantPOLine) => (dsMB.MiscellaneousRow)lookupDs.T.Miscellaneous.RowFind(variantPOLine.F.MiscellaneousID),
+				(variantPOLine) => (dsMB.MiscellaneousRow)lookupDs.T.Miscellaneous.Rows.Find(variantPOLine.F.MiscellaneousID),
 				(variantPOLine, resourceRow) => resourceRow.F.PurchaseOrderText,
 				(variantPOLine, resourceRow) => Costing.GetCosting(resourceRow).GetPurchaseCost(dsMB.Schema.T.POLine.F.Cost.EffectiveType, variantPOLine.F.Quantity),
 				(variantPOLine, resourceRow) => new MessageExceptionContext(KB.K("using Purchase Template Miscellaneous Item referencing Miscellaneous Item {0}"), resourceRow.F.Code),
@@ -1054,7 +1053,7 @@ namespace Thinkage.MainBoss.Database {
 		#endregion
 		#region Members changed by SpecifyRecordArguments
 		// The template rows with the most-specialized template first.
-		private List<dsMB.WorkOrderTemplateRow> templateRowsSpecializedToBase = new List<dsMB.WorkOrderTemplateRow>();
+		private readonly List<dsMB.WorkOrderTemplateRow> templateRowsSpecializedToBase = new List<dsMB.WorkOrderTemplateRow>();
 		// The current (only) work order row being created
 		private dsMB.WorkOrderRow currentWorkOrderRow;
 		// Priority for the WorkOrderExpenseModel.
@@ -1102,7 +1101,7 @@ namespace Thinkage.MainBoss.Database {
 			// get cleared out on each work order. Similarly many of the RecordBuilders don't have to
 			// handle rollbacks because we call ClearHistory on them for each new work order. Perhaps we should be creating a new RecordBuilder for each WO in such cases?
 			// Thus only table mappings and RecordBuilders relating to PO's would need any rollback handling.
-			AddDataTableCheckpointer(workingDs.T.PurchaseOrder).StartRollbackEvent += delegate (AddChangeDeleteCheckpointer<DataRow, object[]> sender) {
+			AddDataTableCheckpointer(workingDs.T.PurchaseOrder).StartRollbackEvent += delegate (AddChangeDeleteCheckpointer<DBIDataRow, object[]> sender) {
 				// We can't remove an entry from the dictionary we are iterating over, so we have to remember all the keys of the entries we want deleted.
 				List<Guid> keysToRemove = new List<Guid>();
 				foreach (KeyValuePair<Guid, dsMB.PurchaseOrderRow> kvp in GeneratedPurchaseOrdersByTemplateID)
@@ -1240,7 +1239,7 @@ namespace Thinkage.MainBoss.Database {
 
 			// This loop assumes that the DB has a trigger to prevent circularly-defined templates.
 			while (templateID != null) {
-				dsMB.WorkOrderTemplateRow row = (dsMB.WorkOrderTemplateRow)lookupDs.T.WorkOrderTemplate.RowFind(templateID);
+				dsMB.WorkOrderTemplateRow row = (dsMB.WorkOrderTemplateRow)lookupDs.T.WorkOrderTemplate.Rows.Find(templateID);
 				templateRowsSpecializedToBase.Add(row);
 				templateID = row[dsMB.Schema.T.WorkOrderTemplate.F.ContainingWorkOrderTemplateID];  // Use column indexer since value may be null
 			}
@@ -1266,7 +1265,7 @@ namespace Thinkage.MainBoss.Database {
 			// about the null UnitLocationID anyway.
 			if ((accessCodePriority != DatabaseEnums.TaskUnitPriority.OnlyTaskValue || workOrderExpenseModelPriority != DatabaseEnums.TaskUnitPriority.OnlyTaskValue)
 				&& currentWorkOrderRow[dsMB.Schema.T.WorkOrder.F.UnitLocationID] != null)
-				unitRow = ((dsMB.LocationRow)lookupDs.T.Location.RowFind(currentWorkOrderRow.F.UnitLocationID)).RelativeLocationIDParentRow.UnitIDParentRow;
+				unitRow = ((dsMB.LocationRow)lookupDs.T.Location.Rows.Find(currentWorkOrderRow.F.UnitLocationID)).RelativeLocationIDParentRow.UnitIDParentRow;
 
 			// Reset all the accumulators.
 			foreach (IAccumulator accumulator in accumulators)
@@ -1317,7 +1316,7 @@ namespace Thinkage.MainBoss.Database {
 		public void ReservePONumbersForWorkOrderTemplate() {
 			var POTemplateRowIds = new Set<Guid>();
 			for (int i = templateRowsSpecializedToBase.Count; --i >= 0;) {
-				foreach (dsMB.WorkOrderTemplatePurchaseOrderTemplateLinkageRow linkRow in lookupDs.T.WorkOrderTemplatePurchaseOrderTemplateLinkage)
+				foreach (dsMB.WorkOrderTemplatePurchaseOrderTemplateLinkageRow linkRow in lookupDs.T.WorkOrderTemplatePurchaseOrderTemplateLinkage.Rows)
 					// Check the PO template actually relates to the current WO template rather than just dregs left from the last WO template.
 					// Also check for generation of distinct po's
 					if (linkRow.F.LinkedWorkOrderTemplateID == templateRowsSpecializedToBase[i].F.Id)
@@ -1332,14 +1331,14 @@ namespace Thinkage.MainBoss.Database {
 		/// and all its containing templates are added to the work order.
 		/// If we throw an exception we undo all the work we did (all the rows we create are removed again)
 		/// </summary>
-		public void FillInWorkOrderChildRecordsFromTemplate(Guid? workorderInitialState, Guid creatorId) {
+		public void FillInWorkOrderChildRecordsFromTemplate(Guid? workorderInitialState, Guid? workorderInitialStatus, String workorderInitialComment, Guid creatorId) {
 			ICheckpointData startCheckpoint = Checkpoint();
 			try {
-				// Use the DBI_Column to access the value because it might be null and the row.F. accessor will get an null reference exception
+				// Use the DBI_Column to access the value because it might be null and the row.F.accessor will get an null reference exception
 				if (currentWorkOrderRow[dsMB.Schema.T.WorkOrder.F.WorkOrderExpenseModelID] != null) {
-					WorkOrderExpenseModelRow = (dsMB.WorkOrderExpenseModelRow)lookupDs.T.WorkOrderExpenseModel.RowFind(currentWorkOrderRow.F.WorkOrderExpenseModelID);
+					WorkOrderExpenseModelRow = (dsMB.WorkOrderExpenseModelRow)lookupDs.T.WorkOrderExpenseModel.Rows.Find(currentWorkOrderRow.F.WorkOrderExpenseModelID);
 					ValidExpenseCategories = new Set<Guid>();
-					foreach (dsMB.WorkOrderExpenseModelEntryRow r in lookupDs.T.WorkOrderExpenseModelEntry)
+					foreach (dsMB.WorkOrderExpenseModelEntryRow r in lookupDs.T.WorkOrderExpenseModelEntry.Rows)
 						if (r.F.WorkOrderExpenseModelID == currentWorkOrderRow.F.WorkOrderExpenseModelID)
 							ValidExpenseCategories.Add(r.F.WorkOrderExpenseCategoryID);
 				}
@@ -1359,7 +1358,7 @@ namespace Thinkage.MainBoss.Database {
 				// To avoid this we arrange here to re-use the same RecordBuilders by creating them once only in our ctor, and clearing out their history
 				// in our finally clause below.
 
-				CreateWorkOrderStateHistoryRecord(workorderInitialState, creatorId);
+				CreateWorkOrderStateHistoryRecord(workorderInitialState, workorderInitialStatus, workorderInitialComment, creatorId);
 				List<System.Exception> aggregateExceptions = new List<System.Exception>();
 				for (int i = templateRowsSpecializedToBase.Count; --i >= 0;) {
 					try {
@@ -1439,19 +1438,22 @@ namespace Thinkage.MainBoss.Database {
 		#region - Child record creation.
 		#region -   Work Order State History
 		// Add the initial WorkOrderStateHistory record for the work order.
-		private void CreateWorkOrderStateHistoryRecord(Guid? initialState, Guid creatorId) {
+		private void CreateWorkOrderStateHistoryRecord(Guid? initialState, Guid? initialStatus, string initialComment, Guid creatorId) {
 			// Setup the WorkOrder history to the state dictated in the template
-			dsMB.WorkOrderStateHistoryRow woHistory = workingDs.T.WorkOrderStateHistory.AddNewWorkOrderStateHistoryRow();
+			dsMB.WorkOrderStateHistoryRow woHistory = workingDs.T.WorkOrderStateHistory.AddNewRow();
 			woHistory.F.EffectiveDateReadonly = true;
 			woHistory.F.WorkOrderID = currentWorkOrderRow.F.Id;
+			if (initialStatus.HasValue)
+				woHistory.F.WorkOrderStateHistoryStatusID = initialStatus.Value;
 			if (initialState.HasValue)
 				woHistory.F.WorkOrderStateID = initialState.Value;
+			woHistory.F.Comment = initialComment;
 			woHistory.F.UserID = creatorId;
 		}
 		#endregion
 		#region -   TemplateTemporaryStorage -> TemporaryStorage
 		private void CreateTemporaryStorageForTemplate(List<System.Exception> aggregateExceptions, Guid templateID) {
-			foreach (dsMB.TemplateTemporaryStorageRow templateTemporaryStorageRow in lookupDs.T.TemplateTemporaryStorage) {
+			foreach (dsMB.TemplateTemporaryStorageRow templateTemporaryStorageRow in lookupDs.T.TemplateTemporaryStorage.Rows) {
 				if (templateTemporaryStorageRow.F.WorkOrderTemplateID != templateID)
 					continue;
 
@@ -1470,7 +1472,7 @@ namespace Thinkage.MainBoss.Database {
 		#endregion
 		#region -   TemplateItemLocation -> TemporaryItemLocation
 		private void CreateTemporaryItemLocationsForTemplate(List<System.Exception> aggregateExceptions, Guid templateID) {
-			foreach (dsMB.TemplateItemLocationRow templateItemLocationRow in lookupDs.T.TemplateItemLocation) {
+			foreach (dsMB.TemplateItemLocationRow templateItemLocationRow in lookupDs.T.TemplateItemLocation.Rows) {
 				// The apparent alternative check: LocationTemplateToInstanceMapping.ContainsKey(templateItemLocationRow.ItemLocationIDParentRow.F.LocationID)
 				// will not work because as we are processing a base task, we will "find" the derived task mapped ItemLocations again.
 				// TODO: Is it possible to eliminate our templateID argument and just make TemporaryItemLocations for all the TemplateItemLocations whose
@@ -1509,42 +1511,42 @@ namespace Thinkage.MainBoss.Database {
 			//		merge to?????
 			CopyDemandRows<dsMB.DemandItemRow, dsMB.ItemLocationRow>(aggregateExceptions, templateId, null, dsMB.Schema.T.DemandItemTemplate, dsMB.Schema.T.DemandItem, dsMB.Schema.T.WorkOrderExpenseModel.F.DefaultItemExpenseModelEntryID,
 				// The ItemLocation row may actually be in the workingDs if it was a TemporaryItemLocation we generated.
-				(variantRow) => (dsMB.ItemLocationRow)lookupDs.T.ItemLocation.RowFind(variantRow.F.ItemLocationID) ?? variantRow.ItemLocationIDParentRow,
+				(variantRow) => (dsMB.ItemLocationRow)lookupDs.T.ItemLocation.Rows.Find(variantRow.F.ItemLocationID) ?? variantRow.ItemLocationIDParentRow,
 				(variantRow, resourceRow) => Costing.GetCosting(GetItemPriceRowFromItemLocationRow, resourceRow).ConsumeAndGetCost(dsMB.Schema.T.Demand.F.CostEstimate.EffectiveType, variantRow.F.Quantity),
 				(variantRow, resourceRow) => new MessageExceptionContext(KB.K("using Task Demand Item referencing Storage Assignment {0}"), resourceRow.F.Code),
 				new ColumnCopier(dsMB.Schema.T.DemandItemTemplate.F.ItemLocationID, dsMB.Schema.T.DemandItem.F.ItemLocationID, ItemLocationTemplateToInstanceMapping),
 				new ColumnCopier(dsMB.Schema.T.DemandItemTemplate.F.Quantity, dsMB.Schema.T.DemandItem.F.Quantity));
 
 			CopyDemandRows<dsMB.DemandLaborInsideRow, dsMB.LaborInsideRow>(aggregateExceptions, templateId, null, dsMB.Schema.T.DemandLaborInsideTemplate, dsMB.Schema.T.DemandLaborInside, dsMB.Schema.T.WorkOrderExpenseModel.F.DefaultHourlyInsideExpenseModelEntryID,
-				(variantRow) => (dsMB.LaborInsideRow)lookupDs.T.LaborInside.RowFind(variantRow.F.LaborInsideID),
+				(variantRow) => (dsMB.LaborInsideRow)lookupDs.T.LaborInside.Rows.Find(variantRow.F.LaborInsideID),
 				(variantRow, resourceRow) => Costing.GetCosting(resourceRow).ConsumeAndGetCost(dsMB.Schema.T.Demand.F.CostEstimate.EffectiveType, variantRow.F.Quantity),
 				(variantRow, resourceRow) => new MessageExceptionContext(KB.K("using Task Demand Hourly Inside referencing Hourly Inside {0}"), resourceRow.F.Code),
 				new ColumnCopier(dsMB.Schema.T.DemandLaborInsideTemplate.F.LaborInsideID, dsMB.Schema.T.DemandLaborInside.F.LaborInsideID),
 				new ColumnCopier(dsMB.Schema.T.DemandLaborInsideTemplate.F.Quantity, dsMB.Schema.T.DemandLaborInside.F.Quantity));
 
 			CopyDemandRows<dsMB.DemandLaborOutsideRow, dsMB.LaborOutsideRow>(aggregateExceptions, templateId, DemandLaborOutsideTemplateToInstanceMapping, dsMB.Schema.T.DemandLaborOutsideTemplate, dsMB.Schema.T.DemandLaborOutside, dsMB.Schema.T.WorkOrderExpenseModel.F.DefaultHourlyOutsideExpenseModelEntryID,
-				(variantRow) => (dsMB.LaborOutsideRow)lookupDs.T.LaborOutside.RowFind(variantRow.F.LaborOutsideID),
+				(variantRow) => (dsMB.LaborOutsideRow)lookupDs.T.LaborOutside.Rows.Find(variantRow.F.LaborOutsideID),
 				(variantRow, resourceRow) => Costing.GetCosting(resourceRow).ConsumeAndGetCost(dsMB.Schema.T.Demand.F.CostEstimate.EffectiveType, variantRow.F.Quantity),
 				(variantRow, resourceRow) => new MessageExceptionContext(KB.K("using Task Demand Hourly Outside referencing Hourly Outside {0}"), resourceRow.F.Code),
 				new ColumnCopier(dsMB.Schema.T.DemandLaborOutsideTemplate.F.LaborOutsideID, dsMB.Schema.T.DemandLaborOutside.F.LaborOutsideID),
 				new ColumnCopier(dsMB.Schema.T.DemandLaborOutsideTemplate.F.Quantity, dsMB.Schema.T.DemandLaborOutside.F.Quantity));
 
 			CopyDemandRows<dsMB.DemandOtherWorkInsideRow, dsMB.OtherWorkInsideRow>(aggregateExceptions, templateId, null, dsMB.Schema.T.DemandOtherWorkInsideTemplate, dsMB.Schema.T.DemandOtherWorkInside, dsMB.Schema.T.WorkOrderExpenseModel.F.DefaultPerJobInsideExpenseModelEntryID,
-				(variantRow) => (dsMB.OtherWorkInsideRow)lookupDs.T.OtherWorkInside.RowFind(variantRow.F.OtherWorkInsideID),
+				(variantRow) => (dsMB.OtherWorkInsideRow)lookupDs.T.OtherWorkInside.Rows.Find(variantRow.F.OtherWorkInsideID),
 				(variantRow, resourceRow) => Costing.GetCosting(resourceRow).ConsumeAndGetCost(dsMB.Schema.T.Demand.F.CostEstimate.EffectiveType, variantRow.F.Quantity),
 				(variantRow, resourceRow) => new MessageExceptionContext(KB.K("using Task Demand Per Job Inside referencing Per Job Inside {0}"), resourceRow.F.Code),
 				new ColumnCopier(dsMB.Schema.T.DemandOtherWorkInsideTemplate.F.OtherWorkInsideID, dsMB.Schema.T.DemandOtherWorkInside.F.OtherWorkInsideID),
 				new ColumnCopier(dsMB.Schema.T.DemandOtherWorkInsideTemplate.F.Quantity, dsMB.Schema.T.DemandOtherWorkInside.F.Quantity));
 
 			CopyDemandRows<dsMB.DemandOtherWorkOutsideRow, dsMB.OtherWorkOutsideRow>(aggregateExceptions, templateId, DemandOtherWorkOutsideTemplateToInstanceMapping, dsMB.Schema.T.DemandOtherWorkOutsideTemplate, dsMB.Schema.T.DemandOtherWorkOutside, dsMB.Schema.T.WorkOrderExpenseModel.F.DefaultPerJobOutsideExpenseModelEntryID,
-				(variantRow) => (dsMB.OtherWorkOutsideRow)lookupDs.T.OtherWorkOutside.RowFind(variantRow.F.OtherWorkOutsideID),
+				(variantRow) => (dsMB.OtherWorkOutsideRow)lookupDs.T.OtherWorkOutside.Rows.Find(variantRow.F.OtherWorkOutsideID),
 				(variantRow, resourceRow) => Costing.GetCosting(resourceRow).ConsumeAndGetCost(dsMB.Schema.T.Demand.F.CostEstimate.EffectiveType, ((dsMB.DemandOtherWorkOutsideRow)variantRow).F.Quantity),
 				(variantRow, resourceRow) => new MessageExceptionContext(KB.K("using Task Demand Per Job Outside referencing Per Job Outside {0}"), resourceRow.F.Code),
 				new ColumnCopier(dsMB.Schema.T.DemandOtherWorkOutsideTemplate.F.OtherWorkOutsideID, dsMB.Schema.T.DemandOtherWorkOutside.F.OtherWorkOutsideID),
 				new ColumnCopier(dsMB.Schema.T.DemandOtherWorkOutsideTemplate.F.Quantity, dsMB.Schema.T.DemandOtherWorkOutside.F.Quantity));
 
 			CopyDemandRows<dsMB.DemandMiscellaneousWorkOrderCostRow, dsMB.MiscellaneousWorkOrderCostRow>(aggregateExceptions, templateId, null, dsMB.Schema.T.DemandMiscellaneousWorkOrderCostTemplate, dsMB.Schema.T.DemandMiscellaneousWorkOrderCost, dsMB.Schema.T.WorkOrderExpenseModel.F.DefaultMiscellaneousExpenseModelEntryID,
-				(variantRow) => (dsMB.MiscellaneousWorkOrderCostRow)lookupDs.T.MiscellaneousWorkOrderCost.RowFind(variantRow.F.MiscellaneousWorkOrderCostID),
+				(variantRow) => (dsMB.MiscellaneousWorkOrderCostRow)lookupDs.T.MiscellaneousWorkOrderCost.Rows.Find(variantRow.F.MiscellaneousWorkOrderCostID),
 				(variantRow, resourceRow) => Costing.GetCosting(resourceRow).ConsumeAndGetCost(dsMB.Schema.T.Demand.F.CostEstimate.EffectiveType, 1),
 				(variantRow, resourceRow) => new MessageExceptionContext(KB.K("using Task Demand Miscellaneous Cost referencing Miscellaneous Cost {0}"), resourceRow.F.Code),
 				new ColumnCopier(dsMB.Schema.T.DemandMiscellaneousWorkOrderCostTemplate.F.MiscellaneousWorkOrderCostID, dsMB.Schema.T.DemandMiscellaneousWorkOrderCost.F.MiscellaneousWorkOrderCostID));
@@ -1556,13 +1558,13 @@ namespace Thinkage.MainBoss.Database {
 		private void CopyDemandRows<DT, RT>(List<System.Exception> aggregateExceptions, Guid templateID, Dictionary<Guid, Guid> derivedRecordMap,
 			DBI_Table derivedDemandTemplateTable, DBI_Table derivedDemandTable, DBI_Column expenseModelDefaultModelEntryColumn,
 			GetResourceRow<DT, RT> resourceRowFinder, GetCostEstimate<DT, RT> costCalculator, GetRecordIdentificationContext<DT, RT> contextProvider, params ColumnCopier[] variantColumnsToCopy) where RT : DBIDataRow where DT : DBIDataRow {
-			foreach (DBIDataRow variantDemandTemplateRow in lookupDs.GetDataTable(derivedDemandTemplateTable)) {
-				dsMB.DemandTemplateRow demandTemplateRow = (dsMB.DemandTemplateRow)lookupDs.T.DemandTemplate.RowFind(variantDemandTemplateRow[derivedDemandTemplateTable.VariantBaseRecordIDColumn]);
+			foreach (DBIDataRow variantDemandTemplateRow in lookupDs.GetDataTable(derivedDemandTemplateTable).Rows) {
+				dsMB.DemandTemplateRow demandTemplateRow = (dsMB.DemandTemplateRow)lookupDs.T.DemandTemplate.Rows.Find(variantDemandTemplateRow[derivedDemandTemplateTable.VariantBaseRecordIDColumn]);
 				if (demandTemplateRow.F.WorkOrderTemplateID != templateID)
 					// Spurious records (from a previous WO template in the same generation set)
 					continue;
 				DT variantDemandRow = (DT)workingDs.DB.AddNewRowAndBases(workingDs, derivedDemandTable);
-				dsMB.DemandRow demandRow = (dsMB.DemandRow)workingDs.T.Demand.RowFind(variantDemandRow[derivedDemandTable.VariantBaseRecordIDColumn]);
+				dsMB.DemandRow demandRow = (dsMB.DemandRow)workingDs.T.Demand.Rows.Find(variantDemandRow[derivedDemandTable.VariantBaseRecordIDColumn]);
 
 				if (derivedRecordMap != null)
 					derivedRecordMap.Add((Guid)variantDemandTemplateRow[derivedDemandTemplateTable.InternalIdColumn], (Guid)variantDemandRow[derivedDemandTable.InternalIdColumn]);
@@ -1581,14 +1583,14 @@ namespace Thinkage.MainBoss.Database {
 						if (!demandTemplateRow.F.WorkOrderExpenseCategoryID.HasValue) {
 							if (WorkOrderExpenseModelRow[expenseModelDefaultModelEntryColumn] == null)
 								throw new GeneralException(KB.K("Neither the Demand Template nor the Expense Model {0} specify an Expense Category"), WorkOrderExpenseModelRow.F.Code);
-							demandRow.F.WorkOrderExpenseCategoryID = ((dsMB.WorkOrderExpenseModelEntryRow)lookupDs.T.WorkOrderExpenseModelEntry.RowFind(WorkOrderExpenseModelRow[expenseModelDefaultModelEntryColumn])).F.WorkOrderExpenseCategoryID;
+							demandRow.F.WorkOrderExpenseCategoryID = ((dsMB.WorkOrderExpenseModelEntryRow)lookupDs.T.WorkOrderExpenseModelEntry.Rows.Find(WorkOrderExpenseModelRow[expenseModelDefaultModelEntryColumn])).F.WorkOrderExpenseCategoryID;
 						}
 						else
 							demandRow.F.WorkOrderExpenseCategoryID = demandTemplateRow.F.WorkOrderExpenseCategoryID.Value;
 						// Verify that the Category/Model combination is allowed.
 						if (!ValidExpenseCategories.Contains(demandRow.F.WorkOrderExpenseCategoryID)) {
 							// since it isn't a valid expense category, the expenseCategoryIDParentRow may not be valid in this dataset; Look it up in the lookupDs
-							dsMB.WorkOrderExpenseCategoryRow wecr = (dsMB.WorkOrderExpenseCategoryRow)lookupDs.T.WorkOrderExpenseCategory.RowFind(demandRow.F.WorkOrderExpenseCategoryID);
+							dsMB.WorkOrderExpenseCategoryRow wecr = (dsMB.WorkOrderExpenseCategoryRow)lookupDs.T.WorkOrderExpenseCategory.Rows.Find(demandRow.F.WorkOrderExpenseCategoryID);
 							throw new GeneralException(KB.K("Expense Model {0} does not permit Expense Category {1}"), WorkOrderExpenseModelRow.F.Code, wecr.F.Code);
 						}
 					}
@@ -1614,7 +1616,7 @@ namespace Thinkage.MainBoss.Database {
 		#region -   POLineTemplate linked to task -> POLines
 		// Make Purchase Orders from the Purchase Order Templates associated with the given template.
 		private void CreatePurchaseOrdersForTemplate(List<System.Exception> aggregateExceptions, Guid woTemplateId, Guid creatorId) {
-			foreach (dsMB.WorkOrderTemplatePurchaseOrderTemplateLinkageRow linkRow in lookupDs.T.WorkOrderTemplatePurchaseOrderTemplateLinkage) {
+			foreach (dsMB.WorkOrderTemplatePurchaseOrderTemplateLinkageRow linkRow in lookupDs.T.WorkOrderTemplatePurchaseOrderTemplateLinkage.Rows) {
 				// Check the PO template actually relates to the current WO template rather than just dregs left from the last WO template.
 				if (linkRow.F.LinkedWorkOrderTemplateID != woTemplateId)
 					continue;
@@ -1639,7 +1641,7 @@ namespace Thinkage.MainBoss.Database {
 					}
 					else {
 						// A brand-new PO.
-						purchaseorder = workingDs.T.PurchaseOrder.AddNewPurchaseOrderRow();
+						purchaseorder = workingDs.T.PurchaseOrder.AddNewRow();
 						SpecifyRecordArguments(linkRow.F.LinkedPurchaseOrderTemplateID, purchaseorder);
 						FillInPurchaseOrderDetailsFromTemplate(currentWorkOrderRow.F.StartDateEstimate);
 						FillInPurchaseOrderChildRecords(aggregateExceptions, creatorId);
@@ -1649,26 +1651,20 @@ namespace Thinkage.MainBoss.Database {
 					PurchaseOrderTemplateToPurchaseOrderRowMapping.Add(linkRow.F.LinkedPurchaseOrderTemplateID, purchaseorder);
 				}
 
-				// Create the linking record. We use the TableEnum of the view to decide what record type we have.
+				// Create the linking record. We use the type of linkage of the poLineTemplateRow (if any) to determine what type of record(s) to create.
 				dsMB.POLineTemplateRow poLineTemplateRow = linkRow.POLineTemplateIDParentRow;
-				switch ((ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage)linkRow.F.TableEnum) {
-				case ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage.Explicit:
+				if (poLineTemplateRow == null)
 					// Create the explicit linkage record from the PO to the WO if necessary
 					LinkPurchaseOrder(aggregateExceptions, purchaseorder.F.Id);
-					break;
-				case ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage.UsingPOLineItemTemplateToTemplateItemLocation:
+				else if (poLineTemplateRow.F.POLineItemTemplateID != null)
 					// Create POLineItem records for TemporaryItemLocations associated with the WO
 					CopyPOLineItemRow(aggregateExceptions, poLineTemplateRow.POLineItemTemplateIDParentRow, poLineTemplateRow, ItemLocationTemplateToInstanceMapping);
-					break;
-				case ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage.UsingLaborDemandTemplate:
+				else if (poLineTemplateRow.F.POLineLaborTemplateID != null)
 					// Create POLineLabor for Labor demands associated with the WO
 					CopyPOLineLaborRow(aggregateExceptions, poLineTemplateRow.POLineLaborTemplateIDParentRow, poLineTemplateRow, DemandLaborOutsideTemplateToInstanceMapping);
-					break;
-				case ViewRecordTypes.WorkOrderTemplatePurchaseOrderTemplateLinkage.UsingOtherWorkDemandTemplate:
+				else if (poLineTemplateRow.F.POLineOtherWorkTemplateID != null)
 					// Create POLineOtherWork for Other Work demands associated with the WO
 					CopyPOLineOtherWorkRow(aggregateExceptions, poLineTemplateRow.POLineOtherWorkTemplateIDParentRow, poLineTemplateRow, DemandOtherWorkOutsideTemplateToInstanceMapping);
-					break;
-				}
 			}
 		}
 
@@ -1677,11 +1673,11 @@ namespace Thinkage.MainBoss.Database {
 			// nested task/supplemental task entries refer to the same PO template.  Don't generate duplicate linkage
 			// records in this case.
 			// TODO: Use a RecordBuilder like everyone else does for merging records.
-			foreach (dsMB.WorkOrderPurchaseOrderRow wopo in workingDs.T.WorkOrderPurchaseOrder)
+			foreach (dsMB.WorkOrderPurchaseOrderRow wopo in workingDs.T.WorkOrderPurchaseOrder.Rows)
 				if (wopo.F.PurchaseOrderID == purchaseorderID && wopo.F.WorkOrderID == currentWorkOrderRow.F.Id)
 					return;
 
-			dsMB.WorkOrderPurchaseOrderRow linkageRow = workingDs.T.WorkOrderPurchaseOrder.AddNewWorkOrderPurchaseOrderRow();
+			dsMB.WorkOrderPurchaseOrderRow linkageRow = workingDs.T.WorkOrderPurchaseOrder.AddNewRow();
 			linkageRow.F.PurchaseOrderID = purchaseorderID;
 			linkageRow.F.WorkOrderID = currentWorkOrderRow.F.Id;
 			VerifyColumns(aggregateExceptions, linkageRow, dsMB.Schema.T.WorkOrderPurchaseOrder);
@@ -1693,7 +1689,7 @@ namespace Thinkage.MainBoss.Database {
 	public class WorkOrderBatchBuilder : WorkOrderBuilder {
 		#region Properties
 		// For creation of new workorders, a sequence count manager to allocate workorder numbers
-		private SequenceCountManager WOSequenceCounter;
+		private readonly SequenceCountManager WOSequenceCounter;
 		// The Batch row we are generating for
 		private dsMB.PMGenerationBatchRow BatchRow;
 		#endregion
@@ -1764,9 +1760,9 @@ namespace Thinkage.MainBoss.Database {
 		/// <returns>the new workorder record</returns>
 		public dsMB.WorkOrderRow Create(dsMB.ScheduledWorkOrderRow swoRow, DateTime workStartDate) {
 			ICheckpointData checkpoint = Checkpoint();
-			dsMB.WorkOrderRow workorder = null;
+			dsMB.WorkOrderRow workorder;
 			try {
-				workorder = workingDs.T.WorkOrder.AddNewWorkOrderRow();
+				workorder = workingDs.T.WorkOrder.AddNewRow();
 
 				SpecifyRecordArguments(swoRow.F.WorkOrderTemplateID, workorder,
 					BatchRow.F.PurchaseOrderCreationStateID,
@@ -1799,7 +1795,7 @@ namespace Thinkage.MainBoss.Database {
 				}
 				try {
 					// Try to create the child records as well to determine errors even if we failed above
-					FillInWorkOrderChildRecordsFromTemplate(BatchRow.F.WorkOrderCreationStateID, BatchRow.F.UserID);
+					FillInWorkOrderChildRecordsFromTemplate(BatchRow.F.WorkOrderCreationStateID, swoRow.F.InitialWOStatusID, swoRow.F.InitialWOComment, BatchRow.F.UserID);
 				}
 				catch (System.Exception ex) {
 					aggregateExceptions.Add(ex);
@@ -1841,33 +1837,35 @@ namespace Thinkage.MainBoss.Database {
 
 		#endregion
 		#region GeneratedWorkOrderCursorManager
-		// Used solely to sort generated workorders in workingDs according to records related to the workorder found in
-		// lookupDs and to provide DataColumn Values on the Root WorkOrder table to allow changes to be made to the workorder.
+		// This CursorManager is customized to find the WorkOrder fields (i.e. ones with a simple path) in the workingDS,
+		// and all other fields (i.e. compound paths inreferenced rows) in the lookupDS.
+		// It also has a method that provides DataFlow Values (i.e. write access) to columns in the WorkOrder row.
 		private class GeneratedWorkOrderCursorManager : CursorManagerBase {
 			#region Construction
 			public GeneratedWorkOrderCursorManager(DBIDataSet workingDataSet, DBIDataSet lookupDataSet)
 				: base(dsMB.Schema.T.WorkOrder) {
 				workingDs = workingDataSet;
 				lookupDs = lookupDataSet;
-				CursorIndex.GetNode(dsMB.Path.T.WorkOrder); // Create the root entry (is this necessary?)
+				CursorIndex.GetNode(dsMB.Path.T.WorkOrder); // Create the root entry
+				SetupBasePositioner();
 			}
 			#endregion
 			protected DBIDataSet workingDs;
 			protected DBIDataSet lookupDs;
 			#region New Cursor creation
-			protected override DataTable FindTableForNewCursor(DBI_PathToRow pathToTable, DBI_Table slaveTable) {
+			protected override DBIDataTable FindTableForNewCursor(DBI_PathToRow pathToTable, DBI_Table slaveTable) {
 				if (pathToTable.IsSimple)
 					return workingDs.GetDataTable(slaveTable);
 				else
 					return lookupDs.GetDataTable(slaveTable);
 			}
-			protected override DataTablePositionerBase CreateTablePositioner(DataTable t) {
+			protected override DataTablePositionerBase CreateTablePositioner(DBIDataTable t) {
 				return new ChangedDataTablePositioner(t);
 			}
 			#endregion
 			public Value GetRootTableDataColumnValue(DBI_Path p) {
 				System.Diagnostics.Debug.Assert(p.IsSimple && p.Table == dsMB.Schema.T.WorkOrder);
-				return ((ChangedDataTablePositioner)RootCursor.Positioner).GetDataColumnValue(RootCursor.Table.Columns[p.ReferencedColumn.Name]);
+				return ((ChangedDataTablePositioner)RootCursor.Positioner).GetDataColumnValue((DBIDataColumn)RootCursor.Table.Columns[p.ReferencedColumn.Name]);
 			}
 		}
 		#endregion

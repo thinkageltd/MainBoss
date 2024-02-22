@@ -7,8 +7,8 @@ namespace Thinkage.MainBoss.WebAccess {
 		MainBossUser = 1,
 		Anyone = 3
 	}
-	public class MainBossAuthorization : AuthorizeAttribute {
-		readonly MainBossAuthorized HowAuthorized;
+	public sealed class MainBossAuthorization : AuthorizeAttribute {
+		private readonly MainBossAuthorized HowAuthorized;
 		public MainBossAuthorization()
 			: this(MainBossAuthorized.MainBossUser) {
 		}

@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
-using Thinkage.Libraries.XAF.Database.Layout;
-using System.Linq;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.XAF.Database.Service.MSSql;
-using Thinkage.MainBoss.Database;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.XAF.Database.Service;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
 
-namespace Thinkage.MainBoss.MainBoss {
+namespace Thinkage.MainBoss.Database {
 	public class SecurityOnServerSession : EnumerableDrivenSessionWithUpdate<SqlClient.SqlServer.SecurityOnServerInformation, SqlClient.SqlServer.SecurityOnServerInformation> {
 		#region Connection
 		public class Connection : IConnectionInformation {
@@ -48,6 +45,12 @@ namespace Thinkage.MainBoss.MainBoss {
 					throw new NotImplementedException();
 				}
 			}
+
+			public string DatabaseConnectionString {
+				get {
+					throw new NotImplementedException();
+				}
+			}
 			#endregion
 		}
 		#endregion
@@ -68,10 +71,10 @@ namespace Thinkage.MainBoss.MainBoss {
 		#region Constructor
 		public SecurityOnServerSession(IConnectionInformation connection, IServer server)
 			: base(connection, server) {
-//			if( ForDatabaseLoginUsers && !CanManageUserLogins())
-//				throw new Libraries.GeneralException(KB.K("YOU CANNOT DO THIS to LOGINS"));
-//			if (!CanManageUserCredentials())
-//				throw new Libraries.GeneralException(KB.K("YOU CANNOT DO THIS Users"));
+			//			if( ForDatabaseLoginUsers && !CanManageUserLogins())
+			//				throw new Libraries.GeneralException(KB.K("YOU CANNOT DO THIS to LOGINS"));
+			//			if (!CanManageUserCredentials())
+			//				throw new Libraries.GeneralException(KB.K("YOU CANNOT DO THIS Users"));
 		}
 		#endregion
 		#region Destruction/Disposal
@@ -80,7 +83,7 @@ namespace Thinkage.MainBoss.MainBoss {
 		}
 		#endregion
 		#region Properties
-		public bool ForDatabaseLoginUsers {  get { return ConnectionObject.DatabaseLoginManager; } }
+		public bool ForDatabaseLoginUsers { get { return ConnectionObject.DatabaseLoginManager; } }
 		public override DBI_Database Schema {
 			get {
 				return dsSecurityOnServer.Schema;
@@ -125,8 +128,7 @@ namespace Thinkage.MainBoss.MainBoss {
 		/// </summary>
 		long GenerationStampValue = 0;
 		protected override void GetEvaluators(DBI_Column sourceColumnSchema, out GetNormalColumnValue normalEvaluator, out SetNormalColumnValue normalUpdater, out GetExceptionColumnValue exceptionEvaluator) {
-			normalUpdater = delegate(SqlClient.SqlServer.SecurityOnServerInformation e, object v)
-			{
+			normalUpdater = delegate (SqlClient.SqlServer.SecurityOnServerInformation e, object v) {
 				throw new NotImplementedException();
 			};
 			if (sourceColumnSchema == dsSecurityOnServer.Schema.T.SecurityOnServer.F.Id) {
@@ -201,7 +203,7 @@ namespace Thinkage.MainBoss.MainBoss {
 					return KB.I("Error");
 				};
 			}
-			else if(sourceColumnSchema == dsSecurityOnServer.Schema.T.SecurityOnServer.F.Generation) {
+			else if (sourceColumnSchema == dsSecurityOnServer.Schema.T.SecurityOnServer.F.Generation) {
 				normalUpdater = null;
 				normalEvaluator = delegate (SqlClient.SqlServer.SecurityOnServerInformation e) {
 					return GenerationStampValue++;
@@ -230,14 +232,13 @@ namespace Thinkage.MainBoss.MainBoss {
 			else
 				return SqlClient.SqlServer.ListDatabaseUsers(ConnectionObject.SqlDBClient, KB.I("MainBoss"));
 		}
-		public override int UpdateGivenRowsInSingleTable(DBI_Table dbit, DataRow[] rows, ServerExtensions.UpdateOptions options) {
+		public override int UpdateGivenRowsInSingleTable(DBI_Table dbit, DBIDataRow[] rows, ServerExtensions.UpdateOptions options) {
 			int changedRowCount = 0;
 			// Quick check if we have nothing to do, then exit immediately
 			if (rows.Length == 0)
 				return changedRowCount;
 
-			System.Diagnostics.Debug.Assert(rows[0].Table is DBIDataTable);
-			DBIDataTable dt = (DBIDataTable)rows[0].Table;
+			DBIDataTable dt = rows[0].Table;
 			System.Diagnostics.Debug.Assert(dt.Schema == dbit, "Update rows' table does not match schema table");
 			// Fill the DataTable with the columns that were asked for
 			for (int i = rows.Length; --i >= 0;) {
@@ -305,7 +306,7 @@ namespace Thinkage.MainBoss.MainBoss {
 		protected override void CommitUpdate(SqlClient.SqlServer.SecurityOnServerInformation x) {
 			throw new NotImplementedException();
 		}
-#endregion
-#endregion
+		#endregion
+		#endregion
 	}
 }

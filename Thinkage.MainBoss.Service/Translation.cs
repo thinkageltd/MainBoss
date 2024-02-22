@@ -13,7 +13,7 @@ namespace Thinkage.MainBoss.Service
 			DeclareAssemblyProvidesTranslationsUsingResource(K(null), System.Reflection.Assembly.GetExecutingAssembly());
 		}
 
-		static KB Instance = new KB();
+		static readonly KB Instance = new KB();
 		public static SimpleKey K([Context(Level = 1)] string s)
 		{
 			return Instance.BuildKey(s);

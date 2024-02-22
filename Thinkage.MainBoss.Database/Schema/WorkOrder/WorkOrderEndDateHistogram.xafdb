@@ -33,9 +33,9 @@
 							join WorkOrderState as WOS on WOS.[ID] = WOSH.WorkOrderStateID
 						where WOS.FilterAsOpen = 1
 					union
-						select null, dbo._DClosestValue(getdate(), 0, 846000000000), null, null
+						select null, cast(cast(getdate() as date) as datetime), null, null
 					union
-						select null, dbo._DClosestValue(getdate(), 0, 846000000000) + dbo._INew(1, 0, 0, 0, 0), null, null
+						select null, dateadd(day, 1, cast(cast(getdate() as date) as datetime)), null, null
 					) as X(WorkOrderID, EndDateEstimate, IsRequested, IsPM)
 				group by X.EndDateEstimate
     </extension>

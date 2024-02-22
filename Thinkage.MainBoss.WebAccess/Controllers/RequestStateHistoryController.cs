@@ -9,7 +9,7 @@ using Thinkage.MainBoss.WebAccess.Models;
 namespace Thinkage.MainBoss.WebAccess.Controllers {
 	[HandleError]
 	public class RequestStateHistoryController : StateHistoryController<RequestStateHistoryModel> {
-		RequestStateHistoryModel Model;
+		private RequestStateHistoryModel Model;
 
 		protected override RequestStateHistoryModel GetModelForModelStateErrors() {
 			if (Model.RequestStateHistoryStatusPickList == null)
@@ -91,7 +91,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		#endregion
 
 		#region Close
-		static List<Guid> AllowedToCloseStates = new List<Guid>(new Guid[] { Thinkage.MainBoss.Database.KnownIds.RequestStateInProgressId });
+		private static readonly List<Guid> AllowedToCloseStates = new List<Guid>(new Guid[] { Thinkage.MainBoss.Database.KnownIds.RequestStateInProgressId });
 		#region Close (GET)
 		// GET: /RequestStateHistory/Close
 		[MainBossAuthorization]
@@ -112,6 +112,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		[MainBossAuthorization]
 		[AcceptVerbs(HttpVerbs.Post)]
 		[ExportModelStateToTempData]
+		[ValidateAntiForgeryToken]
 		public ActionResult Close(FormCollectionWithType collection) {
 			TempData["RedirectOnSuccess"] = "Index";
 			return POSTUpdate(collection, Thinkage.MainBoss.Database.KnownIds.RequestStateClosedId, AllowedToCloseStates, NonRequestorChangeStateInstructions, KB.K("You cannot Close the request since it is already closed"));
@@ -121,7 +122,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 
 		#region InProgress
 		#region InProgress (GET)
-		static List<Guid> CanChangeToInProgressStates = new List<Guid>(new Guid[] { Thinkage.MainBoss.Database.KnownIds.RequestStateNewId });
+		private static readonly List<Guid> CanChangeToInProgressStates = new List<Guid>(new Guid[] { Thinkage.MainBoss.Database.KnownIds.RequestStateNewId });
 
 		// GET: /RequestStateHistory/InProgress
 		[MainBossAuthorization]
@@ -142,6 +143,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		[MainBossAuthorization]
 		[AcceptVerbs(HttpVerbs.Post)]
 		[ExportModelStateToTempData]
+		[ValidateAntiForgeryToken]
 		public ActionResult InProgress(FormCollectionWithType collection) {
 			TempData["RedirectOnSuccess"] = "Index";
 			return POSTUpdate(collection, Thinkage.MainBoss.Database.KnownIds.RequestStateInProgressId, CanChangeToInProgressStates, NonRequestorChangeStateInstructions,
@@ -152,11 +154,11 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 
 		#region AddComment
 		// Common GetAddComment processing
-		static List<Guid> CanCommentStates = new List<Guid>(new Guid[] { Thinkage.MainBoss.Database.KnownIds.RequestStateNewId, Thinkage.MainBoss.Database.KnownIds.RequestStateInProgressId });
-		static List<StateHistoryRepository.CustomInstructions> NonRequestorChangeStateInstructions = new List<StateHistoryRepository.CustomInstructions>(new StateHistoryRepository.CustomInstructions[] {
+		private static readonly List<Guid> CanCommentStates = new List<Guid>(new Guid[] { Thinkage.MainBoss.Database.KnownIds.RequestStateNewId, Thinkage.MainBoss.Database.KnownIds.RequestStateInProgressId });
+		private static readonly List<StateHistoryRepository.CustomInstructions> NonRequestorChangeStateInstructions = new List<StateHistoryRepository.CustomInstructions>(new StateHistoryRepository.CustomInstructions[] {
 			StateHistoryRepository.CustomInstructions.FullUpdate
 		});
-		static List<StateHistoryRepository.CustomInstructions> NonRequestorSameStateInstructions = new List<StateHistoryRepository.CustomInstructions>(new StateHistoryRepository.CustomInstructions[] {
+		private static readonly List<StateHistoryRepository.CustomInstructions> NonRequestorSameStateInstructions = new List<StateHistoryRepository.CustomInstructions>(new StateHistoryRepository.CustomInstructions[] {
 			StateHistoryRepository.CustomInstructions.DefaultToExisting,
 			StateHistoryRepository.CustomInstructions.FullUpdate
 		});
@@ -193,6 +195,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		[MainBossAuthorization]
 		[AcceptVerbs(HttpVerbs.Post)]
 		[ExportModelStateToTempData]
+		[ValidateAntiForgeryToken]
 		public ActionResult AddComment(FormCollectionWithType collection) {
 			TempData["RedirectOnSuccess"] = "View";
 			return POSTUpdate(collection, null, CanCommentStates, NonRequestorChangeStateInstructions, KB.K("You cannot add a comment to the request in its current state"));
@@ -201,6 +204,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		[MainBossAuthorization]
 		[AcceptVerbs(HttpVerbs.Post)]
 		[ExportModelStateToTempData]
+		[ValidateAntiForgeryToken]
 		public ActionResult UnAssignedAddComment(FormCollectionWithType collection) {
 			TempData["RedirectOnSuccess"] = "ViewUnAssigned";
 			return POSTUpdate(collection, null, CanCommentStates, NonRequestorChangeStateInstructions, KB.K("You cannot add a comment to the request in its current state"));
@@ -209,7 +213,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		#endregion
 
 		#region SelfAssign
-		static List<StateHistoryRepository.CustomInstructions> SelfAssignInstructions = new List<StateHistoryRepository.CustomInstructions>(new StateHistoryRepository.CustomInstructions[] {
+		private static readonly List<StateHistoryRepository.CustomInstructions> SelfAssignInstructions = new List<StateHistoryRepository.CustomInstructions>(new StateHistoryRepository.CustomInstructions[] {
 			StateHistoryRepository.CustomInstructions.DefaultToExisting,
 			StateHistoryRepository.CustomInstructions.FullUpdate,
 			StateHistoryRepository.CustomInstructions.SelfAssign
@@ -235,6 +239,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		[MainBossAuthorization]
 		[AcceptVerbs(HttpVerbs.Post)]
 		[ExportModelStateToTempData]
+		[ValidateAntiForgeryToken]
 		public ActionResult SelfAssign(FormCollectionWithType collection) {
 			TempData["RedirectOnSuccess"] = "UnAssigned";
 			return POSTUpdate(collection, Thinkage.MainBoss.Database.KnownIds.RequestStateInProgressId, CanCommentStates, SelfAssignInstructions,

@@ -6,7 +6,7 @@
 		<field name="ParentID" type="GUIDREF" link="UnitRelatedRecords" labelkey="Unit Related Records"/>
 		<field name="ThisUnitLocationID" type="GUIDREF" link="Location"/>
 		<field name="Reverse" type="requiredBool"/>
-		<field name="RelationshipID" type="RequiredGUIDREF" link="Relationship"/>
+		<field name="RelationshipID" type="GUIDREF" link="Relationship"/>
 		<field name="UnitRelatedContactID" type="GUIDREF" link="UnitRelatedContact"/>
 		<field name="UnitRelatedUnitID" type="GUIDREF" link="UnitRelatedUnit"/>
 		<extension name="query">
@@ -54,18 +54,13 @@
 		</field>
 		<field name="DisplayID" link="UnitRelatedRecords" type="RequiredGUIDREF">
 		</field>
-		<!-- The remaining fields are required by the limitations of CompositeTbl or Tree-Structured Tbls TODO: Delete this-->
-		<field name="IsPrimary" type="RequiredBool">
-			<!-- ListControl needs this field directly and the Tbl.IAttr that specifies this only lets you name a DBI_Column not a DBI_Path -->
-		</field>
 		<extension name="query">
-			select UR.ParentID, UR.ID, UR.ParentID, 0
+			select UR.ParentID, UR.ID, UR.ParentID
 			from UnitRelatedRecords as UR
 			where UR.ParentID is not null
 	  
-			union
-	  
-			select UR.ID, UR.ID, UR.ID, 1
+			union	  
+			select UR.ID, UR.ID, UR.ID
 			from UnitRelatedRecords as UR
 
 		</extension>

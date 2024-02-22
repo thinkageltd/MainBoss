@@ -1,8 +1,8 @@
-﻿using System.Data;
-using Thinkage.Libraries;
+﻿using Thinkage.Libraries;
 using Thinkage.Libraries.CommandLineParsing;
 using Thinkage.Libraries.DBAccess;
 using Thinkage.Libraries.Presentation;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.MainBoss.Database;
 
 namespace Thinkage.MainBoss.MBUtility {
@@ -10,9 +10,9 @@ namespace Thinkage.MainBoss.MBUtility {
 		public class Definition : UtilityVerbWithDatabaseDefinition {
 			public Definition()
 				: base() {
-				Add(InputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("Input"), KB.I("File containing the import data"), true));
-				Add(ErrorOutputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("ErrorOutput"), KB.I("File containing the errors encountered during import."), false));
-				Add(AdjustmentCode = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("AdjustmentCode"), KB.I("The Adjustment Code to use for the physical count"), true));
+				Optable.Add(InputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("Input"), KB.I("File containing the import data"), true));
+				Optable.Add(ErrorOutputFile = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("ErrorOutput"), KB.I("File containing the errors encountered during import."), false));
+				Optable.Add(AdjustmentCode = new Thinkage.Libraries.CommandLineParsing.StringValueOption(KB.I("AdjustmentCode"), KB.I("The Adjustment Code to use for the physical count"), true));
 			}
 			public readonly StringValueOption InputFile;
 			public readonly StringValueOption ErrorOutputFile;
@@ -36,15 +36,15 @@ namespace Thinkage.MainBoss.MBUtility {
 			DataImportExportHelper.Setup();
 			try {
 				// Get a connection to the database that we are importing to
-				MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out string oName);
+				MB3Client.ConnectionDefinition connect = Options.ConnectionDefinition(out string oName);
 				DataImportExportHelper.SetupDatabaseAccess(oName, connect);
 				Thinkage.Libraries.DBAccess.DBClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
-				DataSet errors;
+				DBIDataSet errors;
 				using (dsMB mbds = new dsMB(db)) {
 					mbds.DisableUpdatePropagation();
 					// Fetch the physical counts
 					PhysicalCountImportExport physicalCountImport = new PhysicalCountImportExport();
-					physicalCountImport.LoadPhysicalCounts(System.IO.File.ReadAllText(Options.InputFile.Value), new System.Xml.Schema.ValidationEventHandler(xml_ValidationEventHandler));
+					physicalCountImport.LoadPhysicalCounts(System.IO.File.ReadAllText(Options.InputFile.Value), new System.Xml.Schema.ValidationEventHandler(Xml_ValidationEventHandler));
 					// and create them
 					errors = physicalCountImport.CreatePhysicalCounts(mbds, Options.AdjustmentCode.Value, new UserIDSource());
 				}
@@ -54,8 +54,9 @@ namespace Thinkage.MainBoss.MBUtility {
 				throw new GeneralException(ex, KB.K("Import of physical counts failed"));
 			}
 		}
+
 		// Report import data XML validation errors with line number and position to Console
-		void xml_ValidationEventHandler(object sender, System.Xml.Schema.ValidationEventArgs e) {
+		private void Xml_ValidationEventHandler(object sender, System.Xml.Schema.ValidationEventArgs e) {
 			System.Console.WriteLine(Strings.Format(KB.K("Line {0}, Position {1}:{2}"), e.Exception.LineNumber, e.Exception.LinePosition, e.Message));
 		}
 	}

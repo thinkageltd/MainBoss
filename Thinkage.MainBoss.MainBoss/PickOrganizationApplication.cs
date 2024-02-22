@@ -24,37 +24,37 @@ namespace Thinkage.MainBoss.MainBoss {
 			new ApplicationExecutionWithMainFormCreatorDelegate(this,
 				delegate () {
 					var form = Libraries.Presentation.MSWindows.BrowseForm.NewBrowseForm(GetInterface<UIFactory>(), null, SavedOrganizationsBrowserTblCreator);
-					form.Menu = form.MainBrowseControl.UIFactory.CreateMainMenu(
-						form.MainBrowseControl.UIFactory.CreateSubMenu(KB.K("Session"), null,
-						form.MainBrowseControl.UIFactory.CreateCommandMenuItem(KB.K("Exit"), new CallDelegateCommand(KB.K("Close this window"),
+					form.Menu = new List<MenuItem>() {
+						new SubMenuItem(KB.K("Session"),
+						new CommandMenuItem(KB.K("Exit"), new CallDelegateCommand(KB.K("Close this window"),
 								delegate () {
 									form.CloseForm(UIDialogResult.Cancel);
 								}))
 							),
-						form.MainBrowseControl.UIFactory.CreateSubMenu(KB.K("Help"), null,
-							form.MainBrowseControl.UIFactory.CreateCommandMenuItem(KB.K("Contents"), new CallDelegateCommand(KB.K("Go to Help Table of Contents"),
+						new SubMenuItem(KB.K("Help"),
+							new CommandMenuItem(KB.K("Contents"), new CallDelegateCommand(KB.K("Go to Help Table of Contents"),
 								delegate () {
 									PickOrganizationApplication.Instance.GetInterface<PickOrganizationApplication.IHelp>().ShowTopic(Thinkage.Libraries.Presentation.KB.HelpTopicKey("TableOfContents"));
 								}))
-							, form.MainBrowseControl.UIFactory.CreateCommandMenuItem(KB.K("Help Index"), new CallDelegateCommand(KB.K("Go to Help Index"),
+							, new CommandMenuItem(KB.K("Help Index"), new CallDelegateCommand(KB.K("Go to Help Index"),
 								delegate () {
 									PickOrganizationApplication.Instance.GetInterface<PickOrganizationApplication.IHelp>().ShowTopic(Thinkage.Libraries.Presentation.KB.HelpTopicKey("Index"));
 								}))
-							, form.MainBrowseControl.UIFactory.CreateMenuSeparator()
-							, form.MainBrowseControl.UIFactory.CreateCommandMenuItem(KB.K("Get Technical Support"), new CallDelegateCommand(KB.K("Go to technical support information"),
+							, new SeparatorMenuItem()
+							, new CommandMenuItem(KB.K("Get Technical Support"), new CallDelegateCommand(KB.K("Go to technical support information"),
 								delegate () {
 									Thinkage.Libraries.Application.Instance.GetInterface<Thinkage.Libraries.Application.IHelp>().ShowTopic(Thinkage.Libraries.Presentation.KB.HelpTopicKey("GetSupport"));
 								}))
-							, form.MainBrowseControl.UIFactory.CreateCommandMenuItem(KB.K("Start Support Connection"), new CallDelegateCommand(KB.K("Start the Teamviewer support connection with Thinkage"), new EventHandler((object s, EventArgs a) => {
+							, new CommandMenuItem(KB.K("Start Support Connection"), new CallDelegateCommand(KB.K("Start the Teamviewer support connection with Thinkage"), new EventHandler((object s, EventArgs a) => {
 								MBAboutForm.StartTeamviewer();
 							})))
-							, form.MainBrowseControl.UIFactory.CreateMenuSeparator()
-							, form.MainBrowseControl.UIFactory.CreateCommandMenuItem(KB.K("About..."), new CallDelegateCommand(KB.K("Show information about this application"),
+							, new SeparatorMenuItem()
+							, new CommandMenuItem(KB.K("About..."), new CallDelegateCommand(KB.K("Show information about this application"),
 								delegate () {
 									new MBAboutForm(form.MainBrowseControl.UIFactory, null, KB.I("MainBoss")).ShowModal(form);
 								}))
 						)
-					);
+					};
 					form.MainBrowseControl.NotifyRefresh += delegate () {
 						var savedOrganizationSession = (SavedOrganizationSession)form.MainBrowseControl.LogicObject.DB.Session;
 						savedOrganizationSession.PrepareToRefresh();
@@ -103,8 +103,8 @@ namespace Thinkage.MainBoss.MainBoss {
 #if DEBUG
 			new MSWindowsDebugProvider(this, KB.I("MainBoss Debug Form"));
 #endif
-			new StandardApplicationIdentification(this, "MainBoss", "MainBoss");
-			new GUIApplicationIdentification(this, "Thinkage.MainBoss.MainBoss.Resources.MainBoss400.ico");
+			new StandardApplicationIdentification(this, ApplicationParameters.RegistryLocation, ApplicationParameters.ApplicationDisplayName);
+			new GUIApplicationIdentification(this, new Libraries.Drawing.StaticImage(Resources.Images.MainBoss400_16_16, Resources.Images.MainBoss400_32_32, Resources.Images.MainBoss400_48_48, Resources.Images.MainBoss400_256_256));
 			new Thinkage.Libraries.XAF.UI.MSWindows.UserInterface(this);
 			new Thinkage.Libraries.Presentation.MSWindows.UserInterface(this);
 			var uiFactory = new MSWindowsUIFactory(this) {
@@ -192,10 +192,9 @@ namespace Thinkage.MainBoss.MainBoss {
 		}
 		#endregion
 		#region SavedOrganizationsBrowser
-		private static Key newGroupKey = KB.T("New group key");
-		private static Key sameNewExistingKey = KB.K("Add Existing Organization");
+		private static readonly Key newGroupKey = KB.T("Add Organization");
 		private const int MAX_PATH = 260; // There is NO .NET defined constant that is common in the C Windows libraries, so we define the common accepted value here with the common name found elsewhere (so if someone searches for it, the will find it here)
-		private static Libraries.TypeInfo.StringTypeInfo FilenameTypeInfo = new Libraries.TypeInfo.StringTypeInfo(1, MAX_PATH, 0, false, true, true);
+		private static readonly Libraries.TypeInfo.StringTypeInfo FilenameTypeInfo = new Libraries.TypeInfo.StringTypeInfo(1, MAX_PATH, 0, false, true, true);
 		private static ICommand MakeOpenOrganizationCommand(BrowseLogic browserLogic, Key hint, IDisablerProperties appIdDisabler, DatabaseEnums.ApplicationModeID? forcedMode = null) {
 			Libraries.DataFlow.Source defaultAppModeSource = browserLogic.GetTblPathDisplaySource(dsSavedOrganizations.Path.T.Organizations.F.PreferredApplicationMode, -1);
 			Libraries.DataFlow.Source organizationNameSource = browserLogic.GetTblPathDisplaySource(dsSavedOrganizations.Path.T.Organizations.F.OrganizationName, -1);
@@ -392,23 +391,22 @@ namespace Thinkage.MainBoss.MainBoss {
 							}
 						)
 					},
-					null,
-				#region New Commands (Create)
-					// For all of these we want a New command in the browser but no transition back to New in the editor. In fact we don't even really want Edit/View mode in most of them so you have Save&Close which does the work. but this is not a requirement.
-					new CompositeView(OrganizationEditorTblCreator(TId.Organization, typeof(NewOrganizationEditorLogic)), dsSavedOrganizations.Path.T.Organizations.F.Id,
-						CompositeView.JoinedNewCommand(sameNewExistingKey),
+					#region New Commands (Create)
+					// The first composite view is for all of the saved Organizations except the default one.
+					CompositeView.ChangeEditTbl(OrganizationEditorTblCreator(TId.Organization, typeof(NewOrganizationEditorLogic)),
+						CompositeView.JoinedNewCommand(KB.K("Add Existing Organization")),
 						CompositeView.NewCommandGroup(newGroupKey),
 						CompositeView.RecognizeByValidEditLinkage(),
-						CompositeView.AddRecognitionCondition(new SqlExpression(dsSavedOrganizations.Path.T.Organizations.F.IsPreferredOrganization).Not())),    // This is the only one where we want Edit mode...?
-					new CompositeView(OrganizationEditorTblCreator(TId.Organization, typeof(NewOrganizationEditorLogic)), dsSavedOrganizations.Path.T.Organizations.F.Id,
-						CompositeView.JoinedNewCommand(sameNewExistingKey),
+						CompositeView.AddRecognitionCondition(new SqlExpression(dsSavedOrganizations.Path.T.Organizations.F.IsPreferredOrganization).Not())),
+					// The second composite view is for the Default saved organization, so it shows a special icon.
+					CompositeView.ChangeEditTbl(OrganizationEditorTblCreator(TId.Organization, typeof(NewOrganizationEditorLogic)),
+						CompositeView.SetAllowContextFreeNew(false),    // Avoid a duplicate New verb in the browser.
 						CompositeView.NewCommandGroup(newGroupKey),
 						CompositeView.RecognizeByValidEditLinkage(),
 						CompositeView.AddRecognitionCondition(new SqlExpression(dsSavedOrganizations.Path.T.Organizations.F.IsPreferredOrganization)),
-						CompositeView.IdentificationOverride(TId.DefaultOrganization)),
-					CompositeView.ExtraNewVerb(
-						OrganizationEditorTblCreator(TId.Organization, typeof(NewCreateDatabaseWithLicensesOrganizationEditorLogic)
-						), CompositeView.JoinedNewCommand(KB.K("Create New Organization")),
+						CompositeView.IdentificationOverride(TId.DefaultOrganization)),    // This is the only one where we want Edit mode...?
+					CompositeView.ExtraNewVerb(OrganizationEditorTblCreator(TId.Organization, typeof(NewCreateDatabaseWithLicensesOrganizationEditorLogic)),
+						CompositeView.JoinedNewCommand(KB.K("Create New Organization")),
 						CompositeView.NewCommandGroup(newGroupKey)),
 					CompositeView.ExtraNewVerb(
 						OrganizationEditorTblCreator(TId.Organization, typeof(NewOrganizationFromBackupEditorLogic),
@@ -441,12 +439,13 @@ namespace Thinkage.MainBoss.MainBoss {
 							)
 						), CompositeView.JoinedNewCommand(KB.K("Create New Organization using MainBoss Basic 2.9 export file")),
 						CompositeView.NewCommandGroup(newGroupKey))
-				#endregion
+						#endregion
 				);
 			}
 		);
 		#endregion
 		#region RunScriptTblCreator
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<Pending>")]
 		public class RunScriptEditLogic : EditLogic {
 			public RunScriptEditLogic(IEditUI editUI, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 				: base(editUI, db, tbl, settingsContainer, initialEditMode, initRowIDs, ModifySubsequentModeRestrictions(subsequentModeRestrictions), initLists) {
@@ -462,8 +461,9 @@ namespace Thinkage.MainBoss.MainBoss {
 				// Do not call base.SaveRecord which assumes there is a DB client
 				return new object[] { null /* RunScript ? */ };
 			}
-			EditorState StateParametersChanged = null;
-			EditorState StateParametersUnchanged = null;
+
+			private EditorState StateParametersChanged = null;
+			private EditorState StateParametersUnchanged = null;
 			//			EditorState StateUnCommittedChanged = null;
 			//			EditorState StateUnCommittedUnchanged = null;
 
@@ -534,38 +534,39 @@ namespace Thinkage.MainBoss.MainBoss {
 						)
 					),
 					TblUnboundControlNode.New(KB.K("Source Database Name"),
-					new Libraries.TypeInfo.StringTypeInfo(1, 128, 0, true, true, true),
-					ECol.AllWriteable,
-					Fmt.SetId(InputDatabaseNameId),
-					Fmt.SetCreatorT<EditLogic>(
-						delegate (EditLogic logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer) {
-							Libraries.DataFlow.Source serverNameSourceInEditor = logicObject.GetControlNotifyingSource(ServerNameId);
-							return logicObject.CommonUI.UIFactory.CreateTextEditWithPickButton((Libraries.TypeInfo.StringTypeInfo)controlTypeInfo, enabledDisabler, writeableDisabler, KB.K("Select from available databases"),
-										delegate (IInputControl control) {
-											Libraries.DataFlow.Source serverNameSourceInPicker = null;
-											var form = Libraries.Presentation.MSWindows.SelectValueForm.NewSelectValueForm(logicObject.CommonUI.UIFactory, null, SelectDatabaseTbl, new BrowserPathValue(dsDatabasesOnServer.Path.T.DatabasesOnServer.F.Database),
-												delegate (object value) {
-													control.Value = value;
-													try {
-														serverNameSourceInEditor.GetValue();
-													}
-													catch (System.Exception) {
-													}
-												}, allowNull: false);
-											object serverNameInEditor = null;
-											try {
-												serverNameInEditor = serverNameSourceInEditor.GetValue();
-											}
-											catch (Libraries.TypeInfo.NonnullValueRequiredException) {
-											}
-											form.MainBrowseControl.BrowserLogic.GetSinkForInit(new BrowserFilterTarget(DatabasePickerServerFilterId)).SetValue(serverNameInEditor);
-											serverNameSourceInPicker = form.MainBrowseControl.BrowserLogic.GetTblPathDisplaySource(dsDatabasesOnServer.Path.T.DatabasesOnServer.F.ServerName, -1);
-											form.ShowModal(control.ContainingForm);
-										}
-									);
-						}
-					)
-				),
+						new Libraries.TypeInfo.StringTypeInfo(1, 128, 0, true, true, true),
+						ECol.AllWriteable,
+						Fmt.SetId(InputDatabaseNameId),
+						Fmt.SetCreatorT<EditLogic>(
+							delegate(EditLogic logicObject, TblLeafNode leafNode, Libraries.TypeInfo.TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer) {
+								Libraries.DataFlow.Source serverNameSourceInEditor = logicObject.GetControlNotifyingSource(ServerNameId);
+								return logicObject.CommonUI.UIFactory.CreateTextEditWithPickButton((StringTypeInfo)controlTypeInfo, enabledDisabler, writeableDisabler,                                     control =>
+										new List<MenuItem>() {
+											new CommandMenuItem(KB.K("Select database"), image: logicObject.CommonUI.UIFactory.PickWithBrowserImage, command: new MultiCommandIfAllEnabled(
+												new CallDelegateCommand(
+													KB.K("Select from the databases avaiable on the server"),
+													delegate() {
+														var form = Libraries.Presentation.MSWindows.SelectValueForm.NewSelectValueForm(logicObject.CommonUI.UIFactory, null, SelectDatabaseTbl, new BrowserPathValue(dsDatabasesOnServer.Path.T.DatabasesOnServer.F.Database),
+															delegate (object value) {
+																control.Value = value;
+															}, allowNull: false);
+
+														// Filter the popup browser to show only databases on the server in the ServerNameId control if there's a value there.
+														try {
+															form.MainBrowseControl.BrowserLogic.GetSinkForInit(new BrowserFilterTarget(DatabasePickerServerFilterId)).SetValue(serverNameSourceInEditor.GetValue());
+														}
+														catch (NonnullValueRequiredException) {
+															// Just leave the filter value null
+														}
+
+														form.ShowModal(control.ContainingForm);
+													}),
+												writeableDisabler))
+									}
+								);
+							}
+						)
+					),
 					TblUnboundControlNode.New(KB.K("Script file"),
 					FilenameTypeInfo,
 					ECol.AllWriteable,
@@ -578,7 +579,7 @@ namespace Thinkage.MainBoss.MainBoss {
 					dsSavedOrganizations.Schema.T.Organizations,
 					TId.Organization,
 					new Tbl.IAttr[] {
-						new ETbl(ETbl.EditorDefaultAccess(false), ETbl.EditorAccess(true, EdtMode.View), new ETbl.CustomLogicClassArg(typeof(RunScriptEditLogic)))
+						new ETbl(ETbl.EditorDefaultAccess(false), ETbl.EditorAccess(true, EdtMode.View), ETbl.LogicClass(typeof(RunScriptEditLogic)))
 					},
 					new TblLayoutNodeArray(layoutNodes)
 				);
@@ -597,11 +598,12 @@ namespace Thinkage.MainBoss.MainBoss {
 					TheConverter.CheckSrcDatabase();
 					ipd.Update(KB.T(Strings.Format(KB.K("Running script on database {0} on database server {1}"), connectInfo.DBName, connectInfo.DBServer)));
 					mb3db = new MB3Client(connectInfo);
-					ScriptProcessing(mb3db, inputDatabase, scriptUrl, ipd);
+					ScriptProcessing(scriptUrl, ipd);
+					string scriptFileName = System.IO.Path.GetFileName(scriptUrl);
 					if (HistoryLogText.Length == 0)
-						MBUpgrader.UpgradeInformation.CreateCurrentVersionHandler(mb3db).LogHistory(mb3db, Strings.Format(KB.K("SQL Script completed {0}"), scriptUrl), null);
+						MBUpgrader.UpgradeInformation.CreateCurrentVersionHandler(mb3db).LogHistory(mb3db, Strings.Format(KB.K("SQL Script completed {0}"), scriptFileName), null);
 					else {
-						MBUpgrader.UpgradeInformation.CreateCurrentVersionHandler(mb3db).LogHistory(mb3db, Strings.Format(KB.K("SQL Script completed with errors {0}"), scriptUrl), HistoryLogText.ToString());
+						MBUpgrader.UpgradeInformation.CreateCurrentVersionHandler(mb3db).LogHistory(mb3db, Strings.Format(KB.K("SQL Script completed with errors {0}"), scriptFileName), HistoryLogText.ToString());
 						gex = new GeneralException(KB.K("Run Script has errors"));
 					}
 				}
@@ -619,19 +621,19 @@ namespace Thinkage.MainBoss.MainBoss {
 					}
 					if (mb3db != null)
 						mb3db.CloseDatabase();
-					mb3db = null;
 					if (ipd != null)
 						ipd.Complete();
 					HistoryLogText = null;
 					TheConverter = null;
 				}
 			}
-			Thinkage.MainBoss.CustomConversion.RunScriptBasedOnDBConverter TheConverter;
-			System.Text.StringBuilder HistoryLogText;
-			MB3Client.ConnectionDefinition connectInfo;
+
+			private Thinkage.MainBoss.CustomConversion.RunScriptBasedOnDBConverter TheConverter;
+			private System.Text.StringBuilder HistoryLogText;
+			private MB3Client.ConnectionDefinition connectInfo;
 
 			// TODO: When done open in admin mode so licenses can be added.
-			protected void ScriptProcessing(MB3Client db, string inputDatabase, string scriptUrl, IProgressDisplay ipd) {
+			protected void ScriptProcessing(string scriptUrl, IProgressDisplay ipd) {
 				TheConverter.TableConverting += delegate (object source, TableConvertEventArgs e) {
 					ipd.Update(KB.T(Strings.Format(KB.K("Script Step {0}{1}"), e.TableName, Environment.NewLine)));
 				};
@@ -684,7 +686,7 @@ namespace Thinkage.MainBoss.MainBoss {
 			var v = el.GetControlNotifyingSource(CredentialsAuthenticationMethodId).GetValue();
 			return (AuthenticationMethod)(int)dsSavedOrganizations.Schema.T.Organizations.F.CredentialsAuthenticationMethod.EffectiveType.GenericAsNativeType(v, typeof(int));
 		}
-		private static EnumValueTextRepresentations LicenseRequestTypes = new EnumValueTextRepresentations(
+		private static readonly EnumValueTextRepresentations LicenseRequestTypes = new EnumValueTextRepresentations(
 			new Key[] {
 				KB.K("No License"),
 				KB.K("Demonstration"),
@@ -697,9 +699,9 @@ namespace Thinkage.MainBoss.MainBoss {
 				KB.I("FreeLicense")
 			}
 		);
-		private static Dictionary<Key, string> LicenseInformationToSend = new Dictionary<Key, string>();
-		private static Key EmailAddressLabel = KB.K("Email Address");
-		private static Key LicensesToRequestLabel = KB.K("Licenses To Request");
+		private static readonly Dictionary<Key, string> LicenseInformationToSend = new Dictionary<Key, string>();
+		private static readonly Key EmailAddressLabel = KB.K("Email Address");
+		private static readonly Key LicensesToRequestLabel = KB.K("Licenses To Request");
 		private static readonly EditorCalculatedInitValue.CalculationDelegate GetLicenseDisplay = delegate (object[] inputs) {
 
 			//TODO: build some mechanism to put a Dictionary of <Keys, Strings> one per line in the display. Get this dictionary of 'information' from some common place and format a multiline display of information
@@ -735,16 +737,21 @@ namespace Thinkage.MainBoss.MainBoss {
 							TblColumnNode.New(dsSavedOrganizations.Path.T.Organizations.F.DataBaseServer, Fmt.SetId(ServerNameId),
 								new ECol(ECol.NormalAccess,
 									Fmt.SetCreator(
-										delegate (CommonLogicBase logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer) {
-											return logicObject.CommonUI.UIFactory.CreateTextEditWithPickButton((Libraries.TypeInfo.StringTypeInfo)leafNode.ReferencedType, enabledDisabler, writeableDisabler, KB.K("Select from available database servers"),
-												delegate (IInputControl control) {
-													Libraries.Presentation.MSWindows.SelectValueForm.NewSelectValueForm(logicObject.CommonUI.UIFactory, null, SelectServerTbl, new BrowserPathValue(dsSqlServers.Path.T.SqlServers.F.Name),
-														delegate (object value) {
-															control.Value = value;
-														}, allowNull: false).ShowModal(control.ContainingForm);
+										(CommonLogicBase logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer)
+											=> logicObject.CommonUI.UIFactory.CreateTextEditWithPickButton((StringTypeInfo)leafNode.ReferencedType, enabledDisabler, writeableDisabler, control =>
+												new List<MenuItem>() {
+														new CommandMenuItem(KB.K("Select database server"), image: logicObject.CommonUI.UIFactory.PickWithBrowserImage, command: new MultiCommandIfAllEnabled(
+															new CallDelegateCommand(
+																KB.K("Select from the Sql servers visible on the network"),
+																delegate () {
+																	Libraries.Presentation.MSWindows.SelectValueForm.NewSelectValueForm(logicObject.CommonUI.UIFactory, null, SelectServerTbl, new BrowserPathValue(dsSqlServers.Path.T.SqlServers.F.Name),
+																		delegate (object value) {
+																			control.Value = value;
+																		}, allowNull: false).ShowModal(control.ContainingForm);
+																}),
+																writeableDisabler))
 												}
-											);
-										}
+											)
 									)
 								)
 							),
@@ -754,34 +761,44 @@ namespace Thinkage.MainBoss.MainBoss {
 										delegate (EditLogic logicObject, TblLeafNode leafNode, TypeInfo controlTypeInfo, IDisablerProperties enabledDisabler, IDisablerProperties writeableDisabler, ref Key label, Fmt fmt, Settings.Container settingsContainer) {
 											// We want to copy the server name back too if the user selected the database without a valid value in the server control.
 											// There are two cheats happening here:
-											// One is that the only reason we can get the Path Source out of the picker browser after NewBrowseForm has elaborated the browser to completion is that the browser itself already created the path source for a list column.
+											// One is that the only reason we can get the Path Source out of the picker browser after NewBrowseForm has elaborated the browser to completion
+											// is that the browser itself already created the path source for a list column.
 											//		Some day we will explicitly forbid this and NewBrowseForm will have to be given a list of sources of interest.
-											// The other is that we are assuming tht when BrowseForm calls its acceptor delegate, the browser's data is still positioned to the selected record so the source mentioned above gets the correct record.
+											// The other is that we are assuming that when BrowseForm calls its acceptor delegate, the browser's data is still positioned to the selected record so the source mentioned above gets the correct record.
 											//		Again this could be cured by having NewBrowseForm manage multiple sources and passing all the values as a value array (for example)
 											Libraries.DataFlow.Source serverNameSourceInEditor = logicObject.GetControlNotifyingSource(ServerNameId);
 											Libraries.DataFlow.Sink serverNameSinkInEditor = logicObject.GetControlSink(ServerNameId);
-											return logicObject.CommonUI.UIFactory.CreateTextEditWithPickButton((Libraries.TypeInfo.StringTypeInfo)controlTypeInfo, enabledDisabler, writeableDisabler, KB.K("Select from available databases"),
-												delegate (IInputControl control) {
-													Libraries.DataFlow.Source serverNameSourceInPicker = null;
-													var form = Libraries.Presentation.MSWindows.SelectValueForm.NewSelectValueForm(logicObject.CommonUI.UIFactory, null, SelectDatabaseTbl, new BrowserPathValue(dsDatabasesOnServer.Path.T.DatabasesOnServer.F.Database),
-														delegate (object value) {
-															control.Value = value;
-															try {
-																serverNameSourceInEditor.GetValue();
+											return logicObject.CommonUI.UIFactory.CreateTextEditWithPickButton((StringTypeInfo)controlTypeInfo, enabledDisabler, writeableDisabler, control =>
+												new List<MenuItem>() {
+													new CommandMenuItem(KB.K("Select database"), image: logicObject.CommonUI.UIFactory.PickWithBrowserImage, command: new MultiCommandIfAllEnabled(
+														new CallDelegateCommand(
+															KB.K("Select from the databases avaiable on the server"),
+															delegate () {
+																Libraries.DataFlow.Source serverNameSourceInPicker = null;
+																var form = Libraries.Presentation.MSWindows.SelectValueForm.NewSelectValueForm(logicObject.CommonUI.UIFactory, null, SelectDatabaseTbl, new BrowserPathValue(dsDatabasesOnServer.Path.T.DatabasesOnServer.F.Database),
+																	delegate (object value) {
+																		control.Value = value;
+																		// If the server name control does not have a valid value, set it from the server name in the picker
+																		try {
+																			serverNameSourceInEditor.GetValue();
+																		}
+																		catch {
+																			serverNameSinkInEditor.SetValue(serverNameSourceInPicker.GetValue());
+																		}
+																	}, allowNull: false);
+
+																// Filter the popup browser to show only databases on the server in the ServerNameId control if there's a value there.
+																try {
+																	form.MainBrowseControl.BrowserLogic.GetSinkForInit(new BrowserFilterTarget(DatabasePickerServerFilterId)).SetValue(serverNameSourceInEditor.GetValue());
+																}
+																catch (NonnullValueRequiredException) {
+																	// Just leave the filter value null
+																}
+																serverNameSourceInPicker = form.MainBrowseControl.BrowserLogic.GetTblPathDisplaySource(dsDatabasesOnServer.Path.T.DatabasesOnServer.F.ServerName, -1);
+																form.ShowModal(control.ContainingForm);
 															}
-															catch (System.Exception) {
-																serverNameSinkInEditor.SetValue(serverNameSourceInPicker.GetValue());
-															}
-														}, allowNull: false);
-													object serverNameInEditor = null;
-													try {
-														serverNameInEditor = serverNameSourceInEditor.GetValue();
-													}
-													catch (Libraries.TypeInfo.NonnullValueRequiredException) {
-													}
-													form.MainBrowseControl.BrowserLogic.GetSinkForInit(new BrowserFilterTarget(DatabasePickerServerFilterId)).SetValue(serverNameInEditor);
-													serverNameSourceInPicker = form.MainBrowseControl.BrowserLogic.GetTblPathDisplaySource(dsDatabasesOnServer.Path.T.DatabasesOnServer.F.ServerName, -1);
-													form.ShowModal(control.ContainingForm);
+														),
+														writeableDisabler))
 												}
 											);
 										}
@@ -853,12 +870,12 @@ namespace Thinkage.MainBoss.MainBoss {
 							, Init.OnLoadNew(new ControlTarget(CredentialsPasswordId), new ConstantValue(null))
 							, Init.Continuous(new ControlReadonlyTarget(CredentialsPasswordId, KB.K("A password is not required for this authentication method"))
 								, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, delegate (object[] inputs) {
-								// determine if authentication method needs the password field
-								return (inputs[0] != null &&
-										!((AuthenticationMethod)(int)Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[0], typeof(int)) == AuthenticationMethod.SQLPassword
-									|| (AuthenticationMethod)(int)Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[0], typeof(int)) == AuthenticationMethod.ActiveDirectoryPassword)
-									);
-							}, new Libraries.Presentation.ControlValue(CredentialsAuthenticationMethodId)))
+									// determine if authentication method needs the password field
+									return (inputs[0] != null &&
+											!((AuthenticationMethod)(int)Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[0], typeof(int)) == AuthenticationMethod.SQLPassword
+										|| (AuthenticationMethod)(int)Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[0], typeof(int)) == AuthenticationMethod.ActiveDirectoryPassword)
+										);
+								}, new Libraries.Presentation.ControlValue(CredentialsAuthenticationMethodId)))
 							, Init.OnLoadNew(new ControlTarget(CompactBrowsersId), new ConstantValue(false))
 							, Init.OnLoadNew(new ControlTarget(PreferredModeId), new ConstantValue((int)DatabaseEnums.ApplicationModeID.Normal))
 							, EL == typeof(NewCreateDatabaseWithLicensesOrganizationEditorLogic) ?
@@ -890,7 +907,7 @@ namespace Thinkage.MainBoss.MainBoss {
 				}
 			);
 		}
-		private static StringTypeInfo PasswordInputTypeInfo = new StringTypeInfo(0, 32, 0, true, true, true);
+		private static readonly StringTypeInfo PasswordInputTypeInfo = new StringTypeInfo(0, 32, 0, true, true, true);
 		#endregion
 		#region New Organization Editor Logic
 		private class NewOrganizationEditorLogic : EditLogic {
@@ -934,16 +951,16 @@ namespace Thinkage.MainBoss.MainBoss {
 			}
 			protected override void SetupCommands() {
 				base.SetupCommands();
-				CommandGroupDeclarationsInOrder.Remove(NewCommandGroup);
-				NewCommandGroup = null;
-				CommandGroupDeclarationsInOrder.Remove(CloneCommandGroup);
-				CloneCommandGroup = null;
-				CommandGroupDeclarationsInOrder.Remove(PrintCommandGroup);
-				PrintCommandGroup = null;
+				CommandGroupDeclarationsInOrder.Remove(NewCommandVariantGroup);
+				NewCommandVariantGroup = null;
+				CommandGroupDeclarationsInOrder.Remove(CloneCommandVariantGroup);
+				CloneCommandVariantGroup = null;
+				CommandGroupDeclarationsInOrder.Remove(PrintCommandVariantGroup);
+				PrintCommandVariantGroup = null;
 				CommandGroupDeclarationsInOrder.Remove(SaveCommandGroup);
 				SaveCommandGroup = null;
-				SaveAndCloseCommandGroup.Clear();
-				SaveAndCloseCommandGroup.Add(new CommandDeclaration(CreateCommandCaption,
+				SaveAndCloseCommandVariantGroup.Clear();
+				SaveAndCloseCommandVariantGroup.Add(new CommandDeclaration(CreateCommandCaption,
 					EditLogic.StateTransitionCommand.NewSameTargetState(this, KB.K("Create the database and close this editor"),
 					delegate () {
 						SaveAction(NormalPostSaveState);
@@ -1009,7 +1026,7 @@ namespace Thinkage.MainBoss.MainBoss {
 				IProgressDisplay ipd = null;
 				List<License> licenses = new List<License>();
 				string licenseHtml = null;
-				for (;;) {
+				for (; ; ) {
 					try {
 						licenseHtml = GetLicenses(); // try to get the licenses BEFORE creating any database in case of error retrieving
 						if (licenseHtml == null)
@@ -1143,7 +1160,8 @@ namespace Thinkage.MainBoss.MainBoss {
 			protected override void PostCloseEditorAction() {
 				ReplaceActiveApplicationWithAdministrationApplication();
 			}
-			static Key importErrorMessage = KB.K("MainBoss 2.9 data import has errors");
+
+			private static readonly Key importErrorMessage = KB.K("MainBoss 2.9 data import has errors");
 			protected override void CreateDatabase() {
 				IProgressDisplay ipd = null;
 				xmlInputReader = null;
@@ -1207,10 +1225,13 @@ namespace Thinkage.MainBoss.MainBoss {
 				if (throwErrorOnExit)
 					throw new GeneralException(KB.K("Unable to import organization into database {0} on server {1}"), connectInfo.DBName, connectInfo.DBServer);
 			}
-			System.IO.FileStream xmlInputReader;
-			Thinkage.MainBoss.MB29Conversion.MBConverter TheConverter;
-			System.Text.StringBuilder HistoryLogText;
-			MB3Client.ConnectionDefinition connectInfo;
+
+#pragma warning disable CA2213 // Disposable fields should be disposed Close is called and is responsbile
+			private System.IO.FileStream xmlInputReader;
+#pragma warning restore CA2213 // Disposable fields should be disposed
+			private Thinkage.MainBoss.MB29Conversion.MBConverter TheConverter;
+			private System.Text.StringBuilder HistoryLogText;
+			private MB3Client.ConnectionDefinition connectInfo;
 
 			// TODO: When done open in admin mode so licenses can be added.
 			protected override void PostCreateProcessing(MB3Client db, IProgressDisplay ipd) {
@@ -1235,7 +1256,7 @@ namespace Thinkage.MainBoss.MainBoss {
 		}
 		#endregion
 		#region SelectServerTbl
-		private static Tbl SelectServerTbl = new Tbl(dsSqlServers.Schema.T.SqlServers, TId.SQLServer,
+		private static readonly Tbl SelectServerTbl = new Tbl(dsSqlServers.Schema.T.SqlServers, TId.SQLServer,
 			new Tbl.IAttr[] {
 				new CustomSessionTbl(delegate(DBClient existingDBAccess, DBI_Database newSchema) { return new SqlServersSession.Connection(); }),
 				new BTbl(
@@ -1247,7 +1268,7 @@ namespace Thinkage.MainBoss.MainBoss {
 		);
 		#endregion
 		#region SelectDatabaseTbl
-		private static Tbl SelectDatabaseTbl = new Tbl(dsDatabasesOnServer.Schema.T.DatabasesOnServer, TId.SQLDatabase,
+		private static readonly Tbl SelectDatabaseTbl = new Tbl(dsDatabasesOnServer.Schema.T.DatabasesOnServer, TId.SQLDatabase,
 			new Tbl.IAttr[] {
 				new CustomSessionTbl(delegate(DBClient existingDBAccess, DBI_Database newSchema) { return new DatabasesOnServerSession.Connection(); }),
 				new BTbl(
@@ -1267,14 +1288,14 @@ namespace Thinkage.MainBoss.MainBoss {
 		);
 		#endregion
 		#region Web Panel Support
-		HtmlDisplaySettings GetHtmlSettings() {
+		private HtmlDisplaySettings GetHtmlSettings() {
 			// Determine the initial URL to display to the user
 			string defaultURL = Strings.IFormat("{0}/{1}", InfoRoot, "default.htm");
 			var uri = new System.Uri(defaultURL);
 			return new HtmlDisplaySettings(uri) { ValueIsURI = true, SuppressScriptErrors = true, IsWebBrowserContextMenuEnabled = InitialStartupSettings.IsWebBrowserContextMenuEnabled };
 		}
-		private string InfoRoot;
-		private HtmlDisplaySettings InitialStartupSettings = new HtmlDisplaySettings();
+		private readonly string InfoRoot;
+		private readonly HtmlDisplaySettings InitialStartupSettings = new HtmlDisplaySettings();
 		public static string GetInfoLocation() {
 			string infoRoot;
 			infoRoot = Strings.IFormat("file://{0}/www/version", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));

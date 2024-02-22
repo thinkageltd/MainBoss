@@ -3,14 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Text.RegularExpressions;
+using System.Data.SqlClient;
+using System.Linq;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.XAF.Database.Layout;
-using Thinkage.Libraries.XAF.Database.Service.MSSql;
 using Thinkage.Libraries.Licensing;
 using Thinkage.Libraries.Service;
 using Thinkage.Libraries.TypeInfo;
 using Thinkage.Libraries.XAF.Database.Service;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
 
 namespace Thinkage.MainBoss.Database.Service {
 	//
@@ -46,7 +47,7 @@ namespace Thinkage.MainBoss.Database.Service {
 		private string pServicePassword;
 		public string ServicePassword {
 			get { return pServicePassword; }
-			set { pServicePassword = string.IsNullOrWhiteSpace(pServicePassword) ? null : value; }
+			set { pServicePassword = string.IsNullOrWhiteSpace(value) ? null : value; }
 		}
 		public SQLConnectionInfo ConnectionInfo;
 		public ServiceParms UpdateWith(ServiceParms n) {
@@ -148,16 +149,15 @@ namespace Thinkage.MainBoss.Database.Service {
 			return logging;
 		}
 		public static MB3Client ObtainServiceLogSession(MB3Client.ConnectionDefinition DBConnection, string serviceCode) {
-			Thinkage.Libraries.DBAccess.DBVersionHandler VersionHandler = null;
-			MB3Client logSession = null;
 			string oldmessage = null;
 			DateTime lastMessageOutput = DateTime.Now;
+			MB3Client logSession;
 			while (true) {
 				try {
 					logSession = new MB3Client(DBConnection);
 					logSession.Session.LockShared();
 					Version minDBVersionForServiceLog = new Version(1, 0, 10, 28); // Version where ServiceLog appeared
-					VersionHandler = MBUpgrader.UpgradeInformation.CheckDBVersion(logSession, VersionInfo.ProductVersion, minDBVersionForServiceLog, dsMB.Schema.V.MinAReqAppVersion, KB.I("MainBoss Service"));
+					DBVersionHandler VersionHandler = MBUpgrader.UpgradeInformation.CheckDBVersion(logSession, VersionInfo.ProductVersion, minDBVersionForServiceLog, dsMB.Schema.V.MinAReqAppVersion, KB.I("MainBoss Service"));
 					break;
 				}
 				catch (ApplicationUpgradeRequiredException) {
@@ -173,7 +173,6 @@ namespace Thinkage.MainBoss.Database.Service {
 						lastMessageOutput = DateTime.Now;
 						oldmessage = e.Message;
 					}
-					logSession = null;
 					System.Threading.Thread.Sleep(60 * 1000);
 				}
 			}
@@ -188,14 +187,14 @@ namespace Thinkage.MainBoss.Database.Service {
 		/// <summary>
 		/// The Action to do if no demoAction is specified to VerifyLicense
 		/// </summary>
-		static Action defaultDemoAction = new Action(() => { });
+		static readonly Action defaultDemoAction = new Action(() => { });
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		static public bool VerifyLicense(MB3Client DBSession, IServiceLogging logging, Action demoAction = null) {
 			bool logErrors = logging != null;
 			DBVersionHandler VersionHandler = null;
 			// validate the databaselog
 			try {
-				Version MinDBVersion = new Version(1, 1, 5, 5); // Usually kept in lock step with mainboss application; changing this should be reflected in the checkin comment to vault
+				Version MinDBVersion = new Version(1, 1, 5, 15); // Usually kept in lock step with mainboss application; changing this should be reflected in the checkin comment to vault
 																// MinMBAppVersion; 4.2; MinDBVersion; changing this should be reflected in the checkin comment to vault
 				VersionHandler = MBUpgrader.UpgradeInformation.CheckDBVersion(DBSession, VersionInfo.ProductVersion, MinDBVersion, dsMB.Schema.V.MinMBRemoteAppVersion, KB.I("MainBoss Service"));
 			}
@@ -267,7 +266,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				if (serviceConfiguration != null && serviceConfiguration.StartType == System.ServiceProcess.ServiceStartMode.Manual)
 					logTo.LogWarning(Strings.Format(KB.K("Start mode of MainBoss Service '{0}' is 'Manual'. It should be set to 'Automatic'"), serviceConfiguration.ServiceName));
 				if (dbParms.ServiceUserid != null && Utilities.UseridToDisplayName(serviceConfiguration.StartName) != Utilities.UseridToDisplayName(dbParms.ServiceUserid))
-					logTo.LogWarning(Strings.Format(KB.K("The Service Configuration expects the service to be running as user '{0}'. The MainBoss Service is configured to be running as {1}")
+					logTo.LogWarning(Strings.Format(KB.K("The Service Configuration expects the service to be running as user '{0}'. The MainBoss Service is configured to be running as '{1}'")
 						, dbParms.ServiceUserid, Utilities.UseridToDisplayName(serviceConfiguration.StartName)));
 			}
 		}
@@ -283,7 +282,7 @@ namespace Thinkage.MainBoss.Database.Service {
 					dsMB.ServiceConfigurationRow sr = null;
 					dsMB.ServiceConfigurationRow anysr = null;
 					int numrow = 0;
-					foreach (dsMB.ServiceConfigurationRow r in ds.GetDataTable(dsMB.Schema.T.ServiceConfiguration)) {
+					foreach (dsMB.ServiceConfigurationRow r in ds.GetDataTable(dsMB.Schema.T.ServiceConfiguration).Rows) {
 						anysr = r;
 						numrow++;
 						if (string.Compare(r.F.Code, serviceCode, ignoreCase: true) == 0) {
@@ -345,7 +344,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				using (dsMB ds = new dsMB(DBSession)) {
 					ds.DB.ViewAdditionalRows(ds, dsMB.Schema.T.ServiceConfiguration);
 					dsMB.ServiceConfigurationRow sr = null;
-					foreach (dsMB.ServiceConfigurationRow r in ds.T.ServiceConfiguration)
+					foreach (dsMB.ServiceConfigurationRow r in ds.T.ServiceConfiguration.Rows)
 						if (string.Compare(r.F.Code, parms.ServiceCode, ignoreCase: true) == 0) {
 							sr = r;
 							break;
@@ -492,7 +491,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			Thinkage.Libraries.Exception baseError = null;
 			if (string.IsNullOrWhiteSpace(sc.DatabaseName))
 				return new GeneralException(Thinkage.MainBoss.Database.KB.K("The Windows Service for MainBoss has no database configured, cannot confirm that the service belong to this database"));
-			if (string.IsNullOrWhiteSpace(sc.DatabaseName))
+			if (string.IsNullOrWhiteSpace(sc.DatabaseServer))
 				return new GeneralException(Thinkage.MainBoss.Database.KB.K("The Windows Service for MainBoss has no SQL Server configured, cannot confirm that the service belong to this database"));
 			if (!DomainAndIP.SameComputer(sc.DatabaseServer, dbParms.ConnectionInfo.DatabaseServer))
 				baseError = new GeneralException(Thinkage.MainBoss.Database.KB.K("The Windows Service for MainBoss '{0}' is configured to serve database '{1}' on '{2}' rather than '{3}' on '{4}'."), dbParms.ServiceCode, sc.DatabaseName, sc.ConnectionInfo.DatabaseServer, dbParms.ConnectionInfo.DatabaseName, dbParms.ConnectionInfo.DatabaseServer);
@@ -574,7 +573,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				ds.EnsureDataTableExists(dsMB.Schema.T.RequestState, dsMB.Schema.T.RequestStateHistory, dsMB.Schema.T.Request, dsMB.Schema.T.RequestAcknowledgement);
 				sequenceCounter = new SequenceCountManager(ds.DB, dsMB.Schema.T.RequestSequenceCounter, dsMB.Schema.V.WRSequence, dsMB.Schema.V.WRSequenceFormat);
 				sequenceCounterCheckpoint = sequenceCounter.Checkpoint();
-				dsMB.RequestRow requestRow = ds.T.Request.AddNewRequestRow();
+				dsMB.RequestRow requestRow = ds.T.Request.AddNewRow();
 				try {
 					var test = requestRow.F.SelectPrintFlag;
 				}
@@ -584,7 +583,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				requestRow.F.Number = string.Empty; // default to empty string, we'll catch this below.
 				var subject = emailRequest.F.Subject;
 				var description = emailRequest.F.MailMessage;
-				var size = (int)(dsMB.Path.T.Request.F.Subject.Column.EffectiveType as StringTypeInfo).SizeType.NativeMaxLimit(typeof(int));
+				var subjectMaxSize = (int)(dsMB.Path.T.Request.F.Subject.Column.EffectiveType as StringTypeInfo).SizeType.NativeMaxLimit(typeof(int));
 				//
 				// email don't have to have subject and email subjects can be longer than MainBoss's Request Subjects
 				// if no email subject use the start of the desciption for the request
@@ -595,11 +594,17 @@ namespace Thinkage.MainBoss.Database.Service {
 				if (string.IsNullOrWhiteSpace(subject)) {
 					if (string.IsNullOrWhiteSpace(description))
 						throw new GeneralException(KB.K("No subject or description in email so no request generated"));
-					subject = emailRequest.F.MailMessage.Substring(0, size).Replace("\r", "").Replace('\n', ' ');
+					try {
+						var subsize = Math.Min(subjectMaxSize, description.Length);
+						subject = description.Substring(0, subsize).Replace("\r", "").Replace('\n', ' ');
+					}
+					catch {
+						subject = "-----"; // give up; just put something non-null in so that the request can be created.
+					}
 				}
-				else if (subject.Length > size) {
+				if (subject.Length > subjectMaxSize) {
 					description = Strings.IFormat("{0}\n\n{1}", subject, description);
-					subject = subject.Substring(0, size);
+					subject = subject.Substring(0, subjectMaxSize);
 				}
 				requestRow.F.Subject = subject;
 				requestRow.F.RequestorID = requestorID;
@@ -675,14 +680,14 @@ namespace Thinkage.MainBoss.Database.Service {
 					var k2 = key.OpenSubKey(systemRootKey);
 					string expandedSystemRoot = k2.GetValue(KB.I("SystemRoot")).ToString();
 					path = path.Replace(KB.I("%SystemRoot%"), expandedSystemRoot);
-					k2.Close();
+					k2.Dispose();
 					return path;
 				}
 			}
 		}
 		#region EmailRequestFromEmail
 		public static Guid EmailRequestFromEmail(dsMB dsmb, EmailMessage message, int maxsize, DatabaseEnums.EmailRequestState processingState) {
-			dsMB.EmailRequestRow erequestrow = dsmb.T.EmailRequest.AddNewEmailRequestRow();
+			dsMB.EmailRequestRow erequestrow = dsmb.T.EmailRequest.AddNewRow();
 			erequestrow.F.ProcessingState = (short)processingState;
 			erequestrow.F.MailHeader = message.HeaderText;
 			erequestrow.F.Subject = message.Subject;
@@ -698,7 +703,7 @@ namespace Thinkage.MainBoss.Database.Service {
 					var p = ep.Part;
 					if (p.Length > maxsize)
 						continue;
-					dsMB.EmailPartRow part = dsmb.T.EmailPart.AddNewEmailPartRow();
+					dsMB.EmailPartRow part = dsmb.T.EmailPart.AddNewRow();
 					part.F.EmailRequestID = erequestrow.F.Id;
 					part.F.ContentType = p.ContentType.MediaType;
 					part.F.ContentEncoding = p.ContentType.CharSet;
@@ -718,8 +723,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			return erequestrow.F.Id;
 		}
 		public static Guid EmailRequestFromEmail(DBClient DB, string message, string filename) {
-			EmailMessage emailmessage = null;
-			;
+			EmailMessage emailmessage;
 			try {
 				emailmessage = new EmailMessage(message);
 			}
@@ -767,7 +771,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			if (TemporaryFiles == null)
 				TemporaryFiles = new System.CodeDom.Compiler.TempFileCollection();
 			TemporaryFiles.AddFile(fileName, false);
-			string message = null;
+			string message;
 			try {
 				message = EmailMessage.EmailRequestToRFC822(DB, true, emailRequestId);
 			}
@@ -806,7 +810,7 @@ namespace Thinkage.MainBoss.Database.Service {
 		public bool ViewAllUsers { get; private set; }
 		public bool ViewLocalUsers { get; private set; }
 		public bool CanManageUserLogins { get; private set; }
-		private MB3Client.ConnectionDefinition DBConnection;
+		private readonly MB3Client.ConnectionDefinition DBConnection;
 		public bool LoginExists = false;
 		public bool LoginDisabled = false;
 		public bool HasAccessToDatabase = false;
@@ -827,9 +831,9 @@ namespace Thinkage.MainBoss.Database.Service {
 										&& !DomainAndIP.SameComputer(ServerComputer, dbConnection.DBServer)
 										&& Parms.ServiceUserid != Parms.ServiceUseridAsSqlUserid;
 			var IsWindowsAuthentication = ServiceConfiguration?.ConnectionInfo?.IsWindowsAuthentication ?? true;
-			Error = AccessUser(true, grantAccess, newLoginUser);
+			Error = AccessUser(true, grantAccess, NewLoginUser);
 			if (Error == null)
-				Error = AccessUser(false, grantAccess, newDatabaseUser);
+				Error = AccessUser(false, grantAccess, NewDatabaseUser);
 			if (!IsMainBossUser && !IsWindowsAuthentication && !dbConnection.DBCredentials.Same(serviceConfiguration.Credentials)) {
 				try {
 					var serviceAccess = new MB3Client.ConnectionDefinition(serviceConfiguration.ConnectionInfo.DatabaseServer, serviceConfiguration.ConnectionInfo.DatabaseName, serviceConfiguration.ConnectionInfo.Credentials);
@@ -849,7 +853,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			dsSecurityOnServer dsmb = null;
 			try {
 				var Dbclient = new DBClient(DBConnection);
-				var SecurityConnection = new MainBoss.SecurityOnServerSession.Connection(Dbclient, forlogins);
+				var SecurityConnection = new SecurityOnServerSession.Connection(Dbclient, forlogins);
 				var SecurityClient = new MB3Client(new DBClient.Connection(SecurityConnection, dsSecurityOnServer.Schema), SecurityConnection.CreateServer().OpenSession(SecurityConnection, dsSecurityOnServer.Schema));
 				ViewAllUsers = SecurityClient.Session.CanViewUserLogins();
 				ViewLocalUsers = SecurityClient.Session.CanViewUserCredentials();
@@ -873,9 +877,9 @@ namespace Thinkage.MainBoss.Database.Service {
 			}
 			return null;
 		}
-		void newLoginUser(bool grant, MB3Client SecurityClient, dsSecurityOnServer dsmb) {
+		void NewLoginUser(bool grant, MB3Client SecurityClient, dsSecurityOnServer dsmb) {
 			dsSecurityOnServer.SecurityOnServerRow user = null;
-			foreach (dsSecurityOnServer.SecurityOnServerRow r in dsmb.T.SecurityOnServer) {
+			foreach (dsSecurityOnServer.SecurityOnServerRow r in dsmb.T.SecurityOnServer.Rows) {
 				if (string.Compare(r.F.LoginName, SqlUserid, true) == 0) {
 					user = r;
 					break;
@@ -888,7 +892,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			}
 			try {
 				if (user == null) {
-					user = dsmb.T.SecurityOnServer.AddNewSecurityOnServerRow();
+					user = dsmb.T.SecurityOnServer.AddNewRow();
 					user.F.LoginName = SqlUserid;
 					user.F.Password = Parms.ConnectionInfo.Credentials.Password;
 					user.F.CredentialAuthenticationMethod = (sbyte)Parms.ConnectionInfo.Credentials.Type;
@@ -902,9 +906,9 @@ namespace Thinkage.MainBoss.Database.Service {
 					throw new GeneralException(e, KB.K("A SQL login for user {0} could not be created"), SqlUseridFormatted);
 			}
 		}
-		void newDatabaseUser(bool grant, MB3Client SecurityClient, dsSecurityOnServer dsmb) {
+		void NewDatabaseUser(bool grant, MB3Client SecurityClient, dsSecurityOnServer dsmb) {
 			dsSecurityOnServer.SecurityOnServerRow user = null;
-			foreach (dsSecurityOnServer.SecurityOnServerRow r in dsmb.T.SecurityOnServer) {
+			foreach (dsSecurityOnServer.SecurityOnServerRow r in dsmb.T.SecurityOnServer.Rows) {
 				if (string.Compare(r.F.LoginName, SqlUserid, true) == 0) {
 					user = r;
 					break;
@@ -917,7 +921,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				return;
 			try {
 				if (user == null) {
-					user = dsmb.T.SecurityOnServer.AddNewSecurityOnServerRow();
+					user = dsmb.T.SecurityOnServer.AddNewRow();
 					user.F.LoginName = SqlUserid;
 					user.F.DBUserName = SqlUserid;
 					user.F.InMainBossRole = true;
@@ -944,9 +948,9 @@ namespace Thinkage.MainBoss.Database.Service {
 		public GeneralException GrantAccessToDatabase() {
 			GeneralException e = null;
 			if (!LoginExists)
-				e = AccessUser(true, true, newLoginUser);
+				e = AccessUser(true, true, NewLoginUser);
 			if (!HasAccessToDatabase)
-				e = AccessUser(false, true, newDatabaseUser);
+				e = AccessUser(false, true, NewDatabaseUser);
 			if (e != null)
 				Error = e;
 			return e;
@@ -955,16 +959,16 @@ namespace Thinkage.MainBoss.Database.Service {
 			if (LoginExists && HasAccessToDatabase)
 				return null;
 			if (!ViewLocalUsers) {
-				return Strings.Format(KB.K("The SQL user '{0}' has insufficient permissions to view the user logins on the SQL Server, and therefore could not verify if the MainBoss Service which runs as user {1} has access the SQL server"),
+				return Strings.Format(KB.K("The SQL user '{0}' has insufficient permissions to view the user logins on the SQL Server, and therefore could not verify if the MainBoss Service which runs as user {1} has access to the SQL server"),
 					SQLAccessUser(DBConnection.DBCredentials), SqlUseridFormatted);
 			}
 			else if (!ViewAllUsers) {
-				return Strings.Format(KB.K("The SQL user '{0}' has insufficient permissions to view the user logins on the SQL Server, and therefore could not verify if the MainBoss Service which runs as user {1} has access the SQL server"),
+				return Strings.Format(KB.K("The SQL user '{0}' has insufficient permissions to view the user logins on the SQL Server, and therefore could not verify if the MainBoss Service which runs as user {1} has access to the SQL server"),
 					SQLAccessUser(DBConnection.DBCredentials), SqlUseridFormatted);
 			}
 			return null;
 		}
-		private string SQLAccessUser(AuthenticationCredentials ac) {
+		private static string SQLAccessUser(AuthenticationCredentials ac) {
 			if (ac.Type == AuthenticationMethod.WindowsAuthentication)
 				return System.Security.Principal.WindowsIdentity.GetCurrent().Name;
 			else
@@ -990,4 +994,5 @@ namespace Thinkage.MainBoss.Database.Service {
 		}
 	}
 	#endregion
+
 }

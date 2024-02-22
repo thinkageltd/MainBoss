@@ -12,7 +12,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		}
 		#endregion
 		// We need to persist a DataSet across calls to recover possible used sequence numbers. We do this using support from the ApplicationObject
-		private Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication ApplicationObject = ((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance);
+		private readonly Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication ApplicationObject = ((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance);
 		#region IBaseRepository<RequestDataContext>
 		public override void InitializeDataContext() {
 			DataContext = new RequestDataContext(Connection.ConnectionString);
@@ -138,7 +138,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			}
 		}
 		#endregion
-		private Guid? FindUnitLocationFromExternalTag(string externalTag, dsMB dataSetToSearchIn) {
+		private static Guid? FindUnitLocationFromExternalTag(string externalTag, dsMB dataSetToSearchIn) {
 			if(externalTag == null)
 				return null;
 			var row = (dsMB.RelativeLocationRow)dataSetToSearchIn.DB.ViewAdditionalRow(dataSetToSearchIn, dsMB.Schema.T.RelativeLocation, new Libraries.XAF.Database.Layout.SqlExpression(dsMB.Path.T.RelativeLocation.F.ExternalTag).Eq(Libraries.XAF.Database.Layout.SqlExpression.Constant(externalTag)));

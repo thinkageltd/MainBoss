@@ -32,7 +32,7 @@ namespace Thinkage.MainBoss.Controls {
 		// This is the basic BrowseLogic for Service management. The service is defined by the Tbl which must specify MB3BTbl.WithServiceLogicArg.
 		// We provide service status monitoring.
 		#region Constructor
-		public ServiceCommonBrowseLogic(IBrowseUI control, DBClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
+		protected ServiceCommonBrowseLogic(IBrowseUI control, DBClient db, bool takeDBCustody, Tbl tbl, Settings.Container settingsContainer, BrowseLogic.BrowseOptions structure)
 			: base(control, db, takeDBCustody, tbl, settingsContainer, structure) {
 			MainBossServiceConfiguration config = MainBossServiceConfiguration.GetConfiguration(db);
 			ServiceCode = config.ServiceName;
@@ -73,9 +73,9 @@ namespace Thinkage.MainBoss.Controls {
 		#region Properties
 		public MainBossServiceDefinition ServiceDefinition {
 			get {
-				if(pServiceDefinition == null)
+				if (pServiceDefinition == null)
 					pServiceDefinition = (MainBossServiceDefinition)
-						((MB3BTbl.WithServiceLogicArg)BTbl.BrowserLogicClassArg).ServiceDefinitionClass.GetConstructor(MB3BTbl.WithServiceLogicArg.ctorArgTypes).Invoke(new object[0]);
+						((MB3BTbl.WithServiceLogicArg)BTbl.BrowserLogicClassArg).ServiceDefinitionClass.GetConstructor(MB3BTbl.WithServiceLogicArg.ctorArgTypes).Invoke(Array.Empty<object>());
 				return pServiceDefinition;
 			}
 		}
@@ -96,6 +96,7 @@ namespace Thinkage.MainBoss.Controls {
 		public string ServiceCode {
 			get; private set;
 		}
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "ObjectsToDispose does it")]
 		public readonly ServiceController Controller;
 		#region Service Status
 		public IBasicDataControl ServiceStatus;
@@ -122,18 +123,20 @@ namespace Thinkage.MainBoss.Controls {
 			ServiceNotPendingDisabler.Enabled = false;
 			ServiceStatus.Value = Strings.Format(KB.K("Status Pending"));
 		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "ObjectsToDispose does it")]
 		private System.Threading.Timer refreshlog = null;
 		public void RefreshStatus() {
 			MainBossServiceConfiguration config = MainBossServiceConfiguration.GetConfiguration(DB);
 			ServiceCode = config.ServiceName;
-			if(ServiceCode == null) {
+			if (ServiceCode == null) {
 				NoServiceConfigurationRecord.Enabled = false;
 				ServiceStatus.Value = Strings.Format(KB.K("No Windows Service can exist unless there is a service configuration record"));
 				return;
 			}
 			NoServiceConfigurationRecord.Enabled = true;
 			var sv = ServiceUtilities.Version(config.InstalledServiceVersion);
-			var MinVersion =  ServiceUtilities.MinRequiredServiceVersion(DB.ConnectionInfo);
+			var MinVersion = ServiceUtilities.MinRequiredServiceVersion(DB.ConnectionInfo);
 			bool ServiceNotInstalled = string.IsNullOrWhiteSpace(config.ServiceMachineName);
 			bool serviceInvalid = string.IsNullOrWhiteSpace(config.InstalledServiceVersion) || string.IsNullOrWhiteSpace(config.SqlUserid);
 			bool versionOk = !serviceInvalid && MinVersion <= sv;
@@ -152,9 +155,9 @@ namespace Thinkage.MainBoss.Controls {
 			ServiceUtilities.VerifyLicense((MB3Client)DB, null, new Action(delegate () {
 				IsNotDemonstrationDisabler.Enabled = false;
 			}));
-			if (Controller.ServiceComputer != ServerMachineName || Controller.ServiceName != ServiceName) 
+			if (Controller.ServiceComputer != ServerMachineName || Controller.ServiceName != ServiceName)
 				Controller.SetControllerInfo(new StaticServiceConfiguration(ServerMachineName, ServiceName));
-			else 
+			else
 				Controller.Refresh();
 			ServiceController.Statuses status = Controller.Status;
 			if (Controller.LastStatusError == null && ServiceNotInstalled)
@@ -166,7 +169,7 @@ namespace Thinkage.MainBoss.Controls {
 				statusText = Strings.Format(KB.K("Unknown service controller status 0X{0:x}"), status);
 				ServiceStatusKnownDisabler.Enabled = false;
 			}
-			if(Controller.LastStatusError != null )
+			if (Controller.LastStatusError != null)
 				ServiceStatus.Value = Strings.IFormat("{0}{1}{2}", statusText, System.Environment.NewLine, Thinkage.Libraries.Exception.FullMessage(Controller.LastStatusError));
 			else
 				ServiceStatus.Value = statusText;
@@ -202,9 +205,9 @@ namespace Thinkage.MainBoss.Controls {
 				ServiceConfigurationNotNeededDisabler.Enabled = false;
 				break;
 			case ServiceController.Statuses.StatusUnavailable:
-				// This can happen if the service has a valid definition and appears to be installed but
-				// an error occurs getting the service status. Some common examples: The service is not actually defined
-				// on the server machine, or the server machine is unreachable (network or machine is down)
+			// This can happen if the service has a valid definition and appears to be installed but
+			// an error occurs getting the service status. Some common examples: The service is not actually defined
+			// on the server machine, or the server machine is unreachable (network or machine is down)
 			case ServiceController.Statuses.InvalidDefinition:
 			case ServiceController.Statuses.NeedsConfiguration:
 				ServiceInstalledDisabler.Enabled = true;
@@ -264,9 +267,9 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		#region ServiceControllerCommand which sends a command to the service
 		private class ServiceControllerCommand : ICommand {
-			ManageServiceBrowseLogic ServiceControl;
+			readonly ManageServiceBrowseLogic ServiceControl;
 			ServiceActionCommand Action;
-			int NumberOfRefreshes;
+			readonly int NumberOfRefreshes;
 			public ServiceControllerCommand(ManageServiceBrowseLogic serviceControl, ServiceActionCommand action, int numberOfRefreshes = 10) {
 				ServiceControl = serviceControl;
 				Action = action;
@@ -280,14 +283,9 @@ namespace Thinkage.MainBoss.Controls {
 			public async void Execute() {
 				ServiceControl.ClearStatus();
 				ServiceControl.ExecuteServiceAction(Action.ActionValue);
-				for(int i = 0; i < NumberOfRefreshes; ++i) {
+				for (int i = 0; i < NumberOfRefreshes; ++i) {
 					await System.Threading.Tasks.Task.Run(() => System.Threading.Thread.Sleep(10 * 1000));
 					ServiceControl.RefreshStatus();
-				}
-			}
-			public bool RunElevated {
-				get {
-					return false;
 				}
 			}
 			public Key Tip {
@@ -311,7 +309,7 @@ namespace Thinkage.MainBoss.Controls {
 		#endregion
 		#region Custom command creation
 		// Define the logging-control commands. These are handled by the server and the server must be running for them to execute.
-		static ManageServiceBrowseLogic.ServiceActionCommand[] pServiceTraceControlActions = {
+		static readonly ManageServiceBrowseLogic.ServiceActionCommand[] pServiceTraceControlActions = {
 			new ManageServiceBrowseLogic.ServiceActionCommand("Stop All Tracing", "Turn off all tracing options in the MainBoss Service", ApplicationServiceRequests.TRACE_OFF),
 			new ManageServiceBrowseLogic.ServiceActionCommand("Trace All", "Turn on all tracing options in the MainBoss Service", ApplicationServiceRequests.TRACE_ALL),
 			new ManageServiceBrowseLogic.ServiceActionCommand("Trace Email Requests", "Trace incoming emails and creation of requests", ApplicationServiceRequests.TRACE_EMAIL_REQUESTS),
@@ -324,7 +322,11 @@ namespace Thinkage.MainBoss.Controls {
 				if (!pElevatedCommandsAvailable.HasValue) {
 					string serviceCommand = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), KB.I(ServiceConfigurationCommand));
 					try {
+#if DEBUG
+						pElevatedCommandsAvailable = true; // even if the command isn't available in the DEBUG Bin, this will make the buttons appear and if someone clicks on them will result in an error message that should remind them they need to put copy of the executable in the bin directory....
+#else
 						pElevatedCommandsAvailable = System.IO.File.Exists(serviceCommand);
+#endif
 					}
 					catch {
 						pElevatedCommandsAvailable = false;
@@ -333,7 +335,6 @@ namespace Thinkage.MainBoss.Controls {
 				return pElevatedCommandsAvailable.Value;
 			}
 		}
-
 		protected override void CreateCustomBrowserCommands() {
 			base.CreateCustomBrowserCommands();
 
@@ -353,7 +354,7 @@ namespace Thinkage.MainBoss.Controls {
 						}
 						RefreshStatus();
 						RefreshCommand.Execute(); // refresh any log information that may have appeared
-				})),
+					})),
 					HasMainBossServiceAsWindowsServiceLicense,
 					ServiceIsStoppedDisabler,
 					ServiceNotPendingDisabler,
@@ -362,7 +363,7 @@ namespace Thinkage.MainBoss.Controls {
 					ServiceInstalledDisabler,
 					NoServiceConfigurationRecord
 					);
-				serviceStart.AddCommand(KB.K("Start Service"), KB.K("Start"), command, command);
+				serviceStart.AddCommand(Resources.Images.WindowsServiceBitmap, KB.K("Start Service"), command, command);
 
 				// Now add the administrator, less likely to be used commands
 				command = new MultiCommandIfAllEnabled(new RunElevatedCallDelegateCommand(KB.K("Restart the Windows Service for MainBoss"), new CallDelegateCommand.Delegate(
@@ -376,7 +377,7 @@ namespace Thinkage.MainBoss.Controls {
 						}
 						RefreshStatus();
 						RefreshCommand.Execute(); // refresh any log information that may have appeared
-				})),
+					})),
 					HasMainBossServiceAsWindowsServiceLicense,
 					ServiceIsRunningDisabler,
 					ServiceNotPendingDisabler,
@@ -398,7 +399,7 @@ namespace Thinkage.MainBoss.Controls {
 						}
 						RefreshStatus();
 						RefreshCommand.Execute(); // refresh any log information that may have appeared
-				})),
+					})),
 					ServiceIsRunningDisabler,
 					ServiceNotPendingDisabler,
 					ServiceStatusKnownDisabler,
@@ -406,7 +407,7 @@ namespace Thinkage.MainBoss.Controls {
 					ServiceInstalledDisabler,
 					NoServiceConfigurationRecord
 					);
-				serviceStart.AddCommand(KB.K("Stop Service"), KB.K("Stop"), command, command);
+				serviceStart.AddCommand(Resources.Images.WindowsServiceStopBitmap, KB.K("Stop Service"), command, command);
 			}
 			CommonLogic.CommandNode serviceManagementNodes = Commands.CreateNestedNode(KB.K("Service Management"), null);
 			command = new MultiCommandIfAllEnabled(new CallDelegateCommand(KB.K("Retrieve Email, create Requests from the Email, and when licensed notify Assignees, and Log the activity for the Windows Service for MainBoss"), new CallDelegateCommand.Delegate(
@@ -427,7 +428,7 @@ namespace Thinkage.MainBoss.Controls {
 				ServiceConfigurationNeededDisabler,
 				NoServiceConfigurationRecord
 				);
-			serviceManagementNodes.AddCommand(KB.K("Process Email"), KB.K("Process Email"), command, command);
+			serviceManagementNodes.AddCommand(Resources.Images.ProcessEmailBitmap, KB.K("Process Email"), command, command);
 
 			command = new MultiCommandIfAllEnabled(new CallDelegateCommand(KB.K("Retrieve Email, create Requests from the Email, and when licensed notify Assignees, and Log the activity with detailed Diagnostics for the Windows Service for MainBoss"), new CallDelegateCommand.Delegate(
 				delegate () {
@@ -446,7 +447,7 @@ namespace Thinkage.MainBoss.Controls {
 				ServiceConfigurationNeededDisabler,
 				NoServiceConfigurationRecord
 				);
-			serviceManagementNodes.AddCommand(KB.K("Process Email with Diagnostics"), KB.K("Process Email with Diagnostics"), command, command);
+			serviceManagementNodes.AddCommand(Resources.Images.ProcessEmailBitmap, KB.K("Process Email with Diagnostics"), command, command);
 
 			if (ElevatedCommandsAvailable) {
 				command = new MultiCommandIfAllEnabled(new RunElevatedCallDelegateCommand(KB.K("Associates the Windows Service for MainBoss with this database and configures the service."), new CallDelegateCommand.Delegate(
@@ -466,7 +467,7 @@ namespace Thinkage.MainBoss.Controls {
 				ServiceConfigurationNeededWrongComputerDisabler,
 				NoServiceConfigurationRecord
 				);
-				serviceManagementNodes.AddCommand(KB.K("Configure Windows Service for MainBoss"), KB.K("Configure"), command, command);
+				serviceManagementNodes.AddCommand(Resources.Images.ConfigureServiceBitmap, KB.K("Configure Windows Service for MainBoss"), command, command);
 
 				command = new MultiCommandIfAllEnabled(new RunElevatedCallDelegateCommand(KB.K("Verify configuration of the Windows Service for MainBoss."), new CallDelegateCommand.Delegate(
 					delegate () {
@@ -485,7 +486,7 @@ namespace Thinkage.MainBoss.Controls {
 					IsNotDemonstrationDisabler,
 					NoServiceConfigurationRecord
 					);
-				serviceManagementNodes.AddCommand(KB.K("Verify Windows Service for MainBoss"), KB.K("Verify"), command, command);
+				serviceManagementNodes.AddCommand(Resources.Images.VerifyServiceBitmap, KB.K("Verify Windows Service for MainBoss"), command, command);
 
 				command = new MultiCommandIfAllEnabled(new RunElevatedCallDelegateCommand(KB.K("Delete the Windows Service for MainBoss"), new CallDelegateCommand.Delegate(
 					delegate () {
@@ -503,7 +504,7 @@ namespace Thinkage.MainBoss.Controls {
 					ServiceIsNotRunningDisabler,
 					NoServiceConfigurationRecord
 					);
-				serviceManagementNodes.AddCommand(KB.K("Delete Windows Service for MainBoss"), KB.K("Delete"), command, command);
+				serviceManagementNodes.AddCommand(Libraries.Drawing.Image.Compose(Resources.Images.ConfigureServiceBitmap, new System.Drawing.RectangleF(0F, 0F, 1F, 1F), BrowseUI.DeleteBitmap, new System.Drawing.RectangleF(0F, 0F, 1F, 1F)), KB.K("Delete Windows Service for MainBoss"), command, command);
 
 				CommonLogic.CommandNode actionNodes = Commands.CreateNestedNode(KB.K("Service"), KB.K("Service"));
 				foreach (ManageServiceBrowseLogic.ServiceActionCommand c in ((MB3BTbl.WithManageServiceLogicArg)BTbl.BrowserLogicClassArg).ServiceCommands) {
@@ -526,7 +527,7 @@ namespace Thinkage.MainBoss.Controls {
 					DB.Session.ExecuteCommand(sqlcmd);
 					RefreshCommand.Execute();
 				}
-				catch(System.Exception ex) {
+				catch (System.Exception ex) {
 					Libraries.Application.Instance.DisplayError(ex);
 				}
 				RefreshStatus();
@@ -585,7 +586,7 @@ namespace Thinkage.MainBoss.Controls {
 			try {
 				Controller.ExecuteCommand((int)action);
 			}
-			catch(System.Exception ex) {
+			catch (System.Exception ex) {
 				Libraries.Application.Instance.DisplayError(ex);
 			}
 		}

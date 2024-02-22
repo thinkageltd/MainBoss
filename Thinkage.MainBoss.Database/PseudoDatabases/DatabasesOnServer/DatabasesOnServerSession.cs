@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.XAF.Database.Service.MSSql;
@@ -39,6 +38,8 @@ namespace Thinkage.MainBoss.Database {
 					throw new NotImplementedException();
 				}
 			}
+
+			public string DatabaseConnectionString => throw new NotImplementedException();
 			#endregion
 		}
 		#endregion
@@ -201,7 +202,7 @@ namespace Thinkage.MainBoss.Database {
 			if (fixedServer != null)
 				serverEnumerator = new string[] { fixedServer };
 			else
-				serverEnumerator = System.Data.Sql.SqlDataSourceEnumerator.Instance.GetDataSources().Rows.Cast<DataRow>().Select((row => row[1] is DBNull ? (string)row[0] : Libraries.Strings.IFormat("{0}\\{1}", row[0], row[1])));
+				serverEnumerator = SqlClient.SqlServer.ListDatabaseServers().Rows.Cast<System.Data.DataRow>().Select((row => row[1] is DBNull ? (string)row[0] : Libraries.Strings.IFormat("{0}\\{1}", row[0], row[1])));
 			// transform the serverEnumerator into an enumerator of sql connection objects and create T objects for them.
 			serverEnumerator.AsParallel().WithDegreeOfParallelism(10).ForAll(
 				delegate (string serverName) {

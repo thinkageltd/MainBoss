@@ -40,11 +40,11 @@ namespace Thinkage.MainBoss.Database {
 					bool endgroup = false;
 					bool wassingle = true;
 					for (int j = 1; j < rolenames.Count; ++j) {
-						if (rolenames[j] == "") {
+						if (string.IsNullOrEmpty(rolenames[j])) {
 							endgroup = true;
 							continue;
 						}
-						bool issingle = j + 1 >= rolenames.Count || rolenames[j + 1] == "";
+						bool issingle = j + 1 >= rolenames.Count || string.IsNullOrEmpty(rolenames[j + 1]);
 						linebreak = online++ > 5 || (endgroup && !(wassingle && issingle));
 						result.Append(linebreak ? KB.I(",\n") : KB.I(", "));
 						result.Append(rolenames[j]);
@@ -81,7 +81,7 @@ namespace Thinkage.MainBoss.Database {
 		#region DEBUG CHECKS
 		static bool beenHere = false;
 		[System.Diagnostics.Conditional("DEBUG")]
-		private void CheckSecurityDefinitions(Database.Security.RightSet security) {
+		private static void CheckSecurityDefinitions(Database.Security.RightSet security) {
 			if (beenHere) return;
 			beenHere = true;
 
@@ -179,12 +179,17 @@ namespace Thinkage.MainBoss.Database {
 		public PermissionsGroup GetGroup(RightsGroup g) {
 			return FindPermissionGroup(g.QualifiedName);
 		}
+
+
 		/// <summary>
 		/// This sets the RolesGrantingPermission dictionary so permission disabler tips can identify which roles are required for a particular permission.
 		/// </summary>
 		/// <param name="db"></param>
+
 		public void InitializeRolesGrantingPermission(DBClient session) {
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
 			var x = Thinkage.MainBoss.Database.Licensing.AllMainbossLicenses; // access a static to force translations into memory before we use them below.
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
 			RolesGrantingPermission = new Dictionary<string, List<string>>();
 			Libraries.DBAccess.DBVersionHandler vh = MBUpgrader.UpgradeInformation.CreateCurrentVersionHandler(session);
 			if (vh.CurrentVersion >= new Version(1, 0, 10, 32))
@@ -197,7 +202,7 @@ namespace Thinkage.MainBoss.Database {
 							dsMB.Path.T.Permission.F.PrincipalID.F.RoleID.PathToReferencedRow,
 							dsMB.Path.T.Permission.F.PrincipalID.F.CustomRoleID.PathToReferencedRow
 						});
-					foreach (dsMB.PermissionRow pr in ds.T.Permission) {
+					foreach (dsMB.PermissionRow pr in ds.T.Permission.Rows) {
 						if (!RolesGrantingPermission.TryGetValue(pr.F.PermissionPathPattern, out List<string> roles))
 							RolesGrantingPermission.Add(pr.F.PermissionPathPattern, roles = new List<string>());
 						roles.Add(pr.PrincipalIDParentRow.F.RoleID.HasValue ? pr.PrincipalIDParentRow.RoleIDParentRow.F.RoleName.Translate() : pr.PrincipalIDParentRow.CustomRoleIDParentRow.F.Code);

@@ -30,7 +30,7 @@
 	  declare @includeWSHComment bit
 	  set @includeWSHComment = dbo._vgetCopyWSHCommentToRSH() -- TODO: in future a value in the WSH record itself to whether to include the WSH information
 	  if dbo._vgetManageRequestStates() = 1 begin
-			set @datestamp = dbo._DClosestValue(getdate(), 2, 100)
+			set @datestamp = dbo._DClosestDivisions(getdate(), 100)
 			-- Same state (non-transition) case (Request State History remains in existing state
 			insert into RequestStateHistory (ID, EntryDate, EffectiveDate, EffectiveDateReadonly, UserID, RequestID, RequestStateID,
 									CommentToRequestor,

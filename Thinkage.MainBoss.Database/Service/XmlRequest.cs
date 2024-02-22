@@ -22,7 +22,7 @@ namespace Thinkage.MainBoss.Database {
 	//  <Unit>Tractorx @ Farm @ 000Farm</Unit>
 	//</Request>
 	/// 
-	public class XmlRequest {
+	public static class XmlRequest {
 		delegate object ValueGetter(dsMB lookupDs, XmlRequestMapping mapping, string val);
 		private class XmlRequestMapping {
 			public string tagName;
@@ -45,10 +45,10 @@ namespace Thinkage.MainBoss.Database {
 				rrow[targetColumn] = newValue;
 			}
 		};
-		private static ValueGetter StringGetter = delegate (dsMB lookupDs, XmlRequestMapping mapping, string val) {
+		private static readonly ValueGetter StringGetter = delegate (dsMB lookupDs, XmlRequestMapping mapping, string val) {
 			return val;
 		};
-		static private XmlRequestMapping[] RequestFieldMappings = new XmlRequestMapping[]
+		private static readonly XmlRequestMapping[] RequestFieldMappings = new XmlRequestMapping[]
 		{
 			new XmlRequestMapping(dsMB.Schema.T.Request.F.Description, StringGetter),
 			new XmlRequestMapping(dsMB.Schema.T.Request.F.Comment, StringGetter),

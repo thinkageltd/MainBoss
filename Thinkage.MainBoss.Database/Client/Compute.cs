@@ -11,12 +11,9 @@ namespace Thinkage.MainBoss.Database {
 	// The Unbox/Box [(Xxx)(object)value] are used to make the compiler stop trying to convert the value to Xxx. Because it is not sure here
 	// what type Xxx actually is, it can't generate a convertion. But because we use if (blat is Tttt) and value is of type Ttt and we make sure
 	// Tttt always turns out to be the same type as Xxx there is actually no conversion and the box/unbox is enough to prevent the compiler from complaining.
-	public class Compute {
-		private Compute() {
-		}
-
+	public static class Compute {
 		public static T Zero<T>() where T : struct {
-			return default(T);
+			return default;
 		}
 		public static T One<T>() where T : struct {
 			if (typeof(T) == typeof(long))
@@ -138,13 +135,11 @@ namespace Thinkage.MainBoss.Database {
 			else
 				throw new ArgumentException(KB.I("Divide<T> requires T is long or TimeSpan"), KB.I("T"));
 		}
-		public static T Remaining<T>(T? quantity, T? used) where T : struct, IComparable<T>
-		{
+		public static T Remaining<T>(T? quantity, T? used) where T : struct, IComparable<T> {
 			T difference = Compute.Subtract<T>(quantity ?? Compute.Zero<T>(), used ?? Compute.Zero<T>());
 			return Compute.Less<T>(difference, Compute.Zero<T>()) ? Compute.Zero<T>() : difference;
 		}
-		public static decimal? TotalFromQuantityAndBasisCost<T>(T? quantity, T? basisQuantity, decimal? basisCost) where T : struct, IComparable<T>
-		{
+		public static decimal? TotalFromQuantityAndBasisCost<T>(T? quantity, T? basisQuantity, decimal? basisCost) where T : struct, IComparable<T> {
 			if (Compute.IsZero<T>(quantity))
 				return 0;
 			if (!quantity.HasValue || !basisQuantity.HasValue || Compute.IsZero<T>(basisQuantity) || !basisCost.HasValue)

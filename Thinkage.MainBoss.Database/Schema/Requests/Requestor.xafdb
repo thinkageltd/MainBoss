@@ -3,15 +3,43 @@
   <types uri="..\Types.xafdb"/>
   <table name="Requestor" defaults="true" log="false" id="Id" xid="ContactID Hidden" xunique="true" labelkey="Requestor">
 	<field name="Id" read="RequiredGUID"/>
-	<field name="Hidden" type="GenerationValue"/>
+	<field name="Hidden" type="GenerationValue">
+	  <extension name="dependson">Contact.Hidden</extension>  <!-- We'd like to add @Contact.Id->Requestor.ContactID here but that is not a unique linkage -->
+	</field>
 	<field name="ContactID" type="RequiredGUIDREF" link="Contact">
 	  <extension name="linkage">captive</extension>
+	  <extension name="cascadehide"/>
 	</field>
 	<field name="Comment" type="Comment"  />
 	<field name="ReceiveAcknowledgement" type="Requiredbool">
-	  <doc>True if this requestor wishes to receive acknowledgements of changes in submitted requests status changes.</doc>
+	  <doc>True if this requestor wishes to receive acknowledgments of changes in submitted requests status changes.</doc>
 	</field>
 	<extension name="deletemethod">hide</extension>
   </table>
-  <table name="Contact"/>
+  <table name="Contact">
+	<field name="Hidden"/>
+  </table>
+  <object class="trigger" name="mbtg_Requestor_Delete_Duplicates">
+	<doc>
+	Allow only one Requestor per Contact
+	</doc>
+	<extension name="body">
+	  on Requestor after insert
+	  as
+	    begin
+		  update Request set RequestorID = inserted.id
+			from Request
+			join Requestor on RequestorID = Requestor.Id
+			join inserted on inserted.Contactid = Requestor.Contactid
+			  where inserted.id != Requestor.id
+		  update Workorder set RequestorID = inserted.id
+			from Workorder
+			join Requestor on RequestorID = Requestor.Id
+			join inserted on inserted.Contactid = Requestor.Contactid
+			  where inserted.id != Requestor.id
+		  delete Requestor from Requestor join inserted on inserted.contactid = Requestor.contactid where inserted.id != Requestor.id
+	    end
+	</extension>
+  </object>
+
 </database>

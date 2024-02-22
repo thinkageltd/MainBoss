@@ -42,8 +42,8 @@ namespace Thinkage.MainBoss.Database.Service {
 
 				if (ErrorToRequestor == ErrorToRequestor.None)
 					return null;
-				var format = string.IsNullOrWhiteSpace(EmailAddress.Address) ? ErrorToRequestor.None : ErrorToRequestor;
-				return Strings.Format(requestorUserText[(int)ErrorToRequestor], EmailAddress);
+				int format = string.IsNullOrWhiteSpace(EmailAddress.Address) ? (int)ErrorToRequestor.None : (int)ErrorToRequestor;
+				return Strings.Format(requestorUserText[format], EmailAddress);
 			}
 		}
 		public DatabaseEnums.EmailRequestState State = DatabaseEnums.EmailRequestState.NoRequestor;
@@ -109,7 +109,7 @@ namespace Thinkage.MainBoss.Database.Service {
 									});
 			//
 			// look for primary email addresses first
-			foreach (dsMB.ActiveRequestorRow row in ds.T.ActiveRequestor)
+			foreach (dsMB.ActiveRequestorRow row in ds.T.ActiveRequestor.Rows)
 				if (string.Compare(row.ContactIDParentRow.F.Email, from, true) == 0)
 					found.Add(row);
 			//
@@ -120,7 +120,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			//
 			if (found.Count == 0) {
 				source = KB.K("Requestors {0} have the same alternate email address '{1}'");
-				foreach (dsMB.ActiveRequestorRow row in ds.T.ActiveRequestor)
+				foreach (dsMB.ActiveRequestorRow row in ds.T.ActiveRequestor.Rows)
 					if (ServiceUtilities.CheckAlternateEmail(row.ContactIDParentRow.F.AlternateEmail, from))
 						found.Add(row);
 			}
@@ -130,8 +130,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			if (found.Count == 0) {
 				source = KB.K("Requestors {0} have the same email address '{1}' in Active Directory");
 				try {
-					LDAPUsers = LDAPEntry.GetActiveDirectoryGivenEmail(from);
-					LDAPUsers = LDAPUsers.Where(sr => sr.Disabled);
+					LDAPUsers = LDAPEntry.GetActiveDirectoryUsingEmail(from);
 					if (LDAPUsers.Count() > 1) {
 						var names = LDAPUsers.Select(e => e.UserPrincipalName);
 						var namesAsString = string.Join(KB.I(", "), names.OrderBy(e => e.ToLower()).Select(e => Strings.IFormat("'{0}'", e)));
@@ -152,7 +151,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				catch (System.Exception e) {
 					WarningText = Strings.Format(KB.K("Cannot access Active Directory to check email address {0}. Details: {1}"), EmailAddress, Thinkage.Libraries.Exception.FullMessage(e));
 				}
-				foreach (dsMB.ActiveRequestorRow row in ds.T.ActiveRequestor)
+				foreach (dsMB.ActiveRequestorRow row in ds.T.ActiveRequestor.Rows)
 					found.Add(row);
 			}
 			if (found.Count == 0)
@@ -215,29 +214,31 @@ namespace Thinkage.MainBoss.Database.Service {
 						dsMB.Path.T.Requestor.F.ContactID.PathToReferencedRow
 						});
 				if (ds.T.Requestor.Rows.Count == 0) { // none, create a new one.
-					dsMB.RequestorRow requestor = ds.T.Requestor.AddNewRequestorRow();
+					dsMB.RequestorRow requestor = ds.T.Requestor.AddNewRow();
 					requestor.F.ContactID = contactid;
 					requestor.F.ReceiveAcknowledgement = true; // if we are creating the requestor, they are going to get an acknowledge despite any setting in the defaults for a Requestor record
 					requestor.F.Comment = Strings.Format(KB.K("Created by MainBoss on {0}"), DateTime.Now);
 					InfoText = Strings.Format(KB.K("Creating a Requestor from '{0}' with Contact Code '{1}'"), from, contactcode);
 				}
-				else { // must be at least one hidden requestor record or active; we will resurrect the most recently hidden one if there is not active one (usually because someone deleted the contact record, but not the requestor)
-					SortExpression sortByHiddenField = new SortExpression(dsMB.Path.T.Requestor.F.Hidden, SortExpression.SortOrder.Asc); // Hidden null will be first so active Requestor will be first row
-					using (System.Data.DataView orderedByHiddenField = new System.Data.DataView(ds.T.Requestor, null, sortByHiddenField.ToDataExpressionString(), System.Data.DataViewRowState.CurrentRows)) {
-						dsMB.RequestorRow requestor = (dsMB.RequestorRow)orderedByHiddenField[0].Row;
-						if (requestor.F.Hidden != null) { // found an active one, use this one
-														  // otherwise use the LAST one in the sort list
-							if( orderedByHiddenField.Count > 1)
-								requestor = (dsMB.RequestorRow)orderedByHiddenField[orderedByHiddenField.Count-1].Row;
+				else {
+					// must be at least one hidden requestor record or active; we will resurrect the most recently hidden one if there is not active one (usually because someone deleted the contact record, but not the requestor)
+					// We first sort by ascending Hidden field. If there is an active Requestor it will sort first in the list.
+					dsMB.RequestorRow[] orderedByHiddenField = ds.T.Requestor.Rows.Select(null, new SortExpression(dsMB.Path.T.Requestor.F.Hidden, SortExpression.SortOrder.Asc));
+					dsMB.RequestorRow requestor = orderedByHiddenField[0];
+					if (requestor.F.Hidden != null) {
+						// There is no active Requestor, so find the most recently-hidden on and resurrect it with a message to that effect
+						if (orderedByHiddenField.Length > 1)
+							requestor = orderedByHiddenField[orderedByHiddenField.Length - 1];
 
-							StringBuilder updateComment = new StringBuilder();
-							updateComment.AppendLine(Strings.Format(KB.K("Restored by MainBoss on {0}"), DateTime.Now));
-							updateComment.AppendLine(requestor.F.Comment);
-							requestor.F.ReceiveAcknowledgement = true; // if we are recreating the requestor, they are going to get an acknowledge despite any setting in the defaults for a Requestor record
-							requestor.F.Comment = updateComment.ToString();
-							requestor.F.Hidden = null;
-							InfoText = Strings.Format(KB.K("Restoring a Requestor from '{0}' with Contact Code '{1}'"), from, contactcode);
-						}
+						StringBuilder updateComment = new StringBuilder();
+						updateComment.AppendLine(Strings.Format(KB.K("Restored by MainBoss on {0}"), DateTime.Now));
+						updateComment.Append(requestor.F.Comment);
+						// if we are recreating the requestor, they are going to get an acknowledge despite any setting in the defaults for a Requestor record.
+						// TODO: Is there a reason to do it this way, other than being a bit of a pain to find the default value?
+						requestor.F.ReceiveAcknowledgement = true;
+						requestor.F.Comment = updateComment.ToString();
+						requestor.F.Hidden = null;
+						InfoText = Strings.Format(KB.K("Restoring a Requestor from '{0}' with Contact Code '{1}'"), from, contactcode);
 					}
 				}
 				ds.DB.Update(ds);
@@ -253,24 +254,11 @@ namespace Thinkage.MainBoss.Database.Service {
 		}
 		#endregion
 		#region RequestorError
-		readonly Key[] requestorUserText = new Key[] {
-			KB.K("Your request using email address {0} cannot be accepted. Please contact Maintenance by some other means."),
-			KB.K("A Request could not be created because the email address '{0}' does not match the email address of any Requestor"),
-			KB.K("A Request could not be created because the email address '{0}' is not unique to one Requestor"),
-			KB.K("A Request could not be created because a unique Contact could not be found for email address '{0}'")
-		};
 		void RequestorError(DatabaseEnums.EmailRequestState state, ErrorToRequestor errorToRequestor, Thinkage.Libraries.Translation.Key errformat, params object[] args) {
 			State = state;
 			WarningText = null;
 			ErrorToRequestor = errorToRequestor;
 			Exception = new GeneralException(errformat, args);
-			throw Exception;
-		}
-		void RequestorError(System.Exception ex, DatabaseEnums.EmailRequestState state, ErrorToRequestor errorToRequestor, Thinkage.Libraries.Translation.Key format, params object[] args) {
-			State = state;
-			WarningText = null;
-			ErrorToRequestor = errorToRequestor;
-			Exception = new GeneralException(ex, format, args);
 			throw Exception;
 		}
 		#endregion
@@ -284,7 +272,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				using (dsMB ds = new dsMB(DB)) {
 					ds.EnsureDataTableExists(dsMB.Schema.T.ServiceConfiguration);
 					ds.DB.ViewAdditionalRows(ds, dsMB.Schema.T.ServiceConfiguration);
-					foreach (dsMB.ServiceConfigurationRow sRow in ds.T.ServiceConfiguration) {  // there should only be one, but this is safe.
+					foreach (dsMB.ServiceConfigurationRow sRow in ds.T.ServiceConfiguration.Rows) {  // there should only be one, but this is safe.
 						CreateRequestors |= sRow.F.AutomaticallyCreateRequestors;
 						CreateFromLDAP |= sRow.F.AutomaticallyCreateRequestorsFromLDAP;
 						CreateFromEmail |= sRow.F.AutomaticallyCreateRequestorsFromEmail;
@@ -292,8 +280,7 @@ namespace Thinkage.MainBoss.Database.Service {
 						CreateRequestors |= CreateFromLDAP | CreateFromEmail;
 						string pat = sRow.F.AcceptAutoCreateEmailPattern;
 						try {
-							pat = sRow.F.AcceptAutoCreateEmailPattern;
-							if (AcceptRegex != null && !String.IsNullOrWhiteSpace(pat))
+							if (!String.IsNullOrWhiteSpace(pat))
 								AcceptRegex = new Regex(pat, RegexOptions.IgnoreCase);
 						}
 						catch (ArgumentException ex) {
@@ -301,7 +288,7 @@ namespace Thinkage.MainBoss.Database.Service {
 						}
 						pat = sRow.F.RejectAutoCreateEmailPattern;
 						try {
-							if (RejectRegex != null && !String.IsNullOrWhiteSpace(pat))
+							if (!String.IsNullOrWhiteSpace(pat))
 								RejectRegex = new Regex(pat, RegexOptions.IgnoreCase);
 						}
 						catch (ArgumentException ex) {
@@ -320,7 +307,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			if (Exception != null || WarningText != null || InfoText != null) {
 				using (dsMB ds = new dsMB(DB)) {
 					ds.EnsureDataTableExists(dsMB.Schema.T.ServiceLog);
-					var sr = ds.T.ServiceLog.AddNewServiceLogRow();
+					var sr = ds.T.ServiceLog.AddNewRow();
 					sr.F.Source = source;
 					if (Exception != null) {
 						sr.F.Message = Thinkage.Libraries.Exception.FullMessage(Exception);

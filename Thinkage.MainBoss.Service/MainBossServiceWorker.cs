@@ -18,7 +18,8 @@ namespace Thinkage.MainBoss.Service {
 		/// Properly case ServiceBase
 		/// </summary>
 		public MainBossService MainBossServiceBase => (MainBossService)ServiceBase;
-		public MainBossServiceWorker(ServiceWithServiceWorkers serviceBase) : base(serviceBase) {
+
+		protected MainBossServiceWorker(ServiceWithServiceWorkers serviceBase) : base(serviceBase) {
 		}
 		abstract public override string Name {
 			get;
@@ -34,24 +35,24 @@ namespace Thinkage.MainBoss.Service {
 		}
 		static bool htmLinkedChecked = false;
 		protected override void DoWork(int command) {
-			if(!htmLinkedChecked) {
+			if (!htmLinkedChecked) {
 				htmLinkedChecked = true;
 				MainBossServiceConfiguration config = MainBossServiceConfiguration.GetConfiguration(DBSession.ConnectionInfo);
-				if((ServiceUtilities.HasWebRequestsLicense || ServiceUtilities.HasWebAccessLicense) && config.MainBossRemoteURL == null)
+				if ((ServiceUtilities.HasWebRequestsLicense || ServiceUtilities.HasWebAccessLicense) && config.MainBossRemoteURL == null)
 					ServiceLogging.LogWarning(Strings.Format(KB.K("{0} has not been set. Notification messages will not contain a link to the Web Access or Web Request web page."), dsMB.Schema.T.ServiceConfiguration.F.MainBossRemoteURL.LabelKey.Translate()));
 			}
-			if((int)command == (int)Thinkage.Libraries.Service.Application.ServiceRequests.USER_STOP_SERVICE) {
+			if ((int)command == (int)Thinkage.Libraries.Service.Application.ServiceRequests.USER_STOP_SERVICE) {
 				Stop();
 				return;
 			}
 			// If we lost a valid DBSession, just reestablish it
-			if(DBSession == null)
+			if (DBSession == null)
 				SetupDBSession();
 			//derived class will do the work
 		}
 		protected override bool HandleWorkException(System.Exception e) {
 			ServiceLogging.LogError(Thinkage.Libraries.Exception.FullMessage(e));
-			if(e is System.Data.Common.DbException || e is System.Data.SqlClient.SqlException || e is System.InvalidOperationException) {
+			if (e is System.Data.Common.DbException || e is System.Data.SqlClient.SqlException || e is System.InvalidOperationException) {
 				CleanupDBSession();
 				return true;
 			}
@@ -72,7 +73,7 @@ namespace Thinkage.MainBoss.Service {
 			ServiceUtilities.VerifyLicense(DBSession, ServiceLogging);
 		}
 		protected void CleanupDBSession() {
-			if(DBSession != null) {
+			if (DBSession != null) {
 				DBSession.CloseDatabase();
 				DBSession = null;
 			}

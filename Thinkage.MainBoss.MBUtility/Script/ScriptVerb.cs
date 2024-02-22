@@ -25,7 +25,7 @@ namespace Thinkage.MainBoss.MBUtility {
 		public class Definition : UtilityVerbWithDatabaseDefinition {
 			public Definition()
 				: base() {
-				Add(ScriptName = new StringValueOption("Script", KB.K("Specify the name of the script file to be run").Translate(), true));
+				Optable.Add(ScriptName = new StringValueOption("Script", KB.K("Specify the name of the script file to be run").Translate(), true));
 			}
 			public readonly StringValueOption ScriptName;
 			public override string Verb {
@@ -96,8 +96,7 @@ namespace Thinkage.MainBoss.MBUtility {
 				// So we locate Thinkage's certificate specifically and explicitly use it to verify the signing of the file.
 				X509Certificate2 thinkageCertificate = null;
 				foreach (KeyInfoClause kic in signedXml.KeyInfo) {
-					KeyInfoX509Data kic509 = kic as KeyInfoX509Data;
-					if (kic509 == null)
+					if (!(kic is KeyInfoX509Data kic509))
 						continue;
 					for (int i = kic509.Certificates.Count; --i >= 0; ) {
 						// TODO: Perhaps there is some other field we should check since we may get different serial numbers for renewal certificates.
@@ -142,7 +141,7 @@ namespace Thinkage.MainBoss.MBUtility {
 #endif
 
 			// Handle LicenseKey options from the command line based on what the script says.
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out string oName);
+			MB3Client.ConnectionDefinition connect = Options.ConnectionDefinition(out string _);
 		}
 		private XmlReaderSettings GetSchemaValidatingXmlReaderSettings() {
 			XmlSchemaSet schemaCollection = new XmlSchemaSet();

@@ -2,7 +2,7 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
 	xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
 	xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
-	<!-- Copyright (c) 2014 by Thinkage Ltd. -->
+	<!-- Copyright (c) 2021 by Thinkage Ltd. -->
 	<?include SolutionSettings.wxi?>
 	<?include ../Wix/Common.wxi?>
 	<?define Property_UpgradeCode = "12727DC6-91B9-4DAE-8054-784509027B65" ?>
@@ -12,7 +12,7 @@
 		"*" to generate new GUID every build and always replace same version with new version
 		without changing the version number
 	-->
-	<Product Id="03D685BB-C1ED-49AF-98C9-3A6DFC91AD45"
+	<Product Id="1E8A3304-55E2-4095-B800-6005AFCF7A96"
 			 Name="$(var.PRODUCTNAME) $(var.VERSION).$(var.UPDATE)"
 			 Language="1033"
 			 Version="$(var.VERSION).$(var.UPDATE).$(var.BUILD)"
@@ -22,7 +22,7 @@
 					Compressed="yes"
 					Description="!(loc.PACKAGEDESCRIPTION)"
 					Keywords="CMMS MainBoss"
-					Comments="(c) 2017 by $(var.COMPANY)"
+					Comments="(c) 2021 by $(var.COMPANY)"
 					InstallPrivileges="elevated"
 					Manufacturer="$(var.COMPANY)"
 					InstallScope="perMachine"/>

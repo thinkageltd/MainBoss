@@ -10,6 +10,7 @@
 @section EditFormContent {
 	@(Html.ValidationSummary(true, T.Text("Request submission was unsuccessful. Please correct the errors and try again.")))
 	@using(Html.BeginForm()) {
+		@Html.AntiForgeryToken()
 		FormMap<RequestEntities.Request> f = Thinkage.MainBoss.WebAccess.Models.CreateRequestRepository.CreateForm;
 
 		<fieldset>
@@ -18,11 +19,11 @@
 
 			@(Html.InputControlFor(f, r => r.Number, null, new
 		{
-			@readonly = "true"
+			@readonly = "readonly"
 		}))
 			@(Html.InputControlFor(f, r => r.Subject))
 			<p>
-					@(Html.LabelFor(f, r => r.UnitLocationID))
+					<label for="WhereIsProblem">Where is the problem</label>
 					@(Html.TextBox("WhereIsProblem", null, new
 				{
 					@size = "100"
@@ -71,10 +72,14 @@
 			disabled: !RequestCreateUnitCodeAutocompleteEnabled(),
 			source: function (request, response) {
 				var unit = new Array();
+				var headers = {};
+				var token = $('input[name="__RequestVerificationToken"]').val();
+				headers['__RequestVerificationToken'] = token;
 				$.ajax({
 					async: false,
 					cache: false,
 					type: "POST",
+					headers: headers,
 					url: "@(Url.Action("Autocomplete", "Unit"))",
 					data: { "term": request.term, "pattern": RequestCreateUnitCodePattern(uName, uEmail) },
 					success: function (data) {

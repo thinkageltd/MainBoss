@@ -8,7 +8,7 @@
 	</field>
 	<field name="DataBaseServer" type="string(minlength 1, 128, lines 0, trim both, nonnull)">
 	</field>
-	<field name="CredentialsAuthenticationMethod" type="integer(nonnull, min 0, max 3)" labelkey="Authentication">
+	<field name="CredentialsAuthenticationMethod" type="integer(nonnull, min 0, max 4)" labelkey="Authentication">
 	  <!-- XAF.Database.Service.AuthenticationMethod -->
 	  <extension name="controlprovider">Thinkage.Libraries.XAF.Database.Service.AuthenticationCredentials.AuthenticationMethodProvider,Thinkage.Libraries.XAF.Database.Service</extension>
 	</field>

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
@@ -14,7 +15,7 @@ namespace Thinkage.MainBoss.Controls {
 	/// </summary>
 	public class MBAboutForm : TblForm<UIPanel> {
 		// Name of Teamviewer executable for Help menu references; put here as a common place accessible to MainBoss
-		static string TeamviewerFileName = KB.I("TeamViewerQS.exe");
+		static readonly string TeamviewerFileName = KB.I("TeamViewerQS.exe");
 		public static void StartTeamviewer() {
 			var path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), MBAboutForm.TeamviewerFileName);
 			try {
@@ -25,10 +26,11 @@ namespace Thinkage.MainBoss.Controls {
 				throw;
 			}
 		}
+
 		/// <summary>
 		/// Link for the company website is active for the Logo as well.
 		/// </summary>
-		UILinkDisplay webLink;
+		readonly UILinkDisplay webLink;
 		public MBAboutForm(UIFactory uiFactory, MB3Client db, string appName)
 			: base(uiFactory, PanelHelper.NewCenterColumnPanel(uiFactory)) {
 			Caption = KB.T(Strings.Format(KB.K("About {0}"), appName));
@@ -50,21 +52,28 @@ namespace Thinkage.MainBoss.Controls {
 			aboutText.Append(Strings.Format(KB.K("Messages {0} ({1}/{2:X4})"), Thinkage.Libraries.Application.InstanceMessageCultureInfo.NativeName, Thinkage.Libraries.Application.InstanceMessageCultureInfo.Name, Thinkage.Libraries.Application.InstanceMessageCultureInfo.LCID));
 			aboutText.Append("\n"); // single space next three
 			aboutText.Append(Strings.Format(KB.K("Installed as {0} ({1}/{2:X4})"), System.Globalization.CultureInfo.InstalledUICulture.NativeName, System.Globalization.CultureInfo.InstalledUICulture.Name, System.Globalization.CultureInfo.InstalledUICulture.LCID));
+			aboutText.AppendLine(Strings.Format(KB.K("Report Viewer Version {0}"), VersionInfo.AssemblyInformationVersion(KB.I("Microsoft.ReportViewer.WinForms")) ?? KB.K("not available").Translate()));
+
 			// TODO: Determine out deployment using some other more portable method; System.Deployment is not the means to get the information for .NET Core
 			//if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed) {
 			//	// Determine the root of our application from the UpdateLocation Uri if we have been clickonce deployed
 			//	var webRoot = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.UpdateLocation.GetLeftPart(UriPartial.Authority);
 			//	aboutText.AppendLine(Strings.Format(KB.K("Network Deployed {0}"), webRoot));
 			//}
-			if (db != null) {
-				aboutText.AppendLine(Strings.Format(KB.K("Database {0} Version {1}"), db.ConnectionInfo.DBName, Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().VersionHandler.CurrentVersion));
-				aboutText.Append("\n");
-				aboutText.Append(Strings.Format(KB.K("Server {0}"), db.ConnectionInfo.DBServer));
-				aboutText.Append("\n");
-				aboutText.Append(db.DatabaseServerProductIdentification);
+			StringBuilder DBInformation = new StringBuilder();
+			try {
+				if (db == null)
+					throw new System.Exception(); // don't even bother, just use the exception message
+				DBInformation.AppendLine(Strings.Format(KB.K("Database {0} Version {1}"), db.ConnectionInfo.DBName, Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().VersionHandler.CurrentVersion));
+				DBInformation.Append("\n");
+				DBInformation.Append(Strings.Format(KB.K("Server {0}"), db.ConnectionInfo.DBServer));
+				DBInformation.Append("\n");
+				DBInformation.Append(db.DatabaseServerProductIdentification);
 			}
-			else
-				aboutText.AppendLine(KB.K("Not connected to a database").Translate());
+			catch (System.Exception) {
+				DBInformation.AppendLine(KB.K("Not connected to a database").Translate());
+			}
+			aboutText.AppendLine(DBInformation.ToString());
 			var mixin = Libraries.Application.Instance.QueryInterface<IApplicationWithSingleDatabaseConnection>();
 			if (mixin != null)
 				aboutText.AppendLine(mixin.LicenseMessage);
@@ -74,6 +83,7 @@ namespace Thinkage.MainBoss.Controls {
 				(Attribute.GetCustomAttribute(
 				System.Reflection.Assembly.GetCallingAssembly(),
 				typeof(System.Reflection.AssemblyCopyrightAttribute)))).Copyright);
+
 			uint desiredWidth = aboutText.MaxLineLength * 10 / 8;
 			TextSizePreference preference = new TextSizePreference() { DefaultWidthInCharacters = desiredWidth, MinWidthInCharacters = desiredWidth, MaxPreferredWidthInCharacters = desiredWidth };
 			UITextDisplay tbAbout = uiFactory.CreateTextDisplay(new StringTypeInfo(0, null, aboutText.LineCount + 1, false, false, false).GetTypeFormatter(Thinkage.Libraries.Application.InstanceFormatCultureInfo), null, false, preference);
@@ -96,7 +106,7 @@ namespace Thinkage.MainBoss.Controls {
 			pbLogo.ImagePosition = UIImagePosition.CenterClipped;
 			pbLogo.Click += (sender, args) => { webLink.ClickLink(); };
 
-			var btnOK = uiFactory.CreateButton(KB.K("OK"), UIDialogResult.Cancel);
+			var btnOK = uiFactory.CreateButton(KB.K("OK"), new CloseFormCommand(FormContents, UIDialogResult.Cancel));
 			this.CancelButton = btnOK;
 
 			// Arrange the tab order so the textBox is not the initial selected control with focus.
@@ -113,7 +123,7 @@ namespace Thinkage.MainBoss.Controls {
 		}
 
 		private class MyLineBuilder {
-			private StringBuilder sb;
+			private readonly StringBuilder sb;
 			public MyLineBuilder(StringBuilder sb) {
 				this.sb = sb;
 			}

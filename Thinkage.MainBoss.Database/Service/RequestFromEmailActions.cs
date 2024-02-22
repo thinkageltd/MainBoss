@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Thinkage.Libraries;
 using Thinkage.Libraries.Collections;
-using Thinkage.Libraries.DBAccess;
 using Thinkage.Libraries.XAF.Database.Layout;
-using Thinkage.Libraries.Tcpip;
-using Thinkage.Libraries.Translation;
-using Thinkage.Libraries.TypeInfo;
-using Thinkage.Libraries.XAF.UI;
-using Thinkage.MainBoss.Database;
-using Thinkage.MainBoss.Database.Service;
 
 namespace Thinkage.MainBoss.Database.Service {
 	public static class RequestFromEmailActions {
-		static Set<object> Rejectable = new Set<object>(new object[] {
+		static readonly Set<object> Rejectable = new Set<object>(new object[] {
 			(short) DatabaseEnums.EmailRequestState.NoRequestor ,
 			(short) DatabaseEnums.EmailRequestState.NoContact,
 			(short) DatabaseEnums.EmailRequestState.AmbiguousRequestor,
@@ -36,12 +28,12 @@ namespace Thinkage.MainBoss.Database.Service {
 			using (dsMB ds = new dsMB(DB)) {
 				ds.DB.ViewAdditionalRows(ds, dsMB.Schema.T.EmailRequest, (new SqlExpression(dsMB.Path.T.EmailRequest.F.Id).In(SqlExpression.Constant(EmailRequestIds)))
 					.And((new SqlExpression(dsMB.Path.T.EmailRequest.F.ProcessingState).In(SqlExpression.Constant(Rejectable)))));
-				foreach (dsMB.EmailRequestRow r in ds.T.EmailRequest)
+				foreach (dsMB.EmailRequestRow r in ds.T.EmailRequest.Rows)
 					r.F.ProcessingState = (short)DatabaseEnums.EmailRequestState.ToBeRejected;
 				DB.Update(ds);
 			}
 		}
-		static Set<object> Createable = new Set<object>(new object[] {
+		static readonly Set<object> Createable = new Set<object>(new object[] {
 			(short) DatabaseEnums.EmailRequestState.NoRequestor ,
 			(short) DatabaseEnums.EmailRequestState.NoContact,
 			});
@@ -63,7 +55,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				Set<string> emailAddresses = new Set<string>();
 				Set<object> createdContacts = new Set<object>(dsMB.Schema.T.EmailRequest.F.RequestorEmailAddress.EffectiveType); // type object so SqlExpression.Constant will process it
 				Dictionary<string, Guid> requestorIDs = new Dictionary<string, Guid>();
-				foreach (dsMB.EmailRequestRow r in ds.T.EmailRequest) {
+				foreach (dsMB.EmailRequestRow r in ds.T.EmailRequest.Rows) {
 					var address = r.F.RequestorEmailAddress.ToLower();
 					if (!emailAddresses.Contains(address)) {
 						var requestorInfo = new AcquireRequestor(DB, new System.Net.Mail.MailAddress(r.F.RequestorEmailAddress, r.F.RequestorEmailDisplayName), forceCreate, forceCreate, forceCreate, null, null, r.F.PreferredLanguage);
@@ -85,7 +77,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				if (emailAddresses.Count() > 0 && forceCreate && createdContacts.Count > 0)
 					ds.DB.ViewAdditionalRows(ds, dsMB.Schema.T.EmailRequest, (new SqlExpression(dsMB.Path.T.EmailRequest.F.RequestorEmailAddress).In(SqlExpression.Constant(createdContacts)))
 					.And((new SqlExpression(dsMB.Path.T.EmailRequest.F.ProcessingState).In(SqlExpression.Constant(Createable)))));
-				foreach (dsMB.EmailRequestRow r in ds.T.EmailRequest) {
+				foreach (dsMB.EmailRequestRow r in ds.T.EmailRequest.Rows) {
 					try {
 						if (!requestorIDs.TryGetValue(r.F.RequestorEmailAddress.ToLower(), out Guid requestorId))
 							continue;

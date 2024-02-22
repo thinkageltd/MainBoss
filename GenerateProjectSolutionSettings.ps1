@@ -76,6 +76,18 @@ using System.Reflection;
 "@
 			[System.IO.File]::WriteAllText($SolutionSettingsPath,$content)
 		}
+
+	"vsix"
+		{
+			# The source.extension.vsixmanifest file contains a copy of the version number.
+			# Right now this file is under source control so we have no good way to modify it, but we want to at least check that the version is correct
+			$vsixmanifestPath = (join-path -path $ProjectDir -childpath "source.extension.vsixmanifest")
+			# Load the file contents as an XML object and use XPath to find the version number.
+			$manifestVersion = new-object System.Version ((select-xml -xml $([xml](Get-Content $vsixmanifestPath)) -namespace @{ n = "http://schemas.microsoft.com/developer/vsx-schema/2011"} -xpath "n:PackageManifest/n:Metadata/n:Identity/@Version").Node.Value)
+			if ($manifestVersion -ne $SolutionVersion) {
+				write-error -ErrorAction Stop ([String]::Format("Solution version {0} does not match .vsixmanifest file version {1}", $SolutionVersion, $manifestVersion))
+			}
+		}
 	}
 }
 

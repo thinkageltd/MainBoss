@@ -8,38 +8,32 @@ using Thinkage.Libraries.TypeInfo;
 using Thinkage.Libraries.XAF.UI;
 using Thinkage.MainBoss.Database;
 
-namespace Thinkage.MainBoss.Controls
-{
+namespace Thinkage.MainBoss.Controls {
 	/// <summary>
 	/// Report that first generates the PMs up to the batch end-date given by the user.
 	/// StaticFilters that are set through an instance of this class will be discarded and overridden.
 	/// </summary>
-	public abstract class ForecastReportViewerControl : ReportViewerControl
-	{
+	public abstract class ForecastReportViewerControl : ReportViewerControl {
 		private IInputControl fromDateControl, toDateControl;
-		public ForecastReportViewerControl(UIFactory uiFactory, DBClient db, Tbl tbl, Settings.Container settingsContainer, SqlExpression filterExpression)
-			: base(uiFactory, db, tbl, settingsContainer, filterExpression)
-		{
+
+		protected ForecastReportViewerControl(UIFactory uiFactory, DBClient db, Tbl tbl, Settings.Container settingsContainer, SqlExpression filterExpression)
+			: base(uiFactory, db, tbl, settingsContainer, filterExpression) {
 		}
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-		protected override void CreateFilterTabs()
-		{
+		protected override void CreateFilterTabs() {
 			base.CreateFilterTabs();
 			LabelledControlPanel lcp = new LabelledControlPanel(UIFactory, true, null);
 			// PM generation parameters
 			// From date
-			Key fromLabel = KB.K("The first day of work");
 			// our dateControl values will be used in a SqlExpression so make sure we only provide values acceptable to Sql
 			DateTimeTypeInfo limitDateTypeInfo = (DateTimeTypeInfo)Thinkage.Libraries.XAF.Database.Service.MSSql.Server.SqlDateTimeTypeInfo.IntersectCompatible(ObjectTypeInfo.NonNullUniverse);
 			fromDateControl = UIFactory.CreateDateTimePicker(limitDateTypeInfo, null, null);
 			var wrappedFromDateControl = UIFactory.WrapFeedbackProvider(fromDateControl, fromDateControl);
 			fromDateControl.Value = DateTime.Today;
 			// To date
-			Key toLabel = KB.K("The last day of work");
 			toDateControl = UIFactory.CreateDateTimePicker(limitDateTypeInfo, null, null);
 			var wrappedToDateControl = UIFactory.WrapFeedbackProvider(toDateControl, toDateControl);
-			using (dsMB tempds = new dsMB(DB))
-			{
+			using (dsMB tempds = new dsMB(DB)) {
 				DB.ViewAdditionalVariables(tempds, dsMB.Schema.V.PmGenerateInterval);
 				toDateControl.Value = DateTime.Today.AddDays(((TimeSpan)tempds.V.PmGenerateInterval.Value).Days);
 			}
@@ -63,7 +57,7 @@ namespace Thinkage.MainBoss.Controls
 						DB.Update(tempds);
 					}
 					catch (System.Exception) { // ignore ALL possible exceptions at this point, not just General Exception (DB may be null for example, or the DBConnection has gone away)
-						// what do we want to do? just ignore the exception as we were trying to delete the batch and associated records of previous generation.
+											   // what do we want to do? just ignore the exception as we were trying to delete the batch and associated records of previous generation.
 					}
 					LastBatchId = Guid.Empty;
 				}
@@ -76,7 +70,7 @@ namespace Thinkage.MainBoss.Controls
 				// Get batch end date from user
 				tempds.EnsureDataTableExists(dsMB.Schema.T.PMGenerationBatch);
 				{
-					dsMB.PMGenerationBatchRow bRow = tempds.T.PMGenerationBatch.AddNewPMGenerationBatchRow();
+					dsMB.PMGenerationBatchRow bRow = tempds.T.PMGenerationBatch.AddNewRow();
 					LastBatchId = bRow.F.Id;
 					bRow.F.UserID = Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().UserRecordID;
 					bRow.F.SessionID = null;
@@ -107,7 +101,7 @@ namespace Thinkage.MainBoss.Controls
 						}
 					}
 				}
-				ReportViewerLogic.AddNonStaticFilter(composeStaticFilter(LastBatchId, (DateTime)fromDateControl.Value, (DateTime)toDateControl.Value));
+				ReportViewerLogic.AddNonStaticFilter(ComposeStaticFilter(LastBatchId, (DateTime)fromDateControl.Value, (DateTime)toDateControl.Value));
 			}
 			base.ConfigureReport();
 		}
@@ -118,14 +112,14 @@ namespace Thinkage.MainBoss.Controls
 		/// <param name="fromDate"></param>
 		/// <param name="toDate"></param>
 		/// <returns>composed filter</returns>
-		protected abstract SqlExpression composeStaticFilter(Guid batchId, DateTime fromDate, DateTime toDate);
+		protected abstract SqlExpression ComposeStaticFilter(Guid batchId, DateTime fromDate, DateTime toDate);
 	}
 
 	public class ResourceForecastReportViewerControl : ForecastReportViewerControl {
 		public ResourceForecastReportViewerControl(UIFactory uiFactory, DBClient db, Tbl tbl, Settings.Container settingsContainer, SqlExpression filterExpression)
 			: base(uiFactory, db, tbl, settingsContainer, filterExpression) {
 		}
-		protected override SqlExpression composeStaticFilter(Guid batchId, DateTime fromDate, DateTime toDate) {
+		protected override SqlExpression ComposeStaticFilter(Guid batchId, DateTime fromDate, DateTime toDate) {
 			SqlExpression batchFilter = new SqlExpression(dsMB.Path.T.ExistingAndForecastResources.F.PMGenerationDetailID.F.PMGenerationBatchID).Eq(batchId)
 				.Or(new SqlExpression(dsMB.Path.T.ExistingAndForecastResources.F.PMGenerationDetailID).IsNull());
 			SqlExpression woFilter = new SqlExpression(dsMB.Path.T.ExistingAndForecastResources.F.EndDateEstimate).GEq(fromDate)
@@ -134,18 +128,17 @@ namespace Thinkage.MainBoss.Controls
 		}
 	}
 
-	public class MaintenanceForecastReportViewerControl : ForecastReportViewerControl
-	{
+	public class MaintenanceForecastReportViewerControl : ForecastReportViewerControl {
 		public MaintenanceForecastReportViewerControl(UIFactory uiFactory, DBClient db, Tbl tbl, Settings.Container settingsContainer, SqlExpression filterExpression)
-			: base(uiFactory, db, tbl, settingsContainer, filterExpression)
-		{
+			: base(uiFactory, db, tbl, settingsContainer, filterExpression) {
 		}
-		protected override SqlExpression composeStaticFilter(Guid batchId, DateTime fromDate, DateTime toDate)
-		{
+		protected override SqlExpression ComposeStaticFilter(Guid batchId, DateTime fromDate, DateTime toDate) {
 			SqlExpression batchFilter = new SqlExpression(dsMB.Path.T.MaintenanceForecastReport.F.PMGenerationBatchID).Eq(batchId)
 				.Or(new SqlExpression(dsMB.Path.T.MaintenanceForecastReport.F.PMGenerationBatchID).IsNull());
-			SqlExpression woFilter = new SqlExpression(dsMB.Path.T.MaintenanceForecastReport.F.WorkStartDate).GEq(fromDate)
-				.And(new SqlExpression(dsMB.Path.T.MaintenanceForecastReport.F.WorkStartDate).LEq(toDate));
+			SqlExpression workStartDate = SqlExpression.Coalesce(
+												new SqlExpression(dsMB.Path.T.MaintenanceForecastReport.F.ForecastWorkStartDate),
+												new SqlExpression(dsMB.Path.T.MaintenanceForecastReport.F.WorkOrderID.F.StartDateEstimate));
+			SqlExpression woFilter = workStartDate.GEq(fromDate).And(workStartDate.LEq(toDate));
 			return batchFilter.And(woFilter);
 		}
 	}

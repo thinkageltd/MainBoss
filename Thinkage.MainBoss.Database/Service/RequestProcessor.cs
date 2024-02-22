@@ -20,7 +20,7 @@ namespace Thinkage.MainBoss.Database.Service {
 				dsMB.Schema.T.RequestStateHistory, dsMB.Schema.T.Request, dsMB.Schema.T.Contact,
 				dsMB.Schema.T.RequestAcknowledgement);
 		}
-		public static void DoAllRequestProcessing(IServiceLogging logger, MB3Client dbSession, bool traceActivities, bool traceDetails, bool allowOutgoingEmail = true) {
+		public static void DoAllRequestProcessing(IServiceLogging logger, MB3Client dbSession, bool traceActivities, bool traceDetails, bool allowOutgoingEmail, bool force) {
 			if (lastFlush + TimeSpan.FromDays(1) < DateTime.Today) {
 				RetrieveRequests.FlushIDs();
 				lastFlush = DateTime.Today;
@@ -33,7 +33,7 @@ namespace Thinkage.MainBoss.Database.Service {
 						logger.LogInfo(KB.K("Email cannot be processed because there is no incoming Mail User Name configured").Translate());
 					else {
 						logger.LogTrace(traceDetails, KB.K("Email requests processing started").Translate());
-						x.FetchAndProcessEmailRequests(traceActivities, traceDetails);
+						x.FetchAndProcessEmailRequests(traceActivities, traceDetails, force);
 						logger.LogTrace(traceDetails, KB.K("Email requests processing completed").Translate());
 					}
 				}
@@ -46,13 +46,13 @@ namespace Thinkage.MainBoss.Database.Service {
 		}
 		static DateTime lastFlush = DateTime.Today;
 		static bool? oldProcessRequestorIncomingEmail = true;
-		bool SendRejections = true;
+		readonly bool SendRejections = true;
 		#endregion
 
 		#region FetchAndProcessEmailRequests
-		public void FetchAndProcessEmailRequests(bool traceActivities, bool traceDetails) {
+		public void FetchAndProcessEmailRequests(bool traceActivities, bool traceDetails, bool force) {
 			try {
-				using (var rr = new RetrieveRequests(Logger, DB))
+				using (var rr = new RetrieveRequests(Logger, DB, force))
 					rr.Run(traceDetails);
 				CreateRequestsFromEmail(traceActivities, traceDetails);
 			}
@@ -87,7 +87,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			}
 			var newEmail = 0;
 			var retryEmail = 0;
-			foreach (dsMB.EmailRequestRow r in dsmb.T.EmailRequest)
+			foreach (dsMB.EmailRequestRow r in dsmb.T.EmailRequest.Rows)
 				if (r.F.ProcessingState == (int)DatabaseEnums.EmailRequestState.UnProcessed)
 					newEmail++;
 				else
@@ -112,7 +112,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			}
 			ProcessRepliesToSender(traceDetails);
 		}
-		static Thinkage.Libraries.Collections.Set<object> ToBeProcessed = new Thinkage.Libraries.Collections.Set<object> {
+		static readonly Thinkage.Libraries.Collections.Set<object> ToBeProcessed = new Thinkage.Libraries.Collections.Set<object> {
 			(long)DatabaseEnums.EmailRequestState.UnProcessed,
 			(long)DatabaseEnums.EmailRequestState.NoRequestor,
 			(long)DatabaseEnums.EmailRequestState.NoContact,
@@ -123,7 +123,7 @@ namespace Thinkage.MainBoss.Database.Service {
 		};
 		#endregion
 		#region RejectionMessage Processing
-		private Dictionary<string, List<ReplytoSender>> MessageWithReplyToSender = new Dictionary<string, List<ReplytoSender>>();
+		private readonly Dictionary<string, List<ReplytoSender>> MessageWithReplyToSender = new Dictionary<string, List<ReplytoSender>>();
 		private void FormatReplyToSender(ReplytoSender reply) {
 			string pending = UK.K("RequestorStatusPending").Translate(reply.PreferredLanguage);
 			if (!reply.Rejection && string.IsNullOrWhiteSpace(pending))
@@ -178,7 +178,7 @@ namespace Thinkage.MainBoss.Database.Service {
 			}
 			MessageWithReplyToSender.Clear();
 		}
-		static Dictionary<string, DateTime> hadDelayMessage = new Dictionary<string, DateTime>();
+		static readonly Dictionary<string, DateTime> hadDelayMessage = new Dictionary<string, DateTime>();
 		#endregion
 	}
 }

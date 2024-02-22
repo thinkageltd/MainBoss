@@ -19,7 +19,7 @@ namespace Thinkage.MainBoss.Controls
 		/// </summary>
 		/// <param name="db"></param>
 		/// <param name="uri"></param>
-		public void Import(MB3Client db, Uri uri) {
+		public static void Import(MB3Client db, Uri uri) {
 			System.IO.Stream importDataStream = null;
 			try {
 				using (var webFetch = new System.Net.WebClient()) {

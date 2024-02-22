@@ -26,15 +26,15 @@ namespace Thinkage.MainBoss.Database.Service {
 				if (pVersion == value)
 					return;
 				pVersion = value;
-				setServiceCmdLine();
+				SetServiceCmdLine();
 			}
 		}
 		private IServiceConfiguration pStaticConfig;
-		public  IServiceConfiguration StaticConfig {
+		public IServiceConfiguration StaticConfig {
 			get { return pStaticConfig; }
 			set {
 				pStaticConfig = value;
-				setServiceCmdLine();
+				SetServiceCmdLine();
 			}
 		}
 		public string ServiceCode => StaticConfig.ServiceName;
@@ -49,21 +49,21 @@ namespace Thinkage.MainBoss.Database.Service {
 				if (pServiceExecutable == value)
 					return;
 				pServiceExecutable = value;
-				setServiceCmdLine();
+				SetServiceCmdLine();
 			}
 		}
 		private SQLConnectionInfo pConnectionInfo = null;
 		public SQLConnectionInfo ConnectionInfo {
 			get { return pConnectionInfo; }
 			set {
-				if (pConnectionInfo?.ConnectionString == value?.ConnectionString )
+				if (pConnectionInfo?.ConnectionString == value?.ConnectionString)
 					return;
 				pConnectionInfo = value;
-				setServiceCmdLine();
+				SetServiceCmdLine();
 			}
 		}
 		public AuthenticationCredentials Credentials => pConnectionInfo?.Credentials;
-		public bool IsMainBossDatabase { get; private set; } =  false;
+		public bool IsMainBossDatabase { get; private set; } = false;
 		public string ServiceUserid {
 			[Invariant]
 			get {
@@ -94,12 +94,12 @@ namespace Thinkage.MainBoss.Database.Service {
 			Controller = controller;
 			if (BinaryPathName != null) {
 				try {
-					if (DisplayName == null ||  !DisplayName.StartsWith(KB.I("MainBoss")))
+					if (DisplayName == null || !DisplayName.StartsWith(KB.I("MainBoss")))
 						throw new GeneralException(KB.K("Service '{0}' exists but is not a MainBoss Service"), config.ServiceName);
 					IsMainBossDatabase = true;
 					var serviceArguments = new ServiceStartupOptions(BinaryPathName);
 					pServiceExecutable = serviceArguments.Executable;
-					pVersion = serviceArguments.Version ?? new Version(3,0,0,0).ToString();
+					pVersion = serviceArguments.Version ?? new Version(3, 0, 0, 0).ToString();
 					pConnectionInfo = serviceArguments.Connection;
 					if (LastError == null && (Version == null || ConnectionInfo == null)) {
 						LastError = new GeneralException(KB.K("The Windows Service for MainBoss '{0}' is an old version."), config.ServiceName);
@@ -107,35 +107,37 @@ namespace Thinkage.MainBoss.Database.Service {
 						LastError = LastError.WithContext(new MessageExceptionContext(KB.K("The changes made to this Windows Service for MainBoss will be lost when the old 'MainBoss Service' is uninstalled. Please do the uninstall first.")));
 					}
 				}
-				catch ( Thinkage.Libraries.Exception e) {
+				catch (Thinkage.Libraries.Exception e) {
 					LastError = e;
 				}
 			}
 		}
-		private void setServiceCmdLine() {
-			BinaryPathName =  ServiceCmdLine(ServiceExecutable, ConnectionInfo, Version, ServiceCode);
+		private void SetServiceCmdLine() {
+			BinaryPathName = ServiceCmdLine(ServiceExecutable, ConnectionInfo, Version, ServiceCode);
 		}
-		public static string ServiceCmdLine([Invariant]string executable, SQLConnectionInfo sqlConnectionInfo, [Invariant]string version,[Invariant]string serviceCode) {
+		public static string ServiceCmdLine([Invariant]string executable, SQLConnectionInfo sqlConnectionInfo, [Invariant]string version, [Invariant]string serviceCode) {
 			if (sqlConnectionInfo.Credentials.Type == AuthenticationMethod.WindowsAuthentication)
 				return Strings.IFormat("\"{0}\" /ServiceName:{1} /Connection:{2}  /Version:\"{3}\"", executable, serviceCode, EscapeArg(sqlConnectionInfo.ConnectionString), version);
-			var noPassword = sqlConnectionInfo.ConnectionStringNoPassword;
+			var noPassword = Libraries.Sql.SqlUtilities.NoPasswordConnectionString(sqlConnectionInfo.SqlConnectionObject);
 			var encrypted = Convert.ToBase64String(Database.Service.ServicePassword.Encode(sqlConnectionInfo.SqlPassword));
 			return Strings.IFormat("\"{0}\" /ServiceName:{1} /Connection:{2} /Version:\"{3}\" /SecurityToken:{4} ", executable, serviceCode, EscapeArg(noPassword), version.ToString(), EscapeArg(encrypted));
-		}		
+		}
 		/// <summary>
 		/// Quotes all arguments that contain whitespace, or begin with a quote and returns a single
 		/// argument string for use with Process.Start().
 		/// </summary>
 		/// <param name="args">A list of strings for arguments, may not contain null, '\0', '\r', or '\n'</param>
 		/// <returns>The combined list of escaped/quoted strings</returns>
-		static Regex invalidChar = new Regex("[\x00\x0a\x0d]"); //  these can not be escaped
-		static Regex needsQuotes = new Regex(@"\s|""");         //  contains whitespace or two quote characters
-		static Regex escapeQuote = new Regex(@"(\\*)(""|$)");   //  one or more '\' followed with a quote or end of string
+		static readonly Regex invalidChar = new Regex("[\x00\x0a\x0d]"); //  these can not be escaped
+		static readonly Regex needsQuotes = new Regex(@"\s|""");         //  contains whitespace or two quote characters
+		static readonly Regex escapeQuote = new Regex(@"(\\*)(""|$)");   //  one or more '\' followed with a quote or end of string
 		public static string EscapeArg([Invariant] string arg) {
-			if (invalidChar.IsMatch(arg)) { throw new ArgumentOutOfRangeException("arg"); }
-			if (string.IsNullOrEmpty(arg)) return "\"\"";
-			else if (!needsQuotes.IsMatch(arg))  return arg; 
-			return '"' + escapeQuote.Replace(arg, m => m.Groups[1].Value + m.Groups[1].Value + (m.Groups[2].Value == "\"" ? "\\\"" : "")				) + '"';
+			if (invalidChar.IsMatch(arg)) { throw new ArgumentOutOfRangeException(nameof(arg)); }
+			if (string.IsNullOrEmpty(arg))
+				return "\"\"";
+			else if (!needsQuotes.IsMatch(arg))
+				return arg;
+			return '"' + escapeQuote.Replace(arg, m => m.Groups[1].Value + m.Groups[1].Value + (m.Groups[2].Value == "\"" ? "\\\"" : "")) + '"';
 		}
 
 		public static List<string> AllMainBossServices([Thinkage.Libraries.Translation.Invariant]string machineName) {
@@ -147,17 +149,17 @@ namespace Thinkage.MainBoss.Database.Service {
 			}
 		}
 		static public ServiceConfiguration AcquireServiceConfiguration(bool isAdmin, bool requireAdmin, string serviceComputer, string serviceName) {
-			if ( serviceName == null ) {
+			if (serviceName == null) {
 				try {
 					var allServices = ServiceConfiguration.AllMainBossServices(serviceComputer);
-					switch (allServices.Count ) {
-						case 0:
-							throw new GeneralException(KB.K("Database connection information was not supplied"));
-						default:
-							throw new GeneralException(KB.K("Multiple Windows Services for MainBoss exist; Choose one with the '{0}' option"), KB.I("/ServiceName:"));
-						case 1:
-							serviceName = allServices.First();
-							break;
+					switch (allServices.Count) {
+					case 0:
+						throw new GeneralException(KB.K("Database connection information was not supplied"));
+					default:
+						throw new GeneralException(KB.K("Multiple Windows Services for MainBoss exist; Choose one with the '{0}' option"), KB.I("/ServiceName:"));
+					case 1:
+						serviceName = allServices.First();
+						break;
 					}
 				}
 				catch (System.Exception ex) {
@@ -167,13 +169,14 @@ namespace Thinkage.MainBoss.Database.Service {
 					throw ge;
 				}
 			}
-			bool serviceExists = false;
+
 			var staticConfig = new StaticServiceConfiguration(serviceComputer, serviceName);
+			bool serviceExists;
 			try {
 				serviceExists = ServiceController.ServiceExists(staticConfig);
 			}
 			catch (GeneralException ex) {
-				Libraries.Exception ge =  new GeneralException(ex,KB.K("Checking the Windows Service for MainBoss '{0}' on '{1}' was not possible"), serviceName, serviceComputer);
+				Libraries.Exception ge = new GeneralException(ex, KB.K("Checking the Windows Service for MainBoss '{0}' on '{1}' was not possible"), serviceName, serviceComputer);
 				if (!isAdmin)
 					ge = ge.WithContext(new MessageExceptionContext(KB.K("Running this program as an Administrator may enable the configuration checks")));
 				throw ge;
@@ -197,35 +200,36 @@ namespace Thinkage.MainBoss.Database.Service {
 	/// </summary>
 	public class ServiceStartupOptions : Optable {
 		public const string ServiceNameCommandArgument = "ServiceName";
+		
+		private readonly StringValueOption ServiceNameO;
+		private readonly StringValueOption ConnectionO;
+		private readonly StringValueOption VersionO;
+		private readonly StringValueOption DatabaseServerO;
+		private readonly StringValueOption DatabaseNameO;
 
-		private StringValueOption ServiceNameO;
-		private StringValueOption ConnectionO;
-		private StringValueOption VersionO;
-		private StringValueOption DatabaseServerO;
-		private StringValueOption DatabaseNameO;
-
-		public string Executable     { get; private set; }
-		public string Version        { get; private set; }
-		public SQLConnectionInfo Connection  { get; private set; }
+		public string Executable { get; private set; }
+		public string Version { get; private set; }
+		public SQLConnectionInfo Connection { get; private set; }
 
 		public ServiceStartupOptions(string commandLine) {
 			StringValueOption SecurityTokenO;
 			string Password = null;
 			var args = SplitArguments(commandLine);
 			Executable = args.Length > 0 ? args[0] : "";
-			Add(ServiceNameO   = new StringValueOption(KB.I("ServiceName"), KB.K("The service name identifier.").Translate(), false));
+		
+			Add(ServiceNameO = new StringValueOption(KB.I("ServiceName"), KB.K("The service name identifier.").Translate(), false));
 			Add(SecurityTokenO = new StringValueOption(KB.I("SecurityToken"), KB.K("Security Identification to the SQL Server. For internal use only.").Translate(), false));
-			Add(ConnectionO    = new StringValueOption(KB.I("Connection"), KB.K("SQL Server Connection string.").Translate(), false));
-			Add(VersionO       = new StringValueOption(KB.I("Version"), KB.K("The version of MainBoss used to install the Windows Service for MainBoss.").Translate(), true));
-			Add(DatabaseNameO  = new StringValueOption(KB.I("DataBaseName"), KB.K("The DataBaseName option is obsolete.").Translate(), false));					//for historical compatablity
-			Add(DatabaseServerO= new StringValueOption(KB.I("DataBaseServer"), KB.K("The DataBaseServer option is obsolete.").Translate(), false));				//for historical compatablity
-			if (args.Length    == 0)
+			Add(ConnectionO = new StringValueOption(KB.I("Connection"), KB.K("SQL Server Connection string.").Translate(), false));
+			Add(VersionO = new StringValueOption(KB.I("Version"), KB.K("The version of MainBoss used to install the Windows Service for MainBoss.").Translate(), true));
+			Add(DatabaseNameO = new StringValueOption(KB.I("DataBaseName"), KB.K("The DataBaseName option is obsolete.").Translate(), false));                  //for historical compatablity
+			Add(DatabaseServerO = new StringValueOption(KB.I("DataBaseServer"), KB.K("The DataBaseServer option is obsolete.").Translate(), false));                //for historical compatablity
+			if (args.Length == 0)
 				return;
 			try {
 				Parse(args.Skip(1).ToArray());
 				CheckRequired();
 			}
-			catch ( System.Exception ex) {
+			catch (System.Exception ex) {
 				throw new GeneralException(ex, KB.K("Windows Service for MainBoss does not have the expected configuration. It may be an old version of the Service. The service needs to be reconfigured"));
 			}
 			try {
@@ -245,10 +249,10 @@ namespace Thinkage.MainBoss.Database.Service {
 				if (Password != null)
 					Connection.SqlConnectionObject.Password = Password;
 			}
-			catch( System.Exception ex ) {
+			catch (System.Exception ex) {
 				throw new GeneralException(ex, KB.K("Invalid SQL Server connection string '{0}'"), ConnectionO.Value);
 			}
-			if( Connection == null)
+			if (Connection == null)
 				throw new GeneralException(KB.K("Windows Service for MainBoss does not have the expected configuration."));
 		}
 		//
@@ -273,7 +277,7 @@ namespace Thinkage.MainBoss.Database.Service {
 					inSingleQuote = !inSingleQuote;
 					parmChars[index] = '\0';
 				}
-				if (parmChars[index] == '\\' && index + 1 < parmChars.Length && (parmChars[index + 1] == '"' || parmChars[index+1] == '\'' )  )
+				if (parmChars[index] == '\\' && index + 1 < parmChars.Length && (parmChars[index + 1] == '"' || parmChars[index + 1] == '\''))
 					parmChars[index++] = '\0';
 
 				if (!inSingleQuote && !inDoubleQuote && (parmChars[index] == ' ' || parmChars[index] == '	'))

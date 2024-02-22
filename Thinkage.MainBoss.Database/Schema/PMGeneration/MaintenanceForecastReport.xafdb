@@ -3,7 +3,7 @@
   <types uri="..\Types.xafdb"/>
   <table name="MaintenanceForecastReport" log="false" id="Id" labelkey="">
 	<field name="Id" read="RequiredGUID" />
-	<field name="PMGenerationDetailType" type="integer(16,nonnull)"/>
+	<field name="PMGenerationDetailType" type="integer(16, null)"/>
 	<field name="PMGenerationBatchID" type="GUIDREF" link="PMGenerationBatch"/>
 
 	<field name="ScheduleID" type="GUIDREF" link="Schedule" />
@@ -17,7 +17,7 @@
 	<field name="WorkOrderPriorityID" type="GUIDREF"  link="WorkOrderPriority" labelkey="Priority"/>
 	<field name="WorkOrderCurrentStateID" type="GUIDREF" link="WorkOrderStateHistory" labelkey="Current State History"/>
 	<field name="UnitLocationID" labelkey="Unit" type="GUIDREF" link="Location"/>
-	<field name="WorkStartDate" type="RequiredDate"/>
+	<field name="ForecastWorkStartDate" type="Date"/>
 	<extension name="query">
 	  select
 	  newid() as Id
@@ -38,7 +38,7 @@
 	  , null -- WorkOrderState
 	  , SWO.UnitLocationID
 	  -- When
-	  , PGD.WorkStartDate -- WorkStartDate
+	  , PGD.WorkStartDate -- ForecastWorkStartDate
 	  from ScheduledWorkOrder as SWO
 	  join WorkOrderTemplate as WOT on WOT.ID = SWO.WorkOrderTemplateID
 	  join ( -- Use a subquery to merge records that would ultimately share a single work order.
@@ -65,9 +65,8 @@
 	  -- Related Records
 	  , WO.UnitLocationID -- Unit
 	  -- When
-	  , WOX.EarliestOpenDate -- WorkStartDate
+	  , null -- ForecastWorkStartDate
 	  from WorkOrder as WO
-	  join WorkOrderExtras as WOX on WOX.WorkOrderID = WO.ID
 	  join WorkOrderStateHistory as WOSH on WOSH.ID = WO.CurrentWorkOrderStateHistoryID
 	  join WorkOrderState as WOS on WOS.ID = WOSH.WorkOrderStateID
 	  where WOS.FilterAsOpen = 1

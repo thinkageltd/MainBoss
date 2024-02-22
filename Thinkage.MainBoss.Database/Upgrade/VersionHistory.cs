@@ -6,7 +6,7 @@ using Thinkage.Libraries;
 using Thinkage.Libraries.XAF.Database.Service.MSSql;
 
 namespace Thinkage.MainBoss.Database {
-	public class MBUpgrader {
+	public static class MBUpgrader {
 #if DEBUG
 		public static void CheckUpgradeSteps() {
 			System.Diagnostics.Debug.WriteLine("Verifying upgrade steps");
@@ -101,13 +101,11 @@ namespace Thinkage.MainBoss.Database {
 		// I expect that we will however keep the major and minor numbers in sync, change the release number
 		// when we do an "internal" release and normally just advance the revision numbers.
 		public static readonly DBVersionInformation UpgradeInformation = new DBVersionInformation(new UpgradeStep[][][][] {
-			new UpgradeStep[][][] {},	// 0.x.x.x
+			Array.Empty<UpgradeStep[][]>(),	// 0.x.x.x
 			new UpgradeStep[][][] {		// 1.x.x.x
 				#region 1.0.x.x for MainBoss versions 3.0 to 3.4
 				new UpgradeStep[][] {	// 1.0.x.x
-					new UpgradeStep[] {	// 1.0.0.x
-					// All these steps predate MB3.0 during development; we no longer have any development databases we care about that predate MB 3.0 release.
-					},
+					Array.Empty<UpgradeStep>(),
 					new UpgradeStep[] { // 1.0.1.x Reserved for steps included in released versions of MB3.0
 						#region 1.0.1.0 -
 						// MB 3.0.0 uses db version 1.0.1.0
@@ -5075,7 +5073,7 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 							")
 						),
 						#endregion
-						#region 1.1.0.30 - 11.1.0.39
+						#region 1.1.0.30 - 1.1.0.39
 						new UpgradeStepSequence( // 1.1.0.30  Auto requestor created include/exclude patterns
 							new AddColumnUpgradeStep("ServiceConfiguration.AcceptAutoCreateEmailPattern"),
 							new AddColumnUpgradeStep("ServiceConfiguration.RejectAutoCreateEmailPattern")
@@ -5714,7 +5712,7 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 						#endregion
 					},
 					new UpgradeStep[] { // 1.1.5.x  Release Versions of MB4.2
-						#region 1.1.5.0 -
+						#region 1.1.5.0 - 1.1.5.9
 						new UpgradeStepSequence( //1.1.5.0 Set the minimum app version to 4.2
 							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinMBAppVersion, new Version(4,2,0,4)),
 							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinAReqAppVersion, new Version(4,2,0,4)),
@@ -5743,7 +5741,169 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinAReqAppVersion, new Version(4,2,0,7)),
 							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinMBRemoteAppVersion, new Version(4,2,0,7))
 						),
-						new UpgradeStepSequence( //1.1.5.3 Use WorkOrderExtras to find PMGBatch and Maintenance Plan
+						// Databases upgraded with Head code had other steps numbered 1.1.5.3, 1.1.5.4, or 1.1.5.5.
+						// These did not make the cut for 4.2 and so have been combined into a single step 1.1.6.0.
+						// However, to ensure that DB's upgraded with the Head code in the interem properly get the remaining 1.1.5.x steps
+						// these three dummy steps have been added to synchronize the numbering.
+						// A side effect of this is that sites running 4.2 may re-execute up to three of the steps now numbered 1.1.5.6-1.1.5.10
+						// (formerly 1.1.5.3-1.1.5.8 in 4.2) but these steps are all idempotent: delete a view or function and re-create it.
+						new UpgradeStepSequence(// Dummy 1.1.5.3
+						),
+						new UpgradeStepSequence(// Dummy 1.1.5.4
+						),
+						new UpgradeStepSequence(// Dummy 1.1.5.5
+						),
+						new UpgradeStepSequence(// 1.1.5.6 (originally 1.1.5.3) Replace date/interval functions with more effecient ones
+							new BuiltinFunctionUpdateUpgradeStep("_DMinValue"),
+							new BuiltinFunctionUpdateUpgradeStep("_DClosestValue"),
+							new BuiltinFunctionUpdateUpgradeStep("_IIToSum"),
+							new BuiltinFunctionUpdateUpgradeStep("_IIToMilliseconds"),
+							new BuiltinFunctionUpdateUpgradeStep("_ISumToI"),
+							new BuiltinFunctionUpdateUpgradeStep("_IAdd"),
+							new BuiltinFunctionUpdateUpgradeStep("_ISubtract"),
+							new BuiltinFunctionUpdateUpgradeStep("_ISum"),
+							new BuiltinFunctionUpdateUpgradeStep("_IDiff"),
+							new BuiltinFunctionUpdateUpgradeStep("_INegate"),
+							new BuiltinFunctionUpdateUpgradeStep("_IScale"),
+							new BuiltinFunctionUpdateUpgradeStep("_IRatio"),
+							new BuiltinFunctionUpdateUpgradeStep("_INew"),
+							new BuiltinFunctionUpdateUpgradeStep("_IDateDiff")
+						),
+						new UpgradeStepSequence(// 1.1.5.7 (originally 1.1.5.4) Replace WorkOrderExtras view to properly calculate EarliestEndDate
+							new RemoveTableUpgradeStep(GetOriginalSchema, "MaintenanceForecastReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderExtras"),
+							new AddTableUpgradeStep("WorkOrderExtras"),
+							new AddTableUpgradeStep("MaintenanceForecastReport")
+						),
+						new UpgradeStepSequence(// 1.1.5.8 (originally 1.1.5.5) Add DemandID and POLineID to AccountingTransactionDerivations view
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AccountingTransactionVariants"),
+							new AddTableUpgradeStep("AccountingTransactionVariants")
+						),
+						new UpgradeStepSequence(// 1.1.5.9 (originally 1.1.5.6) Correct ticks per day and _IRatio definition
+							new BuiltinFunctionUpdateUpgradeStep("_IRatio"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "UnitReport"),
+							new AddTableUpgradeStep("UnitReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "ActiveRequestAgeHistogram"),
+							new AddTableUpgradeStep("ActiveRequestAgeHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedActiveRequestAgeHistogram"),
+							new AddTableUpgradeStep("AssignedActiveRequestAgeHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("WorkOrderEndDateHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedWorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("AssignedWorkOrderEndDateHistogram")
+						),
+						#endregion
+						#region 1.1.5.10 -
+						new UpgradeStepSequence(// 1.1.5.10 (originally 1.1.5.7) Correct _DClosestValue for dates on or before 1/jan/1900
+							new BuiltinFunctionUpdateUpgradeStep("_DClosestValue")
+						),
+						new UpgradeStepSequence(	// 1.1.5.11 Add schemabinding to date/time math functions and new fns
+							// Most of this is also in 1.1.6.20 for databases that were already in the Head chain whan this step was added.
+							new BuiltinFunctionCreateUpgradeStep("_DClosestDivisions"),
+							new BuiltinFunctionCreateUpgradeStep("_DClosestMonths"),
+							new BuiltinFunctionCreateUpgradeStep("_DClosestTicks"),
+							new BuiltinFunctionUpdateUpgradeStep("_DMinValue"),
+							new BuiltinFunctionUpdateUpgradeStep("_DClosestValue"),
+							new BuiltinFunctionUpdateUpgradeStep("_IIToSum"),
+							new BuiltinFunctionUpdateUpgradeStep("_IIToMilliseconds"),
+							new BuiltinFunctionUpdateUpgradeStep("_ISumToI"),
+							new BuiltinFunctionUpdateUpgradeStep("_IAdd"),
+							new BuiltinFunctionUpdateUpgradeStep("_ISubtract"),
+							new BuiltinFunctionUpdateUpgradeStep("_ISum"),
+							new BuiltinFunctionUpdateUpgradeStep("_IDiff"),
+							new BuiltinFunctionUpdateUpgradeStep("_INegate"),
+							new BuiltinFunctionUpdateUpgradeStep("_IScale"),
+							new BuiltinFunctionUpdateUpgradeStep("_IRatio"),
+							new BuiltinFunctionUpdateUpgradeStep("_INew"),
+							new BuiltinFunctionUpdateUpgradeStep("_IDateDiff")
+						),
+						new UpgradeStepSequence(	// 1.1.5.12 Update views to use new _DClosestXxxx functions
+							// This is a duplicate of 1.1.6.22
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedActiveRequestAgeHistogram"),
+							new AddTableUpgradeStep("AssignedActiveRequestAgeHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedWorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("AssignedWorkOrderEndDateHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "PurchaseOrderExtras"),
+							new AddTableUpgradeStep("PurchaseOrderExtras"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_RequestedWorkOrder_ManageRequest"),
+							new AddExtensionObjectUpgradeStep("mbtg_RequestedWorkOrder_ManageRequest"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "RequestExtras"),
+							new AddTableUpgradeStep("RequestExtras"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "RequestAssignmentReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "RequestReport"),
+							new AddTableUpgradeStep("RequestReport"),
+							new AddTableUpgradeStep("RequestAssignmentReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "UnitReport"),
+							new AddTableUpgradeStep("UnitReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("WorkOrderEndDateHistogram"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl"),
+							new AddExtensionObjectUpgradeStep("mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl")
+						),
+						new UpgradeStepSequence(	// 1.1.5.13 Update views to always return Sql DATETIME type for date columns
+							// This is a duplicate of 1.1.6.23
+							new RemoveTableUpgradeStep(GetOriginalSchema, "ActiveRequestAgeHistogram"),
+							new AddTableUpgradeStep("ActiveRequestAgeHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedActiveRequestAgeHistogram"),
+							new AddTableUpgradeStep("AssignedActiveRequestAgeHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedWorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("AssignedWorkOrderEndDateHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "UnitReport"),
+							new AddTableUpgradeStep("UnitReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("WorkOrderEndDateHistogram"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl"),
+							new AddExtensionObjectUpgradeStep("mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl")
+						),
+						new UpgradeStepSequence(	// 1.1.5.14 Widen encrypted password fields in service config record
+							// This is a duplicate of 1.1.6.24
+							// We don't preserve the values from the _D table because we have never let anyone put non-null default passwords in
+							new SqlUpgradeStep("alter table ServiceConfiguration add TempPassword varbinary(max)"),
+							new SqlUpgradeStep("update ServiceConfiguration set TempPassword = SMTPEncryptedPassword"),
+							new RemoveColumnUpgradeStep(GetOriginalSchema, "ServiceConfiguration.SMTPEncryptedPassword"),
+							new AddColumnUpgradeStep("ServiceConfiguration.SMTPEncryptedPassword"),
+							new SqlUpgradeStep("update ServiceConfiguration set SMTPEncryptedPassword = TempPassword, TempPassword = MailEncryptedPassword"),
+							new RemoveColumnUpgradeStep(GetOriginalSchema, "ServiceConfiguration.MailEncryptedPassword"),
+							new AddColumnUpgradeStep("ServiceConfiguration.MailEncryptedPassword"),
+							new SqlUpgradeStep(@"
+								update ServiceConfiguration set MailEncryptedPassword = TempPassword
+                                alter table ServiceConfiguration drop column TempPassword"),
+							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinMBAppVersion, new Version(4, 2, 4, 9)),
+							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinAReqAppVersion, new Version(4, 2, 4, 9))
+						),
+						new UpgradeStepSequence(	// 1.1.5.15 Add fields to support OAuth2
+							new AddColumnUpgradeStep("ServiceConfiguration.MailAuthenticationType"),
+							new SqlUpgradeStep(@"
+								update ServiceConfiguration set MailAuthenticationType = 0
+							"),
+							new SetColumnRequiredUpgradeStep("ServiceConfiguration.MailAuthenticationType"),
+							new AddColumnUpgradeStep("ServiceConfiguration.MailEncryptedClientSecret"),
+							new AddColumnUpgradeStep("ServiceConfiguration.MailClientCertificateName"),
+							new AddColumnUpgradeStep("ServiceConfiguration.MailClientID"),
+							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinMBAppVersion, new Version(4, 2, 4, 12)),
+							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinAReqAppVersion, new Version(4, 2, 4, 12))
+						)
+						#endregion
+					},
+					new UpgradeStep[] { // 1.1.6.x Development version of MB4.3
+						#region 1.1.6.0 - 1.1.6.9
+						new UpgradeStepSequence( //1.1.6.0 Use WorkOrderExtras to find PMGBatch and Maintenance Plan
+							// This first step is here for cases where a DB had been upgraded with the Head code when the steps were confused between
+							// Head and 4.2. Such a DB would have no WorkOrder.PMGenerationBatchID, so if this is the case we create a dummy one here
+							// so the RemoveCoulmnUpgradeStep has something to do. The fact that the dummy column is not a linkage one should not
+							// be a problem. All that will happen is that the removeColumnUpgradeStep will not find any constraints to delete.
+							new SqlUpgradeStep(@"
+								if not exists(select * from information_schema.COLUMNS
+												where COLUMN_NAME = 'PMGenerationBatchID'
+													and TABLE_NAME = 'Workorder'
+													and table_schema = 'dbo')
+									alter table WorkOrder add PMGenerationBatchID int null
+								if not exists(select * from information_schema.COLUMNS
+												where COLUMN_NAME = 'PMGenerationBatchID'
+													and TABLE_NAME = '_DWorkorder'
+													and table_schema = 'dbo')
+									alter table _DWorkOrder add PMGenerationBatchID int null
+							"),
 							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderEndDateHistogram"),
 							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedWorkOrderEndDateHistogram"),
 							new RemoveColumnUpgradeStep(GetOriginalSchema, "WorkOrder.PMGenerationBatchID"),
@@ -5754,26 +5914,530 @@ alter table _DRequestState alter column [Desc] nvarchar(512) null
 							new AddTableUpgradeStep("AssignedWorkOrderEndDateHistogram"),
 							new AddTableUpgradeStep("WorkOrderEndDateHistogram")
 						),
-						new UpgradeStepSequence(new Version(1, 1, 5, 3), //1.1.5.4 Correct improper in-house 1.1.5.3 upgrade. Only run if (broken) 1.1.5.3 had been run.
-							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderEndDateHistogram"),
-							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedWorkOrderEndDateHistogram"),
-							new RemoveTableUpgradeStep(GetOriginalSchema, "MaintenanceForecastReport"),
-							new AddTableUpgradeStep("MaintenanceForecastReport"),
-							new AddTableUpgradeStep("AssignedWorkOrderEndDateHistogram"),
-							new AddTableUpgradeStep("WorkOrderEndDateHistogram")
+						new UpgradeStepSequence( // 1.1.6.1 Add the new Attachment base structure from the existing Unit Attachment table
+							// Make the new derived AttachmentPath and UnitAttachment linkage tables in which existing data will be copied.
+							new AddTableUpgradeStep("AttachmentPath"),
+							new AddTableUpgradeStep("UnitAttachment"),
+							// Remove the unique constraint on the 'XID' in the old Attachment table (which is now the base table for all attachments)
+							new RemoveUniqueConstraintUpgradeStep(GetOriginalSchema, "Attachment.Code"),
+							// Transition the existing Attachment information to the derived and linkage records
+							new SqlUpgradeStep(@"
+								INSERT INTO AttachmentPath (Id, AttachmentID, Path)
+									select NEWID(),  Attachment.[ID], Attachment.Path from Attachment
+								INSERT INTO UnitAttachment (Id, AttachmentID, UnitLocationID)
+									select NEWID(),  Attachment.[ID], Attachment.UnitLocationID from Attachment
+							"),
+							// Clean up rest of the Attachment Table
+							new RemoveColumnUpgradeStep(GetOriginalSchema, "Attachment.Path"),
+							new RemoveColumnUpgradeStep(GetOriginalSchema, "Attachment.UnitLocationID"),
+							new AddColumnUpgradeStep("Attachment.Hidden"),
+							// and the one function with knowledge of Attachments (reports)
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbfn_Attachment_Summary"),
+							new AddExtensionObjectUpgradeStep("mbfn_Attachment_Summary")
 						),
-						new UpgradeStepSequence(new Version(1, 1, 5, 4), //1.1.5.5 Correct improper in-house 1.1.5.4 upgrade. Only run if (broken) 1.1.5.4 had been run.
+						new UpgradeStepSequence( // 1.1.6.2 Transition the Specification to be derived from Attachment and part of the UnitAttachment linkage table
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbfn_Specification_Summary"),
+							new SetColumnNullableUpgradeStep("Attachment.Code"),
+							new AddColumnUpgradeStep("Specification.AttachmentID"),
+
+							new SqlUpgradeStep(@"
+								UPDATE Attachment SET
+									Attachment.[Code] = Specification.CODE,
+									Attachment.[Desc] = Specification.[Desc],
+									Attachment.[Comment] = Specification.COMMENT
+									FROM Specification
+									WHERE Attachment.Id = Specification.AttachmentID
+								INSERT INTO UnitAttachment (Id, AttachmentID, UnitLocationID)
+									SELECT NEWID(), AttachmentID, UnitLocationID from Specification
+							"),
+							new RemoveColumnUpgradeStep( GetOriginalSchema, "Specification.Code"),
+							new RemoveColumnUpgradeStep( GetOriginalSchema, "Specification.Desc"),
+							new RemoveColumnUpgradeStep( GetOriginalSchema, "Specification.Comment"),
+							new RemoveColumnUpgradeStep( GetOriginalSchema, "Specification.UnitLocationID"),
+							new SetColumnRequiredUpgradeStep("Attachment.Code"),
+							new AddExtensionObjectUpgradeStep("mbfn_Specification_Summary")
+						),
+						new UpgradeStepSequence( // 1.1.6.3  add status column to ScheduledWorkOrder A
+							new AddColumnUpgradeStep("ScheduledWorkOrder.StatusPMGenerationDetailID"),
+							new AddColumnUpgradeStep("ScheduledWorkOrder.LastPMGenerationDetailID"),
+							new AddExtensionObjectUpgradeStep("mbfn_ScheduledWorkOrder_StatusPMGenerationDetail"),
+							new AddExtensionObjectUpgradeStep("mbfn_ScheduledWorkOrder_LastPMGenerationDetail"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_SetCurrentPMGenerationDetail1"),
+							new AddExtensionObjectUpgradeStep("mbtg_SetCurrentPMGenerationDetail1"),
+							new SqlUpgradeStep(@"
+								update  ScheduledWorkOrder set LastPMGenerationDetailID = (select top 1 PMGenerationDetail.ID 
+									from PMGenerationDetail
+									join PMGenerationBatch on PMGenerationDetail.PMGenerationBatchID =  PMGenerationBatch.ID
+									where PMGenerationDetail.ScheduledWorkOrderID = ScheduledWorkOrder.ID	
+									order by PMGenerationBatch.EntryDate DESC, case when PMGenerationDetail.DetailType != 0 then 0 else 1 end , PMGenerationDetail.Sequence DESC)
+									from ScheduledWorkOrder
+								update  ScheduledWorkOrder set StatusPMGenerationDetailID = (select top 1 PMGenerationDetail.ID
+									from PMGenerationDetail
+									join PMGenerationBatch on PMGenerationDetail.PMGenerationBatchID=  PMGenerationBatch.ID
+									where PMGenerationDetail.ScheduledWorkOrderID = ScheduledWorkOrder.ID	
+									and PMGenerationDetail.DetailType > 1	and PMGenerationDetail.DetailType < 6		
+									order by PMGenerationBatch.EntryDate DESC, PMGenerationDetail.Sequence DESC)
+									from ScheduledWorkOrder
+							")
+						),
+						new UpgradeStepSequence( // 1.1.6.4 Add comment field to meter readings
+							new AddColumnUpgradeStep("MeterReading.Comment")
+						),
+						new UpgradeStepSequence( // 1.1.6.5 Cleanup up Service configuration SMTPPort and MailPort defaults and nullability
+							new SetColumnRequiredUpgradeStep("ServiceConfiguration.SMTPPort"),
+							// change default values to null; we had provided no means for users to change the default values in the past so no need to check to see if they changed.
+							new SqlUpgradeStep(@"
+								UPDATE _DServiceConfiguration SET
+									SMTPPort = null,
+									MailPort = null
+							")
+						),
+						new UpgradeStepSequence( // 1.1.6.6 Remove no-longer-required IsPrimary flags
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderInsideTreeView"),
+							new AddTableUpgradeStep("WorkOrderInsideTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemporaryStorageTreeView"),
+							new AddTableUpgradeStep("WorkOrderTemporaryStorageTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderItemsTreeView"),
+							new AddTableUpgradeStep("WorkOrderItemsTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderMiscellaneousTreeView"),
+							new AddTableUpgradeStep("WorkOrderMiscellaneousTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderOutsideTreeView"),
+							new AddTableUpgradeStep("WorkOrderOutsideTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "PurchaseOrderLinkedWorkOrdersTreeview"),
+							new AddTableUpgradeStep("PurchaseOrderLinkedWorkOrdersTreeview"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderLinkedPurchaseOrdersTreeview"),
+							new AddTableUpgradeStep("WorkOrderLinkedPurchaseOrdersTreeview"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateInsideTreeView"),
+							new AddTableUpgradeStep("WorkOrderTemplateInsideTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateStorageTreeView"),
+							new AddTableUpgradeStep("WorkOrderTemplateStorageTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateItemsTreeView"),
+							new AddTableUpgradeStep("WorkOrderTemplateItemsTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateMiscellaneousTreeView"),
+							new AddTableUpgradeStep("WorkOrderTemplateMiscellaneousTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateOutsideTreeView"),
+							new AddTableUpgradeStep("WorkOrderTemplateOutsideTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "PurchaseOrderTemplateLinkedWorkOrderTemplatesTreeview"),
+							new AddTableUpgradeStep("PurchaseOrderTemplateLinkedWorkOrderTemplatesTreeview"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateLinkedPurchaseOrderTemplatesTreeview"),
+							new AddTableUpgradeStep("WorkOrderTemplateLinkedPurchaseOrderTemplatesTreeview"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "ContactRelatedRecordsContainment"),
+							new AddTableUpgradeStep("ContactRelatedRecordsContainment"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "UnitRelatedRecordsContainment"),
+							new AddTableUpgradeStep("UnitRelatedRecordsContainment"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderMeterTreeView"),
+							new AddTableUpgradeStep("WorkOrderMeterTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "ItemLocationAndContainers"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "LocationAndContainers"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateWithContainers")
+						),
+						new UpgradeStepSequence( // 1.1.6.7 remove WO/WOT linkage from WO Miscellaneous views
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderMiscellaneousTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderMiscellaneous"),
+							new AddTableUpgradeStep("WorkOrderMiscellaneous"),
+							new AddTableUpgradeStep("WorkOrderMiscellaneousTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateMiscellaneousTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateMiscellaneous"),
+							new AddTableUpgradeStep("WorkOrderTemplateMiscellaneous"),
+							new AddTableUpgradeStep("WorkOrderTemplateMiscellaneousTreeView")
+						),
+						new UpgradeStepSequence( // 1.1.6.8 Remove some TableEnums
+							new RemoveTableUpgradeStep(GetOriginalSchema, "ItemLocationContainment"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "LocationDerivationsAndItemLocations"),
+							new AddTableUpgradeStep("LocationDerivationsAndItemLocations"),
+							new AddTableUpgradeStep("ItemLocationContainment"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderItemsTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderItems"),
+							new AddTableUpgradeStep("WorkOrderItems"),
+							new AddTableUpgradeStep("WorkOrderItemsTreeView"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderInsideTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderInside"),
+							new AddTableUpgradeStep("WorkOrderInside"),
+							new AddTableUpgradeStep("WorkOrderInsideTreeView"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderOutsideTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderOutside"),
+							new AddTableUpgradeStep("WorkOrderOutside"),
+							new AddTableUpgradeStep("WorkOrderOutsideTreeView"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderMiscellaneousTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderMiscellaneous"),
+							new AddTableUpgradeStep("WorkOrderMiscellaneous"),
+							new AddTableUpgradeStep("WorkOrderMiscellaneousTreeView"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemporaryStorageTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemporaryStorage"),
+							new AddTableUpgradeStep("WorkOrderTemporaryStorage"),
+							new AddTableUpgradeStep("WorkOrderTemporaryStorageTreeView"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateStorageTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateStorage"),
+							new AddTableUpgradeStep("WorkOrderTemplateStorage"),
+							new AddTableUpgradeStep("WorkOrderTemplateStorageTreeView"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderLinkedPurchaseOrdersTreeview"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "PurchaseOrderLinkedWorkOrdersTreeview"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderPurchaseOrderView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderPurchaseOrderLinkage"),
+							new AddTableUpgradeStep("WorkOrderPurchaseOrderView"),
+							new AddTableUpgradeStep("PurchaseOrderLinkedWorkOrdersTreeview"),
+							new AddTableUpgradeStep("WorkOrderLinkedPurchaseOrdersTreeview"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "PurchaseOrderAssigneeProspect"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "RequestAssigneeProspect"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderAssigneeProspect"),
+							new AddTableUpgradeStep("WorkOrderAssigneeProspect"),
+							new AddTableUpgradeStep("RequestAssigneeProspect"),
+							new AddTableUpgradeStep("PurchaseOrderAssigneeProspect"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "LocationDerivations"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "ChargebackActivity")
+						),
+						new UpgradeStepSequence( // 1.1.6.9 Remove more TableEnums
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderInsideTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderInside"),
+							new AddTableUpgradeStep("WorkOrderInside"),
+							new AddTableUpgradeStep("WorkOrderInsideTreeView"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateItemsTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateItems"),
+							new AddTableUpgradeStep("WorkOrderTemplateItems"),
+							new AddTableUpgradeStep("WorkOrderTemplateItemsTreeView"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateInsideTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateInside"),
+							new AddTableUpgradeStep("WorkOrderTemplateInside"),
+							new AddTableUpgradeStep("WorkOrderTemplateInsideTreeView"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateOutsideTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateOutside"),
+							new AddTableUpgradeStep("WorkOrderTemplateOutside"),
+							new AddTableUpgradeStep("WorkOrderTemplateOutsideTreeView"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateMiscellaneousTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateMiscellaneous"),
+							new AddTableUpgradeStep("WorkOrderTemplateMiscellaneous"),
+							new AddTableUpgradeStep("WorkOrderTemplateMiscellaneousTreeView"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplateLinkedPurchaseOrderTemplatesTreeview"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "PurchaseOrderTemplateLinkedWorkOrderTemplatesTreeview"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplatePurchaseOrderTemplateView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderTemplatePurchaseOrderTemplateLinkage"),
+							new AddTableUpgradeStep("WorkOrderTemplatePurchaseOrderTemplateLinkage"),
+							new AddTableUpgradeStep("WorkOrderTemplatePurchaseOrderTemplateView"),
+							new AddTableUpgradeStep("PurchaseOrderTemplateLinkedWorkOrderTemplatesTreeview"),
+							new AddTableUpgradeStep("WorkOrderTemplateLinkedPurchaseOrderTemplatesTreeview"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "PurchaseOrderLine"),
+							new AddTableUpgradeStep("PurchaseOrderLine"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "PurchaseOrderTemplateLine"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "ReceiptActivity"),
+							new AddTableUpgradeStep("ReceiptActivity"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderMeterTreeView"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "MeterAndReadingVariants"),
+							new AddTableUpgradeStep("MeterAndReadingVariants"),
+							new AddTableUpgradeStep("WorkOrderMeterTreeView"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "ActiveTemporaryStorageWithItemAssignments"),
+							new AddTableUpgradeStep("ActiveTemporaryStorageWithItemAssignments"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "ItemPricing"),
+							new AddTableUpgradeStep("ItemPricing"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "ItemReceiving"),
+							new AddTableUpgradeStep("ItemReceiving"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "ContactFunctions"),
+							new AddTableUpgradeStep("ContactFunctions"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "CommittedPMGenerationDetailAndBatches"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "CommittedPMGenerationDetailAndPMGenerationBatch"),
+							new AddTableUpgradeStep("CommittedPMGenerationDetailAndPMGenerationBatch"),
+							new AddTableUpgradeStep("CommittedPMGenerationDetailAndBatches"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "PMGenerationDetailAndContainers"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "PMGenerationDetailAndScheduledWorkOrderAndLocation"),
+							new AddTableUpgradeStep("PMGenerationDetailAndScheduledWorkOrderAndLocation"),
+							new AddTableUpgradeStep("PMGenerationDetailAndContainers")
+						),
+						#endregion
+						#region 1.1.6.10 - 1.1.6.19
+						new UpgradeStepSequence( // 1.1.6.10 Remove unqualified joins
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_SetUpdatedRelativeLocationContainment"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_SetUpdatedTemplateTemporaryStorageContainment"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_SetUpdatedTemporaryStorageContainment"),
+							new AddExtensionObjectUpgradeStep("mbtg_SetUpdatedRelativeLocationContainment"),
+							new AddExtensionObjectUpgradeStep("mbtg_SetUpdatedTemplateTemporaryStorageContainment"),
+							new AddExtensionObjectUpgradeStep("mbtg_SetUpdatedTemporaryStorageContainment")
+						),
+						new UpgradeStepSequence(// 1.1.6.11 Complete WorkOrder WorkDueDate stuff
+							new AddVariableUpgradeStep("WODefaultSlackDays"),
+							new SqlUpgradeStep(@"
+								declare @zero datetime
+								set @zero = dbo._INew(0, 0, 0, 0, 0)
+								Exec dbo._VSetWODefaultSlackDays @zero"
+							),
+							// So that the Overdue status of old WOs more or less mimics old behaviour, we set the WorkDueDate on existing WOs to be the EndDateEstimate
+							new SqlUpgradeStep("Update WorkOrder set WorkDueDate = EndDateEstimate where WorkDueDate is null")
+						),
+						new UpgradeStepSequence(// 1.1.6.12 Link RequestStateHistory records to each other
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_EnforceNewRequestStateHistoryOrdering"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_EnforceRequestStateHistoryOrdering"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_RequestStateHistory_Updates_Request"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbfn_Request_CurrentRequestStateHistory"),
+							new AddColumnUpgradeStep("RequestStateHistory.PreviousRequestStateHistoryID"),
+							new SqlUpgradeStep(@"
+								with ordered (Id, RequestID, Seq) as (
+									select Id, RequestId, ROW_NUMBER() over (order by RequestID, EffectiveDate asc) from RequestStateHistory
+								)
+								update RequestStateHistory
+									set PreviousRequestStateHistoryID = P.Id
+									from
+										RequestStateHistory
+										join ordered as O on O.Id = RequestStateHistory.Id
+										join ordered as P on O.RequestID = P.RequestID and O.Seq = P.Seq + 1
+							"),
+							new AddExtensionObjectUpgradeStep("mbtg_RequestStateHistory_Updates_Request"),
+							new AddExtensionObjectUpgradeStep("mbtg_EnforceRequestStateHistoryOrdering"),
+
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_EnforceNewPurchaseOrderStateHistoryOrdering"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_EnforcePurchaseOrderStateHistoryOrdering"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_PurchaseOrderStateHistory_Updates_PurchaseOrderEtAl"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbfn_PurchaseOrder_CurrentPurchaseOrderStateHistory"),
+							new AddColumnUpgradeStep("PurchaseOrderStateHistory.PreviousPurchaseOrderStateHistoryID"),
+							new SqlUpgradeStep(@"
+								with ordered (Id, PurchaseOrderID, Seq) as (
+									select Id, PurchaseOrderId, ROW_NUMBER() over (order by PurchaseOrderID, EffectiveDate asc) from PurchaseOrderStateHistory
+								)
+								update PurchaseOrderStateHistory
+									set PreviousPurchaseOrderStateHistoryID = P.Id
+									from
+										PurchaseOrderStateHistory
+										join ordered as O on O.Id = PurchaseOrderStateHistory.Id
+										join ordered as P on O.PurchaseOrderID = P.PurchaseOrderID and O.Seq = P.Seq + 1
+							"),
+							new AddExtensionObjectUpgradeStep("mbtg_PurchaseOrderStateHistory_Updates_PurchaseOrderEtAl"),
+							new AddExtensionObjectUpgradeStep("mbtg_EnforcePurchaseOrderStateHistoryOrdering"),
+
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_EnforceNewWorkOrderStateHistoryOrdering"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_EnforceWorkOrderStateHistoryOrdering"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbfn_WorkOrder_CurrentWorkOrderStateHistory"),
+							new AddColumnUpgradeStep("WorkOrderStateHistory.PreviousWorkOrderStateHistoryID"),
+							new SqlUpgradeStep(@"
+								with ordered (Id, WorkOrderID, Seq) as (
+									select Id, WorkOrderId, ROW_NUMBER() over (order by WorkOrderID, EffectiveDate asc) from WorkOrderStateHistory
+								)
+								update WorkOrderStateHistory
+									set PreviousWorkOrderStateHistoryID = P.Id
+									from
+										WorkOrderStateHistory
+										join ordered as O on O.Id = WorkOrderStateHistory.Id
+										join ordered as P on O.WorkOrderID = P.WorkOrderID and O.Seq = P.Seq + 1
+							"),
+							new AddExtensionObjectUpgradeStep("mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl"),
+							new AddExtensionObjectUpgradeStep("mbtg_EnforceWorkOrderStateHistoryOrdering"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "RequestStateHistoryReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "PurchaseOrderStateHistoryReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderStateHistoryReport"),
+
+							new RemoveTableUpgradeStep(GetOriginalSchema, "RequestExtras"),
+							new AddTableUpgradeStep("RequestExtras"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "PurchaseOrderExtras"),
+							new AddTableUpgradeStep("PurchaseOrderExtras"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderExtras"),
+							new AddTableUpgradeStep("WorkOrderExtras")
+						),
+						new UpgradeStepSequence(// 1.1.6.13 Add UserID field to MeterReadings
+							new AddColumnUpgradeStep("MeterReading.UserID"),
+							new SetColumnNullableUpgradeStep("MeterReading.UserID")
+						),
+						new UpgradeStepSequence(// 1.1.6.14 Remove WorkOrderExtras fields that can be expression-calculated
 							new RemoveTableUpgradeStep(GetOriginalSchema, "MaintenanceForecastReport"),
-							new AddTableUpgradeStep("MaintenanceForecastReport")
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderExtras"),
+							new AddTableUpgradeStep("WorkOrderExtras"),
+							new AddTableUpgradeStep("MaintenanceForecastReport"),
+							new AddColumnUpgradeStep("WorkOrder.FirstWorkOrderStateHistoryID"),
+							new AddColumnUpgradeStep("WorkOrder.FirstOpenWorkOrderStateHistoryID"),
+							new AddColumnUpgradeStep("WorkOrder.CompletionWorkOrderStateHistoryID"),
+							new AddColumnUpgradeStep("WorkOrder.PreviousWorkedDays"),
+							new AddExtensionObjectUpgradeStep("mbfn_WorkOrder_PreviousWorkedDays"),
+							// Note that the inner subquery for setting the Completion State History must account for the possibility that there are no Draft records at all.
+							new SqlUpgradeStep(@"
+								update WorkOrder
+									set FirstWorkOrderStateHistoryID = FWOSH.Id,
+										PreviousWorkedDays = dbo.mbfn_WorkOrder_PreviousWorkedDays(WorkOrder.Id),
+										CompletionWorkOrderStateHistoryID =
+											(select top 1 WOSH.Id from WorkOrderStateHistory as WOSH
+												join WorkOrderState as WOS on WOS.Id = WOSH.WorkOrderStateID
+												where
+													case when EffectiveDate < (select max(EffectiveDate) from WorkOrderStateHistory as IWOSH join WorkOrderState as IWOS on IWOS.Id = IWOSH.WorkOrderStateID where IWOS.FilterAsDraft != 0 and WorkOrderID = WorkOrder.Id) then 0
+													else 1 end = 1
+													and WOS.FilterAsClosed != 0
+													and WorkOrderID = WorkOrder.Id
+												order by WOSH.EffectiveDate asc),
+										FirstOpenWorkOrderStateHistoryID =
+											(select top 1 WOSH.Id from WorkOrderStateHistory as WOSH
+												join WorkOrderState as WOS on WOS.Id = WOSH.WorkOrderStateID
+												where
+													WOS.FilterAsOpen != 0
+													and WorkOrderID = WorkOrder.Id
+												order by WOSH.EffectiveDate asc)
+									from
+										WorkOrder
+									left join
+										WorkOrderStateHistory as FWOSH on FWOSH.WorkOrderID = WorkOrder.Id and FWOSH.PreviousWorkOrderStateHistoryID is null
+							"),
+							new SetColumnRequiredUpgradeStep("WorkOrder.FirstWorkOrderStateHistoryID"),
+							new SetColumnRequiredUpgradeStep("WorkOrder.PreviousWorkedDays"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl"),
+							new AddExtensionObjectUpgradeStep("mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl"),
+							new AddExtensionObjectUpgradeStep("mbtg_WorkOrderStateHistoryUpdate_Updates_WorkOrder"),
+							new AddExtensionObjectUpgradeStep("mbtg_WorkOrder_PreviousWorkedDays")
+						),
+						new UpgradeStepSequence( // 1.1.6.15 Add WorkOrder and WorkOrderTemplate Attachment linkage tables
+							new AddTableUpgradeStep("WorkOrderAttachment"),
+							new AddTableUpgradeStep("WorkOrderTemplateAttachment")
+						),
+						new UpgradeStepSequence( // 1.1.6.16 Update the _DWorkOrder PreviousWorkedDays to non-null so new workorders have a value in edit buffer
+							new SqlUpgradeStep(@"
+								UPDATE _DWorkOrder SET PreviousWorkedDays = dbo._INew(0,0,0,0,0)
+							")
+						),
+						new UpgradeStepSequence( // 1.1.6.17 keep only one requestor per contact
+							new SqlUpgradeStep(@"
+								drop table if exists #mapping
+								select RemoveRequestor.id as RemoveRequestorId, KeepRequestor.id as KeepRequestorID, KeepRequestor.contactid 
+									into #mapping
+									from requestor as RemoveRequestor
+										join requestor as KeepRequestor on RemoveRequestor.contactid = KeepRequestor.contactid
+										join (select d.contactid, MAX(coalesce(d.hidden, '9999-12-31')) as hidden from requestor as d group by d.contactid having count(d.contactid ) > 1) as d on d.contactid = KeepRequestor.ContactID
+										where d.hidden = coalesce(KeepRequestor.hidden, '9999-12-31') and d.hidden != coalesce(RemoveRequestor.hidden, '9999-12-31')
+								update request set requestorid = KeepRequestorid from request join #mapping on requestorid = RemoveRequestorId
+								update workorder set requestorid = KeepRequestorid from workorder join #mapping on requestorid = RemoveRequestorId
+								delete requestor from requestor join #mapping on requestor.id = RemoveRequestorId
+								drop table #mapping
+							"),
+							new AddExtensionObjectUpgradeStep("mbtg_Requestor_Delete_Duplicates")
+						),
+						new UpgradeStepSequence(	// 1.1.6.18 Auto-hide Requestor and BillableRequestor when Contact is hidden
+							new UpdateCascadeHideTriggersUpgradeStep()
+						),
+						new UpgradeStepSequence(	// 1.1.6.19 Auto-hide Requestor and BillableRequestor when Contact is hidden
+							new AddColumnUpgradeStep("ScheduledWorkOrder.InitialWOStatusID"),
+							new AddColumnUpgradeStep("ScheduledWorkOrder.InitialWOComment")
+						),
+						#endregion
+						#region 1.1.6.20 -
+						new UpgradeStepSequence(	// 1.1.6.20 Add schemabinding to date/time math functions and new fns
+							// This also was done as version 1.1.5.11
+							new Version(1, 1, 6, 0),
+							new BuiltinFunctionCreateUpgradeStep("_DClosestDivisions"),
+							new BuiltinFunctionCreateUpgradeStep("_DClosestMonths"),
+							new BuiltinFunctionCreateUpgradeStep("_DClosestTicks"),
+							new BuiltinFunctionUpdateUpgradeStep("_DMinValue"),
+							new BuiltinFunctionUpdateUpgradeStep("_DClosestValue"),
+							new BuiltinFunctionUpdateUpgradeStep("_IIToSum"),
+							new BuiltinFunctionUpdateUpgradeStep("_IIToMilliseconds"),
+							new BuiltinFunctionUpdateUpgradeStep("_ISumToI"),
+							new BuiltinFunctionUpdateUpgradeStep("_IAdd"),
+							new BuiltinFunctionUpdateUpgradeStep("_ISubtract"),
+							new BuiltinFunctionUpdateUpgradeStep("_ISum"),
+							new BuiltinFunctionUpdateUpgradeStep("_IDiff"),
+							new BuiltinFunctionUpdateUpgradeStep("_INegate"),
+							new BuiltinFunctionUpdateUpgradeStep("_IScale"),
+							new BuiltinFunctionUpdateUpgradeStep("_IRatio"),
+							new BuiltinFunctionUpdateUpgradeStep("_INew"),
+							new BuiltinFunctionUpdateUpgradeStep("_IDateDiff")
+						),
+						new UpgradeStepSequence(	// 1.1.6.21 Drop old classifier functions
+							// If the following were put in the 4.2 chain they would also have to force a minimum app version for the non-admin apps.
+							// It also would mean that there may be some historical reports in the Admin app where you would no longer be able to group by date
+							// if you look at an upgraded DB with an older admin app. This would generate an error in Sql when the report data is fetched.
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "ClassifyDateByMonth"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "ClassifyDateByTime")
+						),
+						new UpgradeStepSequence(	// 1.1.6.22 Update views to use new _DClosestXxxx functions
+							// This is a duplicate of 1.1.5.12
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedActiveRequestAgeHistogram"),
+							new AddTableUpgradeStep("AssignedActiveRequestAgeHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedWorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("AssignedWorkOrderEndDateHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "PurchaseOrderExtras"),
+							new AddTableUpgradeStep("PurchaseOrderExtras"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_RequestedWorkOrder_ManageRequest"),
+							new AddExtensionObjectUpgradeStep("mbtg_RequestedWorkOrder_ManageRequest"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "RequestExtras"),
+							new AddTableUpgradeStep("RequestExtras"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "RequestAssignmentReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "RequestReport"),
+							new AddTableUpgradeStep("RequestReport"),
+							new AddTableUpgradeStep("RequestAssignmentReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "UnitReport"),
+							new AddTableUpgradeStep("UnitReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("WorkOrderEndDateHistogram"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl"),
+							new AddExtensionObjectUpgradeStep("mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl")
+						),
+						new UpgradeStepSequence(	// 1.1.6.23 Update views to always return Sql DATETIME type for date columns
+							// This is a duplicate of 1.1.5.13
+							new RemoveTableUpgradeStep(GetOriginalSchema, "ActiveRequestAgeHistogram"),
+							new AddTableUpgradeStep("ActiveRequestAgeHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedActiveRequestAgeHistogram"),
+							new AddTableUpgradeStep("AssignedActiveRequestAgeHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "AssignedWorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("AssignedWorkOrderEndDateHistogram"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "UnitReport"),
+							new AddTableUpgradeStep("UnitReport"),
+							new RemoveTableUpgradeStep(GetOriginalSchema, "WorkOrderEndDateHistogram"),
+							new AddTableUpgradeStep("WorkOrderEndDateHistogram"),
+							new RemoveExtensionObjectUpgradeStep(GetOriginalSchema, "mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl"),
+							new AddExtensionObjectUpgradeStep("mbtg_WorkOrderStateHistory_Updates_WorkOrderEtAl")
+						),
+						new UpgradeStepSequence(	// 1.1.6.24 Widen encrypted password fields in service config record
+							// This is a duplicate of 1.1.5.14
+							// We don't preserve the values from the _D table because we have never let anyone put non-null default passwords in
+							new SqlUpgradeStep("alter table ServiceConfiguration add TempPassword varbinary(max)"),
+							new SqlUpgradeStep("update ServiceConfiguration set TempPassword = SMTPEncryptedPassword"),
+							new RemoveColumnUpgradeStep(GetOriginalSchema, "ServiceConfiguration.SMTPEncryptedPassword"),
+							new AddColumnUpgradeStep("ServiceConfiguration.SMTPEncryptedPassword"),
+							new SqlUpgradeStep("update ServiceConfiguration set SMTPEncryptedPassword = TempPassword, TempPassword = MailEncryptedPassword"),
+							new RemoveColumnUpgradeStep(GetOriginalSchema, "ServiceConfiguration.MailEncryptedPassword"),
+							new AddColumnUpgradeStep("ServiceConfiguration.MailEncryptedPassword"),
+							new SqlUpgradeStep(@"
+								update ServiceConfiguration set MailEncryptedPassword = TempPassword
+                                alter table ServiceConfiguration drop column TempPassword")
+						),
+						new UpgradeStepSequence(	// 1.1.6.25 Add fields to support OAuth2
+							// This is a duplicate of 1.1.5.15
+							new Version(1, 1, 6, 0),
+							new AddColumnUpgradeStep("ServiceConfiguration.MailAuthenticationType"),
+							new SqlUpgradeStep(@"
+								update ServiceConfiguration set MailAuthenticationType = 0
+							"),
+							new SetColumnRequiredUpgradeStep("ServiceConfiguration.MailAuthenticationType"),
+							new AddColumnUpgradeStep("ServiceConfiguration.MailEncryptedClientSecret"),
+							new AddColumnUpgradeStep("ServiceConfiguration.MailClientCertificateName"),
+							new AddColumnUpgradeStep("ServiceConfiguration.MailClientID"),
+							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinMBAppVersion, new Version(4, 2, 4, 12)),
+							new SqlMinApplicationVersionUpgradeStep(dsMB.Schema.V.MinAReqAppVersion, new Version(4, 2, 4, 12))
 						),
 						#endregion
 					}
-				}
+				},
 				#endregion
+				// Note that for a while there were steps 1.2.0.0-1.2.0.2. These have now been moved to 1.1.6.1-1.1.6.3
 			}
 		},
 		// The DEBUG check schema has CODE; update when Schema has changed and upgrade steps have been added
-		0X1bacb67f5511456aUL, dsMB.Schema);
+		0xb29822f7b5abd2c9UL, dsMB.Schema);
 		#endregion
 	}
 }

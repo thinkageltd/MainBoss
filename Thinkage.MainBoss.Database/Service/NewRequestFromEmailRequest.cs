@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Net.Mail;
-using System.Text;
-using System.Linq;
-using Thinkage.Libraries;
-using Thinkage.Libraries.Translation;
-using Thinkage.Libraries.Service;
-using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.XAF.Database.Layout;
-using System.Text.RegularExpressions;
-using System.DirectoryServices;
 using System.Collections.Generic;
-using System.DirectoryServices.ActiveDirectory;
+using System.Net.Mail;
+using System.Text.RegularExpressions;
+using Thinkage.Libraries;
+using Thinkage.Libraries.Service;
+using Thinkage.Libraries.XAF.Database.Layout;
 
 namespace Thinkage.MainBoss.Database.Service {
 	#region ReplytoSender
@@ -42,9 +36,9 @@ namespace Thinkage.MainBoss.Database.Service {
 		private readonly IServiceLogging Log = null;
 		private readonly string AvoidSendingToPreventMessageLoopingEmailAddress = null;
 		private TimeSpan ManualProcessingAllowance;
-		private bool CreateRequestors = true;
-		private bool CreateFromEmail = true;
-		private bool CreateFromLDAP = true;
+		private readonly bool CreateRequestors = true;
+		private readonly bool CreateFromEmail = true;
+		private readonly bool CreateFromLDAP = true;
 		private readonly Regex AcceptRegex = null;
 		private readonly Regex RejectRegex = null;
 
@@ -53,8 +47,8 @@ namespace Thinkage.MainBoss.Database.Service {
 			Log = log;
 			ManualProcessingAllowance = manualProcessingAllowance;
 			AvoidSendingToPreventMessageLoopingEmailAddress = emailAddressToReject; // for checking for emails from same address as that used to processing incoming emails; could cause an endless loop of emails to ourselves
-			CreateFromEmail  = createFromEmail;
-			CreateFromLDAP   = createFromLDAP;
+			CreateFromEmail = createFromEmail;
+			CreateFromLDAP = createFromLDAP;
 			CreateRequestors = createRequestors | createFromLDAP | createFromEmail;
 			if (!string.IsNullOrWhiteSpace(acceptPattern)) {
 				try {
@@ -106,7 +100,7 @@ namespace Thinkage.MainBoss.Database.Service {
 					try {
 						from = new System.Net.Mail.MailAddress(emailRequest.F.RequestorEmailAddress, emailRequest.F.RequestorEmailDisplayName);
 					}
-					catch( System.Exception ) {
+					catch (System.Exception) {
 						ProcessingError(emailRequest, DatabaseEnums.EmailRequestState.NoRequestor, Strings.Format(KB.K("There was no valid sender's email address in the mail message")));
 						return null;
 					}
@@ -127,7 +121,7 @@ namespace Thinkage.MainBoss.Database.Service {
 							Log.LogWarning(requestorInfo.WarningText);
 						else if (requestorInfo.InfoText != null)
 							Log.LogInfo(requestorInfo.InfoText);
-	
+
 						var requestorID = requestorInfo.RequestorID;
 						if (requestorID == null) {
 							emailRequest.F.RequestID = null;
@@ -162,14 +156,14 @@ namespace Thinkage.MainBoss.Database.Service {
 			//
 			// retryable message expry and wil be rejected after a time limit
 			//
-			if( emailRequest.F.ProcessedDate.Value + ManualProcessingAllowance < DateTime.Now)
-				expiredState.TryGetValue(errorState,out errorState);
+			if (emailRequest.F.ProcessedDate.Value + ManualProcessingAllowance < DateTime.Now)
+				expiredState.TryGetValue(errorState, out errorState);
 
 			//
 			// the type of message returned to the user depends on the previous state and the new state
 			//
-			var currentState = (DatabaseEnums.EmailRequestState) emailRequest.F.ProcessingState;
-			if ( currentState == errorState && emailRequest.F.Comment == errorText)
+			var currentState = (DatabaseEnums.EmailRequestState)emailRequest.F.ProcessingState;
+			if (currentState == errorState && emailRequest.F.Comment == errorText)
 				return; // same state and same comment return, no message;
 
 			emailRequest.F.ProcessingState = (short)errorState;
@@ -179,29 +173,29 @@ namespace Thinkage.MainBoss.Database.Service {
 			var accept = AcceptRegex == null || AcceptRegex.Match(emailRequest.F.RequestorEmailAddress).Length >= 1;
 			var reject = RejectRegex != null && RejectRegex.Match(emailRequest.F.RequestorEmailAddress).Length >= 1;
 
-			if (!accept && reject) 
+			if (!accept && reject)
 				return; // no messages to spammers.
 
-			var retry = retryAble(errorState);
-			if( retry && currentState != DatabaseEnums.EmailRequestState.UnProcessed )
+			var retry = RetryAble(errorState);
+			if (retry && currentState != DatabaseEnums.EmailRequestState.UnProcessed)
 				return; // a message has been sent we don't want to send out out on each retry attempt.
 
-			if( retry )
+			if (retry)
 				textToUser = null;
-			else if( textToUser == null )
-					textToUser = Strings.Format(KB.K("No valid Requestor found for email address '{0}'"), emailRequest.F.RequestorEmailAddress);
-			if( emailRequest.F.ReceiveDate > DateTime.Today-TimeSpan.FromDays(30) ) // if over 30 days old we never send a message back
-				InformSender = new ReplytoSender(new MailAddress(emailRequest.F.RequestorEmailAddress, emailRequest.F.RequestorEmailDisplayName), emailRequest.F.Subject, emailRequest.F.ReceiveDate, 
-					retry,emailRequest.F.MailMessage, Thinkage.Libraries.Translation.MessageBuilder.PreferredLanguage((int?)emailRequest.F.PreferredLanguage), textToUser);
+			else if (textToUser == null)
+				textToUser = Strings.Format(KB.K("No valid Requestor found for email address '{0}'"), emailRequest.F.RequestorEmailAddress);
+			if (emailRequest.F.ReceiveDate > DateTime.Today - TimeSpan.FromDays(30)) // if over 30 days old we never send a message back
+				InformSender = new ReplytoSender(new MailAddress(emailRequest.F.RequestorEmailAddress, emailRequest.F.RequestorEmailDisplayName), emailRequest.F.Subject, emailRequest.F.ReceiveDate,
+					retry, emailRequest.F.MailMessage, Thinkage.Libraries.Translation.MessageBuilder.PreferredLanguage((int?)emailRequest.F.PreferredLanguage), textToUser);
 		}
-		static private Dictionary<DatabaseEnums.EmailRequestState, DatabaseEnums.EmailRequestState> expiredState = new Dictionary<DatabaseEnums.EmailRequestState, DatabaseEnums.EmailRequestState> {
+		private static readonly Dictionary<DatabaseEnums.EmailRequestState, DatabaseEnums.EmailRequestState> expiredState = new Dictionary<DatabaseEnums.EmailRequestState, DatabaseEnums.EmailRequestState> {
 			{ DatabaseEnums.EmailRequestState.NoContact, DatabaseEnums.EmailRequestState.RejectNoContact },
 			{ DatabaseEnums.EmailRequestState.NoRequestor, DatabaseEnums.EmailRequestState.RejectNoRequestor },
 			{ DatabaseEnums.EmailRequestState.AmbiguousRequestor, DatabaseEnums.EmailRequestState.RejectAmbiguousRequestor },
 			{ DatabaseEnums.EmailRequestState.AmbiguousContact, DatabaseEnums.EmailRequestState.RejectAmbiguousContact },
 			{ DatabaseEnums.EmailRequestState.AmbiguousContactCreation, DatabaseEnums.EmailRequestState.RejectAmbiguousContactCreation },
 		};
-		private bool retryAble(DatabaseEnums.EmailRequestState state) {
+		private static bool RetryAble(DatabaseEnums.EmailRequestState state) {
 			return state == DatabaseEnums.EmailRequestState.NoRequestor
 						|| state == DatabaseEnums.EmailRequestState.NoContact
 						|| state == DatabaseEnums.EmailRequestState.AmbiguousRequestor

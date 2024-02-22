@@ -8,7 +8,7 @@ namespace Thinkage.MainBoss.Application {
 		static KB() {
 			DeclareAssemblyProvidesTranslationsUsingResource(K(null), System.Reflection.Assembly.GetExecutingAssembly());
 		}
-		static KB Instance = new KB();
+		static readonly KB Instance = new KB();
 		public static SimpleKey K([Context(Level = 1)] string s) {
 #if FINDMISSINGTIPS
 			System.Diagnostics.Debug.Assert(!String.IsNullOrEmpty(s));

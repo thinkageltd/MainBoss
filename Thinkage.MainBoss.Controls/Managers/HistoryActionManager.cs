@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using Thinkage.Libraries;
 using Thinkage.Libraries.DataFlow;
 using Thinkage.Libraries.DBAccess;
 using Thinkage.Libraries.XAF.Database.Layout;
@@ -20,11 +18,12 @@ namespace Thinkage.MainBoss.Controls {
 		#region nested classes
 		// NOTE: Although this implements ICommand it should not be used directly since that does not apply any data-dependent Restrictions; instead
 		// GetCommand should be called to obtain an appropriately guarded command.
-		private static bool[] SubsequentModeRestrictions;
-		static HistoryActionManager() {
-			SubsequentModeRestrictions = new bool[(int)EdtMode.Max];
+		private static readonly bool[] SubsequentModeRestrictions = InitializeSubsequentModeRestrictions();
+		static bool[] InitializeSubsequentModeRestrictions() {
+			var subsequentModeRestrictions = new bool[(int)EdtMode.Max];
 			for (int i = (int)EdtMode.Max; --i >= 0;)
-				SubsequentModeRestrictions[i] = false;
+				subsequentModeRestrictions[i] = false;
+			return subsequentModeRestrictions;
 		}
 		public class Transition : SqlExpression.ILeafTransformation {
 			public class CommandForEditor : ICommand {
@@ -46,13 +45,13 @@ namespace Thinkage.MainBoss.Controls {
 				public event IEnabledChangedEvent EnabledChanged { add { } remove { } }
 				public void Execute() {
 					if (Transition.TransitionDefinition.CanTransitionWithoutUI)
-						using (SaveRecordNoUIControl ctrl = new SaveRecordNoUIControl(Transition.Manager.DB, EditTbl, EdtMode.New, new object[][] { null }, new bool[(int)EdtMode.Max], Transition.Manager.ParentUI, new List<TblActionNode>[] { constructInitList() }))
+						using (SaveRecordNoUIControl ctrl = new SaveRecordNoUIControl(Transition.Manager.DB, EditTbl, EdtMode.New, new object[][] { null }, new bool[(int)EdtMode.Max], Transition.Manager.ParentUI, new List<TblActionNode>[] { ConstructInitList() }))
 							ctrl.Save();
 					else
 						Thinkage.Libraries.Application.Instance.GetInterface<ITblDrivenApplication>().PerformMultiEdit(Transition.Manager.ParentUI.UIFactory, Transition.Manager.DB, EditTbl, EdtMode.New, new object[][] { null }, new bool[(int)EdtMode.Max], // All false, so the only operation is Save & Close.
-							new List<TblActionNode>[] { constructInitList() }, Transition.Manager.ParentUI.Form, Transition.Manager.ParentUI.LogicObject.CallEditorsModally, null);
+							new List<TblActionNode>[] { ConstructInitList() }, Transition.Manager.ParentUI.Form, Transition.Manager.ParentUI.LogicObject.CallEditorsModally, null);
 				}
-				private List<TblActionNode> constructInitList() {
+				private List<TblActionNode> ConstructInitList() {
 					List<TblActionNode> initList = new List<TblActionNode>();
 					MB3Client.StateHistoryTable h = Transition.Manager.HistoryTable.HistoryTable;
 					// By using PathOrFilterTarget here we force the corresponding bound control readonly in new mode. In other modes, the
@@ -277,36 +276,32 @@ namespace Thinkage.MainBoss.Controls {
 
 			// Read the history records from the cached buffer manager
 			Dictionary<Guid, State> statesById = new Dictionary<Guid, State>();
-			using (DynamicBufferManager bm = new DynamicBufferManager(DB, HistoryTable.HistoryTable.StateTable.Database, false))
-			{
+			using (DynamicBufferManager bm = new DynamicBufferManager(DB, HistoryTable.HistoryTable.StateTable.Database, false)) {
 				DynamicBufferManager.Query q = bm.Add(HistoryTable.HistoryTable.StateTable, false, null);
 				q.KeepUpToDate = true;
 				DBIDataTable stateTable = q.DataTable;
-				foreach (DBIDataRow r in stateTable)
-				{
+				foreach (DBIDataRow r in stateTable.Rows) {
 					Guid stateID = (Guid)r[HistoryTable.HistoryTable.StateTable.InternalIdColumn];
 					State state = new State(stateID, HistoryTable.HistoryTable, r, HistoryTable.CustomFlagField);
 					statesById.Add(stateID, state);
 				}
 			}
-			using (DynamicBufferManager bm = new DynamicBufferManager(DB, HistoryTable.HistoryTable.TransitionTable.Database, false))
-			{
+			using (DynamicBufferManager bm = new DynamicBufferManager(DB, HistoryTable.HistoryTable.TransitionTable.Database, false)) {
 				DynamicBufferManager.Query q = bm.Add(HistoryTable.HistoryTable.TransitionTable, false, null);
 				q.KeepUpToDate = true;
-				using (DataView view = new DataView(q.DataTable, null, new SortExpression(new DBI_Path(HistoryTable.HistoryTable.TransitionRankColumn), SortExpression.SortOrder.Asc).ToDataExpressionString(), DataViewRowState.CurrentRows)) {
-					var indicesByName = new Dictionary<Key, int>();
-					for (int i = 0; i < view.Count; ++i) {
-						Transition transition = new Transition(this, view[i].Row.ToDBIDataRow(), statesById, true, HistoryTable.EditTblToUseByDefault, HistoryTable.EditTblToUseWhenCustomFlagGoesFalse);
-						List<Transition> transitions;
-						if (!indicesByName.TryGetValue(transition.TransitionDefinition.Operation, out int transitionsIndex)) {
-							indicesByName.Add(transition.TransitionDefinition.Operation, Transitions.Count);
-							transitions = new List<Transition>();
-							Transitions.Add(transitions);
-						}
-						else
-							transitions = Transitions[transitionsIndex];
-						transitions.Add(transition);
+				var view = q.DataTable.Rows.Select(null, new SortExpression(new DBI_Path(HistoryTable.HistoryTable.TransitionRankColumn), SortExpression.SortOrder.Asc));
+				var indicesByName = new Dictionary<Key, int>();
+				for (int i = 0; i < view.Length; ++i) {
+					Transition transition = new Transition(this, view[i], statesById, true, HistoryTable.EditTblToUseByDefault, HistoryTable.EditTblToUseWhenCustomFlagGoesFalse);
+					List<Transition> transitions;
+					if (!indicesByName.TryGetValue(transition.TransitionDefinition.Operation, out int transitionsIndex)) {
+						indicesByName.Add(transition.TransitionDefinition.Operation, Transitions.Count);
+						transitions = new List<Transition>();
+						Transitions.Add(transitions);
 					}
+					else
+						transitions = Transitions[transitionsIndex];
+					transitions.Add(transition);
 				}
 			}
 		}

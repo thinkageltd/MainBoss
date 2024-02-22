@@ -13,10 +13,10 @@ using static Thinkage.Libraries.DBAccess.DBDataSet;
 namespace Thinkage.MainBoss.Database {
 	#region SavedOrganizationSession
 	public class SavedOrganizationSession : RegistrySession {
-		private static Version Version_1000_0_0_0 = new Version(1000, 0, 0, 0); // migrate from OLD organizations to dsSavedOrganization structure
-		private static Version Version_1000_1_0_0 = new Version(1000, 1, 0, 0); // move the PreferredOrganization settings to Variables in the dsSavedOrganization structure
-		private static Version Version_1000_2_0_0 = new Version(1000, 2, 0, 0); // delete the LastSelectedOrganization* variables no longer defined.
-		private static Version Version_1000_3_0_0 = new Version(1000, 3, 0, 0); // Add authentication credentials per entry and move the root directory to 4.0
+		private static readonly Version Version_1000_0_0_0 = new Version(1000, 0, 0, 0); // migrate from OLD organizations to dsSavedOrganization structure
+		private static readonly Version Version_1000_1_0_0 = new Version(1000, 1, 0, 0); // move the PreferredOrganization settings to Variables in the dsSavedOrganization structure
+		private static readonly Version Version_1000_2_0_0 = new Version(1000, 2, 0, 0); // delete the LastSelectedOrganization* variables no longer defined.
+		private static readonly Version Version_1000_3_0_0 = new Version(1000, 3, 0, 0); // Add authentication credentials per entry and move the root directory to 4.0
 		protected static Version LatestVersion = Version_1000_3_0_0;
 		#region Connection
 		/// <summary>
@@ -70,7 +70,7 @@ namespace Thinkage.MainBoss.Database {
 					if (currentVersion < Version_1000_2_0_0) {
 						var root = session.CreateItem(rootKeyDesignator);
 						session.UpgradeTo_1000_2_0_0(root);
-						currentVersion = session.SetDBVersion(schema, Version_1000_2_0_0);
+						_ = session.SetDBVersion(schema, Version_1000_2_0_0);
 					}
 				}
 				//TODO: Change the above pattern to a table driven mechanism when it becomes too unwieldly to maintain the way it is.
@@ -101,7 +101,7 @@ namespace Thinkage.MainBoss.Database {
 				Upgrade(session, currentVersion, schema);
 				return session;
 			}
-			protected void Upgrade(SavedOrganizationSession session, Version currentVersion, DBI_Database schema) {
+			protected static void Upgrade(SavedOrganizationSession session, Version currentVersion, DBI_Database schema) {
 				if (currentVersion < Version_1000_3_0_0) {
 					var root = session.CreateItem(rootKeyDesignator);
 					session.UpgradeTo_1000_3_0_0(root);
@@ -135,7 +135,7 @@ namespace Thinkage.MainBoss.Database {
 				List<string> columns = new List<string>(tKey.GetValueNames());
 				if (!columns.Contains(dsSavedOrganizations.Schema.T.Organizations.F.CompactBrowsers.Name))
 					tKey.SetValue(dsSavedOrganizations.Schema.T.Organizations.F.CompactBrowsers.Name, toConverter(false), valueKind);
-				tKey.Close();
+				tKey.Dispose();
 			}
 			CloseItemEnumerable(organizations);
 		}
@@ -165,7 +165,7 @@ namespace Thinkage.MainBoss.Database {
 					}
 				}
 				ds.DB.Update(ds);
-				varsToMigrate.Close();
+				varsToMigrate.Dispose();
 			}
 		}
 		private void UpgradeTo_1000_2_0_0(RegistryKey root) {
@@ -175,34 +175,6 @@ namespace Thinkage.MainBoss.Database {
 		private void UpgradeTo_1000_3_0_0(RegistryKey root) {
 
 			GetConverters(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsAuthenticationMethod.EffectiveType, out FromRegType authenticationMethodfromConverter, out ToRegType authenticationMethodtoConverter, out RegistryValueKind authenticationMethodValueKind);
-			// Move any Solo connection to a new organization record, and set the SoloOrganization variable to the id of that record. Then delete the Solo SubKey
-			var solo = root.OpenSubKey(KB.I("Solo"), true);
-			if (solo != null) {
-				var connection = solo.OpenSubKey(KB.I("ConnectionDefinition"), true);
-				if (connection != null) {
-					Guid soloRowId;
-					DBClient forUpdate = new DBClient(new DBClient.Connection(ConnectionObject, dsSavedOrganizations.Schema), this);
-					using (var ds = new dsSavedOrganizations(forUpdate)) {
-						ds.DisableUpdatePropagation();
-						ds.EnsureDataTableExists(dsSavedOrganizations.Schema.T.Organizations);
-						var soloRow = ds.T.Organizations.AddNewOrganizationsRow();
-						soloRow.F.OrganizationName = KB.I("MainBoss Solo");
-						soloRowId = soloRow.F.Id;
-						DBI_Variable v = dsSavedOrganizations.Schema.V.SoloOrganization;
-						ds.DB.EditVariable(ds, v);
-						ds[v].Value = v.EffectiveType.GenericAsNativeType(soloRowId, v.EffectiveType.GenericMinimalNativeType());
-						// leave the 'columns' to our cheater code later to copy the ConnectionDefinition key to the Organizationkey
-						ds.DB.Update(ds);
-					}
-					var dest = root.OpenSubKey(KB.I("Organizations") + "\\" + soloRowId.ToString(), RegistryKeyPermissionCheck.Default, System.Security.AccessControl.RegistryRights.CreateSubKey | System.Security.AccessControl.RegistryRights.FullControl);
-					Thinkage.Libraries.MSWindows.Registry.RegCopyTree(connection.Handle.DangerousGetHandle(), dest.Handle.DangerousGetHandle());
-					dest.Close();
-					connection.Close();
-					solo.DeleteSubKey(KB.I("ConnectionDefinition"));
-				}
-				solo.Close();
-				root.DeleteSubKey(KB.I("Solo"));
-			}
 
 			var organizations = GetItemEnumerable(dsSavedOrganizations.Schema.T.Organizations);
 			foreach (KeyValuePair<RegistryKey, string> organization in organizations) {
@@ -210,7 +182,7 @@ namespace Thinkage.MainBoss.Database {
 				List<string> columns = new List<string>(tKey.GetValueNames());
 				if (!columns.Contains(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsAuthenticationMethod.Name))
 					tKey.SetValue(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsAuthenticationMethod.Name, authenticationMethodtoConverter(AuthenticationMethod.WindowsAuthentication), authenticationMethodValueKind);
-				tKey.Close();
+				tKey.Dispose();
 			}
 			CloseItemEnumerable(organizations);
 		}
@@ -283,8 +255,8 @@ namespace Thinkage.MainBoss.Database {
 		long GenerationStampValue = 0;
 		#endregion
 		public void GetDBVersion(DBI_Database schema, out Version currentVersion) {
-			DBIDataSet varData = ViewVariables(dsSavedOrganizations.Schema.V.DBVersion);
 			try {
+				DBIDataSet varData = ViewVariables(dsSavedOrganizations.Schema.V.DBVersion);
 				currentVersion = new Version((string)varData[dsSavedOrganizations.Schema.V.DBVersion].Value);
 			}
 			catch (System.Exception) {
@@ -292,8 +264,8 @@ namespace Thinkage.MainBoss.Database {
 			}
 		}
 		protected Version SetDBVersion(DBI_Database schema, Version newVersion) {
-			DBIDataSet varData = ViewVariables(dsSavedOrganizations.Schema.V.DBVersion);
 			try {
+				DBIDataSet varData = ViewVariables(dsSavedOrganizations.Schema.V.DBVersion);
 				varData[dsSavedOrganizations.Schema.V.DBVersion].Value = newVersion.ToString();
 				UpdateGivenVariables(ServerExtensions.UpdateOptions.Normal, varData[dsSavedOrganizations.Schema.V.DBVersion]);
 			}
@@ -383,7 +355,7 @@ namespace Thinkage.MainBoss.Database {
 					var valueAsStored = sc.GetValue(sourceColumnSchema.Name);
 					if (valueAsStored is string s)
 						// Encode the string as a byte array, which is what should have been stored in the first place.
-						valueAsStored = Schema.VariableEncoderProviderObject.GetValueEncoder(Libraries.XAF.Database.Service.MSSql.Server.NVARCHAR_MAX_NULLABLE_TypeInfo, Libraries.XAF.Database.Service.MSSql.Server.EncodedType).Encode(s);
+						valueAsStored = Schema.VariableEncoderProviderObject.GetValueEncoder(Server.MaximumStringTypeInfo.UnionCompatible(NullTypeInfo.Universe), Libraries.XAF.Database.Service.MSSql.Server.EncodedType).Encode(s);
 					return (Byte[])valueAsStored;
 				};
 				normalUpdater = (sc, v) => {
@@ -398,7 +370,7 @@ namespace Thinkage.MainBoss.Database {
 						else {
 							var blobValue = (Byte[])v;
 							try {
-								var stringValue = (string)Schema.VariableEncoderProviderObject.GetValueEncoder(Libraries.XAF.Database.Service.MSSql.Server.NVARCHAR_MAX_NULLABLE_TypeInfo, Libraries.XAF.Database.Service.MSSql.Server.EncodedType).UnEncode(blobValue);
+								var stringValue = (string)Schema.VariableEncoderProviderObject.GetValueEncoder(Server.MaximumStringTypeInfo.UnionCompatible(NullTypeInfo.Universe), Libraries.XAF.Database.Service.MSSql.Server.EncodedType).UnEncode(blobValue);
 								var regex = new System.Text.RegularExpressions.Regex("^[0-9.]+$");
 								if (regex.IsMatch(stringValue)) {
 									sc.SetValue(sourceColumnSchema.Name, stringValue, RegistryValueKind.String);
@@ -421,7 +393,7 @@ namespace Thinkage.MainBoss.Database {
 		/// <summary>
 		/// Our cache of DBVersions extracted from the organizations in our list.
 		/// </summary>
-		private Dictionary<Guid, DatabaseOnServerInformation> DBVersions = new Dictionary<Guid, DatabaseOnServerInformation>();
+		private readonly Dictionary<Guid, DatabaseOnServerInformation> DBVersions = new Dictionary<Guid, DatabaseOnServerInformation>();
 		/// <summary>
 		/// Refresh our cache of DBVersions will cause probing to restart when we are next queried for information.
 		/// </summary>

@@ -54,9 +54,10 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			get;
 			set;
 		}
+
 		// Setup to do EmailAddress validation for Requestors to make comments. We proxy what is necessary from the EmailValidationModel that we create for our use.
 
-		EmailValidationModel RequestorEmailValidation = new EmailValidationModel();
+		private readonly EmailValidationModel RequestorEmailValidation = new EmailValidationModel();
 		public string EmailAddress {
 			get {
 				return RequestorEmailValidation.EmailAddress;

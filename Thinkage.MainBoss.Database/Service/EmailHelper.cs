@@ -27,18 +27,18 @@ namespace Thinkage.MainBoss.Database.Service {
 			if (e == null)
 				return ErrorRecovery.NoRetry;
 			switch (e.StatusCode) {
-				case SmtpStatusCode.GeneralFailure:
-				case SmtpStatusCode.MustIssueStartTlsFirst:
-				case SmtpStatusCode.ClientNotPermitted:
-				case SmtpStatusCode.ServiceNotAvailable:
-					return ErrorRecovery.StopProcessing;
-				case SmtpStatusCode.MailboxBusy:
-				case SmtpStatusCode.InsufficientStorage:
-				case SmtpStatusCode.TransactionFailed:
-				case SmtpStatusCode.MailboxUnavailable:
-					return ErrorRecovery.RetryMessage;
-				default:
-					return ErrorRecovery.NoRetry;
+			case SmtpStatusCode.GeneralFailure:
+			case SmtpStatusCode.MustIssueStartTlsFirst:
+			case SmtpStatusCode.ClientNotPermitted:
+			case SmtpStatusCode.ServiceNotAvailable:
+				return ErrorRecovery.StopProcessing;
+			case SmtpStatusCode.MailboxBusy:
+			case SmtpStatusCode.InsufficientStorage:
+			case SmtpStatusCode.TransactionFailed:
+			case SmtpStatusCode.MailboxUnavailable:
+				return ErrorRecovery.RetryMessage;
+			default:
+				return ErrorRecovery.NoRetry;
 			}
 		}
 		public enum ErrorRecovery {
@@ -46,7 +46,5 @@ namespace Thinkage.MainBoss.Database.Service {
 			RetryMessage,
 			NoRetry
 		}
-
-
 	}
 }

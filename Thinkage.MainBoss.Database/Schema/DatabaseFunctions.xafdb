@@ -124,24 +124,4 @@ BEGIN
 END
 	</extension>
   </object>
-  <object class="function" name="ClassifyDateByMonth">
-	<doc>This function is used in report grouping to classify date-time values into month-sized classes</doc>
-	<extension name="body">
-	  (@value as datetime, @epsilon as integer)
-	  returns datetime
-	  as begin
-		  return dbo._DClosestValue(@value, 1, @epsilon)
-	  end	  
-	</extension>
-  </object>
-  <object class="function" name="ClassifyDateByTime">
-	<doc>This function is used in report grouping to classify date-time values into time-sized classes</doc>
-	<extension name="body">
-	  (@value as datetime, @epsilon as XAFInterval)
-	  returns datetime
-	  as begin
-		  return dbo._DClosestValue(@value, 0, 10000 * dbo._IIToMilliseconds(@epsilon))
-	  end	  
-	</extension>
-  </object>
 </database>

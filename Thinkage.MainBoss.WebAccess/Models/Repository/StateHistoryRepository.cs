@@ -10,9 +10,15 @@ using Thinkage.MainBoss.Database;
 
 namespace Thinkage.MainBoss.WebAccess.Models {
 	[Serializable]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "No need for other constructors")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2229:Implement serialization constructors", Justification = "No need for other constructors")]
+
 	public class ActionNotPermittedForCurrentStateException : System.Exception {
 	}
 	[Serializable]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "No need for other constructors")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2229:Implement serialization constructors", Justification = "No need for other constructors")]
+
 	public class StateHistoryChangedUnderneathUsException : System.Exception {
 		[NonSerialized]
 		public readonly Guid NewStateHistoryID;
@@ -20,7 +26,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		public readonly Guid ParentID;
 		public StateHistoryChangedUnderneathUsException(Guid parentID, Guid currentStateHistoryID)
 			: base() {
-				ParentID = parentID;
+			ParentID = parentID;
 			NewStateHistoryID = currentStateHistoryID;
 		}
 	}
@@ -44,13 +50,15 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		/// <returns></returns>
 		protected delegate string AllowedState(Guid currentState);
 
-		public StateHistoryRepository([Invariant] string governingTableRight, FormMap formDefinition)
+		protected StateHistoryRepository([Invariant] string governingTableRight, FormMap formDefinition)
 			: base(governingTableRight, formDefinition) {
 		}
 		#region State Transition Map
 		public Transition FindTransitionByName(string name) {
 			return Transitions.Find(t => t.Name.IdentifyingName.Equals(name));
 		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<Pending>")]
 		public class Transition {
 			public readonly MB3Client.StateHistoryTransition TransitionDefinition;
 			public readonly State OldState;
@@ -71,8 +79,11 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 						Restrictions.Add(r);
 			}
 		}
+
+
 		// The State class defines each State, and provides the list of Transitions out of that state. It also acts as a Disabler that is only enabled
 		// when it is the CurrentState.
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<Pending>")]
 		public class State {
 			public readonly Guid ID;
 			public readonly List<Transition> Transitions = new List<Transition>();
@@ -92,7 +103,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 				DynamicBufferManager.Query q = bm.Add(HistoryTable.StateTable, false, null);
 				q.KeepUpToDate = true;
 				DBIDataTable stateTable = q.DataTable;
-				foreach (DBIDataRow r in stateTable) {
+				foreach (DBIDataRow r in stateTable.Rows) {
 					Guid stateID = (Guid)r[HistoryTable.StateTable.InternalIdColumn];
 					State state = new State(stateID, HistoryTable.StateRestrictions, r);
 					stateMap.Add(stateID, state);
@@ -101,9 +112,9 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 			using (DynamicBufferManager bm = new DynamicBufferManager(DB, HistoryTable.TransitionTable.Database, false)) {
 				DynamicBufferManager.Query q = bm.Add(HistoryTable.TransitionTable, false, null);
 				q.KeepUpToDate = true;
-				DataView view = new DataView(q.DataTable, null, new SortExpression(new DBI_Path(HistoryTable.TransitionRankColumn), SortExpression.SortOrder.Asc).ToDataExpressionString(), DataViewRowState.CurrentRows);
-				for (int i = 0; i < view.Count; ++i) {
-					Transition transition = new Transition(HistoryTable, view[i].Row.ToDBIDataRow(), stateMap);
+				DBIDataRow[] view = q.DataTable.Rows.Select(null, new SortExpression(new DBI_Path(HistoryTable.TransitionRankColumn), SortExpression.SortOrder.Asc));
+				for (int i = 0; i < view.Length; ++i) {
+					Transition transition = new Transition(HistoryTable, view[i], stateMap);
 					transition.OldState.Transitions.Add(transition);
 					transitions.Add(transition);
 				}
@@ -114,7 +125,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		#region IStateHistoryRepository Members
 
 		public abstract List<StateHistoryRepository.Transition> Transitions {
-			get ;
+			get;
 		}
 
 		#endregion

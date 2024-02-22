@@ -1,6 +1,6 @@
 using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
-using Thinkage.Libraries.RDL2010;
+using Thinkage.Libraries.RDL2016;
 using Thinkage.Libraries.RDLReports;
 using Thinkage.MainBoss.Database;
 
@@ -71,7 +71,7 @@ namespace Thinkage.MainBoss.Controls.Reports {
 			: base(r, logic, dsMB.Path.T.RequestStateHistory.F.RequestID) {
 		}
 		protected override void MakeChartTemplates() {
-			var endTimePath = dsMB.Path.T.RequestStateHistory.F.Id.L.RequestStateHistoryReport.PreviousRequestStateHistoryID.F.RequestStateHistoryID.F.EffectiveDate;
+			var endTimePath = dsMB.Path.T.RequestStateHistory.F.Id.L.RequestStateHistory.PreviousRequestStateHistoryID.F.EffectiveDate;
 			MakeStatusChart(TabularReport.MakeSearchValueFromPath(dsMB.Path.T.RequestStateHistory.F.RequestStateHistoryStatusID), TIReports.IntervalDifferenceQueryExpression(new SqlExpression(dsMB.Path.T.RequestStateHistory.F.EffectiveDate), SqlExpression.Coalesce(new SqlExpression(endTimePath), SqlExpression.Now(endTimePath.ReferencedColumn.EffectiveType))));
 		}
 	}

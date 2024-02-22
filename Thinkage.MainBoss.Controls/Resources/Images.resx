@@ -187,6 +187,21 @@
 	<data name="PostalAddress" type="System.Resources.ResXFileRef, System.Windows.Forms">
 		<value>postaladdress.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
 	</data>
+		<data name="ProcessEmailBitmap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+		<value>VS2017\ReceiveMail_16x.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+	</data>
+	<data name="ConfigureServiceBitmap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+		<value>VS2017\ProcessServices_16x.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+	</data>
+	<data name="VerifyServiceBitmap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+		<value>VS2017\ValidateDocument_16x.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+	</data>
+	<data name="WindowsServiceBitmap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+		<value>VS2017\WindowsService_16x.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+	</data>
+	<data name="WindowsServiceStopBitmap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+		<value>VS2017\WindowsServiceStop_16x.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+	</data>
 	<data name="Purchase" type="System.Resources.ResXFileRef, System.Windows.Forms">
 		<value>purchase.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
 	</data>

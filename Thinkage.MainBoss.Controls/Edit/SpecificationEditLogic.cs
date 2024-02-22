@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
 using Thinkage.Libraries.XAF.Database.Layout;
@@ -9,8 +8,7 @@ using Thinkage.Libraries.TypeInfo;
 using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.MainBoss.Database;
 
-namespace Thinkage.MainBoss.Controls
-{
+namespace Thinkage.MainBoss.Controls {
 	public class SpecificationEditLogic : EditLogic {
 		public static readonly Thinkage.Libraries.Translation.Key CustomFieldPlaceholderLabel = KB.T("Custom Fields Placeholder");
 		private class RowMapperClass {
@@ -19,12 +17,13 @@ namespace Thinkage.MainBoss.Controls
 					throw new GeneralException(KB.T("Only one Specification can be edited at a time"));
 
 				// Create a mapping between recordSet indices and SpecificationFormFieldID IDs.
-				SpecificatonFormFieldIDsByRecordSet = new List<object>();
-				for (int i = tbl.RecordSetCount; --i >= 0; )
-					SpecificatonFormFieldIDsByRecordSet.Add(null);
+				SpecificationFormFieldIDsByRecordSet = new List<object>();
+				for (int i = tbl.RecordSetCount; --i >= 0;)
+					SpecificationFormFieldIDsByRecordSet.Add(null);
 
 				// Create a new set of layout nodes for use in our substitute Tbl. We will be replacing a placeholder with the nodes resulting from the SpecificationFormField records.
-				var newLayout = new List<TblLayoutNode>(((TblLayoutNodeArray)tbl.Columns.Clone()).ColumnArray);
+				System.Diagnostics.Debug.Assert(((TblLayoutNode)tbl.Columns[0]).Label.IdentifyingName == "Details");
+				var newDetailsLayout = new List<TblLayoutNode>(((TblLayoutNodeArray)((TblContainerNode)tbl.Columns[0]).Columns.Clone()).ColumnArray);
 
 				// We have to make sure the Form is properly identified. There must be an Init directive to set the field if the user starts or switches to New mode,
 				// and we also have to know the form ID right here in order to generate the custom Tbl.
@@ -34,9 +33,8 @@ namespace Thinkage.MainBoss.Controls
 				if (mode != EdtMode.EditDefault && mode != EdtMode.ViewDefault) {
 					// Find and extract the Init targeting the SpecificationFormID field. There should be only one.
 					Init formIdInit = null;
-					for (int i = ModifiedInitLists[0].Count; --i >= 0; ) {
-						Init init = ModifiedInitLists[0][i] as Init;
-						if (init == null)
+					for (int i = ModifiedInitLists[0].Count; --i >= 0;) {
+						if (!(ModifiedInitLists[0][i] is Init init))
 							continue;
 						PathTarget pTarget = init.InitTarget as PathTarget;
 						PathOrFilterTarget pfTarget = init.InitTarget as PathOrFilterTarget;
@@ -63,9 +61,8 @@ namespace Thinkage.MainBoss.Controls
 						// TODO: Verify the init is on New Load only.
 
 						// Verify the init has a constant source whose value is not null.
-						ConstantValue source = formIdInit.InitValue as ConstantValue;
-						if (source == null)
-							formIdInit = null;	// TODO: this quietly tosses the "defective" init we found.
+						if (!(formIdInit.InitValue is ConstantValue source))
+							formIdInit = null;  // TODO: this quietly tosses the "defective" init we found.
 						else
 							formID = source.Value;
 					}
@@ -75,7 +72,7 @@ namespace Thinkage.MainBoss.Controls
 							// In all modes relying on an existing specification record fetch the identified Specification record
 							// and extract the form ID from it. We ignore any init that might have been there
 							// TODO (debugging?) if there was an init it should match what is in the record. Not sure about this one.
-							DBIDataRow r = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.Specification, SqlExpression.Constant(rowIDs[0][0]).Eq(new SqlExpression(dsMB.Path.T.Specification.F.Id))).ToDBIDataRow();
+							DBIDataRow r = ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.Specification, SqlExpression.Constant(rowIDs[0][0]).Eq(new SqlExpression(dsMB.Path.T.Specification.F.Id)));
 							if (r != null)
 								formID = r[dsMB.Schema.T.Specification.F.SpecificationFormID];
 							else
@@ -91,11 +88,11 @@ namespace Thinkage.MainBoss.Controls
 						// Find the placeholder in the layout columns before which we should place the custom fields. It is identified by its NodeId.
 						// Note that we do no remove the placeholder node. If we find no placeholder the nodes go at the end.
 						int customPlacement;
-						for (customPlacement = 0; customPlacement < newLayout.Count; ++customPlacement)
-							if (newLayout[customPlacement].Label == CustomFieldPlaceholderLabel)
+						for (customPlacement = 0; customPlacement < newDetailsLayout.Count; ++customPlacement)
+							if (newDetailsLayout[customPlacement].Label == CustomFieldPlaceholderLabel)
 								break;
 						// Remove the placeholder now that we have found it.
-						newLayout.RemoveAt(customPlacement);
+						newDetailsLayout.RemoveAt(customPlacement);
 
 						var splitterContents = new List<TblLayoutNode>();
 						var splitterColumnContents = new List<TblLayoutNode>();
@@ -108,55 +105,51 @@ namespace Thinkage.MainBoss.Controls
 						//ds.DB.View(ds, dsMB.Schema.T.SpecificationForm, SqlExpression.Constant(FormID).Eq(new SqlExpression(dsMB.Path.T.SpecificationForm.F.Id)))
 						ds.DB.ViewAdditionalRows(ds, dsMB.Schema.T.SpecificationFormField, SqlExpression.Constant(formID).Eq(new SqlExpression(dsMB.Path.T.SpecificationFormField.F.SpecificationFormID)));
 						// Build the extra tbl layout nodes and add to the mapping table. We use a DataView to sort the fields in desired order.
-						using (DataView sorted = new DataView(ds.T.SpecificationFormField, null, dsMB.Schema.T.SpecificationFormField.F.FieldOrder.Name, DataViewRowState.OriginalRows)) {
-							for (int i = 0; i < sorted.Count; i++) {
-								int rs = SpecificatonFormFieldIDsByRecordSet.Count;
-								DBIDataRow row = sorted[i].Row.ToDBIDataRow();
-								object formFieldID = row[dsMB.Schema.T.SpecificationFormField.F.Id];
-								SpecificatonFormFieldIDsByRecordSet.Add(formFieldID);
+						foreach (var row in ds.T.SpecificationFormField.Rows.Select(null, new SortExpression(dsMB.Path.T.SpecificationFormField.F.FieldOrder))) {
+							int rs = SpecificationFormFieldIDsByRecordSet.Count;
+							object formFieldID = row.F.Id;
+							SpecificationFormFieldIDsByRecordSet.Add(formFieldID);
 
-								// TODO: allow types other than 1-line text.
-								// TODO: The data field should be of type binary (blob) [and then the 80 that corresponds to the field limit in SpecificationFormData.FieldValue can go away]
-								// To enforce the column length properly, we need a custom derivation of TblColumnNode which overrides the accessor that obtains
-								// the type of the bound value, and which also wraps the field with an encoder similar to the one used for Variables.
-								splitterColumnContents.Add(
-									TblCustomTypedColumnNode.New(
-										KB.T((string)row[dsMB.Schema.T.SpecificationFormField.F.EditLabel]),
-										new StringTypeInfo(0, Math.Min((int)row[dsMB.Schema.T.SpecificationFormField.F.FieldSize], 80), 0, false, false, false),
-											delegate(object o)
-											{
-												// nothing special needed for now
-												return o;
-											},
-											delegate(object o)
-											{
-												// nothing special needed for now
-												return o;
-											},
-										dsMB.Path.T.SpecificationData.F.FieldValue, rs, ECol.Normal));
+							// TODO: allow types other than 1-line text.
+							// TODO: The data field should be of type binary (blob) [and then the 80 that corresponds to the field limit in SpecificationFormData.FieldValue can go away]
+							// To enforce the column length properly, we need a custom derivation of TblColumnNode which overrides the accessor that obtains
+							// the type of the bound value, and which also wraps the field with an encoder similar to the one used for Variables.
+							splitterColumnContents.Add(
+								TblCustomTypedColumnNode.New(
+									KB.T(row.F.EditLabel),
+									new StringTypeInfo(0, Math.Min(row.F.FieldSize, 80), 0, false, false, false),
+										delegate (object o) {
+											// nothing special needed for now
+											return o;
+										},
+										delegate (object o) {
+											// nothing special needed for now
+											return o;
+										},
+									dsMB.Path.T.SpecificationData.F.FieldValue, rs, ECol.Normal));
 
-								// Add the Init directive which in New and Clone modes links the Data record to the Specification
-								ModifiedInitLists[0].Add(Init.LinkRecordSets(dsMB.Path.T.SpecificationData.F.SpecificationID, rs, dsMB.Path.T.Specification.F.Id, 0));
+							// Add the Init directive which in New and Clone modes links the Data record to the Specification
+							ModifiedInitLists[0].Add(Init.LinkRecordSets(dsMB.Path.T.SpecificationData.F.SpecificationID, rs, dsMB.Path.T.Specification.F.Id, 0));
 
-								// Add the Init directive which in New mode links the Data record to the SpecificationFormField (clone doesn't need this, as the cloned value
-								// will be correct)
-								ModifiedInitLists[0].Add(Init.OnLoadNew(new PathTarget(dsMB.Path.T.SpecificationData.F.SpecificationFormFieldID, rs), new ConstantValue(formFieldID)));
+							// Add the Init directive which in New mode links the Data record to the SpecificationFormField (clone doesn't need this, as the cloned value
+							// will be correct)
+							ModifiedInitLists[0].Add(Init.OnLoadNew(new PathTarget(dsMB.Path.T.SpecificationData.F.SpecificationFormFieldID, rs), new ConstantValue(formFieldID)));
 
-								if (splitterColumnContents.Count >= 15) {
-									splitterContents.Add(TblSectionNode.New(new TblLayoutNode.ICtorArg[] { ECol.Normal }, splitterColumnContents.ToArray()));
-									splitterColumnContents.Clear();
-								}
+							if (splitterColumnContents.Count >= 15) {
+								splitterContents.Add(TblSectionNode.New(new TblLayoutNode.ICtorArg[] { ECol.Normal }, splitterColumnContents.ToArray()));
+								splitterColumnContents.Clear();
 							}
 						}
 						if (splitterColumnContents.Count > 0)
 							splitterContents.Add(TblSectionNode.New(new TblLayoutNode.ICtorArg[] { ECol.Normal }, splitterColumnContents.ToArray()));
-						newLayout.Insert(customPlacement, TblContainerNode.New(new TblLayoutNode.ICtorArg[] { ECol.Normal }, splitterContents.ToArray()));
+						newDetailsLayout.Insert(customPlacement, TblContainerNode.New(new TblLayoutNode.ICtorArg[] { ECol.Normal }, splitterContents.ToArray()));
 					}
 				}
-				CustomizedTbl = new Tbl(tbl.Schema, tbl.Identification, tbl.Attributes, new TblLayoutNodeArray(newLayout), tbl.InitList);
+				// we replace the Details container and other tab nodes with JUST the newDetailsLayout
+				CustomizedTbl = new Tbl(tbl.Schema, tbl.Identification, tbl.Attributes, new TblLayoutNodeArray(newDetailsLayout), tbl.InitList);
 			}
 			public readonly List<TblActionNode>[] ModifiedInitLists;
-			public readonly List<object> SpecificatonFormFieldIDsByRecordSet;
+			public readonly List<object> SpecificationFormFieldIDsByRecordSet;
 			public readonly Tbl CustomizedTbl;
 		}
 		public SpecificationEditLogic(IEditUI control, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
@@ -175,11 +168,11 @@ namespace Thinkage.MainBoss.Controls
 			object[] result = base.GetFullRowIDs();
 			using (dsMB ds = new dsMB(DB)) {
 				ds.DB.ViewAdditionalRows(ds, dsMB.Schema.T.SpecificationData, new SqlExpression(dsMB.Path.T.SpecificationData.F.SpecificationID).Eq(SqlExpression.Constant(result[0])));
-				foreach (DBIDataRow r in ds.T.SpecificationData) {
+				foreach (DBIDataRow r in ds.T.SpecificationData.Rows) {
 					object formFieldID = r[dsMB.Schema.T.SpecificationData.F.SpecificationFormFieldID];
 					object dataID = r[dsMB.Schema.T.SpecificationData.F.Id];
-					for (int i = RowMapper.SpecificatonFormFieldIDsByRecordSet.Count; --i >= 0; )
-						if (dsMB.Schema.T.SpecificationData.F.SpecificationFormFieldID.EffectiveType.GenericEquals(formFieldID, RowMapper.SpecificatonFormFieldIDsByRecordSet[i])) {
+					for (int i = RowMapper.SpecificationFormFieldIDsByRecordSet.Count; --i >= 0;)
+						if (dsMB.Schema.T.SpecificationData.F.SpecificationFormFieldID.EffectiveType.GenericEquals(formFieldID, RowMapper.SpecificationFormFieldIDsByRecordSet[i])) {
 							result[i] = dataID;
 							break;
 						}
@@ -188,5 +181,4 @@ namespace Thinkage.MainBoss.Controls
 			return result;
 		}
 	}
-
 }

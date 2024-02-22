@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.XAF.Database.Service.MSSql;
-using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Translation;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.XAF.Database.Service;
 
 namespace Thinkage.MainBoss.Database {
@@ -35,14 +34,14 @@ namespace Thinkage.MainBoss.Database {
 				int roleid = (int)Security.RightSet.UpgradeUser[i];
 				nonadminroles.Add(roleid);
 			}
-			session.ExecuteCommand(new MSSqlLiteralCommandSpecification(KB.I(@"
+			session.ExecuteCommand(new DBSpecificCommandSpecification(KB.I(@"
 				CREATE TABLE dbo.##adminroles (
 					nroleid uniqueidentifier,
 					nprincipalid uniqueidentifier,
 					code nvarchar(100)
 				)
 			")));
-			session.ExecuteCommand(new MSSqlLiteralCommandSpecification(KB.I(@"
+			session.ExecuteCommand(new DBSpecificCommandSpecification(KB.I(@"
 				CREATE TABLE dbo.##nonadminroles (
 					nroleid uniqueidentifier,
 					nprincipalid uniqueidentifier,
@@ -52,65 +51,37 @@ namespace Thinkage.MainBoss.Database {
 			foreach (int i in adminroles) {
 				Guid roleId;
 				roleId = KnownIds.RoleAndPrincipalIDFromRoleRight(i, out Guid principalId);
-				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat("INSERT INTO ##adminroles (nroleid, nprincipalid, code) VALUES ('{0}', '{1}', '{2}')", roleId.ToString("D"), principalId.ToString("D"), i.ToString())));
+				session.ExecuteCommand(new DBSpecificCommandSpecification(Strings.IFormat("INSERT INTO ##adminroles (nroleid, nprincipalid, code) VALUES ('{0}', '{1}', '{2}')", roleId.ToString("D"), principalId.ToString("D"), i.ToString())));
 			}
 			foreach (int i in nonadminroles) {
 				Guid roleId;
 				roleId = KnownIds.RoleAndPrincipalIDFromRoleRight(i, out Guid principalId);
-				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat("INSERT INTO ##nonadminroles (nroleid, nprincipalid, code) VALUES ('{0}', '{1}', '{2}')", roleId.ToString("D"), principalId.ToString("D"), i.ToString())));
+				session.ExecuteCommand(new DBSpecificCommandSpecification(Strings.IFormat("INSERT INTO ##nonadminroles (nroleid, nprincipalid, code) VALUES ('{0}', '{1}', '{2}')", roleId.ToString("D"), principalId.ToString("D"), i.ToString())));
 			}
-			session.ExecuteCommand(new MSSqlLiteralCommandSpecification(KB.I("INSERT INTO Principal (ID) SELECT nPrincipalId from ##adminroles union select nPrincipalID from ##nonadminroles")));
-			session.ExecuteCommand(new MSSqlLiteralCommandSpecification(KB.I("INSERT INTO [Role](ID,PrincipalId,Code,Class) SELECT nRoleid, nPrincipalId, Code, 0 from ##adminroles union select nRoleid, nPrincipalId, Code, 0 from ##nonadminroles")));
+			session.ExecuteCommand(new DBSpecificCommandSpecification(KB.I("INSERT INTO Principal (ID) SELECT nPrincipalId from ##adminroles union select nPrincipalID from ##nonadminroles")));
+			session.ExecuteCommand(new DBSpecificCommandSpecification(KB.I("INSERT INTO [Role](ID,PrincipalId,Code,Class) SELECT nRoleid, nPrincipalId, Code, 0 from ##adminroles union select nRoleid, nPrincipalId, Code, 0 from ##nonadminroles")));
 
 			// Delete all UserRoles that are cross assigned to a user (i.e. user has both All and nonAdmin) to leave just All or nonAdmin assigned roles
-			session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat("delete [UserRole] where [RoleId] = '{0}' and [UserId] IN (SELECT UserId from [UserRole] where RoleId = '{1}')",
+			session.ExecuteCommand(new DBSpecificCommandSpecification(Strings.IFormat("delete [UserRole] where [RoleId] = '{0}' and [UserId] IN (SELECT UserId from [UserRole] where RoleId = '{1}')",
 				KnownIds.RoleId_NonAdministrator.ToString("D"),
 				KnownIds.RoleId_All.ToString("D"))));
 
-			session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat("INSERT INTO UserRole (ID, RoleId, UserId) SELECT NEWID(), nRoleId, UserId from UserRole cross join ##adminroles where UserRole.RoleId = '{0}'",
+			session.ExecuteCommand(new DBSpecificCommandSpecification(Strings.IFormat("INSERT INTO UserRole (ID, RoleId, UserId) SELECT NEWID(), nRoleId, UserId from UserRole cross join ##adminroles where UserRole.RoleId = '{0}'",
 				KnownIds.RoleId_All.ToString("D"))));
-			session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat("INSERT INTO UserRole (ID, RoleId, UserId) SELECT NEWID(), nRoleId, UserId from UserRole cross join ##nonadminroles where UserRole.RoleId = '{0}'",
+			session.ExecuteCommand(new DBSpecificCommandSpecification(Strings.IFormat("INSERT INTO UserRole (ID, RoleId, UserId) SELECT NEWID(), nRoleId, UserId from UserRole cross join ##nonadminroles where UserRole.RoleId = '{0}'",
 				KnownIds.RoleId_NonAdministrator.ToString("D"))));
 
-			session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat("DELETE UserRole where RoleId = '{0}' or RoleId = '{1}'",
+			session.ExecuteCommand(new DBSpecificCommandSpecification(Strings.IFormat("DELETE UserRole where RoleId = '{0}' or RoleId = '{1}'",
 				KnownIds.RoleId_NonAdministrator.ToString("D"),
 				KnownIds.RoleId_All.ToString("D"))));
 			// Get any permissions linked to our old roles
-			session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat("DELETE Permission where PrincipalId = '{0}' or PrincipalId = '{1}'",
+			session.ExecuteCommand(new DBSpecificCommandSpecification(Strings.IFormat("DELETE Permission where PrincipalId = '{0}' or PrincipalId = '{1}'",
 				KnownIds.PrincipalId_NonAdministrator.ToString("D"),
 				KnownIds.PrincipalId_All.ToString("D"))));
 			// now delete the roles (base and derived records will go at same time due to cascade delete)
-			session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat("DELETE [Principal] where Id = '{0}' or Id = '{1}'",
+			session.ExecuteCommand(new DBSpecificCommandSpecification(Strings.IFormat("DELETE [Principal] where Id = '{0}' or Id = '{1}'",
 				KnownIds.PrincipalId_NonAdministrator.ToString("D"),
 				KnownIds.PrincipalId_All.ToString("D"))));
-		}
-	}
-	#endregion
-	#region XAFDatabaseFunctionUpgradeStep - add/modify/remove "built-in" XAF database functions
-	public class XAFDatabaseFunctionUpgradeStep : DatabaseFunctionUpgradeStep {
-		public XAFDatabaseFunctionUpgradeStep(Method method, [Invariant] string name)
-			: base(method, name) {
-		}
-		public override void Perform(Version startingVersion, ISession session, DBI_Database schema, DBVersionHandler handler) {
-			if (How == Method.Alter)
-				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(SqlClient.BuiltinDatabaseFunctions.Update(Name)));
-			else if (How == Method.Create)
-				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(SqlClient.BuiltinDatabaseFunctions.Create(Name)));
-			else if (How == Method.Drop)
-				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(SqlClient.BuiltinDatabaseFunctions.Delete(Name)));
-		}
-	}
-	#endregion
-	#region ChangeClosestValueOnAllDatesUpgradeStep
-	public class ChangeClosestValueOnAllDatesUpgradeStep : DataUpgradeStep {
-		public override void Perform(Version startingVersion, ISession session, DBI_Database schema, DBVersionHandler handler) {
-			foreach (DBI_Table t in schema.Tables)
-				if (t.SqlQueryText == null)
-					foreach (DBI_Column c in t.Columns) {
-						string closestValueConversion = SqlClient.SqlServer.DateTimeClosestValue(c.EffectiveType, SqlClient.SqlServer.SqlIdentifier(c));
-						if (closestValueConversion != null)
-							session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat("UPDATE {0} SET {1} = {2}", SqlClient.SqlServer.SqlIdentifier(t), SqlClient.SqlServer.SqlIdentifier(c), closestValueConversion)));
-					}
 		}
 	}
 	#endregion
@@ -133,7 +104,7 @@ namespace Thinkage.MainBoss.Database {
 				if (baseTable == null)
 					continue;
 				// We can't use MSSqlMethods.BuildSqlForColumnConstrainingForeignConstraintDelete because it call Execute which forces a GO command.
-				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat(@"
+				session.ExecuteCommand(new DBSpecificCommandSpecification(Strings.IFormat(@"
 						if exists (select * from INFORMATION_SCHEMA.COLUMNS where TABLE_SCHEMA = 'dbo' and TABLE_NAME = {0} and COLUMN_NAME = {1})
 						begin
 							declare @cmd nvarchar(max);
@@ -173,13 +144,13 @@ namespace Thinkage.MainBoss.Database {
 			DBClient db = new DBClient(new DBClient.Connection(session.ConnectionInformation, completedSchema), session);
 
 			// determine if any RelativeLocation records have a duplicate ExternalTag
-			System.Data.DataSet rlDuplicates = session.ExecuteCommandReturningTable(new MSSqlLiteralCommandSpecification(KB.I(@"
+			System.Data.DataSet rlDuplicates = session.ExecuteCommandReturningTable(new DBSpecificCommandSpecification(KB.I(@"
 				select DISTINCT L.Code, ExternalTag from RelativeLocation as T
 					join Location as L on L.Id = T.LocationID
 					where ExternalTag in (select ExternalTag from RelativeLocation  group by ExternalTag having count(ExternalTag) > 1)
 			")));
 			// TODO: This should get the Item code too so the stroage assignment can be fully described to the user.
-			System.Data.DataSet pilDuplicates = session.ExecuteCommandReturningTable(new MSSqlLiteralCommandSpecification(KB.I(@"
+			System.Data.DataSet pilDuplicates = session.ExecuteCommandReturningTable(new DBSpecificCommandSpecification(KB.I(@"
 				 select DISTINCT L.Code, ExternalTag from PermanentItemLocation as T
 					join ActualItemLocation as ail on ail.Id = T.ActualItemLocationID
 					join ItemLocation as IL on IL.Id = AIL.ItemLocationID
@@ -204,13 +175,13 @@ namespace Thinkage.MainBoss.Database {
 			// Remove the duplicates by NULLing out the column on those records
 			if (removeRLduplicates.Length > 0) {
 				handler.LogHistory(db, KB.K("ExternalTags cleared on Units and Locations").Translate(), removeRLduplicates.ToString());
-				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(KB.I(@"
+				session.ExecuteCommand(new DBSpecificCommandSpecification(KB.I(@"
 					update RelativeLocation Set ExternalTag = NULL where ExternalTag in (select ExternalTag from RelativeLocation group by ExternalTag having count(ExternalTag) > 1)
 				")));
 			}
 			if (removePILduplicates.Length > 0) {
 				handler.LogHistory(db, KB.K("ExternalTags cleared on Storeroom Assignments").Translate(), removePILduplicates.ToString());
-				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(KB.I(@"
+				session.ExecuteCommand(new DBSpecificCommandSpecification(KB.I(@"
 					update PermanentItemLocation Set ExternalTag = NULL where ExternalTag in (select ExternalTag from PermanentItemLocation group by ExternalTag having count(ExternalTag) > 1)
 				")));
 			}
@@ -224,16 +195,16 @@ namespace Thinkage.MainBoss.Database {
 		}
 		public override void Perform(Version startingVersion, ISession DB, DBI_Database schema, DBVersionHandler handler) {
 			CommandBatchSpecification batch = new CommandBatchSpecification();
-			batch.Commands.Add(new MSSqlLiteralCommandSpecification(SqlStatement));
+			batch.Commands.Add(new DBSpecificCommandSpecification(SqlStatement));
 			batch.CreateNormalParameter(KB.I("UserID"), Thinkage.Libraries.TypeInfo.IdTypeInfo.Universe).Value = handler.IdentifiedUser;
 			DB.ExecuteCommandBatch(batch);
 		}
-		private string SqlStatement;
+		private readonly string SqlStatement;
 	}
 	#endregion
 	#region SqlMinApplicationVersionUpgradeStep
 	public class SqlMinApplicationVersionUpgradeStep : MinApplicationVersionUpgradeStep {
-		SqlUpgradeStep sqlStep;
+		readonly SqlUpgradeStep sqlStep;
 		public SqlMinApplicationVersionUpgradeStep(DBI_Variable variable, Version version) : base(variable, version) {
 			sqlStep = new SqlUpgradeStep(Strings.IFormat("exec dbo._vset{0} '{1}'", variable.Name, version));
 		}
@@ -251,22 +222,22 @@ namespace Thinkage.MainBoss.Database {
 	public class AddAddCommentStateTransitionRecordsUpgradeStep : DataUpgradeStep {
 		public AddAddCommentStateTransitionRecordsUpgradeStep() {
 		}
-		private static Guid[] WOStates = { KnownIds.WorkOrderStateDraftId, KnownIds.WorkOrderStateOpenId, KnownIds.WorkOrderStateClosedId, KnownIds.WorkOrderStateVoidId };
-		private static Guid[] POStates = { KnownIds.PurchaseOrderStateDraftId, KnownIds.PurchaseOrderStateIssuedId, KnownIds.PurchaseOrderStateClosedId, KnownIds.PurchaseOrderStateVoidId };
-		private static Guid[] RequestStates = { KnownIds.RequestStateNewId, KnownIds.RequestStateInProgressId, KnownIds.RequestStateClosedId };
+		private static readonly Guid[] WOStates = { KnownIds.WorkOrderStateDraftId, KnownIds.WorkOrderStateOpenId, KnownIds.WorkOrderStateClosedId, KnownIds.WorkOrderStateVoidId };
+		private static readonly Guid[] POStates = { KnownIds.PurchaseOrderStateDraftId, KnownIds.PurchaseOrderStateIssuedId, KnownIds.PurchaseOrderStateClosedId, KnownIds.PurchaseOrderStateVoidId };
+		private static readonly Guid[] RequestStates = { KnownIds.RequestStateNewId, KnownIds.RequestStateInProgressId, KnownIds.RequestStateClosedId };
 		public override void Perform(Version startingVersion, ISession session, DBI_Database schema, DBVersionHandler handler) {
 			foreach (Guid stateId in WOStates)
-				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat(
+				session.ExecuteCommand(new DBSpecificCommandSpecification(Strings.IFormat(
 					@"INSERT into WorkOrderStateTransition (Id, Operation, OperationHint, CanTransitionWithoutUI, CopyStatusFromPrevious, FromStateID, ToStateID, Rank, RightName)
 						select newid(), 'Thinkage.MainBoss.Database§Add Work Order Comment', 'Thinkage.MainBoss.Database§Add a comment to this Work Order or change its Status without changing State',
 								0, 1, {0}, {0}, 0, 'Table.WorkOrderStateHistory.Create'", Libraries.Sql.SqlUtilities.SqlLiteral(stateId.ToString()))));
 			foreach (Guid stateId in POStates)
-				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat(
+				session.ExecuteCommand(new DBSpecificCommandSpecification(Strings.IFormat(
 					@"INSERT into PurchaseOrderStateTransition (Id, Operation, OperationHint, CanTransitionWithoutUI, CopyStatusFromPrevious, FromStateID, ToStateID, Rank, RightName)
 						select newid(), 'Thinkage.MainBoss.Database§Add Purchase Order Comment', 'Thinkage.MainBoss.Database§Add a comment to this Purchase Order or change its Status without changing State',
 								0, 1, {0}, {0}, 0, 'Table.PurchaseOrderStateHistory.Create'", Libraries.Sql.SqlUtilities.SqlLiteral(stateId.ToString()))));
 			foreach (Guid stateId in RequestStates)
-				session.ExecuteCommand(new MSSqlLiteralCommandSpecification(Strings.IFormat(
+				session.ExecuteCommand(new DBSpecificCommandSpecification(Strings.IFormat(
 					@"INSERT into RequestStateTransition (Id, Operation, OperationHint, CanTransitionWithoutUI, CopyStatusFromPrevious, FromStateID, ToStateID, Rank, RightName)
 						select newid(), 'Thinkage.MainBoss.Database§New Requestor Comment', 'Thinkage.MainBoss.Database§Add a comment to this Request or change its Status without changing State',
 								0, 1, {0}, {0}, 0, 'Table.RequestStateHistory.Create'", Libraries.Sql.SqlUtilities.SqlLiteral(stateId.ToString()))));

@@ -27,6 +27,13 @@
 	  <field name="EffectiveDate"/>
 	  <field name="WorkOrderID"/>
 	</unique>
+	<field name="PreviousWorkOrderStateHistoryID" read="GUIDREF" link="WorkOrderStateHistory" unique="true" where="PreviousWorkOrderStateHistoryID is not null" labelkey="Previous State History">
+	  <doc>Calculated reference to the previous WorkOrderStateHistory record.</doc>
+	  <result hosting="cached">
+		cast(WorkOrderStateHistory.id as link(WorkOrderStateHistory, null))
+	  </result>
+	  <extension name="dependson">WorkOrderStateHistory@WorkOrderStateHistory</extension>
+	</field>
 	<field labelkey="State" name="WorkOrderStateID" type="RequiredGUIDREF" link="WorkOrderState">
 	  <doc>The actual state for this entry.</doc>
 	  <extension name="linkage">captive</extension>
@@ -69,7 +76,7 @@
 				declare @datestamp datetime
 				declare @includeWSHComment bit
 				set @includeWSHComment = dbo._vgetCopyWSHCommentToRSH() -- TODO: in future a value in the WSH record itself to whether to include the WSH information
-				set @datestamp = dbo._DClosestValue(getdate(), 2, 100)
+				set @datestamp = dbo._DClosestDivisions(getdate(), 100)
 
 				-- Same state (non-transition) case (Request State History remains in existing state
 				insert into RequestStateHistory (ID, EntryDate, EffectiveDate, EffectiveDateReadonly, UserID, RequestID, RequestStateID,
@@ -151,11 +158,204 @@
 				end
 		  end
 
+		  <!-- Theoretically we should do this after updates and before deletes too
+			but those operations are not allowed by the app (at least, not in any
+			manner that alters the result of the calculation). The "before delete" would
+			have to exclude the to-be-deleted records from the subquery and also be
+			prepared to find no records, thus setting the field to null. Because some
+			of the triggers are before and some after, two triggers would be needed. -->
+		<!-- Verify the new records post-date the latest existing one -->
+		if exists(select * from inserted as NSH
+					join WorkOrder as WO on WO.Id = NSH.WorkOrderID
+					join WorkOrderStateHistory as CSH on CSH.Id = WO.CurrentWorkOrderStateHistoryID
+					where CSH.EffectiveDate >= NSH.EffectiveDate) begin
+		  raiserror('EffectiveDate-order of records in table ''%s'' cannot be altered', 16, 1, 'WorkOrderStateHistory')
+		  rollback transaction
+		end
+		if (select count(*) from inserted) = (select count(distinct WorkOrderID) from inserted) begin
+		  <!-- This is the simple case, only one new record per WorkOrder -->
+		  <!-- Update PreviousWorkedDays, this must happen before linking the new record -->
 		  update WorkOrder
-			  set CurrentWorkOrderStateHistoryID = dbo.mbfn_WorkOrder_CurrentWorkOrderStateHistory(WorkOrder.ID)
-			  where WorkOrder.ID in (
-				select WorkOrderID from inserted
-				)
+			set PreviousWorkedDays = dbo._IAdd(PreviousWorkedDays,
+			  dbo._INew(case when OS.FilterAsOpen != 0
+							then 1 + datediff(day,
+												  case when cast(OSH.EffectiveDate as date) > WorkOrder.StartDateEstimate
+													then cast(OSH.EffectiveDate as date)
+													else WorkOrder.StartDateEstimate end,
+												  cast(inserted.EffectiveDate as date))
+							else 0 end
+						  - case when NS.FilterAsOpen != 0 then 1 else 0 end, 0, 0, 0, 0))
+			from
+				inserted
+			  join
+				WorkOrder on WorkOrder.Id = inserted.WorkOrderID
+			  join
+				WorkOrderStateHistory as OSH on OSH.Id = WorkORder.CurrentWorkOrderStateHistoryID
+			  join
+				WorkOrderState as NS on NS.Id = inserted.WorkOrderStateID
+			  join
+				WorkOrderState as OS on OS.Id = OSH.WOrkOrderStateID
+			where
+			  cast(inserted.EffectiveDate as date) >= WorkOrder.StartDateEstimate
+		  <!-- Link the new StateHistory record to the previous Current -->
+		  update WorkOrderStateHistory
+			set PreviousWorkOrderStateHistoryID = WO.CurrentWorkOrderStateHistoryID
+			from
+				inserted
+			  join
+				WorkOrderStateHistory as WOSH on WOSH.Id = inserted.Id
+			  join
+				WorkOrder as WO on WO.Id = WOSH.WorkOrderID
+		  <!-- Set the First -->
+		  update WorkOrder
+			set FirstWorkOrderStateHistoryID = inserted.Id
+			from
+				inserted
+			  join
+				WorkOrder as WO on WO.Id = inserted.WorkOrderID
+			where
+			  FirstWorkOrderStateHistoryID is null
+		  <!-- Set the new Current -->
+		  update WorkOrder
+			set CurrentWorkOrderStateHistoryID = inserted.Id
+			from
+				inserted
+			  join
+				WorkOrder as WO on WO.Id = inserted.WorkOrderID
+		  <!-- Set the first Open -->
+		  update WorkOrder
+			set FirstOpenWorkOrderStateHistoryID = inserted.Id
+			from
+				inserted
+			  join
+				WorkOrder as WO on WO.Id = inserted.WorkOrderID
+			  join
+				WorkOrderState as WOS on WOS.Id = inserted.WorkOrderStateID
+			where
+			  FirstOpenWorkOrderStateHistoryID is null
+			  and WOS.FilterAsOpen != 0
+		  <!-- Set the Completion -->
+		  update WorkOrder
+			set CompletionWorkOrderStateHistoryID = inserted.Id
+			from
+				inserted
+			  join
+				WorkOrder as WO on WO.Id = inserted.WorkOrderID
+			  join
+				WorkOrderState as WOS on WOS.Id = inserted.WorkOrderStateID
+			where
+			  CompletionWorkOrderStateHistoryID is null
+			  and WOS.FilterAsClosed != 0
+		  <!-- Clear the Completion -->
+		  update WorkOrder
+			set CompletionWorkOrderStateHistoryID = null
+			from
+				inserted
+			  join
+				WorkOrder as WO on WO.Id = inserted.WorkOrderID
+			  join
+				WorkOrderState as WOS on WOS.Id = inserted.WorkOrderStateID
+			where
+			  WOS.FilterAsDraft != 0
+		end
+		else begin
+		  <!-- This is the hard but rare case, more than one new record per WorkOrder. We process the records one at a time in ascending EffectiveDate order using a cursor. -->
+		  declare ByDate cursor for select Id from inserted order by WorkOrderID, EffectiveDate asc
+		  open ByDate
+
+		  declare @WOSHID Uniqueidentifier
+		  while 1 = 1
+		  begin
+			fetch next from ByDate into @WOSHID
+			if @@fetch_status != 0
+			  break
+			<!-- Update PreviousWorkedDays, this must happen before linking the new record -->
+			update WorkOrder
+			  set PreviousWorkedDays = dbo._IAdd(PreviousWorkedDays,
+				dbo._INew(case when OS.FilterAsOpen != 0
+								then 1 + datediff(day,
+														case when cast(OSH.EffectiveDate as date) > WorkOrder.StartDateEstimate
+														  then cast(OSH.EffectiveDate as date)
+														  else WorkOrder.StartDateEstimate end,
+														cast(WOSH.EffectiveDate as date))
+								else 0 end
+							- case when NS.FilterAsOpen != 0 then 1 else 0 end, 0, 0, 0, 0))
+			  from
+				  WorkOrderStateHistory as WOSH
+				join
+				  WorkOrder on WorkOrder.Id = WOSH.WorkOrderID
+				join
+				  WorkOrderStateHistory as OSH on OSH.Id = WorkOrder.CurrentWorkOrderStateHistoryID
+				join
+				  WorkOrderState as NS on NS.Id = WOSH.WorkOrderStateID
+				join
+				  WorkOrderState as OS on OS.Id = OSH.WOrkOrderStateID
+			  where WOSH.Id = @WOSHID
+				and cast(WOSH.EffectiveDate as date) >= WorkOrder.StartDateEstimate
+			<!-- Link the new StateHistory record to the previous Current -->
+			update WorkOrderStateHistory
+			  set PreviousWorkOrderStateHistoryID = WO.CurrentWorkOrderStateHistoryID
+			  from
+				  WorkOrderStateHistory as WOSH
+				join
+				  WorkOrder as WO on WO.Id = WOSH.WorkOrderID
+			  where WOSH.Id = @WOSHID
+			<!-- Set the First -->
+			update WorkOrder
+			  set FirstWorkOrderStateHistoryID = @WOSHID
+			  from
+				  WorkOrderStateHistory as WOSH
+				join
+				  WorkOrder as WO on WO.Id = WOSH.WorkOrderID
+			  where WOSH.Id = @WOSHID
+				and FirstWorkOrderStateHistoryID is null
+			<!-- Set the new Current -->
+			update WorkOrder
+			  set CurrentWorkOrderStateHistoryID = @WOSHID
+			  from
+				  WorkOrderStateHistory as WOSH
+				join
+				  WorkOrder as WO on WO.Id = WOSH.WorkOrderID
+			  where WOSH.Id = @WOSHID
+			<!-- Set the first Open -->
+			update WorkOrder
+			  set FirstOpenWorkOrderStateHistoryID = @WOSHID
+			  from
+				  WorkOrderStateHistory as WOSH
+				join
+				  WorkOrder as WO on WO.Id = WOSH.WorkOrderID
+				join
+				  WorkOrderState as WOS on WOS.Id = WOSH.WorkOrderStateID
+			  where WOSH.Id = @WOSHID
+				and FirstOpenWorkOrderStateHistoryID is null
+				and WOS.FilterAsOpen != 0
+			<!-- Set the Completion -->
+			update WorkOrder
+			  set CompletionWorkOrderStateHistoryID = @WOSHID
+			  from
+				  WorkOrderStateHistory as WOSH
+				join
+				  WorkOrder as WO on WO.Id = WOSH.WorkOrderID
+				join
+				  WorkOrderState as WOS on WOS.Id = WOSH.WorkOrderStateID
+			  where WOSH.Id = @WOSHID
+				and CompletionWorkOrderStateHistoryID is null
+				and WOS.FilterAsClosed != 0
+			<!-- Clear the Completion -->
+			update WorkOrder
+			  set CompletionWorkOrderStateHistoryID = null
+			  from
+				  WorkOrderStateHistory as WOSH
+				join
+				  WorkOrder as WO on WO.Id = WOSH.WorkOrderID
+				join
+				  WorkOrderState as WOS on WOS.Id = WOSH.WorkOrderStateID
+			  where WOSH.Id = @WOSHID
+				and WOS.FilterAsDraft != 0
+		  end
+		  close ByDate
+		  deallocate ByDate
+		end
 
 		-- Now that the work order state has changed, update the OnReserve counts of ItemLocations mentioned in Demands.
 		update ActualItemLocation
@@ -180,7 +380,6 @@
 	<extension name="references">RequestStateHistory</extension>
 	<extension name="references">RequestState</extension>
 	<extension name="references">RequestedWorkOrder</extension>
-	<extension name="references">mbfn_WorkOrder_CurrentWorkOrderStateHistory()</extension>
 	<extension name="references">mbfn_ActualItemLocation_OnReserve()</extension>
 	<!-- <extension name="dependson">ManageRequestStates</extension> We have no syntax to express depensency on a Variable -->
   </object>
@@ -188,82 +387,33 @@
 	<doc>A flag indicating that MainBoss should attempt to automatically manage Request states based on related WO states to mimic MB Basic behaviour.</doc>
   </variable>
   <variable name="CopyWSHCommentToRSH" type="RequiredBool">
-	<doc>A flag indicating the WSH Comment contents and Status should be copied to the RSH CommentToRequestor on a Request state transition driven by an addition to the WSH</doc>
+	<doc>A flag indicating the WOSH Comment contents and Status should be copied to the RSH CommentToRequestor on a Request state transition driven by an addition to the WOSH</doc>
   </variable>
+  <object class="trigger" name="mbtg_WorkOrderStateHistoryUpdate_Updates_WorkOrder">
+	<extension name="body">
+	  on WorkOrderStateHistory
+	  for update
+	  as
+		if update(EffectiveDate) begin
+		  update WorkOrder
+			set PreviousWorkedDays = dbo.mbfn_WorkOrder_PreviousWorkedDays(Id)
+			where Id in (select inserted.WorkOrderID from inserted join deleted on inserted.Id = deleted.Id where inserted.EffectiveDate != deleted.EffectiveDate)
+		end
+	</extension>
+  </object>
   <object class="trigger" name="mbtg_EnforceWorkOrderStateHistoryOrdering">
 	<doc>This enforces the fact that updates to history records cannot alter their existing EffectiveDate ordering for any particular WO</doc>
 	<extension name="body">
 	  on WorkOrderStateHistory
 	  for update
 	  as
-		declare @count int;	<!-- Because we can't use a WITH inside EXISTS(query) we need to query the count into a variable. -->
-		<!-- The following query yields the columns from the history table as they were before the update operation -->
-		with OriginalHistory as (
-			select WorkOrderStateHistory.Id, WorkOrderStateHistory.WorkOrderID, WorkOrderStateHistory.EffectiveDate
-			  from WorkOrderStateHistory
-			  left join inserted on WorkOrderStateHistory.id = inserted.id
-			  where inserted.id is null
-		  union
-			select Id, WorkOrderID, EffectiveDate
-			  from deleted
-		)
-		<!-- Count the number of records for which the update causes the predecessor or successor records (same WO) to change -->
-		select @count = count(*)
-		  from
-			(select
-			  Id,
-			  (select top 1 Id from WorkOrderStateHistory
-				where WorkOrderID = inserted.WorkOrderID and EffectiveDate &gt; inserted.EffectiveDate
-				order by EffectiveDate asc),
-			  (select top 1 Id from WorkOrderStateHistory
-				where WorkOrderID = inserted.WorkOrderID and EffectiveDate &lt; inserted.EffectiveDate
-				order by EffectiveDate desc)
-			from inserted) as newNeighbours(id, nextid, previd)
-		  inner join
-			(select
-			  Id,
-			  (select top 1 Id from OriginalHistory
-				where WorkOrderID = deleted.WorkOrderID and EffectiveDate &gt; deleted.EffectiveDate
-				order by EffectiveDate asc),
-			  (select top 1 Id from OriginalHistory
-				where WorkOrderID = deleted.WorkOrderID and EffectiveDate &lt; deleted.EffectiveDate
-				order by EffectiveDate desc)
-			from deleted) as oldNeighbours(id, nextid, previd)
-		  on newNeighbours.id = oldneighbours.id
-		  where oldNeighbours.nextId != newNeighbours.nextId
-			or (oldNeighbours.nextId is null and newNeighbours.nextId is not null)
-			or (oldNeighbours.nextId is not null and newNeighbours.nextId is null)
-			or oldNeighbours.previd != newNeighbours.previd
-			or (oldNeighbours.previd is null and newNeighbours.previd is not null)
-			or (oldNeighbours.previd is not null and newNeighbours.previd is null)
-		if @count &gt; 0 begin
+		<!-- If we just looked at the individual WOSH records we would need teo queries, one looking at the previous and one at the next record.
+			  Instead, we just validate all the WOSH records for the related WorkOrder. Note that we only need to look at inserted; deleted will name
+			  WorkOrders that history records are removed from, and this operation cannot violate well-ordering. -->
+		if exists(select * from WorkOrderStateHistory as SH
+					join WorkOrderStateHistory as PSH on PSH.Id = SH.PreviousWorkOrderStateHistoryID
+					where PSH.EffectiveDate >= SH.EffectiveDate and SH.WorkOrderID in (select WorkOrderID from inserted)) begin
 		  raiserror('EffectiveDate-order of records in table ''%s'' cannot be altered', 16, 1, 'WorkOrderStateHistory')
-		  rollback transaction
-		end
-	</extension>
-	<extension name="references">WorkOrderStateHistory</extension>
-  </object>
-  <object class="trigger" name="mbtg_EnforceNewWorkOrderStateHistoryOrdering">
-	<doc>This enforces the rule that new state history records cannot predate (in EffectiveDate order) existing ones for the same WO</doc>
-	<extension name="body">
-	  on WorkOrderStateHistory
-	  for insert
-	  as
-		declare @count int;	<!-- Because we can't use a WITH inside EXISTS(query) we need to query the count into a variable. -->
-		<!-- The following query yields the columns from the history table as they were before the insert operation -->
-		with OriginalHistory as (
-		  select WorkOrderStateHistory.Id, WorkOrderStateHistory.WorkOrderID, WorkOrderStateHistory.EffectiveDate
-			from WorkOrderStateHistory
-			left join inserted on WorkOrderStateHistory.id = inserted.id
-			where inserted.id is null
-		)
-		<!-- Count the number of History records that post-date any newly inserted ones on the same work orders -->
-		select @count = count(*)
-		  from OriginalHistory
-		  inner join inserted on OriginalHistory.WorkOrderID = inserted.WorkOrderID
-		  where OriginalHistory.EffectiveDate &gt; inserted.EffectiveDate
-		if @count &gt; 0 begin
-		  raiserror('EffectiveDate-order of new records in table ''%s'' must be later than those of existing records for the same %s', 16, 1, 'WorkOrderStateHistory', 'Work Order')
 		  rollback transaction
 		end
 	</extension>

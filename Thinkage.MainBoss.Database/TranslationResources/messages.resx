@@ -141,27 +141,6 @@
   <data name="dsDatabasesOnServerLabel§Version" xml:space="preserve">
     <value>Version</value>
   </data>
-  <data name="dsSqlServersLabel§Id" xml:space="preserve">
-    <value>Id</value>
-  </data>
-  <data name="dsSqlServersLabel§Instance" xml:space="preserve">
-    <value>Instance</value>
-  </data>
-  <data name="dsSqlServersLabel§IsClustered" xml:space="preserve">
-    <value>Is Clustered</value>
-  </data>
-  <data name="dsSqlServersLabel§Name" xml:space="preserve">
-    <value>Name</value>
-  </data>
-  <data name="dsSqlServersLabel§Server" xml:space="preserve">
-    <value>Server</value>
-  </data>
-  <data name="dsSqlServersLabel§SQL Servers" xml:space="preserve">
-    <value>SQL Servers</value>
-  </data>
-  <data name="dsSqlServersLabel§Version" xml:space="preserve">
-    <value>Version</value>
-  </data>
   <data name="dsMBLabel§AAsRelatedToBPhrase" xml:space="preserve">
     <value>A As Related To B Phrase</value>
   </data>
@@ -332,9 +311,6 @@
   </data>
   <data name="dsMBLabel§BarCodeSymbology" xml:space="preserve">
     <value>BarCode Symbology</value>
-  </data>
-  <data name="dsMBLabel§Base Task" xml:space="preserve">
-    <value>Base Task</value>
   </data>
   <data name="dsMBLabel§BAsRelatedToAPhrase" xml:space="preserve">
     <value>B As Related To A Phrase</value>
@@ -885,9 +861,6 @@
   <data name="dsMBLabel§IsDefault" xml:space="preserve">
     <value>Is Default</value>
   </data>
-  <data name="dsMBLabel§IsPrimary" xml:space="preserve">
-    <value>Is Primary</value>
-  </data>
   <data name="dsMBLabel§IsReversed" xml:space="preserve">
     <value>Is Reversed</value>
   </data>
@@ -950,6 +923,14 @@
   </data>
   <data name="dsMBLabel§LanguageLCID" xml:space="preserve">
     <value>Language Code Identifier</value>
+  </data>
+  <data name="dsMBLabel§Last Generation Result" xml:space="preserve">
+    <value>Last Generation Result</value>
+    <comment>New!</comment>
+  </data>
+  <data name="dsMBLabel§Last Work Order or Last Error Condition" xml:space="preserve">
+    <value>Last Work Order or Last Error Condition</value>
+    <comment>New!</comment>
   </data>
   <data name="dsMBLabel§LastBackupDate" xml:space="preserve">
     <value>Last Backup Date</value>
@@ -1017,9 +998,6 @@
   <data name="dsMBLabel§Location" xml:space="preserve">
     <value>Location</value>
   </data>
-  <data name="dsMBLabel§Location Derivations" xml:space="preserve">
-    <value>Location Derivations</value>
-  </data>
   <data name="dsMBLabel§LocationCode" xml:space="preserve">
     <value>Location Code</value>
   </data>
@@ -1029,9 +1007,6 @@
   <data name="dsMBLabel§LocationType" xml:space="preserve">
     <value>Location Type</value>
   </data>
-  <data name="dsMBLabel§MailboxName" xml:space="preserve">
-    <value>Mailbox Name</value>
-  </data>
   <data name="dsMBLabel§MailEncryptedPassword" xml:space="preserve">
     <value>Mail Encrypted Password</value>
   </data>
@@ -1040,9 +1015,6 @@
   </data>
   <data name="dsMBLabel§MailMessage" xml:space="preserve">
     <value>Mail Message</value>
-  </data>
-  <data name="dsMBLabel§MailPort" xml:space="preserve">
-    <value>Mail Port</value>
   </data>
   <data name="dsMBLabel§MailServer" xml:space="preserve">
     <value>Mail Server</value>
@@ -1242,6 +1214,16 @@
   <data name="dsMBLabel§Overdue" xml:space="preserve">
     <value>Overdue</value>
   </data>
+  <data name="dsMBLabel§Override Default MailBox" xml:space="preserve">
+    <value>Override Default MailBox</value>
+    <comment>New!</comment>
+  </data>
+  <data name="dsMBLabel§Override Default Port" xml:space="preserve">
+    <value>Override Default Port</value>
+  </data>
+  <data name="dsMBLabel§Override SMTP Port" xml:space="preserve">
+    <value>Override SMTP Port</value>
+  </data>
   <data name="dsMBLabel§Ownership" xml:space="preserve">
     <value>Ownership</value>
   </data>
@@ -1259,6 +1241,10 @@
   </data>
   <data name="dsMBLabel§Path" xml:space="preserve">
     <value>Path</value>
+  </data>
+  <data name="dsMBLabel§Attachment Path" xml:space="preserve">
+    <value>Attachment Path</value>
+    <comment>New!</comment>
   </data>
   <data name="dsMBLabel§Payables Contact" xml:space="preserve">
     <value>Payables Contact</value>
@@ -1509,9 +1495,6 @@
   <data name="dsMBLabel§ReceiveCost" xml:space="preserve">
     <value>Receive Cost</value>
   </data>
-  <data name="dsMBLabel§Received" xml:space="preserve">
-    <value>Received</value>
-  </data>
   <data name="dsMBLabel§ReceiveDate" xml:space="preserve">
     <value>Receive Date</value>
   </data>
@@ -1730,9 +1713,6 @@
   </data>
   <data name="dsMBLabel§SMTPEncryptedPassword" xml:space="preserve">
     <value>SMTP Encrypted Password</value>
-  </data>
-  <data name="dsMBLabel§SMTPPort" xml:space="preserve">
-    <value>SMTP Port</value>
   </data>
   <data name="dsMBLabel§SMTPServer" xml:space="preserve">
     <value>SMTP Server</value>
@@ -2247,6 +2227,27 @@
   <data name="dsSecurityOnServerLabel§User name" xml:space="preserve">
     <value>User name</value>
   </data>
+  <data name="dsSqlServersLabel§Id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="dsSqlServersLabel§Instance" xml:space="preserve">
+    <value>Instance</value>
+  </data>
+  <data name="dsSqlServersLabel§IsClustered" xml:space="preserve">
+    <value>Is Clustered</value>
+  </data>
+  <data name="dsSqlServersLabel§Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="dsSqlServersLabel§Server" xml:space="preserve">
+    <value>Server</value>
+  </data>
+  <data name="dsSqlServersLabel§SQL Servers" xml:space="preserve">
+    <value>SQL Servers</value>
+  </data>
+  <data name="dsSqlServersLabel§Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
   <data name="MainBossService§ANPurchaseOrderIntroduction" xml:space="preserve">
     <value />
   </data>
@@ -2373,9 +2374,6 @@
   <data name="Thinkage.MainBoss.Database.StateCode§Work Order waiting" xml:space="preserve">
     <value>Work Order waiting</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§'{0}' can only work if the computer is a member of a domain" xml:space="preserve">
-    <value>'{0}' can only work if the computer is a member of a domain</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§'{0}' cannot contain itself either directly or indirectly" xml:space="preserve">
     <value>'{0}' cannot contain itself either directly or indirectly</value>
   </data>
@@ -2388,9 +2386,6 @@
   <data name="Thinkage.MainBoss.Database§'{0}' is not a MainBoss database" xml:space="preserve">
     <value>'{0}' is not a MainBoss database</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§{0} mailbox '{1}' server '{2}' on port {3} using {4}" xml:space="preserve">
-    <value>{0} mailbox '{1}' server '{2}' on port {3} using {4}</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§{0} must be zero" xml:space="preserve">
     <value>{0} must be zero</value>
   </data>
@@ -2400,11 +2395,12 @@
   <data name="Thinkage.MainBoss.Database§{0} rejection {0.IsOne ? message : messages } for {1}" xml:space="preserve">
     <value>{0} rejection {0.IsOne ? message : messages } for {1}</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§'{0}' requires access to the domain controller for the domain '{1}' which is currently inaccessible" xml:space="preserve">
-    <value>'{0}' requires access to the domain controller for the domain '{1}' which is currently inaccessible</value>
+  <data name="Thinkage.MainBoss.Database§, mailbox '{0}'" xml:space="preserve">
+    <value>, mailbox '{0}'</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§{0} server '{1}' on port {2} using {3}" xml:space="preserve">
-    <value>{0} server '{1}' on port {2} using {3}</value>
+  <data name="Thinkage.MainBoss.Database§{0} skipped to date {1}" xml:space="preserve">
+    <value>{0} skipped to date {1}</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Database§{0} with {1}" xml:space="preserve">
     <value>{0} with {1}</value>
@@ -2420,6 +2416,14 @@
   </data>
   <data name="Thinkage.MainBoss.Database§¯SQL Security Enumerator" xml:space="preserve">
     <value>SQL Security Enumerator</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§¯SQL Servers Enumerator" xml:space="preserve">
+    <value>SQL Servers Enumerator</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Database§&lt;default&gt;" xml:space="preserve">
+    <value>&lt;default&gt;</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Database§A Contact for email address '{0} could not be created since Contacts already exist for '{1}'" xml:space="preserve">
     <value>A Contact for email address '{0} could not be created since Contacts already exist for '{1}'</value>
@@ -2625,6 +2629,9 @@
   <data name="Thinkage.MainBoss.Database§Authorized by ___________________________________" xml:space="preserve">
     <value>Authorized by ___________________________________</value>
   </data>
+  <data name="Thinkage.MainBoss.Database§Available Mailboxes: {0}" xml:space="preserve">
+    <value>Available Mailboxes: {0}</value>
+  </data>
   <data name="Thinkage.MainBoss.Database§Backup failed to '{0}'" xml:space="preserve">
     <value>Backup failed to '{0}'</value>
   </data>
@@ -2649,29 +2656,14 @@
   <data name="Thinkage.MainBoss.Database§Cannot access Active Directory to check email address {0}. Details: {1}" xml:space="preserve">
     <value>Cannot access Active Directory to check email address {0}. Details: {1}</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access mail messages from mailbox '{0}' using {1} on server '{2}' on port {3}" xml:space="preserve">
-    <value>Cannot access mail messages from mailbox '{0}' using {1} on server '{2}' on port {3}</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access mail messages on server '{0}'" xml:space="preserve">
-    <value>Cannot access mail messages on server '{0}'</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access mail messages on server '{0}' the following was tried:" xml:space="preserve">
-    <value>Cannot access mail messages on server '{0}' the following was tried:</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access mail messages using {0} on server '{1}' on port {2}" xml:space="preserve">
-    <value>Cannot access mail messages using {0} on server '{1}' on port {2}</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access Mail Server on server '{0}' on port {1} using {2}" xml:space="preserve">
-    <value>Cannot access Mail Server on server '{0}' on port {1} using {2}</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot access Mail Server on server '{0}' using {1}" xml:space="preserve">
-    <value>Cannot access Mail Server on server '{0}' using {1}</value>
+  <data name="Thinkage.MainBoss.Database§Cannot access Mail Server" xml:space="preserve">
+    <value>Cannot access Mail Server</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Cannot access MainBoss database '{0}' on database server {1}" xml:space="preserve">
     <value>Cannot access MainBoss database '{0}' on database server {1}</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Cannot authenticate user '{0}' on server '{1}'" xml:space="preserve">
-    <value>Cannot authenticate user '{0}' on server '{1}'</value>
+  <data name="Thinkage.MainBoss.Database§Cannot authenticate" xml:space="preserve">
+    <value>Cannot authenticate user</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Cannot calculate Demand cost because Quantity is null" xml:space="preserve">
     <value>Cannot calculate Demand cost because Quantity is null</value>
@@ -2703,8 +2695,8 @@
   <data name="Thinkage.MainBoss.Database§Cannot find a contact since no email address or Active Directory Reference provided" xml:space="preserve">
     <value>Cannot find a contact since no email address or Active Directory Reference provided</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Cannot find an IP address for Computer '{0}'" xml:space="preserve">
-    <value>Cannot find an IP address for Computer '{0}'</value>
+  <data name="Thinkage.MainBoss.Database§Cannot resolve an IP address for Server '{0}'" xml:space="preserve">
+    <value>Cannot resolve an IP address for Server '{0}'</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Cannot find organization '{0}'" xml:space="preserve">
     <value>Cannot find organization '{0}'</value>
@@ -2720,9 +2712,6 @@
   </data>
   <data name="Thinkage.MainBoss.Database§Cannot locate Email Request {0} for processing." xml:space="preserve">
     <value>Cannot locate Email Request {0} for processing.</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Cannot open a connect to server '{0}' on port {1} using {2}" xml:space="preserve">
-    <value>Cannot open a connect to server '{0}' on port {1} using {2}</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Cannot parse email message" xml:space="preserve">
     <value>Cannot parse email message</value>
@@ -2892,8 +2881,9 @@
   <data name="Thinkage.MainBoss.Database§Contact '{0}' does not receive work order notifications" xml:space="preserve">
     <value>Contact '{0}' does not receive work order notifications</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Contact '{0}' does not want to receive acknowledgements" xml:space="preserve">
-    <value>Contact '{0}' does not want to receive acknowledgements</value>
+  <data name="Thinkage.MainBoss.Database§Contact '{0}' does not want to receive acknowledgments" xml:space="preserve">
+    <value>Contact '{0}' does not want to receive acknowledgments</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Database§Contact '{0}' does receive request notifications" xml:space="preserve">
     <value>Contact '{0}' does receive request notifications</value>
@@ -2949,8 +2939,9 @@
   <data name="Thinkage.MainBoss.Database§Could not contact SMTP server. Purchase Order Notifications will be deferred" xml:space="preserve">
     <value>Could not contact SMTP server. Purchase Order Notifications will be deferred</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Could not contact SMTP server. Request acknowledgements will be deferred" xml:space="preserve">
-    <value>Could not contact SMTP server. Request acknowledgements will be deferred</value>
+  <data name="Thinkage.MainBoss.Database§Could not contact SMTP server. Request acknowledgments will be deferred" xml:space="preserve">
+    <value>Could not contact SMTP server. Request acknowledgments will be deferred</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Database§Could not contact SMTP server. Request Assignment Notifications will be deferred" xml:space="preserve">
     <value>Could not contact SMTP server. Request Assignment Notifications will be deferred</value>
@@ -3109,9 +3100,6 @@ Labor         __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§Error" xml:space="preserve">
     <value>Error</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Error accessing server '{0}' manual intervention may be necessary" xml:space="preserve">
-    <value>Error accessing server '{0}' manual intervention may be necessary</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§Error accessing server '{0}' on port {1}. Manual intervention may be necessary." xml:space="preserve">
     <value>Error accessing server '{0}' on port {1}. Manual intervention may be necessary.</value>
   </data>
@@ -3139,8 +3127,9 @@ Labor         __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§Error processing email message, message will be retried" xml:space="preserve">
     <value>Error processing email message, message will be retried</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Error processing request acknowledgements" xml:space="preserve">
-    <value>Error processing request acknowledgements</value>
+  <data name="Thinkage.MainBoss.Database§Error processing request acknowledgments" xml:space="preserve">
+    <value>Error processing request acknowledgments</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Database§Error retrieving {0} message {1}. The problem may be transient and will be retried again later, but manual intervention may be necessary" xml:space="preserve">
     <value>Error retrieving {0} message {1}. The problem may be transient and will be retried again later, but manual intervention may be necessary</value>
@@ -3409,9 +3398,6 @@ Labor         __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§No incoming Mailbox found on server '{0}' on port {1} using {2}, tried 'MBOX', 'INBOX' and 'Inbox'" xml:space="preserve">
     <value>No incoming Mailbox found on server '{0}' on port {1} using {2}, tried 'MBOX', 'INBOX' and 'Inbox'</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Available Mailboxes: {0}" xml:space="preserve">
-    <value>Available Mailboxes: {0}</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§No intervals are defined for the Maintenance Timing '{0}'" xml:space="preserve">
     <value>No intervals are defined for the Maintenance Timing '{0}'</value>
   </data>
@@ -3528,6 +3514,10 @@ Labor         __________________________ Material    __________________________<
   </data>
   <data name="Thinkage.MainBoss.Database§Planned maintenance is limited to {0} Maintenance Plans, and only {1} generations of work orders." xml:space="preserve">
     <value>Planned maintenance is limited to {0} Maintenance Plans, and only {1} generations of work orders.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Plus {0} more" xml:space="preserve">
+    <value>Plus {0} more</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Database§Postal Address" xml:space="preserve">
     <value>Postal Address</value>
@@ -3655,11 +3645,12 @@ Labor         __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§Request {0} created for requestor '{1}' using email from '{2}'" xml:space="preserve">
     <value>Request {0} created for requestor '{1}' using email from '{2}'</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Request acknowledgement for request {0} skipped to date {1}: {2}" xml:space="preserve">
-    <value>Request acknowledgement for request {0} skipped to date {1}: {2}</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§Request acknowledgement for request {0} to '{1}' with email address '{2}' skipped to date {3}" xml:space="preserve">
     <value>Request acknowledgement for request {0} to '{1}' with email address '{2}' skipped to date {3}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Request acknowledgement for:" xml:space="preserve">
+    <value>Request acknowledgement for:</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Database§Request acknowledgement sent for request {0} to '{1}' with email address '{2}'" xml:space="preserve">
     <value>Request acknowledgement sent for request {0} to '{1}' with email address '{2}'</value>
@@ -3823,6 +3814,10 @@ Labor         __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§SQL Server Connection string." xml:space="preserve">
     <value>SQL Server Connection string.</value>
   </data>
+  <data name="Thinkage.MainBoss.Database§SQL servers enumerator" xml:space="preserve">
+    <value>SQL servers enumerator</value>
+    <comment>New!</comment>
+  </data>
   <data name="Thinkage.MainBoss.Database§SQL User" xml:space="preserve">
     <value>SQL User</value>
   </data>
@@ -3853,8 +3848,8 @@ Labor         __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§Subject: {0}" xml:space="preserve">
     <value>Subject: {0}</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Successfully authenticated with" xml:space="preserve">
-    <value>Successfully authenticated with</value>
+  <data name="Thinkage.MainBoss.Database§Successfully authenticated with {0}" xml:space="preserve">
+    <value>Successfully authenticated with {0}</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Suspend WO" xml:space="preserve">
     <value>S&amp;uspend</value>
@@ -3952,9 +3947,6 @@ Labor         __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§The DataBaseServer option is obsolete." xml:space="preserve">
     <value>The DataBaseServer option is obsolete.</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§The domain controller for the domain '{0}' is currently inaccessible" xml:space="preserve">
-    <value>The domain controller for the domain '{0}' is currently inaccessible</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§The email message contains a virus or other unwanted software. The message will be deleted." xml:space="preserve">
     <value>The email message contains a virus or other unwanted software. The message will be deleted.</value>
   </data>
@@ -3994,11 +3986,9 @@ Labor         __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§The Schedule for this Unit Maintenance Plan has been deleted" xml:space="preserve">
     <value>The Schedule for this Unit Maintenance Plan has been deleted</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§The Service Configuration expects the service to be running as user '{0}'. The MainBoss Service is configured to be running as {1}" xml:space="preserve">
-    <value>The Service Configuration expects the service to be running as user '{0}'. The MainBoss Service is configured to be running as {1}</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§The service name identifier." xml:space="preserve">
-    <value>The service name identifier.</value>
+  <data name="Thinkage.MainBoss.Database§The Service Configuration expects the service to be running as user '{0}'. The MainBoss Service is configured to be running as '{1}'" xml:space="preserve">
+    <value>The Service Configuration expects the service to be running as user '{0}'. The MainBoss Service is configured to be running as '{1}'</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Database§The SMTP server parameter is not set." xml:space="preserve">
     <value>The SMTP server parameter is not set.</value>
@@ -4006,8 +3996,8 @@ Labor         __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§The SQL Credentials {0} for the MainBoss Service do not allow connection to the database" xml:space="preserve">
     <value>The SQL Credentials {0} for the MainBoss Service do not allow connection to the database</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§The SQL user '{0}' has insufficient permissions to view the user logins on the SQL Server, and therefore could not verify if the MainBoss Service which runs as user {1} has access the SQL server" xml:space="preserve">
-    <value>The SQL user '{0}' has insufficient permissions to view the user logins on the SQL Server, and therefore could not verify if the MainBoss Service which runs as user {1} has access the SQL server</value>
+  <data name="Thinkage.MainBoss.Database§The SQL user '{0}' has insufficient permissions to view the user logins on the SQL Server, and therefore could not verify if the MainBoss Service which runs as user {1} has access to the SQL server" xml:space="preserve">
+    <value>The SQL user '{0}' has insufficient permissions to view the user logins on the SQL Server, and therefore could not verify if the MainBoss Service which runs as user {1} has access to the SQL server</value>
   </data>
   <data name="Thinkage.MainBoss.Database§The SQL user name {0} does not have a login for SQL server '{1}'" xml:space="preserve">
     <value>The SQL user name {0} does not have a login for SQL server '{1}'</value>
@@ -4090,9 +4080,6 @@ Labor         __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§This account is for the user who created this organization" xml:space="preserve">
     <value>This account is for the user who created this organization</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§This computer is not a member of a domain" xml:space="preserve">
-    <value>This computer is not a member of a domain</value>
-  </data>
   <data name="Thinkage.MainBoss.Database§This contact is for the user who created this organization" xml:space="preserve">
     <value>This contact is for the user who created this organization</value>
   </data>
@@ -4119,9 +4106,6 @@ Labor         __________________________ Material    __________________________<
   </data>
   <data name="Thinkage.MainBoss.Database§Transfer To" xml:space="preserve">
     <value>Transfer To</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Tried" xml:space="preserve">
-    <value>Tried</value>
   </data>
   <data name="Thinkage.MainBoss.Database§Unable to access any MainBoss Service records in {0}.  User '{1}' must have SQL Administrator privileges on the SQL server." xml:space="preserve">
     <value>Unable to access any MainBoss Service records in {0}.  User '{1}' must have SQL Administrator privileges on the SQL server.</value>
@@ -4273,11 +4257,8 @@ Labor         __________________________ Material    __________________________<
   <data name="Thinkage.MainBoss.Database§Users {0} in the Active Directory have the same email address '{1}'" xml:space="preserve">
     <value>Users {0} in the Active Directory have the same email address '{1}'</value>
   </data>
-  <data name="Thinkage.MainBoss.Database§Using {0} server '{1}' on port {2}" xml:space="preserve">
-    <value>Using {0} server '{1}' on port {2}</value>
-  </data>
-  <data name="Thinkage.MainBoss.Database§Using {0} with mailbox '{0}' server '{2}' on port {3}" xml:space="preserve">
-    <value>Using {0} with mailbox '{0}' server '{2}' on port {3}</value>
+  <data name="Thinkage.MainBoss.Database§User '{0}' on server '{1}', port '{2}', using {3}" xml:space="preserve">
+    <value>User '{0}' on server '{1}', port '{2}', using {3}</value>
   </data>
   <data name="Thinkage.MainBoss.Database§using Purchase Template Hourly Outside referencing Hourly Outside {0}" xml:space="preserve">
     <value>using Purchase Template Hourly Outside referencing Hourly Outside '{0}'</value>
@@ -4470,5 +4451,29 @@ Labor         __________________________ Material    __________________________<
   </data>
   <data name="Thinkage.MainBoss.Database§Your request using email address {0} cannot be accepted. Please contact Maintenance by some other means." xml:space="preserve">
     <value>Your request using email address {0} cannot be accepted. Please contact Maintenance by some other means.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Configuration record contains both a client certificate name and a client secret" xml:space="preserve">
+    <value>Configuration record contains both a client certificate name and a client secret</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Mail Service Type does not allow any plaintext protocol, so Encryption 'None' will be ignored" xml:space="preserve">
+    <value>Mail Service Type does not allow any plaintext protocol, so Encryption 'None' will be ignored</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Mail Service Type does not allow specification of a Mailbox, so the Mailbox setting will be ignored" xml:space="preserve">
+    <value>Mail Service Type does not allow specification of a Mailbox, so the Mailbox setting will be ignored</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Cannot connect to {0}" xml:space="preserve">
+    <value>Cannot connect to {0}</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Cannot connect to incoming mail server. The following was tried:" xml:space="preserve">
+    <value>Cannot connect to incoming mail server. The following was tried:</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Mailbox '{0}' does not exist" xml:space="preserve">
+    <value>Mailbox '{0}' does not exist</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§No default Mailbox found, tried 'MBOX', 'INBOX' and 'Inbox'" xml:space="preserve">
+    <value>No default Mailbox found, tried 'MBOX', 'INBOX' and 'Inbox'</value>
+  </data>
+  <data name="Thinkage.MainBoss.Database§Only IPv6 addresses could be found but IPv6 is not enabled on this computer" xml:space="preserve">
+    <value>Only IPv6 addresses could be found but IPv6 is not enabled on this computer</value>
   </data>
 </root>

@@ -9,6 +9,10 @@ using Thinkage.Libraries.XAF.UI.MSWindows;
 using Thinkage.MainBoss.Application;
 using Thinkage.MainBoss.Controls;
 using Thinkage.MainBoss.Database;
+#if DEBUG
+using Thinkage.Libraries.TypeInfo;
+using Thinkage.Libraries.XAF.Database.Layout;
+#endif
 
 namespace Thinkage.MainBoss.MainBoss {
 
@@ -38,7 +42,7 @@ namespace Thinkage.MainBoss.MainBoss {
 				if (pModes == null)
 					pModes = new ModeDefinition[] {
 						new ModeDefinition("MainBoss Maintenance Manager", (int)DatabaseEnums.ApplicationModeID.Normal, KB.K("Start MainBoss with all permitted licenses."),
-							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 5, 5),// changing this should be reflected in the checkin comment to vault
+							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 6, 3),// changing this should be reflected in the checkin comment to vault
 							new [] {
 								new [] {new Libraries.Licensing.LicenseRequirement(Licensing.NamedUsersLicense, overLimitFatal: true)}
 							},
@@ -46,7 +50,7 @@ namespace Thinkage.MainBoss.MainBoss {
 						),
 						new ModeDefinition("MainBoss Assignments", (int)DatabaseEnums.ApplicationModeID.Assignments, KB.K("Start MainBoss showing only user's assignments."),
 							// This is a simplified mode for users to see only Work Orders, Requests, and/or Purchase Orders which are assigned to them.
-							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 5, 5), // changing this should be reflected in the checkin comment to vault
+							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 6, 3), // changing this should be reflected in the checkin comment to vault
 							new [] {
 								new [] {new Libraries.Licensing.LicenseRequirement(Licensing.NamedUsersLicense, overLimitFatal: true)}
 							},
@@ -54,7 +58,7 @@ namespace Thinkage.MainBoss.MainBoss {
 						),
 						new ModeDefinition("MainBoss Requests", (int)DatabaseEnums.ApplicationModeID.Requests, KB.K("Start only MainBoss Requests"),
 							// This is a simplified mode only for users to enter Requests and monitor requests they have entered (and are thus part of their Assigned requests)
-							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 5, 5), // changing this should be reflected in the checkin comment to vault
+							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 6, 3), // changing this should be reflected in the checkin comment to vault
 							new[] {
 								new [] { new Libraries.Licensing.LicenseRequirement(Licensing.NamedUsersLicense, overLimitFatal: true), new Libraries.Licensing.LicenseRequirement(Licensing.RequestsLicense, overLimitFatal: true) }
 							},
@@ -63,12 +67,12 @@ namespace Thinkage.MainBoss.MainBoss {
 						// Amininstration mode provides a simplified access to enter (with no licenses) Licenses, Users, and Security, and (with appropriate licenses) Requestors and MB Service administration.
 						new ModeDefinition("MainBoss Database Administration", (int)DatabaseEnums.ApplicationModeID.Administration, KB.K("Start the MainBoss Administration program."),
 							dsMB.Schema.V.MinMBAppVersion, new Version(1, 1, 4, 11), // ServiceConfiguration changed in 1.1.4.11 // changing this should be reflected in the checkin comment to vault
-							new Libraries.Licensing.LicenseRequirement[] { },
+							Array.Empty<Libraries.Licensing.LicenseRequirement>(),
 							((LicenseEnabledFeatureGroups[])LicensedFeatureGroups.Clone()).Concat(new [] {new LicenseEnabledFeatureGroups(TIGeneralMB3.AdministrationModeGroup)}).ToArray()
 						),
 						new ModeDefinition("MainBoss Database Sessions", (int)DatabaseEnums.ApplicationModeID.Sessions, KB.K("View the MainBoss sessions currently in use."),
 							dsMB.Schema.V.MinMBAppVersion, new Version(1, 0, 4, 15), // User tables and views changed at 1.0.4.15 // changing this should be reflected in the checkin comment to vault
-							new Libraries.Licensing.LicenseRequirement[] { },
+							Array.Empty<Libraries.Licensing.LicenseRequirement>(),
 							new LicenseEnabledFeatureGroups(TIGeneralMB3.SessionsModeGroup)
 						)
 					};
@@ -91,8 +95,8 @@ namespace Thinkage.MainBoss.MainBoss {
 				}
 			);
 #endif
-			new StandardApplicationIdentification(this, "MainBoss", "MainBoss");
-			new GUIApplicationIdentification(this, "Thinkage.MainBoss.MainBoss.Resources.MainBoss400.ico");
+			new StandardApplicationIdentification(this, ApplicationParameters.RegistryLocation, ApplicationParameters.ApplicationDisplayName);
+			new GUIApplicationIdentification(this, new Libraries.Drawing.StaticImage(Resources.Images.MainBoss400_16_16, Resources.Images.MainBoss400_32_32, Resources.Images.MainBoss400_48_48, Resources.Images.MainBoss400_256_256));
 			new Thinkage.Libraries.XAF.UI.MSWindows.UserInterface(this);
 			new Thinkage.Libraries.Presentation.MSWindows.UserInterface(this);
 			var uiFactory = new MSWindowsUIFactory(this) {
@@ -108,6 +112,14 @@ namespace Thinkage.MainBoss.MainBoss {
 				delegate () {
 					return CreateMainForm((MB3Client)GetInterface<IApplicationWithSingleDatabaseConnection>().Session);
 				});
+#if DEBUG
+			MSWindowsDebugProvider.AddPushbutton(MSWindowsDebugProvider.GeneralCategory, "Test Relative Date control",
+				delegate (object sender, System.EventArgs e) {
+					new RelativeDateControlTestForm(uiFactory).ShowForm();
+					;
+				}
+			);
+#endif
 		}
 		internal static Thinkage.Libraries.Application CreateMainBossApplication(NamedOrganization o) {
 			ModeDefinition pAppModeDefinition = null;
@@ -130,11 +142,11 @@ namespace Thinkage.MainBoss.MainBoss {
 	}
 	public class MainBossMainForm : MainBossDataForm {
 
-		protected override IContainableMenuItem BuildSessionMenu() {
-			return UIFactory.CreateSubMenu(KB.K("Session"), null
+		protected override MenuItem BuildSessionMenu() {
+			return new SubMenuItem(KB.K("Session")
 				// TODO: Make the following disabled when more than one window is open.
-				, UIFactory.CreateCommandMenuItem(KB.K("Change Maintenance Organization"), new CallDelegateCommand(KB.K("Close this organization and switch to a different organization"), new EventHandler(this.SetupDatabase)))
-				, UIFactory.CreateCommandMenuItem(KB.T(Strings.Format(KB.K("Reset to user {0} security"), DB.Session.ConnectionInformation.UserIdentification)), new CallDelegateCommand(KB.K("Security roles will be set back to the logged in user name"),
+				, new CommandMenuItem(KB.K("Change Maintenance Organization"), new CallDelegateCommand(KB.K("Close this organization and switch to a different organization"), new EventHandler(this.SetupDatabase)))
+				, new CommandMenuItem(KB.T(Strings.Format(KB.K("Reset to user {0} security"), DB.Session.ConnectionInformation.UserIdentification)), new CallDelegateCommand(KB.K("Security roles will be set back to the logged in user name"),
 					delegate () {
 						var appobj = MainBossApplication.Instance.AppConnectionMixIn;
 						// The following does not attempt to re-evaluate the User record ID, which may have changed if the original logon was with a scope-less
@@ -144,31 +156,31 @@ namespace Thinkage.MainBoss.MainBoss {
 					}
 				))
 #if DEBUG
-, UIFactory.CreateMenuSeparator()
-				, UIFactory.CreateCommandMenuItem(KB.T("DEBUG: Restart on same database"), new CallDelegateCommand(KB.K("Close this organization and restart to same database"), new EventHandler(delegate (object sender, EventArgs args) {
+, new SeparatorMenuItem()
+				, new CommandMenuItem(KB.T("DEBUG: Restart on same database"), new CallDelegateCommand(KB.K("Close this organization and restart to same database"), new EventHandler(delegate (object sender, EventArgs args) {
 					bool compactBrowsers = !TblDrivenMainBossApplication.Instance.GetInterface<IFormsPresentationApplication>().BrowsersHavePanel;
 					var junk = new NamedOrganization(Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().OrganizationName, new MB3Client.MBConnectionDefinition(DatabaseEnums.ApplicationModeID.Normal, compactBrowsers, DB.ConnectionInfo.DBServer, DB.ConnectionInfo.DBName, DB.ConnectionInfo.DBCredentials));
 					var app = MainBossApplication.CreateMainBossApplication(junk);
 					Thinkage.Libraries.Application.ReplaceActiveApplication(app);
 				})))
-				, UIFactory.CreateCommandMenuItem(KB.T("DEBUG: Select View Cost Permissions"), new CallDelegateCommand(KB.T("DefaultVisibility"), new EventHandler(delegate (object sender, EventArgs args) {
+				, new CommandMenuItem(KB.T("DEBUG: Select View Cost Permissions"), new CallDelegateCommand(KB.T("DefaultVisibility"), new EventHandler(delegate (object sender, EventArgs args) {
 					new PickViewCostPermissions(UIFactory, UpdateSecurity()).ShowAppModalAndWait();
 					MainControlPanel.RefreshTreeViewMenu();
 				})))
-				, UIFactory.CreateCommandMenuItem(KB.T("DEBUG: Select View Cost Roles"), new CallDelegateCommand(KB.T("DefaultVisibility"), new EventHandler(delegate (object sender, EventArgs args) {
+				, new CommandMenuItem(KB.T("DEBUG: Select View Cost Roles"), new CallDelegateCommand(KB.T("DefaultVisibility"), new EventHandler(delegate (object sender, EventArgs args) {
 					new PickViewCostRoles(UIFactory, UpdateSecurity()).ShowAppModalAndWait();
 					MainControlPanel.RefreshTreeViewMenu();
 				})))
-				, UIFactory.CreateCommandMenuItem(KB.T("DEBUG: Select Roles"), new CallDelegateCommand(delegate () {
+				, new CommandMenuItem(KB.T("DEBUG: Select Roles"), new CallDelegateCommand(delegate () {
 					new PickRoles(UIFactory, UpdateSecurity()).ShowAppModalAndWait();
 					MainControlPanel.RefreshTreeViewMenu();
 				}))
-				, UIFactory.CreateCommandMenuItem(KB.T("DEBUG: Select from existing roles"), new CallDelegateCommand(delegate () {
+				, new CommandMenuItem(KB.T("DEBUG: Select from existing roles"), new CallDelegateCommand(delegate () {
 					new PickLiveRoles(UIFactory).ShowAppModalAndWait();
 					MainControlPanel.RefreshTreeViewMenu();
 				}))
 #endif
-, UIFactory.CreateMenuSeparator()
+, new SeparatorMenuItem()
 				, ExitOrCloseMenuItem()
 				);
 		}
@@ -220,4 +232,74 @@ namespace Thinkage.MainBoss.MainBoss {
 		}
 		#endregion
 	}
+#if DEBUG
+	#region Test form
+	public class RelativeDateControlTestForm : TblForm<UIPanel> {
+		public RelativeDateControlTestForm(UIFactory uiFactory)
+			: base(uiFactory, PanelHelper.NewCenterColumnPanel(uiFactory)) {
+			FormContents.Add(uiFactory.CreateLabel(KB.T("Test Input")));
+			InputControl = new RelativeDateControl(uiFactory, null, null, ValuePlaceholder);
+			FormContents.Add(InputControl);
+			FormContents.Add(uiFactory.CreateLabel(KB.T("Reinterpreted value")));
+			RedisplayControl = new RelativeDateControl(uiFactory, null, new SettableDisablerProperties(null, null, false), ValuePlaceholder);
+			FormContents.Add(RedisplayControl);
+			FormContents.Add(uiFactory.CreateLabel(KB.T("Expression")));
+			ExpressionControl = uiFactory.CreateTextDisplay(StringTypeInfo.Universe.GetTypeFormatter(Libraries.Application.Instance.FormatCultureInfo), null, textPreferences: new TextSizePreference() { MaxPreferredLineCount = 4, DefaultLineCount = 4 });
+			FormContents.Add(ExpressionControl);
+			FormContents.Add(uiFactory.CreateLabel(KB.T("Sample SQL expression")));
+			SQLExpressionControl = uiFactory.CreateTextDisplay(StringTypeInfo.Universe.GetTypeFormatter(Libraries.Application.Instance.FormatCultureInfo), null, textPreferences: new TextSizePreference() { MaxPreferredLineCount = 4, DefaultLineCount = 4 });
+			FormContents.Add(SQLExpressionControl);
+			FormContents.Add(uiFactory.CreateLabel(KB.T("If today were")));
+			TodayControl = uiFactory.CreateDateTimePicker(DateTimeTypeInfo.NullableOneDayEpsilon, null, null);
+			FormContents.Add(TodayControl);
+			FormContents.Add(uiFactory.CreateLabel(KB.T("Result would be")));
+			ResultControl = uiFactory.CreateTextDisplay(DateTimeTypeInfo.NullableOneDayEpsilon.GetTypeFormatter(Libraries.Application.Instance.FormatCultureInfo), null);
+			FormContents.Add(ResultControl);
+
+			InputControl.Notify += TextInputChange;
+			TodayControl.Notify += TodayChange;
+
+			// Handle the initial values of the input controls.
+			TextInputChange();
+		}
+		private readonly SqlExpression ValuePlaceholder = new SqlExpression(dsMB.Path.T.WorkOrder.F.WorkDueDate);
+		private readonly IDataControl InputControl;
+		private readonly IDataControl RedisplayControl;
+		private readonly UITextDisplay ExpressionControl;
+		private readonly UITextDisplay SQLExpressionControl;
+		private readonly IDataControl TodayControl;
+		private readonly IDataControl ResultControl;
+		private readonly Libraries.XAF.Database.Service.MSSql.ExpressionUnparser Unparser = new Libraries.XAF.Database.Service.MSSql.ExpressionUnparser(null);
+		private void TextInputChange() {
+			if (InputControl.ValueStatus != null) {
+				RedisplayControl.Value = null;
+				SQLExpressionControl.Value = Libraries.Exception.FullMessage(InputControl.ValueStatus);
+				ExpressionControl.Value = null;
+			}
+			else {
+				var expr = (SqlExpression)InputControl.Value;
+				RedisplayControl.Value = expr;
+				SQLExpressionControl.Value = Unparser.UnParseCondition(expr);
+				ExpressionControl.Value = expr.DebugText;
+			}
+
+			TodayChange();
+		}
+		private void TodayChange() {
+			if (InputControl.ValueStatus != null || TodayControl.ValueStatus != null)
+				ResultControl.Value = null;
+			else {
+				var expr = (SqlExpression)InputControl.Value;
+				var today = (DateTime?)TodayControl.Value;
+				if (expr == null || !today.HasValue)
+					ResultControl.Value = null;
+				else {
+					expr = expr.TraverseWithReplacement(((node, depth) => node.Op == SqlExpression.OpName.Now ? SqlExpression.Constant(today) : null), 0);
+					ResultControl.Value = expr.Evaluate();
+				}
+			}
+		}
+	}
+	#endregion
+#endif
 }

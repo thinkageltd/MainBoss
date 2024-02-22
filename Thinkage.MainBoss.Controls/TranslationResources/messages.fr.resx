@@ -144,14 +144,15 @@
   <data name="TableObjects§A new Scheduling Basis was manually entered" xml:space="preserve">
     <value>Une nouvelle base de planification a été entrée manuellement</value>
   </data>
+  <data name="TableObjects§A schedule basis is need" xml:space="preserve">
+    <value>A schedule basis is need</value>
+    <comment>New!</comment>
+  </data>
   <data name="TableObjects§A single Work Order was generated for several Schedule Dates that have been deferred to the same date" xml:space="preserve">
     <value>Un Ordre de Travail unique a été généré pour plusieurs dates de calendrier qui ont été reportés à la même date</value>
   </data>
   <data name="TableObjects§A single Work Order will be generated for several Schedule Dates that have been deferred to the same date" xml:space="preserve">
     <value>Un Ordre de Travail unique sera généré pour plusieurs dates de calendrier qui ont été reportés à la même date</value>
-  </data>
-  <data name="TableObjects§A Work Order was generated" xml:space="preserve">
-    <value>Un Ordre de Travail a été générée</value>
   </data>
   <data name="TableObjects§A Work Order will be generated" xml:space="preserve">
     <value>Un Ordre de Travail sera généré</value>
@@ -181,7 +182,7 @@
     <value>En dehors horaire réel</value>
   </data>
   <data name="TableObjects§Actual Hourly Outside (with PO)" xml:space="preserve">
-    <value>En dehors horaire réel (avec PO)</value>
+    <value>En dehors horaire réel (avec BC)</value>
   </data>
   <data name="TableObjects§Actual Item" xml:space="preserve">
     <value>Point réelle</value>
@@ -196,7 +197,7 @@
     <value>Réel par emploi à l'extérieur</value>
   </data>
   <data name="TableObjects§Actual Per Job Outside (with PO)" xml:space="preserve">
-    <value>Réel par emploi à l'extérieur (avec PO)</value>
+    <value>Réel par emploi à l'extérieur (avec BC)</value>
   </data>
   <data name="TableObjects§Administration" xml:space="preserve">
     <value>Administration</value>
@@ -221,6 +222,14 @@
   </data>
   <data name="TableObjects§Attachment" xml:space="preserve">
     <value>Attachement</value>
+  </data>
+  <data name="TableObjects§Attachment Image" xml:space="preserve">
+    <value>Attachment Image</value>
+    <comment>New!</comment>
+  </data>
+  <data name="TableObjects§Attachment Path" xml:space="preserve">
+    <value>Attachment Path</value>
+    <comment>New!</comment>
   </data>
   <data name="TableObjects§Average Purchase Order Duration Per Grouping" xml:space="preserve">
     <value>Moyenne Durée Bon de Commande par groupe</value>
@@ -283,7 +292,7 @@
     <value>Correction de l'extérieur horaire réel</value>
   </data>
   <data name="TableObjects§Correction of Actual Hourly Outside (with PO)" xml:space="preserve">
-    <value>Correction de l'extérieur horaire réel (avec PO)</value>
+    <value>Correction de l'extérieur horaire réel (avec BC)</value>
   </data>
   <data name="TableObjects§Correction of Actual Item" xml:space="preserve">
     <value>Correction du point réelles</value>
@@ -298,7 +307,7 @@
     <value>Correction du réel par emploi à l'extérieur</value>
   </data>
   <data name="TableObjects§Correction of Actual Per Job Outside (with PO)" xml:space="preserve">
-    <value>Correction du réel par emploi à l'extérieur (avec PO)</value>
+    <value>Correction du réel par emploi à l'extérieur (avec BC)</value>
   </data>
   <data name="TableObjects§Correction of Chargeback Activity" xml:space="preserve">
     <value>Correction de l'activité Rétrofacturation</value>
@@ -392,6 +401,10 @@
   </data>
   <data name="TableObjects§Error" xml:space="preserve">
     <value>Erreur</value>
+  </data>
+  <data name="TableObjects§Error while making a Work Order" xml:space="preserve">
+    <value>Error while making a Work Order</value>
+    <comment>New!</comment>
   </data>
   <data name="TableObjects§Expense Category" xml:space="preserve">
     <value>Catégorie de dépenses</value>
@@ -507,8 +520,16 @@
   <data name="TableObjects§Labor Time by Vendor" xml:space="preserve">
     <value>Travail Temps par le vendeur</value>
   </data>
+  <data name="TableObjects§Last Generated Work Order" xml:space="preserve">
+    <value>Last Generated Work Order</value>
+    <comment>New!</comment>
+  </data>
   <data name="TableObjects§License" xml:space="preserve">
     <value>Licence</value>
+  </data>
+  <data name="TableObjects§Linked Attachment" xml:space="preserve">
+    <value>Linked Attachment</value>
+    <comment>New!</comment>
   </data>
   <data name="TableObjects§Linked Work Order" xml:space="preserve">
     <value>Lié Ordre de Travail</value>
@@ -534,14 +555,19 @@
   <data name="TableObjects§MainBoss-defined Security Role" xml:space="preserve">
     <value>MainBoss-defined Security Role</value>
   </data>
-  <data name="TableObjects§Security Role" xml:space="preserve">
-    <value>Security Role</value>
-  </data>
   <data name="TableObjects§Maintenance Forecast" xml:space="preserve">
     <value>Prévisions Entretien</value>
   </data>
   <data name="TableObjects§Maintenance History" xml:space="preserve">
     <value>Historique de la maintenance</value>
+  </data>
+  <data name="TableObjects§Maintenance plan has an error" xml:space="preserve">
+    <value>Maintenance plan has an error</value>
+    <comment>New!</comment>
+  </data>
+  <data name="TableObjects§Maintenance plan is inhibited" xml:space="preserve">
+    <value>Maintenance plan is inhibited</value>
+    <comment>New!</comment>
   </data>
   <data name="TableObjects§Maintenance Timing" xml:space="preserve">
     <value>Moment d'entretien</value>
@@ -727,7 +753,7 @@
     <value>Recevez article</value>
   </data>
   <data name="TableObjects§Receive Item (with PO)" xml:space="preserve">
-    <value>Recevez Point (avec PO)</value>
+    <value>Recevez Point (avec BC)</value>
   </data>
   <data name="TableObjects§Receive Miscellaneous" xml:space="preserve">
     <value>Recevez Divers</value>
@@ -788,6 +814,9 @@
   </data>
   <data name="TableObjects§Scheduling Basis" xml:space="preserve">
     <value>Base de Scheduling</value>
+  </data>
+  <data name="TableObjects§Security Role" xml:space="preserve">
+    <value>Security Role</value>
   </data>
   <data name="TableObjects§Service Contract" xml:space="preserve">
     <value>Contrat de service</value>
@@ -954,6 +983,10 @@
   <data name="TableObjects§Unit" xml:space="preserve">
     <value>Unités</value>
   </data>
+  <data name="TableObjects§Unit Attachment" xml:space="preserve">
+    <value>Unit Attachment</value>
+    <comment>New!</comment>
+  </data>
   <data name="TableObjects§Unit Category" xml:space="preserve">
     <value>Unité Catégorie</value>
   </data>
@@ -992,6 +1025,10 @@
   </data>
   <data name="TableObjects§Unplanned Maintenance Work Order" xml:space="preserve">
     <value>Travaux d'entretien imprévus Ordres de Travail</value>
+  </data>
+  <data name="TableObjects§Unspecified Trade" xml:space="preserve">
+    <value>Unspecified Trade</value>
+    <comment>New!</comment>
   </data>
   <data name="TableObjects§User Security Role" xml:space="preserve">
     <value>Sécurité utilisateur Rôle</value>
@@ -1069,13 +1106,13 @@
     <value>Ordre de Travail horaire à l'extérieur</value>
   </data>
   <data name="TableObjects§Work Order Hourly Outside (with PO)" xml:space="preserve">
-    <value>Ordre de Travail horaire à l'extérieur (avec PO)</value>
+    <value>Ordre de Travail horaire à l'extérieur (avec BC)</value>
   </data>
   <data name="TableObjects§Work Order Hourly Outside Actual (no PO)" xml:space="preserve">
     <value>Ordre de Travail horaire extérieur réel</value>
   </data>
   <data name="TableObjects§Work Order Hourly Outside Actual (with PO)" xml:space="preserve">
-    <value>Ordre de Travail horaire extérieur réel (avec PO)</value>
+    <value>Ordre de Travail horaire extérieur réel (avec BC)</value>
   </data>
   <data name="TableObjects§Work Order Inside" xml:space="preserve">
     <value>À l'intérieur</value>
@@ -1114,13 +1151,13 @@
     <value>Ordre de Travail par poste à l'extérieur</value>
   </data>
   <data name="TableObjects§Work Order Per Job Outside (with PO)" xml:space="preserve">
-    <value>Ordre de Travail par poste à l'extérieur (avec PO)</value>
+    <value>Ordre de Travail par poste à l'extérieur (avec BC)</value>
   </data>
   <data name="TableObjects§Work Order Per Job Outside Actual (no PO)" xml:space="preserve">
     <value>Ordre de Travail par emploi extérieur réel</value>
   </data>
   <data name="TableObjects§Work Order Per Job Outside Actual (with PO)" xml:space="preserve">
-    <value>Ordre de Travail par emploi extérieur réel (avec PO)</value>
+    <value>Ordre de Travail par emploi extérieur réel (avec BC)</value>
   </data>
   <data name="TableObjects§Work Order Priority" xml:space="preserve">
     <value>Ordre de Travail par de priorité</value>
@@ -1154,6 +1191,10 @@
   </data>
   <data name="TableObjects§Work Order Temporary Storage" xml:space="preserve">
     <value>Ordre de Travail temporaire de stockage</value>
+  </data>
+  <data name="TableObjects§Work Orders have been generated " xml:space="preserve">
+    <value>Work Orders have been generated </value>
+    <comment>New!</comment>
   </data>
   <data name="TableObjects§Work was deferred to a later date" xml:space="preserve">
     <value>Le travail a été reporté à une date ultérieure</value>
@@ -1245,8 +1286,16 @@
   <data name="Thinkage.MainBoss.Controls§." xml:space="preserve">
     <value>.</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§'{0}'    deleted on {1}" xml:space="preserve">
+    <value>'{0}'    deleted on {1}</value>
+    <comment>New!</comment>
+  </data>
   <data name="Thinkage.MainBoss.Controls§{0} {0.IsOne ? error was : errors were } encountered during import." xml:space="preserve">
     <value>{0} {0.IsOne ? erreur était rencontré : erreurs étaient rencontrés } lors de l'importation.</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§{0} merged contact {1} into contact {2}" xml:space="preserve">
+    <value>{0} merged contact {1} into contact {2}</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Controls§A password is not required for this authentication method" xml:space="preserve">
     <value>Un mot de passe n'est pas requis pour cette méthode d'authentification</value>
@@ -1275,6 +1324,10 @@
   <data name="Thinkage.MainBoss.Controls§Acknowledgements are sent by email" xml:space="preserve">
     <value>Remerciements sont envoyés par e-mail</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Active Directory does not have any relevant information for email address {0}" xml:space="preserve">
+    <value>Active Directory does not have any relevant information for email address {0}</value>
+    <comment>New!</comment>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Active filter shows only records less than this many days old" xml:space="preserve">
     <value>Filtre actif montre uniquement les enregistrements moins de cette vieille plusieurs jours</value>
   </data>
@@ -1284,8 +1337,8 @@
   <data name="Thinkage.MainBoss.Controls§Actual" xml:space="preserve">
     <value>Utilisation réelle</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Actual and Effective readings must differ by Meter offset" xml:space="preserve">
-    <value>Les relevés effectif et réel doivent être différents de la compensation du compteur.</value>
+  <data name="Thinkage.MainBoss.Controls§Actual and Effective readings must differ by Meter offset of {0}" xml:space="preserve">
+    <value>Les relevés effectif et réel doivent être différents de la compensation du compteur de {0}</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Actual Cost" xml:space="preserve">
     <value>Coût réel</value>
@@ -1297,10 +1350,10 @@
     <value>Durée réelle</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Actual Hourly (with PO)" xml:space="preserve">
-    <value>Actual horaire (avec PO)</value>
+    <value>Actual horaire (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Actual Per Job (with PO)" xml:space="preserve">
-    <value>Par réelles d'emploi (avec PO)</value>
+    <value>Par réelles d'emploi (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Actual Quantity" xml:space="preserve">
     <value>Quantité réelle</value>
@@ -1335,6 +1388,10 @@
   <data name="Thinkage.MainBoss.Controls§After Scheduling Period" xml:space="preserve">
     <value>Après la période de programmation</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§All files (*.*)" xml:space="preserve">
+    <value>All files (*.*)</value>
+    <comment>New!</comment>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Allow Days" xml:space="preserve">
     <value>Inclure Jours de Semaine</value>
   </data>
@@ -1364,9 +1421,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Assigned to" xml:space="preserve">
     <value>Assigné à</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Assignees" xml:space="preserve">
-    <value>Personnes assignées</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Associates the Windows Service for MainBoss with this database and configures the service." xml:space="preserve">
     <value>Associe le Service Windows à MainBoss avec cette base de données et configure le service.</value>
@@ -1572,6 +1626,10 @@
   <data name="Thinkage.MainBoss.Controls§Change the parent location of the selected records to be the destination location" xml:space="preserve">
     <value>Modifier l'emplacement de parent des enregistrements sélectionnés pour être l'emplacement de destination</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Choose the contact which the selected contacts will be merged into" xml:space="preserve">
+    <value>Choose the contact which the selected contacts will be merged into</value>
+    <comment>New!</comment>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Choose the location where the selected records will be moved to" xml:space="preserve">
     <value>Choisissez l'emplacement où les enregistrements sélectionnés seront déplacés</value>
   </data>
@@ -1608,9 +1666,6 @@
   <data name="Thinkage.MainBoss.Controls§Computer" xml:space="preserve">
     <value>Ordinateur</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Configure" xml:space="preserve">
-    <value>Configurer</value>
-  </data>
   <data name="Thinkage.MainBoss.Controls§Configure Windows Service for MainBoss" xml:space="preserve">
     <value>Configurer le service Windows pour MainBoss</value>
   </data>
@@ -1622,6 +1677,10 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Contact could not be created for senders email address" xml:space="preserve">
     <value>Contact n'a pas pu être créé pour les expéditeurs de courriel</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Contacts that have associated MainBoss Users cannot be completely merged." xml:space="preserve">
+    <value>Contacts that have associated MainBoss Users cannot be completely merged.</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Controls§Content is not printable" xml:space="preserve">
     <value>Contenu n'est pas imprimable</value>
@@ -1645,13 +1704,10 @@
     <value>Correction</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Correction of Actual Hourly (with PO)" xml:space="preserve">
-    <value>Correction de réelles horaire (avec PO)</value>
+    <value>Correction de réelles horaire (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Correction of Actual Per Job (with PO)" xml:space="preserve">
-    <value>Correction du réel par emploi (avec PO)</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Correction of Chargeback" xml:space="preserve">
-    <value>Correction de la Rétrofacturation</value>
+    <value>Correction du réel par emploi (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Correction of Receive Item to Temporary Location (no PO)" xml:space="preserve">
     <value>Correction de réception d'un article dans un espace de rangement temporaire</value>
@@ -1679,9 +1735,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Cost Pending" xml:space="preserve">
     <value>En attente des coûts</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Could not construct a valid SQL Server Connection string" xml:space="preserve">
-    <value>Impossible de construire une chaîne de connexion SQL Server valide</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Coverage" xml:space="preserve">
     <value>Couverture</value>
@@ -1808,9 +1861,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Deferred" xml:space="preserve">
     <value>Reporté</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Delete" xml:space="preserve">
-    <value>Supprimer</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Delete Activity Logging Entries" xml:space="preserve">
     <value>Supprimer Activité entrées de journalisation</value>
@@ -1941,6 +1991,14 @@
   <data name="Thinkage.MainBoss.Controls§Do not use encryption" xml:space="preserve">
     <value>N'utilisez pas de cryptage</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Do you want to merge contact:" xml:space="preserve">
+    <value>Do you want to merge contact:</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Do you want to merge contacts:" xml:space="preserve">
+    <value>Do you want to merge contacts:</value>
+    <comment>New!</comment>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Due Date" xml:space="preserve">
     <value>Date d'échéance</value>
   </data>
@@ -1965,20 +2023,23 @@
   <data name="Thinkage.MainBoss.Controls§Effective Date must be different from Current Effective Date" xml:space="preserve">
     <value>Date d'effet doit être différent de Current Date effective</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Effective Reading must be greater than Current Effective Reading" xml:space="preserve">
-    <value>De lecture efficace doit être supérieur de lecture efficace actuel</value>
+  <data name="Thinkage.MainBoss.Controls§Effective Reading must be greater than Current Effective Reading of {0}" xml:space="preserve">
+    <value>De lecture efficace doit être supérieur de lecture efficace actuel de {0}</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Effective reading must not be less than offset" xml:space="preserve">
-    <value>La valeur du relevé ne doit pas être inférieure à la compensation.</value>
+  <data name="Thinkage.MainBoss.Controls§Effective reading must not be less than offset of {0}" xml:space="preserve">
+    <value>La valeur du relevé ne doit pas être inférieure à la compensation de {0}</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Effective Reading that predates Current Reading must be less than Current Effective Reading" xml:space="preserve">
-    <value>Lecture efficace qui précède Lecture actuelle doit être inférieur de lecture efficace actuel</value>
+  <data name="Thinkage.MainBoss.Controls§Effective Reading that predates Current Reading must be less than Current Effective Reading of {0}" xml:space="preserve">
+    <value>Lecture efficace qui précède Lecture actuelle doit être inférieur de lecture efficace actuel de {0}</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Effective Values" xml:space="preserve">
     <value>Valeurs efficaces</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Email" xml:space="preserve">
     <value>Courriel</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Email held for review: is stale dated or originated as an auto response" xml:space="preserve">
+    <value>E-mail conservé pour examen: date périmée ou origine en tant que réponse automatique</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Email Message" xml:space="preserve">
     <value>Message électronique</value>
@@ -1991,9 +2052,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Email rejected: Senders Contact could not be created since another Contact exists with the same code" xml:space="preserve">
     <value>Email rejeté: le contact des expéditeurs n'a pas pu être créé car un autre contact existe avec le même code</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Email held for review: is stale dated or originated as an auto response" xml:space="preserve">
-    <value>E-mail conservé pour examen: date périmée ou origine en tant que réponse automatique</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Email rejected: Senders email address doesn't match any Contact" xml:space="preserve">
     <value>Email rejeté: l'adresse e-mail des expéditeurs ne correspond à aucun contact</value>
@@ -2205,6 +2263,12 @@
   <data name="Thinkage.MainBoss.Controls§History of work orders on selected units" xml:space="preserve">
     <value>Histoire des Ordres de Travail sur les unités sélectionnées</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Hourly Outside (with PO)" xml:space="preserve">
+    <value>En dehors horaire (avec BC)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Hourly Outside (no PO)" xml:space="preserve">
+    <value>En dehors horaire</value>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Hourly Purchase Line" xml:space="preserve">
     <value>Horaire Achat Ligne</value>
   </data>
@@ -2220,6 +2284,10 @@
   <data name="Thinkage.MainBoss.Controls§HTML Content" xml:space="preserve">
     <value>Contenu HTML</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§If you or other users are currently using the contact which is the source of the merge, the merge may cause transient errors in MainBoss, restarting MainBoss will fix the problem" xml:space="preserve">
+    <value>If you or other users are currently using the contact which is the source of the merge, the merge may cause transient errors in MainBoss, restarting MainBoss will fix the problem</value>
+    <comment>New!</comment>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Image Content" xml:space="preserve">
     <value>Contenu de l'image</value>
   </data>
@@ -2232,7 +2300,7 @@
   <data name="Thinkage.MainBoss.Controls§Import Email Message" xml:space="preserve">
     <value>Message d'importation de messagerie</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§In order to update the contact there must be either an Active Directory Reference or an Email address" xml:space="preserve">
+  <data name="Thinkage.MainBoss.Controls§In order to update the contact there must be either an Active Directory Reference or an email address" xml:space="preserve">
     <value>Pour mettre à jour le contact, il doit y avoir une référence Active Directory ou une adresse e-mail</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Include Work Order History status code and comments in Comments to Requestor" xml:space="preserve">
@@ -2246,6 +2314,10 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Inflation to end of life" xml:space="preserve">
     <value>L'inflation à la fin de vie</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Information" xml:space="preserve">
+    <value>Information</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Controls§Inhibit" xml:space="preserve">
     <value>Inhiber</value>
@@ -2277,6 +2349,10 @@
   <data name="Thinkage.MainBoss.Controls§Internet Message Access Protocol version 4 revision 1 over SSL" xml:space="preserve">
     <value>Internet Message Access Protocol version 4 révision 1 sur SSL</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§into contact:" xml:space="preserve">
+    <value>into contact:</value>
+    <comment>New!</comment>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Item Pricing and Purchasing History" xml:space="preserve">
     <value>Historique du coût et d'achat de l'article</value>
   </data>
@@ -2297,6 +2373,10 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Labor Receiving" xml:space="preserve">
     <value>Travail Réception</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Last Generation" xml:space="preserve">
+    <value>Last Generation</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Controls§Latest Physical Count" xml:space="preserve">
     <value>Dernier dénombrement</value>
@@ -2361,6 +2441,10 @@
   <data name="Thinkage.MainBoss.Controls§Mail Message Content" xml:space="preserve">
     <value>Contenu du message de courrier</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Mail Messages (*.eml)" xml:space="preserve">
+    <value>Mail Messages (*.eml)</value>
+    <comment>New!</comment>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Mail User's Password" xml:space="preserve">
     <value>Mot de passe de l'utilisateur du courrier</value>
   </data>
@@ -2409,6 +2493,26 @@
   <data name="Thinkage.MainBoss.Controls§Maximum" xml:space="preserve">
     <value>Maximum</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Merge all contact information from the selected contacts the target contact" xml:space="preserve">
+    <value>Merge all contact information from the selected contacts the target contact</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Merge into Contact" xml:space="preserve">
+    <value>Merge into Contact</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Merge to" xml:space="preserve">
+    <value>Merge to</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Merging contacts" xml:space="preserve">
+    <value>Merging contacts</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Merging contacts should only be done when you are the sole user of MainBoss." xml:space="preserve">
+    <value>Merging contacts should only be done when you are the sole user of MainBoss.</value>
+    <comment>New!</comment>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Messages {0} ({1}/{2:X4})" xml:space="preserve">
     <value>Messages {0} ({1}/{2:X4})</value>
   </data>
@@ -2450,9 +2554,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Name does not match font's name" xml:space="preserve">
     <value>Nom ne correspond pas le nom de la police</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Network Deployed {0}" xml:space="preserve">
-    <value>Déployé réseau {0}</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§New" xml:space="preserve">
     <value>Nouveau</value>
@@ -2598,9 +2699,6 @@
   <data name="Thinkage.MainBoss.Controls§One line per selected unit maintenance plan" xml:space="preserve">
     <value>Une ligne par sélectionnée plan de maintenance de l'unité</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Only available on computer that is a member of a domain" xml:space="preserve">
-    <value>Uniquement disponible sur un ordinateur membre d'un domaine</value>
-  </data>
   <data name="Thinkage.MainBoss.Controls§Only include Demand Templates for work specifically from this Purchase Order Template's Vendor" xml:space="preserve">
     <value>Inclure uniquement les modèles des demandes de ressources pour le travail confié précisément au fournisseur rattaché à ce Bon de Commande</value>
   </data>
@@ -2690,6 +2788,10 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Only include Storage Assignments which have a preferred Price Quote associated with them" xml:space="preserve">
     <value>Inclure uniquement les attributions d'espaces de rangement ayant une proposition de prix privilégiée qui leur est associée</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Only one Contact at a time can be merged" xml:space="preserve">
+    <value>Only one Contact at a time can be merged</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Controls§Only one record is allowed" xml:space="preserve">
     <value>Un seul enregistrement est autorisé</value>
@@ -2790,17 +2892,17 @@
   <data name="Thinkage.MainBoss.Controls§Overdue" xml:space="preserve">
     <value>Arriéré</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Override Default MailBox" xml:space="preserve">
-    <value>Remplacer le MailBox par défaut</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Override Default Port" xml:space="preserve">
-    <value>Remplacer le port par défaut</value>
-  </data>
   <data name="Thinkage.MainBoss.Controls§Pause Service" xml:space="preserve">
     <value>Service Pause</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Pause the Windows Service for MainBoss. While the service is paused it will not do any processing" xml:space="preserve">
     <value>Mettre en pause le service Windows pour MainBoss. Alors que le service est suspendu, il ne fera pas de traitement</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Per Job Outside (with PO)" xml:space="preserve">
+    <value>Par emploi à l'extérieur (avec BC)</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Per Job Outside (no PO)" xml:space="preserve">
+    <value>Par emploi à l'extérieur</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Per Job Purchase Line" xml:space="preserve">
     <value>Par achat d'emploi Ligne</value>
@@ -2819,6 +2921,10 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Physical Count" xml:space="preserve">
     <value>Dénombrement</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§plus {0} more" xml:space="preserve">
+    <value>plus {0} more</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Controls§PM Batch has been committed" xml:space="preserve">
     <value>Le lot de MP est engagé.</value>
@@ -2890,13 +2996,13 @@
     <value>Précédent achat</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Previous Purchase (with PO)" xml:space="preserve">
-    <value>Achat précédent (avec PO)</value>
+    <value>Achat précédent (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Previous Purchase from Vendor (no PO)" xml:space="preserve">
     <value>Achat précédent auprès du vendeur</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Previous Purchase from Vendor (with PO)" xml:space="preserve">
-    <value>Achat précédent auprès du vendeur (avec PO)</value>
+    <value>Achat précédent auprès du vendeur (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Price Quote" xml:space="preserve">
     <value>Proposition de prix</value>
@@ -2963,12 +3069,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Purchase Order initial State override" xml:space="preserve">
     <value>Annulation de l'état initial du Bon de Commande</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Purchase Order Line Hourly" xml:space="preserve">
-    <value>Bon de commande Ligne horaire</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Purchase Order Line Per Job" xml:space="preserve">
-    <value>Bon de commande ligne par emploi</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Purchase total cost" xml:space="preserve">
     <value>Achetez coût total</value>
@@ -3069,8 +3169,9 @@
   <data name="Thinkage.MainBoss.Controls§Receiving is only allowed to temporary storage assignments for this work order" xml:space="preserve">
     <value>La réception n'est autorisée que pour des assignations d'espaces de rangement temporaires pour ce bon de travail.</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Receiving Storage Assignment" xml:space="preserve">
-    <value>Réception d'une attribution d'espace de rangement</value>
+  <data name="Thinkage.MainBoss.Controls§Recommended To Order" xml:space="preserve">
+    <value>Recommended To Order</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Controls§Refresh from Active Directory" xml:space="preserve">
     <value>Rafraîchir à partir d'Active Directory</value>
@@ -3255,6 +3356,10 @@
   <data name="Thinkage.MainBoss.Controls§Save the scheduling basis for each of the selected Unit Maintenance Plans" xml:space="preserve">
     <value>Enregistrer la base de planification pour chacun des plans de maintenance unité sélectionnée</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§Schedule Basis Date" xml:space="preserve">
+    <value>Schedule Basis Date</value>
+    <comment>New!</comment>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Scheduled Date" xml:space="preserve">
     <value>Date programmée</value>
   </data>
@@ -3270,8 +3375,33 @@
   <data name="Thinkage.MainBoss.Controls§Seasonal exceptions" xml:space="preserve">
     <value>Exceptions saisonnières</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Select from database users" xml:space="preserve">
-    <value>Sélectionnez parmi les utilisateurs de la base de données</value>
+  <data name="Thinkage.MainBoss.Controls§Select a contact to be merged from" xml:space="preserve">
+    <value>Select a contact to be merged from</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Select a contact to be merged into" xml:space="preserve">
+    <value>Select a contact to be merged into</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Select a contact to be merged to" xml:space="preserve">
+    <value>Select a contact to be merged to</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Select database user" xml:space="preserve">
+    <value>Select database user</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Select from the logins avaiable on the server" xml:space="preserve">
+    <value>Select from the logins avaiable on the server</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Select from the users avaiable in the database" xml:space="preserve">
+    <value>Select from the users avaiable in the database</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Select server login" xml:space="preserve">
+    <value>Select server login</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Controls§Self Assign" xml:space="preserve">
     <value>Auto Assign</value>
@@ -3405,6 +3535,14 @@
   <data name="Thinkage.MainBoss.Controls§Source Type" xml:space="preserve">
     <value>Type de Source</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§SQL User '{0}'" xml:space="preserve">
+    <value>SQL User '{0}'</value>
+    <comment>New!</comment>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§SQL User '{0}' (Windows User '{1}')" xml:space="preserve">
+    <value>SQL User '{0}' (Windows User '{1}')</value>
+    <comment>New!</comment>
+  </data>
   <data name="Thinkage.MainBoss.Controls§Start" xml:space="preserve">
     <value>Démarrer</value>
   </data>
@@ -3444,9 +3582,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Status Pending" xml:space="preserve">
     <value>Statut attente</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Stop" xml:space="preserve">
-    <value>Arrêter</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Stop All Tracing" xml:space="preserve">
     <value>Arrêter tout Tracing</value>
@@ -3544,14 +3679,8 @@
   <data name="Thinkage.MainBoss.Controls§The email request has been already processed" xml:space="preserve">
     <value>La demande de courrier électronique a déjà été traitée</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§The first day of work" xml:space="preserve">
-    <value>Le premier jour de travail</value>
-  </data>
   <data name="Thinkage.MainBoss.Controls§The following licenses have a License Id different from the Named User license {0}:" xml:space="preserve">
     <value>Les licences suivantes ont un License Id différent de la licence Named User {0}:</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§The last day of work" xml:space="preserve">
-    <value>Le dernier jour de travail</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§The Planned Maintenance Batch has not been committed so there is no Work Order to view" xml:space="preserve">
     <value>Le lot Maintenance planifiée n'a pas été commis tant il est commandant de travail pour voir</value>
@@ -3573,9 +3702,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§The template already provides an Expense Model" xml:space="preserve">
     <value>Le modèle comprend déjà un ligne Modèle de coûts</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§The Windows Service for MainBoss cannot be configured from within clickonce deployment of MainBoss." xml:space="preserve">
-    <value>Le service Windows pour MainBoss ne peut pas être configuré à partir déploiement clickonce de MainBoss.</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§The Windows Service for MainBoss cannot be configured with only a demonstration license." xml:space="preserve">
     <value>The Windows Service for MainBoss cannot be configured with only a demonstration license.</value>
@@ -3610,8 +3736,8 @@
   <data name="Thinkage.MainBoss.Controls§The Windows Service for MainBoss status cannot be determined." xml:space="preserve">
     <value>Le Statut du service Windows pour MainBoss ne peut être déterminée.</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§There are no contact records to create from" xml:space="preserve">
-    <value>Il n'y a pas les enregistrements de contact pour créer de</value>
+  <data name="Thinkage.MainBoss.Controls§There are no Active Directory records to create from" xml:space="preserve">
+    <value>Il n'y a pas les enregistrements d'Active Directory pour créer avec</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§There are no license records to update" xml:space="preserve">
     <value>Il n'y a pas de dossiers de permis de mettre à jour</value>
@@ -3637,6 +3763,10 @@
   <data name="Thinkage.MainBoss.Controls§These limits specify the entire year." xml:space="preserve">
     <value>Cette fourchette englobe toute l'année.</value>
   </data>
+  <data name="Thinkage.MainBoss.Controls§This action cannot be undone" xml:space="preserve">
+    <value>This action cannot be undone</value>
+    <comment>New!</comment>
+  </data>
   <data name="Thinkage.MainBoss.Controls§This command needs to show a form for some but not all of the selected records" xml:space="preserve">
     <value>Cette commande doit afficher un formulaire pour certains, mais pas pour tous les enregistrements sélectionnés</value>
   </data>
@@ -3645,6 +3775,10 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§This Entry" xml:space="preserve">
     <value>Cette écriture</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§This operation can take a very long time." xml:space="preserve">
+    <value>This operation can take a very long time.</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Controls§This operation is not allowed in the current state" xml:space="preserve">
     <value>Cette opération n'est pas autorisée dans l'état actuel.</value>
@@ -3726,9 +3860,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Unavailable: {0}" xml:space="preserve">
     <value>Non disponible : {0}</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Unit Contact" xml:space="preserve">
-    <value>Contact - unité</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Unit Cost" xml:space="preserve">
     <value>Coût unitaire</value>
@@ -3913,23 +4044,11 @@
   <data name="Thinkage.MainBoss.Controls§Using calculated source Assignment On Hand cost" xml:space="preserve">
     <value>Utilisation calculée Attribution source sur le coût main</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Using Hourly Demand" xml:space="preserve">
-    <value>Utilisation de la demande de main-d'œuvre</value>
-  </data>
   <data name="Thinkage.MainBoss.Controls§Using On Hand Quantity from storage assignment" xml:space="preserve">
     <value>Utilisation en inventaire Quantité de cession de stockage</value>
   </data>
-  <data name="Thinkage.MainBoss.Controls§Using Per Job Demand" xml:space="preserve">
-    <value>Utilisation d'une autre demande de ressources</value>
-  </data>
   <data name="Thinkage.MainBoss.Controls§Using Purchase Item Template to Template Storage Assignment" xml:space="preserve">
     <value>Utilisation d'achat Item Modèle à Modèle Attribution de stockage</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Using Purchase item to Temporary Storage" xml:space="preserve">
-    <value>Utilisation de l'achat d'un article pour un espace de rangement temporaire</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Using Receive item to Temporary Storage" xml:space="preserve">
-    <value>Utilisation de la réception d'un article pour un espace de rangement temporaire</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Using Task Hourly Demand" xml:space="preserve">
     <value>Utilisation du modèle de demande de main-d'œuvre</value>
@@ -3945,18 +4064,6 @@
   </data>
   <data name="Thinkage.MainBoss.Controls§Value On Hand" xml:space="preserve">
     <value>Valeur en main</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Vendor Payables" xml:space="preserve">
-    <value>Comptes fournisseurs du fournisseur</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Vendor Sales" xml:space="preserve">
-    <value>Service des ventes du fournisseur</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Vendor Service" xml:space="preserve">
-    <value>Service après-vente du fournisseur</value>
-  </data>
-  <data name="Thinkage.MainBoss.Controls§Verify" xml:space="preserve">
-    <value>Vérifier</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Verify configuration of the Windows Service for MainBoss." xml:space="preserve">
     <value>Vérifiez la configuration du service Windows pour MainBoss.</value>
@@ -4067,7 +4174,7 @@
     <value>Ordre de Travail horaire extérieur effectivement utilisé</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Work Order Hourly Outside actually used (with PO)" xml:space="preserve">
-    <value>Ordre de Travail horaire extérieur effectivement utilisé (avec PO)</value>
+    <value>Ordre de Travail horaire extérieur effectivement utilisé (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Work Order Hourly Outside with demanded and actual time and cost" xml:space="preserve">
     <value>Ordre horaire extérieur avec demandé et le temps réel et le coût de travail</value>
@@ -4100,13 +4207,17 @@
     <value>Ordre de Travail par emploi En dehors de l'utilisation réelle</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Work Order Per Job Outside actually used (with PO)" xml:space="preserve">
-    <value>Ordre de Travail par emploi En dehors de l'utilisation réelle (avec PO)</value>
+    <value>Ordre de Travail par emploi En dehors de l'utilisation réelle (avec BC)</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Work Order Per Job Outside with demanded and actual quantity and cost" xml:space="preserve">
     <value>Bon de commande par emploi extérieur avec exigé et réelle quantité et le coût</value>
   </data>
   <data name="Thinkage.MainBoss.Controls§Work Order Resource Costs" xml:space="preserve">
     <value>Travailler l'ordonnance de frais de ressources</value>
+  </data>
+  <data name="Thinkage.MainBoss.Controls§Work Order Resources actually used" xml:space="preserve">
+    <value>Work Order Resources actually used</value>
+    <comment>New!</comment>
   </data>
   <data name="Thinkage.MainBoss.Controls§Work Order Resources with demanded and actual quantity and cost" xml:space="preserve">
     <value>Ressources travailler Commander comme demandé et réelle quantité et le coût</value>

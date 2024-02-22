@@ -3,10 +3,13 @@
   <types uri="..\Types.xafdb"/>
   <table name="BillableRequestor" defaults="true" log="false" id="Id" xid="ContactID Hidden" xunique="true" labelkey="Billable Requestor">
 	<field name="Id" read="RequiredGUID" />
-	<field name="Hidden" type="GenerationValue"/>
+	<field name="Hidden" type="GenerationValue">
+	  <extension name="dependson">Contact.Hidden</extension>  <!-- We'd like to add @Contact.Id->BillableRequestor.ContactID here but that is not a unique linkage -->
+	</field>
 	<field name="ContactID" type="RequiredGUIDREF" link="Contact">
 	  <doc>Contact reference associated to this billable requestor</doc>
 	  <extension name="linkage">captive</extension>
+	  <extension name="cascadehide"/>
 	</field>
 	<field name="Comment" type="Comment"  />
 	<field name="AccountsReceivableCostCenterID" type="RequiredGUIDREF"  link="CostCenter">
@@ -15,6 +18,8 @@
 	</field>
 	<extension name="deletemethod">hide</extension>
   </table>
-  <table name="Contact"/>
+  <table name="Contact">
+	<field name="Hidden"/>
+  </table>
   <table name="CostCenter"/>
 </database>

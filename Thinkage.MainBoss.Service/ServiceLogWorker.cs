@@ -41,7 +41,7 @@ namespace Thinkage.MainBoss.Service {
 						if (lastrunDate == expiryDate) break;
 						batch = new CommandBatchSpecification();
 						batch.CreateNormalParameter(KB.I("ExpiryDate"), Thinkage.Libraries.XAF.Database.Service.MSSql.Server.SqlDateTimeTypeInfo).Value = expiryDate;
-						batch.Commands.Add(new MSSqlLiteralCommandSpecification("DELETE ServiceLog Where EntryDate < @ExpiryDate"));
+						batch.Commands.Add(new DBSpecificCommandSpecification("DELETE ServiceLog Where EntryDate < @ExpiryDate"));
 						DBSession.Session.ExecuteCommandBatch(batch);
 						ServiceLogging.LogInfo(Strings.Format(KB.K("Log truncation request processing completed, removed all entries older than {0}"), expiryDate));
 						lastrunDate = expiryDate;
@@ -49,13 +49,13 @@ namespace Thinkage.MainBoss.Service {
 #if DEBUG
 					case ApplicationServiceRequests.LOG_EMPTY:
 						batch = new CommandBatchSpecification();
-						batch.Commands.Add(new MSSqlLiteralCommandSpecification("DELETE ServiceLog Where EntryDate is not null")); // we don't want to delete the table just the entries
+						batch.Commands.Add(new DBSpecificCommandSpecification("DELETE ServiceLog Where EntryDate is not null")); // we don't want to delete the table just the entries
 						DBSession.Session.ExecuteCommandBatch(batch);
 						ServiceLogging.LogInfo(Strings.Format(KB.K("Log empty request processing completed, removed all log entries")));
 						break;
 					case ApplicationServiceRequests.TRACE_CLEAR:
 						batch = new CommandBatchSpecification();
-						batch.Commands.Add(new MSSqlLiteralCommandSpecification(string.Format("DELETE ServiceLog Where EntryType = {0}", (int)Thinkage.MainBoss.Database.DatabaseEnums.ServiceLogEntryType.Trace))); 
+						batch.Commands.Add(new DBSpecificCommandSpecification(string.Format("DELETE ServiceLog Where EntryType = {0}", (int)Thinkage.MainBoss.Database.DatabaseEnums.ServiceLogEntryType.Trace))); 
 						DBSession.Session.ExecuteCommandBatch(batch);
 						ServiceLogging.LogInfo(Strings.Format(KB.K("Log clear request processing completed, removed all trace log entries")));
 						break;

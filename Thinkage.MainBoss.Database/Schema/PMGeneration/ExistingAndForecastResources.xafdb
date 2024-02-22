@@ -18,8 +18,8 @@
 	<field name="ProjectID" type="GUIDREF"  link="Project"/>
 	<field name="WorkOrderPriorityID" type="GUIDREF"  link="WorkOrderPriority" labelkey="Priority"/>
 	<field name="CloseCodeID" type="GUIDREF"  link="CloseCode"/>
-	<field name="StartDateEstimate" type="RequiredDate" labelkey="Work Start Date"/>
-	<field name="EndDateEstimate" type="RequiredDate" labelkey="Work End Date"/>
+	<field name="StartDateEstimate" type="RequiredDate" labelkey="Planned Start Date"/>
+	<field name="EndDateEstimate" type="RequiredDate" labelkey="Planned End Date"/>
 	<field name="Downtime" type="Downtime"/>
 	<field name="SelectPrintFlag" type="bool" labelkey="Select for Printing"/>
 	<field name="GenerateLeadTime" type="WorkOrderDuration"/>

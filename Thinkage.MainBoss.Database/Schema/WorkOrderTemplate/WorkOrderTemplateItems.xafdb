@@ -4,11 +4,6 @@
   <table name="WorkOrderTemplateItems" defaults="false" log="false" id="Id" labelkey="Task Demand Item">
 	<doc>This is the row data for the simplified WO Items browsette</doc>
 	<field name="Id" read="RequiredGUID" />
-	<field name="TableEnum" type="integer(min 0, max 1, nonnull)">
-	  <!-- DatabaseEnums.WorkOrderItems -->
-	  <doc>The type of resource record</doc>
-	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderTemplateItemsProvider,Thinkage.MainBoss.Controls</extension>
-	</field>
 	<!-- the base linkages of the unified records -->
 	<field name="ItemID" type="GUIDREF" link="Item">
 	  <doc>the Item record linkage</doc>
@@ -17,32 +12,15 @@
 	  <doc>the base Demand record linkage for resources derived from this (demands)</doc>
 	</field>
 	<!-- Other fields required by restrictions in Tbl etc representations -->
-	<field name="WorkOrderExpenseModelEntryID" type="GUIDREF" link="WorkOrderExpenseModelEntry">
-	  <!-- This has to be here because the double-field join operation is not followable in XAF -->
-	  <doc>the Id of the WorkOrderExpenseModelEntry associated with a DemandTemplate record based on the WorkOrderTemplate's expense model which determines the C/C to actualize to.
-	  This will be null if there is no model entry (preventing actualization) and for all non-Demand and non-Actual record types.</doc>
-	</field>
-	<!-- Other fields required for filtering/parentage: None. Since only one variant has a non-null filter or parent the value can be represented
-	by just a path in the tbl.-->
 	<extension name="query">
-				select I.ID, 0, I.ID, NULL, NULL  <!-- DatabaseEnums.WorkOrderTemplateItems.Item -->
-					from Item as I
+				select ID, ID, NULL
+					from Item
 			union all
-				select D.ID, 1, NULL, D.ID, WOXME.ID  <!-- DatabaseEnums.WorkOrderTemplateItems.DemandItemTemplate -->
-					from
-						DemandTemplate as D
-					join
-						DemandItemTemplate as DI on DI.DemandTemplateID = D.Id
-					join
-						WorkOrderTemplate as WO on WO.ID = D.WorkOrderTemplateID
-					left join
-						WorkOrderExpenseModelEntry as WOXME
-							on WOXME.WorkOrderExpenseModelID = WO.WorkOrderExpenseModelID
-							and WOXME.WorkOrderExpenseCategoryID = D.WorkOrderExpenseCategoryID
+				select DemandTemplateID, NULL, DemandTemplateID
+					from DemandItemTemplate
 		</extension>
 	<extension name="dependson">Item</extension>
-	<extension name="dependson">DemandTemplate</extension>
-	<extension name="dependson">WorkOrderExpenseModelEntry</extension>
+	<extension name="dependson">DemandItemTemplate</extension>
 	<extension name="costrights">WorkOrderItem</extension>
   </table>
   <table name="WorkOrderTemplateItemsTreeView" defaults="false" log="false" id="Id"  labelkey="Task Demand Item">
@@ -52,15 +30,12 @@
 	</field>
 	<field name="DisplayID" type="GUIDREF" link="WorkOrderTemplateItems">
 	</field>
-	<!--TODO: delete this-->
-	<field name="IsPrimary" type="RequiredBool">
-	</field>
 	<extension name="query">
 				<!-- We don't need self-containment for the Item records since they are never primary -->
-				select DI.DemandTemplateID, DI.DemandTemplateID, DI.DemandTemplateID, 1
+				select DI.DemandTemplateID, DI.DemandTemplateID, DI.DemandTemplateID
 					from DemandItemTemplate as DI
 			union all
-				select IL.ItemId, DI.DemandTemplateID, IL.ItemId, 0
+				select IL.ItemId, DI.DemandTemplateID, IL.ItemId
 					from
 						DemandItemTemplate as DI
 					join
@@ -76,11 +51,6 @@
 	</doc>
 	<field name="Id" read="RequiredGUID">
 	</field>
-	<field name="TableEnum" type="integer(min 0, max 6, nonnull)">
-	  <!-- DatabaseEnums.WorkOrderTemporaryStorage -->
-	  <doc>The type of record</doc>
-	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderTemplateStorageProvider,Thinkage.MainBoss.Controls</extension>
-	</field>
 	<field name="LocationID" type="GUIDREF" link="Location">
 	  <doc>ID of the base Location record if the TableEnum indicates this is a Location derivation</doc>
 	</field>
@@ -90,47 +60,24 @@
 	<field name="WorkOrderTemplateID" type="GUIDREF" link="WorkOrderTemplate">
 	  <doc>The ID of the work order for TemplateTemporaryStorage and TemplateItemLocation records</doc>
 	</field>
-	<field name="ParentID" type="GUIDREF" link="WorkOrderTemplateStorage" labelkey="Task Temporary Storage">
-	  <doc>The ID of the base Location record of the parent record for the tree structure</doc>
-	</field>
 	<!-- Location variants in the following query that cannot contain a TemplateItemLocation have been pruned out -->
 	<extension name="query">
-				<!-- DatabaseEnums.LocationDerivations.PostalAddress -->
-				select LocationID, 0, LocationID, null, null, NULL
+				select LocationID, LocationID, null, null
 					from PostalAddress as PA
 			union all
-				<!-- DatabaseEnums.LocationDerivations.Unit -->
-				select RL.LocationID, 2, RL.LocationID, null, null, RL.ContainingLocationID
-					from Unit
-						left join RelativeLocation as RL on Unit.RelativeLocationID = RL.ID
+				select LocationID, LocationID, null, null
+					from RelativeLocation
 			union all
-				<!-- DatabaseEnums.LocationDerivations.PermanentStorage -->
-				select RL.LocationID, 3, RL.LocationID, null, null, RL.ContainingLocationID
-					from PermanentStorage as PS
-						left join RelativeLocation as RL on PS.RelativeLocationID = RL.ID
+				select LocationID, LocationID, null, WorkOrderTemplateID
+					from TemplateTemporaryStorage
 			union all
-				<!-- DatabaseEnums.LocationDerivations.PlainRelativeLocation -->
-				select RL.LocationID, 4, RL.LocationID, null, null, RL.ContainingLocationID
-					from PlainRelativeLocation as PRL
-						left join RelativeLocation as RL on PRL.RelativeLocationID = RL.ID
-			union all
-				<!-- DatabaseEnums.LocationDerivations.TemplateTemporaryStorage -->
-				select TTS.LocationID, 5, TTS.LocationID, null, TTS.WorkOrderTemplateID, TTS.ContainingLocationID
-					from TemplateTemporaryStorage as TTS
-			union all
-				<!-- DatabaseEnums.WorkOrderTemplateStorage.TemplateItemLocation -->
-				select IL.ID, 6, NULL, IL.ID, TS.WorkOrderTemplateID, IL.LocationID 
+				select IL.ID, NULL, IL.ID, TS.WorkOrderTemplateID 
 					from TemplateItemLocation as TIL
 						join ItemLocation as IL on IL.ID = TIL.ItemLocationID
 						join TemplateTemporaryStorage as TS on TS.LocationID = IL.LocationID
 		</extension>
-	<extension name="dependson">Location</extension>
-	<extension name="dependson">PermanentStorage</extension>
-	<extension name="dependson">PlainRelativeLocation</extension>
 	<extension name="dependson">PostalAddress</extension>
 	<extension name="dependson">RelativeLocation</extension>
-	<extension name="dependson">TemplateTemporaryStorage</extension>
-	<extension name="dependson">Unit</extension>
 	<extension name="dependson">TemplateTemporaryStorage</extension>
 	<extension name="dependson">TemplateItemLocation</extension>
 	<extension name="dependson">ItemLocation</extension>
@@ -142,21 +89,18 @@
 	</field>
 	<field name="DisplayID" type="GUIDREF" link="WorkOrderTemplateStorage">
 	</field>
-	<!--TODO: delete this-->
-	<field name="IsPrimary" type="RequiredBool">
-	</field>
 	<extension name="query">
 				<!-- Containment (including self-containment) for all Locations -->
-				select LC.ContainingLocationID, LC.ContainedLocationID, LC.ContainingLocationID, case when LC.Depth = 0 then 1 else 0 end
+				select LC.ContainingLocationID, LC.ContainedLocationID, LC.ContainingLocationID
 					from LocationContainment as LC
 			union all
 				<!-- Self-containment for TemporaryItemLocation records -->
-				select TIL.ItemLocationID, TIL.ItemLocationID, TIL.ItemLocationID, 1
+				select TIL.ItemLocationID, TIL.ItemLocationID, TIL.ItemLocationID
 					from
 						TemplateItemLocation as TIL
 			union all
 				<!-- Containment of all TemplateItemLocation records within all the containing Locations -->
-				select LC.ContainingLocationID, TIL.ItemLocationID, LC.ContainingLocationID, 0
+				select LC.ContainingLocationID, TIL.ItemLocationID, LC.ContainingLocationID
 					from
 						TemplateItemLocation as TIL
 					inner join
@@ -175,12 +119,8 @@
   <table name="LocationContainment"/>
   <table name="TemplateTemporaryStorage"/>
   <table name="WorkOrderTemplate"/>
-  <table name="WorkOrderExpenseModelEntry"/>
   <table name="Item"/>
   <table name="Location"/>
-  <table name="PermanentStorage"/>
-  <table name="PlainRelativeLocation"/>
   <table name="PostalAddress"/>
   <table name="RelativeLocation"/>
-  <table name="Unit"/>
 </database>

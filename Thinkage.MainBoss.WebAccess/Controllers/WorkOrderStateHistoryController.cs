@@ -9,7 +9,7 @@ using Thinkage.MainBoss.WebAccess.Models;
 namespace Thinkage.MainBoss.WebAccess.Controllers {
 	[HandleError]
 	public class WorkOrderStateHistoryController : StateHistoryController<WorkOrderStateHistoryModel> {
-		WorkOrderStateHistoryModel Model;
+		private WorkOrderStateHistoryModel Model;
 		protected override WorkOrderStateHistoryModel GetModelForModelStateErrors() {
 			if (Model.CloseCodePickList == null)
 				Model.CloseCodePickList = NewRepository<WorkOrderStateHistoryRepository>().CloseCodePickList(Model.CloseCodeID);
@@ -93,7 +93,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		#endregion
 
 		#region Close
-		static List<Guid> AllowedToCloseStates = new List<Guid>(new Guid[] { Thinkage.MainBoss.Database.KnownIds.WorkOrderStateOpenId });
+		private static readonly List<Guid> AllowedToCloseStates = new List<Guid>(new Guid[] { Thinkage.MainBoss.Database.KnownIds.WorkOrderStateOpenId });
 		#region Close (GET)
 		// GET: /WorkOrderStateHistory/Close
 		[MainBossAuthorization]
@@ -114,6 +114,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		[MainBossAuthorization]
 		[AcceptVerbs(HttpVerbs.Post)]
 		[ExportModelStateToTempData]
+		[ValidateAntiForgeryToken]
 		public ActionResult Close(FormCollectionWithType collection) {
 			TempData["RedirectOnSuccess"] = "Index";
 			return POSTUpdate(collection, Thinkage.MainBoss.Database.KnownIds.WorkOrderStateClosedId, AllowedToCloseStates, CloseStateInstructions, KB.K("You cannot close the work order since it is already closed"));
@@ -123,7 +124,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 
 		#region Open
 		#region Open (GET)
-		static List<Guid> CanChangeToOpenStates = new List<Guid>(new Guid[] { Thinkage.MainBoss.Database.KnownIds.WorkOrderStateDraftId });
+		private static readonly List<Guid> CanChangeToOpenStates = new List<Guid>(new Guid[] { Thinkage.MainBoss.Database.KnownIds.WorkOrderStateDraftId });
 
 		// GET: /WorkOrderStateHistory/Open
 		[MainBossAuthorization]
@@ -144,6 +145,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		[MainBossAuthorization]
 		[AcceptVerbs(HttpVerbs.Post)]
 		[ExportModelStateToTempData]
+		[ValidateAntiForgeryToken]
 		public ActionResult Open(FormCollectionWithType collection) {
 			TempData["RedirectOnSuccess"] = "Index";
 			return POSTUpdate(collection, Thinkage.MainBoss.Database.KnownIds.WorkOrderStateOpenId, CanChangeToOpenStates, MainBossUserChangeStateInstructions,
@@ -154,11 +156,11 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 
 		#region AddComment
 		// Common GetAddComment processing
-		static List<Guid> CanCommentStates = new List<Guid>(new Guid[] { Thinkage.MainBoss.Database.KnownIds.WorkOrderStateDraftId, Thinkage.MainBoss.Database.KnownIds.WorkOrderStateOpenId });
-		static List<StateHistoryRepository.CustomInstructions> MainBossUserChangeStateInstructions = new List<StateHistoryRepository.CustomInstructions>(new StateHistoryRepository.CustomInstructions[] {
+		private static readonly List<Guid> CanCommentStates = new List<Guid>(new Guid[] { Thinkage.MainBoss.Database.KnownIds.WorkOrderStateDraftId, Thinkage.MainBoss.Database.KnownIds.WorkOrderStateOpenId });
+		private static readonly List<StateHistoryRepository.CustomInstructions> MainBossUserChangeStateInstructions = new List<StateHistoryRepository.CustomInstructions>(new StateHistoryRepository.CustomInstructions[] {
 			StateHistoryRepository.CustomInstructions.DefaultToExisting
 		});
-		static List<StateHistoryRepository.CustomInstructions> CloseStateInstructions = new List<StateHistoryRepository.CustomInstructions>(new StateHistoryRepository.CustomInstructions[] {
+		private static readonly List<StateHistoryRepository.CustomInstructions> CloseStateInstructions = new List<StateHistoryRepository.CustomInstructions>(new StateHistoryRepository.CustomInstructions[] {
 			StateHistoryRepository.CustomInstructions.CloseWorkOrder
 		});
 		#region AddComment (GET)
@@ -194,6 +196,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		[MainBossAuthorization]
 		[AcceptVerbs(HttpVerbs.Post)]
 		[ExportModelStateToTempData]
+		[ValidateAntiForgeryToken]
 		public ActionResult AddComment(FormCollectionWithType collection) {
 			TempData["RedirectOnSuccess"] = "View";
 			return POSTUpdate(collection, null, CanCommentStates, MainBossUserChangeStateInstructions, KB.K("You cannot add a comment to the work order in its current state"));
@@ -202,6 +205,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		[MainBossAuthorization]
 		[AcceptVerbs(HttpVerbs.Post)]
 		[ExportModelStateToTempData]
+		[ValidateAntiForgeryToken]
 		public ActionResult UnAssignedAddComment(FormCollectionWithType collection) {
 			TempData["RedirectOnSuccess"] = "ViewUnAssigned";
 			return POSTUpdate(collection, null, CanCommentStates, MainBossUserChangeStateInstructions, KB.K("You cannot add a comment to the work order in its current state"));
@@ -210,7 +214,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		#endregion
 
 		#region SelfAssign
-		static List<StateHistoryRepository.CustomInstructions> SelfAssignInstructions = new List<StateHistoryRepository.CustomInstructions>(new StateHistoryRepository.CustomInstructions[] {
+		private static readonly List<StateHistoryRepository.CustomInstructions> SelfAssignInstructions = new List<StateHistoryRepository.CustomInstructions>(new StateHistoryRepository.CustomInstructions[] {
 			StateHistoryRepository.CustomInstructions.DefaultToExisting,
 			StateHistoryRepository.CustomInstructions.FullUpdate,
 			StateHistoryRepository.CustomInstructions.SelfAssign
@@ -236,6 +240,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		[MainBossAuthorization]
 		[AcceptVerbs(HttpVerbs.Post)]
 		[ExportModelStateToTempData]
+		[ValidateAntiForgeryToken]
 		public ActionResult SelfAssign(FormCollectionWithType collection) {
 			TempData["RedirectOnSuccess"] = "UnAssigned";
 			return POSTUpdate(collection, Thinkage.MainBoss.Database.KnownIds.WorkOrderStateOpenId, CanCommentStates, SelfAssignInstructions,

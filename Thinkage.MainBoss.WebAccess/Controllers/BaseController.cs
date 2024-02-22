@@ -10,6 +10,11 @@ using Thinkage.MainBoss.WebAccess.Models;
 
 namespace Thinkage.MainBoss.WebAccess.Controllers {
 	abstract public class ErrorHandlingController : Controller {
+		protected override void OnAuthorization(AuthorizationContext filterContext) {
+			base.OnAuthorization(filterContext);
+			if (filterContext.Result == null)
+				((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance).ReAuthenticateMainBossUser();
+		}
 		protected override void OnException(ExceptionContext filterContext) {
 			base.OnException(filterContext);
 			if (filterContext.ExceptionHandled)
@@ -50,6 +55,12 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 			if (!String.IsNullOrEmpty(uri))
 				TempData.Add("HomeURL", uri);
 		}
+		public void SetHomeURLAsReferrer() {
+			if (TempData.ContainsKey("HomeURL"))
+				TempData.Remove("HomeURL");
+			if (Request.UrlReferrer != null && !String.IsNullOrEmpty(Request.UrlReferrer.AbsoluteUri))
+				TempData.Add("HomeURL", Request.UrlReferrer.AbsoluteUri);
+		}
 	}
 	#region BaseController for WebAccess
 	/// <summary>
@@ -60,6 +71,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 	/// </summary>
 	abstract public class BaseController : ErrorHandlingController {
 		[Serializable]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "<Pending>")]
 		protected class ValueProviderException : System.Exception {
 			[NonSerialized]
 			public readonly RuleViolationCollector RulesViolated;
@@ -92,11 +104,6 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 				//				HandleErrorInfo model = new HandleErrorInfo(filterContext.Exception, controllerName, actionName);
 				View("NoPermission", filterContext.Exception).ExecuteResult(this.ControllerContext);
 			}
-		}
-		protected override void OnAuthorization(AuthorizationContext filterContext) {
-			base.OnAuthorization(filterContext);
-			if (filterContext.Result == null)
-				((Thinkage.MainBoss.WebAccess.MainBossWebAccessApplication)Thinkage.Libraries.Application.Instance).ReAuthenticateMainBossUser();
 		}
 	}
 	#endregion
@@ -159,13 +166,13 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 			}
 			if (e is ColumnRelatedDBException) {
 				var vuc = e as ColumnRelatedDBException;
-				System.Exception columnMappedException = vuc;
 				if (vuc.InterpretedErrorCode == InterpretedDbExceptionCodes.ViolationUniqueConstraint) {
 					// For Unique Constraint violations, we try to list the related fields in a custom message, using the column names is the best we can do in the web version for now
 					var mappedLabels = new System.Collections.Generic.List<string>();
 					foreach (string s in vuc.ColumnsInError)
 						mappedLabels.Add(s);
 
+					System.Exception columnMappedException;
 					if (mappedLabels.Count == 0)
 						columnMappedException = new GeneralException(KB.K("The value entered already exists. Only one instance of this value is allowed."));
 					else if (mappedLabels.Count == 1)

@@ -12,12 +12,13 @@ namespace Thinkage.MainBoss.Database {
 		}
 		public static string HelpFileOnlineLocation {
 			get {
-				return Strings.IFormat("http://mainboss.com/manual/{0}.{1}.{2}/HtmlHelp/{3}", VersionInfo.ProductVersion.Major, VersionInfo.ProductVersion.Minor, VersionInfo.ProductVersion.Build, Thinkage.Libraries.Application.InstanceMessageCultureInfo.TwoLetterISOLanguageName);
+				return Strings.IFormat("https://mainboss.com/manual/{0}.{1}.{2}/HtmlHelp/{3}", VersionInfo.ProductVersion.Major, VersionInfo.ProductVersion.Minor, VersionInfo.ProductVersion.Build, Thinkage.Libraries.Application.InstanceMessageCultureInfo.TwoLetterISOLanguageName);
 			}
 		}
 		/// <summary>
 		/// Location in the registry where the application may store things
 		/// </summary>
 		public static readonly string RegistryLocation = KB.I("MainBoss");
+		public static readonly string ApplicationDisplayName = KB.I("MainBoss");
 	}
 }

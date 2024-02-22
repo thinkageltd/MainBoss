@@ -26,8 +26,8 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <SignManifests>true</SignManifests>
-    <ManifestCertificateThumbprint>0072E09A760BFAC04E5CD4F5A26ABC34A1C0072B</ManifestCertificateThumbprint>
+    <SignManifests>false</SignManifests>
+    <ManifestCertificateThumbprint>2D94C4A70185FA788CF24B2B8389D41892878468</ManifestCertificateThumbprint>
     <ManifestKeyFile>
     </ManifestKeyFile>
     <ManifestTimestampUrl>http://tsa.starfieldtech.com</ManifestTimestampUrl>
@@ -36,7 +36,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <SignAssembly>true</SignAssembly>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <GenerateManifests>true</GenerateManifests>
     <ApplicationManifest>Resources\MainBoss.manifest</ApplicationManifest>
     <TargetZone>Custom</TargetZone>
@@ -52,18 +52,18 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>false</MapFileExtensions>
-    <InstallUrl>http://www.mainboss.com/MainBossAdvancedPreview/4.2.0.6/</InstallUrl>
+    <InstallUrl>http://www.mainboss.com/MainBossAdvancedPreview/4.3.0.1/</InstallUrl>
     <SupportUrl>http://www.mainboss.com/info/support.htm%3fversion=4.3</SupportUrl>
     <ErrorReportUrl>http://www.mainboss.com/info/support.shtml%3fversion=4.2</ErrorReportUrl>
     <ProductName>MainBoss Advanced</ProductName>
     <PublisherName>Thinkage</PublisherName>
     <SuiteName>MainBoss</SuiteName>
-    <MinimumRequiredVersion>4.3.0.0</MinimumRequiredVersion>
+    <MinimumRequiredVersion>4.3.0.1</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>WebDeploy.htm</WebPage>
     <TrustUrlParameters>true</TrustUrlParameters>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>4.3.0.0</ApplicationVersion>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>4.3.0.1</ApplicationVersion>
     <UseApplicationTrust>true</UseApplicationTrust>
     <ExcludeDeploymentUrl>true</ExcludeDeploymentUrl>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -217,6 +217,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="licenses.licx" />
+    <EmbeddedResource Include="Resources\Images.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Images.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="TranslationResources\messages.en.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -230,8 +235,14 @@
     <Compile Include="CompanyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MainBossApplication.cs">
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Resources\Images.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Images.resx</DependentUpon>
     </Compile>
     <Compile Include="SolutionSettings.cs" />
     <Compile Include="StartupApplication.cs" />
@@ -242,6 +253,9 @@
     <Compile Include="Translation.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="SetupMBServiceOAuth2Access.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup Condition="Exists('SolutionSettings.targets')">
     <None Include="SolutionSettings.targets" />
@@ -250,6 +264,10 @@
     <Service Include="{967B4E0D-AD0C-4609-AB67-0FA40C0206D8}" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\MainBoss400_16_16.bmp" />
+    <None Include="Resources\MainBoss400_32_32.bmp" />
+    <None Include="Resources\MainBoss400_48_48.bmp" />
+    <None Include="Resources\MainBoss400_256_256.bmp" />
     <Content Include="www\default.htm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -294,7 +312,6 @@
     </Content>
     <Content Include="Resources\Laundry.ico">
     </Content>
-    <EmbeddedResource Include="Resources\MainBoss400.ico" />
     <Content Include="Resources\Resort.ico">
     </Content>
     <Content Include="Resources\SCHOOL.ICO">

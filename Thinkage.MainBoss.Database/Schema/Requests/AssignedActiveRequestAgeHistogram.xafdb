@@ -38,7 +38,7 @@
 							) then 1 else 0 end
 						from
 							<!-- The following returns the Id and earliest in-progress effective date for all in-progress requests -->
-							(select RSH.RequestId, RA.RequestAssigneeID, dbo._DClosestValue(min(RSH.EffectiveDate), 0, 846000000000)
+							(select RSH.RequestId, RA.RequestAssigneeID, min(cast(cast(RSH.EffectiveDate as date) as datetime))
 								from
 									RequestStateHistory as RSH
 									join RequestState as RS on RS.Id = RSH.RequestStateId
@@ -50,10 +50,10 @@
 								group by RSH.RequestId, RA.RequestAssigneeID
 							) as X(RequestId, RequestAssigneeID, RequestOpenDate)
 					union
-						select null, ID, dbo._DClosestValue(getdate(), 0, 846000000000), 0, 0
+						select null, ID, cast(cast(getdate() as date) as datetime), 0, 0
 							from RequestAssignee
 					union
-						select null, ID, dbo._DClosestValue(getdate(), 0, 846000000000) + dbo._INew(1, 0, 0, 0, 0), 0, 0
+						select null, ID, dateadd(day, 1, cast(cast(getdate() as date) as datetime)), 0, 0
 							from RequestAssignee
 					) as Y(RequestId, RequestAssigneeID, RequestOpenDate, HasWorkOrders, HasIncompleteWorkOrders)
 				group by RequestOpenDate, RequestAssigneeID

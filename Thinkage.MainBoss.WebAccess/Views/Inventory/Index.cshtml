@@ -1,0 +1,24 @@
+@using Thinkage.MainBoss.WebAccess
+@{
+	ViewBag.Title = T.Text("View Inventory");
+}
+@section MainContent {
+	<div id="assignmentPanel">
+		<h3>@(T.Text("Inventory Activity"))</h3>
+			<div>
+				<div class="ActivityLink">
+					@(Html.ActionLink(T.Text("View Storeroom list"), "Index", "Storeroom"))
+					<span class="HelpPopup">@T.Text("Show your permanent storage locations.")</span>
+				</div>
+				<div class="ActivityLink">
+					@(Html.ActionLink(T.Text("View Item list"), "Index", "Item"))
+					<span class="HelpPopup">@T.Text("Show your inventory item list.")</span>
+				</div>
+			</div>
+		<br />
+	</div>
+	<div class="Actions">
+		<div class="Action">@(Html.ActionButton(T.Text("Refresh"), ""))</div>
+		<div class="Action">@(Html.ActionLink(T.Text("Home"), "WebAccess", "Home"))</div>
+	</div>
+}

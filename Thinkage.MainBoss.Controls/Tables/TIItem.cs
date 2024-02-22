@@ -12,116 +12,58 @@ namespace Thinkage.MainBoss.Controls {
 	/// Register Tbl and/or DelayedCreateTbl objects for Items.
 	/// </summary>
 	public class TIItem : TIGeneralMB3 {
-		#region Record-type providers
-		#region - ItemReceivingProvider
-		private static object[] ItemReceivingValues = new object[] {
-			(int)ViewRecordTypes.ItemReceiving.NotSpecified,
-			(int)ViewRecordTypes.ItemReceiving.ReceivePermanentPO,
-			(int)ViewRecordTypes.ItemReceiving.ReceiveTemporaryPO,
-			(int)ViewRecordTypes.ItemReceiving.ReceivePermanentNonPO,
-			(int)ViewRecordTypes.ItemReceiving.ReceiveTemporaryNonPO,
-			(int)ViewRecordTypes.ItemReceiving.ReceivePermanentPOCorrection,
-			(int)ViewRecordTypes.ItemReceiving.ReceiveTemporaryPOCorrection,
-			(int)ViewRecordTypes.ItemReceiving.ReceivePermanentNonPOCorrection,
-			(int)ViewRecordTypes.ItemReceiving.ReceiveTemporaryNonPOCorrection
-		};
-		private static Key[] ItemReceivingLabels = new Key[] {
-			KB.K("Not Specified"),
-			KB.TOi(TId.ReceiveItemWithPO),
-			KB.K("Receive Item to Temporary Location (with PO)"),
-			KB.TOi(TId.ReceiveItemNoPO),
-			KB.K("Receive Item to Temporary Location (no PO)"),
-			KB.TOi(TId.CorrectionofReceiveItemWithPO),
-			KB.K("Correction of Receive Item to Temporary Location (with PO)"),
-			KB.TOi(TId.CorrectionofReceiveItemNoPO),
-			KB.K("Correction of Receive Item to Temporary Location (no PO)")
-		};
-		public static EnumValueTextRepresentations ItemReceivingProvider = new EnumValueTextRepresentations(ItemReceivingLabels, null, ItemReceivingValues);
+		#region View Record Types
+		#region - ItemActivity
+		public enum ItemActivity {
+			ItemAdjustment,
+			ItemIssue,
+			ItemIssueCorrection,
+			ItemTransferTo,
+			ItemTransferToCorrection,
+			ItemTransferFrom,
+			ItemTransferFromCorrection,
+			ReceiveItemPO,
+			ReceiveItemPOCorrection,
+			ReceiveItemNonPO,
+			ReceiveItemNonPOCorrection,
+			ActualItem,
+			ActualItemCorrection,
+			ItemCountValue,
+			VoidItemCountValue,
+			VoidedItemCountValue
+		}
 		#endregion
-		#region - ItemPricingProvider
-		public static EnumValueTextRepresentations ItemPricingProvider = new EnumValueTextRepresentations(
-			new Key[] {
-				KB.K("Not Specified"),
-				KB.K("Price Quote"),
-				KB.TOi(TId.ReceiveItemWithPO),
-				KB.TOi(TId.ReceiveItemNoPO)
-			}, null,
-			new object[] {
-				(int)ViewRecordTypes.ItemPricing.NotSpecified,
-				(int)ViewRecordTypes.ItemPricing.PriceQuote,
-				(int)ViewRecordTypes.ItemPricing.ReceivePO,
-				(int)ViewRecordTypes.ItemPricing.ReceiveNonPO
-			}
-		);
+		#region - ActiveTemporaryStorageWithItemAssignments
+		public enum ActiveTemporaryStorageWithItemAssignments {
+			TemporaryStorage,
+			TemporaryItemLocation
+		}
 		#endregion
-		#region - ActiveTemporaryStorageWithItemAssignmentsProvider
-		public static EnumValueTextRepresentations ActiveTemporaryStorageWithItemAssignmentsProvider
-			= new EnumValueTextRepresentations(
-				new Key[] {
-					KB.TOi(TId.TemporaryStorage),
-					KB.TOi(TId.TemporaryStorageAssignment)
-				}, null,
-				new object[] {
-					(int)ViewRecordTypes.ActiveTemporaryStorageWithItemAssignments.TemporaryStorage,
-					(int)ViewRecordTypes.ActiveTemporaryStorageWithItemAssignments.TemporaryItemLocation
-				}
-			);
+		#region - ItemReceiving
+		public enum ItemReceiving {
+			ReceivePermanentPO,
+			ReceivePermanentPOCorrection,
+			ReceiveTemporaryPO,
+			ReceiveTemporaryPOCorrection,
+			ReceivePermanentNonPO,
+			ReceivePermanentNonPOCorrection,
+			ReceiveTemporaryNonPO,
+			ReceiveTemporaryNonPOCorrection
+		}
 		#endregion
-		#region ItemActivityProvider
-		private static object[] ItemActivityValues = new object[] {
-			(int)ViewRecordTypes.ItemActivity.NotSpecified,
-			(int)ViewRecordTypes.ItemActivity.ItemCountValue,
-			(int)ViewRecordTypes.ItemActivity.VoidItemCountValue,
-			(int)ViewRecordTypes.ItemActivity.ItemAdjustment,
-			(int)ViewRecordTypes.ItemActivity.ItemIssue,
-
-			(int)ViewRecordTypes.ItemActivity.ItemTransferTo,
-			(int)ViewRecordTypes.ItemActivity.ItemTransferFrom,
-			(int)ViewRecordTypes.ItemActivity.ReceiveItemPO,
-			(int)ViewRecordTypes.ItemActivity.ReceiveItemNonPO,
-			(int)ViewRecordTypes.ItemActivity.ActualItem,
-
-			(int)ViewRecordTypes.ItemActivity.ItemIssueCorrection,
-			(int)ViewRecordTypes.ItemActivity.ReceiveItemPOCorrection,
-			(int)ViewRecordTypes.ItemActivity.ReceiveItemNonPOCorrection,
-			(int)ViewRecordTypes.ItemActivity.ActualItemCorrection,
-			(int)ViewRecordTypes.ItemActivity.ItemTransferToCorrection,
-
-			(int)ViewRecordTypes.ItemActivity.ItemTransferFromCorrection,
-			(int)ViewRecordTypes.ItemActivity.VoidedItemCountValue
-		};
-		private static Key[] ItemActivityLabels = new Key[] {
-			KB.K("Not Specified"),
-			KB.TOi(TId.PhysicalCount),
-			KB.TOi(TId.VoidPhysicalCount),
-			KB.TOi(TId.ItemAdjustment),
-			KB.TOi(TId.ItemIssue),
-			KB.TOi(TId.ItemTransferTo),
-			KB.TOi(TId.ItemTransferFrom),
-			KB.TOi(TId.ReceiveItemWithPO),
-			KB.TOi(TId.ReceiveItemNoPO),
-			KB.TOi(TId.ActualItem),
-			KB.TOi(TId.CorrectionofItemIssue),
-			KB.TOi(TId.CorrectionofReceiveItemWithPO),
-			KB.TOi(TId.CorrectionofReceiveItemNoPO),
-			KB.TOi(TId.CorrectionofActualItem),
-			KB.TOi(TId.CorrectionofItemTransferTo),
-			KB.TOi(TId.CorrectionofItemTransferFrom),
-			KB.TOi(TId.VoidPhysicalCount)
-		};
-
-		public static EnumValueTextRepresentations ItemActivityProvider = new EnumValueTextRepresentations(ItemActivityLabels, null, ItemActivityValues);
-#endregion
 		#endregion
 		#region NodeIds
 		private static readonly object ActivityBrowsetteId = KB.I("ActivityBrowsetteId");
+		internal static readonly Key costColumnId = dsMB.Path.T.AccountingTransaction.F.Cost.Key();
+		internal static readonly Key unitCostColumnId = KB.K("Unit Cost");
+		internal static readonly Key quantityColumnId = dsMB.Path.T.ItemIssue.F.Quantity.Key();
 		#endregion
 
 		#region ItemLocationInit
 		private static TblActionNode ItemLocationInit {
 			get {
 				return new Check2<ulong, ulong>(
-					delegate(ulong min, ulong max) {
+					delegate (ulong min, ulong max) {
 						if (min > max)
 							return EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("Minimum must be less than or equal to Maximum")));
 						return null;
@@ -151,129 +93,190 @@ namespace Thinkage.MainBoss.Controls {
 
 		private static DelayedCreateTbl ItemActivityTbl(bool forPermanentStorage) {
 			// For the Item editor's Activity browsette
-			return new DelayedCreateTbl(delegate() {
+			return new DelayedCreateTbl(delegate () {
 				Key correctionGroup = KB.K("Correct"); // JoinedNewCommand
 				Key activityGroup = KB.K("Receive");
 				Key clericalGroup = KB.K("Physical Count");
 				dsMB.PathClass.PathToItemActivityRow root = dsMB.Path.T.ItemActivity;
 				dsMB.PathClass.PathToAccountingTransactionLink tx = root.F.AccountingTransactionID;
-				CompositeView CompositeViewZero = null;
-				CompositeView CompositeViewOne = null;
-				CompositeView CompositeViewFifteen = null;
-				if (forPermanentStorage) {
-					CompositeViewZero =
-							new CompositeView(tx.F.ItemCountValueID,							// Table #0 - Physical count
-								CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ItemCountValue.F.ItemLocationID),
-								CompositeView.NewCommandGroup(clericalGroup),
-								CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete));
+				// TODO: As a policy we do not allow ActualizeItem and PO Receiving here because it is too difficult to control the filtering
+				// of the pickers (DemandItem/POLIneItem) in the called editor. Also with POLineItem there is the issue of whether we are
+				// initing the POLIneItem choice or the receive-to location choice.
+				// Ideally, though, they should be allowed.
+				CompositeView ActivityView(DelayedCreateTbl editTblCreator, DBI_Path linkagePath, dsMB.PathClass.PathToItemLocationLink itemLocationPath = null,
+						DBI_Path correctionPath = null, DBI_Path originalRecordPath = null,
+						DBI_Path quantityPath = null, DBI_Path costPath = null, Key newCommandGroup = null, CompositeView.ICtorArg[] extraArgs = null) {
+					var args = new List<CompositeView.ICtorArg> {
+						CompositeView.RecognizeByValidEditLinkage(),
+						RecordTypePerViewColumnValue(RecordTypeColumnTagID)
+					};
+					if (itemLocationPath != null)
+						args.Add(CompositeView.PathAlias(root.F.ItemLocationID, itemLocationPath));
+					if (extraArgs != null)
+						args.AddRange(extraArgs);
+					if (originalRecordPath != null) {
+						// We're a correction, and the originalRecordPath links to the corrected record
+						if (correctionPath != null)
+							args.Add(CompositeView.AddRecognitionCondition(new SqlExpression(correctionPath).NEq(new SqlExpression(linkagePath))));
+						args.Add(CompositeView.SetParentPath(originalRecordPath));
+					}
+					else if (correctionPath != null)
+						// We're the original of a correctable record type
+						args.Add(CompositeView.AddRecognitionCondition(new SqlExpression(correctionPath).Eq(new SqlExpression(linkagePath))));
 
-					// These other two views could always be in the Tbl since they have no context-free New and the context required by the contextual New operation
-					// can never occur. However this could also cause panel growth from impossible panel variants, and impossible New operations to show up on buttons.
-					CompositeViewOne =
-							new CompositeView(tx.F.ItemCountValueVoidID, NoNewMode,	// Table #1 - Void physical count
-								CompositeView.JoinedNewCommand(correctionGroup),
-								CompositeView.ContextualInit((int)ViewRecordTypes.ItemActivity.ItemCountValue,
-									new CompositeView.Init(dsMB.Path.T.ItemCountValueVoid.F.VoidedItemCountValueID, tx.F.ItemCountValueID),
-						// Reverse the accounting transaction.
-									new CompositeView.Init(dsMB.Path.T.ItemCountValueVoid.F.AccountingTransactionID.F.FromCostCenterID, tx.F.ToCostCenterID),
-									new CompositeView.Init(dsMB.Path.T.ItemCountValueVoid.F.AccountingTransactionID.F.ToCostCenterID, tx.F.FromCostCenterID),
-									new CompositeView.Init(dsMB.Path.T.ItemCountValueVoid.F.AccountingTransactionID.F.Cost, tx.F.Cost),
-									new CompositeView.Init(dsMB.Path.T.ItemCountValueVoid.F.AccountingTransactionID.F.EffectiveDate, tx.F.EffectiveDate)),
-						// TODO: The PathAlias is commented out as a kludge to stop the browsette from specifying filter-based setting of the ItemLocationID.
-						// Someday we may want the PathAlias info for other purposes, or it might be inferred automatically from the query definition,
-						// in which case we would want a CompositeView.NoFilterBasedInit() or some such beast to explicitly prevent this filter.
-						// , CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ItemCountValueVoid.F.VoidedItemCountValueID.F.ItemLocationID)
-								CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete));
-					CompositeViewFifteen =
-							new CompositeView(tx.F.ItemCountValueID,							// Table #15 - Voided Physical count
-								CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ItemCountValue.F.ItemLocationID),
-								ReadonlyView);
+					if (quantityPath != null) {
+						args.Add(BTbl.PerViewColumnValue(quantityColumnId, quantityPath));
+						args.Add(BTbl.PerViewColumnValue(costColumnId, costPath));
+						args.Add(BTbl.PerViewColumnValue(unitCostColumnId, ResourceCountUnitCostInitValue(costPath, quantityPath), null));
+					}
+					if (newCommandGroup == null)
+						args.Add(CompositeView.JoinedNewCommand(correctionGroup));
+					else
+						args.Add(CompositeView.NewCommandGroup(newCommandGroup));
+
+					return editTblCreator == null ? new CompositeView(linkagePath, args.ToArray()) : new CompositeView(editTblCreator, linkagePath, args.ToArray());
+				}
+				var views = new List<CompositeView> {
+					// Adjustment
+					ActivityView(null, tx.F.ItemAdjustmentID, itemLocationPath: dsMB.Path.T.ItemAdjustment.F.ItemLocationID,
+						quantityPath: dsMB.Path.T.ItemAdjustment.F.Quantity, costPath: dsMB.Path.T.ItemAdjustment.F.AccountingTransactionID.F.Cost, newCommandGroup: clericalGroup),
+					// ItemIssue
+					ActivityView(null, tx.F.ItemIssueID, itemLocationPath: dsMB.Path.T.ItemIssue.F.ItemLocationID, correctionPath: tx.F.ItemIssueID.F.CorrectionID,
+						quantityPath: dsMB.Path.T.ItemIssue.F.Quantity, costPath: dsMB.Path.T.ItemIssue.F.AccountingTransactionID.F.Cost, newCommandGroup: activityGroup),
+					// Correction thereof
+					ActivityView(TIItem.ItemIssueCorrectionTblCreator, tx.F.ItemIssueID, itemLocationPath: dsMB.Path.T.ItemIssue.F.ItemLocationID,
+						correctionPath: tx.F.ItemIssueID.F.CorrectionID, originalRecordPath: tx.F.ItemIssueID.F.CorrectionID.F.AccountingTransactionID,
+						quantityPath: dsMB.Path.T.ItemIssue.F.Quantity, costPath: dsMB.Path.T.ItemIssue.F.AccountingTransactionID.F.Cost, extraArgs: new[] {
+							NoNewMode,
+							CompositeView.ContextualInit(new int[] { (int)ItemActivity.ItemIssue, (int)ItemActivity.ItemIssueCorrection },
+								new CompositeView.Init(dsMB.Path.T.ItemIssue.F.CorrectionID, tx.F.ItemIssueID.F.CorrectionID)),
+							CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete)
+					}),
+					// Transfer To; note that Id is the ItemTransfer record ID rather than the accounting transaction Id as in all other cases.
+					ActivityView(null, tx.F.ItemTransferID, itemLocationPath: dsMB.Path.T.ItemTransfer.F.ToItemLocationID, correctionPath: tx.F.ItemTransferID.F.CorrectionID,
+						quantityPath: dsMB.Path.T.ItemTransfer.F.Quantity, costPath: dsMB.Path.T.ItemTransfer.F.AccountingTransactionID.F.Cost, newCommandGroup: activityGroup, extraArgs: new[] {
+							CompositeView.IdentificationOverride(TId.ItemTransferTo),
+							CompositeView.AddRecognitionCondition(new SqlExpression(tx.F.ItemTransferID.F.ToItemLocationID).Eq(new SqlExpression(root.F.ItemLocationID)))
+					}),
+					// Correction thereof
+					ActivityView(TIItem.ItemTransferCorrectionTblCreator, tx.F.ItemTransferID, itemLocationPath: dsMB.Path.T.ItemTransfer.F.ToItemLocationID,
+						correctionPath: tx.F.ItemTransferID.F.CorrectionID, originalRecordPath: tx.F.ItemTransferID.F.CorrectionID,	// Note special parent linkage
+						quantityPath: dsMB.Path.T.ItemTransfer.F.Quantity, costPath: dsMB.Path.T.ItemTransfer.F.AccountingTransactionID.F.Cost, extraArgs: new[] {
+							CompositeView.AddRecognitionCondition(new SqlExpression(tx.F.ItemTransferID.F.ToItemLocationID).Eq(new SqlExpression(root.F.ItemLocationID))),
+							NoNewMode,
+							CompositeView.IdentificationOverride(TId.CorrectionofItemTransferTo),
+							CompositeView.ContextualInit(new int[] { (int)ItemActivity.ItemTransferTo, (int)ItemActivity.ItemTransferToCorrection },
+								new CompositeView.Init(dsMB.Path.T.ItemTransfer.F.CorrectionID, tx.F.ItemTransferID.F.CorrectionID)),
+							CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete)
+					}),
+					// Transfer From
+					ActivityView(null, tx.F.ItemTransferID, itemLocationPath: dsMB.Path.T.ItemTransfer.F.FromItemLocationID, correctionPath: tx.F.ItemTransferID.F.CorrectionID,
+						quantityPath: dsMB.Path.T.ItemTransfer.F.Quantity, costPath: dsMB.Path.T.ItemTransfer.F.AccountingTransactionID.F.Cost, newCommandGroup: activityGroup, extraArgs: new[] {
+							CompositeView.IdentificationOverride(TId.ItemTransferFrom),
+							CompositeView.AddRecognitionCondition(new SqlExpression(tx.F.ItemTransferID.F.FromItemLocationID).Eq(new SqlExpression(root.F.ItemLocationID)))
+					}),
+					// Correction thereof
+					ActivityView(TIItem.ItemTransferCorrectionTblCreator, tx.F.ItemTransferID, itemLocationPath: dsMB.Path.T.ItemTransfer.F.FromItemLocationID,
+						correctionPath: tx.F.ItemTransferID.F.CorrectionID, originalRecordPath: tx.F.ItemTransferID.F.CorrectionID.F.AccountingTransactionID,
+						quantityPath: dsMB.Path.T.ItemTransfer.F.Quantity, costPath: dsMB.Path.T.ItemTransfer.F.AccountingTransactionID.F.Cost, extraArgs: new[] {
+							CompositeView.AddRecognitionCondition(new SqlExpression(tx.F.ItemTransferID.F.FromItemLocationID).Eq(new SqlExpression(root.F.ItemLocationID))),
+							NoNewMode,
+							CompositeView.IdentificationOverride(TId.CorrectionofItemTransferFrom),
+							CompositeView.ContextualInit(new int[] { (int)ItemActivity.ItemTransferFrom, (int)ItemActivity.ItemTransferFromCorrection },
+								new CompositeView.Init(dsMB.Path.T.ItemTransfer.F.CorrectionID, tx.F.ItemTransferID.F.CorrectionID)),
+							CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete)
+					}),
+					// Receive PO
+					ActivityView(TIReceive.ReceiveItemPOFromActivityTblCreator, tx.F.ReceiveItemPOID, itemLocationPath: dsMB.Path.T.ReceiveItemPO.F.ItemLocationID, correctionPath: tx.F.ReceiveItemPOID.F.CorrectionID,
+						quantityPath: dsMB.Path.T.ReceiveItemPO.F.Quantity, costPath: dsMB.Path.T.ReceiveItemPO.F.AccountingTransactionID.F.Cost, newCommandGroup: activityGroup),
+					// Correction thereof
+					ActivityView(TIReceive.ReceiveItemPOCorrectionTblCreator, tx.F.ReceiveItemPOID, itemLocationPath: dsMB.Path.T.ReceiveItemPO.F.ItemLocationID,
+						correctionPath: tx.F.ReceiveItemPOID.F.CorrectionID, originalRecordPath: tx.F.ReceiveItemPOID.F.CorrectionID.F.AccountingTransactionID,
+						quantityPath: dsMB.Path.T.ReceiveItemPO.F.Quantity, costPath: dsMB.Path.T.ReceiveItemPO.F.AccountingTransactionID.F.Cost, extraArgs: new[] {
+							NoNewMode,
+							CompositeView.ContextualInit(new int[] { (int)ItemActivity.ReceiveItemPO, (int)ItemActivity.ReceiveItemPOCorrection },
+								new CompositeView.Init(dsMB.Path.T.ReceiveItemPO.F.CorrectionID, tx.F.ReceiveItemPOID.F.CorrectionID),
+								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveItemPO.F.POLineItemID), tx.F.ReceiveItemPOID.F.POLineItemID)   // This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
+							),
+							CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete)
+					}),
+					// Receive Non-PO
+					ActivityView(null, tx.F.ReceiveItemNonPOID, itemLocationPath: dsMB.Path.T.ReceiveItemNonPO.F.ItemLocationID, correctionPath: tx.F.ReceiveItemNonPOID.F.CorrectionID,
+						quantityPath: dsMB.Path.T.ReceiveItemNonPO.F.Quantity, costPath: dsMB.Path.T.ReceiveItemNonPO.F.AccountingTransactionID.F.Cost, newCommandGroup: activityGroup),
+					// Correction thereof
+					ActivityView(TIReceive.ReceiveItemNonPOCorrectionTblCreator, tx.F.ReceiveItemNonPOID, itemLocationPath: dsMB.Path.T.ReceiveItemNonPO.F.ItemLocationID,
+						correctionPath: tx.F.ReceiveItemNonPOID.F.CorrectionID, originalRecordPath: tx.F.ReceiveItemNonPOID.F.CorrectionID.F.AccountingTransactionID,
+						quantityPath: dsMB.Path.T.ReceiveItemNonPO.F.Quantity, costPath: dsMB.Path.T.ReceiveItemNonPO.F.AccountingTransactionID.F.Cost, extraArgs: new[] {
+							NoNewMode,
+							CompositeView.ContextualInit(new int[] { (int)ItemActivity.ReceiveItemNonPO, (int)ItemActivity.ReceiveItemNonPOCorrection },
+								new CompositeView.Init(dsMB.Path.T.ReceiveItemNonPO.F.CorrectionID, tx.F.ReceiveItemNonPOID.F.CorrectionID)),
+							CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete)
+					}),
+					// Actual Item
+					ActivityView(null, tx.F.ActualItemID, itemLocationPath: dsMB.Path.T.ActualItem.F.DemandItemID.F.ItemLocationID, correctionPath: tx.F.ActualItemID.F.CorrectionID,
+						quantityPath: dsMB.Path.T.ActualItem.F.Quantity, costPath: dsMB.Path.T.ActualItem.F.AccountingTransactionID.F.Cost, newCommandGroup: activityGroup, extraArgs: new[] { ReadonlyView }),
+					// Correction thereof
+					ActivityView(TIWorkOrder.ActualItemCorrectionTblCreator, tx.F.ActualItemID, itemLocationPath: dsMB.Path.T.ActualItem.F.DemandItemID.F.ItemLocationID,
+						correctionPath: tx.F.ActualItemID.F.CorrectionID, originalRecordPath: tx.F.ActualItemID.F.CorrectionID.F.AccountingTransactionID,
+						quantityPath: dsMB.Path.T.ActualItem.F.Quantity, costPath: dsMB.Path.T.ActualItem.F.AccountingTransactionID.F.Cost, extraArgs: new[] {
+							NoNewMode,
+							CompositeView.ContextualInit(new int[] { (int)ItemActivity.ActualItem, (int)ItemActivity.ActualItemCorrection },
+								new CompositeView.Init(dsMB.Path.T.ActualItem.F.CorrectionID, tx.F.ActualItemID.F.CorrectionID),
+								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualItem.F.DemandItemID), tx.F.ActualItemID.F.DemandItemID)   // This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on WO state.
+							),
+							CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete)
+					})
+				};
+				if (forPermanentStorage) {
+					// Physical Count
+					views.Add(
+							ActivityView(null, tx.F.ItemCountValueID, itemLocationPath: dsMB.Path.T.ItemCountValue.F.ItemLocationID,
+								quantityPath: dsMB.Path.T.ItemCountValue.F.Quantity, costPath: dsMB.Path.T.ItemCountValue.F.Cost, newCommandGroup: clericalGroup, extraArgs: new[] {
+									CompositeView.AddRecognitionCondition(new SqlExpression(tx.F.ItemCountValueID.F.VoidingItemCountValueVoidID).IsNull())
+							}));
+
+					// Void physical count
+					views.Add(
+							ActivityView(null, tx.F.ItemCountValueVoidID, originalRecordPath: tx.F.ItemCountValueVoidID.F.VoidedItemCountValueID.F.AccountingTransactionID,
+								extraArgs: new[] {
+									NoNewMode,
+									CompositeView.ContextualInit(
+										(int)ItemActivity.ItemCountValue,
+										new CompositeView.Init(dsMB.Path.T.ItemCountValueVoid.F.VoidedItemCountValueID, tx.F.ItemCountValueID),
+										// Reverse the accounting transaction.
+										new CompositeView.Init(dsMB.Path.T.ItemCountValueVoid.F.AccountingTransactionID.F.FromCostCenterID, tx.F.ToCostCenterID),
+										new CompositeView.Init(dsMB.Path.T.ItemCountValueVoid.F.AccountingTransactionID.F.ToCostCenterID, tx.F.FromCostCenterID),
+										new CompositeView.Init(dsMB.Path.T.ItemCountValueVoid.F.AccountingTransactionID.F.Cost, tx.F.Cost),
+										new CompositeView.Init(dsMB.Path.T.ItemCountValueVoid.F.AccountingTransactionID.F.EffectiveDate, tx.F.EffectiveDate)),
+									// TODO: The PathAlias is commented out as a kludge to stop the browsette from specifying filter-based setting of the ItemLocationID.
+									// Someday we may want the PathAlias info for other purposes, or it might be inferred automatically from the query definition,
+									// in which case we would want a CompositeView.NoFilterBasedInit() or some such beast to explicitly prevent this filter.
+									// , CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ItemCountValueVoid.F.VoidedItemCountValueID.F.ItemLocationID)
+									CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete)
+							}));
+					// Voided physical count
+					views.Add(
+							ActivityView(null, tx.F.ItemCountValueID, extraArgs: new[] {
+									ReadonlyView,
+									CompositeView.IdentificationOverride(TId.VoidedPhysicalCount),
+									CompositeView.AddRecognitionCondition(new SqlExpression(tx.F.ItemCountValueID.F.VoidingItemCountValueVoidID).IsNotNull()),
+							}));
 				}
 
 				return new CompositeTbl(dsMB.Schema.T.ItemActivity, TId.ItemActivity,
 					new Tbl.IAttr[] {
 						CommonTblAttrs.ViewCostsDefinedBySchema,
-						new BTbl(BTbl.ListColumn(root.F.TableEnum),
+						new BTbl(
+							BTbl.PerViewListColumn(KB.K("Type"), RecordTypeColumnTagID),
 							BTbl.ListColumn(tx.F.EffectiveDate, BTbl.Contexts.SortInitialAscending),
 							BTbl.ListColumn(root.F.ItemLocationID.F.ItemID.F.Code),
-							BTbl.ListColumn(root.F.Quantity),
-							BTbl.ListColumn(root.F.UnitCost),
-							BTbl.ListColumn(root.F.Cost),
-							BTbl.SetTreeStructure(root.F.ParentID, 2)
+							BTbl.PerViewListColumn(quantityColumnId, quantityColumnId),
+							BTbl.PerViewListColumn(unitCostColumnId, unitCostColumnId),
+							BTbl.PerViewListColumn(costColumnId, costColumnId),
+							BTbl.SetTreeStructure(null, 2)
 						)
 					},
-					root.F.TableEnum,
-					// TODO: As a policy we do not allow ActualizeItem and PO Receiving here because it is too difficult to control the filtering
-					// of the pickers (DemandItem/POLIneItem) in the called editor. Also with POLineItem there is the issue of whether we are
-					// initing the POLIneItem choice or the receive-to location choice.
-					// Ideally, though, they should be allowed.
-					CompositeViewZero,																								// Table #0 - Physical count
-					CompositeViewOne,																								// Table #1 - Voided physical count
-					new CompositeView(tx.F.ItemAdjustmentID,																		// Table #2 - Adjustment
-						CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ItemAdjustment.F.ItemLocationID),
-						CompositeView.NewCommandGroup(clericalGroup)),
-					new CompositeView(tx.F.ItemIssueID,																				// Table #3 - Issue
-						CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ItemIssue.F.ItemLocationID),
-						CompositeView.NewCommandGroup(activityGroup)),
-					new CompositeView(tx.F.ItemTransferID,																			// Table #4 - Transfer 'To'
-						CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ItemTransfer.F.FromItemLocationID),
-						CompositeView.NewCommandGroup(activityGroup),
-						CompositeView.IdentificationOverride(TId.ItemTransferTo)),
-					new CompositeView(tx.F.ItemTransferID,																			// Table #5 - Transfer 'From'
-						CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ItemTransfer.F.ToItemLocationID),
-						CompositeView.NewCommandGroup(activityGroup),
-						CompositeView.IdentificationOverride(TId.ItemTransferFrom)),
-					new CompositeView(TIReceive.ReceiveItemPOFromActivityTblCreator, tx.F.ReceiveItemPOID,							// Table #6 - PO Receive
-						CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ReceiveItemPO.F.ItemLocationID),
-						CompositeView.NewCommandGroup(activityGroup)),
-					new CompositeView(tx.F.ReceiveItemNonPOID,																		// Table #7 - Non-PO receive
-						CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ReceiveItemNonPO.F.ItemLocationID),
-						CompositeView.NewCommandGroup(activityGroup)),
-					new CompositeView(tx.F.ActualItemID, ReadonlyView,																// Table #8 - Actualize Item
-						CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ActualItem.F.DemandItemID.F.ItemLocationID)),
-					new CompositeView(TIItem.ItemIssueCorrectionTblCreator, tx.F.ItemIssueID, NoNewMode,						// Table #9 - Issue Correction
-						CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ItemIssue.F.ItemLocationID),
-						CompositeView.JoinedNewCommand(correctionGroup),
-						CompositeView.ContextualInit(new int[] {(int)ViewRecordTypes.ItemActivity.ItemIssue, (int)ViewRecordTypes.ItemActivity.ItemIssueCorrection},
-							new CompositeView.Init(dsMB.Path.T.ItemIssue.F.CorrectionID, tx.F.ItemIssueID.F.CorrectionID)),
-						CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete)),
-					new CompositeView(TIReceive.ReceiveItemPOCorrectionTblCreator, tx.F.ReceiveItemPOID, NoNewMode,			// Table #10 - PO Receive Correction
-						CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ReceiveItemPO.F.ItemLocationID),
-						CompositeView.JoinedNewCommand(correctionGroup),
-						CompositeView.ContextualInit(new int[] {(int)ViewRecordTypes.ItemActivity.ReceiveItemPO, (int)ViewRecordTypes.ItemActivity.ReceiveItemPOCorrection},
-							new CompositeView.Init(dsMB.Path.T.ReceiveItemPO.F.CorrectionID, tx.F.ReceiveItemPOID.F.CorrectionID),
-							new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveItemPO.F.POLineItemID), tx.F.ReceiveItemPOID.F.POLineItemID)	// This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
-						),
-						CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete)),
-					new CompositeView(TIReceive.ReceiveItemNonPOCorrectionTblCreator, tx.F.ReceiveItemNonPOID, NoNewMode,	// Table #11 - Non-PO receive Correction
-						CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ReceiveItemNonPO.F.ItemLocationID),
-						CompositeView.JoinedNewCommand(correctionGroup),
-						CompositeView.ContextualInit(new int[] {(int)ViewRecordTypes.ItemActivity.ReceiveItemNonPO, (int)ViewRecordTypes.ItemActivity.ReceiveItemNonPOCorrection},
-							new CompositeView.Init(dsMB.Path.T.ReceiveItemNonPO.F.CorrectionID, tx.F.ReceiveItemNonPOID.F.CorrectionID)),
-						CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete)),
-					new CompositeView(TIWorkOrder.ActualItemCorrectionTblCreator, tx.F.ActualItemID, NoNewMode,				// Table #12 - Actualize Item Correction
-						CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ActualItem.F.DemandItemID.F.ItemLocationID),
-						CompositeView.JoinedNewCommand(correctionGroup),
-						CompositeView.ContextualInit(new int[] {(int)ViewRecordTypes.ItemActivity.ActualItem, (int)ViewRecordTypes.ItemActivity.ActualItemCorrection},
-							new CompositeView.Init(dsMB.Path.T.ActualItem.F.CorrectionID, tx.F.ActualItemID.F.CorrectionID),
-							new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ActualItem.F.DemandItemID), tx.F.ActualItemID.F.DemandItemID)			// This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on WO state.
-						),
-						CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete)),
-					new CompositeView(TIItem.ItemTransferCorrectionTblCreator, tx.F.ItemTransferID, NoNewMode,				// Table #13 - Transfer 'To' Correction
-						CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ItemTransfer.F.FromItemLocationID),
-						CompositeView.JoinedNewCommand(correctionGroup),
-						CompositeView.IdentificationOverride(TId.CorrectionofItemTransferTo),
-						CompositeView.ContextualInit(new int[] {(int)ViewRecordTypes.ItemActivity.ItemTransferTo, (int)ViewRecordTypes.ItemActivity.ItemTransferToCorrection},
-							new CompositeView.Init(dsMB.Path.T.ItemTransfer.F.CorrectionID, tx.F.ItemTransferID.F.CorrectionID)),
-						CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete)),
-					new CompositeView(TIItem.ItemTransferCorrectionTblCreator, tx.F.ItemTransferID, NoNewMode,				// Table #14 - Transfer 'From' Correction
-						CompositeView.PathAlias(root.F.ItemLocationID, dsMB.Path.T.ItemTransfer.F.ToItemLocationID),
-						CompositeView.JoinedNewCommand(correctionGroup),
-						CompositeView.IdentificationOverride(TId.CorrectionofItemTransferFrom),
-						CompositeView.ContextualInit(new int[] {(int)ViewRecordTypes.ItemActivity.ItemTransferFrom, (int)ViewRecordTypes.ItemActivity.ItemTransferFromCorrection},
-							new CompositeView.Init(dsMB.Path.T.ItemTransfer.F.CorrectionID, tx.F.ItemTransferID.F.CorrectionID)),
-						CompositeView.EditorAccess(false, EdtMode.Delete, EdtMode.UnDelete)),
-					CompositeViewFifteen
+					views.ToArray()
 				);
 			});
 		}
@@ -339,7 +342,6 @@ namespace Thinkage.MainBoss.Controls {
 			// Inlined from common inventory code since we want to give choice of From and To costing values.
 			object FromOnHandQuantityId = KB.I("FromOnHandQuantityId");
 			object FromOnHandValueId = KB.I("FromOnHandValue");
-			object CalculatedFromOnHandValueId = KB.I("CalculatedFromOnHandValue");
 			object FromOnHandUnitCostId = KB.I("FromOnHandUnitCost");
 			creator.StartCostingRow(KB.K("Source Assignment status"));
 			creator.AddCostingControl(TblColumnNode.New(dsMB.Path.T.ItemTransfer.F.FromItemLocationID.F.ActualItemLocationID.F.OnHand, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(FromOnHandQuantityId))));
@@ -510,7 +512,7 @@ namespace Thinkage.MainBoss.Controls {
 				.Operand1(AccountingTransactionWithQuantityDerivationTblCreator<long>.OnHandValueId)
 				.Operand2(creator.ThisCostId)
 				.Operand3(TransferredValueId,
-					delegate(decimal? apparent, decimal? entered) {
+					delegate (decimal? apparent, decimal? entered) {
 						return !apparent.HasValue || !entered.HasValue ? null : (decimal?)checked(apparent.Value - entered.Value);
 					}, NewAndCloneOnly));
 
@@ -565,12 +567,12 @@ namespace Thinkage.MainBoss.Controls {
 			// Essentially we can only void the current physical count.
 			// TODO: This should also be enforced in the calling browser as a condition on the composite view's ContextualInit.
 			creator.Actions.Add(new Check2<Guid?, Guid?>(
-				delegate(Guid? currentPCId, Guid? thisPCId) {
+				delegate (Guid? currentPCId, Guid? thisPCId) {
 					if (currentPCId.HasValue && thisPCId.HasValue && currentPCId != thisPCId)
 						return EditLogic.ValidatorAndCorrector.ValidatorStatus.NewErrorAll(new GeneralException(KB.K("Only the most latest non-voided Physical Count can be voided")));
 					return null;
 				})
-				.Operand1(KB.K("Latest Physical Count"), dsMB.Path.T.ItemCountValueVoid.F.VoidedItemCountValueID.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID.F.CurrentItemCountValueID)
+				.Operand1(KB.K("Latest Physical Count"), new EditorPathValue(dsMB.Path.T.ItemCountValueVoid.F.VoidedItemCountValueID.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID.F.CurrentItemCountValueID))
 				.Operand2(voidedCountId));
 
 			return creator.GetTbl(
@@ -588,7 +590,7 @@ namespace Thinkage.MainBoss.Controls {
 		#endregion
 		#region TemporaryStorageTbl
 		private static DelayedCreateTbl TemporaryStorageEditTbl(bool onlyActiveOnes) {
-			return new DelayedCreateTbl(delegate() {
+			return new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.TemporaryStorage, TId.TemporaryStorage,
 					new Tbl.IAttr[] {
 						ItemResourcesGroup,
@@ -615,7 +617,7 @@ namespace Thinkage.MainBoss.Controls {
 		#endregion
 		#region TemporaryItemLocationTbl
 		private static DelayedCreateTbl TemporaryItemLocationTbl(bool activeOnly) {
-			return new DelayedCreateTbl(delegate() {
+			return new DelayedCreateTbl(delegate () {
 				List<BTbl.ICtorArg> BTblAttrs = new List<BTbl.ICtorArg>();
 				if (activeOnly)
 					BTblAttrs.Add(BTbl.ExpressionFilter(new SqlExpression(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID.F.TemporaryStorageID.F.WorkOrderID.F.CurrentWorkOrderStateHistoryID.F.WorkOrderStateID.F.TemporaryStorageActive).IsTrue()));
@@ -650,31 +652,31 @@ namespace Thinkage.MainBoss.Controls {
 									),
 
 									TblRowNode.New(KB.K("On Hand"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-										TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.OnHand, DCol.Normal, ECol.AllReadonly	/* calculated */),
-										TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.UnitCost, DCol.Normal, ECol.AllReadonly	/* calculated */),
-										TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.TotalCost, DCol.Normal, ECol.AllReadonly	/* calculated */)
+										TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.OnHand, DCol.Normal, ECol.AllReadonly  /* calculated */),
+										TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.UnitCost, DCol.Normal, ECol.AllReadonly    /* calculated */),
+										TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.TotalCost, DCol.Normal, ECol.AllReadonly   /* calculated */)
 									),
 
 									TblRowNode.New(KB.K("On Order"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-										TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.OnOrder, new FeatureGroupArg(PurchasingGroup), DCol.Normal, ECol.AllReadonly	/* calculated */),
+										TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.OnOrder, new FeatureGroupArg(PurchasingGroup), DCol.Normal, ECol.AllReadonly   /* calculated */),
 										TblLayoutNode.Empty(),
 										TblLayoutNode.Empty()
 									),
 
 									TblRowNode.New(KB.K("On Reserve"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-										TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.OnReserve, DCol.Normal, ECol.AllReadonly	/* calculated */),
+										TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.OnReserve, DCol.Normal, ECol.AllReadonly   /* calculated */),
 										TblLayoutNode.Empty(),
 										TblLayoutNode.Empty()
 									),
 
 									TblRowNode.New(KB.K("Available"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-										TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.Available, DCol.Normal, ECol.AllReadonly	/* calculated */),
+										TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.Available, DCol.Normal, ECol.AllReadonly   /* calculated */),
 										TblLayoutNode.Empty(),
 										TblLayoutNode.Empty()
 									)
 								),
 								TblColumnNode.New(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.CostCenterID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.CostCenter.F.Code)), ECol.Normal, CommonNodeAttrs.PermissionToViewAccounting, CommonNodeAttrs.PermissionToEditAccounting)),
-							BrowsetteTabNode.New(TId.ItemActivity, TId.TemporaryStorageAssignment, 
+							BrowsetteTabNode.New(TId.ItemActivity, TId.TemporaryStorageAssignment,
 								TblColumnNode.NewBrowsette(TemporaryItemActivityBrowseTblCreator, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID, dsMB.Path.T.ItemActivity.F.ItemLocationID,
 									DCol.Normal, new ECol(Fmt.SetId(ActivityBrowsetteId)))
 							)
@@ -693,9 +695,9 @@ namespace Thinkage.MainBoss.Controls {
 
 			btblArgs.AddRange(new BTbl.ICtorArg[] {
 							BTbl.ListColumn(dsMB.Path.T.ItemPricing.F.ItemID.F.Code, BTbl.Contexts.List|BTbl.Contexts.ClosedPicker|BTbl.Contexts.SearchAndFilter),
-							BTbl.ListColumn(dsMB.Path.T.ItemPricing.F.VendorID.F.Code), // Always show Vendor ID with Pricing
+							BTbl.ListColumn(dsMB.Path.T.ItemPricing.F.VendorID.F.Code),
 							BTbl.ListColumn(dsMB.Path.T.ItemPricing.F.Quantity),
-							BTbl.ListColumn(dsMB.Path.T.ItemPricing.F.UnitCost),
+							BTbl.ListColumn(KB.K("Unit Cost"), ResourceCountUnitCostInitValue(dsMB.Path.T.ItemPricing.F.Cost, dsMB.Path.T.ItemPricing.F.Quantity), null),
 							BTbl.ListColumn(dsMB.Path.T.ItemPricing.F.Cost)
 			});
 			return new CompositeTbl(dsMB.Schema.T.ItemPricing, TId.ItemPricing,
@@ -704,16 +706,20 @@ namespace Thinkage.MainBoss.Controls {
 					CommonTblAttrs.ViewCostsDefinedBySchema,
 					new BTbl(btblArgs.ToArray())
 				},
-				dsMB.Path.T.ItemPricing.F.TableEnum,
 				new CompositeView(dsMB.Path.T.ItemPricing.F.ItemPriceID,
-						CompositeView.PathAlias(dsMB.Path.T.ItemPricing.F.VendorID, dsMB.Path.T.ItemPrice.F.VendorID),
-						CompositeView.PathAlias(dsMB.Path.T.ItemPricing.F.ItemID, dsMB.Path.T.ItemPrice.F.ItemID)),
-				new CompositeView(dsMB.Path.T.ItemPricing.F.ReceiveItemPOID, ReadonlyView,
-						CompositeView.PathAlias(dsMB.Path.T.ItemPricing.F.VendorID, dsMB.Path.T.ReceiveItemPO.F.POLineItemID.F.POLineID.F.PurchaseOrderID.F.VendorID),
-						CompositeView.PathAlias(dsMB.Path.T.ItemPricing.F.ItemID, dsMB.Path.T.ReceiveItemPO.F.ItemLocationID.F.ItemID)),
-				new CompositeView(dsMB.Path.T.ItemPricing.F.ReceiveItemNonPOID, ReadonlyView,
-						CompositeView.PathAlias(dsMB.Path.T.ItemPricing.F.VendorID, dsMB.Path.T.ReceiveItemNonPO.F.VendorID),
-						CompositeView.PathAlias(dsMB.Path.T.ItemPricing.F.ItemID, dsMB.Path.T.ReceiveItemNonPO.F.ItemLocationID.F.ItemID))
+					CompositeView.RecognizeByValidEditLinkage(),
+					CompositeView.PathAlias(dsMB.Path.T.ItemPricing.F.VendorID, dsMB.Path.T.ItemPrice.F.VendorID),
+					CompositeView.PathAlias(dsMB.Path.T.ItemPricing.F.ItemID, dsMB.Path.T.ItemPrice.F.ItemID)),
+				new CompositeView(dsMB.Path.T.ItemPricing.F.AccountingTransactionID.F.ReceiveItemPOID,
+					CompositeView.RecognizeByValidEditLinkage(),
+					ReadonlyView,
+					CompositeView.PathAlias(dsMB.Path.T.ItemPricing.F.VendorID, dsMB.Path.T.ReceiveItemPO.F.POLineItemID.F.POLineID.F.PurchaseOrderID.F.VendorID),
+					CompositeView.PathAlias(dsMB.Path.T.ItemPricing.F.ItemID, dsMB.Path.T.ReceiveItemPO.F.ItemLocationID.F.ItemID)),
+				new CompositeView(dsMB.Path.T.ItemPricing.F.AccountingTransactionID.F.ReceiveItemNonPOID,
+					CompositeView.RecognizeByValidEditLinkage(),
+					ReadonlyView,
+					CompositeView.PathAlias(dsMB.Path.T.ItemPricing.F.VendorID, dsMB.Path.T.ReceiveItemNonPO.F.VendorID),
+					CompositeView.PathAlias(dsMB.Path.T.ItemPricing.F.ItemID, dsMB.Path.T.ReceiveItemNonPO.F.ItemLocationID.F.ItemID))
 			);
 		}
 		#endregion
@@ -725,12 +731,12 @@ namespace Thinkage.MainBoss.Controls {
 		static TIItem() {
 			ItemPriceTblCreator = new DelayedCreateTbl(() => ItemPriceTbl());
 			#region ItemIssue Correction
-			ItemIssueCorrectionTblCreator = new DelayedCreateTbl(delegate() {
+			ItemIssueCorrectionTblCreator = new DelayedCreateTbl(delegate () {
 				return ItemIssueTbl(true);
 			});
 			#endregion
 			#region ItemTransfer Correction
-			ItemTransferCorrectionTblCreator = new DelayedCreateTbl(delegate() {
+			ItemTransferCorrectionTblCreator = new DelayedCreateTbl(delegate () {
 				return ItemTransferTbl(true);
 			});
 			#endregion
@@ -759,72 +765,112 @@ namespace Thinkage.MainBoss.Controls {
 			{
 				Key joinedCorrectionsCommand = KB.K("Correct");
 				object quantityColumnId = dsMB.Path.T.ReceiveItemPO.F.Quantity.Key(); // to ensure all labels for Quantity use the same object
-				// For the Receiving tab from the Item editor
-				DefineBrowseTbl(dsMB.Schema.T.ItemReceiving, delegate() {
+																					  // For the Receiving tab from the Item editor
+				DefineBrowseTbl(dsMB.Schema.T.ItemReceiving, delegate () {
 					return new CompositeTbl(dsMB.Schema.T.ItemReceiving, TId.ItemReceiving,
 						new Tbl.IAttr[] {
 							CommonTblAttrs.ViewCostsDefinedBySchema,
-							new BTbl(BTbl.ListColumn(dsMB.Path.T.ItemReceiving.F.TableEnum),
+							new BTbl(
+								BTbl.PerViewListColumn(KB.K("Type"), RecordTypeColumnTagID),
 								BTbl.ListColumn(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.EffectiveDate, BTbl.Contexts.SortInitialAscending),
 								BTbl.PerViewListColumn(dsMB.Path.T.ReceiveItemPO.F.Quantity.Key(), quantityColumnId),
 								BTbl.ListColumn(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.Cost),
-								BTbl.SetTreeStructure(dsMB.Path.T.ItemReceiving.F.ParentID, 2)
+								BTbl.SetTreeStructure(null, 2)
 							)
 						},
-						dsMB.Path.T.ItemReceiving.F.TableEnum,
-						new CompositeView(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID,						// Table #0 - Permanent (with PO)
+						// Permanent IL with PO
+						new CompositeView(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID).IsNotNull()),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID.F.CorrectionID).Eq(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID))),
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemPO.F.Quantity),
-							CompositeView.PathAlias(dsMB.Path.T.ItemReceiving.F.ItemID,
-													dsMB.Path.T.ReceiveItemPO.F.ItemLocationID.F.ItemID)
+							RecordTypeViewColumnValue(),
+							CompositeView.PathAlias(dsMB.Path.T.ItemReceiving.F.ItemLocationID.F.ItemID, dsMB.Path.T.ReceiveItemPO.F.ItemLocationID.F.ItemID)
 						),
-						new CompositeView(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID,						// Table #1 - Temporary (with PO)
-							ReadonlyView,
-							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemPO.F.Quantity),
-							CompositeView.PathAlias(dsMB.Path.T.ItemReceiving.F.ItemID,
-													dsMB.Path.T.ReceiveItemPO.F.ItemLocationID.F.ItemID)
-						),
-						new CompositeView(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID,						// Table #2 - Permanent (Non-PO)
-							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemNonPO.F.Quantity),
-							CompositeView.PathAlias(dsMB.Path.T.ItemReceiving.F.ItemID,
-													dsMB.Path.T.ReceiveItemNonPO.F.ItemLocationID.F.ItemID)
-						),
-						new CompositeView(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID,						// Table #3 - Temporary (Non-PO)
-							ReadonlyView,
-							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemNonPO.F.Quantity),
-							CompositeView.PathAlias(dsMB.Path.T.ItemReceiving.F.ItemID,
-													dsMB.Path.T.ReceiveItemNonPO.F.ItemLocationID.F.ItemID)
-						),
-						new CompositeView(TIReceive.ReceiveItemPOCorrectionTblCreator,													// Table #4 - Permanent (with PO) Correction
-							dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID,
+						// Correction thereof
+						new CompositeView(TIReceive.ReceiveItemPOCorrectionTblCreator, dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID).IsNotNull()),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID.F.CorrectionID).NEq(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID))),
+							CompositeView.SetParentPath(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID.F.CorrectionID.F.AccountingTransactionID),
 							NoNewMode,
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemPO.F.Quantity),
+							RecordTypeViewColumnValue(),
 							CompositeView.JoinedNewCommand(joinedCorrectionsCommand),
 							CompositeView.ContextualInit(new int[] {
-									(int)ViewRecordTypes.ItemReceiving.ReceivePermanentPO,
-									(int)ViewRecordTypes.ItemReceiving.ReceivePermanentPOCorrection
+									(int)ItemReceiving.ReceivePermanentPO,
+									(int)ItemReceiving.ReceivePermanentPOCorrection
 								},
 								new CompositeView.Init(dsMB.Path.T.ReceiveItemPO.F.CorrectionID, dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID.F.CorrectionID),
-								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveItemPO.F.POLineItemID), dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID.F.POLineItemID)		// This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
+								new CompositeView.Init(new PathOrFilterTarget(dsMB.Path.T.ReceiveItemPO.F.POLineItemID), dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID.F.POLineItemID)      // This is redundant on the inits in the Correction editor but is needed for the browser to recognize dead-ends based on PO state.
 							)
 						),
-						new CompositeView(TIReceive.ReceiveItemPOCorrectionTblCreator, dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID, ReadonlyView,			// Table #5 - Temporary (with PO) Correction
+						// Temporary IL with PO
+						new CompositeView(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID).IsNotNull()),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID.F.CorrectionID).Eq(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID))),
+							ReadonlyView,
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemPO.F.Quantity),
+							RecordTypeViewColumnValue(),
+							CompositeView.PathAlias(dsMB.Path.T.ItemReceiving.F.ItemLocationID.F.ItemID, dsMB.Path.T.ReceiveItemPO.F.ItemLocationID.F.ItemID)
+						),
+						// Correction thereof
+						new CompositeView(TIReceive.ReceiveItemPOCorrectionTblCreator, dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID).IsNotNull()),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID.F.CorrectionID).NEq(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID))),
+							CompositeView.SetParentPath(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemPOID.F.CorrectionID.F.AccountingTransactionID),
+							ReadonlyView,
+							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemPO.F.Quantity),
+							RecordTypeViewColumnValue(),
 							CompositeView.JoinedNewCommand(joinedCorrectionsCommand)
 						),
-						new CompositeView(TIReceive.ReceiveItemNonPOCorrectionTblCreator,												// Table #6 - Permanent (Non-PO) Correction
-							dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID,
+						// Permanent IL, No PO
+						new CompositeView(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID).IsNotNull()),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID.F.CorrectionID).Eq(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID))),
+							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemNonPO.F.Quantity),
+							RecordTypeViewColumnValue(),
+							CompositeView.PathAlias(dsMB.Path.T.ItemReceiving.F.ItemLocationID.F.ItemID, dsMB.Path.T.ReceiveItemNonPO.F.ItemLocationID.F.ItemID)
+						),
+						// Correction thereof
+						new CompositeView(TIReceive.ReceiveItemNonPOCorrectionTblCreator, dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID.F.ItemLocationID.F.ActualItemLocationID.F.PermanentItemLocationID).IsNotNull()),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID.F.CorrectionID).NEq(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID))),
+							CompositeView.SetParentPath(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID.F.CorrectionID.F.AccountingTransactionID),
 							NoNewMode,
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemNonPO.F.Quantity),
+							RecordTypeViewColumnValue(),
 							CompositeView.JoinedNewCommand(joinedCorrectionsCommand),
 							CompositeView.ContextualInit(new int[] {
-									(int)ViewRecordTypes.ItemReceiving.ReceivePermanentNonPO,
-									(int)ViewRecordTypes.ItemReceiving.ReceivePermanentNonPOCorrection
+									(int)ItemReceiving.ReceivePermanentNonPO,
+									(int)ItemReceiving.ReceivePermanentNonPOCorrection
 								},
 								new CompositeView.Init(dsMB.Path.T.ReceiveItemNonPO.F.CorrectionID, dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID.F.CorrectionID)
 							)
 						),
-						new CompositeView(TIReceive.ReceiveItemNonPOCorrectionTblCreator, dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID, ReadonlyView,	// Table #7 - Temporary (Non-PO) Correction
+						// Tempoorary IL, No PO
+						new CompositeView(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID).IsNotNull()),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID.F.CorrectionID).Eq(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID))),
+							ReadonlyView,
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemNonPO.F.Quantity),
+							RecordTypeViewColumnValue(),
+							CompositeView.PathAlias(dsMB.Path.T.ItemReceiving.F.ItemLocationID.F.ItemID, dsMB.Path.T.ReceiveItemNonPO.F.ItemLocationID.F.ItemID)
+						),
+						// Correction thereof
+						new CompositeView(TIReceive.ReceiveItemNonPOCorrectionTblCreator, dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID,
+							CompositeView.RecognizeByValidEditLinkage(),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID).IsNotNull()),
+							CompositeView.AddRecognitionCondition(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID.F.CorrectionID).NEq(new SqlExpression(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID))),
+							CompositeView.SetParentPath(dsMB.Path.T.ItemReceiving.F.AccountingTransactionID.F.ReceiveItemNonPOID.F.CorrectionID.F.AccountingTransactionID),
+							ReadonlyView,   // Table #7 - Temporary (Non-PO) Correction
+							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.ReceiveItemNonPO.F.Quantity),
+							RecordTypeViewColumnValue(),
 							CompositeView.JoinedNewCommand(joinedCorrectionsCommand)
 						)
 					);
@@ -843,22 +889,22 @@ namespace Thinkage.MainBoss.Controls {
 					TblGroupNode.New(KB.K("Totals for this item over all locations"), new TblLayoutNode.ICtorArg[] { new FeatureGroupArg(StoreroomGroup), new NonDefaultCol(), DCol.Normal, ECol.Normal },
 						TblMultiColumnNode.New(new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal }, MulticolumnQuantityUnitCostTotalLabels,
 							TblRowNode.New(KB.K("On Hand"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-								TblColumnNode.New(dsMB.Path.T.Item.F.OnHand, DCol.Normal, ECol.AllReadonly	/* calculated */ ),
-								TblColumnNode.New(dsMB.Path.T.Item.F.UnitCost, DCol.Normal, ECol.AllReadonly	/* calculated */ ),
-								TblColumnNode.New(dsMB.Path.T.Item.F.TotalCost, DCol.Normal, ECol.AllReadonly	/* calculated */ )
+								TblColumnNode.New(dsMB.Path.T.Item.F.OnHand, DCol.Normal, ECol.AllReadonly  /* calculated */ ),
+								TblColumnNode.New(dsMB.Path.T.Item.F.UnitCost, DCol.Normal, ECol.AllReadonly    /* calculated */ ),
+								TblColumnNode.New(dsMB.Path.T.Item.F.TotalCost, DCol.Normal, ECol.AllReadonly   /* calculated */ )
 							),
 							TblRowNode.New(KB.K("On Order"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-								TblColumnNode.New(dsMB.Path.T.Item.F.OnOrder, new FeatureGroupArg(PurchasingGroup), DCol.Normal, ECol.AllReadonly	/* calculated */ ),
+								TblColumnNode.New(dsMB.Path.T.Item.F.OnOrder, new FeatureGroupArg(PurchasingGroup), DCol.Normal, ECol.AllReadonly   /* calculated */ ),
 								TblLayoutNode.Empty(),
 								TblLayoutNode.Empty()
 							),
 							TblRowNode.New(KB.K("On Reserve"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-								TblColumnNode.New(dsMB.Path.T.Item.F.OnReserve, DCol.Normal, ECol.AllReadonly	/* calculated */ ),
+								TblColumnNode.New(dsMB.Path.T.Item.F.OnReserve, DCol.Normal, ECol.AllReadonly   /* calculated */ ),
 								TblLayoutNode.Empty(),
 								TblLayoutNode.Empty()
 							),
 							TblRowNode.New(KB.K("Available"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-								TblColumnNode.New(dsMB.Path.T.Item.F.Available, DCol.Normal, ECol.AllReadonly	/* calculated */ ),
+								TblColumnNode.New(dsMB.Path.T.Item.F.Available, DCol.Normal, ECol.AllReadonly   /* calculated */ ),
 								TblLayoutNode.Empty(),
 								TblLayoutNode.Empty()
 							)
@@ -877,7 +923,7 @@ namespace Thinkage.MainBoss.Controls {
 				BrowsetteTabNode.New(TId.PurchaseOrderLine, TId.Item,
 					TblColumnNode.NewBrowsette(TIPurchaseOrder.POLineItemWithItemLocationInitTblCreator, dsMB.Path.T.POLineItem.F.ItemLocationID.F.ItemID, DCol.Normal, ECol.Normal)),
 				BrowsetteTabNode.New(TId.ItemReceiving, TId.Item,
-					TblColumnNode.NewBrowsette(dsMB.Path.T.ItemReceiving.F.ItemID, DCol.Normal, ECol.Normal)),
+					TblColumnNode.NewBrowsette(dsMB.Path.T.ItemReceiving.F.ItemLocationID.F.ItemID, DCol.Normal, ECol.Normal)),
 				TblTabNode.New(KB.K("Usage"), KB.K("Display units using this item as a part"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
 					TblColumnNode.NewBrowsette(dsMB.Path.T.SparePart.F.ItemID, DCol.Normal, ECol.Normal)),
 				BrowsetteTabNode.New(TId.TaskDemandItem, TId.Item,
@@ -903,14 +949,13 @@ namespace Thinkage.MainBoss.Controls {
 				);
 			});
 			DefineEditTbl(dsMB.Schema.T.Item, ItemEditorTblCreator);
-			DefineBrowseTbl(dsMB.Schema.T.Item, delegate() {
+			DefineBrowseTbl(dsMB.Schema.T.Item, delegate () {
 				return new CompositeTbl(dsMB.Schema.T.Item, TId.Item,
 					new Tbl.IAttr[] {
 						ItemsDependentGroup,
 						CommonTblAttrs.ViewCostsDefinedBySchema,
 						new BTbl((BTbl.ICtorArg[]) columnList.Clone())
 					},
-					null,
 					CompositeView.ChangeEditTbl(ItemEditorTblCreator),
 					CompositeView.AdditionalEditDefault(TblRegistry.FindDelayedEditTbl(dsMB.Schema.T.PermanentItemLocation)),
 					CompositeView.AdditionalEditDefault(AllTemporaryItemLocationTblCreator),
@@ -918,7 +963,7 @@ namespace Thinkage.MainBoss.Controls {
 				);
 			});
 			RegisterExistingForImportExport(TId.Item, dsMB.Schema.T.Item);
-			ItemAsSparePartPickerTblCreator = new DelayedCreateTbl(delegate() {
+			ItemAsSparePartPickerTblCreator = new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.Item, TId.Part,
 					new Tbl.IAttr[] {
 						ItemsDependentGroup,
@@ -933,12 +978,12 @@ namespace Thinkage.MainBoss.Controls {
 
 			#endregion
 			#region ItemAdjustment
-			DefineTbl(dsMB.Schema.T.ItemAdjustment, delegate() {
+			DefineTbl(dsMB.Schema.T.ItemAdjustment, delegate () {
 				return ItemAdjustmentTbl();
 			});
 			#endregion
 			#region ItemAdjustmentCode
-			DefineTbl(dsMB.Schema.T.ItemAdjustmentCode, delegate() {
+			DefineTbl(dsMB.Schema.T.ItemAdjustmentCode, delegate () {
 				return new Tbl(dsMB.Schema.T.ItemAdjustmentCode, TId.ItemAdjustmentCode,
 				new Tbl.IAttr[] {
 					InventoryGroup | ItemResourcesGroup,
@@ -961,7 +1006,7 @@ namespace Thinkage.MainBoss.Controls {
 			RegisterExistingForImportExport(TId.ItemAdjustmentCode, dsMB.Schema.T.ItemAdjustmentCode);
 			#endregion
 			#region ItemCategory
-			DefineTbl(dsMB.Schema.T.ItemCategory, delegate() {
+			DefineTbl(dsMB.Schema.T.ItemCategory, delegate () {
 				return new Tbl(dsMB.Schema.T.ItemCategory, TId.ItemCategory,
 				new Tbl.IAttr[] {
 					ItemsDependentGroup,
@@ -981,24 +1026,24 @@ namespace Thinkage.MainBoss.Controls {
 			RegisterExistingForImportExport(TId.ItemCategory, dsMB.Schema.T.ItemCategory);
 			#endregion
 			#region ItemCountValue
-			DefineTbl(dsMB.Schema.T.ItemCountValue, delegate() {
+			DefineTbl(dsMB.Schema.T.ItemCountValue, delegate () {
 				return ItemCountValueTbl();
 			});
 			// Physical Count import/export disabled until we handle processing of Init records during Import/Export to set field values from Init directies during import (e.g. UserID field)
 			// RegisterExistingBrowserImport(TId.PhysicalCount, dsMB.Schema.T.ItemCountValue);
 			#endregion
 			#region ItemCountValueVoid
-			DefineTbl(dsMB.Schema.T.ItemCountValueVoid, delegate() {
+			DefineTbl(dsMB.Schema.T.ItemCountValueVoid, delegate () {
 				return ItemCountValueVoidTbl();
 			});
 			#endregion
 			#region ItemIssue
-			DefineTbl(dsMB.Schema.T.ItemIssue, delegate() {
+			DefineTbl(dsMB.Schema.T.ItemIssue, delegate () {
 				return ItemIssueTbl(false);
 			});
 			#endregion
 			#region ItemIssueCode
-			DefineTbl(dsMB.Schema.T.ItemIssueCode, delegate() {
+			DefineTbl(dsMB.Schema.T.ItemIssueCode, delegate () {
 				return new Tbl(dsMB.Schema.T.ItemIssueCode, TId.ItemIssueCode,
 				new Tbl.IAttr[] {
 					InventoryGroup | ItemResourcesGroup,
@@ -1025,7 +1070,7 @@ namespace Thinkage.MainBoss.Controls {
 			#endregion
 			#region ItemRestocking
 			DefineBrowseTbl(dsMB.Schema.T.ItemRestocking,
-				delegate() {
+				delegate () {
 					Key restockJoinedCaption = KB.K("Restock from selected source");
 					object codeColumnId = KB.I("ItemRestockingCodeId");
 					object quantityColumnId = KB.I("ItemRestockingQuantityId");
@@ -1045,14 +1090,13 @@ namespace Thinkage.MainBoss.Controls {
 								BTbl.SetTreeStructure(dsMB.Path.T.ItemRestocking.F.ParentID, 3)
 							)
 						},
-						null,
 						// Items that need restocking
 						new CompositeView(dsMB.Path.T.ItemRestocking.F.ItemID,
 							CompositeView.RecognizeByValidEditLinkage(),
 							ReadonlyView,
 							BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.Item.F.Code),
 							BTbl.PerViewColumnValue(quantityColumnId, dsMB.Path.T.Item.F.Available),
-						// TODO: BTbl.PerViewColumn(minimumColumnId, dsMB.Path.T.Item.F.Minimum), we would like to dispay the total of all active IL minimum values.
+							// TODO: BTbl.PerViewColumn(minimumColumnId, dsMB.Path.T.Item.F.Minimum), we would like to dispay the total of all active IL minimum values.
 							BTbl.PerViewColumnValue(uomColumnId, dsMB.Path.T.Item.F.UnitOfMeasureID.F.Code),
 							BTbl.PerViewColumnValue(unitCostColumnId, dsMB.Path.T.Item.F.UnitCost)
 						),
@@ -1133,7 +1177,7 @@ namespace Thinkage.MainBoss.Controls {
 								new CompositeView.Init(dsMB.Path.T.ItemTransfer.F.ToItemLocationID, dsMB.Path.T.ItemRestocking.F.ParentID.F.ItemLocationID),
 								new CompositeView.Init(dsMB.Path.T.ItemTransfer.F.Quantity,
 									new BrowserCalculatedInitValue(dsMB.Path.T.ItemTransfer.F.Quantity.ReferencedColumn.EffectiveType,
-										delegate(object[] inputs) {
+										delegate (object[] inputs) {
 											long needed = (long)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[0], typeof(long))
 												- (long)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[1], typeof(long));
 											long availableToTransfer = (long)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[3], typeof(long))
@@ -1179,9 +1223,9 @@ namespace Thinkage.MainBoss.Controls {
 								new CompositeView.Init(new ControlTarget(TIPurchaseOrder.POLinePricingBasisQuantity), dsMB.Path.T.ItemRestocking.F.ItemLocationID.F.ItemPriceID.F.Quantity),
 								new CompositeView.Init(new PathTarget(dsMB.Path.T.POLineItem.F.POLineID.F.PurchaseOrderText, 2), dsMB.Path.T.ItemRestocking.F.ItemLocationID.F.ItemPriceID.F.PurchaseOrderText)
 							),
-						// TODO: The first three inits are the same in all the remaining cases here (they all refer to the Parent record which is the ItemLocation with the shortfall.
-						// Furthermore they are the same as the first three inits in the previous case except for the rooting of the paths to the shortfall IL.
-						// We should make these common somehow... Putting them in a single local variable is clumsy though; so is 3 local variables though...
+							// TODO: The first three inits are the same in all the remaining cases here (they all refer to the Parent record which is the ItemLocation with the shortfall.
+							// Furthermore they are the same as the first three inits in the previous case except for the rooting of the paths to the shortfall IL.
+							// We should make these common somehow... Putting them in a single local variable is clumsy though; so is 3 local variables though...
 							CompositeView.ContextualInit(5,
 								new CompositeView.Init(new PathTarget(dsMB.Path.T.POLineItem.F.ItemLocationID, 2), dsMB.Path.T.ItemRestocking.F.ParentID.F.ItemLocationID),
 								new CompositeView.Init(new PathTarget(dsMB.Path.T.POLineItem.F.POLineID.F.LineNumber, 2), new ConstantValue(1)),
@@ -1233,12 +1277,12 @@ namespace Thinkage.MainBoss.Controls {
 			);
 			#endregion
 			#region ItemTransfer
-			DefineTbl(dsMB.Schema.T.ItemTransfer, delegate() {
+			DefineTbl(dsMB.Schema.T.ItemTransfer, delegate () {
 				return ItemTransferTbl(false);
 			});
 			#endregion
 			#region PermanentStorage
-			DefineTbl(dsMB.Schema.T.PermanentStorage, delegate() {
+			DefineTbl(dsMB.Schema.T.PermanentStorage, delegate () {
 				return new Tbl(dsMB.Schema.T.PermanentStorage, TId.Storeroom,
 				new Tbl.IAttr[] {
 					StoreroomGroup,
@@ -1270,7 +1314,7 @@ namespace Thinkage.MainBoss.Controls {
 							new DCol(Fmt.SetDisplayPath(dsMB.Path.T.Location.F.Code)),
 							new ECol(
 								Fmt.SetPickFrom(TILocations.PermanentLocationPickerTblCreator),
-								FilterOutContainedLocations(dsMB.Path.T.PermanentStorage.F.RelativeLocationID.F.LocationID, dsMB.Path.T.LocationDerivations.F.LocationID)	
+								FilterOutContainedLocations(dsMB.Path.T.PermanentStorage.F.RelativeLocationID.F.LocationID, dsMB.Path.T.Location.F.Id)
 							)),
 						TblColumnNode.New(dsMB.Path.T.PermanentStorage.F.RelativeLocationID.F.ContainingLocationID,
 							new DefaultOnlyCol(),
@@ -1295,7 +1339,7 @@ namespace Thinkage.MainBoss.Controls {
 			//DefineTbl(dsMB.Schema.T.TemporaryStorage, TemporaryStorageTbl());
 			#endregion
 			#region PermanentItemLocation
-			DefineTbl(dsMB.Schema.T.PermanentItemLocation, new DelayedCreateTbl(delegate() {
+			DefineTbl(dsMB.Schema.T.PermanentItemLocation, new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.PermanentItemLocation, TId.StoreroomAssignment,
 					new Tbl.IAttr[] {
 						CommonTblAttrs.ViewCostsDefinedBySchema,
@@ -1335,25 +1379,25 @@ namespace Thinkage.MainBoss.Controls {
 								),
 
 								TblRowNode.New(KB.K("On Hand"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-									TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.OnHand, DCol.Normal, ECol.AllReadonly	/* calculated */),
-									TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.UnitCost, DCol.Normal, ECol.AllReadonly	/* calculated */),
-									TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.TotalCost, DCol.Normal, ECol.AllReadonly	/* calculated */)
+									TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.OnHand, DCol.Normal, ECol.AllReadonly  /* calculated */),
+									TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.UnitCost, DCol.Normal, ECol.AllReadonly    /* calculated */),
+									TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.TotalCost, DCol.Normal, ECol.AllReadonly   /* calculated */)
 								),
 
 								TblRowNode.New(KB.K("On Order"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-									TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.OnOrder, new FeatureGroupArg(PurchasingGroup), DCol.Normal, ECol.AllReadonly	/* calculated */),
+									TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.OnOrder, new FeatureGroupArg(PurchasingGroup), DCol.Normal, ECol.AllReadonly   /* calculated */),
 									TblLayoutNode.Empty(),
 									TblLayoutNode.Empty()
 								),
 
 								TblRowNode.New(KB.K("On Reserve"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-									TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.OnReserve, DCol.Normal, ECol.AllReadonly	/* calculated */),
+									TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.OnReserve, DCol.Normal, ECol.AllReadonly   /* calculated */),
 									TblLayoutNode.Empty(),
 									TblLayoutNode.Empty()
 								),
 
 								TblRowNode.New(KB.K("Available"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-									TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.Available, DCol.Normal, ECol.AllReadonly	/* calculated */),
+									TblColumnNode.New(dsMB.Path.T.PermanentItemLocation.F.ActualItemLocationID.F.Available, DCol.Normal, ECol.AllReadonly   /* calculated */),
 									TblLayoutNode.Empty(),
 									TblLayoutNode.Empty()
 								)
@@ -1376,7 +1420,7 @@ namespace Thinkage.MainBoss.Controls {
 			//tInfo.Add(dsMB.Schema.T.TemporaryItemLocation, TemporaryItemLocationTbl());
 			#endregion
 			#region ActiveTemporaryStorageWithItemAssignments
-			DefineBrowseTbl(dsMB.Schema.T.ActiveTemporaryStorageWithItemAssignments, new DelayedCreateTbl(delegate() {
+			DefineBrowseTbl(dsMB.Schema.T.ActiveTemporaryStorageWithItemAssignments, new DelayedCreateTbl(delegate () {
 				object descriptionColumnId = KB.I("DescriptionId");
 				object codeColumnId = KB.I("ActiveTemporaryStorageWithItemAssignmentsCodeId");
 				return new CompositeTbl(dsMB.Schema.T.ActiveTemporaryStorageWithItemAssignments, TId.TemporaryStorageAndItem,
@@ -1384,22 +1428,24 @@ namespace Thinkage.MainBoss.Controls {
 						ItemResourcesGroup,
 						new BTbl(BTbl.PerViewListColumn(CommonCodeColumnKey, codeColumnId),
 							BTbl.PerViewListColumn(CommonDescColumnKey, descriptionColumnId),
-							BTbl.SetTreeStructure(dsMB.Path.T.ActiveTemporaryStorageWithItemAssignments.F.ParentID, 2)
+							BTbl.SetTreeStructure(null, 2)
 						)
 					},
-					dsMB.Path.T.ActiveTemporaryStorageWithItemAssignments.F.TableEnum,
 					new CompositeView(TIItem.ActiveTemporaryStorageEditTblCreator, dsMB.Path.T.ActiveTemporaryStorageWithItemAssignments.F.LocationID.F.TemporaryStorageID,
+						CompositeView.RecognizeByValidEditLinkage(),
 						BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.TemporaryStorage.F.LocationID.F.Desc),
 						BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.TemporaryStorage.F.WorkOrderID.F.Number),
 						CompositeView.PathAlias(dsMB.Path.T.ActiveTemporaryStorageWithItemAssignments.F.ContainingLocationID,
 							dsMB.Path.T.TemporaryStorage.F.ContainingLocationID)),
 					new CompositeView(TIItem.ActiveTemporaryItemLocationTblCreator, dsMB.Path.T.ActiveTemporaryStorageWithItemAssignments.F.ItemLocationID.F.ActualItemLocationID.F.TemporaryItemLocationID, NoNewMode,
+						CompositeView.RecognizeByValidEditLinkage(),
+						CompositeView.SetParentPath(dsMB.Path.T.ActiveTemporaryStorageWithItemAssignments.F.ItemLocationID.F.LocationID),
 						BTbl.PerViewColumnValue(descriptionColumnId, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID.F.Desc),
 						BTbl.PerViewColumnValue(codeColumnId, dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.ItemID.F.Code),
-						CompositeView.ContextualInit((int)ViewRecordTypes.ActiveTemporaryStorageWithItemAssignments.TemporaryStorage,
+						CompositeView.ContextualInit((int)ActiveTemporaryStorageWithItemAssignments.TemporaryStorage,
 							new CompositeView.Init(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID,
 								dsMB.Path.T.ActiveTemporaryStorageWithItemAssignments.F.LocationID)),
-						CompositeView.ContextualInit((int)ViewRecordTypes.ActiveTemporaryStorageWithItemAssignments.TemporaryItemLocation,
+						CompositeView.ContextualInit((int)ActiveTemporaryStorageWithItemAssignments.TemporaryItemLocation,
 							new CompositeView.Init(dsMB.Path.T.TemporaryItemLocation.F.ActualItemLocationID.F.ItemLocationID.F.LocationID,
 								dsMB.Path.T.ActiveTemporaryStorageWithItemAssignments.F.ItemLocationID.F.LocationID)),
 						CompositeView.PathAlias(dsMB.Path.T.ActiveTemporaryStorageWithItemAssignments.F.ContainingLocationID,
@@ -1408,7 +1454,7 @@ namespace Thinkage.MainBoss.Controls {
 			}));
 			#endregion
 			#region TemplateItemLocation
-			DefineTbl(dsMB.Schema.T.TemplateItemLocation, new DelayedCreateTbl(delegate() {
+			DefineTbl(dsMB.Schema.T.TemplateItemLocation, new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.TemplateItemLocation, TId.TaskTemporaryStorageAssignment,
 					new Tbl.IAttr[] {
 						CommonTblAttrs.ViewCostsDefinedBySchema,
@@ -1445,7 +1491,7 @@ namespace Thinkage.MainBoss.Controls {
 			}));
 			#endregion
 			#region TemplateTemporaryStorage
-			DefineTbl(dsMB.Schema.T.TemplateTemporaryStorage, new DelayedCreateTbl(delegate() {
+			DefineTbl(dsMB.Schema.T.TemplateTemporaryStorage, new DelayedCreateTbl(delegate () {
 				return new Tbl(dsMB.Schema.T.TemplateTemporaryStorage, TId.TaskTemporaryStorage,
 					new Tbl.IAttr[] {
 						SchedulingAndItemResourcesGroup,

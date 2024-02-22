@@ -7,10 +7,6 @@
 	</doc>
 	<field name="Id" read="RequiredGUID">
 	</field>
-	<field name="TableEnum" type="integer(min 0, max 1, nonnull)">
-	  <doc>The type of resource record</doc>
-	  <extension name="controlprovider">Thinkage.MainBoss.Controls.TIWorkOrder.WorkOrderTemplateMiscellaneousProvider,Thinkage.MainBoss.Controls</extension>
-	</field>
 	<!-- the base linkages of the unified records -->
 	<field name="DemandTemplateID" type="GUIDREF" link="DemandTemplate">
 	  <doc>the base Demand record linkage for resources derived from this (demands)</doc>
@@ -18,35 +14,17 @@
 	<field name="MiscellaneousWorkOrderCostID" type="GUIDREF" link="MiscellaneousWorkOrderCost">
 	  <doc>the MiscellaneousWorkOrderCost record linkage for employees doing per-job work</doc>
 	</field>
-	<!-- Other fields required by restrictions in Tbl etc representations -->
-	<field name="WorkOrderTemplateID" type="RequiredGUIDREF" link="WorkOrderTemplate">
-	  <!-- This must remain until we can put per-view filters on all the CompositeViews all with the same tag and target them as a group with
-	the BrowserFilterTarget init target. -->
-	  <doc>a unified Work Order Template id</doc>
-	</field>
-	<field name="ParentID" type="GUIDREF" link="WorkOrderTemplateMiscellaneous" labelkey="Task Miscellaneous Cost">
-	  <!-- This must remain until we have some way of expressing the row parent on a per-view basis -->
-	  <doc>the Id of another record in this table that is the parent of this record in the tree view</doc>
-	</field>
 	<extension name="query">
-		select OWI.ID, 0,					<!-- WorkOrderTemplateMiscellaneous.MiscellaneousWorkOrderCost -->
-			  NULL, OWI.ID,
-			  NULL, NULL
+		select ID, NULL, ID
 		  from
-			MiscellaneousWorkOrderCost as OWI
+			MiscellaneousWorkOrderCost
 	  union all
 		<!-- Demands: DemandMiscellaneousWorkOrderCost -->
-		select D.ID, 1,					<!-- WorkOrderTemplateMiscellaneous.DemandMiscellaneousWorkOrderCostTemplate-->
-			  D.ID, NULL,
-			  D.WorkOrderTemplateID, DOWI.MiscellaneousWorkOrderCostID
+		select DemandTemplateID, DemandTemplateID, NULL
 		  from
 			DemandMiscellaneousWorkOrderCostTemplate as DOWI
-		  join
-			DemandTemplate as D on D.ID = DOWI.DemandTemplateID
 	</extension>
-	<extension name="dependson">DemandTemplate</extension>
 	<extension name="dependson">DemandMiscellaneousWorkOrderCostTemplate</extension>
-	<extension name="dependson">WorkOrderTemplate</extension>
 	<extension name="dependson">MiscellaneousWorkOrderCost</extension>
   </table>
   <table name="WorkOrderTemplateMiscellaneousTreeView" defaults="false" log="false" id="Id" labelkey="Task Miscellaneous Cost">
@@ -56,32 +34,23 @@
 	</field>
 	<field name="DisplayID" type="GUIDREF" link="WorkOrderTemplateMiscellaneous">
 	</field>
-	<!--TODO: delete this-->
-	<field name="IsPrimary" type="RequiredBool">
-	</field>
 	<extension name="query">
-	  with ResourceImproperContainment (ContainedID, ContainingID, Improper)
-	  as (
-		  select WOI.ID, WOI.ID, 1
-			from
-			  WorkOrderTemplateMiscellaneous as WOI
-		union all <!-- no duplicates should exist, but the syntax of 'with' requires union ALL -->
-		  select RIC.ContainedID, WOI.ParentID, 0
-			from
-			  WorkOrderTemplateMiscellaneous as WOI
-			join
-			  ResourceImproperContainment as RIC on RIC.ContainingID = WOI.ID
-			where WOI.ParentID is not null
-	  )
-			  
-	  select ContainingID, ContainedID, ContainingID, Improper
-		from
-		  ResourceImproperContainment
+	  -- Self-containment on resource records
+	  select ID, ID, ID
+		from MiscellaneousWorkOrderCost
+	union all
+	  -- Self-containment on Demand records
+	  select DemandTemplateID, DemandTemplateID, DemandTemplateID
+		from DemandMiscellaneousWorkOrderCostTemplate
+	union all
+	  -- COntainment of Demands within Resources
+	  select MiscellaneousWorkOrderCostID, DemandTemplateID, MiscellaneousWorkOrderCostID
+		from DemandMiscellaneousWorkOrderCostTemplate
 	</extension>
-	<extension name="dependson">WorkOrderTemplateMiscellaneous</extension>
+	<extension name="dependson">MiscellaneousWorkOrderCost</extension>
+	<extension name="dependson">DemandMiscellaneousWorkOrderCostTemplate</extension>
   </table>
   <table name="DemandTemplate"/>
   <table name="DemandMiscellaneousWorkOrderCostTemplate"/>
-  <table name="WorkOrderTemplate"/>
   <table name="MiscellaneousWorkOrderCost"/>
 </database>

@@ -57,13 +57,13 @@ namespace Thinkage.MainBoss.Controls {
 			public readonly DelayedConstruction<StateHistoryUITable> HistoryTable;
 		}
 		public abstract class WithServiceLogicArg : CustomLogicClassArg {
-			public WithServiceLogicArg(System.Type browserLogicClass, System.Type serviceApplicationClass)
+			protected WithServiceLogicArg(System.Type browserLogicClass, System.Type serviceApplicationClass)
 				: base(browserLogicClass) {
 				ServiceDefinitionClass = serviceApplicationClass;
 				System.Diagnostics.Debug.Assert(ServiceDefinitionClass.GetConstructor(ctorArgTypes) != null);
 			}
 			public readonly System.Type ServiceDefinitionClass;
-			public static readonly System.Type[] ctorArgTypes = new System.Type[] { };
+			public static readonly System.Type[] ctorArgTypes = System.Array.Empty<System.Type>();
 		}
 		public class WithManageServiceLogicArg : WithServiceLogicArg {
 			public WithManageServiceLogicArg(System.Type serviceApplicationClass, params ManageServiceBrowseLogic.ServiceActionCommand[] serviceCommands)
@@ -102,21 +102,8 @@ namespace Thinkage.MainBoss.Controls {
 		#endregion
 		#region - Constructor optional argument implementation classes
 		public class StateHistoryTbl : ETbl.ICtorArg {
-			#region Housekeeping for ICtorArg
-			internal class Organization : ICtorArgOrganization {
-				public bool IsSingleValued {
-					get {
-						return true;
-					}
-				}
-			}
-			internal static readonly Organization OrganizationObject = new Organization();
-			public ICtorArgOrganization CtorArgOrganization {
-				get {
-					return OrganizationObject;
-				}
-			}
-			#endregion
+			internal static readonly Organization OrganizationObject = new Organization(true);
+			public CtorArgCollection.Organization CtorArgOrganization => OrganizationObject;
 			public readonly DelayedConstruction<StateHistoryUITable> StateHistory;
 			public StateHistoryTbl(DelayedConstruction<StateHistoryUITable> stateHistory) : base() {
 				StateHistory = stateHistory;
@@ -155,7 +142,7 @@ namespace Thinkage.MainBoss.Controls {
 
 		public static IEnumerable<TblLayoutNode.ICtorArg> PermissionAttributesFromSchema(Thinkage.Libraries.XAF.Database.Layout.DBI_Table schema) {
 			if (schema == null || schema.CostRights.Count == 0) {
-				return new TblLayoutNode.ICtorArg[] { };
+				return System.Array.Empty<TblLayoutNode.ICtorArg>();
 			}
 			List<PermissionToView> attributes = new List<PermissionToView>();
 			foreach (string p in schema.CostRights)

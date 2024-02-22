@@ -90,7 +90,7 @@ namespace Thinkage.MainBoss.Database {
 					r = (dsSavedOrganizations.OrganizationsRow)ds.DB.EditSingleRow(ds, dsSavedOrganizations.Schema.T.Organizations, new SqlExpression(dsSavedOrganizations.Path.T.Organizations.F.Id).Eq(SqlExpression.Constant(o.Id)));
 				if(r == null) {
 					ds.EnsureDataTableExists(dsSavedOrganizations.Schema.T.Organizations);
-					r = ds.T.Organizations.AddNewOrganizationsRow();
+					r = ds.T.Organizations.AddNewRow();
 					r.F.DataBaseName = o.ConnectionDefinition.DBName;
 					r.F.DataBaseServer = o.ConnectionDefinition.DBServer;
 					r.F.CompactBrowsers = o.ConnectionDefinition.CompactBrowsers;
@@ -117,7 +117,7 @@ namespace Thinkage.MainBoss.Database {
 			using(var ds = new dsSavedOrganizations(Session)) {
 				try {
 					ds.DB.ViewAdditionalRows(ds, dsSavedOrganizations.Schema.T.Organizations); //TODO: Use the filterByOrganizationName to do the view and eliminate our comparison below
-					foreach(dsSavedOrganizations.OrganizationsRow r in ds.T.Organizations) {
+					foreach(dsSavedOrganizations.OrganizationsRow r in ds.T.Organizations.Rows) {
 						NamedOrganization o = Load(r.F.Id);
 						if(filterByOrganizationName == null || string.Equals(filterByOrganizationName, o.DisplayName, StringComparison.InvariantCultureIgnoreCase))
 							list.Add(o);

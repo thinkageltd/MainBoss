@@ -11,7 +11,7 @@ namespace Thinkage.MainBoss.WebAccess.Models
 	/// </summary>
 	/// <typeparam name="T">The particular record type</typeparam>
 	/// <typeparam name="VT">The view type returned</typeparam>
-	interface IBrowse<VT> : IView<VT>
+	internal interface IBrowse<VT> : IView<VT>
 	{
 		//		IQueryable<T> Browse();
 		IQueryable<VT> BrowseAssigned();

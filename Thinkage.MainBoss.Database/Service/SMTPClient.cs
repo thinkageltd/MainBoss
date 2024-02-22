@@ -74,7 +74,7 @@ namespace Thinkage.MainBoss.Database.Service {
 		public void Send(MailMessage msg) {
 			smtp.Send(msg);
 		}
-		public void BuildMailMessageBody(MailMessage msg, INotificationEmail textEmail, INotificationEmail htmlEmail) {
+		public static void BuildMailMessageBody(MailMessage msg, INotificationEmail textEmail, INotificationEmail htmlEmail) {
 			msg.Body = textEmail.BodyAsString;
 			if (htmlEmail != null) {
 				AlternateView htmlNotification;

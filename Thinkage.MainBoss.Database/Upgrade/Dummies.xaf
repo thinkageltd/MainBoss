@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+  <table name="CommittedPMGenerationDetailAndBatches" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="CommittedPMGenerationDetailAndPMGenerationBatch" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ItemPricing" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="ActiveTemporaryStorageWithItemAssignments" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
   <table name="ContactRelatedRecordsContainment" defaults="false" log="false">
 	<field name="Id" read="id(nonnull)"/>
 	<extension name="query">
@@ -48,6 +72,8 @@
 	<field name="ANPurchaseOrderSubjectPrefix" type="string(minlength 1, 1073741823, lines 0, trim leading)" />
 	<field name="RequestorNotificationIntroduction" type="string(minlength 1, 1073741823, trim both)" />
 	<field name="RequestorNotificationSubjectPrefix" type="string(minlength 1, 1073741823, lines 0, trim leading)" />
+	<field name="MailEncryptedPassword" type="blob(minlength 8, maxlength 32, null)" />
+	<field name="SMTPEncryptedPassword" type="blob(minlength 8, maxlength 32, null)" />
   </table>
   <table name="Session" defaults="false" log="false" id="Id">
 	<field name="Id" read="id(nonnull)"/>
@@ -110,12 +136,6 @@
 		select newid(), newid(), newid(), newid() where 1 = 2
 	</extension>
   </table>
-  <table name="WorkOrderExtras" defaults="false" log="false">
-	<field name="Id" read="id(nonnull)" />
-	<extension name="query">
-		select newid() where 1 = 2
-	</extension>
-  </table>
   <table name="WorkOrderAssignmentReport" defaults="false" log="false">
 	<field name="Id" read="id(nonnull)"/>
 	<extension name="query">
@@ -161,6 +181,15 @@
 		select newid() where 1 = 2
 	</extension>
   </table>
+	<table name="Attachment" defaults="false" log="false" id="Id" xid="Code" xunique="true">
+		<field name="Id" read="id(nonnull)"/>
+		<field name="Code" type="string(minlength 1, 50, lines 0, trim both)"/>
+		<field name="UnitLocationID" link="Location" type="link(nonnull)"/>
+		<field name="Path" type="string(minlength 1, 1073741823, lines 0, trim both, nonnull)"/>
+		<extension name="query">
+		select newid() where 1 = 2
+	</extension>
+	</table>
   <table name="AttentionStatus" defaults="false" log="false" id="Id">
 	<field name="Id" read="id(nonnull)"/>
 	<extension name="query">
@@ -180,6 +209,12 @@
 	</extension>
   </table>
   <table name="AccountingTransactionDerivations" log="false" id="Id">
+	<field name="Id" read="id(nonnull)" />
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="AccountingTransactionVariants" log="false" id="Id">
 	<field name="Id" read="id(nonnull)" />
 	<extension name="query">
 	  select newid() where 1 = 2
@@ -877,9 +912,12 @@
 	<field name="Id" read="id(nonnull)" />
   </table>
   <table name="Specification" defaults="true" xid="Code Hidden" log="false" >
-	<field name="Code"/>
-	<field name="Hidden" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
-	<field name="ReportText" type="string(minlength 1, 1073741823, trim both)" />
+		<field name="Code"/>
+		<field name="Desc"/>
+		<field name="Comment"/>
+		<field name="UnitLocationID" link="Location" type="link(nonnull)"/>
+		<field name="Hidden" type="datetime(min 1/1/1753 0:00:00, max 12/31/9999 23:59:59.99, divided 100)"/>
+		<field name="ReportText" type="string(minlength 1, 1073741823, trim both)" />
   </table>
   <table name="WorkOrderStatisticsReport" defaults="false" log="false" >
 	<field name="Id" read="id(nonnull)" />
@@ -2244,7 +2282,75 @@
       end
     </extension>
   </object>
-	<object class="trigger" name="mbtg_User_Updates_Contact">
+  <object class="function" name="mbfn_WorkOrder_CurrentWorkOrderStateHistory">
+	<extension name="body">
+	  (
+		@Id uniqueidentifier
+	  )
+	  returns uniqueidentifier
+	  begin
+		return null
+	  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_PurchaseOrder_CurrentPurchaseOrderStateHistory">
+	<extension name="body">
+	  (
+	  @Id uniqueidentifier
+	  )
+	  returns uniqueidentifier
+	  begin
+	  return null
+	  end
+	</extension>
+  </object>
+  <object class="function" name="mbfn_Request_CurrentRequestStateHistory">
+	<extension name="body">
+	  (
+	  @Id uniqueidentifier
+	  )
+	  returns uniqueidentifier
+	  begin
+	  return null
+	  end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_EnforceNewPurchaseOrderStateHistoryOrdering">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_EnforcePurchaseOrderStateHistoryOrdering">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_EnforceNewWorkOrderStateHistoryOrdering">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_EnforceWorkOrderStateHistoryOrdering">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_EnforceNewRequestStateHistoryOrdering">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_EnforceRequestStateHistoryOrdering">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_RequestStateHistory_Updates_Request">
+	<extension name="body">
+	  on __Variables  after insert  as  begin  declare @i integer end
+	</extension>
+  </object>
+  <object class="trigger" name="mbtg_User_Updates_Contact">
 		<extension name="body">
 		  on __Variables  after insert  as  begin  declare @i integer end
 		</extension>
@@ -2906,6 +3012,24 @@
   </extension>
   </object>
 
+  <table name="RequestExtras" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="WorkOrderExtras" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
+  <table name="PurchaseOrderExtras" defaults="false" log="false">
+	<field name="Id" read="id(nonnull)"/>
+	<extension name="query">
+	  select newid() where 1 = 2
+	</extension>
+  </table>
   <table name="DatabaseStatus" defaults="false" log="false">
 	<field name="Id" read="id(nonnull)"/>
 	<extension name="query">

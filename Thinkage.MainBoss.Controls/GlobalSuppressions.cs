@@ -3,6 +3,7 @@
 // attributes that are applied to this project.
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
-
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>", Scope = "member", Target = "~M:Thinkage.MainBoss.Controls.HistoryActionManager.Transition.CommandForEditor.constructInitList~System.Collections.Generic.List{Thinkage.Libraries.Presentation.TblActionNode}")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>", Scope = "type", Target = "~T:Thinkage.MainBoss.Controls.xyzzy")]
+using System.Diagnostics.CodeAnalysis;
+[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "namespaceanddescendants", Target = "Thinkage.MainBoss.Controls")]
+[assembly: SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<Pending>", Scope = "namespaceanddescendants", Target = "Thinkage.MainBoss.Controls")]
+[assembly: SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>", Scope = "type", Target = "~T:Thinkage.MainBoss.Controls.xyzzy")]

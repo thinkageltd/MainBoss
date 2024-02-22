@@ -24,8 +24,8 @@ namespace Thinkage.MainBoss.Application {
 #if DEBUG
 			new MSWindowsDebugProvider(this, KB.I("MainBoss Debug Form"));
 #endif
-			new StandardApplicationIdentification(this, ApplicationParameters.RegistryLocation, "MainBoss");
-			new GUIApplicationIdentification(this, "Thinkage.MainBoss.Application.Resources.UpgradeApplication.ico");
+			new StandardApplicationIdentification(this, ApplicationParameters.RegistryLocation, ApplicationParameters.ApplicationDisplayName);
+			new GUIApplicationIdentification(this, Resources.Images.UpgradeApplication);
 			new Thinkage.Libraries.XAF.UI.MSWindows.UserInterface(this);
 			new Thinkage.Libraries.Presentation.MSWindows.UserInterface(this);
 			new MSWindowsUIFactory(this);
@@ -34,8 +34,8 @@ namespace Thinkage.MainBoss.Application {
 			Upgrader.CloseSession();
 			base.TeardownApplication(nextApplication);
 		}
-		private DBUpgrader Upgrader;
-		#region the main form
+		private readonly DBUpgrader Upgrader;
+#region the main form
 		// TODO: add a Cancel (if Upgrade is enabled) or Close (if disabled) button which closes the form (ideally calling up the Pick Organization app).
 		// Have the X box ask are you sure if the upgrade has not been done.
 		// What about permissions checking? This should happen in the ctor so a user who can't upgrade also can't lock the DB exclusively forever.
@@ -81,7 +81,7 @@ namespace Thinkage.MainBoss.Application {
 					new MultiCommandIfAllEnabled(
 						new CallDelegateCommand(KB.K("Upgrade this database to the latest version and optimize for the current SQL Server version"),
 #if !ASYNC
-							delegate()
+							delegate ()
 #else
 							async delegate()
 #endif
@@ -92,8 +92,7 @@ namespace Thinkage.MainBoss.Application {
 #if !ASYNC
 					IProgressDisplay ipdo = uiFactory.CreateProgressDisplay(KB.K("Upgrading MainBoss maintenance organization to current version"), 0, true);
 					try {
-						Upgrader.BasicDB.PerformTransaction(false, delegate ()
-						{
+						Upgrader.BasicDB.PerformTransaction(false, delegate () {
 							Upgrader.UpgradeToCurrentVersion(ipdo);
 							Upgrader.UpgradeServerVersion(ipdo);
 							ipdo.Update(KB.K("Setting built-in MainBoss security."), 1);
@@ -103,7 +102,7 @@ namespace Thinkage.MainBoss.Application {
 							}
 							if (Upgrader.BasicDB.Session.EffectiveDBServerVersion >= new System.Version(10, 0, 0, 0)) { // only for server 2008 and higher; sorry 2005 server ...
 								ipdo.Update(KB.K("Updating Database Index Statistics."), 1);
-								var sqlCommand = new Thinkage.Libraries.XAF.Database.Service.MSSql.MSSqlLiteralCommandSpecification(KB.I("EXEC sp_updatestats"));
+								var sqlCommand = new DBSpecificCommandSpecification(KB.I("EXEC sp_updatestats"));
 								System.Text.StringBuilder output = new System.Text.StringBuilder();
 								try {
 									Upgrader.BasicDB.Session.ExecuteCommand(sqlCommand, output); // we don't examine output
@@ -150,21 +149,21 @@ namespace Thinkage.MainBoss.Application {
 				}),
 						AlreadyUpgradedDisabler)));
 				buttonRow.Add(uiFactory.CreateButton(KB.K("Close"),
-						new CallDelegateCommand(KB.K("Close this form and return to the previous application"), delegate() {
-					onlyonce++;
-					ReplaceActiveApplication(ReturnToApplication());
-				})));
+						new CallDelegateCommand(KB.K("Close this form and return to the previous application"), delegate () {
+							onlyonce++;
+							ReplaceActiveApplication(ReturnToApplication());
+						})));
 #if DEBUG
 				// Allow debugging to reset the security rights directly without need to add fake upgrade step to cause it
 				buttonRow.Add(uiFactory.CreateButton(KB.T("DEBUG: Reset MainBoss Security"),
-					new CallDelegateCommand(KB.T("DEBUG: Reset MainBoss Security"), delegate() {
-					Upgrader.BasicDB.PerformTransaction(false, delegate() {
-						using (dsMB ds = new dsMB(Upgrader.BasicDB)) {
-							SecurityCreation.CreateSecurityDataSet(ds, null, SecurityCreation.RightSetLocation);
-							ds.DB.Update(ds, ServerExtensions.UpdateOptions.NoConcurrencyCheck);
-						}
-					});
-				})));
+					new CallDelegateCommand(KB.T("DEBUG: Reset MainBoss Security"), delegate () {
+						Upgrader.BasicDB.PerformTransaction(false, delegate () {
+							using (dsMB ds = new dsMB(Upgrader.BasicDB)) {
+								SecurityCreation.CreateSecurityDataSet(ds, null, SecurityCreation.RightSetLocation);
+								ds.DB.Update(ds, ServerExtensions.UpdateOptions.NoConcurrencyCheck);
+							}
+						});
+					})));
 #endif
 				UpdateDisplay();
 			}
@@ -185,7 +184,7 @@ namespace Thinkage.MainBoss.Application {
 				return Thinkage.Libraries.Presentation.KB.HelpTopicKey("Main.Upgrade");
 			}
 		}
-		#endregion
+#endregion
 	}
-	#endregion
+#endregion
 }

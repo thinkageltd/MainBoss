@@ -1,38 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
-  <types uri="..\Types.xafdb"/>
-  <!-- There is no unique xid because specifications can have duplicate codes amongst the same associated UNIT associated with the same SpecficationFormID
+	<types uri="..\Types.xafdb"/>
+	<!-- There is no unique xid because specifications can have duplicate codes amongst the same associated UNIT associated with the same SpecficationFormID
        This is the same behaviour allowed in previous mainboss databases for specifications and is required to allow conversions to work properly -->
-  <table name="Specification" defaults="true" log="false" id="Id" xid="Code"  labelkey="Specification">
-	<field name="Id" read="RequiredGUID"/>
-	<field name="Code" type="RequiredCode"/>
-	<field name="Desc" type="Desc"/>
-	<field name="Comment" type="Comment"/>
-	<field name="UnitLocationID" labelkey="Unit" type="RequiredGUIDREF" link="Location">
-	  <extension name="linkage">captive</extension>
-	  <extension name="pickfrom">Thinkage.MainBoss.Controls.TILocations.UnitBrowseTblCreator,Thinkage.MainBoss.Controls</extension>
-	</field>
-	<field name="SpecificationFormID" link="SpecificationForm" type="link(nonnull)">
-	  <extension name="linkage">captive</extension>
-	</field>
-	<field name="ReportText" read="MultiLineUnlimited" >
-	  <!-- dbo.mbfn_Specification_ReportText( [ID] ) -->
-	  <!-- maintained by trigger on SpecificationData -->
-	  <result hosting="cached">
+	<table name="Specification" defaults="true" log="false" id="Id" xid="AttachmentID" labelkey="Specification">
+		<field name="Id" read="RequiredGUID"/>
+		<field name="AttachmentID" read="RequiredGUIDREF" base="Attachment"/>
+		<field name="SpecificationFormID" link="SpecificationForm" type="link(nonnull)">
+			<extension name="linkage">captive</extension>
+		</field>
+		<field name="ReportText" read="MultiLineUnlimited" >
+			<!-- dbo.mbfn_Specification_ReportText( [ID] ) -->
+			<!-- maintained by trigger on SpecificationData -->
+			<result hosting="cached">
 			cast(' ' as Comment)
 	  </result>
-	  <extension name="dependson">mbfn_Specification_ReportText()</extension>
-	</field>
+			<extension name="dependson">mbfn_Specification_ReportText()</extension>
+		</field>
 
-	<extension name="deletemethod">delete</extension>
-  </table>
-  <table name="Location"/>
-  <table name="SpecificationForm"/>
-  <table name="SpecificationFormField"/>
-  <table name="SpecificationData"/>
-  <object class="function" name="mbfn_Specification_ReportText">
-	<doc>returns the composed Report Text for a specification record</doc>
-	<extension name="body">
+		<extension name="deletemethod">hide</extension>
+	</table>
+	<table name="Attachment"/>
+	<table name="SpecificationForm"/>
+	<table name="SpecificationFormField"/>
+	<table name="SpecificationData"/>
+	<object class="function" name="mbfn_Specification_ReportText">
+		<doc>returns the composed Report Text for a specification record</doc>
+		<extension name="body">
 (
 	@IID		uniqueidentifier	-- Specification id
 )
@@ -71,7 +65,7 @@ begin
 	return @result
 end
 	</extension>
-	<extension name="dependson">SpecificationForm</extension>
-	<extension name="dependson">SpecificationData</extension>
-  </object>
+		<extension name="dependson">SpecificationForm</extension>
+		<extension name="dependson">SpecificationData</extension>
+	</object>
 </database>

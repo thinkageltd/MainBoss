@@ -5,7 +5,7 @@
 	<field name="Id" read="requiredGUID"/>
 	<field name="ParentID" type="GUIDREF" link="ContactRelatedRecords" labelkey="Contact Related Records"/>
 	<field name="ThisContactID" type="GUIDREF" link="Contact"/>
-	<field name="RelationshipID" type="RequiredGUIDREF" link="Relationship"/>
+	<field name="RelationshipID" type="GUIDREF" link="Relationship"/>
 	<field name="UnitRelatedContactID" type="GUIDREF" link="UnitRelatedContact"/>
 	<extension name="query">
 				<!-- Get all the reverse relationship role records whose AType is a Unit and BType is a Contact-->
@@ -34,19 +34,14 @@
 	<field name="DisplayID" link="ContactRelatedRecords" type="RequiredGUIDREF">
 	  <doc></doc>
 	</field>
-	<!-- The remaining fields are required by the limitations of CompositeTbl or Tree-Structured Tbls TODO: Delete this-->
-	<field name="IsPrimary" type="RequiredBool">
-	  <!-- ListControl needs this field directly and the Tbl.IAttr that specifies this only lets you name a DBI_Column not a DBI_Path -->
-	  <doc></doc>
-	</field>
 	<extension name="query">
-	  select UR.ParentID, UR.ID, UR.ParentID, 0
+	  select UR.ParentID, UR.ID, UR.ParentID
 	  from ContactRelatedRecords as UR
 	  where UR.ParentID is not null
 	  
 	  union
 	  
-	  select UR.ID, UR.ID, UR.ID, 1
+	  select UR.ID, UR.ID, UR.ID
 	  from ContactRelatedRecords as UR
 	</extension>
 	<extension name="dependson">ContactRelatedRecords</extension>

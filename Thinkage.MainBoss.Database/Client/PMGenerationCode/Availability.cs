@@ -38,7 +38,8 @@ namespace Thinkage.MainBoss.Database {
 			get;
 		}
 	}
-
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "No need for other constructors")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2229:Implement serialization constructors", Justification = "No need for other constructors")]
 	public class AvailabilityException : GeneralException {
 		public AvailabilityException(Key msg)
 			: base(msg) {

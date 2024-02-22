@@ -91,6 +91,16 @@ namespace Thinkage.MainBoss.Controls.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap ConfigureServiceBitmap {
+            get {
+                object obj = ResourceManager.GetObject("ConfigureServiceBitmap", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         public static System.Drawing.Icon Contact {
@@ -401,6 +411,16 @@ namespace Thinkage.MainBoss.Controls.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap ProcessEmailBitmap {
+            get {
+                object obj = ResourceManager.GetObject("ProcessEmailBitmap", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         public static System.Drawing.Icon Purchase {
@@ -631,12 +651,42 @@ namespace Thinkage.MainBoss.Controls.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap VerifyServiceBitmap {
+            get {
+                object obj = ResourceManager.GetObject("VerifyServiceBitmap", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         public static System.Drawing.Icon VoidCountValue {
             get {
                 object obj = ResourceManager.GetObject("VoidCountValue", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap WindowsServiceBitmap {
+            get {
+                object obj = ResourceManager.GetObject("WindowsServiceBitmap", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap WindowsServiceStopBitmap {
+            get {
+                object obj = ResourceManager.GetObject("WindowsServiceStopBitmap", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

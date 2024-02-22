@@ -7,11 +7,18 @@ using Thinkage.MainBoss.Database;
 
 namespace Thinkage.MainBoss.WebAccess.Models {
 	[Serializable]
+#pragma warning disable CA1032 // Implement standard exception constructors
+#pragma warning disable CA2229 // Implement standard exception constructors
+
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "No need for other constructors")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2229:Implement serialization constructors", Justification = "No need for other constructors")]
 	public class NotCorrectRequestorForCommentException : System.Exception {
 	}
 	[Serializable]
 	public class NotRegisteredAsRequestAssigneeException : System.Exception {
 	}
+#pragma warning restore CA1032 // Implement standard exception constructors
+#pragma warning restore CA2229 // Implement standard exception constructors
 	public class RequestStateHistoryRepository : StateHistoryRepository, IStateHistoryRepository<RequestStateHistoryModel> {
 		protected delegate string GetConcurrencyContextMessage(Guid currentState);
 
@@ -61,7 +68,8 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 				throw new ActionNotPermittedForCurrentStateException();
 			}
 		}
-		delegate void OtherInstruction(CustomInstructions instruction);
+
+		private delegate void OtherInstruction(CustomInstructions instruction);
 		private void ProcessCustomInstructions(dsMB ds, RequestStateHistoryModel model, IEnumerable<CustomInstructions> instructions, OtherInstruction other) {
 			if (instructions != null) {
 				foreach (var instruction in instructions) {
@@ -132,7 +140,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 								if (assigneeID == Guid.Empty)
 									throw new NotRegisteredAsRequestAssigneeException();
 								ds.EnsureDataTableExists(dsMB.Schema.T.RequestAssignment);
-								var assignToRequestRow = ds.T.RequestAssignment.AddNewRequestAssignmentRow();
+								var assignToRequestRow = ds.T.RequestAssignment.AddNewRow();
 								assignToRequestRow.F.RequestAssigneeID = assigneeID;
 								assignToRequestRow.F.RequestID = updatedModel.RequestID;
 							}
@@ -168,8 +176,9 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 				}
 			}
 		}
+
 		// we keep a static definition so we only execute the filling once. We do not anticipate changes to happen in the StateTransition definitions underneath us.
-		static List<Transition> pTransitions = new List<Transition>();
+		private static readonly List<Transition> pTransitions = new List<Transition>();
 
 		public void GetCurrentStateHistory(dsMB ds, Guid parentID) {
 			ds.DB.ViewOnlyRows(ds, dsMB.Schema.T.Request, new SqlExpression(dsMB.Path.T.Request.F.Id).Eq(SqlExpression.Constant(parentID)), null, new DBI_PathToRow[] {
@@ -192,7 +201,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		private string pCurrentStateHistoryStatusRowCode;
 		public void GetDefaultStateHistory(dsMB ds) {
 			pDefaultStateHistoryRow = (dsMB.RequestStateHistoryRow)ds.DB.AddNewRowAndBases(ds, dsMB.Schema.T.RequestStateHistory);
-			if(pDefaultStateHistoryRow.F.RequestStateHistoryStatusID.HasValue) {
+			if (pDefaultStateHistoryRow.F.RequestStateHistoryStatusID.HasValue) {
 				// need to get the Code of the default RequestStateHistoryStatus record
 				ds.DB.ViewOnlyRows(ds, dsMB.Schema.T.RequestStateHistoryStatus, new SqlExpression(dsMB.Path.T.RequestStateHistoryStatus.F.Id).Eq(SqlExpression.Constant(pDefaultStateHistoryRow.F.RequestStateHistoryStatusID.Value)), null, null);
 				pDefaultStateHistoryStatusRowCode = ((dsMB.RequestStateHistoryStatusRow)ds.T.RequestStateHistoryStatus.Rows[0]).F.Code;

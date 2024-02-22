@@ -34,16 +34,16 @@ namespace Thinkage.MainBoss.MBUtility {
 		public class Definition : UtilityVerbWithDatabaseDefinition {
 			public Definition()
 				: base() {
-				Add(EmailAddresses = new StringValueOption("EmailAddresses", KB.K("The email addresses used to find the Active Directory entry for the contacts to be updated").Translate(), false));
-				Add(EmailAddressPattern = new StringValueOption("EmailAddressesPattern", KB.K("All contacts with Active Directory References whose primary email address matches this pattern will have their contacts updated from Active Directory").Translate(), false));
-				Add(ExcludeEmailAddressPattern = new StringValueOption("ExcludedEmailAddressesPattern", KB.K("Any contact whose primary email address matches this pattern will be excluded from being updated from Active Directory").Translate(), false));
-				Add(ExcludeEmailAddress = new StringValueOption("ExcludeEmailAddresses", KB.K("All contacts with Active Directory References excluding these email addresses will have their contacts updated from Active Directory").Translate(), false));
-				Add(FromEmailAddresses = new BooleanOption("FromEmailAddresses", KB.K("Use the primary email address in the contact as well as the Active Directory Reference to find the Active Directory entry").Translate()));
-				Add(DeleteContacts = new BooleanOption("DeleteContacts", KB.K("Contacts that do not have a valid Active Directory Reference are deleted").Translate()));
-				Add(RemoveLDAPReference = new BooleanOption("RemoveActiveDirectoryReference", KB.K("Clear the Active Directory Reference for any Contact that does not have a valid Active Directory Reference").Translate()));
-				Add(PreservePrimaryEmail = new BooleanOption("PreservePrimaryEmailAddress", KB.K("Preserve the Contact's primary email address if it exists; otherwise the Active Directory Mail address will be added to the Contacts Alternate email address").Translate()));
-				Add(Verbose = new BooleanOption("Verbose", KB.K("Provide additional information about changes that have occurred").Translate()));
-				Add(UpdateAll = new BooleanOption("UpdateAll", KB.K("Update all the contacts that have Active Directory References").Translate()));
+				Optable.Add(EmailAddresses = new StringValueOption("EmailAddresses", KB.K("The email addresses used to find the Active Directory entry for the contacts to be updated").Translate(), false));
+				Optable.Add(EmailAddressPattern = new StringValueOption("EmailAddressesPattern", KB.K("All contacts with Active Directory References whose primary email address matches this pattern will have their contacts updated from Active Directory").Translate(), false));
+				Optable.Add(ExcludeEmailAddressPattern = new StringValueOption("ExcludedEmailAddressesPattern", KB.K("Any contact whose primary email address matches this pattern will be excluded from being updated from Active Directory").Translate(), false));
+				Optable.Add(ExcludeEmailAddress = new StringValueOption("ExcludeEmailAddresses", KB.K("All contacts with Active Directory References excluding these email addresses will have their contacts updated from Active Directory").Translate(), false));
+				Optable.Add(FromEmailAddresses = new BooleanOption("FromEmailAddresses", KB.K("Use the primary email address in the contact as well as the Active Directory Reference to find the Active Directory entry").Translate()));
+				Optable.Add(DeleteContacts = new BooleanOption("DeleteContacts", KB.K("Contacts that do not have a valid Active Directory Reference are deleted").Translate()));
+				Optable.Add(RemoveLDAPReference = new BooleanOption("RemoveActiveDirectoryReference", KB.K("Clear the Active Directory Reference for any Contact that does not have a valid Active Directory Reference").Translate()));
+				Optable.Add(PreservePrimaryEmail = new BooleanOption("PreservePrimaryEmailAddress", KB.K("Preserve the Contact's primary email address if it exists; otherwise the Active Directory Mail address will be added to the Contacts Alternate email address").Translate()));
+				Optable.Add(Verbose = new BooleanOption("Verbose", KB.K("Provide additional information about changes that have occurred").Translate()));
+				Optable.Add(UpdateAll = new BooleanOption("UpdateAll", KB.K("Update all the contacts that have Active Directory References").Translate()));
 			}
 			public StringValueOption EmailAddresses;
 			public StringValueOption EmailAddressPattern;
@@ -107,7 +107,7 @@ namespace Thinkage.MainBoss.MBUtility {
 					throw new GeneralException(KB.K("The {0} could not be parsed"), KB.I("ExcludeEmailAddressPattern"));
 				}
 			System.Version minDBVersionForRolesTable = new System.Version(1, 0, 4, 38); // The roles table appeared in its current form at this version
-			MB3Client.ConnectionDefinition connect = MB3Client.OptionSupport.ResolveSavedOrganization(Options.OrganizationName, Options.DataBaseServer, Options.DataBaseName, out string oName);
+			MB3Client.ConnectionDefinition connect = Options.ConnectionDefinition(out string oName);
 			// Get a connection to the database that we are referencing
 			new ApplicationTblDefaultsNoEditing(Thinkage.Libraries.Application.Instance, new MainBossPermissionsManager(Root.Rights), Root.Rights.Table, Root.RightsSchema, Root.Rights.Action.Customize);
 			var dbapp = new ApplicationWithSingleDatabaseConnection(Thinkage.Libraries.Application.Instance);
@@ -131,8 +131,8 @@ namespace Thinkage.MainBoss.MBUtility {
 				throw new GeneralException(ex, KB.K("There was a problem validating access to the database {0} on server {1}"), connect.DBName, connect.DBServer);
 			}
 			DBClient db = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session;
-			IEnumerable<MailAddress> EmailAddresses = resolveEmailAddresses(Options.EmailAddresses);
-			IEnumerable<MailAddress> ExcludeEmailAddresses = resolveEmailAddresses(Options.ExcludeEmailAddress);
+			IEnumerable<MailAddress> EmailAddresses = ResolveEmailAddresses(Options.EmailAddresses);
+			IEnumerable<MailAddress> ExcludeEmailAddresses = ResolveEmailAddresses(Options.ExcludeEmailAddress);
 			List<Guid> ContactIds = new List<Guid>();
 			if (EmailAddresses != null) {
 				foreach (var EmailAddress in EmailAddresses) {
@@ -173,10 +173,10 @@ namespace Thinkage.MainBoss.MBUtility {
 						if (row.F.LDAPGuid != null) {
 							ldapusers = LDAPEntry.GetActiveDirectoryGivenGuid(row.F.LDAPGuid.Value);
 							if (ldapusers.Count() == 1)
-								changed = LDAPEntry.SetContactValues(row, ldapusers.First(), PreservePrimaryEmail);
+								changed = LDAPEntryHelper.SetContactValues(row, ldapusers.First(), PreservePrimaryEmail);
 							else {
 								if (deleteContacts) {
-									hideContacts(ds, row);
+									HideContacts(ds, row);
 									changed = true;
 								}
 								else if (removeLDAPReference) {
@@ -193,11 +193,11 @@ namespace Thinkage.MainBoss.MBUtility {
 								emailAddresses.Add(row.F.Email);
 							ldapusers = new List<LDAPEntry>();
 							foreach (var ea in emailAddresses) {
-								var ad = LDAPEntry.GetActiveDirectoryGivenEmail(ea);
-								ldapusers = ldapusers.Concat(ad);
+								var ad = LDAPEntry.GetActiveDirectoryUsingEmail(ea);
+								ldapusers = ldapusers.Union(ad, new LDAPEntryComparerByGuid());
 							}
 							if (ldapusers.Count() >= 1 && ldapusers.Select(e => e.Guid).Distinct().Count() == 1)
-								changed = LDAPEntry.SetContactValues(row, ldapusers.First(), PreservePrimaryEmail);
+								changed = LDAPEntryHelper.SetContactValues(row, ldapusers.First(), PreservePrimaryEmail);
 							else if (ldapusers.Count() > 1)
 								System.Console.WriteLine(Strings.Format(KB.K("Contact '{0}' email address is defined in multiple Active Directory Users {1}"), row.F.Code, string.Join(", ", ldapusers.Select(e => Strings.IFormat("'{0}'", e.DisplayName)))));
 						}
@@ -222,8 +222,7 @@ namespace Thinkage.MainBoss.MBUtility {
 					catch (System.Exception ex) {
 						errorCount++;
 						// Determine if we received a duplicate code trying to save our restored contact
-						InterpretedDbException ie = ex as InterpretedDbException;
-						if (ie == null || ie.InterpretedErrorCode != InterpretedDbExceptionCodes.ViolationUniqueConstraint) {
+						if (!(ex is InterpretedDbException ie) || ie.InterpretedErrorCode != InterpretedDbExceptionCodes.ViolationUniqueConstraint) {
 							System.Console.WriteLine(Strings.Format(KB.K("Cannot update Contact '{0}'; {1}"), originalCode ?? row.F.Code, Thinkage.Libraries.Exception.FullMessage(ex)));
 						}
 					}
@@ -249,14 +248,14 @@ namespace Thinkage.MainBoss.MBUtility {
 			}
 		}
 
-		private void hideContacts(dsMB ds, dsMB.ContactRow contactRow) {
+		private static void HideContacts(dsMB ds, dsMB.ContactRow contactRow) {
 			var now = DateTime.Now;
 			contactRow.F.Hidden = now;
 			var requestorRow = (dsMB.RequestorRow)ds.DB.ViewAdditionalRow(ds, dsMB.Schema.T.Requestor, new SqlExpression(dsMB.Path.T.Requestor.F.ContactID).Eq(SqlExpression.Constant(contactRow.F.Id)));
 			requestorRow.F.Hidden = now;
 		}
 
-		private List<Guid> AllContactsInLDAP(DBClient db, bool FromEmailAddresses, IEnumerable<MailAddress> ExcludeEmailAddresses, Regex EmailAddressRE, Regex ExcludeEmailAddressRE) {
+		private static List<Guid> AllContactsInLDAP(DBClient db, bool FromEmailAddresses, IEnumerable<MailAddress> ExcludeEmailAddresses, Regex EmailAddressRE, Regex ExcludeEmailAddressRE) {
 			List<Guid> contactIds = new List<Guid>();
 			using (dsMB ds = new dsMB(db)) {
 				ds.EnsureDataTableExists(dsMB.Schema.T.Contact);
@@ -267,7 +266,7 @@ namespace Thinkage.MainBoss.MBUtility {
 					test = test.And(new SqlExpression(dsMB.Path.T.Contact.F.Email).In(SqlExpression.Constant(new HashSet<object>(ExcludeEmailAddresses.Select(e => (object)e.Address)))).Not());
 				test = test.And(new SqlExpression(dsMB.Path.T.Contact.F.Hidden).IsNull());
 				ds.DB.ViewAdditionalRows(ds, dsMB.Schema.T.Contact, test, null, null);
-				foreach (dsMB.ContactRow row in ds.T.Contact) {
+				foreach (var row in ds.T.Contact.Rows) {
 					if (row.F.LDAPGuid != null) {
 						contactIds.Add(row.F.Id);
 						continue;
@@ -294,10 +293,9 @@ namespace Thinkage.MainBoss.MBUtility {
 			return contactIds;
 		}
 
-		private List<MailAddress> resolveEmailAddresses(StringValueOption option) {
+		private static List<MailAddress> ResolveEmailAddresses(StringValueOption option) {
 			if (!option.HasValue)
 				return null;
-			var el = option.Value.Split(new char[] { ' ', ',', ';' });
 			var l = new List<System.Net.Mail.MailAddress>();
 			foreach (var e in option.Value.Split(new char[] { ' ', ',', ';' }))
 				try {

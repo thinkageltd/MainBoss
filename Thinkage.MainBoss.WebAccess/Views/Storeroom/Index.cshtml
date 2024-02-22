@@ -1,4 +1,7 @@
-﻿@model IEnumerable<ItemCountValueEntities.PermanentStorage>
+﻿@using Thinkage.MainBoss.WebAccess;
+@using Thinkage.Web.Mvc.Html
+@using Thinkage.MainBoss.Database;
+@model IEnumerable<ItemCountValueEntities.PermanentStorage>
 
 @{
 	ViewBag.Title = "Storerooms";
@@ -7,32 +10,40 @@
 @section BrowseContent {
 	<thead>
 		<tr>
-			<th>
-				@Html.DisplayNameFor(model => model.BaseRelativeLocation.BaseLocation.Code)
-			</th>
-			<th>
-				@Html.DisplayNameFor(model => model.Rank)
-			</th>
-			<th></th>
+<!--			<th />  REMOVED until COUNT is enabled-->
+			@Html.LabelOnly(dsMB.Path.T.PermanentStorage.F.RelativeLocationID.F.LocationID.F.Code, "th")
+			@Html.LabelOnly(dsMB.Path.T.PermanentStorage.F.Rank, "th")
 		</tr>
 	</thead>
 	<tbody>
 		@foreach (var item in Model) {
-			<tr>
-				<td>
-					@Html.DisplayFor(modelItem => item.BaseRelativeLocation.BaseLocation.Code)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.Rank)
-				</td>
-				<td>
-					@Html.ActionLink("Items", "ItemAssignments", new {
-						locationId = item.BaseRelativeLocation.LocationID,
-						resultMessage = ""
-					}) |
-				</td>
-			</tr>
+		<tr>
+			<!--
+					<td>
+						<div>
+							@Html.ActionLink(T.Text("Count"), "PhysicalCounts", "ItemCountValue", new {
+									locationId = item.BaseRelativeLocation.LocationID,
+									resultMessage = ""
+								}, new {
+									@class = "StateActionLink"
+								})
+						</div>
+					</td>
+	REMOVED until COUNT is enabled-->
+			<td class="WithPopup">
+				@Html.ActionLink(item.BaseRelativeLocation.Code, "ItemAssignments", new {
+					locationId = item.BaseRelativeLocation.LocationID,
+					resultMessage = ""
+				})
+				<span class="ThePopup">@(item.BaseRelativeLocation.BaseLocation.Code)</span>
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.Rank)
+			</td>
+		</tr>
 		}
-		</tbody>
-	}
-		
+	</tbody>
+}
+@section BackToContent {
+	<div class="Action">@(Html.ActionLink(T.Text("Back to Inventory"), "Index", "Inventory"))</div>
+}

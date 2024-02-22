@@ -162,8 +162,8 @@ namespace Thinkage.MainBoss.Database {
 				for (int index = 0; index < result.Length; index++) {
 					result = result.Replace(breaks, "\r\r");
 					result = result.Replace(tabs, "\t\t\t\t");
-					breaks = breaks + "\r";
-					tabs = tabs + "\t";
+					breaks += "\r";
+					tabs += "\t";
 				}
 				result = result.Replace("\r", "\n\r");
 				// That's it.
@@ -351,7 +351,7 @@ namespace Thinkage.MainBoss.Database {
 			}
 			return System.Text.Encoding.ASCII;
 		}
-#region IDisposable Members
+		#region IDisposable Members
 		public void Dispose() {
 			Dispose(true);
 			GC.SuppressFinalize(this);
@@ -363,7 +363,7 @@ namespace Thinkage.MainBoss.Database {
 				Message = null;
 			}
 		}
-#endregion
+		#endregion
 		static public string EmailRequestToRFC822(DBClient DB, bool encode, Guid EmailRequestId) {
 			using (dsMB ds = new dsMB(DB)) {
 				ds.EnsureDataTableExists(dsMB.Schema.T.EmailRequest, dsMB.Schema.T.EmailPart);
@@ -374,7 +374,7 @@ namespace Thinkage.MainBoss.Database {
 					foreach (var h in headers)
 						mailMessage.Headers.Add(h);
 					List<dsMB.EmailPartRow> parts = new List<dsMB.EmailPartRow>();
-					foreach (dsMB.EmailPartRow r in ds.T.EmailPart)
+					foreach (dsMB.EmailPartRow r in ds.T.EmailPart.Rows)
 						parts.Add(r);
 					if (parts.Count() == 0) {
 						mailMessage.Text = emailRequest.F.MailMessage;
@@ -420,8 +420,8 @@ namespace Thinkage.MainBoss.Database {
 			}
 		}
 		static Part MakePart(dsMB.EmailPartRow partRow) {
-			Part p = null;
 			var Headers = partRow.F.Header.Replace("\r", "").Split('\n');
+			Part p;
 			if (partRow.F.FileName != null) {
 				p = new Attachment(partRow.F.Content, partRow.F.FileName);
 				foreach (var h in Headers)

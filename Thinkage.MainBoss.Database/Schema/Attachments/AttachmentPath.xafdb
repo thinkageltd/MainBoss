@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<database xmlns="http://www.thinkage.ca/XmlNamespaces/XAF">
+	<types uri="..\Types.xafdb"/>
+	<table name="AttachmentPath" defaults="true" log="false" id="Id" xid="AttachmentID" labelkey="Attachment Path">
+		<doc>
+	  This record is the derived record type for the Attachment record when the attachment is a Path reference (URL typically).
+	</doc>
+		<field name="Id" read="RequiredGUID" />
+		<field name="AttachmentID" read="RequiredGUIDREF" base="Attachment"/>
+		<field name="Path" type="RequiredURL">
+			<doc>The pathname or URL to the external attachment itself</doc>
+			<extension name="usage">ProtocolEncodedLink</extension>
+		</field>
+		<extension name="deletemethod">hide</extension>
+	</table>
+	<table name="Attachment"/>
+</database>

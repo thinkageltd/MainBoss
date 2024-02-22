@@ -9,27 +9,19 @@ using Thinkage.MainBoss.WebAccess.Models;
 namespace Thinkage.MainBoss.WebAccess.Controllers {
 	[HandleError]
 	public class RequestorController : StateHistoryController<RequestStateHistoryModel> {
-		RequestStateHistoryModel Model;
+		private RequestStateHistoryModel Model;
 		protected override RequestStateHistoryModel GetModelForModelStateErrors() {
 			if (Model.RequestStateHistoryStatusPickList == null)
 				Model.RequestStateHistoryStatusPickList = NewRepository<RequestStateHistoryRepository>().RequestStateHistoryStatusPickList(Model.RequestStateHistoryStatusID);
 			return Model;
 		}
 		#region AddComment
-		static List<Guid> RequestorAddCommentStates = new List<Guid>(new Guid[] { Thinkage.MainBoss.Database.KnownIds.RequestStateNewId, Thinkage.MainBoss.Database.KnownIds.RequestStateInProgressId });
-		static List<StateHistoryRepository.CustomInstructions> RequestorChangeStateInstructions = new List<StateHistoryRepository.CustomInstructions>(new StateHistoryRepository.CustomInstructions[] {
+		private static readonly List<Guid> RequestorAddCommentStates = new List<Guid>(new Guid[] { Thinkage.MainBoss.Database.KnownIds.RequestStateNewId, Thinkage.MainBoss.Database.KnownIds.RequestStateInProgressId });
+		private static readonly List<StateHistoryRepository.CustomInstructions> RequestorChangeStateInstructions = new List<StateHistoryRepository.CustomInstructions>(new StateHistoryRepository.CustomInstructions[] {
 			StateHistoryRepository.CustomInstructions.DefaultToExisting,
 			StateHistoryRepository.CustomInstructions.CheckRequestorID
 		});
-		private RequestStateHistoryRepository InitModel(Guid requestId, Guid currentStateHistoryId) {
-			var repository = NewRepository<RequestStateHistoryRepository>();
-			Model = new RequestStateHistoryModel() {
-				RequestID = requestId,
-				CurrentStateHistoryID = currentStateHistoryId,
-				EffectiveDate = DateTime.Now
-			};
-			return repository;
-		}
+
 		private ActionResult GetViewModel(RequestStateHistoryRepository repository) {
 			// Setup Model pickers and other information we expect to display
 			Model.RequestStateHistoryStatusPickList = repository.RequestStateHistoryStatusPickList(Model.RequestStateHistoryStatusID);
@@ -74,25 +66,6 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 				return RedirectToAction("UnHandledException", "Error");
 			}
 			return GetViewModel(repository);
-
-#if OLD
-			DBConcurrencyExceptionView = delegate()
-			{
-				return ToConcurrencyErrorView(parentID);
-			};
-			try {
-				var emailFromCookie = Cookies.GetRequestorEmail(Request);
-				if (emailFromCookie != null)
-					Model.EmailAddress = emailFromCookie;
-			}
-			catch (System.Exception gex) {
-				Session.Add("Exception", gex);
-				return RedirectToAction("UnHandledException", "Error");
-			}
-			CompleteTheModel(repository);
-			// Need to stash the id in the form so the Post code can link the New Request State history to the Request (actually it automagically appears in the FormCollection ...)
-			return View(Model);
-#endif
 		}
 		#endregion
 		#region AddComment (POST)
@@ -101,6 +74,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		[MainBossAuthorization(MainBossAuthorized.Requestor)]
 		[AcceptVerbs(HttpVerbs.Post)]
 		[ExportModelStateToTempData]
+		[ValidateAntiForgeryToken]
 		public ActionResult AddComment(FormCollectionWithType collection) {
 			var parentID = new System.Guid(collection["RequestID"]);
 			Guid newStateHistoryID = new System.Guid(collection["CurrentStateHistoryID"]);
@@ -122,30 +96,6 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 				return RedirectBack(parentID, newStateHistoryID);
 			}
 			RemoveCancelURL();
-#if OLD
-			var requestId = new System.Guid(collection["RequestID"]);
-			var repository = NewRepository<RequestStateHistoryRepository>();
-			Model = new RequestStateHistoryModel();
-			try {
-				Model = UpdateFromForm(Model, collection);
-				if (!Model.IsValid)
-					throw new Exception();
-			}
-			catch {
-				CollectRuleViolations(Model);
-				CompleteTheModel(repository);
-				return View(Model);
-			}
-			Guid requestStateHistoryId;
-			try {
-				requestStateHistoryId = repository.AddRequestorsComment(Model);
-				Cookies.CreateRequestorEmail(Response, Model.EmailAddress);
-			}
-			catch (NotCorrectRequestorForCommentException) {
-				ModelState.AddModelError("EmailAddress", KB.K("Your email address does not match that of the originator of this request.").Translate());
-				return View(Model);
-			}
-#endif
 			// return to the now 'new' current statehistory comment so Requestor can see what they added, and maybe add another. The 
 			// comment is placed into the RequestorComment field.
 			return RedirectToAction("AddComment", "Requestor", new {
@@ -156,6 +106,7 @@ namespace Thinkage.MainBoss.WebAccess.Controllers {
 		#endregion
 		#endregion
 		#region CanNoLongerMakeRemarks
+		[HttpGet]
 		[MainBossAuthorization(MainBossAuthorized.Anyone)]
 		public ActionResult CanNoLongerMakeRemarks(Guid id, [Translated] string resultMessage) {
 			ViewData["ResultMessage"] = resultMessage;
