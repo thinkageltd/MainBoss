@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.Libraries.MSWindows;
 using Thinkage.Libraries.Translation;
 

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.Translation;
 using Thinkage.Libraries.XAF.UI;

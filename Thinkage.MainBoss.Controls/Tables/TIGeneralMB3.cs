@@ -5,7 +5,7 @@ using Thinkage.Libraries;
 using Thinkage.Libraries.Collections;
 using Thinkage.Libraries.DataFlow;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Licensing;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.Presentation.MSWindows;
@@ -4450,7 +4450,7 @@ namespace Thinkage.MainBoss.Controls {
 							TblUnboundControlNode.New(KB.K("Computer"), new StringTypeInfo(0, 256, 1, true, true, true),
 								new DCol(Fmt.SetInitialValue(
 									delegate (CommonLogic bl) {
-										var session = (Libraries.DBILibrary.MSSql.SqlClient)bl.DB.Session;
+										var session = (Libraries.XAF.Database.Service.MSSql.SqlClient)bl.DB.Session;
 										try {
 											return session.DBServerComputer();
 										}
@@ -4465,7 +4465,7 @@ namespace Thinkage.MainBoss.Controls {
 							TblUnboundControlNode.New(KB.K("Directory"), new StringTypeInfo(0, 256, 1, true, true, true),
 								new DCol(Fmt.SetInitialValue(
 									delegate (CommonLogic bl) {
-										var session = (Libraries.DBILibrary.MSSql.SqlClient)bl.DB.Session;
+										var session = (Libraries.XAF.Database.Service.MSSql.SqlClient)bl.DB.Session;
 										try {
 											return session.DBDefaultBackupDirectory();
 										}
@@ -4885,7 +4885,7 @@ namespace Thinkage.MainBoss.Controls {
 										try {
 											using (Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().VersionHandler.GetUnfetteredDatabaseAccess(browserLogic.DB)) {
 
-												var sqlCommand = new Thinkage.Libraries.DBILibrary.MSSql.MSSqlLiteralCommandSpecification(KB.I("EXEC sp_updatestats"));
+												var sqlCommand = new Thinkage.Libraries.XAF.Database.Service.MSSql.MSSqlLiteralCommandSpecification(KB.I("EXEC sp_updatestats"));
 												System.Text.StringBuilder output = new System.Text.StringBuilder();
 												session.ExecuteCommand(sqlCommand, output);
 												var vh = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().VersionHandler;

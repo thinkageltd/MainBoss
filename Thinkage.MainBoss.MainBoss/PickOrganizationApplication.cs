@@ -11,11 +11,12 @@ namespace Thinkage.MainBoss.MainBoss {
 	using System.Collections.Generic;
 	using Thinkage.Libraries.Collections;
 	using Thinkage.Libraries.DBAccess;
-	using Thinkage.Libraries.DBILibrary;
-	using Thinkage.Libraries.DBILibrary.MSSql;
+	using Thinkage.Libraries.XAF.Database.Layout;
+	using Thinkage.Libraries.XAF.Database.Service.MSSql;
 	using Thinkage.Libraries.Licensing;
 	using Thinkage.Libraries.Presentation;
 	using Thinkage.Libraries.Translation;
+	using Thinkage.Libraries.XAF.Database.Service;
 	using Thinkage.MainBoss.Application;
 	using Thinkage.MainBoss.Controls;
 	public class PickOrganizationApplication : Thinkage.Libraries.Application {
@@ -115,7 +116,7 @@ namespace Thinkage.MainBoss.MainBoss {
 			//			var permissionsManager = new MainBossPermissionsManager(Root.Rights);
 			//			var app = new ApplicationTblDefaultsUsingWindows(this, new ETbl(), permissionsManager, Root.Rights.Table, null); //, Root.Rights.Table, Root.Rights.Action.Customize);
 			//			TableOperationRightsGroup rightsGroup = (TableOperationRightsGroup)app.TableRights.FindDirectChild(dsSavedOrganizations.Schema.T.Organizations.MainTableName);
-			//			permissionsManager.GetPermission(rightsGroup.GetTableOperationRight(Thinkage.Libraries.DBILibrary.TableOperationRightsGroup.TableOperation.Browse)).SetPermission(true);
+			//			permissionsManager.GetPermission(rightsGroup.GetTableOperationRight(Thinkage.Libraries.XAF.Database.Layout.TableOperationRightsGroup.TableOperation.Browse)).SetPermission(true);
 			//			permissionsManager.SetPermission("Table.Organizations.*", true);
 			new Libraries.Presentation.MSWindows.ApplicationTblDefaultsUsingWindows(this, new ETbl(), null, null, null, null);
 			new Libraries.Presentation.MSWindows.FormsPresentationApplication(this);
@@ -457,7 +458,7 @@ namespace Thinkage.MainBoss.MainBoss {
 				result[(int)EdtMode.View] = true;
 				return result;
 			}
-			protected override object[] SaveRecord(Libraries.DBILibrary.Server.UpdateOptions updateOptions) {
+			protected override object[] SaveRecord(ServerExtensions.UpdateOptions updateOptions) {
 				// Do not call base.SaveRecord which assumes there is a DB client
 				return new object[] { null /* RunScript ? */ };
 			}
@@ -840,7 +841,7 @@ namespace Thinkage.MainBoss.MainBoss {
 								}, TblActionNode.Activity.Continuous)
 								.Operand1(OrganizationNameId)
 								.Operand2(ExistingOrganizationNamesId)
-							, Init.OnLoadNew(new ControlTarget(CredentialsAuthenticationMethodId), new ConstantValue((int)Thinkage.Libraries.DBILibrary.AuthenticationMethod.WindowsAuthentication))
+							, Init.OnLoadNew(new ControlTarget(CredentialsAuthenticationMethodId), new ConstantValue((int)AuthenticationMethod.WindowsAuthentication))
 							, Init.OnLoadNew(new ControlTarget(CredentialsUsernameId), new ConstantValue(null))
 							, Init.Continuous(new ControlReadonlyTarget(CredentialsUsernameId, KB.K("A username is not required for this authentication method"))
 								, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, delegate (object[] inputs) {
@@ -961,7 +962,7 @@ namespace Thinkage.MainBoss.MainBoss {
 						));
 			}
 			// This intercepts the save cycle and first does a DB create and post-processing, and also has error handling to drop the DB
-			protected override object[] SaveRecord(Server.UpdateOptions updateOptions) {
+			protected override object[] SaveRecord(ServerExtensions.UpdateOptions updateOptions) {
 				if (State.EditRecordState == EditRecordStates.New) {
 					CreateDatabase();   // otherwise the user has done a "save & stay in edit mode"
 				}

@@ -5,9 +5,10 @@ using System.Linq;
 using Thinkage.Libraries.Collections;
 using Thinkage.Libraries.DataFlow;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Licensing;
 using Thinkage.Libraries.Presentation;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.Libraries.XAF.UI;
 using Thinkage.MainBoss.Database;
 
@@ -315,15 +316,15 @@ namespace Thinkage.MainBoss.Controls
 					foreach (License l in AddThese) {
 						Thinkage.MainBoss.Database.DatabaseCreation.SetLicenseRow(licTable.AddNewLicenseRow(), l);
 					}
-					Server.UpdateOptions updateOptions = Server.UpdateOptions.Normal;
+					ServerExtensions.UpdateOptions updateOptions = ServerExtensions.UpdateOptions.Normal;
 					for (; ; ) {
 						try {
 							dsUpdate.DB.Update(dsUpdate, updateOptions);
 						}
 						catch (DBConcurrencyException e) {
-							if (updateOptions == Server.UpdateOptions.Normal && Browser.BrowseUI.HandleConcurrencyError(Browser.DB, e)) {
+							if (updateOptions == ServerExtensions.UpdateOptions.Normal && Browser.BrowseUI.HandleConcurrencyError(Browser.DB, e)) {
 								// User wants to retry the delete even though changed
-								updateOptions = Server.UpdateOptions.NoConcurrencyCheck;
+								updateOptions = ServerExtensions.UpdateOptions.NoConcurrencyCheck;
 								continue;
 							}
 						}

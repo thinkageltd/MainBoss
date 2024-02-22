@@ -1,6 +1,7 @@
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
-using Thinkage.Libraries.DBILibrary.MSSql;
+using Thinkage.Libraries.XAF.Database.Layout;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.Libraries.Xml;
 
 namespace Thinkage.MainBoss.CustomConversion {

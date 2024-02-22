@@ -5,7 +5,7 @@ using System.Linq;
 using Thinkage.Libraries;
 using Thinkage.Libraries.Collections;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Permissions;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.Presentation.MSWindows;
@@ -760,7 +760,7 @@ namespace Thinkage.MainBoss.Application {
 				PermissionsGroup costGroup = ((MainBossPermissionsManager)TblDrivenMainBossApplication.Instance.GetInterface<ITblDrivenApplication>().PermissionsManager).GetGroup(Root.Rights.ViewCost);
 				costGroup.ResetPermissions();
 				foreach (string role in v) {
-					Thinkage.MainBoss.Database.Security.RightSet.RolePermission rp = security.RolePermissions(Thinkage.Libraries.DBILibrary.Security.TableRightType.Role, role);
+					Thinkage.MainBoss.Database.Security.RightSet.RolePermission rp = security.RolePermissions(Thinkage.Libraries.XAF.Database.Layout.Security.TableRightType.Role, role);
 					foreach (string p in rp.ViewCostPermissions)
 						costGroup.SetPermission(p, true);
 				}
@@ -774,7 +774,7 @@ namespace Thinkage.MainBoss.Application {
 			// Populate the list
 			System.Text.RegularExpressions.Regex shortNames = new System.Text.RegularExpressions.Regex("[a-z]"); // Remove all but Uppercase
 			foreach (string p in security.RoleNames) {
-				Thinkage.MainBoss.Database.Security.RightSet.RolePermission rp = security.RolePermissions(Thinkage.Libraries.DBILibrary.Security.TableRightType.Role, p);
+				Thinkage.MainBoss.Database.Security.RightSet.RolePermission rp = security.RolePermissions(Thinkage.Libraries.XAF.Database.Layout.Security.TableRightType.Role, p);
 				if (rp.ViewCostPermissions.Count == 0)
 					continue;
 				System.Text.StringBuilder item = new System.Text.StringBuilder();
@@ -813,7 +813,7 @@ namespace Thinkage.MainBoss.Application {
 				var manager = (MainBossPermissionsManager)TblDrivenMainBossApplication.Instance.GetInterface<ITblDrivenApplication>().PermissionsManager;
 				manager.ResetPermissions();
 				foreach (string role in v) {
-					Thinkage.MainBoss.Database.Security.RightSet.RolePermission rp = security.RolePermissions(Thinkage.Libraries.DBILibrary.Security.TableRightType.Role, role);
+					Thinkage.MainBoss.Database.Security.RightSet.RolePermission rp = security.RolePermissions(Thinkage.Libraries.XAF.Database.Layout.Security.TableRightType.Role, role);
 					foreach (string p in rp.TableRightsAsTablePermissions)
 						manager.GetGroup(Root.Rights.Table).SetPermission(p, true);
 					foreach (string p in rp.ViewCostPermissions)

@@ -1,7 +1,7 @@
 ﻿using System;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
 using Thinkage.Libraries.XAF.Database.Layout;
+using Thinkage.Libraries.XAF.Database.Service;
 
 namespace Thinkage.MainBoss.Database {
 	public class RepairDefaultTableForeignConstraintsUpgradeStep : DataUpgradeStep {

@@ -67,14 +67,6 @@
       <Project>{4c013dd4-7ae5-49ed-9a18-ce2204c9b508}</Project>
       <Name>Thinkage.Libraries.DBAccess</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary.MSSql\Thinkage.Libraries.DBILibrary.MSSql.csproj">
-      <Project>{71bfb1de-d9e5-48cc-87ba-bbde18496ab2}</Project>
-      <Name>Thinkage.Libraries.DBILibrary.MSSql</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary\Thinkage.Libraries.DBILibrary.csproj">
-      <Project>{9398f76e-d6fd-4194-9599-ce4b6512d5a2}</Project>
-      <Name>Thinkage.Libraries.DBILibrary</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Thinkage.Libraries.Presentation.MSWindows\Thinkage.Libraries.Presentation.MSWindows.csproj">
       <Project>{0032bcbc-be62-486d-a78a-8890fdbbc790}</Project>
       <Name>Thinkage.Libraries.Presentation.MSWindows</Name>

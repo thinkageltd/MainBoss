@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Thinkage.Libraries;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Permissions;
 using Thinkage.Libraries.Presentation;
 using Thinkage.MainBoss.Database;
@@ -153,7 +153,7 @@ namespace Thinkage.MainBoss.Controls {
 			pAttributes = AddSchemaCostTblLayoutNodeAttributesTbl.PermissionAttributesFromSchema(tbl.Schema).ToArray();
 		}
 
-		public static IEnumerable<TblLayoutNode.ICtorArg> PermissionAttributesFromSchema(Thinkage.Libraries.DBILibrary.DBI_Table schema) {
+		public static IEnumerable<TblLayoutNode.ICtorArg> PermissionAttributesFromSchema(Thinkage.Libraries.XAF.Database.Layout.DBI_Table schema) {
 			if (schema == null || schema.CostRights.Count == 0) {
 				return new TblLayoutNode.ICtorArg[] { };
 			}

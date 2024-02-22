@@ -1,6 +1,7 @@
 ﻿using Thinkage.Libraries;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Translation;
+using Thinkage.Libraries.XAF.Database.Service;
 
 namespace Thinkage.MainBoss.Database {
 	// TODO: This should probably not be done this way. XAFDB should be extended so that custom messages can be declared by providing their format string.

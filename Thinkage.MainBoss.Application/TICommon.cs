@@ -4,8 +4,9 @@ using Thinkage.MainBoss.Database;
 
 namespace Thinkage.MainBoss.Application {
 	using System;
-	using Thinkage.Libraries.DBILibrary;
+	using Thinkage.Libraries.XAF.Database.Layout;
 	using Thinkage.Libraries.Presentation;
+	using Thinkage.Libraries.XAF.Database.Service;
 	using Thinkage.MainBoss.Controls;
 	/// <summary>
 	/// A collection of commonly shared Tbl definitions for MainBoss Applications

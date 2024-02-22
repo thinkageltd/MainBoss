@@ -2,8 +2,9 @@
 
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.Libraries.XAF.UI;
 using Thinkage.MainBoss.Controls;
 
@@ -26,7 +27,7 @@ namespace Thinkage.MainBoss.MBUtility.ImportExport {
 			get {
 				// Use the database connection for serverProperties (must exist)
 				var databaseAppConnection = Thinkage.Libraries.Application.Instance.QueryInterface<IApplicationWithSingleDatabaseConnection>();
-				return databaseAppConnection != null ? databaseAppConnection.Session.Session.Server : new Thinkage.Libraries.DBILibrary.MSSql.SqlClient.SqlServer();
+				return databaseAppConnection != null ? databaseAppConnection.Session.Session.Server : new Thinkage.Libraries.XAF.Database.Service.MSSql.SqlClient.SqlServer();
 			}
 		}
 		#endregion

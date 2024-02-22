@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary.MSSql;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
 
 namespace Thinkage.MainBoss.Database {
 	/// <summary>

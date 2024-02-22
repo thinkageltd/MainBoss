@@ -9,8 +9,8 @@
 	<field name="DataBaseServer" type="string(minlength 1, 128, lines 0, trim both, nonnull)">
 	</field>
 	<field name="CredentialsAuthenticationMethod" type="integer(nonnull, min 0, max 3)" labelkey="Authentication">
-	  <!-- DBILibrary.AuthenticationMethod -->
-	  <extension name="controlprovider">Thinkage.Libraries.DBILibrary.AuthenticationCredentials.AuthenticationMethodProvider,Thinkage.Libraries.DBILibrary</extension>
+	  <!-- XAF.Database.Service.AuthenticationMethod -->
+	  <extension name="controlprovider">Thinkage.Libraries.XAF.Database.Service.AuthenticationCredentials.AuthenticationMethodProvider,Thinkage.Libraries.XAF.Database.Service</extension>
 	</field>
 	<field name="CredentialsPassword" type="string(minlength 0, maxlength 4096, lines 0, null)" labelkey="Password" >
 	  <!-- stored as encrypted Base64 encoded string (without line breaks) using System.Security.Cryptography.Protect on Current User  -->

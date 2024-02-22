@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Thinkage.Libraries;
 using Thinkage.Libraries.CommandLineParsing;
-using Thinkage.Libraries.DBILibrary;
-using Thinkage.Libraries.DBILibrary.MSSql;
+using Thinkage.Libraries.XAF.Database.Layout;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
 using Thinkage.Libraries.Service;
 using Thinkage.Libraries.Translation;
+using Thinkage.Libraries.XAF.Database.Service;
 
 namespace Thinkage.MainBoss.Database.Service {
 	/// <summary>

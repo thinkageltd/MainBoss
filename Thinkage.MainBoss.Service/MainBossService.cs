@@ -8,8 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Thinkage.Libraries;
 using Thinkage.Libraries.CommandLineParsing;
-using Thinkage.Libraries.DBILibrary.MSSql;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
 using Thinkage.Libraries.Service;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.MainBoss.Database;
 using Thinkage.MainBoss.Database.Service;
 
@@ -767,8 +768,8 @@ namespace Thinkage.MainBoss.Service {
 							throw serviceInfo.LastError;
 						string canAccess = KB.K("Unknown").Translate();
 						try {
-							var authentication = new Libraries.DBILibrary.AuthenticationCredentials();
-							DBConnection = new MB3Client.ConnectionDefinition(serviceInfo.DatabaseServer, serviceInfo.DatabaseName, Libraries.DBILibrary.AuthenticationCredentials.Default);
+							var authentication = new AuthenticationCredentials();
+							DBConnection = new MB3Client.ConnectionDefinition(serviceInfo.DatabaseServer, serviceInfo.DatabaseName, AuthenticationCredentials.Default);
 							using (var logging = ServiceUtilities.VerifyDatabaseAndAcquireLog(DBConnection, s)) {
 								if (logging != null)
 									canAccess = KB.K("Can Access").Translate();

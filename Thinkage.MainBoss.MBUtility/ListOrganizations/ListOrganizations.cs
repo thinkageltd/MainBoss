@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Text;
 using Thinkage.Libraries.Translation;
 using System;
+using Thinkage.Libraries.XAF.Database.Service;
+
 namespace Thinkage.MainBoss.MBUtility {
 	internal class ListOrganizationsVerb {
 		public class Definition : Thinkage.Libraries.CommandLineParsing.Optable, UtilityVerbDefinition {
@@ -85,7 +87,7 @@ namespace Thinkage.MainBoss.MBUtility {
 
 		private void Run() {
 			DBVersionHandler vh = new DBVersionHandler();
-			MainBossNamedOrganizationStorage connections = new MainBossNamedOrganizationStorage(Options.AllUsersOption.Value ? (Libraries.DBILibrary.IConnectionInformation) new SavedOrganizationSessionAllUsers.Connection(writeAccess:false) : new SavedOrganizationSession.Connection());
+			MainBossNamedOrganizationStorage connections = new MainBossNamedOrganizationStorage(Options.AllUsersOption.Value ? (IConnectionInformation) new SavedOrganizationSessionAllUsers.Connection(writeAccess:false) : new SavedOrganizationSession.Connection());
 			var names = new List<Names>();
 			var organization = new Column(KB.K("Organization"));
 			var application = new Column(KB.K("Application"));

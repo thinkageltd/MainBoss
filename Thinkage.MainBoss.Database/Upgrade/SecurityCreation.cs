@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Translation;
-using Thinkage.Libraries.DBILibrary.Security;
+using Thinkage.Libraries.XAF.Database.Layout.Security;
+using Thinkage.Libraries.XAF.Database.Service;
+
 namespace Thinkage.MainBoss.Database {
 	public class SecurityCreation {
 		public static readonly string RightSetLocation = KB.I("manifest://localhost/Thinkage.MainBoss.Database,Thinkage/MainBoss/Database/Schema/Security/rightset.xml");

@@ -1,11 +1,9 @@
 ﻿using Thinkage.Libraries;
 using Thinkage.Libraries.CommandLineParsing;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
 using Thinkage.Libraries.Presentation;
-using Thinkage.MainBoss.Database;
-using Thinkage.Libraries.DBILibrary.MSSql;
 using Thinkage.Libraries.XAF.Database.Service.MSSql;
+using Thinkage.MainBoss.Database;
 namespace Thinkage.MainBoss.MBUtility {
 	// Things we want to be able to do here:
 	// Add a user (given userName (code), windows User and optional Scope), group memberships

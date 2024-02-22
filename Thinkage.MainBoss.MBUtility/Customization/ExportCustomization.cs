@@ -1,7 +1,7 @@
 ﻿using Thinkage.Libraries.CommandLineParsing;
 using Thinkage.MainBoss.Database;
 using Thinkage.Libraries.Presentation;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using System.Collections.Generic;
 using System;
 using Thinkage.Libraries;

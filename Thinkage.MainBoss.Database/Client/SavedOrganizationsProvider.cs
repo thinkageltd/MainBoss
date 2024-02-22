@@ -4,9 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Win32;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
-using Thinkage.Libraries.DBILibrary.MSSql;
+using Thinkage.Libraries.XAF.Database.Layout;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
 using Thinkage.Libraries.TypeInfo;
+using Thinkage.Libraries.XAF.Database.Service;
 using static Thinkage.Libraries.DBAccess.DBDataSet;
 
 namespace Thinkage.MainBoss.Database {
@@ -29,7 +30,7 @@ namespace Thinkage.MainBoss.Database {
 				// Need to modify minor product version tag at end to the base '0' release where all original Organizations lists are kept until such time
 				// as we determine whether we should migrate the Organization list for each version release or not.
 			}
-			public override Libraries.DBILibrary.IServer CreateServer() {
+			public override IServer CreateServer() {
 				return new SavedOrganizationServer3();
 			}
 		}
@@ -44,7 +45,7 @@ namespace Thinkage.MainBoss.Database {
 				// Need to modify minor product version tag at end to the base '0' release where all original Organizations lists are kept until such time
 				// as we determine whether we should migrate the Organization list for each version release or not.
 			}
-			public override Libraries.DBILibrary.IServer CreateServer() {
+			public override IServer CreateServer() {
 				return new SavedOrganizationServer();
 			}
 		}
@@ -208,7 +209,7 @@ namespace Thinkage.MainBoss.Database {
 				RegistryKey tKey = PrepareItemForWrite(organization);
 				List<string> columns = new List<string>(tKey.GetValueNames());
 				if (!columns.Contains(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsAuthenticationMethod.Name))
-					tKey.SetValue(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsAuthenticationMethod.Name, authenticationMethodtoConverter(Thinkage.Libraries.DBILibrary.AuthenticationMethod.WindowsAuthentication), authenticationMethodValueKind);
+					tKey.SetValue(dsSavedOrganizations.Schema.T.Organizations.F.CredentialsAuthenticationMethod.Name, authenticationMethodtoConverter(AuthenticationMethod.WindowsAuthentication), authenticationMethodValueKind);
 				tKey.Close();
 			}
 			CloseItemEnumerable(organizations);
@@ -294,7 +295,7 @@ namespace Thinkage.MainBoss.Database {
 			DBIDataSet varData = ViewVariables(dsSavedOrganizations.Schema.V.DBVersion);
 			try {
 				varData[dsSavedOrganizations.Schema.V.DBVersion].Value = newVersion.ToString();
-				UpdateGivenVariables(Libraries.DBILibrary.Server.UpdateOptions.Normal, varData[dsSavedOrganizations.Schema.V.DBVersion]);
+				UpdateGivenVariables(ServerExtensions.UpdateOptions.Normal, varData[dsSavedOrganizations.Schema.V.DBVersion]);
 			}
 			catch (System.Exception) {
 				return new Version(0, 0, 0, 0);
@@ -351,7 +352,7 @@ namespace Thinkage.MainBoss.Database {
 											DBVersions[id] = dbInfo;
 											UITaskFactory.StartNew(() => // Notify the CacheManager of the updated values
 											{
-												OnRowChanged(dsSavedOrganizations.Schema.T.Organizations, id, Thinkage.Libraries.DBILibrary.Session.RowChangeTypes.AddedOrChanged);
+												OnRowChanged(dsSavedOrganizations.Schema.T.Organizations, id, SessionExtensions.RowChangeTypes.AddedOrChanged);
 											});
 										}
 									}
@@ -453,7 +454,7 @@ namespace Thinkage.MainBoss.Database {
 			public Connection()
 				: base() {
 			}
-			public override Libraries.DBILibrary.IServer CreateServer() {
+			public override IServer CreateServer() {
 				return new SavedOrganizationLocalAllUsersServer();
 			}
 		}
@@ -484,7 +485,7 @@ namespace Thinkage.MainBoss.Database {
 				// as we determine whether we should migrate the Organization list for each version release or not.
 				WriteAccessRequired = writeAccess;
 			}
-			public override Libraries.DBILibrary.IServer CreateServer() {
+			public override IServer CreateServer() {
 				return new SavedOrganizationServerAllUsers();
 			}
 			public readonly bool WriteAccessRequired;

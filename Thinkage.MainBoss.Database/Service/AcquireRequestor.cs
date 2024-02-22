@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Translation;
 
 namespace Thinkage.MainBoss.Database.Service {

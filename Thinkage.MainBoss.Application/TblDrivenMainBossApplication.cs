@@ -6,11 +6,12 @@ using System.Linq;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DataFlow;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.Presentation.MSWindows;
 using Thinkage.Libraries.Translation;
 using Thinkage.Libraries.TypeInfo;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.Libraries.XAF.UI;
 using Thinkage.MainBoss.Controls;
 using Thinkage.MainBoss.Database;
@@ -34,7 +35,7 @@ namespace Thinkage.MainBoss.Application {
 			get {
 				// Use the database connection for serverProperties (if exists)
 				var databaseAppConnection = Thinkage.Libraries.Application.Instance.QueryInterface<IApplicationWithSingleDatabaseConnection>();
-				return databaseAppConnection != null ? databaseAppConnection.Session.Session.Server : new Thinkage.Libraries.DBILibrary.MSSql.SqlClient.SqlServer();
+				return databaseAppConnection != null ? databaseAppConnection.Session.Session.Server : new Thinkage.Libraries.XAF.Database.Service.MSSql.SqlClient.SqlServer();
 			}
 		}
 		#endregion
@@ -553,7 +554,7 @@ namespace Thinkage.MainBoss.Application {
 		Thinkage.Libraries.DataFlow.DataTablePositioner dtp;
 		private void UserForPermissionsCheckingChanged() {
 			dtp.Changed -= new Thinkage.Libraries.DataFlow.DataChanged(dtp_Changed);
-			q.SetFilter(new Thinkage.Libraries.DBILibrary.SqlExpression(dsMB.Path.T.UserRole.F.UserID).Eq(Thinkage.Libraries.DBILibrary.SqlExpression.Constant(AppConnectionMixIn.UserRecordIDForPermissions)));
+			q.SetFilter(new SqlExpression(dsMB.Path.T.UserRole.F.UserID).Eq(SqlExpression.Constant(AppConnectionMixIn.UserRecordIDForPermissions)));
 			notifierBuffer.SetAllKeepUpdated(true);
 			dtp.Changed += new Thinkage.Libraries.DataFlow.DataChanged(dtp_Changed);
 		}

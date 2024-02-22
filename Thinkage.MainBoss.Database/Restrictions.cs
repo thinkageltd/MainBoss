@@ -2,7 +2,7 @@
 // Eventually this information should perhaps be represented as DBI objects and declared using extensions in the actual schema.
 // Ideally the Edit and Browse controls should consult this information in order to force some controls readonly, filter the values available in pickers,
 // and limit access to New operations where a forced value would violate the editor's picker's filter.
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Translation;
 namespace Thinkage.MainBoss.Database {
 	public static class MBRestrictions {

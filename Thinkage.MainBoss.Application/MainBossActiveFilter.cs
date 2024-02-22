@@ -3,8 +3,9 @@ using System.Collections.Generic;
 
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.Libraries.XAF.UI;
 using Thinkage.MainBoss.Controls;
 using Thinkage.MainBoss.Database;
@@ -23,7 +24,7 @@ namespace Thinkage.MainBoss.Application
 			public ActiveFilterEditLogic(IEditUI editUI, DBClient db, Tbl tbl, Settings.Container settingsContainer, EdtMode initialEditMode, object[][] initRowIDs, bool[] subsequentModeRestrictions, List<TblActionNode>[] initLists)
 				: base(editUI, db, tbl, settingsContainer, initialEditMode, initRowIDs, subsequentModeRestrictions, initLists) {
 			}
-			protected override object[] SaveRecord(Libraries.DBILibrary.Server.UpdateOptions updateOptions) {
+			protected override object[] SaveRecord(ServerExtensions.UpdateOptions updateOptions) {
 				// Do not call base.SaveRecord which assumes there is a DB client
 				// base.SaveRecord();
 				MainBossActiveFilter filter = (MainBossActiveFilter)Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithLastUpdateFilter>();

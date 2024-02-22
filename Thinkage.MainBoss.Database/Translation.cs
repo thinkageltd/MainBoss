@@ -6,7 +6,7 @@ using Thinkage.Libraries;
 using Thinkage.Libraries.Collections;
 using Thinkage.Libraries.DataFlow;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Translation;
 
 namespace Thinkage.MainBoss.Database {

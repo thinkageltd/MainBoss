@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.Translation;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.Libraries.XAF.UI;
 using Thinkage.MainBoss.Controls.Resources;
 using Thinkage.MainBoss.Database;
@@ -496,15 +497,15 @@ namespace Thinkage.MainBoss.Controls
 						}
 					);
 
-					Thinkage.Libraries.DBILibrary.Server.UpdateOptions updateOptions = Thinkage.Libraries.DBILibrary.Server.UpdateOptions.Normal;
+					ServerExtensions.UpdateOptions updateOptions = ServerExtensions.UpdateOptions.Normal;
 					for (; ; ) {
 						try {
 							dsMove.DB.Update(dsMove, updateOptions);
 						}
 						catch (DBConcurrencyException e) {
-							if (updateOptions == Libraries.DBILibrary.Server.UpdateOptions.Normal && Browser.BrowseUI.HandleConcurrencyError(Browser.DB, e)) {
+							if (updateOptions == ServerExtensions.UpdateOptions.Normal && Browser.BrowseUI.HandleConcurrencyError(Browser.DB, e)) {
 								// User wants to retry the delete even though changed
-								updateOptions = Libraries.DBILibrary.Server.UpdateOptions.NoConcurrencyCheck;
+								updateOptions = ServerExtensions.UpdateOptions.NoConcurrencyCheck;
 								continue;
 							}
 						}

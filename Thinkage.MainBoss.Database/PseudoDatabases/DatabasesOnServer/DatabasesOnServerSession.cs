@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Thinkage.Libraries.DBILibrary;
-using Thinkage.Libraries.DBILibrary.MSSql;
+using Thinkage.Libraries.XAF.Database.Layout;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
+using Thinkage.Libraries.XAF.Database.Service;
 
 namespace Thinkage.MainBoss.Database {
 	public class DatabasesOnServerSession : EnumerableDrivenSession<DatabaseOnServerInformation, DatabaseOnServerInformation> {

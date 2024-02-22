@@ -1,6 +1,8 @@
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation.MSWindows;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.Libraries.XAF.UI;
 using Thinkage.Libraries.XAF.UI.MSWindows;
 using Thinkage.MainBoss.Database;
@@ -97,11 +99,11 @@ namespace Thinkage.MainBoss.Application {
 							ipdo.Update(KB.K("Setting built-in MainBoss security."), 1);
 							using (dsMB ds = new dsMB(Upgrader.BasicDB)) {
 								SecurityCreation.CreateSecurityDataSet(ds, null, SecurityCreation.RightSetLocation);
-								ds.DB.Update(ds, Libraries.DBILibrary.Server.UpdateOptions.NoConcurrencyCheck);
+								ds.DB.Update(ds, ServerExtensions.UpdateOptions.NoConcurrencyCheck);
 							}
 							if (Upgrader.BasicDB.Session.EffectiveDBServerVersion >= new System.Version(10, 0, 0, 0)) { // only for server 2008 and higher; sorry 2005 server ...
 								ipdo.Update(KB.K("Updating Database Index Statistics."), 1);
-								var sqlCommand = new Thinkage.Libraries.DBILibrary.MSSql.MSSqlLiteralCommandSpecification(KB.I("EXEC sp_updatestats"));
+								var sqlCommand = new Thinkage.Libraries.XAF.Database.Service.MSSql.MSSqlLiteralCommandSpecification(KB.I("EXEC sp_updatestats"));
 								System.Text.StringBuilder output = new System.Text.StringBuilder();
 								try {
 									Upgrader.BasicDB.Session.ExecuteCommand(sqlCommand, output); // we don't examine output
@@ -132,7 +134,7 @@ namespace Thinkage.MainBoss.Application {
 								reportProgress.Update(KB.K("Setting built-in MainBoss security."), 1);
 								using (dsMB ds = new dsMB(upgradeDB)) {
 									SecurityCreation.CreateSecurityDataSet(ds, null, SecurityCreation.RightSetLocation);
-									ds.DB.Update(ds, Libraries.DBILibrary.Server.UpdateOptions.NoConcurrencyCheck);
+									ds.DB.Update(ds, Server.UpdateOptions.NoConcurrencyCheck);
 								}
 							});
 							return 0;
@@ -159,7 +161,7 @@ namespace Thinkage.MainBoss.Application {
 					Upgrader.BasicDB.PerformTransaction(false, delegate() {
 						using (dsMB ds = new dsMB(Upgrader.BasicDB)) {
 							SecurityCreation.CreateSecurityDataSet(ds, null, SecurityCreation.RightSetLocation);
-							ds.DB.Update(ds, Libraries.DBILibrary.Server.UpdateOptions.NoConcurrencyCheck);
+							ds.DB.Update(ds, ServerExtensions.UpdateOptions.NoConcurrencyCheck);
 						}
 					});
 				})));

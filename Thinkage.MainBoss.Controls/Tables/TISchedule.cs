@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Thinkage.Libraries;
 using Thinkage.Libraries.Collections;
 using Thinkage.Libraries.DataFlow;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.Translation;
 using Thinkage.Libraries.TypeInfo;
@@ -737,7 +737,7 @@ namespace Thinkage.MainBoss.Controls {
 				return new CompositeTbl(dsMB.Schema.T.PMGenerationBatch, TId.PlannedMaintenanceBatch,
 					new Tbl.IAttr[] {
 						new BTbl(
-							BTbl.ExpressionFilter(new Thinkage.Libraries.DBILibrary.SqlExpression(dsMB.Path.T.PMGenerationBatch.F.SessionID).IsNull()),
+							BTbl.ExpressionFilter(new SqlExpression(dsMB.Path.T.PMGenerationBatch.F.SessionID).IsNull()),
 							BTbl.ListColumn(dsMB.Path.T.PMGenerationBatch.F.EntryDate),
 							BTbl.ListColumn(dsMB.Path.T.PMGenerationBatch.F.EndDate)
 						)

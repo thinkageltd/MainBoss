@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Permissions;
 using Thinkage.Libraries.Translation;
 using Thinkage.Libraries.XAF.UI;
@@ -101,7 +101,7 @@ namespace Thinkage.MainBoss.Database {
 
 			System.Text.StringBuilder errors = new System.Text.StringBuilder();
 			foreach (string role in security.RoleNames) {
-				var rolePermission = security.RolePermissions(Thinkage.Libraries.DBILibrary.Security.TableRightType.Role, role);
+				var rolePermission = security.RolePermissions(Thinkage.Libraries.XAF.Database.Layout.Security.TableRightType.Role, role);
 				foreach (string costright in rolePermission.ViewCostPermissions) {
 					if (costright.Equals("*"))
 						continue;
@@ -121,9 +121,9 @@ namespace Thinkage.MainBoss.Database {
 					if (Root.Rights.Action.FindDirectChild(actionright) == null)
 						errors.AppendLine(Thinkage.Libraries.Strings.IFormat("Action right '{0}' referenced in role '{1}' is not defined in MB3Rights Action group ", actionright, role));
 				}
-				foreach (KeyValuePair<Thinkage.Libraries.DBILibrary.Security.TableRight, Thinkage.Libraries.DBILibrary.Security.TableRightName> kvp in rolePermission.TableRights) {
-					if (kvp.Key.Class != Thinkage.Libraries.DBILibrary.Security.TableRightType.Table
-						&& (kvp.Key.Rights & Thinkage.Libraries.DBILibrary.Security.TableRightName.Create) != 0)
+				foreach (KeyValuePair<Thinkage.Libraries.XAF.Database.Layout.Security.TableRight, Thinkage.Libraries.XAF.Database.Layout.Security.TableRightName> kvp in rolePermission.TableRights) {
+					if (kvp.Key.Class != Thinkage.Libraries.XAF.Database.Layout.Security.TableRightType.Table
+						&& (kvp.Key.Rights & Thinkage.Libraries.XAF.Database.Layout.Security.TableRightName.Create) != 0)
 						continue;
 					SchemasWithoutUsedTableRights.Remove(kvp.Key.Name);
 				}

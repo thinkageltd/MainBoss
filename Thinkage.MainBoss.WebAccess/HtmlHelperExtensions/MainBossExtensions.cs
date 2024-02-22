@@ -8,7 +8,7 @@
 	using Thinkage.Libraries.TypeInfo;
 	using System.Collections.Generic;
 	using System.Web.Routing;
-	using Thinkage.Libraries.DBILibrary;
+	using Thinkage.Libraries.XAF.Database.Layout;
 	/// <summary>
 	/// Extensions for building Html SPECIFIC to MainBoss
 	/// </summary>

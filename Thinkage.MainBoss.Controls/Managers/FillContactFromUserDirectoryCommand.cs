@@ -5,7 +5,7 @@ using System.Linq;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DataFlow;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.XAF.UI;
 using Thinkage.MainBoss.Database;

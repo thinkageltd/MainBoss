@@ -1,10 +1,10 @@
 using System;
 using System.Data;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using System.Collections.Generic;
 using Thinkage.Libraries.DBAccess;
 using Thinkage.Libraries;
-using Thinkage.Libraries.DBILibrary.MSSql;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
 using Thinkage.Libraries.Translation;
 
 namespace Thinkage.MainBoss.Database {

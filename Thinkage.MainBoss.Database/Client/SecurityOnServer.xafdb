@@ -3,8 +3,8 @@
   <table name="SecurityOnServer" defaults="false" log="false" id="Id" xid="DBUserName" labelkey="Authentication Credential">
 	<field name="Id" read="id(nonnull)" />
 	<field name="CredentialAuthenticationMethod" type="integer(nonnull, min 0, max 3)" labelkey="Authentication">
-	  <!-- DBILibrary.AuthenticationMethod -->
-	  <extension name="controlprovider">Thinkage.Libraries.DBILibrary.AuthenticationCredentials.AuthenticationMethodProvider,Thinkage.Libraries.DBILibrary</extension>
+	  <!-- XAF.Database.Service.AuthenticationMethod -->
+	  <extension name="controlprovider">Thinkage.Libraries.XAF.Database.Service.AuthenticationCredentials.AuthenticationMethodProvider,Thinkage.Libraries.XAF.Database.Service</extension>
 	</field>
 	<!-- DBUserName, LoginName and Password are flagged as nullable because depending on the AuthenticationMethod of the record, the field may be null (or not). Editors
 		 need to enforce required fields depending on the AuthenticationMethod-->

@@ -3,7 +3,7 @@ using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.DBAccess;
 using System.Collections.Generic;
 using Thinkage.MainBoss.Database;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.TypeInfo;
 using Thinkage.Libraries.DataFlow;
 

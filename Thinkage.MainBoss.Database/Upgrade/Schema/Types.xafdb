@@ -3,8 +3,8 @@
   <!--
 	This is the basic level types required required by the DBVersionHandler30 to do its thing.
   -->
-  <types uri="../../../Thinkage.Libraries.DBILibrary/Types.xafdb">
-	<else uri="manifest://localhost/Thinkage.Libraries.DBILibrary,Thinkage/Libraries/DBILibrary/Types.xafdb"/>
+  <types uri="../../../Thinkage.Libraries.XAF.Database.Layout/Types.xafdb">
+	<else uri="manifest://localhost/Thinkage.Libraries.XAF.Database.Layout,Thinkage/Libraries/XAF/Database/Layout/Types.xafdb"/>
   </types>
   <type name="RequiredVersionInfo" type="string(minlength 1, 23, lines 0, nonnull)" />
   <type name="UserName" type="string(minlength 1, 200, lines 0, trim both)" />

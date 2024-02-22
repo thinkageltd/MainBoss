@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Thinkage.Libraries;
 using Thinkage.Libraries.Collections;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Permissions;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.Presentation.MSWindows;

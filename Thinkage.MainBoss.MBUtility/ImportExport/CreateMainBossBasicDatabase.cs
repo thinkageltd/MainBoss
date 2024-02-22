@@ -5,8 +5,8 @@ using Thinkage.MainBoss.Database;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.DBAccess;
 using Thinkage.MainBoss.Controls;
-using Thinkage.Libraries.DBILibrary;
-using Thinkage.Libraries.DBILibrary.MSSql;
+using Thinkage.Libraries.XAF.Database.Layout;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
 using Thinkage.Libraries;
 using System;
 namespace Thinkage.MainBoss.MBUtility

@@ -1,9 +1,9 @@
 using System;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.DBAccess;
 using Thinkage.Libraries.Xml;
 using Thinkage.Libraries;
-using Thinkage.Libraries.DBILibrary.MSSql;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
 
 namespace Thinkage.MainBoss.Database {
 	public class MBUpgrader {

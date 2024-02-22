@@ -1,6 +1,8 @@
 ﻿using Thinkage.Libraries.CommandLineParsing;
 using Thinkage.MainBoss.Database;
 using System.Collections.Generic;
+using Thinkage.Libraries.XAF.Database.Service;
+
 namespace Thinkage.MainBoss.MBUtility {
 	internal class DeleteOrganizationVerb {
 		public class Definition : Optable, UtilityVerbDefinition {
@@ -35,7 +37,7 @@ namespace Thinkage.MainBoss.MBUtility {
 		}
 		private readonly Definition Options;
 		private void Run() {
-			Libraries.DBILibrary.IConnectionInformation connectionInfo;
+			IConnectionInformation connectionInfo;
 			if(Options.AllUsersOption.Value)
 				connectionInfo = new SavedOrganizationSessionAllUsers.Connection(writeAccess:true);
 			else

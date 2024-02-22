@@ -6,7 +6,7 @@ using Thinkage.Libraries;
 using Thinkage.Libraries.Translation;
 using Thinkage.Libraries.Service;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using System.Text.RegularExpressions;
 using System.DirectoryServices;
 using System.Collections.Generic;

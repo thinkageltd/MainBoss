@@ -5,7 +5,7 @@ using System.Net.Mail;
 using System.Text;
 using Thinkage.Libraries;
 using Thinkage.Libraries.Service;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 
 namespace Thinkage.MainBoss.Database.Service {
 	/// <summary>

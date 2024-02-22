@@ -1,21 +1,20 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Security.Principal;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 using Thinkage.Libraries;
 using Thinkage.Libraries.CommandLineParsing;
-using Thinkage.Libraries.DBILibrary;
 using Thinkage.Libraries.Permissions;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.Presentation.MSWindows;
 using Thinkage.Libraries.Service;
 using Thinkage.Libraries.Translation;
+using Thinkage.Libraries.XAF.Database.Layout;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.Libraries.XAF.UI.MSWindows;
 using Thinkage.MainBoss.Database;
 using Thinkage.MainBoss.Database.Service;
-using System.Data.SqlClient;
-using Thinkage.Libraries.DBILibrary.MSSql;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
 
 namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 	#region CommanLine Setup and Processing
@@ -232,7 +231,7 @@ namespace Thinkage.MainBoss.MainBossServiceConfiguration {
 				throw new GeneralException(e, KB.K("Cannot access service {0} on computer {1}; the computer may not be available or you may not have sufficient privileges."), dbParms.ServiceCode, dbParms.ServiceComputer);
 			}
 		}
-		protected void ObtainLog(SQLConnectionInfo sqlConnectionInfo) {
+		protected void ObtainLog(Libraries.XAF.Database.Service.MSSql.SQLConnectionInfo sqlConnectionInfo) {
 			try {
 				DBConnection = new MB3Client.ConnectionDefinition(sqlConnectionInfo.DatabaseServer, sqlConnectionInfo.DatabaseName, sqlConnectionInfo.Credentials);
 				DBSession = new MB3Client(DBConnection);

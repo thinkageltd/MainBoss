@@ -1,5 +1,5 @@
 ﻿using Thinkage.Libraries;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 
 namespace Thinkage.MainBoss.Database {
 	public class CommonExpressions {

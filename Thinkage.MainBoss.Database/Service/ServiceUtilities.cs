@@ -5,11 +5,12 @@ using System.Security.Principal;
 using System.Text.RegularExpressions;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
-using Thinkage.Libraries.DBILibrary.MSSql;
+using Thinkage.Libraries.XAF.Database.Layout;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
 using Thinkage.Libraries.Licensing;
 using Thinkage.Libraries.Service;
 using Thinkage.Libraries.TypeInfo;
+using Thinkage.Libraries.XAF.Database.Service;
 
 namespace Thinkage.MainBoss.Database.Service {
 	//
@@ -441,7 +442,7 @@ namespace Thinkage.MainBoss.Database.Service {
 		#region TryAccessToDatabase
 		public static GeneralException TryAccessToDatabase(ServiceConfiguration serviceConfiguration, ServiceParms parms) {
 			if (serviceConfiguration?.ConnectionInfo != null && string.Compare(serviceConfiguration.ConnectionInfo.ConnectionString, parms.ConnectionInfo.ConnectionString, true) != 0
-				&& serviceConfiguration.Credentials.Type != Libraries.DBILibrary.AuthenticationMethod.WindowsAuthentication) {
+				&& serviceConfiguration.Credentials.Type != AuthenticationMethod.WindowsAuthentication) {
 				// if the connection strings are different see if the one recorded in the service, will work.
 				// if it is windows authentication we cannot do the check.
 				try {

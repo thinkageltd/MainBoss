@@ -2,8 +2,8 @@
 using Thinkage.Libraries.Service;
 using Thinkage.MainBoss.Database;
 using Thinkage.MainBoss.Database.Service;
-using Thinkage.Libraries.DBILibrary;
-using Thinkage.Libraries.DBILibrary.MSSql;
+using Thinkage.Libraries.XAF.Database.Layout;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
 using Thinkage.MainBoss.Service;
 using System;
 using System.Linq;

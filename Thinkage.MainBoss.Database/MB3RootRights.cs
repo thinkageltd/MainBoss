@@ -1,5 +1,5 @@
 ﻿using Thinkage.Libraries.Permissions;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Translation;
 using Thinkage.Libraries;
 using System.Linq;

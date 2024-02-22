@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using Thinkage.Libraries;
 using Thinkage.Libraries.CommandLineParsing;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
-using Thinkage.Libraries.DBILibrary.MSSql;
 using Thinkage.Libraries.Translation;
+using Thinkage.Libraries.XAF.Database.Layout;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.Libraries.XAF.Database.Service.MSSql;
-using Thinkage.Libraries.XAF.UI;
 
 namespace Thinkage.MainBoss.Database {
 	/// <summary>
@@ -100,11 +98,11 @@ namespace Thinkage.MainBoss.Database {
 				return new BooleanOption("CompactBrowsers", KB.K("Make the browser screens more compact by not showing details of the selected record").Translate(), required);
 			}
 			public static KeywordValueOption CreateAuthenticationMethodOption(bool required) {
-				int l = Thinkage.Libraries.DBILibrary.AuthenticationCredentials.AuthenticationMethodProvider.Values.Length;
+				int l = AuthenticationCredentials.AuthenticationMethodProvider.Values.Length;
 				string[] choices = new string[l];
 				for (int i = l; --i >= 0;)
 					// Note that as with all other options, we use the untranslated text
-					choices[(int)Thinkage.Libraries.DBILibrary.AuthenticationCredentials.AuthenticationMethodProvider.Values[i]] = Thinkage.Libraries.DBILibrary.AuthenticationCredentials.AuthenticationMethodProvider.Labels[i].Translate(System.Globalization.CultureInfo.InvariantCulture);
+					choices[(int)AuthenticationCredentials.AuthenticationMethodProvider.Values[i]] = AuthenticationCredentials.AuthenticationMethodProvider.Labels[i].Translate(System.Globalization.CultureInfo.InvariantCulture);
 
 				return new KeywordValueOption(CredentialsAuthenticationMethodArgument,
 					KB.K("Server authentication method to use").Translate(), required,
@@ -950,7 +948,7 @@ namespace Thinkage.MainBoss.Database {
 				catch (System.Exception e) {
 					mb3db?.CloseDatabase();
 					db.CloseDatabase();
-					Libraries.DBILibrary.Server.DeleteDatabaseAfterFailedCompletion(server, connection.ConnectionInformation, e);
+					ServerExtensions.DeleteDatabaseAfterFailedCompletion(server, connection.ConnectionInformation, e);
 					throw;
 				}
 			}
@@ -1111,7 +1109,7 @@ namespace Thinkage.MainBoss.Database {
 				}
 			}
 			catch (System.Exception mainException) {
-				Libraries.DBILibrary.Server.DeleteDatabaseAfterFailedCompletion(server, connectionDefinition.ConnectionInformation, mainException);
+				ServerExtensions.DeleteDatabaseAfterFailedCompletion(server, connectionDefinition.ConnectionInformation, mainException);
 				throw new GeneralException(mainException, KB.K("Unable to restore database"));
 			}
 		}

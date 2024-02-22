@@ -6,11 +6,12 @@ using System.Text;
 using System.Collections.Generic;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Licensing;
 using Thinkage.Libraries.Translation;
 using Thinkage.Libraries.RDL2010;
 using Thinkage.Libraries.Sql;
+using Thinkage.Libraries.XAF.Database.Service;
 
 namespace Thinkage.MainBoss.Database {
 	/// <summary>
@@ -44,14 +45,14 @@ namespace Thinkage.MainBoss.Database {
 			}
 		}
 		public static string GetDatabaseSystemUser(DBClient db) {
-			return (string)Thinkage.Libraries.TypeInfo.StringTypeInfo.AsNativeType(db.Session.ExecuteCommandReturningScalar(new Libraries.TypeInfo.StringTypeInfo(0, 128, 0, false, false, false), new Libraries.DBILibrary.MSSql.MSSqlLiteralCommandSpecification("SELECT SYSTEM_USER")), typeof(string));
+			return (string)Thinkage.Libraries.TypeInfo.StringTypeInfo.AsNativeType(db.Session.ExecuteCommandReturningScalar(new Libraries.TypeInfo.StringTypeInfo(0, 128, 0, false, false, false), new Libraries.XAF.Database.Service.MSSql.MSSqlLiteralCommandSpecification("SELECT SYSTEM_USER")), typeof(string));
 		}
 		public static void ManageDatabaseUserCredential(DBClient db, string authenticationCredential, bool delete = false) {
-			Thinkage.Libraries.DBILibrary.MSSql.MSSqlLiteralCommandSpecification sqlCommand;
+			Thinkage.Libraries.XAF.Database.Service.MSSql.MSSqlLiteralCommandSpecification sqlCommand;
 			if (delete)
-				sqlCommand = new Thinkage.Libraries.DBILibrary.MSSql.MSSqlLiteralCommandSpecification(Strings.IFormat("exec [mbsp_DropDataBaseUser] {0}", SqlUtilities.SqlLiteral(authenticationCredential)));
+				sqlCommand = new Thinkage.Libraries.XAF.Database.Service.MSSql.MSSqlLiteralCommandSpecification(Strings.IFormat("exec [mbsp_DropDataBaseUser] {0}", SqlUtilities.SqlLiteral(authenticationCredential)));
 			else
-				sqlCommand = new Thinkage.Libraries.DBILibrary.MSSql.MSSqlLiteralCommandSpecification(Strings.IFormat("exec [mbsp_AddDataBaseUser] {0}", SqlUtilities.SqlLiteral(authenticationCredential)));
+				sqlCommand = new Thinkage.Libraries.XAF.Database.Service.MSSql.MSSqlLiteralCommandSpecification(Strings.IFormat("exec [mbsp_AddDataBaseUser] {0}", SqlUtilities.SqlLiteral(authenticationCredential)));
 			System.Text.StringBuilder output = new System.Text.StringBuilder();
 			db.Session.ExecuteCommand(sqlCommand, output);
 			if (output.Length > 0)
@@ -600,7 +601,7 @@ namespace Thinkage.MainBoss.Database {
 				dsMB.MeterReadingRow defaultMeterReadingRow = (dsMB.MeterReadingRow)ds.DB.EditSingleRow(ds, dsMB.Schema.T.MeterReading.Default, null);
 				defaultMeterReadingRow.SetReadOnlyColumn(dsMB.Schema.T.MeterReading.F.EffectiveReading, 0);
 
-				ds.DB.Update(ds, Thinkage.Libraries.DBILibrary.Server.UpdateOptions.InitialDefaults);
+				ds.DB.Update(ds, ServerExtensions.UpdateOptions.InitialDefaults);
 			}
 			#endregion
 			using (dsMB ds = new dsMB(mb3db)) {
@@ -1301,7 +1302,7 @@ namespace Thinkage.MainBoss.Database {
 				ds.V.BarCodeSymbology.Value = 0; // Thinkage.Libraries.Presentation.BarCodeSymbology.None
 				#endregion
 
-				ds.DB.Update(ds, Thinkage.Libraries.DBILibrary.Server.UpdateOptions.NoConcurrencyCheck);
+				ds.DB.Update(ds, ServerExtensions.UpdateOptions.NoConcurrencyCheck);
 
 				// Add circular references in Work Order Expense Models
 				workOrderExpenseModelRow.F.DefaultItemExpenseModelEntryID = workOrderExpenseModelEntryRow.F.Id;
@@ -1311,7 +1312,7 @@ namespace Thinkage.MainBoss.Database {
 				workOrderExpenseModelRow.F.DefaultPerJobOutsideExpenseModelEntryID = workOrderExpenseModelEntryRow.F.Id;
 				workOrderExpenseModelRow.F.DefaultMiscellaneousExpenseModelEntryID = workOrderExpenseModelEntryRow.F.Id;
 
-				ds.DB.Update(ds, Thinkage.Libraries.DBILibrary.Server.UpdateOptions.NoConcurrencyCheck);
+				ds.DB.Update(ds, ServerExtensions.UpdateOptions.NoConcurrencyCheck);
 			}
 		}
 		/// <summary>
@@ -1324,7 +1325,7 @@ namespace Thinkage.MainBoss.Database {
 				ds.EnsureDataTableExists(dsMB.Schema.T.License);
 				foreach (License l in licenses)
 					SetLicenseRow(ds.T.License.AddNewLicenseRow(), l);
-				ds.DB.Update(ds, Thinkage.Libraries.DBILibrary.Server.UpdateOptions.NoConcurrencyCheck);
+				ds.DB.Update(ds, ServerExtensions.UpdateOptions.NoConcurrencyCheck);
 			}
 		}
 		public static void SetLicenseRow(dsMB.LicenseRow licenserow, License license) {

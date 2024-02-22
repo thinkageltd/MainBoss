@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Translation;
 using System.Net;
 using System.Net.Sockets;

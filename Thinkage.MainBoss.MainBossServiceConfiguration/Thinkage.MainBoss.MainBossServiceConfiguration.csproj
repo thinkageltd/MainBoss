@@ -86,14 +86,6 @@
       <Project>{4C013DD4-7AE5-49ED-9A18-CE2204C9B508}</Project>
       <Name>Thinkage.Libraries.DBAccess</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary.MSSql\Thinkage.Libraries.DBILibrary.MSSql.csproj">
-      <Project>{71bfb1de-d9e5-48cc-87ba-bbde18496ab2}</Project>
-      <Name>Thinkage.Libraries.DBILibrary.MSSql</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary\Thinkage.Libraries.DBILibrary.csproj">
-      <Project>{9398F76E-D6FD-4194-9599-CE4B6512D5A2}</Project>
-      <Name>Thinkage.Libraries.DBILibrary</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Thinkage.Libraries.Presentation.MSWindows\Thinkage.Libraries.Presentation.MSWindows.csproj">
       <Project>{0032BCBC-BE62-486D-A78A-8890FDBBC790}</Project>
       <Name>Thinkage.Libraries.Presentation.MSWindows</Name>
@@ -109,6 +101,10 @@
     <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Layout\Thinkage.Libraries.XAF.Database.Layout.csproj">
       <Project>{D329682F-5E4C-496D-9DF4-E94896DAEC54}</Project>
       <Name>Thinkage.Libraries.XAF.Database.Layout</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Service.MSSql\Thinkage.Libraries.XAF.Database.Service.MSSql.csproj">
+      <Project>{1a451d90-ff1f-4446-a6c7-983422ca1103}</Project>
+      <Name>Thinkage.Libraries.XAF.Database.Service.MSSql</Name>
     </ProjectReference>
     <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Service\Thinkage.Libraries.XAF.Database.Service.csproj">
       <Project>{1BF2EC15-6F92-4CE1-AEB4-FBA8E3E147A1}</Project>

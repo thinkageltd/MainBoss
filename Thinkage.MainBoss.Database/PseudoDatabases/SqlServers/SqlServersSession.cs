@@ -4,7 +4,8 @@ using System.Data;
 using System.Linq;
 using Microsoft.Win32;
 using Thinkage.Libraries;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
+using Thinkage.Libraries.XAF.Database.Service;
 
 namespace Thinkage.MainBoss.Database {
 	public class SqlServersSession : EnumerableDrivenSession<DataRow, DataRow> {

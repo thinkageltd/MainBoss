@@ -4,8 +4,9 @@ using System.Threading;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DataFlow;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.MainBoss.Database;
 
 namespace Thinkage.MainBoss.Controls {
@@ -66,7 +67,7 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		private Source WorkOrderPickerSource;
 		private ICheckpointedObject Checkpointer;
-		protected override object[] SaveRecord(Libraries.DBILibrary.Server.UpdateOptions updateOptions) {
+		protected override object[] SaveRecord(ServerExtensions.UpdateOptions updateOptions) {
 			ICheckpointData checkpoint = Checkpointer.Checkpoint();
 			try {
 				if (State.EditRecordState == EditRecordStates.New) {

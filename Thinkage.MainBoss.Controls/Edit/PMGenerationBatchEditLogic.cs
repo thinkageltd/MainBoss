@@ -5,8 +5,10 @@ using Thinkage.Libraries;
 using Thinkage.Libraries.Collections;
 using Thinkage.Libraries.DataFlow;
 using Thinkage.Libraries.DBAccess;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.Presentation.MSWindows;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.Libraries.XAF.UI;
 using Thinkage.MainBoss.Database;
 
@@ -284,7 +286,7 @@ namespace Thinkage.MainBoss.Controls {
 			// As far as the RecordManager is concerned, the buffer had no changes before we started and there will be no changes once we're done.
 			PMGenerator.DeleteUncommittedBatch(BatchRowBeingEdited);
 			try {
-				DB.Update(DataSet, Libraries.DBILibrary.Server.UpdateOptions.NoConcurrencyCheck);
+				DB.Update(DataSet, ServerExtensions.UpdateOptions.NoConcurrencyCheck);
 			}
 			catch {
 				// Even though we failed to tell SQL about it, we still want the rows gone from the dataset.
@@ -351,7 +353,7 @@ namespace Thinkage.MainBoss.Controls {
 		// As a result per-record operations which would normally belong in SaveRecord can be done in SaveMultipleRecords instead.
 		// In this case, the Commit operation needs its own transaction(s) to reserve sequence numbers, and so cannot occur within SaveRecord (which is already contained in the
 		// transaction created by EditLogic.SaveMultipleRecords). To avoid this, we move the Commit call to SaveMultipleRecords.
-		protected override void SaveMultipleRecords(Libraries.DBILibrary.Server.UpdateOptions updateOptions, EditorState postSaveState, IProgress<IProgressDisplay> rP = null, CancellationToken cT = default(CancellationToken)) {
+		protected override void SaveMultipleRecords(ServerExtensions.UpdateOptions updateOptions, EditorState postSaveState, IProgress<IProgressDisplay> rP = null, CancellationToken cT = default(CancellationToken)) {
 			// This is called once per Save command, from outside the transaction.
 			ICheckpointData PMGeneratorCheckpoint = PMGenerator.Checkpoint();
 			System.Text.StringBuilder resultMessage = new System.Text.StringBuilder();

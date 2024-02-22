@@ -114,14 +114,6 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary.MSSql\Thinkage.Libraries.DBILibrary.MSSql.csproj">
-      <Project>{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}</Project>
-      <Name>Thinkage.Libraries.DBILibrary.MSSql</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary\Thinkage.Libraries.DBILibrary.csproj">
-      <Project>{9398F76E-D6FD-4194-9599-CE4B6512D5A2}</Project>
-      <Name>Thinkage.Libraries.DBILibrary</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Thinkage.Libraries.Sql\Thinkage.Libraries.Sql.csproj">
       <Project>{f83bdc83-15eb-4778-a127-80bb86a7ace3}</Project>
       <Name>Thinkage.Libraries.Sql</Name>

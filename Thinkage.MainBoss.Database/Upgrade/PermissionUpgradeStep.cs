@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary.MSSql;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Translation;
+using Thinkage.Libraries.XAF.Database.Service;
 
 namespace Thinkage.MainBoss.Database {
 	#region PermissionsUpgradeStep - Special Permission upgrade step for MainBoss

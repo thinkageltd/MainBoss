@@ -340,10 +340,10 @@ namespace Thinkage.MainBoss.Controls {
 					null,
 					CompositeView.ChangeEditTbl(ManualMeterReadingEditTbl,
 						//CompositeView.IdentificationOverride(TId.MeterReading),
-						CompositeView.AddRecognitionCondition(new Libraries.DBILibrary.SqlExpression(dsMB.Path.T.MeterReading.F.WorkOrderID).IsNull()),
+						CompositeView.AddRecognitionCondition(new Libraries.XAF.Database.Layout.SqlExpression(dsMB.Path.T.MeterReading.F.WorkOrderID).IsNull()),
 						CompositeView.ExportNewVerb(true)),
 					CompositeView.ChangeEditTbl(WorkOrderMeterReadingEditTbl,
-						CompositeView.AddRecognitionCondition(new Libraries.DBILibrary.SqlExpression(dsMB.Path.T.MeterReading.F.WorkOrderID).IsNotNull()),
+						CompositeView.AddRecognitionCondition(new Libraries.XAF.Database.Layout.SqlExpression(dsMB.Path.T.MeterReading.F.WorkOrderID).IsNotNull()),
 						NoNewMode
 						//CompositeView.IdentificationOverride(TId.MeterReading),
 						)

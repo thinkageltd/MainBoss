@@ -2,7 +2,7 @@
 using System.Xml;
 using System.Linq;
 using Thinkage.Libraries;
-using Thinkage.Libraries.DBILibrary.Security;
+using Thinkage.Libraries.XAF.Database.Layout.Security;
 using Thinkage.Libraries.Xml;
 
 namespace Thinkage.MainBoss.Database.Security
@@ -349,14 +349,14 @@ namespace Thinkage.MainBoss.Database.Security
 	{
 		#region Properties
 		public NameAndNameSpaceCollection Rights;
-		private Thinkage.Libraries.DBILibrary.DBI_Database pDatabaseSchema;
+		private Libraries.XAF.Database.Layout.DBI_Database pDatabaseSchema;
 		#endregion
 		#region Constructor
-		public RightSet(Thinkage.Libraries.DBILibrary.DBI_Database databaseSchema, string xmlInputUri)
+		public RightSet(Libraries.XAF.Database.Layout.DBI_Database databaseSchema, string xmlInputUri)
 		{
 			pDatabaseSchema = databaseSchema;
 #if DEBUG
-			foreach (Thinkage.Libraries.DBILibrary.DBI_Table t in pDatabaseSchema.Tables)
+			foreach (Libraries.XAF.Database.Layout.DBI_Table t in pDatabaseSchema.Tables)
 				TablesWithoutAnyPermissions.Add(t.Name);
 			TablesWithoutAnyPermissions.Remove("__Variables");
 #endif
@@ -666,7 +666,7 @@ namespace Thinkage.MainBoss.Database.Security
 											ni.Verified = trp.Key.Verified;
 											TablesWithoutAnyPermissions.Remove(trp.Key.Name);
 											if ((resultingRight & TableRightName.EditDefault) != 0) {
-												Thinkage.Libraries.DBILibrary.DBI_Table t = pDatabaseSchema.Tables[trp.Key.Name];
+												Libraries.XAF.Database.Layout.DBI_Table t = pDatabaseSchema.Tables[trp.Key.Name];
 												if (t != null && t.HasDefaults)
 													TablesWithoutAnyPermissions.Remove(t.Default.Name);
 											}

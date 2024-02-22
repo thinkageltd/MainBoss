@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Principal;
 using Thinkage.Libraries;
 using Thinkage.Libraries.CommandLineParsing;
-using Thinkage.Libraries.DBILibrary.MSSql;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
 using Thinkage.Libraries.Service;
 using Thinkage.MainBoss.Database.Service;
 

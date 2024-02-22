@@ -141,7 +141,7 @@ namespace Thinkage.MainBoss.WebAccess.Models {
 		private Guid? FindUnitLocationFromExternalTag(string externalTag, dsMB dataSetToSearchIn) {
 			if(externalTag == null)
 				return null;
-			var row = (dsMB.RelativeLocationRow)dataSetToSearchIn.DB.ViewAdditionalRow(dataSetToSearchIn, dsMB.Schema.T.RelativeLocation, new Libraries.DBILibrary.SqlExpression(dsMB.Path.T.RelativeLocation.F.ExternalTag).Eq(Libraries.DBILibrary.SqlExpression.Constant(externalTag)));
+			var row = (dsMB.RelativeLocationRow)dataSetToSearchIn.DB.ViewAdditionalRow(dataSetToSearchIn, dsMB.Schema.T.RelativeLocation, new Libraries.XAF.Database.Layout.SqlExpression(dsMB.Path.T.RelativeLocation.F.ExternalTag).Eq(Libraries.XAF.Database.Layout.SqlExpression.Constant(externalTag)));
 			if(row == null)
 				return null;
 			return row.F.LocationID;

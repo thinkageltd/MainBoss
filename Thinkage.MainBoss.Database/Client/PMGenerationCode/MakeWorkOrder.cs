@@ -4,9 +4,10 @@ using System.Data;
 using Thinkage.Libraries;
 using Thinkage.Libraries.Collections;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.TypeInfo;
 using Thinkage.Libraries.DataFlow;
+using Thinkage.Libraries.XAF.Database.Service;
 
 namespace Thinkage.MainBoss.Database {
 	public class PurchaseOrderBuilder : ICheckpointedObject, IDisposable {

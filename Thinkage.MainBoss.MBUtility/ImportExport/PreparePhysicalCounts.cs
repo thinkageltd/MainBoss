@@ -6,7 +6,7 @@ using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.DBAccess;
 using Thinkage.MainBoss.Controls;
 using System;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Translation;
 using Thinkage.Libraries.DataFlow;
 using System.Collections.Generic;

@@ -181,15 +181,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.MainBoss.MBUtility
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.MainBoss.Controls", "Thinkage.MainBoss.Controls\Thinkage.MainBoss.Controls.csproj", "{A599B818-5F91-4113-8978-8AEC50046882}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.Libraries.DBILibrary", "Thinkage.Libraries.DBILibrary\Thinkage.Libraries.DBILibrary.csproj", "{9398F76E-D6FD-4194-9599-CE4B6512D5A2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.Libraries.Presentation", "Thinkage.Libraries.Presentation\Thinkage.Libraries.Presentation.csproj", "{DED2C505-EF02-483C-95A6-F2AD5B60A081}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.Libraries.XAF.Database.Service.MSSql", "Thinkage.Libraries.XAF.Database.Service.MSSql\Thinkage.Libraries.XAF.Database.Service.MSSql.csproj", "{1A451D90-FF1F-4446-A6C7-983422CA1103}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.Libraries.Presentation.MSWindows", "Thinkage.Libraries.Presentation.MSWindows\Thinkage.Libraries.Presentation.MSWindows.csproj", "{0032BCBC-BE62-486D-A78A-8890FDBBC790}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.Libraries.DBILibrary.MSSql", "Thinkage.Libraries.DBILibrary.MSSql\Thinkage.Libraries.DBILibrary.MSSql.csproj", "{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinkage.MainBoss.Service", "Thinkage.MainBoss.Service\Thinkage.MainBoss.Service.csproj", "{5CE02DDB-C336-4416-848E-454325F3FB0F}"
 EndProject
@@ -1117,16 +1113,6 @@ Global
 		{A599B818-5F91-4113-8978-8AEC50046882}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A599B818-5F91-4113-8978-8AEC50046882}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A599B818-5F91-4113-8978-8AEC50046882}.Release|x86.ActiveCfg = Release|Any CPU
-		{9398F76E-D6FD-4194-9599-CE4B6512D5A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9398F76E-D6FD-4194-9599-CE4B6512D5A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9398F76E-D6FD-4194-9599-CE4B6512D5A2}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{9398F76E-D6FD-4194-9599-CE4B6512D5A2}.Desktop|Any CPU.ActiveCfg = Desktop|Any CPU
-		{9398F76E-D6FD-4194-9599-CE4B6512D5A2}.Desktop|Any CPU.Build.0 = Desktop|Any CPU
-		{9398F76E-D6FD-4194-9599-CE4B6512D5A2}.Desktop|x86.ActiveCfg = Desktop|Any CPU
-		{9398F76E-D6FD-4194-9599-CE4B6512D5A2}.Desktop|x86.Build.0 = Desktop|Any CPU
-		{9398F76E-D6FD-4194-9599-CE4B6512D5A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9398F76E-D6FD-4194-9599-CE4B6512D5A2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9398F76E-D6FD-4194-9599-CE4B6512D5A2}.Release|x86.ActiveCfg = Release|Any CPU
 		{DED2C505-EF02-483C-95A6-F2AD5B60A081}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DED2C505-EF02-483C-95A6-F2AD5B60A081}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DED2C505-EF02-483C-95A6-F2AD5B60A081}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -1157,16 +1143,6 @@ Global
 		{0032BCBC-BE62-486D-A78A-8890FDBBC790}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0032BCBC-BE62-486D-A78A-8890FDBBC790}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0032BCBC-BE62-486D-A78A-8890FDBBC790}.Release|x86.ActiveCfg = Release|Any CPU
-		{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}.Desktop|Any CPU.ActiveCfg = Desktop|Any CPU
-		{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}.Desktop|Any CPU.Build.0 = Desktop|Any CPU
-		{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}.Desktop|x86.ActiveCfg = Desktop|Any CPU
-		{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}.Desktop|x86.Build.0 = Desktop|Any CPU
-		{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}.Release|x86.ActiveCfg = Release|Any CPU
 		{5CE02DDB-C336-4416-848E-454325F3FB0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5CE02DDB-C336-4416-848E-454325F3FB0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CE02DDB-C336-4416-848E-454325F3FB0F}.Debug|x86.ActiveCfg = Debug|Any CPU

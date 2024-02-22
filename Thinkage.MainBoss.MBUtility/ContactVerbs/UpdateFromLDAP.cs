@@ -1,17 +1,16 @@
-﻿using Thinkage.Libraries;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Mail;
+using System.Text.RegularExpressions;
+using Thinkage.Libraries;
 using Thinkage.Libraries.CommandLineParsing;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
 using Thinkage.Libraries.Presentation;
+using Thinkage.Libraries.XAF.Database.Layout;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.MainBoss.Database;
 using Thinkage.MainBoss.Database.Service;
-using Thinkage.Libraries.DBILibrary.MSSql;
-using Thinkage.Libraries.XAF.Database.Service.MSSql;
-using System.Linq;
-using System.Collections.Generic;
-using System.Net.Mail;
-using System;
-using System.Text.RegularExpressions;
 
 namespace Thinkage.MainBoss.MBUtility {
 	// This command arranges that the current Windows user have MB permissions at least as large as those granted to the creator of a new database.

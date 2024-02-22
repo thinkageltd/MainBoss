@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using System.Linq;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary.MSSql;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
 using Thinkage.MainBoss.Database;
+using Thinkage.Libraries.XAF.Database.Service;
 
 namespace Thinkage.MainBoss.MainBoss {
 	public class SecurityOnServerSession : EnumerableDrivenSessionWithUpdate<SqlClient.SqlServer.SecurityOnServerInformation, SqlClient.SqlServer.SecurityOnServerInformation> {
@@ -229,7 +230,7 @@ namespace Thinkage.MainBoss.MainBoss {
 			else
 				return SqlClient.SqlServer.ListDatabaseUsers(ConnectionObject.SqlDBClient, KB.I("MainBoss"));
 		}
-		public override int UpdateGivenRowsInSingleTable(DBI_Table dbit, DataRow[] rows, Server.UpdateOptions options) {
+		public override int UpdateGivenRowsInSingleTable(DBI_Table dbit, DataRow[] rows, ServerExtensions.UpdateOptions options) {
 			int changedRowCount = 0;
 			// Quick check if we have nothing to do, then exit immediately
 			if (rows.Length == 0)

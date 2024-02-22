@@ -1,4 +1,4 @@
-﻿using Thinkage.Libraries.DBILibrary.MSSql;
+﻿using Thinkage.Libraries.XAF.Database.Service.MSSql;
 
 namespace WOResourceEntities {
 	/// <summary>

@@ -4,7 +4,9 @@ using System.Threading;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DataFlow;
 using Thinkage.Libraries.DBAccess;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
+using Thinkage.Libraries.XAF.Database.Service;
 
 namespace Thinkage.MainBoss.Controls
 {
@@ -48,7 +50,7 @@ namespace Thinkage.MainBoss.Controls
 				return base.SaveTransactionIsolationLevel;
 			}
 		}
-		protected override void SaveMultipleRecords(Libraries.DBILibrary.Server.UpdateOptions updateOptions, EditorState postSaveState, IProgress<IProgressDisplay> rP = null, CancellationToken cT = default(CancellationToken)) {
+		protected override void SaveMultipleRecords(ServerExtensions.UpdateOptions updateOptions, EditorState postSaveState, IProgress<IProgressDisplay> rP = null, CancellationToken cT = default(CancellationToken)) {
 			switch (State.EditRecordState) {
 			default:
 				base.SaveMultipleRecords(updateOptions, postSaveState, rP, cT);
@@ -68,7 +70,7 @@ namespace Thinkage.MainBoss.Controls
 				break;
 			}
 		}
-		protected override object[] SaveRecord(Libraries.DBILibrary.Server.UpdateOptions updateOptions) {
+		protected override object[] SaveRecord(ServerExtensions.UpdateOptions updateOptions) {
 			switch (State.EditRecordState) {
 			case EditRecordStates.Defaults:
 				// Need to determine if the user has changed the sequence counter, and if so, clear out the spoils table.

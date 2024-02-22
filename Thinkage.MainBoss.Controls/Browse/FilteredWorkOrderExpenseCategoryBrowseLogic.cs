@@ -1,5 +1,5 @@
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
 using Thinkage.MainBoss.Database;
 
@@ -36,7 +36,7 @@ namespace Thinkage.MainBoss.Controls
 				ExpenseModelIDParameter.ParameterChanged += NotifyServerFilterChanged;
 			}
 			public readonly FilterParameter ExpenseModelIDParameter;
-			protected override Thinkage.Libraries.DBILibrary.SqlExpression InnerServerFilter {
+			protected override Thinkage.Libraries.XAF.Database.Layout.SqlExpression InnerServerFilter {
 				get {
 					if (ExpenseModelIDParameter.GetValue() == null)
 						return SqlExpression.Constant(true);

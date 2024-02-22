@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Thinkage.Libraries;
 using Thinkage.Libraries.CommandLineParsing;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.Translation;
 using Thinkage.MainBoss.Controls;
@@ -336,7 +336,7 @@ namespace Thinkage.MainBoss.WebApi.Models
 		// This is the only way to auto generate the documentation with Build XmlDocumentation output option on.
 		#endregion
 		#region RepositoryGeneration
-		string RepositoryTemplate = KB.I(@"using Thinkage.Libraries.DBILibrary;
+		string RepositoryTemplate = KB.I(@"using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.MainBoss.Database;
 namespace Thinkage.MainBoss.WebApi.Models
 {{

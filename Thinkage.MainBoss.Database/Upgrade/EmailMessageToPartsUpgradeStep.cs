@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary.MSSql;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Service.MSSql;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Translation;
 using System.Linq;
 using Dart.Mail;
+using Thinkage.Libraries.XAF.Database.Service;
+
 namespace Thinkage.MainBoss.Database
 {
 	public class EmailMessageToPartsUpgradeStep : DataUpgradeStep
@@ -75,7 +77,7 @@ namespace Thinkage.MainBoss.Database
 							erequestrow.Delete(); // can't skip it, the MailHeader is a required field, and it may not be set; or something else is crap; we just 'throw the message away'
 						}
 						finally {
-							dsEmail.DB.Update(dsEmail, Libraries.DBILibrary.Server.UpdateOptions.Normal);
+							dsEmail.DB.Update(dsEmail, ServerExtensions.UpdateOptions.Normal);
 						}
 					} // else? report what?
 				}

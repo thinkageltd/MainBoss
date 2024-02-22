@@ -1,7 +1,7 @@
 ﻿using Thinkage.Libraries;
 using Thinkage.Libraries.DataFlow;
 using Thinkage.Libraries.DBAccess;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.GIS;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.XAF.UI;
@@ -68,7 +68,7 @@ namespace Thinkage.MainBoss.Controls {
 #if !SetTopTakesSortOrder
 				CommandBatchSpecification batch = new CommandBatchSpecification();
 				NormalParameterSpecification param = batch.CreateNormalParameter(dsMB.Schema.T.Location.Id.EffectiveType);
-				batch.Commands.Add(new Libraries.DBILibrary.MSSql.MSSqlLiteralCommandSpecification(Strings.IFormat(@"
+				batch.Commands.Add(new Libraries.XAF.Database.Service.MSSql.MSSqlLiteralCommandSpecification(Strings.IFormat(@"
 							select top 1 L.GISLocation
 								from Location as L
 								join LocationContainment as LC on LC.ContainingLocationID = L.ID

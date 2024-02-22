@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using Thinkage.Libraries;
 using Thinkage.Libraries.DBAccess;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Presentation;
 using Thinkage.Libraries.Translation;
 using Thinkage.Libraries.TypeInfo;
+using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.Libraries.XAF.UI;
 using Thinkage.MainBoss.Database;
 
@@ -125,7 +127,7 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		#endregion
 		#region Record-save override
-		protected override object[] SaveRecord(Libraries.DBILibrary.Server.UpdateOptions updateOptions) {
+		protected override object[] SaveRecord(ServerExtensions.UpdateOptions updateOptions) {
 			ICheckpointData woGeneratorData = woGenerator.Checkpoint();
 			try {
 				woGenerator.PopulateChildLookupTables();

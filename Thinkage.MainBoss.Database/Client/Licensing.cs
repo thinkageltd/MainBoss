@@ -1,7 +1,7 @@
 using Thinkage.Libraries.DBAccess;
 using Thinkage.Libraries.Licensing;
 using Thinkage.Libraries.Translation;
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using System.Collections.Generic;
 using Thinkage.Libraries;
 

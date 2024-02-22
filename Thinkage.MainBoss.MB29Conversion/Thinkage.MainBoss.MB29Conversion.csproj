@@ -109,17 +109,13 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary.MSSql\Thinkage.Libraries.DBILibrary.MSSql.csproj">
-      <Project>{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}</Project>
-      <Name>Thinkage.Libraries.DBILibrary.MSSql</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary\Thinkage.Libraries.DBILibrary.csproj">
-      <Project>{9398F76E-D6FD-4194-9599-CE4B6512D5A2}</Project>
-      <Name>Thinkage.Libraries.DBILibrary</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Service.MSSql\Thinkage.Libraries.XAF.Database.Service.MSSql.csproj">
       <Project>{1A451D90-FF1F-4446-A6C7-983422CA1103}</Project>
       <Name>Thinkage.Libraries.XAF.Database.Service.MSSql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Thinkage.Libraries.XAF.Database.Service\Thinkage.Libraries.XAF.Database.Service.csproj">
+      <Project>{1bf2ec15-6f92-4ce1-aeb4-fba8e3e147a1}</Project>
+      <Name>Thinkage.Libraries.XAF.Database.Service</Name>
     </ProjectReference>
     <ProjectReference Include="..\Thinkage.MainBoss.Database\Thinkage.MainBoss.Database.csproj">
       <Project>{1302BBDA-FB21-415F-9ECF-678BE8F5F79E}</Project>

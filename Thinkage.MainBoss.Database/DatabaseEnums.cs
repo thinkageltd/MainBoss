@@ -65,7 +65,7 @@ namespace Thinkage.MainBoss.Database {
 	/// </summary>
 	public static class Root {
 		public static readonly MB3RootRights Rights = new MB3RootRights();
-		public static Libraries.DBILibrary.DBI_Database RightsSchema = dsMB.Schema;
+		public static Libraries.XAF.Database.Layout.DBI_Database RightsSchema = dsMB.Schema;
 	}
 
 	#endregion

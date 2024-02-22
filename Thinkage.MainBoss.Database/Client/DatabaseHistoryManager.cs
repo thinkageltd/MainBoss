@@ -1,4 +1,4 @@
-using Thinkage.Libraries.DBILibrary;
+using Thinkage.Libraries.XAF.Database.Layout;
 using Thinkage.Libraries.Translation;
 using System;
 using Thinkage.Libraries.DBAccess;

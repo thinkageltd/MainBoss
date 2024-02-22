@@ -95,14 +95,6 @@
     <Compile Include="WebApi\GenerateWebApi.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary.MSSql\Thinkage.Libraries.DBILibrary.MSSql.csproj">
-      <Project>{71BFB1DE-D9E5-48CC-87BA-BBDE18496AB2}</Project>
-      <Name>Thinkage.Libraries.DBILibrary.MSSql</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Thinkage.Libraries.DBILibrary\Thinkage.Libraries.DBILibrary.csproj">
-      <Project>{9398F76E-D6FD-4194-9599-CE4B6512D5A2}</Project>
-      <Name>Thinkage.Libraries.DBILibrary</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Thinkage.Libraries.Presentation\Thinkage.Libraries.Presentation.csproj">
       <Project>{DED2C505-EF02-483C-95A6-F2AD5B60A081}</Project>
       <Name>Thinkage.Libraries.Presentation</Name>
