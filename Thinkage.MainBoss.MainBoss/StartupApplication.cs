@@ -1,3 +1,4 @@
+using System;
 using Thinkage.Libraries;
 using Thinkage.Libraries.CommandLineParsing;
 using Thinkage.Libraries.Presentation.MSWindows;
@@ -13,6 +14,7 @@ namespace Thinkage.MainBoss.MainBoss {
 		[System.STAThread]
 		static void Main(string[] args) {
 			try {
+				AppDomain.CurrentDomain.SetPrincipalPolicy(System.Security.Principal.PrincipalPolicy.WindowsPrincipal);
 				new StartupApplication(args);
 				Thinkage.Libraries.Application.Run();
 			}

@@ -10,7 +10,6 @@ using Thinkage.Libraries.TypeInfo;
 using Thinkage.Libraries.XAF.Database.Service;
 using Thinkage.Libraries.XAF.UI;
 using Thinkage.MainBoss.Database;
-using System.Drawing;
 
 namespace Thinkage.MainBoss.Controls {
 	// The permissions Loading code in DBVersionHandler/MB3Application does not support groups at all.
@@ -136,7 +135,7 @@ namespace Thinkage.MainBoss.Controls {
 			private readonly TypeEditTextHandler UnderlyingHandler;
 
 			public SizingInformation SizingInformation => UnderlyingHandler.SizingInformation;
-			public StringAlignment PreferredAlignment => UnderlyingHandler.PreferredAlignment;
+			public Libraries.Drawing.StringAlignment PreferredAlignment => UnderlyingHandler.PreferredAlignment;
 			public event Notification FormattingChanged { add { UnderlyingHandler.FormattingChanged += value; } remove { UnderlyingHandler.FormattingChanged -= value; } }
 			public string Format(object val) => UnderlyingHandler.Format(val);
 			public string FormatForEdit(object val) => UnderlyingHandler.FormatForEdit(val);
