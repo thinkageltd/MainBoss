@@ -702,7 +702,7 @@ namespace Thinkage.MainBoss.MainBoss {
 		private static readonly Dictionary<Key, string> LicenseInformationToSend = new Dictionary<Key, string>();
 		private static readonly Key EmailAddressLabel = KB.K("Email Address");
 		private static readonly Key LicensesToRequestLabel = KB.K("Licenses To Request");
-		private static readonly EditorCalculatedInitValue.CalculationDelegate GetLicenseDisplay = delegate (object[] inputs) {
+		private static readonly CalculatedInitValue.CalculationDelegate GetLicenseDisplay = delegate (object[] inputs) {
 
 			//TODO: build some mechanism to put a Dictionary of <Keys, Strings> one per line in the display. Get this dictionary of 'information' from some common place and format a multiline display of information
 			// Information to be supplied, customer id if known, database and server name, current licenses, email address.

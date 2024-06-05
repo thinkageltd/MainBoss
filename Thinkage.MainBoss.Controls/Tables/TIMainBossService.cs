@@ -131,13 +131,13 @@ namespace Thinkage.MainBoss.Controls {
 		private static readonly object OutgoingMailServerPasswordId = KB.I("OutgoingMailServerPasswordId");
 		protected static readonly Key BecauseOutgoingMailServerAuthenticationIsNotCustom = KB.K("Readonly because the Outgoing SMTP server authentication is not using the specified SMTP domain, username and password");
 		protected static readonly Key BecauseWrongAuthentication = KB.K("Readonly because the selected Authentication Type does not use this value");
-		private static readonly EditorCalculatedInitValue.CalculationDelegate OutgoingMailServerAuthenticationControlReadonly = delegate (object[] inputs) {
+		private static readonly CalculatedInitValue.CalculationDelegate OutgoingMailServerAuthenticationControlReadonly = delegate (object[] inputs) {
 			return (inputs[0] != null && (DatabaseEnums.SMTPCredentialType)(int)IntegralTypeInfo.AsNativeType(inputs[0], typeof(int)) != DatabaseEnums.SMTPCredentialType.CUSTOM);
 		};
-		private static readonly EditorCalculatedInitValue.CalculationDelegate UsingPlainAuthentication = delegate (object[] inputs) {
+		private static readonly CalculatedInitValue.CalculationDelegate UsingPlainAuthentication = delegate (object[] inputs) {
 			return (inputs[0] != null && (DatabaseEnums.MailServerAuthentication)(int)IntegralTypeInfo.AsNativeType(inputs[0], typeof(int)) == DatabaseEnums.MailServerAuthentication.Plain);
 		};
-		private static readonly EditorCalculatedInitValue.CalculationDelegate UsingOAuth2Authentication = delegate (object[] inputs) {
+		private static readonly CalculatedInitValue.CalculationDelegate UsingOAuth2Authentication = delegate (object[] inputs) {
 			return (inputs[0] != null && (DatabaseEnums.MailServerAuthentication)(int)IntegralTypeInfo.AsNativeType(inputs[0], typeof(int)) == DatabaseEnums.MailServerAuthentication.OAuth2);
 		};
 		#endregion
