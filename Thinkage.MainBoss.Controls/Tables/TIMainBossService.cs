@@ -412,14 +412,14 @@ namespace Thinkage.MainBoss.Controls {
 				CompositeView.ExtraNewVerb(FindDelayedEditTbl(dsMB.Schema.T.Request),
 					NoNewMode,
 					CompositeView.ContextualInit(0, new[] {
-						new CompositeView.Init(new ControlTarget(TIRequest.RequestSubjectID), new BrowserCalculatedInitValue(dsMB.Path.T.Request.F.Subject.ReferencedColumn.EffectiveType,
+						new CompositeView.Init(new ControlTarget(TIRequest.RequestSubjectID), CalculatedInitValue.New<BrowserInitValue>(dsMB.Path.T.Request.F.Subject.ReferencedColumn.EffectiveType,
 								delegate(object[] inputs) {
 									var content = (string)inputs[0];
 									if (content == null)
 										return null;
 									return content;
 								}, new BrowserPathValue(dsMB.Path.T.EmailRequest.F.Subject))),
-						new CompositeView.Init(new ControlTarget(TIRequest.RequestDescriptionID), new BrowserCalculatedInitValue(dsMB.Path.T.Request.F.Description.ReferencedColumn.EffectiveType,
+						new CompositeView.Init(new ControlTarget(TIRequest.RequestDescriptionID), CalculatedInitValue.New<BrowserInitValue>(dsMB.Path.T.Request.F.Description.ReferencedColumn.EffectiveType,
 								delegate(object[] inputs) {
 									var content = (string)inputs[0];
 									if (content == null)
@@ -508,7 +508,7 @@ namespace Thinkage.MainBoss.Controls {
 					TblColumnNode.New(dsMB.Path.T.EmailPart.F.ContentLength, DCol.Normal, ECol.AllReadonly),
 					TblColumnNode.New(dsMB.Path.T.EmailPart.F.Name, DCol.Normal, ECol.Normal),
 					TblGroupNode.New(KB.K("Text Content"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-						TblInitSourceNode.New(null, new DualCalculatedInitValue(StringTypeInfo.Universe, delegate (object[] inputs) {
+						TblInitSourceNode.New(null, CalculatedInitValue.New<DualInitValue>(StringTypeInfo.Universe, delegate (object[] inputs) {
 							var content = (byte[])inputs[1];
 							if (content == null)
 								return null;
@@ -539,7 +539,7 @@ namespace Thinkage.MainBoss.Controls {
 					TblColumnNode.New(dsMB.Path.T.EmailPart.F.ContentLength, DCol.Normal, ECol.AllReadonly),
 					TblColumnNode.New(dsMB.Path.T.EmailPart.F.Name, DCol.Normal, ECol.Normal),
 					TblGroupNode.New(KB.K("HTML Content"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-						TblInitSourceNode.New(null, new DualCalculatedInitValue(StringTypeInfo.Universe, delegate (object[] inputs) {
+						TblInitSourceNode.New(null, CalculatedInitValue.New<DualInitValue>(StringTypeInfo.Universe, delegate (object[] inputs) {
 							var content = (byte[])inputs[1];
 							if (content == null)
 								return null;
@@ -594,7 +594,7 @@ namespace Thinkage.MainBoss.Controls {
 					TblColumnNode.New(dsMB.Path.T.EmailPart.F.ContentLength, DCol.Normal, ECol.AllReadonly),
 					TblColumnNode.New(dsMB.Path.T.EmailPart.F.Name, DCol.Normal, ECol.Normal),
 					TblGroupNode.New(KB.K("Mail Message Content"), new TblLayoutNode.ICtorArg[] { DCol.Normal, ECol.Normal },
-						TblInitSourceNode.New(null, new DualCalculatedInitValue(StringTypeInfo.Universe, delegate (object[] inputs) {
+						TblInitSourceNode.New(null, CalculatedInitValue.New<DualInitValue>(StringTypeInfo.Universe, delegate (object[] inputs) {
 							var content = (byte[])inputs[1];
 							if (content == null)
 								return null;
@@ -773,7 +773,7 @@ namespace Thinkage.MainBoss.Controls {
 				new Tbl.IAttr[] {
 					MainBossServiceAdminGroup,
 					new BTbl(
-						BTbl.ListColumn(dsMB.Path.T.ServiceLog.F.EntryDate.Key(), new BrowserCalculatedInitValue(
+						BTbl.ListColumn(dsMB.Path.T.ServiceLog.F.EntryDate.Key(), CalculatedInitValue.New<BrowserInitValue>(
 							new StructTypeInfo( false, dsMB.Path.T.ServiceLog.F.EntryDate.ReferencedColumn.EffectiveType, dsMB.Path.T.ServiceLog.F.EntryVersion.ReferencedColumn.EffectiveType ),
 							delegate(object[] a)
 							{
@@ -1058,20 +1058,20 @@ namespace Thinkage.MainBoss.Controls {
 
 				// Make the irrelevant incoming mail authentication fields readonly
 				Init.Continuous(new ControlReadonlyTarget(MailEncryptedPasswordId, BecauseWrongAuthentication)
-						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, UsingOAuth2Authentication, new ControlValue(IncomingMailAuthenticationTypeId))),
+						, CalculatedInitValue.New<EditorInitValue>(BoolTypeInfo.NonNullUniverse, UsingOAuth2Authentication, new ControlValue(IncomingMailAuthenticationTypeId))),
 				Init.Continuous(new ControlReadonlyTarget(MailClientIDId, BecauseWrongAuthentication)
-						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, UsingPlainAuthentication, new ControlValue(IncomingMailAuthenticationTypeId))),
+						, CalculatedInitValue.New<EditorInitValue>(BoolTypeInfo.NonNullUniverse, UsingPlainAuthentication, new ControlValue(IncomingMailAuthenticationTypeId))),
 				Init.Continuous(new ControlReadonlyTarget(MailEncryptedClientSecretId, BecauseWrongAuthentication)
-						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, UsingPlainAuthentication, new ControlValue(IncomingMailAuthenticationTypeId))),
+						, CalculatedInitValue.New<EditorInitValue>(BoolTypeInfo.NonNullUniverse, UsingPlainAuthentication, new ControlValue(IncomingMailAuthenticationTypeId))),
 				Init.Continuous(new ControlReadonlyTarget(MailClientCertificateNameId, BecauseWrongAuthentication)
-						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, UsingPlainAuthentication, new ControlValue(IncomingMailAuthenticationTypeId))),
+						, CalculatedInitValue.New<EditorInitValue>(BoolTypeInfo.NonNullUniverse, UsingPlainAuthentication, new ControlValue(IncomingMailAuthenticationTypeId))),
 				// Make the irrelevant outgoing mail authentication fields readonly
 				Init.Continuous(new ControlReadonlyTarget(OutgoingMailServerUserDomainId, BecauseOutgoingMailServerAuthenticationIsNotCustom)
-						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, OutgoingMailServerAuthenticationControlReadonly, new ControlValue(OutgoingMailServerAuthenticationId))),
+						, CalculatedInitValue.New<EditorInitValue>(BoolTypeInfo.NonNullUniverse, OutgoingMailServerAuthenticationControlReadonly, new ControlValue(OutgoingMailServerAuthenticationId))),
 				Init.Continuous(new ControlReadonlyTarget(OutgoingMailServerUsernameId, BecauseOutgoingMailServerAuthenticationIsNotCustom)
-						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, OutgoingMailServerAuthenticationControlReadonly, new ControlValue(OutgoingMailServerAuthenticationId))),
+						, CalculatedInitValue.New<EditorInitValue>(BoolTypeInfo.NonNullUniverse, OutgoingMailServerAuthenticationControlReadonly, new ControlValue(OutgoingMailServerAuthenticationId))),
 				Init.Continuous(new ControlReadonlyTarget(OutgoingMailServerPasswordId, BecauseOutgoingMailServerAuthenticationIsNotCustom)
-						, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, OutgoingMailServerAuthenticationControlReadonly, new ControlValue(OutgoingMailServerAuthenticationId))),
+						, CalculatedInitValue.New<EditorInitValue>(BoolTypeInfo.NonNullUniverse, OutgoingMailServerAuthenticationControlReadonly, new ControlValue(OutgoingMailServerAuthenticationId))),
 				Init.OnLoadNew(new PathTarget(dsMB.Path.T.ServiceConfiguration.F.Code), new ConstantValue(KB.I("MainBossService"))),
 				Init.OnLoadNew(new PathTarget(dsMB.Path.T.ServiceConfiguration.F.Encryption), new ConstantValue(DatabaseEnums.MailServerEncryption.RequireEncryption)),
 

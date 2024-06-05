@@ -498,7 +498,7 @@ namespace Thinkage.MainBoss.Controls {
 							// The following isn't valid because we have no SQL type for time spans that comes back in the data set as a TimeSpan.
 							//TblQueryValueNode.New(KB.K("Work Duration"), new TblQueryExpression(new SqlExpression(dsMB.Path.T.WorkOrder.F.EndDateEstimate).Minus(new SqlExpression(dsMB.Path.T.WorkOrder.F.StartDateEstimate))), DCol.Normal),
 							TblInitSourceNode.New(KB.K("Work Duration"),
-								new BrowserCalculatedInitValue(new IntervalTypeInfo(new TimeSpan(1, 0, 0, 0, 0), new TimeSpan(1, 0, 0, 0, 0), TimeSpan.MaxValue, false),
+								CalculatedInitValue.New<BrowserInitValue>(new IntervalTypeInfo(new TimeSpan(1, 0, 0, 0, 0), new TimeSpan(1, 0, 0, 0, 0), TimeSpan.MaxValue, false),
 									values => (DateTime?)values[0] - (DateTime?)values[1] + new TimeSpan(1, 0, 0, 0),
 									new BrowserPathValue(dsMB.Path.T.WorkOrder.F.EndDateEstimate),
 									new BrowserPathValue(dsMB.Path.T.WorkOrder.F.StartDateEstimate)),
@@ -509,7 +509,7 @@ namespace Thinkage.MainBoss.Controls {
 							// The following isn't valid because we have no SQL type for time spans that comes back in the data set as a TimeSpan.
 							//TblQueryValueNode.New(SlackDaysKey, new TblQueryExpression(new SqlExpression(dsMB.Path.T.WorkOrder.F.WorkDueDate).Minus(new SqlExpression(dsMB.Path.T.WorkOrder.F.EndDateEstimate))), DCol.Normal),
 							TblInitSourceNode.New(SlackDaysKey,
-								new BrowserCalculatedInitValue(SlackDaysType,
+								CalculatedInitValue.New<BrowserInitValue>(SlackDaysType,
 									values => (DateTime?)values[0] - (DateTime?)values[1],
 									new BrowserPathValue(dsMB.Path.T.WorkOrder.F.WorkDueDate),
 									new BrowserPathValue(dsMB.Path.T.WorkOrder.F.EndDateEstimate)),
@@ -647,7 +647,7 @@ namespace Thinkage.MainBoss.Controls {
 			if (!creator.Correction)
 				// Look up the To c/c from the work order expense model.
 				creator.Actions.Add(Init.OnLoadNewClone(dsMB.Path.T.AccountingTransaction.F.ToCostCenterID.ReOrientFromRelatedTable(creator.MostDerivedTable),
-					new EditorCalculatedInitValue(IdTypeInfo.Universe,
+					CalculatedInitValue.New<EditorInitValue>(IdTypeInfo.Universe,
 						delegate (object[] inputs) {
 							// TODO: Technically the following Session might not be the same as the editor's Session. Maybe we need a 'Session' init source (yuk!)
 							object result = Thinkage.Libraries.Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().Session.Session.ExecuteCommandReturningScalar(
@@ -4740,7 +4740,7 @@ namespace Thinkage.MainBoss.Controls {
 					Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.Description, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.Description))),
 					Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.Downtime, new InSubBrowserValue(SourceWorkOrderPickerId, new BrowserPathValue(dsMB.Path.T.WorkOrder.F.Downtime))),
 					Init.ContinuousNewClone(dsMB.Path.T.WorkOrderTemplate.F.Duration, new InSubBrowserValue(SourceWorkOrderPickerId,
-					new BrowserCalculatedInitValue(dsMB.Schema.T.WorkOrderTemplate.F.Duration.EffectiveType,
+					CalculatedInitValue.New<BrowserInitValue>(dsMB.Schema.T.WorkOrderTemplate.F.Duration.EffectiveType,
 						(object[] inputs) => (inputs[0] == null || inputs[1] == null) ? null : (object)((DateTime)inputs[1] - (DateTime)inputs[0] + Extensions.TimeSpan.OneDay),
 						new BrowserPathValue(dsMB.Path.T.WorkOrder.F.StartDateEstimate),
 						new BrowserPathValue(dsMB.Path.T.WorkOrder.F.EndDateEstimate)))),

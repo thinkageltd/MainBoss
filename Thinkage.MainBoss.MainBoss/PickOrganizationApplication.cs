@@ -861,7 +861,7 @@ namespace Thinkage.MainBoss.MainBoss {
 							, Init.OnLoadNew(new ControlTarget(CredentialsAuthenticationMethodId), new ConstantValue((int)AuthenticationMethod.WindowsAuthentication))
 							, Init.OnLoadNew(new ControlTarget(CredentialsUsernameId), new ConstantValue(null))
 							, Init.Continuous(new ControlReadonlyTarget(CredentialsUsernameId, KB.K("A username is not required for this authentication method"))
-								, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, delegate (object[] inputs) {
+								, CalculatedInitValue.New<EditorInitValue>(BoolTypeInfo.NonNullUniverse, delegate (object[] inputs) {
 									// determine if authentication method needs the password field
 									return (inputs[0] != null &&
 											(AuthenticationMethod)(int)Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[0], typeof(int)) == AuthenticationMethod.WindowsAuthentication
@@ -869,7 +869,7 @@ namespace Thinkage.MainBoss.MainBoss {
 								}, new Libraries.Presentation.ControlValue(CredentialsAuthenticationMethodId)))
 							, Init.OnLoadNew(new ControlTarget(CredentialsPasswordId), new ConstantValue(null))
 							, Init.Continuous(new ControlReadonlyTarget(CredentialsPasswordId, KB.K("A password is not required for this authentication method"))
-								, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, delegate (object[] inputs) {
+								, CalculatedInitValue.New<EditorInitValue>(BoolTypeInfo.NonNullUniverse, delegate (object[] inputs) {
 									// determine if authentication method needs the password field
 									return (inputs[0] != null &&
 											!((AuthenticationMethod)(int)Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[0], typeof(int)) == AuthenticationMethod.SQLPassword
@@ -879,7 +879,7 @@ namespace Thinkage.MainBoss.MainBoss {
 							, Init.OnLoadNew(new ControlTarget(CompactBrowsersId), new ConstantValue(false))
 							, Init.OnLoadNew(new ControlTarget(PreferredModeId), new ConstantValue((int)DatabaseEnums.ApplicationModeID.Normal))
 							, EL == typeof(NewCreateDatabaseWithLicensesOrganizationEditorLogic) ?
-								Init.Continuous(new ControlTarget(HtmlDisplayId), new EditorCalculatedInitValue(StringTypeInfo.Universe, GetLicenseDisplay,
+								Init.Continuous(new ControlTarget(HtmlDisplayId), CalculatedInitValue.New<EditorInitValue>(StringTypeInfo.Universe, GetLicenseDisplay,
 									new ControlValue(EmailForLicenseId),
 									new ControlValue(OrganizationNameId),
 									new ControlValue(ServerNameId),

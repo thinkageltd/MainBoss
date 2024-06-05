@@ -239,7 +239,7 @@ namespace Thinkage.MainBoss.Controls {
 				}
 				if (needPassword) {
 					pInitLists[0].Add(Init.Continuous(new ControlReadonlyTarget(passwordControlId, KB.K("A password is not required for this authentication method"))
-							, new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse, delegate (object[] inputs) {
+							, CalculatedInitValue.New<EditorInitValue>(BoolTypeInfo.NonNullUniverse, delegate (object[] inputs) {
 								// determine if authentication method needs the password field
 								return (inputs[0] != null &&
 										!((AuthenticationMethod)(int)Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[0], typeof(int)) == AuthenticationMethod.SQLPassword

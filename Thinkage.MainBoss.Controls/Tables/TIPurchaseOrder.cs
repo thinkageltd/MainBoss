@@ -285,7 +285,7 @@ namespace Thinkage.MainBoss.Controls {
 					creator.BuildPickedItemPriceResultDisplays();
 					creator.BuildPickedItemPriceResultValueTransfers();
 					creator.Actions.Add(Init.Continuous(new ControlTarget(PrototypeDescriptionId),
-						new EditorCalculatedInitValue(creator.PrototypeDescriptionTypeInfo,
+						CalculatedInitValue.New<EditorInitValue>(creator.PrototypeDescriptionTypeInfo,
 							(values => values[1] ?? values[0]),
 							new EditorPathValue(dsMB.Path.T.POLineItem.F.ItemLocationID.F.ItemID.F.Code),
 							new InSubBrowserValue(DerivationTblCreatorWithQuantityAndCostBase.ItemPricePickerId, new BrowserPathValue(dsMB.Path.T.ItemPricing.F.PurchaseOrderText))))

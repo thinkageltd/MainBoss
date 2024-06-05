@@ -303,7 +303,7 @@ namespace Thinkage.MainBoss.Controls {
 		}
 		#endregion
 		private static TblLayoutNode WorkEndDateNodeFromNextAvailableDate(Key k) {
-			return TblInitSourceNode.New(k, new BrowserCalculatedInitValue(dsMB.Path.T.PMGenerationDetail.F.NextAvailableDate.ReferencedColumn.EffectiveType,
+			return TblInitSourceNode.New(k, CalculatedInitValue.New<BrowserInitValue>(dsMB.Path.T.PMGenerationDetail.F.NextAvailableDate.ReferencedColumn.EffectiveType,
 				(values => values[0] == null ? null : (object)((DateTime)values[0]).AddDays(-1)), new BrowserPathValue(dsMB.Path.T.PMGenerationDetail.F.NextAvailableDate)), DCol.Normal);
 		}
 		internal static void DefineTblEntries() {

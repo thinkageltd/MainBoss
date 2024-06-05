@@ -246,12 +246,12 @@ namespace Thinkage.MainBoss.Controls {
 			return ResourceCountUnitCostCalculator((long?)IntegralTypeInfo.AsNativeType(values[1], typeof(long?)), (decimal?)values[0]);
 		}
 		public static BrowserInitValue ResourceCountUnitCostInitValue(DBI_Path pathToCost, DBI_Path pathToQuantity) {
-			return new BrowserCalculatedInitValue(ItemUnitCostTypeOnClient, ResourceCountUnitCostCalculator,
+			return CalculatedInitValue.New<BrowserInitValue>(ItemUnitCostTypeOnClient, ResourceCountUnitCostCalculator,
 					new BrowserPathValue(pathToCost),
 					new BrowserPathValue(pathToQuantity));
 		}
 		public static BrowserInitValue ResourceIntervalUnitCostInitValue(DBI_Path pathToCost, DBI_Path pathToQuantity) {
-			return new BrowserCalculatedInitValue(HourlyUnitCostTypeOnClient, ResourceIntervalUnitCostCalculator,
+			return CalculatedInitValue.New<BrowserInitValue>(HourlyUnitCostTypeOnClient, ResourceIntervalUnitCostCalculator,
 					new BrowserPathValue(pathToCost),
 					new BrowserPathValue(pathToQuantity));
 		}
@@ -624,7 +624,7 @@ namespace Thinkage.MainBoss.Controls {
 						targetReadonlyValue = choiceControlInitValue;
 					else {
 						int thisi = i + 1;
-						targetReadonlyValue = new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse,
+						targetReadonlyValue = CalculatedInitValue.New<EditorInitValue>(BoolTypeInfo.NonNullUniverse,
 							delegate (object[] inputs) {
 								if (inputs[0] == null)
 									return false;
@@ -743,19 +743,19 @@ namespace Thinkage.MainBoss.Controls {
 				// otherwise there is the chance that EditControl might make a display instead of a browser and InSubBrowserValue will get an
 				// Invalid Cast error. The ItemPricePicker control is now always a live browser so these inits can also likewise be live.
 				EditorInitValue quantitySource = new InSubBrowserValue(ItemPricePickerId, new BrowserPathValue(dsMB.Path.T.ItemPricing.F.Quantity));
-				EditorInitValue noHistoryPickedSource = new EditorCalculatedInitValue(BoolTypeInfo.NonNullUniverse,
+				EditorInitValue noHistoryPickedSource = CalculatedInitValue.New<EditorInitValue>(BoolTypeInfo.NonNullUniverse,
 					(values) => values[0] == null,
 					new InSubBrowserValue(ItemPricePickerId, new BrowserPathValue(dsMB.Path.T.ItemPricing.F.Id))
 				);
 				if (defaultQuantityId != null)
-					quantitySource = new EditorCalculatedInitValue(quantitySource.TypeInfo,
+					quantitySource = CalculatedInitValue.New<EditorInitValue>(quantitySource.TypeInfo,
 						(values) => (bool)values[0] ? values[2] : values[1],
 						noHistoryPickedSource,
 						quantitySource,
 						new Libraries.Presentation.ControlValue(defaultQuantityId));
 				EditorInitValue valueSource = new InSubBrowserValue(ItemPricePickerId, new BrowserPathValue(dsMB.Path.T.ItemPricing.F.Cost));
 				if (defaultValueId != null)
-					valueSource = new EditorCalculatedInitValue(valueSource.TypeInfo,
+					valueSource = CalculatedInitValue.New<EditorInitValue>(valueSource.TypeInfo,
 						(values) => (bool)values[0] ? values[2] : values[1],
 						noHistoryPickedSource,
 						valueSource,
@@ -873,7 +873,7 @@ namespace Thinkage.MainBoss.Controls {
 			protected void AddUnitCostBrowserDisplayAndEditControl<QT>(Key label, DBI_Path quantityPath, object unitCostId, DBI_Path totalCostPath, params ECol.ICtorArg[] attrs)
 				where QT : struct, System.IComparable<QT> {
 				AddCostingControl(TblInitSourceNode.New(
-					new BrowserCalculatedInitValue(UnitCostTypeInfo,
+					CalculatedInitValue.New<BrowserInitValue>(UnitCostTypeInfo,
 						delegate (object[] values) {
 							object totalCost = values[1];
 							object quantity = values[0];
@@ -2325,7 +2325,7 @@ namespace Thinkage.MainBoss.Controls {
 				EndPickerFilterControlGroup(KB.K("Storage Assignment filtering based on Pricing and Purchasing History"));
 
 				// Make a calculated init value that adds one to the radio-button value if specific-vendor filtering is requested.
-				EditorInitValue combined = new EditorCalculatedInitValue(
+				EditorInitValue combined = CalculatedInitValue.New<EditorInitValue>(
 					new IntegralTypeInfo(false, 0, 7),
 					delegate (object[] inputs) {
 						return ((bool)inputs[1] ? 1 : 0) + (int)IntegralTypeInfo.AsNativeType(inputs[0], typeof(int));
@@ -3077,7 +3077,7 @@ namespace Thinkage.MainBoss.Controls {
 				EndPickerFilterControlGroup(KB.K("Storage Assignment filtering based on Pricing and Purchasing History"));
 
 				// Make a calculated init value that adds one to the radio-button value if specific-vendor filtering is requested.
-				EditorInitValue combined = new EditorCalculatedInitValue(
+				EditorInitValue combined = CalculatedInitValue.New<EditorInitValue>(
 					new IntegralTypeInfo(false, 0, 7),
 					delegate (object[] inputs) {
 						return ((bool)inputs[1] ? 1 : 0) + (int)IntegralTypeInfo.AsNativeType(inputs[0], typeof(int));
@@ -3730,7 +3730,7 @@ namespace Thinkage.MainBoss.Controls {
 								TblColumnNode.New(dsMB.Path.T.UserMessageKey.F.Context, DCol.Normal, allowKeyModifications ? ECol.AllReadonly : ECol.Normal),
 							TblColumnNode.New(dsMB.Path.T.UserMessageKey.F.Key, DCol.Normal, ECol.Normal),
 							TblColumnNode.New(dsMB.Path.T.UserMessageKey.F.Comment, DCol.Normal),
-							TblInitSourceNode.New(KB.K("Current Translation"), new DualCalculatedInitValue(TranslationKeyTypeInfo.Universe, delegate (object[] inputs) {
+							TblInitSourceNode.New(KB.K("Current Translation"), CalculatedInitValue.New<DualInitValue>(TranslationKeyTypeInfo.Universe, delegate (object[] inputs) {
 								if (inputs[0] == null || inputs[1] == null)
 									return null;
 								return new Thinkage.Libraries.Translation.SimpleKey(ContextReference.New((string)inputs[0]), (string)inputs[1]);
@@ -3747,12 +3747,12 @@ namespace Thinkage.MainBoss.Controls {
 		#region RecordTypeViewColumnValue for ListColumn Views
 		public static CompositeView.ICtorArg RecordTypePerViewColumnValue(object columnTag) {
 			return BTbl.PerViewColumnValue(columnTag,
-				new BrowserCalculatedInitValue(TranslationKeyTypeInfo.NonNullUniverse, (args => ((Tbl.TblIdentification)args[0]).Compose("{0} Record Type")),
+				CalculatedInitValue.New<BrowserInitValue>(TranslationKeyTypeInfo.NonNullUniverse, (args => ((Tbl.TblIdentification)args[0]).Compose("{0} Record Type")),
 					new BrowseRecordTblIdentificationValue()), null);
 		}
 		public static CompositeView.ICtorArg StringRecordTypePerViewColumnValue(object columnTag) {
 			return BTbl.PerViewColumnValue(columnTag,
-				new BrowserCalculatedInitValue(StringTypeInfo.NonNullUniverse, (args => ((Tbl.TblIdentification)args[0]).Compose("{0} Record Type").Translate()),
+				CalculatedInitValue.New<BrowserInitValue>(StringTypeInfo.NonNullUniverse, (args => ((Tbl.TblIdentification)args[0]).Compose("{0} Record Type").Translate()),
 					new BrowseRecordTblIdentificationValue()), null);
 		}
 		public static readonly object RecordTypeColumnTagID = KB.I("RecordType");
@@ -3798,19 +3798,19 @@ namespace Thinkage.MainBoss.Controls {
 
 			var btblArgsWithScheduling = new List<BTbl.ICtorArg>(otherBTblArgs) {
 				BTbl.ListColumn(endDatePath),
-				BTbl.ListColumn(unrequestedPMCountPath.Key(), new BrowserCalculatedInitValue(countType, TotalCounts, new BrowserPathValue(unrequestedPMCountPath), new BrowserPathValue(requestedPMCountPath)), null),
-				BTbl.ListColumn(unrequestedCMCountPath.Key(), new BrowserCalculatedInitValue(countType, TotalCounts, new BrowserPathValue(unrequestedCMCountPath), new BrowserPathValue(requestedCMCountPath)), null)
+				BTbl.ListColumn(unrequestedPMCountPath.Key(), CalculatedInitValue.New<BrowserInitValue>(countType, TotalCounts, new BrowserPathValue(unrequestedPMCountPath), new BrowserPathValue(requestedPMCountPath)), null),
+				BTbl.ListColumn(unrequestedCMCountPath.Key(), CalculatedInitValue.New<BrowserInitValue>(countType, TotalCounts, new BrowserPathValue(unrequestedCMCountPath), new BrowserPathValue(requestedCMCountPath)), null)
 			};
 
 			var btblArgsWithRequests = new List<BTbl.ICtorArg>(otherBTblArgs) {
 				BTbl.ListColumn(endDatePath),
-				BTbl.ListColumn(KB.K("Work Order Count"), new BrowserCalculatedInitValue(countType, TotalCounts, new BrowserPathValue(unrequestedPMCountPath), new BrowserPathValue(unrequestedCMCountPath)), null),
-				BTbl.ListColumn(KB.K("Requested Work Order Count"), new BrowserCalculatedInitValue(countType, TotalCounts, new BrowserPathValue(requestedPMCountPath), new BrowserPathValue(requestedCMCountPath)), null)
+				BTbl.ListColumn(KB.K("Work Order Count"), CalculatedInitValue.New<BrowserInitValue>(countType, TotalCounts, new BrowserPathValue(unrequestedPMCountPath), new BrowserPathValue(unrequestedCMCountPath)), null),
+				BTbl.ListColumn(KB.K("Requested Work Order Count"), CalculatedInitValue.New<BrowserInitValue>(countType, TotalCounts, new BrowserPathValue(requestedPMCountPath), new BrowserPathValue(requestedCMCountPath)), null)
 			};
 
 			var btblArgsWithNeither = new List<BTbl.ICtorArg>(otherBTblArgs) {
 				BTbl.ListColumn(endDatePath),
-				BTbl.ListColumn(KB.K("Work Order Count"), new BrowserCalculatedInitValue(countType, TotalCounts,
+				BTbl.ListColumn(KB.K("Work Order Count"), CalculatedInitValue.New<BrowserInitValue>(countType, TotalCounts,
 					new BrowserPathValue(unrequestedPMCountPath), new BrowserPathValue(unrequestedCMCountPath),
 					new BrowserPathValue(requestedPMCountPath), new BrowserPathValue(requestedCMCountPath)
 				),
@@ -4672,7 +4672,7 @@ namespace Thinkage.MainBoss.Controls {
 						new BTbl(
 							BTbl.SetDummyBrowserPanelControl(new TblLayoutNodeArray(
 								TblInitSourceNode.New(null,
-									new DualCalculatedInitValue(StringTypeInfo.Universe,
+									CalculatedInitValue.New<DualInitValue>(StringTypeInfo.Universe,
 										delegate (object[] inputs) {
 											var defaultURL = Strings.IFormat("http://mainboss.com/MainBossNews/{0}.{1}.{2}/index.htm?version={0}.{1}.{2}.{3}&language={4}&id={5}", VersionInfo.ProductVersion.Major, VersionInfo.ProductVersion.Minor, VersionInfo.ProductVersion.Build, VersionInfo.ProductVersion.Revision, Thinkage.Libraries.Application.InstanceFormatCultureInfo.TwoLetterISOLanguageName, Application.Instance.GetInterface<IApplicationWithSingleDatabaseConnection>().OrganizationId);
 											return new System.Uri((string)inputs[0] ?? defaultURL);
@@ -4717,11 +4717,11 @@ namespace Thinkage.MainBoss.Controls {
 							TblUnboundControlNode.New(KB.K("Main Font"), ObjectTypeInfo.NonNullUniverse, Fmt.SetId(fontId), ECol.Font(false)),
 							TblVariableNode.New(KB.K("Font name"), dsMB.Schema.V.ReportFont, Fmt.SetId(faceNameID), ECol.Hidden),
 							TblVariableNode.New(KB.K("Point size"), dsMB.Schema.V.ReportFontSize, Fmt.SetId(sizeId), ECol.Hidden),
-							TblInitSourceNode.New(KB.K("Main Font"), new BrowserCalculatedInitValue(ObjectTypeInfo.NonNullUniverse, (values => values[0] == null || values[1] == null ? null : new System.Drawing.Font((string)values[0], (int)IntegralTypeInfo.AsNativeType(values[1], typeof(int)))), new VariableValue(dsMB.Schema.V.ReportFont), new VariableValue(dsMB.Schema.V.ReportFontSize)), DCol.Font()),
+							TblInitSourceNode.New(KB.K("Main Font"), CalculatedInitValue.New<BrowserInitValue>(ObjectTypeInfo.NonNullUniverse, (values => values[0] == null || values[1] == null ? null : new System.Drawing.Font((string)values[0], (int)IntegralTypeInfo.AsNativeType(values[1], typeof(int)))), new VariableValue(dsMB.Schema.V.ReportFont), new VariableValue(dsMB.Schema.V.ReportFontSize)), DCol.Font()),
 							TblUnboundControlNode.New(KB.K("Fixed-Pitch Font"), ObjectTypeInfo.NonNullUniverse, Fmt.SetId(ffontId), ECol.Font(true)),
 							TblVariableNode.New(KB.K("Font name"), dsMB.Schema.V.ReportFontFixedWidth, Fmt.SetId(ffaceNameID), ECol.Hidden),
 							TblVariableNode.New(KB.K("Point size"), dsMB.Schema.V.ReportFontSizeFixedWidth, Fmt.SetId(fsizeId), ECol.Hidden),
-							TblInitSourceNode.New(KB.K("Fixed-width Font"), new BrowserCalculatedInitValue(ObjectTypeInfo.NonNullUniverse, (values => values[0] == null || values[1] == null ? null : new System.Drawing.Font((string)values[0], (int)IntegralTypeInfo.AsNativeType(values[1], typeof(int)))), new VariableValue(dsMB.Schema.V.ReportFontFixedWidth), new VariableValue(dsMB.Schema.V.ReportFontSizeFixedWidth)), DCol.Font()),
+							TblInitSourceNode.New(KB.K("Fixed-width Font"), CalculatedInitValue.New<BrowserInitValue>(ObjectTypeInfo.NonNullUniverse, (values => values[0] == null || values[1] == null ? null : new System.Drawing.Font((string)values[0], (int)IntegralTypeInfo.AsNativeType(values[1], typeof(int)))), new VariableValue(dsMB.Schema.V.ReportFontFixedWidth), new VariableValue(dsMB.Schema.V.ReportFontSizeFixedWidth)), DCol.Font()),
 							TblVariableNode.New(KB.K("Bar Code Symbology"), dsMB.Schema.V.BarCodeSymbology,
 								Fmt.SetEnumText(new EnumValueTextRepresentations(BarCodeBase.SymbologyTypeInfo, BarCodeBase.BarCodeNameContext, 8)),
 								DCol.Normal, ECol.Normal)
@@ -4731,7 +4731,7 @@ namespace Thinkage.MainBoss.Controls {
 							TblVariableNode.New(KB.K("Active filter shows only records updated since this date"), dsMB.Schema.V.ActiveFilterSinceDate, DCol.Normal, ECol.Normal)
 						)
 					),
-					Init.OnLoad(new ControlTarget(fontId), new EditorCalculatedInitValue(ObjectTypeInfo.Universe, (object[] values) => new System.Drawing.Font((string)values[0], (int)IntegralTypeInfo.AsNativeType(values[1], typeof(int))), new VariableValue(dsMB.Schema.V.ReportFont), new VariableValue(dsMB.Schema.V.ReportFontSize))),
+					Init.OnLoad(new ControlTarget(fontId), CalculatedInitValue.New<EditorInitValue>(ObjectTypeInfo.Universe, (object[] values) => new System.Drawing.Font((string)values[0], (int)IntegralTypeInfo.AsNativeType(values[1], typeof(int))), new VariableValue(dsMB.Schema.V.ReportFont), new VariableValue(dsMB.Schema.V.ReportFontSize))),
 					new Check2<System.Drawing.Font, int>(
 							delegate (System.Drawing.Font f, int ps) {
 								if ((int)Math.Round(f.SizeInPoints) != ps)
@@ -4754,7 +4754,7 @@ namespace Thinkage.MainBoss.Controls {
 						.Operand2(faceNameID, delegate (System.Drawing.Font f) {
 							return f.Name;
 						}),
-					Init.OnLoad(new ControlTarget(ffontId), new EditorCalculatedInitValue(ObjectTypeInfo.Universe, (object[] values) => new System.Drawing.Font((string)values[0], (int)IntegralTypeInfo.AsNativeType(values[1], typeof(int))), new VariableValue(dsMB.Schema.V.ReportFontFixedWidth), new VariableValue(dsMB.Schema.V.ReportFontSizeFixedWidth))),
+					Init.OnLoad(new ControlTarget(ffontId), CalculatedInitValue.New<EditorInitValue>(ObjectTypeInfo.Universe, (object[] values) => new System.Drawing.Font((string)values[0], (int)IntegralTypeInfo.AsNativeType(values[1], typeof(int))), new VariableValue(dsMB.Schema.V.ReportFontFixedWidth), new VariableValue(dsMB.Schema.V.ReportFontSizeFixedWidth))),
 					new Check2<System.Drawing.Font, int>(
 							delegate (System.Drawing.Font f, int ps) {
 								if ((int)Math.Round(f.SizeInPoints) != ps)
@@ -4897,7 +4897,7 @@ namespace Thinkage.MainBoss.Controls {
 						TblColumnNode.New(KB.T("License Module ID"), dsMB.Path.T.License.F.ApplicationID, DCol.Normal, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(applicationIDId))),
 						TblColumnNode.New(dsMB.Path.T.License.F.LicenseModel, DCol.Normal, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(licenseModelId)), Fmt.SetEnumText(License.LicenseModelNameProvider)),
 						TblColumnNode.New(dsMB.Path.T.License.F.LicenseCount, DCol.Normal, new ECol(ECol.AllReadonlyAccess, Fmt.SetId(licenseCountId))),
-						TblInitSourceNode.New(KB.K("License Count Status"), new DualCalculatedInitValue(exceptionFullMessageTypeInfo, delegate (object[] inputs) {
+						TblInitSourceNode.New(KB.K("License Count Status"), CalculatedInitValue.New<DualInitValue>(exceptionFullMessageTypeInfo, delegate (object[] inputs) {
 							string key = (string)inputs[0];
 							if (key == null)
 								return null;

@@ -1176,7 +1176,7 @@ namespace Thinkage.MainBoss.Controls {
 								new CompositeView.Init(dsMB.Path.T.ItemTransfer.F.FromItemLocationID, dsMB.Path.T.ItemRestocking.F.ItemLocationID),
 								new CompositeView.Init(dsMB.Path.T.ItemTransfer.F.ToItemLocationID, dsMB.Path.T.ItemRestocking.F.ParentID.F.ItemLocationID),
 								new CompositeView.Init(dsMB.Path.T.ItemTransfer.F.Quantity,
-									new BrowserCalculatedInitValue(dsMB.Path.T.ItemTransfer.F.Quantity.ReferencedColumn.EffectiveType,
+									CalculatedInitValue.New<BrowserInitValue>(dsMB.Path.T.ItemTransfer.F.Quantity.ReferencedColumn.EffectiveType,
 										delegate (object[] inputs) {
 											long needed = (long)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[0], typeof(long))
 												- (long)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[1], typeof(long));
@@ -1212,7 +1212,7 @@ namespace Thinkage.MainBoss.Controls {
 								new CompositeView.Init(new PathTarget(dsMB.Path.T.POLineItem.F.ItemLocationID, 2), dsMB.Path.T.ItemRestocking.F.ItemLocationID),
 								new CompositeView.Init(new PathTarget(dsMB.Path.T.POLineItem.F.POLineID.F.LineNumber, 2), new ConstantValue(1)),
 								new CompositeView.Init(new PathTarget(dsMB.Path.T.POLineItem.F.Quantity, 2),
-									new BrowserCalculatedInitValue(dsMB.Path.T.ItemTransfer.F.Quantity.ReferencedColumn.EffectiveType,
+									CalculatedInitValue.New<BrowserInitValue>(dsMB.Path.T.ItemTransfer.F.Quantity.ReferencedColumn.EffectiveType,
 										(inputs => (long)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[0], typeof(long)) - (long)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[1], typeof(long))),
 										new BrowserPathValue(dsMB.Path.T.ItemRestocking.F.ItemLocationID.F.ActualItemLocationID.F.EffectiveMaximum),
 										new BrowserPathValue(dsMB.Path.T.ItemRestocking.F.ItemLocationID.F.ActualItemLocationID.F.Available)
@@ -1230,7 +1230,7 @@ namespace Thinkage.MainBoss.Controls {
 								new CompositeView.Init(new PathTarget(dsMB.Path.T.POLineItem.F.ItemLocationID, 2), dsMB.Path.T.ItemRestocking.F.ParentID.F.ItemLocationID),
 								new CompositeView.Init(new PathTarget(dsMB.Path.T.POLineItem.F.POLineID.F.LineNumber, 2), new ConstantValue(1)),
 								new CompositeView.Init(new PathTarget(dsMB.Path.T.POLineItem.F.Quantity, 2),
-									new BrowserCalculatedInitValue(dsMB.Path.T.ItemTransfer.F.Quantity.ReferencedColumn.EffectiveType,
+									CalculatedInitValue.New<BrowserInitValue>(dsMB.Path.T.ItemTransfer.F.Quantity.ReferencedColumn.EffectiveType,
 										(inputs => (long)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[0], typeof(long)) - (long)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[1], typeof(long))),
 										new BrowserPathValue(dsMB.Path.T.ItemRestocking.F.ParentID.F.ItemLocationID.F.ActualItemLocationID.F.EffectiveMaximum),
 										new BrowserPathValue(dsMB.Path.T.ItemRestocking.F.ParentID.F.ItemLocationID.F.ActualItemLocationID.F.Available)
@@ -1245,7 +1245,7 @@ namespace Thinkage.MainBoss.Controls {
 								new CompositeView.Init(new PathTarget(dsMB.Path.T.POLineItem.F.ItemLocationID, 2), dsMB.Path.T.ItemRestocking.F.ParentID.F.ItemLocationID),
 								new CompositeView.Init(new PathTarget(dsMB.Path.T.POLineItem.F.POLineID.F.LineNumber, 2), new ConstantValue(1)),
 								new CompositeView.Init(new PathTarget(dsMB.Path.T.POLineItem.F.Quantity, 2),
-									new BrowserCalculatedInitValue(dsMB.Path.T.ItemTransfer.F.Quantity.ReferencedColumn.EffectiveType,
+									CalculatedInitValue.New<BrowserInitValue>(dsMB.Path.T.ItemTransfer.F.Quantity.ReferencedColumn.EffectiveType,
 										(inputs => (long)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[0], typeof(long)) - (long)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[1], typeof(long))),
 										new BrowserPathValue(dsMB.Path.T.ItemRestocking.F.ParentID.F.ItemLocationID.F.ActualItemLocationID.F.EffectiveMaximum),
 										new BrowserPathValue(dsMB.Path.T.ItemRestocking.F.ParentID.F.ItemLocationID.F.ActualItemLocationID.F.Available)
@@ -1260,7 +1260,7 @@ namespace Thinkage.MainBoss.Controls {
 								new CompositeView.Init(new PathTarget(dsMB.Path.T.POLineItem.F.ItemLocationID, 2), dsMB.Path.T.ItemRestocking.F.ParentID.F.ItemLocationID),
 								new CompositeView.Init(new PathTarget(dsMB.Path.T.POLineItem.F.POLineID.F.LineNumber, 2), new ConstantValue(1)),
 								new CompositeView.Init(new PathTarget(dsMB.Path.T.POLineItem.F.Quantity, 2),
-									new BrowserCalculatedInitValue(dsMB.Path.T.ItemTransfer.F.Quantity.ReferencedColumn.EffectiveType,
+									CalculatedInitValue.New<BrowserInitValue>(dsMB.Path.T.ItemTransfer.F.Quantity.ReferencedColumn.EffectiveType,
 										(inputs => (long)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[0], typeof(long)) - (long)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(inputs[1], typeof(long))),
 										new BrowserPathValue(dsMB.Path.T.ItemRestocking.F.ParentID.F.ItemLocationID.F.ActualItemLocationID.F.EffectiveMaximum),
 										new BrowserPathValue(dsMB.Path.T.ItemRestocking.F.ParentID.F.ItemLocationID.F.ActualItemLocationID.F.Available)

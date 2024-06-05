@@ -348,7 +348,7 @@ namespace Thinkage.MainBoss.Controls {
 			attribs.Add(NewNoContextFreeNew);
 			attribs.Add(NoReentryToNewMode);
 			attribs.Add(CompositeView.ContextFreeInit(dsMB.Path.T.Request.F.Id, dsMB.Path.T.RequestStateHistory.F.RequestID));
-			attribs.Add(CompositeView.ContextFreeInit(new BrowserCalculatedInitValue(Libraries.TypeInfo.StringTypeInfo.NonNullUniverse, (values) => KB.K("Assigned to self").Translate()), dsMB.Path.T.RequestStateHistory.F.Comment));
+			attribs.Add(CompositeView.ContextFreeInit(CalculatedInitValue.New<BrowserInitValue>(Libraries.TypeInfo.StringTypeInfo.NonNullUniverse, (values) => KB.K("Assigned to self").Translate()), dsMB.Path.T.RequestStateHistory.F.Comment));
 			attribs.Add(CompositeView.ContextFreeInit(new ConstantValue(KnownIds.RequestStateInProgressId), dsMB.Path.T.RequestStateHistory.F.RequestStateID));
 			attribs.Add(CompositeView.ContextFreeInit(dsMB.Path.T.Request.F.Id, dsMB.Path.T.RequestAssignment.F.RequestID, 1));
 			attribs.Add(CompositeView.ContextFreeInit(new UserIDValue(), dsMB.Path.T.RequestAssignment.F.RequestAssigneeID, 1));	// TODO: Must use the RequestAssigneeId (an up-to-date result for assigneeIdExpression)
@@ -671,7 +671,7 @@ namespace Thinkage.MainBoss.Controls {
 						TblColumnNode.New(dsMB.Path.T.ManageRequestTransition.F.CommentToRequestorUserMessageKeyID, new DCol(Fmt.SetDisplayPath(dsMB.Path.T.UserMessageKey.F.Key)),
 									new ECol(Fmt.SetPickFrom(TIGeneralMB3.UserMessageKeyWithEditAbilityTblCreator),
 									Fmt.SetBrowserFilter(BTbl.EqFilter(dsMB.Path.T.UserMessageKey.F.Context, KB.I(Database.RequestClosePreferenceK.RequestClosePreference))))),
-						TblInitSourceNode.New(KB.K("Current Translation"), new DualCalculatedInitValue(TranslationKeyTypeInfo.Universe, delegate (object[] inputs) {
+						TblInitSourceNode.New(KB.K("Current Translation"), CalculatedInitValue.New<DualInitValue>(TranslationKeyTypeInfo.Universe, delegate (object[] inputs) {
 							if (inputs[0] == null || inputs[1] == null)
 								return null;
 							return new Thinkage.Libraries.Translation.SimpleKey(ContextReference.New((string)inputs[0]), (string)inputs[1]);
