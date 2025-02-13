@@ -77,7 +77,7 @@ namespace Thinkage.MainBoss.Controls {
 								order by LC.Depth asc
 							", param.Name)));
 				param.Value = ContainingLocationIDValueSource.GetValue();
-				GISLocation = (GeoGeography)dsMB.Schema.T.Location.F.GISLocation.EffectiveType.GenericAsNativeType(DB.Session.ExecuteCommandBatchReturningScalar(dsMB.Schema.T.Location.F.GISLocation.EffectiveType, batch), typeof(GeoGeography));
+				GISLocation = (GeoGeography)DB.Session.ExecuteCommandBatchReturningScalar(dsMB.Schema.T.Location.F.GISLocation.EffectiveType, batch, nativeType: typeof(GeoGeography));
 #else
 				// Note that in this case we don't need the param or the batch, just a single SQL command.
 				GISLocation = (GeoGeography)GISGeographyConverter(DB.Session.ExecuteCommandReturningScalar(new SelectSpecification(

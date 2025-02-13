@@ -100,7 +100,7 @@ namespace Thinkage.MainBoss.MBUtility {
 				// See if we can break in
 				int? result = null;
 				try {
-					result = (int?)Thinkage.Libraries.TypeInfo.IntegralTypeInfo.AsNativeType(db.Session.ExecuteCommandReturningScalar(Thinkage.Libraries.XAF.Database.Service.MSSql.Server.INT_NULLABLE_TypeInfo, new Libraries.XAF.Database.Layout.DBSpecificCommandSpecification("select has_perms_by_name(db_name(), 'DATABASE', 'CONTROL')")), typeof(int?));
+					result = (int?)db.Session.ExecuteCommandReturningScalar(Thinkage.Libraries.XAF.Database.Service.MSSql.Server.INT_NULLABLE_TypeInfo, new Libraries.XAF.Database.Layout.DBSpecificCommandSpecification("select has_perms_by_name(db_name(), 'DATABASE', 'CONTROL')"), nativeType: typeof(int?));
 				}
 				catch {
 				}

@@ -43,7 +43,7 @@ namespace Thinkage.MainBoss.Database {
 			}
 		}
 		public static string GetDatabaseSystemUser(DBClient db) {
-			return (string)Thinkage.Libraries.TypeInfo.StringTypeInfo.AsNativeType(db.Session.ExecuteCommandReturningScalar(new Libraries.TypeInfo.StringTypeInfo(0, 128, 0, false, false, false), new DBSpecificCommandSpecification("SELECT SYSTEM_USER")), typeof(string));
+			return (string)db.Session.ExecuteCommandReturningScalar(new Libraries.TypeInfo.StringTypeInfo(0, 128, 0, false, false, false), new DBSpecificCommandSpecification("SELECT SYSTEM_USER"), nativeType: typeof(string));
 		}
 		public static void ManageDatabaseUserCredential(DBClient db, string authenticationCredential, bool delete = false) {
 			DBSpecificCommandSpecification sqlCommand;
